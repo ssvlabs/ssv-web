@@ -6,7 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Logo from '~app/common/components/AppBar/components/Logo';
-import Button from '~app/common/components/AppBar/components/Button';
+import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
 import { useStyles } from './AppBar.styles';
 
 const AppBarComponent = () => {
@@ -19,7 +19,9 @@ const AppBarComponent = () => {
           <Typography variant="h5" className={classes.title}>
             <Logo />
           </Typography>
-          <Button variant="outlined" color="primary">Connect Wallet</Button>
+
+          <ConnectWalletButton />
+
           <IconButton edge="end" className={classes.menuButton} color="inherit" aria-label="menu">
             <MenuIcon />
           </IconButton>

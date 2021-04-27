@@ -4,7 +4,7 @@ export const useStyles = makeStyles((theme) => ({
     mainContainer: {
         height: '100%',
         width: '100%',
-        padding: theme.spacing(2),
+        padding: theme.spacing(4),
     },
     guideStepsContainerPaper: {
         cursor: 'pointer',
@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: 'aliceblue',
         },
     },
-    guideStepsContainer: {
+    gridContainer: {
         flexGrow: 1,
         flexDirection: 'column',
     },

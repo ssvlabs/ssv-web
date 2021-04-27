@@ -1,8 +1,11 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import Layout from '~app/common/components/Layout';
-import config from '~app/common/config';
+import NewOperator from '~app/components/NewOperator';
+import RegisterInNetwork from '~app/components/RegisterInNetwork';
 
 const Main = () => {
   return (
@@ -13,10 +16,10 @@ const Main = () => {
             <Welcome />
           </Route>
           <Route path={config.routes.OPERATOR.KEYS.GENERATE}>
-            Generate operator keys
+            <NewOperator />
           </Route>
           <Route path={config.routes.NETWORK.REGISTER}>
-            Generate operator keys
+            <RegisterInNetwork />
           </Route>
         </Switch>
       </Router>
@@ -24,4 +27,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default observer(Main);

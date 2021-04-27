@@ -7,8 +7,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Link as MaterialLink } from '@material-ui/core';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import config from '~app/common/config';
+import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
-import Header from '~app/components/Welcome/components/Header';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
@@ -16,13 +16,15 @@ const OrganicLink = UnStyledLink(MaterialLink);
 
 const Welcome = () => {
   const classes = useStyles();
+  const title = 'Join the SSV Network Operators';
+  const subtitle = 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.';
 
   return (
     <Paper className={classes.mainContainer}>
-      <Header />
+      <Header title={title} subtitle={subtitle} />
 
-      <Grid container wrap="nowrap" spacing={0} className={classes.guideStepsContainer}>
-        <Grid item xs zeroMinWidth className={classes.guideStepsContainer}>
+      <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <OrganicLink href={config.links.LINK_SSV_DEV_DOCS} target="_blank">
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
@@ -38,7 +40,7 @@ const Welcome = () => {
           </OrganicLink>
         </Grid>
 
-        <Grid item xs zeroMinWidth className={classes.guideStepsContainer}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <RouteLink to={config.routes.OPERATOR.KEYS.GENERATE}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
@@ -54,7 +56,7 @@ const Welcome = () => {
           </RouteLink>
         </Grid>
 
-        <Grid item xs zeroMinWidth className={classes.guideStepsContainer}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <RouteLink to={config.routes.NETWORK.REGISTER}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>

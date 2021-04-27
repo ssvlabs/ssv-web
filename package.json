@@ -32,7 +32,6 @@
   "scripts": {
     "start": "react-app-env --env-file=.env.local start",
     "build": "react-app-env --env-file=.env.${BUILD_ENV} build",
-    "build:test": "cross-env DOTENV=.env.${BUILD_ENV} node -r dotenv/config ./node_modules/.bin/react-scripts test --watchAll=false",
     "test": "cross-env DOTENV=.env.staging node -r dotenv/config ./node_modules/.bin/react-scripts test --watchAll=false",
     "test:dev": "react-scripts test --coverage --reporters=default",
     "lint": "eslint 'src/**'",

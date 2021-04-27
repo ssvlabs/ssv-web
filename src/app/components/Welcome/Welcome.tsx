@@ -11,10 +11,11 @@ import UnStyledLink from '~app/common/components/UnStyledLink';
 import Header from '~app/components/Welcome/components/Header';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 
+const RouteLink = UnStyledLink(RouterLink);
+const OrganicLink = UnStyledLink(MaterialLink);
+
 const Welcome = () => {
   const classes = useStyles();
-  const RouteLink = UnStyledLink(RouterLink);
-  const OrganicLink = UnStyledLink(MaterialLink);
 
   return (
     <Paper className={classes.mainContainer}>

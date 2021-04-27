@@ -11,5 +11,5 @@ test('Renders Application', () => {
     </Provider>,
   );
 
-  expect(getByText(/SSV Manager/i)).toBeInTheDocument();
+  expect(getByText(/Run SSV Node/i)).toBeInTheDocument();
 });

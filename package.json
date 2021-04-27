@@ -13,8 +13,10 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
+    "cross-env": "^7.0.3",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-typescript": "^12.3.1",
+    "jest-html-reporter": "^3.3.0",
     "link-module-alias": "^1.2.0",
     "mobx": "5.15.0",
     "mobx-react": "6.1.4",
@@ -30,7 +32,9 @@
   "scripts": {
     "start": "react-app-env --env-file=.env.local start",
     "build": "react-app-env --env-file=.env.${BUILD_ENV} build",
-    "test": "react-app-env --env-file=.env.staging test",
+    "build:test": "cross-env DOTENV=.env.${BUILD_ENV} node -r dotenv/config ./node_modules/.bin/react-scripts test --watchAll=false",
+    "test": "cross-env DOTENV=.env.staging node -r dotenv/config ./node_modules/.bin/react-scripts test --watchAll=false",
+    "test:dev": "react-scripts test --coverage --reporters=default",
     "lint": "eslint 'src/**'",
     "eject": "react-scripts eject",
     "postinstall": "link-module-alias && husky install",
@@ -60,14 +64,8 @@
   "devDependencies": {
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.9",
-    "husky": "^5.2.0",
+    "husky": "^6.0.0",
     "pinst": "^2.1.6",
     "sass-lint": "^1.13.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn test"
-    }
   }
 }

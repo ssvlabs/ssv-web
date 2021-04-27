@@ -1,0 +1,30 @@
+stages:
+  - build
+
+variables:
+  #STAGE
+  ACCOUNT_ID_INFRA_STAGE: 121827225315
+  AWS_REGION_INFRA_STAGE: "us-west-2"
+
+
+# ssv-web-stage
+Build stage Docker image:
+  stage: build
+  tags:
+    - ssv-web
+  script:
+    - docker build --build-arg BUILD_ENV=staging --build-arg S3_BUCKET=$STAGE_S3_BUCKET --build-arg AWS_ACCESS_KEY_ID=$STAGE_AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$STAGE_AWS_SECRET_ACCESS_KEY -t test-build -f Dockerfile .
+
+  only:
+    - stage
+
+# ssv-web-prod
+Build prod Docker image:
+  stage: build
+  tags:
+    - ssv-web
+  script:
+    - docker build --build-arg BUILD_ENV=production --build-arg S3_BUCKET=$PROD_S3_BUCKET --build-arg AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY -t test-build -f Dockerfile .
+
+  only:
+    - main

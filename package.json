@@ -63,5 +63,11 @@
     "husky": "^6.0.0",
     "pinst": "^2.1.6",
     "sass-lint": "^1.13.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint",
+      "pre-push": "yarn test"
+    }
   }
 }

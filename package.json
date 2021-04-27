@@ -1,0 +1,67 @@
+{
+  "name": "ssv-web",
+  "description": "Webapp to interact with SSV",
+  "version": "1.0.0",
+  "dependencies": {
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-redux": "^7.1.7",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^12.3.1",
+    "link-module-alias": "^1.2.0",
+    "mobx": "5.15.0",
+    "mobx-react": "6.1.4",
+    "react": "^17.0.2",
+    "react-app-env": "^1.2.3",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "sass": "^1.32.11",
+    "styled-components": "^5.2.3",
+    "typescript": "~4.1.5"
+  },
+  "scripts": {
+    "start": "react-app-env --env-file=.env.local start",
+    "build": "react-app-env --env-file=.env.${BUILD_ENV} build",
+    "test": "react-app-env --env-file=.env.staging test",
+    "lint": "eslint 'src/**'",
+    "eject": "react-scripts eject",
+    "postinstall": "link-module-alias && husky install",
+    "preinstall": "command -v link-module-alias && link-module-alias clean || true",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "_moduleAliases": {
+    "~root": "./src",
+    "~app": "./src/app"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.1.7",
+    "@types/styled-components": "^5.1.9",
+    "husky": "^6.0.0",
+    "pinst": "^2.1.6",
+    "sass-lint": "^1.13.1"
+  }
+}

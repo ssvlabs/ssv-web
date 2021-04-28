@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/common/components/Layout';
-import SSVHome from '~app/components/SSVHome';
-import ShareValidatorKey from '~app/components/ShareValidatorKey';
-import GenerateOperatorKeys from '~app/components/SSVHome/components/GenerateOperatorKeys';
-import RegisterOperatorMenu from '~app/components/SSVHome/components/RegisterOperatorMenu';
+import SSVHome from '~app/components/Home';
+import RegisterValidator from '~app/components/RegisterValidator';
+import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
+import RegisterOperatorMenu from '~app/components/RegisterOperatorMenu';
 
 const Routes = () => {
   return (
@@ -26,8 +26,8 @@ const Routes = () => {
               </Route>
             </Switch>
           </Route>
-          <Route exact path={config.routes.VALIDATOR.SHARE}>
-            <ShareValidatorKey />
+          <Route path={config.routes.VALIDATOR.HOME}>
+            <RegisterValidator />
           </Route>
         </Switch>
       </Router>

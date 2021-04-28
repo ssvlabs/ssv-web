@@ -8,11 +8,11 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import config from '~app/common/config';
 import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
-import { useStyles } from '~app/components/SSVHome/SSVHome.styles';
+import { useStyles } from '~app/components/Home/Home.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
 
-const SSVHome = () => {
+const Home = () => {
   const classes = useStyles();
   const title = 'Join SSV Network';
   const subtitle = 'Create new operator and share validator keys with other operators';
@@ -27,7 +27,7 @@ const SSVHome = () => {
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Create new Operator</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Create new Operator</Typography>
                   <Typography noWrap variant="caption">Create your network identifier</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>
@@ -39,11 +39,11 @@ const SSVHome = () => {
         </Grid>
 
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <RouteLink to={config.routes.VALIDATOR.SHARE}>
+          <RouteLink to={config.routes.VALIDATOR.HOME}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Share Validator Key</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Share Validator Key</Typography>
                   <Typography noWrap variant="caption">List yourself in the network operators registry</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>
@@ -58,4 +58,4 @@ const SSVHome = () => {
   );
 };
 
-export default observer(SSVHome);
+export default observer(Home);

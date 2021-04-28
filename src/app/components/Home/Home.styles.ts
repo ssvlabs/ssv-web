@@ -26,11 +26,14 @@ export const useStyles = makeStyles((theme) => ({
     guideStep: {
         marginBottom: theme.spacing(1),
     },
+    guideStepText: {
+        fontSize: 14,
+    },
     arrowIcon: {
         float: 'right',
         marginLeft: 'auto',
         marginRight: theme.spacing(1),
         alignSelf: 'center',
-        marginTop: theme.spacing(1.5),
+        marginTop: theme.spacing(1),
     },
 }));

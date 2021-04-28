@@ -14,7 +14,7 @@ import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
 import BackNavigation from '~app/common/components/BackNavigation';
 import { INewOperatorTransaction } from '~app/common/stores/SSV.store';
-import { useStyles } from '~app/components/SSVHome/SSVHome.styles';
+import { useStyles } from '~app/components/Home/Home.styles';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();

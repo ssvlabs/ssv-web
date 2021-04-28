@@ -7,7 +7,8 @@ const config = {
       GENERATE_KEYS: '/operator/generate',
     },
     VALIDATOR: {
-      SHARE: '/validator/share',
+      HOME: '/validator',
+      SELECT_OPERATORS: '/validator/operators',
     },
   },
   links: {

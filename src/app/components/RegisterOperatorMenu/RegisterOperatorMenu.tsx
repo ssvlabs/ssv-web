@@ -10,7 +10,7 @@ import config from '~app/common/config';
 import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
 import BackNavigation from '~app/common/components/BackNavigation';
-import { useStyles } from '~app/components/SSVHome/SSVHome.styles';
+import { useStyles } from '~app/components/Home/Home.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
 const OrganicLink = UnStyledLink(MaterialLink);
@@ -31,7 +31,7 @@ const RegisterOperatorMenu = () => {
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Run SSV Node</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Run SSV Node</Typography>
                   <Typography noWrap variant="caption">See our developer documentation</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>
@@ -47,7 +47,7 @@ const RegisterOperatorMenu = () => {
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Generate operator keys</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Generate operator keys</Typography>
                   <Typography noWrap variant="caption">Create your network identifier</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>
@@ -63,7 +63,7 @@ const RegisterOperatorMenu = () => {
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Register to the network</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Register to the network</Typography>
                   <Typography noWrap variant="caption">List yourself in the network operators registry</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>

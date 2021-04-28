@@ -17,11 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - name: Run build
         run: echo "sdfsdfsdf ${{ env.BUILD_ENV }}"
-
-      - name: Setup yarn
-        run: sudo apt-get update && sudo apt-get install -y yarn && yarn install --frozen-lockfile --silent
 
       - name: Run lint
         run: yarn lint
@@ -31,3 +33,14 @@ jobs:
 
       - name: Run build
         run: BUILD_ENV=${{ secrets.BUILD_ENV }} yarn build
+
+      - name: Configure AWS credentials for stage account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Copy build dir to s3 bucket
+        run: |
+          aws s3 cp build/ s3://app.stage.bloxstaking.com/ --recursive

@@ -18,24 +18,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Configure AWS credentials from Test account
+    - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
         aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
 
-    - name: Copy files to the test website with the AWS CLI
+    - name: Test s3 
         run: aws s3 ls
-
-    - name: Setup yarn
-        run: sudo apt-get update && sudo apt-get install -y yarn && yarn install --frozen-lockfile --silent
-
-      - name: Run lint
-        run: yarn lint
-
-      - name: Run test
-        run: yarn test
-
-      - name: Run build
-        run: yarn build

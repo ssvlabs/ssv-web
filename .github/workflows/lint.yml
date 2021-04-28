@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Run build
+        run: echo ${BUILD_ENV}
+
       - name: Setup yarn
         run: sudo apt-get update && sudo apt-get install -y yarn && yarn install --frozen-lockfile --silent
 
@@ -27,4 +30,4 @@ jobs:
         run: yarn test
 
       - name: Run build
-        run: BUILD_ENV=$BUILD_ENV yarn build
+        run: BUILD_ENV=${BUILD_ENV} yarn build

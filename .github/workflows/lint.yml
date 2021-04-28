@@ -18,16 +18,16 @@ jobs:
       - uses: actions/checkout@v2
       - uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: yarn install
+          cmd: install
 
       - uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: yarn lint
+          cmd: lint
 
       - uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: yarn test
+          cmd: test
 
       - uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: yarn build
+          cmd: build

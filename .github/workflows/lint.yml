@@ -27,4 +27,4 @@ jobs:
         run: yarn test
 
       - name: Run build
-        run: yarn build
+        run: BUILD_ENV=$BUILD_ENV yarn build

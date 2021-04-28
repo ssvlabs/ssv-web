@@ -26,8 +26,7 @@ jobs:
         aws-region: us-west-2
 
     - name: Copy files to the test website with the AWS CLI
-      run: |
-        aws s3 ls
+        run: aws s3 ls
 
     - name: Setup yarn
         run: sudo apt-get update && sudo apt-get install -y yarn && yarn install --frozen-lockfile --silent

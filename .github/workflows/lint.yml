@@ -17,14 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup yarn
-        run: sudo apt-get update && sudo apt-get install -y yarn
-
-      - name: Run lint
-        run: yarn lint
-
-      - name: Run test
-        run: yarn test
-
-      - name: Run build
-        run: yarn build          
+      - uses: actions/checkout@master
+      - name: Install
+        uses: CultureHQ/actions-yarn@master
+        with:
+          args: install
+      - name: Lint
+        uses: CultureHQ/actions-yarn@master
+        with:
+          args: lint
+      - name: Test
+        uses: CultureHQ/actions-yarn@master
+        with:
+          args: test   
+      - name: Build
+        uses: CultureHQ/actions-yarn@master
+        with:
+          args: build            

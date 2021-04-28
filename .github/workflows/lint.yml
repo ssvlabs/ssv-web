@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run build
-        run: echo "sdfsdfsdf ${{ secrets.BUILD_ENV }}"
+        run: echo "sdfsdfsdf ${{ env.BUILD_ENV }}"
 
       - name: Setup yarn
         run: sudo apt-get update && sudo apt-get install -y yarn && yarn install --frozen-lockfile --silent

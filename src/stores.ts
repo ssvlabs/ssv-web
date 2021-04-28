@@ -1,12 +1,12 @@
 import { createContext } from 'react';
 import AppStore from '~app/App.store';
-import WalletStore from '~app/common/stores/Wallet.store';
+import SSVStore from '~app/common/stores/SSVStore';
 import ValidatorsStore from '~app/components/Validators/Validators.store';
 
 const rootStore = {
     app: new AppStore(),
     validators: new ValidatorsStore(),
-    wallet: new WalletStore(),
+    wallet: new SSVStore(),
 };
 
 const rootStoreContext = createContext(rootStore);

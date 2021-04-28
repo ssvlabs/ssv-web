@@ -5,6 +5,7 @@ import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import Layout from '~app/common/components/Layout';
 import NewOperator from '~app/components/NewOperator';
+import StartRegister from '~app/components/StartRegister';
 import RegisterInNetwork from '~app/components/RegisterInNetwork';
 
 const Main = () => {
@@ -14,6 +15,9 @@ const Main = () => {
         <Switch>
           <Route exact path="/">
             <Welcome />
+          </Route>
+          <Route path={config.routes.START}>
+            <StartRegister />
           </Route>
           <Route path={config.routes.OPERATOR.KEYS.GENERATE}>
             <NewOperator />

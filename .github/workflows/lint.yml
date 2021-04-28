@@ -17,20 +17,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/checkout@master
-      - name: Install
-        uses: CultureHQ/actions-yarn@master
-        with:
-          args: install
-      - name: Lint
-        uses: CultureHQ/actions-yarn@master
-        with:
-          args: lint
-      - name: Test
-        uses: CultureHQ/actions-yarn@master
-        with:
-          args: test   
-      - name: Build
-        uses: CultureHQ/actions-yarn@master
-        with:
-          args: build            
+      - name: Setup yarn
+        run: sudo apt-get update && sudo apt-get install -y yarn && yarn install --frozen-lockfile --silent
+
+      - name: Run lint
+        run: yarn lint
+
+      - name: Run test
+        run: yarn test
+
+      - name: Run build
+        run: yarn build
+

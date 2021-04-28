@@ -25,6 +25,9 @@ jobs:
       - name: Run build
         run: echo "sdfsdfsdf ${{ env.BUILD_ENV }}"
 
+      - name: Install packages
+        run: yarn install
+
       - name: Run lint
         run: yarn lint
 

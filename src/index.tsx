@@ -6,11 +6,9 @@ import { rootStore } from '~root/stores';
 import * as serviceWorker from '~root/serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider stores={rootStore}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
+  <Provider stores={rootStore}>
+    <App />
+  </Provider>,
   document.getElementById('root'),
 );
 

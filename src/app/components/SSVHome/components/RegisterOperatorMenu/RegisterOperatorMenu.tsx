@@ -9,18 +9,20 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import config from '~app/common/config';
 import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
+import BackNavigation from '~app/common/components/BackNavigation';
+import { useStyles } from '~app/components/SSVHome/SSVHome.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
 const OrganicLink = UnStyledLink(MaterialLink);
 
-const Welcome = () => {
+const RegisterOperatorMenu = () => {
   const classes = useStyles();
   const title = 'Join the SSV Network Operators';
   const subtitle = 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.';
 
   return (
     <Paper className={classes.mainContainer}>
+      <BackNavigation to={config.routes.OPERATOR.HOME} text="Join SSV Network" />
       <Header title={title} subtitle={subtitle} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
@@ -57,7 +59,7 @@ const Welcome = () => {
         </Grid>
 
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <RouteLink to={config.routes.START}>
+          <RouteLink to={config.routes.OPERATOR.GENERATE_KEYS}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
@@ -76,4 +78,4 @@ const Welcome = () => {
   );
 };
 
-export default observer(Welcome);
+export default observer(RegisterOperatorMenu);

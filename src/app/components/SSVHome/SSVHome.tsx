@@ -8,24 +8,22 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import config from '~app/common/config';
 import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import BackNavigation from '~app/common/components/BackNavigation';
+import { useStyles } from '~app/components/SSVHome/SSVHome.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
 
-const StartRegister = () => {
+const SSVHome = () => {
   const classes = useStyles();
-  const title = 'Share validator keys with other operators';
-  const subtitle = '';
+  const title = 'Join SSV Network';
+  const subtitle = 'Create new operator and share validator keys with other operators';
 
   return (
     <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.HOME} text="Join the SSV Network Operators" />
       <Header title={title} subtitle={subtitle} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <RouteLink to={config.routes.OPERATOR.KEYS.GENERATE}>
+          <RouteLink to={config.routes.OPERATOR.START}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
@@ -60,4 +58,4 @@ const StartRegister = () => {
   );
 };
 
-export default observer(StartRegister);
+export default observer(SSVHome);

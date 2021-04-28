@@ -1,17 +1,13 @@
 const config = {
   routes: {
-    HOME: '/',
     START: '/start',
     OPERATOR: {
-      KEYS: {
-        GENERATE: '/operator/keys/generate',
-      },
+      HOME: '/',
+      START: '/operator',
+      GENERATE_KEYS: '/operator/generate',
     },
     VALIDATOR: {
-      SHARE: '/validator',
-    },
-    NETWORK: {
-      REGISTER: '/network/register',
+      SHARE: '/validator/share',
     },
   },
   links: {

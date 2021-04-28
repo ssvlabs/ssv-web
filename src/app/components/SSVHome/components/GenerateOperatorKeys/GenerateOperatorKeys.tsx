@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
+import Backdrop from '~app/common/components/Backdrop';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -12,11 +13,10 @@ import Header from '~app/common/components/Header';
 import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
 import BackNavigation from '~app/common/components/BackNavigation';
-import { INewOperatorTransaction } from '~app/common/stores/SSVStore';
-import { useStyles } from '~app/components/NewOperator/NewOperator.styles';
-import Backdrop from '~app/common/components/Backdrop';
+import { INewOperatorTransaction } from '~app/common/stores/SSV.store';
+import { useStyles } from '~app/components/SSVHome/SSVHome.styles';
 
-const NewOperator = () => {
+const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const { wallet } = useStores();
   const title = 'Register Operator';
@@ -35,6 +35,11 @@ const NewOperator = () => {
       setRegisterButtonEnabled(false);
     };
   }, [inputsData, userAgreed]);
+
+  // Showing errors and success messages
+  useEffect(() => {
+
+  }, [wallet]);
 
   const onInputChange = (name: string, value: string) => {
     setInputsData({ ...inputsData, [name]: value });
@@ -56,7 +61,7 @@ const NewOperator = () => {
 
   return (
     <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.START} text="Share validator keys" />
+      <BackNavigation to={config.routes.OPERATOR.START} text="Join the SSV Network Operators" />
       <Header title={title} subtitle={subtitle} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
@@ -67,7 +72,7 @@ const NewOperator = () => {
           </InputLabel>
 
           <br />
-          <InputLabel title="Operator Key">
+          <InputLabel title="Operator Public Key">
             <TextInput type="text" onChange={(event) => { onInputChange('pubKey', event.target.value); }} />
           </InputLabel>
 
@@ -100,4 +105,4 @@ const NewOperator = () => {
   );
 };
 
-export default observer(NewOperator);
+export default observer(GenerateOperatorKeys);

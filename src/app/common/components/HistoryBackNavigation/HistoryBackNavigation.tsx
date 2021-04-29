@@ -31,16 +31,23 @@ const BackNavigationWrapper = styled.div`
 type BackNavigationProps = {
   text?: string,
   color?: string
+  onClick?: () => void
 };
 
-const HistoryBackNavigation = ({ text, color }: BackNavigationProps) => {
+const HistoryBackNavigation = ({ text, color, onClick }: BackNavigationProps) => {
   const backText = text || 'Back';
   const defaultColor = '#AAAAAA';
   const usedColor = color || defaultColor;
   const history = useHistory();
+  const onNavigationClicked = () => {
+    history.goBack();
+    if (typeof onClick === 'function') {
+      onClick();
+    }
+  };
 
   return (
-    <BackNavigationWrapper onClick={() => { history.goBack(); }}>
+    <BackNavigationWrapper onClick={onNavigationClicked}>
       <BackIcon iconcolor={usedColor} />
       <BackNavigationLink color={usedColor}>
         {backText}

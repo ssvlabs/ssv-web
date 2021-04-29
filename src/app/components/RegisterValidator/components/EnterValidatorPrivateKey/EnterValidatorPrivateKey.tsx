@@ -5,28 +5,34 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import config from '~app/common/config';
 import Header from '~app/common/components/Header';
+import { useStores } from '~app/hooks/useStores';
+import config, { translations } from '~app/common/config';
 import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 
+// TODO:
+//  1. Create ValidatorStore to keep validator private key during the process
+//  2. Cleanup ValidatorStore once the process is finished or route changed to other flows
+//  3. Use ValidatorStore on further steps
 const EnterValidatorPrivateKey = () => {
   const classes = useStyles();
   const history = useHistory();
-  const title = 'Register Validator to SSV Network';
-  const subtitle = 'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.';
+  const { validator } = useStores();
+  const title = translations.VALIDATOR.ENTER_KEY.TITLE;
+  const subtitle = translations.VALIDATOR.ENTER_KEY.DESCRIPTION;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [inputsData, setInputsData] = useState({ validatorPrivateKey: '' });
-  const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
+  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setRegisterButtonEnabled(!!inputsData.validatorPrivateKey);
+    setNextButtonEnabled(!!inputsData.validatorPrivateKey);
     return () => {
-      setRegisterButtonEnabled(false);
+      setNextButtonEnabled(false);
     };
   }, [inputsData]);
 
@@ -35,6 +41,7 @@ const EnterValidatorPrivateKey = () => {
   };
 
   const goToSelectOperators = () => {
+    validator.setValidatorPrivateKey(inputsData.validatorPrivateKey);
     history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
   };
 
@@ -52,7 +59,7 @@ const EnterValidatorPrivateKey = () => {
           </InputLabel>
 
           <Button
-            disabled={!registerButtonEnabled}
+            disabled={!nextButtonEnabled}
             variant="contained"
             color="primary"
             style={registerButtonStyle}

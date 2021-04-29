@@ -150,6 +150,7 @@ class ContractStore {
 
   /**
    * Initialize SDK
+   * @url https://docs.blocknative.com/onboard#initialization
    */
   @action.bound
   async init() {

@@ -1,10 +1,13 @@
 import { createContext } from 'react';
-import AppStore from '~app/common/stores/App.store';
+import MessageStore from '~app/common/stores/Message.store';
 import ContractStore from '~app/common/stores/Contract.store';
 
+const message = new MessageStore();
+const wallet = new ContractStore(message);
+
 const rootStore = {
-    app: new AppStore(),
-    wallet: new ContractStore(),
+    wallet,
+    message,
 };
 
 const rootStoreContext = createContext(rootStore);

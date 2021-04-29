@@ -60,9 +60,7 @@ const EnterValidatorPrivateKey = () => {
           >
             Next
           </Button>
-          <br />
-          <br />
-          <Typography style={{ textAlign: 'center', fontSize: 12 }}>I don’t have a validator key</Typography>
+          <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>I don’t have a validator key</Typography>
         </Grid>
       </Grid>
     </Paper>

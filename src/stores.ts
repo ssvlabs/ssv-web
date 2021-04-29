@@ -1,10 +1,10 @@
 import { createContext } from 'react';
 import AppStore from '~app/common/stores/App.store';
-import SSVStore from '~app/common/stores/SSV.store';
+import ContractStore from '~app/common/stores/Contract.store';
 
 const rootStore = {
     app: new AppStore(),
-    wallet: new SSVStore(),
+    wallet: new ContractStore(),
 };
 
 const rootStoreContext = createContext(rootStore);

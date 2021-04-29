@@ -9,7 +9,7 @@ export interface INewOperatorTransaction {
   pubKey: string,
 }
 
-class SSVStore {
+class ContractStore {
   @observable web3: any = null;
   @observable error: string = '';
   @observable ready: boolean = false;
@@ -153,4 +153,4 @@ class SSVStore {
   }
 }
 
-export default SSVStore;
+export default ContractStore;

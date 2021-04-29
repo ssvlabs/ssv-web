@@ -11,24 +11,46 @@ export interface INewOperatorTransaction {
 
 class ContractStore {
   @observable web3: any = null;
-  @observable error: string = '';
+  @observable errorMessage: string = '';
+  @observable successMessage: string = '';
   @observable ready: boolean = false;
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
   @observable addingOperator: boolean = false;
+  @observable contractReceipt: any = null;
+
+  @action.bound
+  cleanBeforeTransaction() {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.contractReceipt = null;
+    this.addingOperator = true;
+  }
+
+  @action.bound
+  setErrorMessage(message: string) {
+    this.errorMessage = message;
+    this.successMessage = '';
+  }
+
+  @action.bound
+  setSuccessMessage(message: string) {
+    this.successMessage = message;
+    this.errorMessage = '';
+  }
 
   @action.bound
   async registerOperator(transaction: INewOperatorTransaction) {
     try {
       await this.connect();
       if (this.ready) {
+        this.cleanBeforeTransaction();
         console.debug('Register Operator Transaction Data:', transaction);
 
-        this.addingOperator = true;
-        const accounts = await this.web3.eth.getAccounts();
-        const address = accounts[0];
+        const accounts: string[] = await this.web3.eth.getAccounts();
+        const address: string = accounts[0];
         const abi: any = config.CONTRACT.ABI;
-        const contractAddress = config.CONTRACT.ADDRESS;
+        const contractAddress: string = config.CONTRACT.ADDRESS;
         const contract: Contract = new this.web3.eth.Contract(abi, contractAddress);
 
         // Send add operator transaction
@@ -41,11 +63,12 @@ class ContractStore {
           .send({ from: address })
           .on('receipt', (receipt: any) => {
             console.debug('Contract Receipt', receipt);
+            this.contractReceipt = receipt;
           })
           .catch((error: any) => {
             this.addingOperator = false;
             if (error) {
-              this.error = error.message;
+              this.setErrorMessage(error.message);
             }
             console.debug('Contract Error', error);
           });
@@ -55,20 +78,22 @@ class ContractStore {
           .OperatorAdded({}, (error: any, event: any) => {
             this.addingOperator = false;
             if (error) {
-              this.error = error.message;
+              this.setErrorMessage(error.message);
+            } else {
+              this.setSuccessMessage('You successfully added operator!');
             }
             console.debug({ error, event });
           })
           .on('error', (error: any, receipt: any) => {
             if (error) {
-              this.error = error.message;
+              this.setErrorMessage(error.message);
             }
             console.debug({ error, receipt });
           });
       }
     } catch (error: any) {
       console.error('Register Operator Error:', error);
-      this.error = error.message;
+      this.setErrorMessage(error.message);
       this.addingOperator = false;
     }
   }
@@ -77,8 +102,8 @@ class ContractStore {
   async disconnect() {
     if (this.connected) {
       await this.onboardSdk.walletReset();
+      this.cleanBeforeTransaction();
       this.wallet = null;
-      this.error = '';
       this.web3 = null;
       this.ready = false;
     }
@@ -90,14 +115,14 @@ class ContractStore {
       await this.selectWalletAndCheckIfReady();
       console.debug('OnBoard State:', this.onboardSdk.getState());
     } catch (error: any) {
-      this.error = error.message ?? 'Unknown error during connecting to wallet';
-      console.error('Connection error:', this.error);
+      this.setErrorMessage(error.message ?? 'Unknown errorMessage during connecting to wallet');
+      console.error('Connection errorMessage:', this.errorMessage);
     }
   }
 
   @computed
   get connected() {
-    return this.wallet;
+    return this.wallet?.name;
   }
 
   /**
@@ -114,9 +139,11 @@ class ContractStore {
         .then((ready: boolean) => {
           console.debug('Wallet is ready for transaction:', ready);
           this.ready = ready;
+          this.setSuccessMessage('Wallet is ready!');
         })
         .catch((error: any) => {
-          console.error('Wallet check error', error);
+          console.error('Wallet check errorMessage', error);
+          this.setErrorMessage('Wallet is not connected!');
         });
     }
   }
@@ -150,6 +177,7 @@ class ContractStore {
     console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
+    this.setSuccessMessage('Successfully connected to Wallet!');
   }
 }
 

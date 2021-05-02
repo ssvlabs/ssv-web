@@ -1,14 +1,16 @@
 import { createContext } from 'react';
-import AppStore from '~app/common/stores/App.store';
-import ContractStore from '~app/common/stores/Contract.store';
+import WalletStore from '~app/common/stores/Wallet.store';
+import StoresProvider from '~app/common/stores/StoresProvider';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 import ValidatorStore from '~app/common/stores/Validator.store';
 
-const rootStore = {
-    app: new AppStore(),
-    wallet: new ContractStore(),
-    validator: new ValidatorStore(),
-};
+// Register stores in provider
+const storesProvider = StoresProvider.getInstance();
+storesProvider.addStore('notifications', new NotificationsStore());
+storesProvider.addStore('wallet', new WalletStore());
+storesProvider.addStore('validator', new ValidatorStore());
 
+const rootStore = storesProvider.getStores();
 const rootStoreContext = createContext(rootStore);
 
 export {

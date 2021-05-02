@@ -26,7 +26,6 @@ class StoresProvider {
    * @param name
    */
   getStore(name: string): any {
-    console.debug('this.stores:', this.stores);
     return this.stores[name] ?? null;
   }
 

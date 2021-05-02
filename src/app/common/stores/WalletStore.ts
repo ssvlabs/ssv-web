@@ -66,10 +66,10 @@ class WalletStore {
           .on('receipt', (receipt: any) => {
             console.debug('Contract Receipt', receipt);
             this.contractReceipt = receipt;
-          }).on('error', (error: any) => {
+          })
+          .on('error', (error: any) => {
             this.addingOperator = false;
             this.setEventMessage(error.message, 'error');
-            console.log(this.errorMessage);
             console.debug('Contract Error', error);
           })
           .catch((error: any) => {

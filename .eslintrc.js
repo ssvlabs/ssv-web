@@ -37,6 +37,7 @@ module.exports = {
     'no-unused-vars': 2,
     'no-use-before-define': 0,
     'prefer-template': 2,
+    'prefer-destructuring': 0,
     'react/destructuring-assignment': 0,
     'react-hooks/rules-of-hooks': 0,
     'react/button-has-type': 0,

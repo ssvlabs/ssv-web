@@ -1,15 +1,14 @@
 import { createContext } from 'react';
-import MessageStore from '~app/common/stores/Message.store';
-import ContractStore from '~app/common/stores/Contract.store';
+import WalletStore from '~app/common/stores/WalletStore';
+import StoresProvider from '~app/common/stores/StoresProvider';
+import NotificationsStore from '~app/common/stores/NotificationsStore';
 
-const message = new MessageStore();
-const wallet = new ContractStore(message);
+// Register stores in provider
+const storesProvider = StoresProvider.getInstance();
+storesProvider.addStore('notifications', new NotificationsStore());
+storesProvider.addStore('wallet', new WalletStore());
 
-const rootStore = {
-    wallet,
-    message,
-};
-
+const rootStore = storesProvider.getStores();
 const rootStoreContext = createContext(rootStore);
 
 export {

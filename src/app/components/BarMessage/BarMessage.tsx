@@ -1,24 +1,27 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { useStores } from '~app/hooks/useStores';
+import Snackbar from '@material-ui/core/Snackbar';
 import { useStyles } from './BarMessage.styles';
+import { useStores } from '~app/hooks/useStores';
+import NotificationsStore from '~app/common/stores/NotificationsStore';
 
-function Alert(props: any) {
+const Alert = (props: any) => {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+};
+
 const BarMessage = () => {
     const classes = useStyles();
-    const { message } = useStores();
+    const stores = useStores();
+    const notifications: NotificationsStore = stores.notifications;
 
     const handleClose = () => {
-        message.setShowSnackBar(false);
+        notifications.setShowSnackBar(false);
     };
     return (
-      <Snackbar open={message.showSnackBar} autoHideDuration={6000}>
-        <Alert className={classes.messageBar} onClose={handleClose} severity={message.messageSeverity}>
-          {message.message}
+      <Snackbar open={notifications.showSnackBar} autoHideDuration={6000}>
+        <Alert className={classes.messageBar} onClose={handleClose} severity={notifications.messageSeverity}>
+          {notifications.message}
         </Alert>
       </Snackbar>
     );

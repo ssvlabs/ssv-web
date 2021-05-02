@@ -3,15 +3,16 @@ import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
-import MessageStore from '~app/common/stores/Message.store';
+import StoresProvider from '~app/common/stores/StoresProvider';
+import NotificationsStore from '~app/common/stores/NotificationsStore';
 
 export interface INewOperatorTransaction {
   name: string,
   pubKey: string,
 }
 
-class ContractStore {
-  messageStore: MessageStore;
+class WalletStore {
+  notificationsStore: NotificationsStore;
   @observable web3: any = null;
   @observable errorMessage: string = '';
   @observable successMessage: string = '';
@@ -21,8 +22,8 @@ class ContractStore {
   @observable addingOperator: boolean = false;
   @observable contractReceipt: any = null;
 
-  constructor(messageStore: MessageStore) {
-    this.messageStore = messageStore;
+  constructor() {
+    this.notificationsStore = StoresProvider.getInstance().getStore('notifications');
   }
 
   @action.bound
@@ -35,9 +36,9 @@ class ContractStore {
 
   @action.bound
   setEventMessage(message: string, severity: string) {
-    this.messageStore.setShowSnackBar(true);
-    this.messageStore.setMessage(message);
-    this.messageStore.setMessageSeverity(severity);
+    this.notificationsStore.setShowSnackBar(true);
+    this.notificationsStore.setMessage(message);
+    this.notificationsStore.setMessageSeverity(severity);
   }
 
   @action.bound
@@ -187,4 +188,4 @@ class ContractStore {
   }
 }
 
-export default ContractStore;
+export default WalletStore;

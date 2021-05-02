@@ -13,7 +13,7 @@ import Header from '~app/common/components/Header';
 import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
 import BackNavigation from '~app/common/components/BackNavigation';
-import { INewOperatorTransaction } from '~app/common/stores/Contract.store';
+import { INewOperatorTransaction } from '~app/common/stores/WalletStore';
 import { useStyles } from '~app/components/Home/Home.styles';
 
 const GenerateOperatorKeys = () => {
@@ -54,7 +54,7 @@ const GenerateOperatorKeys = () => {
         };
         return wallet.registerOperator(transaction);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error(error);
       });
   };

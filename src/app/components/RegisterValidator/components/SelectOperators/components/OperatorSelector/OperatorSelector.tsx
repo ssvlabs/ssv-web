@@ -7,6 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { createStyles, Theme } from '@material-ui/core/styles';
+import { IOperator } from '~app/common/stores/Validator.store';
 import { useStores } from '~app/hooks/useStores';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -17,7 +18,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     maxWidth: '100%',
   },
   select: {
-    padding: 0,
   },
   selectPaper: {
     maxWidth: 300,
@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     },
   },
   menuItem: {
-    padding: 0,
     display: 'flex',
     flexGrow: 1,
     flexDirection: 'column',
@@ -90,7 +89,7 @@ const OperatorSelector = () => {
         variant="outlined"
         MenuProps={{ classes: { paper: classes.selectPaper } }}
       >
-        {validator.operators.map((operator, operatorIndex) => {
+        {validator.operators.map((operator: IOperator, operatorIndex: number) => {
           return (
             <MenuItem
               key={`menu-item-${operatorIndex}`}

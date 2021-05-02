@@ -18,11 +18,11 @@ class ValidatorStore {
 
   /**
    * Find operator by publicKey
-   * @param operator
+   * @param publicKey
    */
-  findOperator(operator: string): { operator: IOperator | null, index: number } {
+  findOperator(publicKey: string): { operator: IOperator | null, index: number } {
     for (let i = 0; i < this.operators?.length || 0; i += 1) {
-      if (this.operators[i].publicKey === operator) {
+      if (this.operators[i].publicKey === publicKey) {
         return { operator: this.operators[i], index: i };
       }
     }

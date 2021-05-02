@@ -7,9 +7,10 @@ import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Home/Home.styles';
+import { IOperator } from '~app/common/stores/Validator.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
 import OperatorSelector from './components/OperatorSelector';
+import { useStyles } from '~app/components/Home/Home.styles';
 
 const SelectOperators = () => {
   const history = useHistory();
@@ -45,7 +46,7 @@ const SelectOperators = () => {
           <br />
           <br />
 
-          {validator.operators.map((operator) => (
+          {validator.operators.map((operator: IOperator) => (
             <OperatorSelector key={`operator-selector-${operator.publicKey}`} />
           ))}
 

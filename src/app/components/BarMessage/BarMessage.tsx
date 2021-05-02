@@ -4,7 +4,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import { useStyles } from './BarMessage.styles';
 import { useStores } from '~app/hooks/useStores';
-import NotificationsStore from '~app/common/stores/NotificationsStore';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 
 const Alert = (props: any) => {
     return <MuiAlert elevation={6} variant="filled" {...props} />;

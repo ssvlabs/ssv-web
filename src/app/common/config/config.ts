@@ -48,6 +48,25 @@ const config = {
         'type': 'event',
       },
       {
+        'anonymous': false,
+        'inputs': [
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'pubkey',
+            'type': 'bytes',
+          },
+          {
+            'indexed': false,
+            'internalType': 'address',
+            'name': 'ownerAddress',
+            'type': 'address',
+          },
+        ],
+        'name': 'ValidatorAdded',
+        'type': 'event',
+      },
+      {
         'inputs': [
           {
             'internalType': 'string',
@@ -71,8 +90,97 @@ const config = {
         'type': 'function',
       },
       {
+        'inputs': [
+          {
+            'internalType': 'string',
+            'name': 'pubkey',
+            'type': 'string',
+          },
+          {
+            'internalType': 'string[]',
+            'name': 'operatorPubKeys',
+            'type': 'string[]',
+          },
+          {
+            'internalType': 'uint256[]',
+            'name': 'indexes',
+            'type': 'uint256[]',
+          },
+          {
+            'internalType': 'string[]',
+            'name': 'sharePubKeys',
+            'type': 'string[]',
+          },
+          {
+            'internalType': 'string[]',
+            'name': 'encryptedKeys',
+            'type': 'string[]',
+          },
+          {
+            'internalType': 'address',
+            'name': 'ownerAddress',
+            'type': 'address',
+          },
+        ],
+        'name': 'addValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'string',
+            'name': 's',
+            'type': 'string',
+          },
+        ],
+        'name': 'fromHex',
+        'outputs': [
+          {
+            'internalType': 'bytes',
+            'name': '',
+            'type': 'bytes',
+          },
+        ],
+        'stateMutability': 'pure',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'uint8',
+            'name': 'c',
+            'type': 'uint8',
+          },
+        ],
+        'name': 'fromHexChar',
+        'outputs': [
+          {
+            'internalType': 'uint8',
+            'name': '',
+            'type': 'uint8',
+          },
+        ],
+        'stateMutability': 'pure',
+        'type': 'function',
+      },
+      {
         'inputs': [],
         'name': 'operatorCount',
+        'outputs': [
+          {
+            'internalType': 'uint256',
+            'name': '',
+            'type': 'uint256',
+          },
+        ],
+        'stateMutability': 'view',
+        'type': 'function',
+      },
+      {
+        'inputs': [],
+        'name': 'validatorCount',
         'outputs': [
           {
             'internalType': 'uint256',

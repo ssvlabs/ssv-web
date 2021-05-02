@@ -5,7 +5,7 @@ import Button from '~app/common/components/AppBar/components/Button';
 import TorusIcon from './images/torus.png';
 import MetaMaskIcon from './images/metamask.svg';
 import AutheriumIcon from './images/autherium.png';
-import WalletStore from '~app/common/stores/WalletStore';
+import WalletStore from '~app/common/stores/Wallet.store';
 
 const ConnectWalletButton = () => {
   const stores = useStores();

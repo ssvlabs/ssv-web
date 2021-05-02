@@ -4,7 +4,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import StoresProvider from '~app/common/stores/StoresProvider';
-import NotificationsStore from '~app/common/stores/NotificationsStore';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 
 export interface INewOperatorTransaction {
   name: string,
@@ -157,6 +157,7 @@ class WalletStore {
 
   /**
    * Initialize SDK
+   * @url https://docs.blocknative.com/onboard#initialization
    */
   @action.bound
   async init() {

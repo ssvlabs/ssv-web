@@ -1,77 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import styled from 'styled-components';
 import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core';
+import { useStores } from '~app/hooks/useStores';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { createStyles, Theme } from '@material-ui/core/styles';
-import { IOperator } from '~app/common/stores/Validator.store';
-import { useStores } from '~app/hooks/useStores';
+import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
+import { useStyles } from './OperatorSelector.styles';
+import { OperatorName, OperatorScore, OperatorKey } from './components/Operator';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  formControl: {
-    margin: theme.spacing(0),
-    marginTop: theme.spacing(1),
-    width: '100%',
-    maxWidth: '100%',
-  },
-  select: {
-  },
-  selectPaper: {
-    maxWidth: 300,
-    '& ul': {
-      padding: 3,
-      maxHeight: 400,
-    },
-    '& li': {
-      width: 'inherit',
-    },
-  },
-  menuItem: {
-    display: 'flex',
-    flexGrow: 1,
-    flexDirection: 'column',
-    alignItems: 'start',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-}));
+type OperatorSelectorProps = {
+  indexedOperator: IOperator
+};
 
-const OperatorName = styled.div`
-  font-size: 13px;
-  margin-left: 0;
-`;
-
-const OperatorKey = styled.div`
-  font-size: 10px;
-  margin-left: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-`;
-
-const OperatorSelector = () => {
+const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
   const classes = useStyles();
-  const { validator } = useStores();
+  const stores = useStores();
+  const ssv: SSVStore = stores.ssv;
   const [selectedOperator, selectOperator] = useState('');
-  // const [operators, setOperatorsInComponent] = useState(validator.operators);
+
+  const selectOperatorMethod = (publicKey: string) => {
+    if (!ssv.isOperatorSelected(publicKey)) {
+      if (selectedOperator) {
+        ssv.unselectOperator(selectedOperator);
+      }
+      ssv.selectOperator(publicKey);
+      selectOperator(publicKey);
+    }
+  };
 
   useEffect(() => {
-    // setOperatorsInComponent(validator.operators);
-  }, [validator.operators]);
+    console.debug('indexedOperator: ', indexedOperator);
+    if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.publicKey !== selectedOperator) {
+      selectOperatorMethod(indexedOperator.publicKey);
+    }
+  });
 
   const onSelectOperator = (event: any) => {
     const operatorKey = String(event.target.value);
-    if (!validator.isOperatorSelected(operatorKey)) {
-      if (selectedOperator) {
-        validator.unselectOperator(selectedOperator);
-      }
-      validator.selectOperator(operatorKey);
-      selectOperator(operatorKey);
-    }
+    selectOperatorMethod(operatorKey);
   };
 
   return (
@@ -89,15 +56,16 @@ const OperatorSelector = () => {
         variant="outlined"
         MenuProps={{ classes: { paper: classes.selectPaper } }}
       >
-        {validator.operators.map((operator: IOperator, operatorIndex: number) => {
+        {ssv.operators.map((operator: IOperator, operatorIndex: number) => {
           return (
             <MenuItem
               key={`menu-item-${operatorIndex}`}
               className={classes.menuItem}
               value={operator.publicKey}
-              disabled={validator.isOperatorSelected(operator.publicKey)}
+              disabled={ssv.isOperatorSelected(operator.publicKey)}
               >
               <OperatorName>{operator.name}</OperatorName>
+              <OperatorScore>Score: {operator.score}</OperatorScore>
               <OperatorKey>{operator.publicKey}</OperatorKey>
             </MenuItem>
             );

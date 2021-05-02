@@ -7,20 +7,21 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import Backdrop from '~app/common/components/Backdrop';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import TextInput from '~app/common/components/TextInput';
+import WalletStore from '~app/common/stores/Wallet.store';
 import InputLabel from '~app/common/components/InputLabel';
-import BackNavigation from '~app/common/components/BackNavigation';
-import { INewOperatorTransaction } from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Home/Home.styles';
+import BackNavigation from '~app/common/components/BackNavigation';
+import SSVStore, { INewOperatorTransaction } from '~app/common/stores/SSV.store';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
-  const { wallet } = useStores();
-  const title = 'Register Operator';
-  const subtitle = 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.';
+  const stores = useStores();
+  const ssv: SSVStore = stores.ssv;
+  const wallet: WalletStore = stores.wallet;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const checkboxLabelStyle = { fontSize: 14 };
   const [inputsData, setInputsData] = useState({ name: '', pubKey: '' });
@@ -30,7 +31,7 @@ const GenerateOperatorKeys = () => {
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setRegisterButtonEnabled(!(!userAgreed || wallet.addingOperator || !inputsData.name || !inputsData.pubKey));
+    setRegisterButtonEnabled(!(!userAgreed || ssv.addingNewOperator || !inputsData.name || !inputsData.pubKey));
     return () => {
       setRegisterButtonEnabled(false);
     };
@@ -39,7 +40,7 @@ const GenerateOperatorKeys = () => {
   // Showing errors and success messages
   useEffect(() => {
 
-  }, [wallet]);
+  }, [ssv]);
 
   const onInputChange = (name: string, value: string) => {
     setInputsData({ ...inputsData, [name]: value });
@@ -52,7 +53,7 @@ const GenerateOperatorKeys = () => {
           name: inputsData.name,
           pubKey: inputsData.pubKey,
         };
-        return wallet.registerOperator(transaction);
+        return ssv.addNewOperator(transaction);
       })
       .catch((error: any) => {
         console.error(error);
@@ -62,7 +63,7 @@ const GenerateOperatorKeys = () => {
   return (
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.START} text="Join the SSV Network Operators" />
-      <Header title={title} subtitle={subtitle} />
+      <Header title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
@@ -98,7 +99,7 @@ const GenerateOperatorKeys = () => {
           >
             Register
           </Button>
-          {wallet.addingOperator && <Backdrop />}
+          {ssv.addingNewOperator && <Backdrop />}
         </Grid>
       </Grid>
     </Paper>

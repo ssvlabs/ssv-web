@@ -5,8 +5,9 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import Header from '~app/common/components/Header';
 import { useStores } from '~app/hooks/useStores';
+import Header from '~app/common/components/Header';
+import SSVStore from '~app/common/stores/SSV.store';
 import config, { translations } from '~app/common/config';
 import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
@@ -14,15 +15,14 @@ import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 
 // TODO:
-//  1. Create ValidatorStore to keep validator private key during the process
-//  2. Cleanup ValidatorStore once the process is finished or route changed to other flows
-//  3. Use ValidatorStore on further steps
+//  1. Create SSVStore to keep validator private key during the process
+//  2. Cleanup SSVStore once the process is finished or route changed to other flows
+//  3. Use SSVStore on further steps
 const EnterValidatorPrivateKey = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { validator } = useStores();
-  const title = translations.VALIDATOR.ENTER_KEY.TITLE;
-  const subtitle = translations.VALIDATOR.ENTER_KEY.DESCRIPTION;
+  const stores = useStores();
+  const ssv: SSVStore = stores.ssv;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [inputsData, setInputsData] = useState({ validatorPrivateKey: '' });
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
@@ -41,14 +41,14 @@ const EnterValidatorPrivateKey = () => {
   };
 
   const goToSelectOperators = () => {
-    validator.setValidatorPrivateKey(inputsData.validatorPrivateKey);
+    ssv.setValidatorPrivateKey(inputsData.validatorPrivateKey);
     history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
   };
 
   return (
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.HOME} text="Join SSV Network" />
-      <Header title={title} subtitle={subtitle} />
+      <Header title={translations.VALIDATOR.ENTER_KEY.TITLE} subtitle={translations.VALIDATOR.ENTER_KEY.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>

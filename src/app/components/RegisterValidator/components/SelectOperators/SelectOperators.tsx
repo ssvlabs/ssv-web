@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import Spinner from '~app/common/components/Spinner';
@@ -53,7 +54,8 @@ const SelectOperators = () => {
             style={registerButtonStyle}
             onClick={ssv.autoSelectOperators}
           >
-            Automatically Select Best Operators
+            <AutorenewIcon />
+            &nbsp;Auto-select best operators
           </Button>
 
           {!ssv.loadingOperators ?

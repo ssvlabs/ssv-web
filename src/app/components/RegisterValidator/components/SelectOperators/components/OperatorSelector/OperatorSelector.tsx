@@ -20,17 +20,14 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
   const [selectedOperator, selectOperator] = useState('');
 
   const selectOperatorMethod = (publicKey: string) => {
-    if (!ssv.isOperatorSelected(publicKey)) {
-      if (selectedOperator) {
-        ssv.unselectOperator(selectedOperator);
-      }
-      ssv.selectOperator(publicKey);
-      selectOperator(publicKey);
+    if (selectedOperator) {
+      ssv.unselectOperator(selectedOperator);
     }
+    ssv.selectOperator(publicKey);
+    selectOperator(publicKey);
   };
 
   useEffect(() => {
-    console.debug('indexedOperator: ', indexedOperator);
     if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.publicKey !== selectedOperator) {
       selectOperatorMethod(indexedOperator.publicKey);
     }

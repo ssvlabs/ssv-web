@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import BarMessage from '~app/common/components/BarMessage';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
-import BarMessage from '~app/components/BarMessage';
 
 const Layout = ({ children }: any) => {
     const classes = useStyles();

@@ -14,6 +14,7 @@ class WalletStore {
   @observable ready: boolean = false;
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
+  @observable accountAddress: string = '';
 
   constructor() {
     this.notifications = StoresProvider.getInstance().getStore('notifications');
@@ -33,16 +34,9 @@ class WalletStore {
     return this.contract;
   }
 
-  /**
-   * Get user account address
-   */
-  async getUserAccount() {
-    const accounts: string[] = await this.wallet.web3.eth.getAccounts();
-    return accounts[0];
-  }
-
   @action.bound
   clean() {
+    this.accountAddress = '';
     this.wallet = null;
     this.web3 = null;
     this.ready = false;
@@ -70,7 +64,7 @@ class WalletStore {
 
   @computed
   get connected() {
-    return this.wallet?.name;
+    return this.wallet?.name && this.wallet?.accountAddress;
   }
 
   /**
@@ -87,6 +81,7 @@ class WalletStore {
         .then((ready: boolean) => {
           console.debug('Wallet is ready for transaction:', ready);
           this.ready = ready;
+          this.accountAddress = this.onboardSdk.getState().address;
           this.notifications.showMessage('Wallet is ready!', 'success');
         })
         .catch((error: any) => {

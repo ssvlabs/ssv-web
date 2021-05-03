@@ -59,17 +59,19 @@ class SSVStore {
           encryptedKeys,
         });
 
-        return; // TODO: uncomment
         const contract: Contract = this.wallet.getContract();
-        const address: string = await this.wallet.getUserAccount();
+        const address: string = this.wallet.accountAddress;
 
+        // Guy Part
         // TODO: split shares
         // TODO: encode shares
 
         // Send add operator transaction
         contract.methods
           .addValidator(
+            // Dima Part
             // TODO: provide all params
+            // TODO: navigate to success screen
           )
           .send({ from: address })
           .on('receipt', (receipt: any) => {
@@ -124,7 +126,7 @@ class SSVStore {
 
         console.debug('Register Operator Transaction Data:', transaction);
         const contract: Contract = this.wallet.getContract();
-        const address: string = await this.wallet.getUserAccount();
+        const address: string = this.wallet.accountAddress;
 
         // Send add operator transaction
         contract.methods

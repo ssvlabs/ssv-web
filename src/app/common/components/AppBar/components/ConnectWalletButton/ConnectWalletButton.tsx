@@ -34,11 +34,11 @@ const ConnectWalletButton = () => {
   }
 
   return (
-    <Button variant="outlined" color="primary" onClick={onClick}>
+    <Button variant="outlined" color="primary" onClick={onClick} style={{ textTransform: 'none' }}>
       {wallet.connected ? (
         <>
           {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${wallet.wallet.name}`} />}
-          {wallet.wallet.name}
+          {wallet.accountAddress.substr(0, 4)}..{wallet.accountAddress.substr(wallet.accountAddress.length - 3, 3)}
         </>
       ) : 'Connect Wallet'}
     </Button>

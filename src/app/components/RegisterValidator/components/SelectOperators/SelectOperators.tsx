@@ -9,10 +9,10 @@ import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import Spinner from '~app/common/components/Spinner';
 import config, { translations } from '~app/common/config';
+import { useStyles } from '~app/components/Home/Home.styles';
 import OperatorSelector from './components/OperatorSelector';
 import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
-import { useStyles } from '~app/components/Home/Home.styles';
 
 const SelectOperators = () => {
   const history = useHistory();

@@ -24,11 +24,13 @@ class WalletStore {
    * Get smart contract instance
    * @param address
    */
-  getContract(address?: string): Contract {
-    if (!this.contract) {
+  @action.bound
+  async getContract(address?: string): Promise<Contract> {
+    await this.connect();
+    if (!this.contract && this.ready) {
       const abi: any = config.CONTRACT.ABI;
       const contractAddress: string = config.CONTRACT.ADDRESS;
-      this.contract = new this.wallet.web3.eth.Contract(abi, address ?? contractAddress);
+      this.contract = new this.web3.eth.Contract(abi, address ?? contractAddress);
     }
     // @ts-ignore
     return this.contract;
@@ -37,8 +39,6 @@ class WalletStore {
   @action.bound
   clean() {
     this.accountAddress = '';
-    this.wallet = null;
-    this.web3 = null;
     this.ready = false;
   }
 
@@ -54,7 +54,6 @@ class WalletStore {
   async connect() {
     try {
       await this.selectWalletAndCheckIfReady();
-      console.debug('OnBoard State:', this.onboardSdk.getState());
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
       this.notifications.showMessage(message, 'error');
@@ -64,7 +63,7 @@ class WalletStore {
 
   @computed
   get connected() {
-    return this.wallet?.name && this.wallet?.accountAddress;
+    return this.wallet?.name;
   }
 
   /**
@@ -72,6 +71,9 @@ class WalletStore {
    */
   @action.bound
   async selectWalletAndCheckIfReady() {
+    if (this.connected && this.ready) {
+      return;
+    }
     await this.init();
     if (!this.connected) {
       await this.onboardSdk.walletSelect();
@@ -85,6 +87,7 @@ class WalletStore {
           this.notifications.showMessage('Wallet is ready!', 'success');
         })
         .catch((error: any) => {
+          this.ready = false;
           console.error('Wallet check errorMessage', error);
           this.notifications.showMessage('Wallet is not connected!', 'error');
         });

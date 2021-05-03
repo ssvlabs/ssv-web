@@ -4,14 +4,11 @@ import config from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
 import StoresProvider from '~app/common/stores/StoresProvider';
 import NotificationsStore from '~app/common/stores/Notifications.store';
+import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 
 export interface INewOperatorTransaction {
   name: string,
   pubKey: string,
-}
-
-export interface INewValidatorTransaction {
-
 }
 
 export interface IOperator {
@@ -53,27 +50,48 @@ class SSVStore {
         this.newValidatorReceipt = null;
         this.addingNewValidator = true;
 
-        const encryptedKeys: string[] = [];
+        const contract: Contract = await this.wallet.getContract();
+        const ownerAddress: string = this.wallet.accountAddress;
+        // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
+        const threshold: Threshold = new Threshold(this.validatorPrivateKey);
+        const thresholdResult: ISharesKeyPairs = await threshold.create();
 
-        console.debug('Register Validator Transaction Data:', {
-          encryptedKeys,
+        // Get list of selected operator's public keys
+        const indexes: number[] = [];
+        const operatorPublicKeys: string[] = this.operators
+          .filter((operator: IOperator) => {
+            return operator.selected;
+          })
+          .map((operator: IOperator, operatorIndex: number) => {
+            indexes.push(operatorIndex);
+            return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
+          });
+
+        // Collect all public keys from shares
+        const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
+          return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
         });
 
-        const contract: Contract = this.wallet.getContract();
-        const address: string = this.wallet.accountAddress;
+        // TODO: https://bloxxx.atlassian.net/browse/BLOXSSV-56
+        const encryptedKeys: string[] = sharePublicKeys;
 
-        // Guy Part
-        // TODO: split shares
-        // TODO: encode shares
+        const payload = [
+          thresholdResult.validatorPublicKey.startsWith('0x')
+            ? thresholdResult.validatorPublicKey.substr(2)
+            : thresholdResult.validatorPublicKey,
+          operatorPublicKeys,
+          indexes,
+          sharePublicKeys,
+          encryptedKeys,
+          ownerAddress,
+        ];
+
+        console.debug('Add Validator Payload: ', payload);
 
         // Send add operator transaction
         contract.methods
-          .addValidator(
-            // Dima Part
-            // TODO: provide all params
-            // TODO: navigate to success screen
-          )
-          .send({ from: address })
+          .addValidator(...payload)
+          .send({ from: ownerAddress })
           .on('receipt', (receipt: any) => {
             console.debug('Contract Receipt', receipt);
             this.newValidatorReceipt = receipt;
@@ -125,7 +143,7 @@ class SSVStore {
         this.addingNewOperator = true;
 
         console.debug('Register Operator Transaction Data:', transaction);
-        const contract: Contract = this.wallet.getContract();
+        const contract: Contract = await this.wallet.getContract();
         const address: string = this.wallet.accountAddress;
 
         // Send add operator transaction
@@ -281,35 +299,35 @@ class SSVStore {
         const operators = [
           {
             name: 'Operator #1',
-            publicKey: '0x1a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d56692',
+            publicKey: '0x1a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
             score: 0.1,
             selected: false,
             autoSelected: false,
           },
           {
             name: 'Operator #2',
-            publicKey: '0x2a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d56692',
+            publicKey: '0x2a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
             score: 0.2,
             selected: false,
             autoSelected: false,
           },
           {
             name: 'Operator #3',
-            publicKey: '0x3a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d56692',
+            publicKey: '0x3a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
             score: 0.9,
             selected: false,
             autoSelected: false,
           },
           {
             name: 'Operator #4',
-            publicKey: '0x4a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d56692',
+            publicKey: '0x4a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
             score: 0.4,
             selected: false,
             autoSelected: false,
           },
           {
             name: 'Operator #5',
-            publicKey: '0x5a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d56692',
+            publicKey: '0x5a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
             score: 0.7,
             selected: false,
             autoSelected: false,

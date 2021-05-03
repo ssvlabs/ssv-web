@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "~app/*": ["./src/app/*"],
+      "~lib/*": ["./src/lib/*"],
       "~root/*": ["./src/*"],
     }
   }

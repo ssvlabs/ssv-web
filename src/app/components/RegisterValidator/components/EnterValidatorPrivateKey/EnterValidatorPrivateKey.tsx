@@ -24,24 +24,22 @@ const EnterValidatorPrivateKey = () => {
   const stores = useStores();
   const ssv: SSVStore = stores.ssv;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
-  const [inputsData, setInputsData] = useState({ validatorPrivateKey: '' });
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setNextButtonEnabled(!!inputsData.validatorPrivateKey);
+    setNextButtonEnabled(!!ssv.validatorPrivateKey);
     return () => {
       setNextButtonEnabled(false);
     };
-  }, [inputsData]);
+  }, [ssv.validatorPrivateKey]);
 
-  const onInputChange = (name: string, value: string) => {
-    setInputsData({ ...inputsData, [name]: value });
+  const onInputChange = (value: string) => {
+    ssv.setValidatorPrivateKey(value);
   };
 
   const goToSelectOperators = () => {
-    ssv.setValidatorPrivateKey(inputsData.validatorPrivateKey);
     history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
   };
 
@@ -55,7 +53,7 @@ const EnterValidatorPrivateKey = () => {
           <br />
           <br />
           <InputLabel title="Validator Private key">
-            <TextInput type="text" onChange={(event) => { onInputChange('validatorPrivateKey', event.target.value); }} />
+            <TextInput type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
           </InputLabel>
 
           <Button

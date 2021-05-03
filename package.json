@@ -38,7 +38,7 @@
   "scripts": {
     "start": "react-app-env --env-file=.env.local start",
     "build": "react-app-env --env-file=.env.${BUILD_ENV} build",
-    "test": "cross-env DOTENV=.env.staging node -r dotenv/config ./node_modules/.bin/react-scripts test --watchAll=false",
+    "test": "cross-env NODE_ENV=test TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' DOTENV=.env.staging node -r dotenv/config ./node_modules/.bin/mocha -r ts-node/register -r jsdom-global/register './tests/*.test.*'",
     "test:dev": "react-scripts test --coverage --reporters=default",
     "lint": "eslint 'src/**'",
     "eject": "react-scripts eject",
@@ -69,10 +69,25 @@
     "~lib": "./src/lib"
   },
   "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
+    "@babel/register": "^7.13.16",
+    "@types/chai": "^4.2.17",
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.9",
+    "babel-plugin-inline-react-svg": "^2.0.1",
+    "babel-preset-react-app-babel-7": "^4.0.2-0",
+    "chai": "^4.3.4",
+    "chai-enzyme": "^1.0.0-beta.1",
+    "cheerio": "^1.0.0-rc.6",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "husky": "^6.0.0",
+    "ignore-styles": "^5.0.1",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^8.3.2",
     "pinst": "^2.1.6",
-    "sass-lint": "^1.13.1"
+    "sass-lint": "^1.13.1",
+    "ts-node": "^9.1.1"
   }
 }

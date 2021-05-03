@@ -1,11 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
-import Button from '~app/common/components/AppBar/components/Button';
-import TorusIcon from './images/torus.png';
-import MetaMaskIcon from './images/metamask.svg';
-import AutheriumIcon from './images/autherium.png';
 import WalletStore from '~app/common/stores/Wallet.store';
+import Button from '~app/common/components/AppBar/components/Button';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
@@ -22,13 +19,13 @@ const ConnectWalletButton = () => {
   if (wallet.wallet?.name) {
     switch (wallet.wallet.name) {
       case 'MetaMask':
-        icon = MetaMaskIcon;
+        icon = '/images/metamask.svg';
         break;
       case 'Torus':
-        icon = TorusIcon;
+        icon = '/images/torus.png';
         break;
       case 'Authereum':
-        icon = AutheriumIcon;
+        icon = '/images/autherium.png';
         break;
     }
   }

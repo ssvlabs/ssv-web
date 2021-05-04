@@ -9,6 +9,7 @@ const config = {
     VALIDATOR: {
       HOME: '/validator',
       SELECT_OPERATORS: '/validator/operators',
+      FILE_PASSWORD_APPROVAL: '/validator/file_approval',
     },
   },
   links: {

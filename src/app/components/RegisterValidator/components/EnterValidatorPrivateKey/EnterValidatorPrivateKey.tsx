@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import { DropzoneArea } from 'material-ui-dropzone';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
@@ -10,6 +11,7 @@ import Header from '~app/common/components/Header';
 import SSVStore from '~app/common/stores/SSV.store';
 import config, { translations } from '~app/common/config';
 import TextInput from '~app/common/components/TextInput';
+// import FileInput from '~app/common/components/FileInput';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
@@ -29,18 +31,27 @@ const EnterValidatorPrivateKey = () => {
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setNextButtonEnabled(!!ssv.validatorPrivateKey);
+    setNextButtonEnabled(!!ssv.validatorPrivateKey || !!ssv.validatorPrivateKeyFile);
     return () => {
       setNextButtonEnabled(false);
     };
-  }, [ssv.validatorPrivateKey]);
+  }, [ssv.validatorPrivateKey, ssv.validatorPrivateKeyFile]);
 
   const onInputChange = (value: string) => {
     ssv.setValidatorPrivateKey(value);
   };
 
   const goToSelectOperators = () => {
-    history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+    if (ssv.validatorPrivateKeyFile) {
+      history.push(config.routes.VALIDATOR.FILE_PASSWORD_APPROVAL);
+    } else {
+      history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+    }
+  };
+  const onFileChange = (file: any) => {
+    if (file !== null) {
+      ssv.setValidatorPrivateKeyFile(file[0]);
+    }
   };
 
   return (
@@ -53,7 +64,19 @@ const EnterValidatorPrivateKey = () => {
           <br />
           <br />
           <InputLabel title="Validator Private key">
-            <TextInput type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
+            <TextInput className={classes.privateKeyTextInput} type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
+            <DropzoneArea
+              onChange={onFileChange}
+              // open={this.state.open}
+              // onSave={this.handleSave.bind(this)}
+              acceptedFiles={['.json']}
+              // showPreviews
+              filesLimit={1}
+              maxFileSize={5000000}
+              // onClose={this.handleClose.bind(this)}
+            />
+            {/* <FileInput type="file" onChange={(event) => { onFileChange(event.target.files || null); }}> */}
+            {/* </FileInput> */}
           </InputLabel>
 
           <Button

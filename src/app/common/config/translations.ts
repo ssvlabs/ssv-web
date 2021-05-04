@@ -3,6 +3,7 @@ const translations = {
     ENTER_KEY: {
       TITLE: 'Register Validator to SSV Network',
       DESCRIPTION: 'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.',
+      SECURITY_DESCRIPTION: 'Your validator key is secured - it’s encrypted in your browser locally and never sent to our servers.',
     },
     SELECT_OPERATORS: {
       TITLE: 'Select Operators',

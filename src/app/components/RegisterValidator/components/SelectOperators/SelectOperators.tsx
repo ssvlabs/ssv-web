@@ -26,7 +26,7 @@ const SelectOperators = () => {
     setButtonEnabled(ssv.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
-    if (!ssv.validatorPrivateKey) {
+    if (!ssv.validatorPrivateKey && !ssv.validatorPrivateKeyFile) {
       history.push(config.routes.VALIDATOR.HOME);
       return;
     }

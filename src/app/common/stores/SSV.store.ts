@@ -26,6 +26,9 @@ class SSVStore {
   protected notifications: NotificationsStore;
 
   @observable validatorPrivateKey: string = '';
+  @observable validatorPrivateKeyFile: File | null = null;
+
+  @observable validatorKeyStorePassword: string = '';
 
   @observable operators: IOperator[] = [];
   @observable loadingOperators: boolean = false;
@@ -199,6 +202,15 @@ class SSVStore {
   @action.bound
   setValidatorPrivateKey(validatorPrivateKey: string) {
     this.validatorPrivateKey = validatorPrivateKey;
+  }
+
+  @action.bound
+  setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
+    this.validatorPrivateKeyFile = validatorPrivateKeyFile;
+  }
+  @action.bound
+  setValidatorKeyStorePassword(validatorKeyStorePassword: string) {
+    this.validatorKeyStorePassword = validatorKeyStorePassword;
   }
 
   /**

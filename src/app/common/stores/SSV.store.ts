@@ -42,91 +42,103 @@ class SSVStore {
     this.notifications = storesProvider.getStore('notifications');
   }
 
+  /**
+   * Returns true if wallet is ready
+   * Otherwise returns false
+   */
+  checkIfWalletReady() {
+    if (!this.wallet.ready) {
+      this.notifications.showMessage('Please connect your wallet first!', 'error');
+      return false;
+    }
+    return true;
+  }
+
   @action.bound
   async addNewValidator() {
     try {
-      await this.wallet.connect();
-      if (this.wallet.ready) {
-        this.newValidatorReceipt = null;
-        this.addingNewValidator = true;
+      if (!this.checkIfWalletReady) {
+        return;
+      }
+      this.newValidatorReceipt = null;
+      this.addingNewValidator = true;
 
-        const contract: Contract = await this.wallet.getContract();
-        const ownerAddress: string = this.wallet.accountAddress;
-        // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
-        const threshold: Threshold = new Threshold(this.validatorPrivateKey);
-        const thresholdResult: ISharesKeyPairs = await threshold.create();
+      const contract: Contract = await this.wallet.getContract();
+      const ownerAddress: string = this.wallet.accountAddress;
+      // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
+      const threshold: Threshold = new Threshold(this.validatorPrivateKey);
+      const thresholdResult: ISharesKeyPairs = await threshold.create();
 
-        // Get list of selected operator's public keys
-        const indexes: number[] = [];
-        const operatorPublicKeys: string[] = this.operators
-          .filter((operator: IOperator) => {
-            return operator.selected;
-          })
-          .map((operator: IOperator, operatorIndex: number) => {
-            indexes.push(operatorIndex);
-            return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
-          });
-
-        // Collect all public keys from shares
-        const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
-          return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
+      // Get list of selected operator's public keys
+      const indexes: number[] = [];
+      const operatorPublicKeys: string[] = this.operators
+        .filter((operator: IOperator) => {
+          return operator.selected;
+        })
+        .map((operator: IOperator, operatorIndex: number) => {
+          indexes.push(operatorIndex);
+          return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
         });
 
-        // TODO: https://bloxxx.atlassian.net/browse/BLOXSSV-56
-        const encryptedKeys: string[] = sharePublicKeys;
+      // Collect all public keys from shares
+      const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
+        return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
+      });
 
-        const payload = [
-          thresholdResult.validatorPublicKey.startsWith('0x')
-            ? thresholdResult.validatorPublicKey.substr(2)
-            : thresholdResult.validatorPublicKey,
-          operatorPublicKeys,
-          indexes,
-          sharePublicKeys,
-          encryptedKeys,
-          ownerAddress,
-        ];
+      // TODO: https://bloxxx.atlassian.net/browse/BLOXSSV-56
+      const encryptedKeys: string[] = sharePublicKeys;
 
-        console.debug('Add Validator Payload: ', payload);
+      const payload = [
+        thresholdResult.validatorPublicKey.startsWith('0x')
+          ? thresholdResult.validatorPublicKey.substr(2)
+          : thresholdResult.validatorPublicKey,
+        operatorPublicKeys,
+        indexes,
+        sharePublicKeys,
+        encryptedKeys,
+        ownerAddress,
+      ];
 
-        // Send add operator transaction
-        contract.methods
-          .addValidator(...payload)
-          .send({ from: ownerAddress })
-          .on('receipt', (receipt: any) => {
-            console.debug('Contract Receipt', receipt);
-            this.newValidatorReceipt = receipt;
-          })
-          .on('error', (error: any) => {
-            this.addingNewValidator = false;
+      console.debug('Add Validator Payload: ', payload);
+
+      // Send add operator transaction
+      contract.methods
+        .addValidator(...payload)
+        .send({ from: ownerAddress })
+        .on('receipt', (receipt: any) => {
+          console.debug('Contract Receipt', receipt);
+          this.newValidatorReceipt = receipt;
+        })
+        .on('error', (error: any) => {
+          this.addingNewValidator = false;
+          this.notifications.showMessage(error.message, 'error');
+          console.debug('Contract Error', error);
+        })
+        .catch((error: any) => {
+          this.addingNewValidator = false;
+          if (error) {
             this.notifications.showMessage(error.message, 'error');
-            console.debug('Contract Error', error);
-          })
-          .catch((error: any) => {
-            this.addingNewValidator = false;
-            if (error) {
-              this.notifications.showMessage(error.message, 'error');
-            }
-            console.debug('Contract Error', error);
-          });
+          }
+          console.debug('Contract Error', error);
+        });
 
-        // Listen for final event when it's added
-        contract.events
-          .ValidatorAdded({}, (error: any, event: any) => {
-            this.addingNewValidator = false;
-            if (error) {
-              this.notifications.showMessage(error.message, 'error');
-            } else {
-              this.notifications.showMessage('You successfully added validator!', 'success');
-            }
-            console.debug({ error, event });
-          })
-          .on('error', (error: any, receipt: any) => {
-            if (error) {
-              this.notifications.showMessage(error.message, 'error');
-            }
-            console.debug({ error, receipt });
-          });
-      }
+      // Listen for final event when it's added
+      contract.events
+        .ValidatorAdded({}, (error: any, event: any) => {
+          this.addingNewValidator = false;
+          if (error) {
+            this.notifications.showMessage(error.message, 'error');
+          } else {
+            this.notifications.showMessage('You successfully added validator!', 'success');
+          }
+          console.debug({ error, event });
+        })
+        .on('error', (error: any, receipt: any) => {
+          if (error) {
+            this.notifications.showMessage(error.message, 'error');
+          }
+          console.debug({ error, receipt });
+        });
     } catch (error) {
       console.error('Register Validator Error:', error);
       this.notifications.showMessage(error.message, 'error');
@@ -137,58 +149,58 @@ class SSVStore {
   @action.bound
   async addNewOperator(transaction: INewOperatorTransaction) {
     try {
-      await this.wallet.connect();
-      if (this.wallet.ready) {
-        this.newOperatorReceipt = null;
-        this.addingNewOperator = true;
-
-        console.debug('Register Operator Transaction Data:', transaction);
-        const contract: Contract = await this.wallet.getContract();
-        const address: string = this.wallet.accountAddress;
-
-        // Send add operator transaction
-        contract.methods
-          .addOperator(
-            transaction.name,
-            transaction.pubKey,
-            config.CONTRACT.PAYMENT_ADDRESS,
-          )
-          .send({ from: address })
-          .on('receipt', (receipt: any) => {
-            console.debug('Contract Receipt', receipt);
-            this.newOperatorReceipt = receipt;
-          })
-          .on('error', (error: any) => {
-            this.addingNewOperator = false;
-            this.notifications.showMessage(error.message, 'error');
-            console.debug('Contract Error', error);
-          })
-          .catch((error: any) => {
-            this.addingNewOperator = false;
-            if (error) {
-              this.notifications.showMessage(error.message, 'error');
-            }
-            console.debug('Contract Error', error);
-          });
-
-        // Listen for final event when it's added
-        contract.events
-          .OperatorAdded({}, (error: any, event: any) => {
-            this.addingNewOperator = false;
-            if (error) {
-              this.notifications.showMessage(error.message, 'error');
-            } else {
-              this.notifications.showMessage('You successfully added operator!', 'success');
-            }
-            console.debug({ error, event });
-          })
-          .on('error', (error: any, receipt: any) => {
-            if (error) {
-              this.notifications.showMessage(error.message, 'error');
-            }
-            console.debug({ error, receipt });
-          });
+      if (!this.checkIfWalletReady) {
+        return;
       }
+      this.newOperatorReceipt = null;
+      this.addingNewOperator = true;
+
+      console.debug('Register Operator Transaction Data:', transaction);
+      const contract: Contract = await this.wallet.getContract();
+      const address: string = this.wallet.accountAddress;
+
+      // Send add operator transaction
+      contract.methods
+        .addOperator(
+          transaction.name,
+          transaction.pubKey,
+          config.CONTRACT.PAYMENT_ADDRESS,
+        )
+        .send({ from: address })
+        .on('receipt', (receipt: any) => {
+          console.debug('Contract Receipt', receipt);
+          this.newOperatorReceipt = receipt;
+        })
+        .on('error', (error: any) => {
+          this.addingNewOperator = false;
+          this.notifications.showMessage(error.message, 'error');
+          console.debug('Contract Error', error);
+        })
+        .catch((error: any) => {
+          this.addingNewOperator = false;
+          if (error) {
+            this.notifications.showMessage(error.message, 'error');
+          }
+          console.debug('Contract Error', error);
+        });
+
+      // Listen for final event when it's added
+      contract.events
+        .OperatorAdded({}, (error: any, event: any) => {
+          this.addingNewOperator = false;
+          if (error) {
+            this.notifications.showMessage(error.message, 'error');
+          } else {
+            this.notifications.showMessage('You successfully added operator!', 'success');
+          }
+          console.debug({ error, event });
+        })
+        .on('error', (error: any, receipt: any) => {
+          if (error) {
+            this.notifications.showMessage(error.message, 'error');
+          }
+          console.debug({ error, receipt });
+        });
     } catch (error: any) {
       console.error('Register Operator Error:', error);
       this.notifications.showMessage(error.message, 'error');

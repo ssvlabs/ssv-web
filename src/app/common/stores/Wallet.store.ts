@@ -53,6 +53,7 @@ class WalletStore {
   @action.bound
   async connect() {
     try {
+      console.debug('Connecting wallet..');
       await this.selectWalletAndCheckIfReady();
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';

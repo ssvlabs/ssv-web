@@ -57,7 +57,7 @@ class SSVStore {
   @action.bound
   async addNewValidator() {
     try {
-      if (!this.checkIfWalletReady) {
+      if (!this.checkIfWalletReady()) {
         return;
       }
       this.newValidatorReceipt = null;
@@ -149,7 +149,7 @@ class SSVStore {
   @action.bound
   async addNewOperator(transaction: INewOperatorTransaction) {
     try {
-      if (!this.checkIfWalletReady) {
+      if (!this.checkIfWalletReady()) {
         return;
       }
       this.newOperatorReceipt = null;

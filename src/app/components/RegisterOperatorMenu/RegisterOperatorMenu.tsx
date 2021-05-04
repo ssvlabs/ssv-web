@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 import { Link as MaterialLink } from '@material-ui/core';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
 import BackNavigation from '~app/common/components/BackNavigation';
@@ -17,13 +17,10 @@ const OrganicLink = UnStyledLink(MaterialLink);
 
 const RegisterOperatorMenu = () => {
   const classes = useStyles();
-  const title = 'Join the SSV Network Operators';
-  const subtitle = 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.';
-
   return (
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.HOME} text="Join SSV Network" />
-      <Header title={title} subtitle={subtitle} />
+      <Header title={translations.OPERATOR.HOME.TITLE} subtitle={translations.OPERATOR.HOME.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>

@@ -1,8 +1,8 @@
 import util from 'util';
 import { split } from 'shamirs-secret-sharing-ts';
+import blsSignaturesFactory from 'bls-signatures';
 import { init, SecretKey, PublicKey } from '@chainsafe/bls';
 import { isNode } from '~lib/utils/detectEnvironment';
-const blsSignaturesFactory = require('bls-signatures');
 
 export interface IShares {
   privateKey: string,

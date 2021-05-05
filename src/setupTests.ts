@@ -2,12 +2,9 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect';
 import Enzyme from 'enzyme';
+import 'jsdom-global/register';
+import '@testing-library/jest-dom/extend-expect';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
-
-window.addEventListener = jest.fn();
-window.removeEventListener = jest.fn();
-URL.createObjectURL = jest.fn();
 
 Enzyme.configure({ adapter: new Adapter() });

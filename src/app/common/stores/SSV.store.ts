@@ -107,8 +107,8 @@ class SSVStore {
       const contract: Contract = await this.wallet.getContract();
       const ownerAddress: string = this.wallet.accountAddress;
       // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
-      const threshold: Threshold = new Threshold(this.validatorPrivateKey);
-      const thresholdResult: ISharesKeyPairs = await threshold.create();
+      const thresholdResult: ISharesKeyPairs = await new Threshold().create(this.validatorPrivateKey);
+
       // Get list of selected operator's public keys
       const indexes: number[] = [];
       const operatorPublicKeys: string[] = this.operators

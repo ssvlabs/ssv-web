@@ -10,6 +10,7 @@ const SpinnerMessage = styled.div`
 `;
 
 const SpinnerWrapper = styled.div`
+  position: absolute;
   display: flex;
   flex-grow: 1;
   flex-direction: column;

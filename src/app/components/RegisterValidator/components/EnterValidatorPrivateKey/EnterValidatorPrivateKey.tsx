@@ -67,16 +67,10 @@ const EnterValidatorPrivateKey = () => {
             <TextInput className={classes.privateKeyTextInput} type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
             <DropzoneArea
               onChange={onFileChange}
-              // open={this.state.open}
-              // onSave={this.handleSave.bind(this)}
               acceptedFiles={['.json']}
-              // showPreviews
               filesLimit={1}
               maxFileSize={5000000}
-              // onClose={this.handleClose.bind(this)}
             />
-            {/* <FileInput type="file" onChange={(event) => { onFileChange(event.target.files || null); }}> */}
-            {/* </FileInput> */}
           </InputLabel>
 
           <Button

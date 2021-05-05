@@ -7,17 +7,18 @@ import Button from '@material-ui/core/Button';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import Spinner from '~app/common/components/Spinner';
 import config, { translations } from '~app/common/config';
 import { useStyles } from '~app/components/Home/Home.styles';
 import OperatorSelector from './components/OperatorSelector';
 import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
+import WalletStore from '~app/common/stores/Wallet.store';
 
 const SelectOperators = () => {
   const history = useHistory();
   const stores = useStores();
   const ssv: SSVStore = stores.ssv;
+  const wallet: WalletStore = stores.wallet;
   const classes = useStyles();
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [buttonEnabled, setButtonEnabled] = useState(false);
@@ -31,11 +32,15 @@ const SelectOperators = () => {
       return;
     }
     if (!ssv.operators.length) {
-      ssv.loadOperators();
+      ssv.setIsLoading(true);
+      ssv.loadOperators().then(() => {
+        ssv.setIsLoading(false);
+      });
     }
   }, [ssv.operators, ssv.selectedEnoughOperators]);
 
   const onSelectOperatorsClick = async () => {
+    await wallet.connect();
     await ssv.addNewValidator();
   };
 
@@ -58,16 +63,12 @@ const SelectOperators = () => {
             &nbsp;Auto-select best operators
           </Button>
 
-          {!ssv.loadingOperators ?
+          {!ssv.isLoading ?
             ssv.operators.map((operator: IOperator) => (
               <OperatorSelector key={`operator-selector-${operator.publicKey}`} indexedOperator={operator} />
             ))
           : (
-            <>
-              <br />
-              <br />
-              <Spinner message="Loading operators list.." />
-            </>
+            null
           )}
 
           <Button

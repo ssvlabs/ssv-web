@@ -27,7 +27,7 @@ class WalletStore {
   @action.bound
   async getContract(address?: string): Promise<Contract> {
     await this.connect();
-    if (!this.contract && this.ready) {
+    if (!this.contract && this.connected) {
       const abi: any = config.CONTRACT.ABI;
       const contractAddress: string = config.CONTRACT.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, address ?? contractAddress);
@@ -39,7 +39,6 @@ class WalletStore {
   @action.bound
   clean() {
     this.accountAddress = '';
-    this.ready = false;
   }
 
   @action.bound
@@ -64,7 +63,7 @@ class WalletStore {
 
   @computed
   get connected() {
-    return this.wallet?.name;
+    return this.accountAddress;
   }
 
   /**
@@ -72,23 +71,23 @@ class WalletStore {
    */
   @action.bound
   async selectWalletAndCheckIfReady() {
-    if (this.connected && this.ready) {
+    if (this.connected) {
       return;
     }
     await this.init();
     if (!this.connected) {
       await this.onboardSdk.walletSelect();
-    }
-    if (this.connected && !this.ready) {
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-          console.debug('Wallet is ready for transaction:', ready);
-          this.ready = ready;
-          this.accountAddress = this.onboardSdk.getState().address;
-          this.notifications.showMessage('Wallet is ready!', 'success');
+          if (ready) {
+            this.notifications.showMessage('Wallet is connected!', 'success');
+            this.accountAddress = this.onboardSdk.getState().address;
+          } else {
+            this.notifications.showMessage('Wallet is not connected!', 'error');
+          }
+          console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
-          this.ready = false;
           console.error('Wallet check errorMessage', error);
           this.notifications.showMessage('Wallet is not connected!', 'error');
         });
@@ -122,6 +121,7 @@ class WalletStore {
    */
   @action.bound
   async onWalletConnected(wallet: any) {
+    console.log(wallet);
     console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);

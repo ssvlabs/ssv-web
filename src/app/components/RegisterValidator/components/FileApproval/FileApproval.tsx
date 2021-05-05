@@ -39,7 +39,6 @@ const EnterValidatorPrivateKey = () => {
     }, [ssv.validatorPrivateKeyFile]);
 
     useEffect(() => {
-        console.log(ssv.validatorKeyStorePassword);
         setNextButtonEnabled(!!ssv.validatorKeyStorePassword);
         return () => {
             setNextButtonEnabled(false);
@@ -49,8 +48,9 @@ const EnterValidatorPrivateKey = () => {
     const onInputChange = (value: string) => {
         ssv.setValidatorKeyStorePassword(value);
     };
-    const goToSelectOperators = () => {
-        history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+     const goToSelectOperators = async () => {
+       await ssv.extractPrivateKey();
+       history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     };
     const removeKeyStoreFile = () => {
         ssv.setValidatorPrivateKeyFile(false);
@@ -66,7 +66,6 @@ const EnterValidatorPrivateKey = () => {
             <br />
             <br />
             <InputLabel title="Keystore File">
-              {/* here should be Square with file name and icon and cancle option */}
               <Grid container className={classes.fileContainer}>
                 <Grid item xs={1}>
                   <DoneIcon className={classes.doneIcon} />
@@ -78,11 +77,6 @@ const EnterValidatorPrivateKey = () => {
                   <ClearIcon onClick={removeKeyStoreFile} className={classes.clearIcon} />
                 </Grid>
               </Grid>
-              {/* <Typography className={classes.fileContainer}> */}
-              {/*  <DoneIcon /> */}
-              {/*  {ssv.validatorPrivateKeyFile?.name} */}
-              {/*  <ClearIcon /> */}
-              {/* </Typography> */}
             </InputLabel>
 
             <InputLabel title="Keystore Password">

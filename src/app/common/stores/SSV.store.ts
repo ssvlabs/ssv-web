@@ -5,6 +5,8 @@ import WalletStore from '~app/common/stores/Wallet.store';
 import StoresProvider from '~app/common/stores/StoresProvider';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
+import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+// const path = require('path');
 
 export interface INewOperatorTransaction {
   name: string,
@@ -39,6 +41,8 @@ class SSVStore {
   @observable addingNewValidator: boolean = false;
   @observable newValidatorReceipt: any = null;
 
+  @observable isLoading: boolean = false;
+
   constructor() {
     const storesProvider = StoresProvider.getInstance();
     this.wallet = storesProvider.getStore('wallet');
@@ -50,11 +54,33 @@ class SSVStore {
    * Otherwise returns false
    */
   checkIfWalletReady() {
-    if (!this.wallet.ready) {
+    if (!this.wallet.connected) {
       this.notifications.showMessage('Please connect your wallet first!', 'error');
       return false;
     }
     return true;
+  }
+
+  @action.bound
+  setIsLoading(status: boolean) {
+    this.isLoading = status;
+  }
+
+  @action.bound
+  async extractPrivateKey() {
+    this.setIsLoading(true);
+      await this.validatorPrivateKeyFile?.text().then((string) => {
+        try {
+          const keyStore = new EthereumKeyStore(string);
+         return keyStore.getPrivateKey(this.validatorKeyStorePassword).then((answer) => {
+            if (typeof answer === 'string') {
+              this.setValidatorPrivateKey(answer);
+            }
+          });
+        } catch (error) {
+          this.notifications.showMessage('something went wrong..', 'error');
+        }
+      });
   }
 
   @action.bound
@@ -71,7 +97,6 @@ class SSVStore {
       // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
       const threshold: Threshold = new Threshold(this.validatorPrivateKey);
       const thresholdResult: ISharesKeyPairs = await threshold.create();
-
       // Get list of selected operator's public keys
       const indexes: number[] = [];
       const operatorPublicKeys: string[] = this.operators
@@ -82,7 +107,7 @@ class SSVStore {
           indexes.push(operatorIndex);
           return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
         });
-
+console.log('passssssssss');
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
@@ -219,6 +244,7 @@ class SSVStore {
   @action.bound
   setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
     this.validatorPrivateKeyFile = validatorPrivateKeyFile;
+    this.validatorPrivateKey = '';
   }
   @action.bound
   setValidatorKeyStorePassword(validatorKeyStorePassword: string) {

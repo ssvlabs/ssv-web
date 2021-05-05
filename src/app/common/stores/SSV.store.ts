@@ -32,6 +32,8 @@ class SSVStore {
 
   @observable validatorKeyStorePassword: string = '';
 
+  @observable disableInput: string = '';
+
   @observable operators: IOperator[] = [];
   @observable loadingOperators: boolean = false;
 
@@ -64,6 +66,16 @@ class SSVStore {
   @action.bound
   setIsLoading(status: boolean) {
     this.isLoading = status;
+  }
+
+  @action.bound
+  setDisableInput(type: string) {
+    this.disableInput = type;
+  }
+
+  @action.bound
+  checkInputDisable(type: string) {
+    return this.disableInput === type;
   }
 
   @action.bound
@@ -107,7 +119,6 @@ class SSVStore {
           indexes.push(operatorIndex);
           return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
         });
-console.log('passssssssss');
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;

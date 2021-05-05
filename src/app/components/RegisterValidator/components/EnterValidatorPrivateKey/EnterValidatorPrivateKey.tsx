@@ -31,6 +31,13 @@ const EnterValidatorPrivateKey = () => {
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
+    if (ssv.validatorPrivateKey.length) {
+      ssv.setDisableInput('file');
+    } else if (ssv.validatorPrivateKeyFile) {
+      ssv.setDisableInput('text');
+    } else {
+      ssv.setDisableInput('');
+    }
     setNextButtonEnabled(!!ssv.validatorPrivateKey || !!ssv.validatorPrivateKeyFile);
     return () => {
       setNextButtonEnabled(false);
@@ -64,8 +71,9 @@ const EnterValidatorPrivateKey = () => {
           <br />
           <br />
           <InputLabel title="Validator Private key">
-            <TextInput className={classes.privateKeyTextInput} type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
+            <TextInput className={`${ssv.checkInputDisable('text') ? classes.disable : 'null'} ${classes.privateKeyTextInput}`} type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
             <DropzoneArea
+              dropzoneClass={ssv.checkInputDisable('file') ? classes.disable : ''}
               onChange={onFileChange}
               acceptedFiles={['.json']}
               filesLimit={1}

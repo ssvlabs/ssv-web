@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import Header from '~app/common/components/Header';
 import UnStyledLink from '~app/common/components/UnStyledLink';
 import { useStyles } from '~app/components/Home/Home.styles';
@@ -14,16 +14,13 @@ const RouteLink = UnStyledLink(RouterLink);
 
 const Home = () => {
   const classes = useStyles();
-  const title = 'Join SSV Network';
-  const subtitle = 'Create new operator and share validator keys with other operators';
-
   return (
     <Paper className={classes.mainContainer}>
-      <Header title={title} subtitle={subtitle} />
+      <Header title={translations.HOME.TITLE} subtitle={translations.HOME.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <RouteLink to={config.routes.OPERATOR.START}>
+          <RouteLink to={config.routes.OPERATOR.START} data-testid={config.routes.OPERATOR.START}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>

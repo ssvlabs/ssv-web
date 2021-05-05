@@ -14,10 +14,18 @@ const translations = {
       DESCRIPTION: 'With every new operator, our network grows stronger.',
     },
   },
+  HOME: {
+    TITLE: 'Join SSV Network',
+    DESCRIPTION: 'Create new operator and share validator keys with other operators',
+  },
   OPERATOR: {
     REGISTER: {
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
+    },
+    HOME: {
+      TITLE: 'Join the SSV Network Operators',
+      DESCRIPTION: 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.',
     },
   },
 };

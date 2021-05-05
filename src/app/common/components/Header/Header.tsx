@@ -11,7 +11,7 @@ const Header = ({ title, subtitle }: HeaderProps) => {
   const classes = useStyles();
   return (
     <div className={classes.header}>
-      <Typography variant="h6">{title}</Typography>
+      <Typography variant="h6" data-testid="header-title">{title}</Typography>
       <Typography variant="subtitle1" style={{ fontSize: 13 }}>{subtitle}</Typography>
     </div>
   );

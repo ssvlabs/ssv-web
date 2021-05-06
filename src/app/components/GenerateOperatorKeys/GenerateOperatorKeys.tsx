@@ -36,11 +36,11 @@ const GenerateOperatorKeys = () => {
   useEffect(() => {
     const isRegisterButtonEnabled = !userAgreed
         || ssv.addingNewOperator
-        || !inputsData.name ||
-        !inputsData.pubKey ||
-        displayNameError.shouldDisplay ||
-        publicKeyError.shouldDisplay;
-    setRegisterButtonEnabled(!(isRegisterButtonEnabled));
+        || !inputsData.name
+        || !inputsData.pubKey
+        || displayNameError.shouldDisplay
+        || publicKeyError.shouldDisplay;
+    setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
     };

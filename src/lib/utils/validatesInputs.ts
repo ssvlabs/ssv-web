@@ -2,6 +2,7 @@ interface ErrorObject {
     shouldDisplay: boolean,
     errorMessage: string
 }
+
 export const validatePublicKeyInput = (value: string, callback: React.Dispatch<ErrorObject>) :void => {
     const response: ErrorObject = { shouldDisplay: true, errorMessage: '' };
     const regx = /^[A-Za-z0-9]+$/;

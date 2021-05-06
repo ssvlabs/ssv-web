@@ -23,7 +23,7 @@ export const validateDisplayNameInput = (value: string, callback: React.Dispatch
     const regx = /^[A-Za-z0-9]+$/;
     if (value.length === 0) {
         response.errorMessage = 'Please enter a display name.';
-    } else if (value.length !== 42) {
+    } else if (value.length < 4 || value.length > 21) {
         response.errorMessage = 'Display name must be between 3 to 20 characters.';
     } else if (!regx.test(value)) {
         response.errorMessage = 'Display name should contain only alphanumeric characters.';

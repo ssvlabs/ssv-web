@@ -9,6 +9,7 @@ const config = {
     VALIDATOR: {
       HOME: '/validator',
       SELECT_OPERATORS: '/validator/operators',
+      DECRYPT: '/validator/keystore/decrypt',
     },
   },
   links: {

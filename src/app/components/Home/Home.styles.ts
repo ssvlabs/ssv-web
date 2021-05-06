@@ -11,6 +11,28 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
+    privateKeyTextInput: {
+        marginBottom: '10px',
+    },
+    doneIcon: {
+      color: 'green',
+      float: 'left',
+    },
+    fileNameText: {
+        textAlign: 'left',
+    },
+    clearIcon: {
+        float: 'right',
+    },
+    fileContainer: {
+        display: 'flex',
+        padding: '10px',
+        textAlign: 'center',
+        width: '100%',
+        alignContent: 'center',
+        height: '50px',
+        border: 'dashed thin gray',
+    },
     guideStepsContainerPaper: {
         cursor: 'pointer',
         margin: `${theme.spacing(1)}px auto`,

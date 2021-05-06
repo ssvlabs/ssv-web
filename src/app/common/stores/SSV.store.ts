@@ -2,6 +2,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
+import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
 import StoresProvider from '~app/common/stores/StoresProvider';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
@@ -26,6 +27,8 @@ class SSVStore {
   protected notifications: NotificationsStore;
 
   @observable validatorPrivateKey: string = '';
+  @observable validatorPrivateKeyFile: File | null = null;
+  @observable validatorKeyStorePassword: string = '';
 
   @observable operators: IOperator[] = [];
   @observable loadingOperators: boolean = false;
@@ -35,6 +38,8 @@ class SSVStore {
 
   @observable addingNewValidator: boolean = false;
   @observable newValidatorReceipt: any = null;
+
+  @observable isLoading: boolean = false;
 
   constructor() {
     const storesProvider = StoresProvider.getInstance();
@@ -47,7 +52,7 @@ class SSVStore {
    * Otherwise returns false
    */
   checkIfWalletReady() {
-    if (!this.wallet.ready) {
+    if (!this.wallet.connected) {
       this.notifications.showMessage('Please connect your wallet first!', 'error');
       return false;
     }
@@ -55,7 +60,30 @@ class SSVStore {
   }
 
   @action.bound
+  setIsLoading(status: boolean) {
+    this.isLoading = status;
+  }
+
+  @action.bound
+  async extractPrivateKey() {
+    this.setIsLoading(true);
+      await this.validatorPrivateKeyFile?.text().then((string) => {
+        try {
+          const keyStore = new EthereumKeyStore(string);
+          return keyStore.getPrivateKey(this.validatorKeyStorePassword).then((answer) => {
+              if (typeof answer === 'string') {
+                this.setValidatorPrivateKey(answer);
+              }
+          });
+        } catch (error) {
+          this.notifications.showMessage('something went wrong..', 'error');
+        }
+      });
+  }
+
+  @action.bound
   async addNewValidator() {
+    this.setIsLoading(true);
     try {
       if (!this.checkIfWalletReady()) {
         return;
@@ -66,8 +94,8 @@ class SSVStore {
       const contract: Contract = await this.wallet.getContract();
       const ownerAddress: string = this.wallet.accountAddress;
       // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
-      const threshold: Threshold = new Threshold(this.validatorPrivateKey);
-      const thresholdResult: ISharesKeyPairs = await threshold.create();
+      const threshold: Threshold = new Threshold();
+      const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
       // Get list of selected operator's public keys
       const indexes: number[] = [];
@@ -79,7 +107,6 @@ class SSVStore {
           indexes.push(operatorIndex);
           return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
         });
-
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
@@ -107,6 +134,7 @@ class SSVStore {
         .send({ from: ownerAddress })
         .on('receipt', (receipt: any) => {
           console.debug('Contract Receipt', receipt);
+          this.setIsLoading(false);
           this.newValidatorReceipt = receipt;
         })
         .on('error', (error: any) => {
@@ -211,6 +239,17 @@ class SSVStore {
   @action.bound
   setValidatorPrivateKey(validatorPrivateKey: string) {
     this.validatorPrivateKey = validatorPrivateKey;
+  }
+
+  @action.bound
+  setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
+    this.validatorPrivateKeyFile = validatorPrivateKeyFile;
+    this.validatorPrivateKey = '';
+  }
+
+  @action.bound
+  setValidatorKeyStorePassword(validatorKeyStorePassword: string) {
+    this.validatorKeyStorePassword = validatorKeyStorePassword;
   }
 
   /**

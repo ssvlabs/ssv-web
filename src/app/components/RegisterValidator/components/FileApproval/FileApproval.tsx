@@ -80,9 +80,13 @@ const EnterValidatorPrivateKey = () => {
             </InputLabel>
 
             <InputLabel title="Keystore Password">
-              <TextInput type="text" value={ssv.validatorKeyStorePassword} onChange={(event) => {
+              <TextInput
+                type="text"
+                value={ssv.validatorKeyStorePassword}
+                onChange={(event) => {
                             onInputChange(event.target.value);
-                        }} />
+                        }}
+              />
             </InputLabel>
 
             <Button
@@ -93,8 +97,9 @@ const EnterValidatorPrivateKey = () => {
               onClick={goToSelectOperators}>
               Next
             </Button>
-            <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>I don’t have a validator
-              key</Typography>
+            <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>
+              I don’t have a validator key
+            </Typography>
           </Grid>
         </Grid>
       </Paper>

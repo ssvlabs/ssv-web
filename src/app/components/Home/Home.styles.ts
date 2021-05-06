@@ -11,6 +11,13 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
+    inputError: {
+        border: '1px solid red',
+    },
+    textError: {
+        fontSize: '0.8rem',
+        color: 'red',
+    },
     privateKeyTextInput: {
         marginBottom: '10px',
     },

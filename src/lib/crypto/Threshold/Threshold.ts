@@ -56,9 +56,9 @@ class Threshold {
                         }
                     }
 
-                    for (let i = 1; i < this.sharesNumber; i += 1) {
+                    for (let i = 0; i < this.sharesNumber; i += 1) {
                         const id = new bls.Id();
-                        id.setInt(i);
+                        id.setInt(i + 1);
                         idVec.push(id);
                         const shareSecretKey = new bls.SecretKey();
                         shareSecretKey.share(msk, idVec[i]);

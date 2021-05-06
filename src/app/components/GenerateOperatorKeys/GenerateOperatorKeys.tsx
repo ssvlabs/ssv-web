@@ -16,6 +16,7 @@ import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import SSVStore, { INewOperatorTransaction } from '~app/common/stores/SSV.store';
+import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
@@ -33,7 +34,13 @@ const GenerateOperatorKeys = () => {
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setRegisterButtonEnabled(!(!userAgreed || ssv.addingNewOperator || !inputsData.name || !inputsData.pubKey || displayNameError.shouldDisplay || publicKeyError.shouldDisplay));
+    const isRegisterButtonEnabled = !userAgreed
+        || ssv.addingNewOperator
+        || !inputsData.name ||
+        !inputsData.pubKey ||
+        displayNameError.shouldDisplay ||
+        publicKeyError.shouldDisplay;
+    setRegisterButtonEnabled(!(isRegisterButtonEnabled));
     return () => {
       setRegisterButtonEnabled(false);
     };
@@ -62,36 +69,6 @@ const GenerateOperatorKeys = () => {
       });
   };
 
-  const validatePublicKeyInput = (value: string) => {
-    const response = { shouldDisplay: true, errorMessage: '' };
-    const regx = /^[A-Za-z0-9]+$/;
-    if (value.length === 0) {
-      response.errorMessage = 'Please enter an operator key.';
-    } else if (value.length !== 42) {
-      response.errorMessage = 'Invalid operator key - see our documentation to generate your key.';
-    } else if (!regx.test(value)) {
-      response.errorMessage = 'Operator key should contain only alphanumeric characters.';
-    } else {
-      response.shouldDisplay = false;
-    }
-    setPublicKeyError(response);
-  };
-
-  const validateDisplayNameInput = (value: string) => {
-    const response = { shouldDisplay: true, errorMessage: '' };
-    const regx = /^[A-Za-z0-9]+$/;
-    if (value.length === 0) {
-      response.errorMessage = 'Please enter a display name.';
-    } else if (value.length !== 42) {
-      response.errorMessage = 'Display name must be between 3 to 20 characters.';
-    } else if (!regx.test(value)) {
-      response.errorMessage = 'Display name should contain only alphanumeric characters.';
-    } else {
-      response.shouldDisplay = false;
-    }
-    setDisplayNameError(response);
-  };
-
   return (
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.START} text="Join the SSV Network Operators" />
@@ -104,10 +81,10 @@ const GenerateOperatorKeys = () => {
             <TextInput
               className={displayNameError.shouldDisplay ? classes.inputError : ''}
               type="text"
-              onBlur={(event) => { validateDisplayNameInput(event.target.value); }}
+              onBlur={(event) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
               onChange={(event) => { onInputChange('name', event.target.value); }}
             />
-            {displayNameError.shouldDisplay ? <Typography className={classes.textError}>{displayNameError.errorMessage}</Typography> : null}
+            {displayNameError.shouldDisplay && <Typography className={classes.textError}>{displayNameError.errorMessage}</Typography>}
           </InputLabel>
 
           <br />
@@ -115,9 +92,9 @@ const GenerateOperatorKeys = () => {
             <TextInput type="text"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}
               onChange={(event) => { onInputChange('publicKey', event.target.value); }}
-              onBlur={(event) => { validatePublicKeyInput(event.target.value); }}
+              onBlur={(event) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
             />
-            {publicKeyError.shouldDisplay ? <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography> : null}
+            {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
           </InputLabel>
 
           <br />

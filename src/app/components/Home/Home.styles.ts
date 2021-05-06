@@ -11,10 +11,6 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
-    disable: {
-        opacity: 0.2,
-        pointerEvents: 'none',
-    },
     privateKeyTextInput: {
         marginBottom: '10px',
     },

@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { DropzoneArea } from 'material-ui-dropzone';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
+import { DropzoneArea } from 'material-ui-dropzone';
 import SSVStore from '~app/common/stores/SSV.store';
+import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
-import TextInput from '~app/common/components/TextInput';
-// import FileInput from '~app/common/components/FileInput';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
@@ -31,30 +29,20 @@ const EnterValidatorPrivateKey = () => {
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    if (ssv.validatorPrivateKey.length) {
-      ssv.setDisableInput('file');
-    } else if (ssv.validatorPrivateKeyFile) {
-      ssv.setDisableInput('text');
-    } else {
-      ssv.setDisableInput('');
-    }
     setNextButtonEnabled(!!ssv.validatorPrivateKey || !!ssv.validatorPrivateKeyFile);
     return () => {
       setNextButtonEnabled(false);
     };
   }, [ssv.validatorPrivateKey, ssv.validatorPrivateKeyFile]);
 
-  const onInputChange = (value: string) => {
-    ssv.setValidatorPrivateKey(value);
-  };
-
   const goToSelectOperators = () => {
     if (ssv.validatorPrivateKeyFile) {
-      history.push(config.routes.VALIDATOR.FILE_PASSWORD_APPROVAL);
+      history.push(config.routes.VALIDATOR.DECRYPT);
     } else {
       history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     }
   };
+
   const onFileChange = (file: any) => {
     if (file !== null) {
       ssv.setValidatorPrivateKeyFile(file[0]);
@@ -71,9 +59,7 @@ const EnterValidatorPrivateKey = () => {
           <br />
           <br />
           <InputLabel title="Validator Private key">
-            <TextInput className={`${ssv.checkInputDisable('text') ? classes.disable : 'null'} ${classes.privateKeyTextInput}`} type="text" value={ssv.validatorPrivateKey} onChange={(event) => { onInputChange(event.target.value); }} />
             <DropzoneArea
-              dropzoneClass={ssv.checkInputDisable('file') ? classes.disable : ''}
               onChange={onFileChange}
               acceptedFiles={['.json']}
               filesLimit={1}

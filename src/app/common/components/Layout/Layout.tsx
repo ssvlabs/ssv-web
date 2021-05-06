@@ -1,11 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import BarMessage from '~app/common/components/BarMessage';
-import { useStyles } from '~app/common/components/Layout/Layout.styles';
-import Spinner from '~app/common/components/Spinner';
 import { useStores } from '~app/hooks/useStores';
 import SSVStore from '~app/common/stores/SSV.store';
+import Spinner from '~app/common/components/Spinner';
+import BarMessage from '~app/common/components/BarMessage';
+import { useStyles } from '~app/common/components/Layout/Layout.styles';
 
 const Layout = ({ children }: any) => {
     const classes = useStyles();
@@ -16,7 +16,7 @@ const Layout = ({ children }: any) => {
         if (ssv.isLoading) {
             return <Spinner />;
         }
-            return null;
+        return null;
     };
 
     return (

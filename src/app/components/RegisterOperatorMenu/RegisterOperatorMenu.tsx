@@ -39,22 +39,6 @@ const RegisterOperatorMenu = () => {
           </OrganicLink>
         </Grid>
 
-        {/* <Grid item xs zeroMinWidth className={classes.gridContainer}> */}
-        {/*  <OrganicLink href={config.links.LINK_SSV_DEV_DOCS} target="_blank"> */}
-        {/*    <Paper className={classes.guideStepsContainerPaper}> */}
-        {/*      <Grid container wrap="nowrap" spacing={1}> */}
-        {/*        <Grid item md={8} xs={8}> */}
-        {/*          <Typography noWrap variant="h6" className={classes.guideStepText}>Generate operator keys</Typography> */}
-        {/*          <Typography noWrap variant="caption">Create your network identifier</Typography> */}
-        {/*        </Grid> */}
-        {/*        <Grid item md={4} xs={4}> */}
-        {/*          <ArrowForwardIosIcon className={classes.arrowIcon} /> */}
-        {/*        </Grid> */}
-        {/*      </Grid> */}
-        {/*    </Paper> */}
-        {/*  </OrganicLink> */}
-        {/* </Grid> */}
-
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <RouteLink to={config.routes.OPERATOR.GENERATE_KEYS}>
             <Paper className={classes.guideStepsContainerPaper}>

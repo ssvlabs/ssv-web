@@ -2,22 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
-import Button from '@material-ui/core/Button';
-import { useHistory } from 'react-router-dom';
-
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import SSVStore from '~app/common/stores/SSV.store';
-import config, { translations } from '~app/common/config';
+import Typography from '@material-ui/core/Typography';
 import TextInput from '~app/common/components/TextInput';
-// import FileInput from '~app/common/components/FileInput';
+import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
-// import FileInput from '~app/common/components/FileInput';
 
 // TODO:
 //  1. Create SSVStore to keep validator private key during the process
@@ -48,10 +45,12 @@ const EnterValidatorPrivateKey = () => {
     const onInputChange = (value: string) => {
         ssv.setValidatorKeyStorePassword(value);
     };
-     const goToSelectOperators = async () => {
-       await ssv.extractPrivateKey();
-       history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+
+    const goToSelectOperators = async () => {
+        await ssv.extractPrivateKey();
+        history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     };
+
     const removeKeyStoreFile = () => {
         ssv.setValidatorPrivateKeyFile(false);
     };
@@ -59,7 +58,8 @@ const EnterValidatorPrivateKey = () => {
     return (
       <Paper className={classes.mainContainer}>
         <BackNavigation to={config.routes.OPERATOR.HOME} text="Join SSV Network" />
-        <Header title={translations.VALIDATOR.ENTER_KEY.TITLE} subtitle={translations.VALIDATOR.ENTER_KEY.SECURITY_DESCRIPTION} />
+        <Header title={translations.VALIDATOR.ENTER_KEY.TITLE}
+          subtitle={translations.VALIDATOR.ENTER_KEY.SECURITY_DESCRIPTION} />
 
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
@@ -80,7 +80,9 @@ const EnterValidatorPrivateKey = () => {
             </InputLabel>
 
             <InputLabel title="Keystore Password">
-              <TextInput type="text" value={ssv.validatorKeyStorePassword} onChange={(event) => { onInputChange(event.target.value); }} />
+              <TextInput type="text" value={ssv.validatorKeyStorePassword} onChange={(event) => {
+                            onInputChange(event.target.value);
+                        }} />
             </InputLabel>
 
             <Button
@@ -88,11 +90,11 @@ const EnterValidatorPrivateKey = () => {
               variant="contained"
               color="primary"
               style={registerButtonStyle}
-              onClick={goToSelectOperators}
-                    >
+              onClick={goToSelectOperators}>
               Next
             </Button>
-            <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>I don’t have a validator key</Typography>
+            <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>I don’t have a validator
+              key</Typography>
           </Grid>
         </Grid>
       </Paper>

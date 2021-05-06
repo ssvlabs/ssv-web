@@ -16,8 +16,8 @@ export interface ISharesKeyPairs {
 /**
  * Example of usage:
  *
- *  const threshold: Threshold = new Threshold('45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94');
- *  threshold.create().then((s) => {
+ *  const threshold: Threshold = new Threshold();
+ *  threshold.create('45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94').then((s) => {
  *    console.log(s);
  *  });
  */
@@ -56,9 +56,9 @@ class Threshold {
                         }
                     }
 
-                    for (let i = 0; i < this.sharesNumber; i += 1) {
+                    for (let i = 1; i < this.sharesNumber; i += 1) {
                         const id = new bls.Id();
-                        id.setByCSPRNG();
+                        id.setInt(i);
                         idVec.push(id);
                         const shareSecretKey = new bls.SecretKey();
                         shareSecretKey.share(msk, idVec[i]);

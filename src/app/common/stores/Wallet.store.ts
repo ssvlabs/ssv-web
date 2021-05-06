@@ -121,7 +121,6 @@ class WalletStore {
    */
   @action.bound
   async onWalletConnected(wallet: any) {
-    console.log(wallet);
     console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);

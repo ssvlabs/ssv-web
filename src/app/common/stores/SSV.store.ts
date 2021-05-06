@@ -2,11 +2,10 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
+import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
 import StoresProvider from '~app/common/stores/StoresProvider';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
-// const path = require('path');
 
 export interface INewOperatorTransaction {
   name: string,
@@ -29,10 +28,7 @@ class SSVStore {
 
   @observable validatorPrivateKey: string = '';
   @observable validatorPrivateKeyFile: File | null = null;
-
   @observable validatorKeyStorePassword: string = '';
-
-  @observable disableInput: string = '';
 
   @observable operators: IOperator[] = [];
   @observable loadingOperators: boolean = false;
@@ -69,25 +65,15 @@ class SSVStore {
   }
 
   @action.bound
-  setDisableInput(type: string) {
-    this.disableInput = type;
-  }
-
-  @action.bound
-  checkInputDisable(type: string) {
-    return this.disableInput === type;
-  }
-
-  @action.bound
   async extractPrivateKey() {
     this.setIsLoading(true);
       await this.validatorPrivateKeyFile?.text().then((string) => {
         try {
           const keyStore = new EthereumKeyStore(string);
-         return keyStore.getPrivateKey(this.validatorKeyStorePassword).then((answer) => {
-            if (typeof answer === 'string') {
-              this.setValidatorPrivateKey(answer);
-            }
+          return keyStore.getPrivateKey(this.validatorKeyStorePassword).then((answer) => {
+              if (typeof answer === 'string') {
+                this.setValidatorPrivateKey(answer);
+              }
           });
         } catch (error) {
           this.notifications.showMessage('something went wrong..', 'error');
@@ -97,6 +83,7 @@ class SSVStore {
 
   @action.bound
   async addNewValidator() {
+    this.setIsLoading(true);
     try {
       if (!this.checkIfWalletReady()) {
         return;
@@ -107,7 +94,8 @@ class SSVStore {
       const contract: Contract = await this.wallet.getContract();
       const ownerAddress: string = this.wallet.accountAddress;
       // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
-      const thresholdResult: ISharesKeyPairs = await new Threshold().create(this.validatorPrivateKey);
+      const threshold: Threshold = new Threshold();
+      const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
       // Get list of selected operator's public keys
       const indexes: number[] = [];
@@ -146,6 +134,7 @@ class SSVStore {
         .send({ from: ownerAddress })
         .on('receipt', (receipt: any) => {
           console.debug('Contract Receipt', receipt);
+          this.setIsLoading(false);
           this.newValidatorReceipt = receipt;
         })
         .on('error', (error: any) => {
@@ -257,6 +246,7 @@ class SSVStore {
     this.validatorPrivateKeyFile = validatorPrivateKeyFile;
     this.validatorPrivateKey = '';
   }
+
   @action.bound
   setValidatorKeyStorePassword(validatorKeyStorePassword: string) {
     this.validatorKeyStorePassword = validatorKeyStorePassword;

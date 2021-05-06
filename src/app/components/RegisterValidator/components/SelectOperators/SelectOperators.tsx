@@ -4,15 +4,15 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import config, { translations } from '~app/common/config';
+import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Home/Home.styles';
 import OperatorSelector from './components/OperatorSelector';
 import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
-import WalletStore from '~app/common/stores/Wallet.store';
 
 const SelectOperators = () => {
   const history = useHistory();

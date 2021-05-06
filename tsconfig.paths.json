@@ -5,6 +5,7 @@
       "~app/*": ["./src/app/*"],
       "~lib/*": ["./src/lib/*"],
       "~root/*": ["./src/*"],
+      "~config/*": ["./config/*"],
     }
   }
 }

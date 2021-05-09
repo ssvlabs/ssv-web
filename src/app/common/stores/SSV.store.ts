@@ -82,6 +82,16 @@ class SSVStore {
   }
 
   @action.bound
+  async verifyOperatorPublicKey() {
+    await this.wallet.connect();
+    const contract: Contract = await this.wallet.getContract();
+    console.log(contract);
+    return new Promise((resolve) => {
+      resolve(true);
+    });
+  }
+
+  @action.bound
   async addNewValidator() {
     this.setIsLoading(true);
     try {
@@ -90,7 +100,7 @@ class SSVStore {
       }
       this.newValidatorReceipt = null;
       this.addingNewValidator = true;
-
+      await this.wallet.connect();
       const contract: Contract = await this.wallet.getContract();
       const ownerAddress: string = this.wallet.accountAddress;
       // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
@@ -111,9 +121,13 @@ class SSVStore {
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
       });
+      // Collect all private keys from shares
+      const sharePrivateKeys: string[] = thresholdResult.shares.map((share: IShares) => {
+        return share.privateKey.startsWith('0x') ? share.privateKey.substr(2) : share.privateKey;
+      });
 
       // TODO: https://bloxxx.atlassian.net/browse/BLOXSSV-56
-      const encryptedKeys: string[] = sharePublicKeys;
+      const encryptedKeys: string[] = sharePrivateKeys;
 
       const payload = [
         thresholdResult.validatorPublicKey.startsWith('0x')
@@ -184,6 +198,7 @@ class SSVStore {
       this.addingNewOperator = true;
 
       console.debug('Register Operator Transaction Data:', transaction);
+      await this.wallet.connect();
       const contract: Contract = await this.wallet.getContract();
       const address: string = this.wallet.accountAddress;
 

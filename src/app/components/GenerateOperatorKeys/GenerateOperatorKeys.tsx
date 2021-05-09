@@ -81,8 +81,8 @@ const GenerateOperatorKeys = () => {
             <TextInput
               className={displayNameError.shouldDisplay ? classes.inputError : ''}
               type="text"
-              onBlur={(event: React.FocusEvent) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
-              onChange={(event: React.ChangeEvent) => { onInputChange('name', event.target.value); }}
+              onBlur={(event: any) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
+              onChange={(event: any) => { onInputChange('name', event.target.value); }}
             />
             {displayNameError.shouldDisplay && <Typography className={classes.textError}>{displayNameError.errorMessage}</Typography>}
           </InputLabel>
@@ -91,8 +91,8 @@ const GenerateOperatorKeys = () => {
           <InputLabel title="Operator Public Key">
             <TextInput type="text"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}
-              onChange={(event: React.ChangeEvent) => { onInputChange('publicKey', event.target.value); }}
-              onBlur={(event: React.FocusEvent) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
+              onChange={(event: any) => { onInputChange('publicKey', event.target.value); }}
+              onBlur={(event: any) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
             />
             {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
           </InputLabel>

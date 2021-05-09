@@ -26,7 +26,6 @@ class WalletStore {
    */
   @action.bound
   async getContract(address?: string): Promise<Contract> {
-    await this.connect();
     if (!this.contract && this.connected) {
       const abi: any = config.CONTRACT.ABI;
       const contractAddress: string = config.CONTRACT.ADDRESS;

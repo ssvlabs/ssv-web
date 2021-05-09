@@ -11,6 +11,10 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
+    inputWithHint: {
+        backgroundColor: 'red',
+        display: 'flex',
+    },
     inputError: {
         border: '1px solid red',
     },

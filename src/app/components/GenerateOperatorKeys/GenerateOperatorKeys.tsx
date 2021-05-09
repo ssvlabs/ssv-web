@@ -16,6 +16,7 @@ import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import SSVStore, { INewOperatorTransaction } from '~app/common/stores/SSV.store';
+import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
@@ -26,16 +27,24 @@ const GenerateOperatorKeys = () => {
   const checkboxLabelStyle = { fontSize: 14 };
   const [inputsData, setInputsData] = useState({ name: '', pubKey: '' });
   const [userAgreed, setUserAgreed] = useState(false);
+  const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
 
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setRegisterButtonEnabled(!(!userAgreed || ssv.addingNewOperator || !inputsData.name || !inputsData.pubKey));
+    const isRegisterButtonEnabled = !userAgreed
+        || ssv.addingNewOperator
+        || !inputsData.name
+        || !inputsData.pubKey
+        || displayNameError.shouldDisplay
+        || publicKeyError.shouldDisplay;
+    setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
     };
-  }, [inputsData, userAgreed]);
+  }, [inputsData, userAgreed, displayNameError.shouldDisplay, publicKeyError.shouldDisplay]);
 
   // Showing errors and success messages
   useEffect(() => {
@@ -69,12 +78,23 @@ const GenerateOperatorKeys = () => {
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <br />
           <InputLabel title="Display Name">
-            <TextInput type="text" onChange={(event: any) => { onInputChange('name', event.target.value); }} />
+            <TextInput
+              className={displayNameError.shouldDisplay ? classes.inputError : ''}
+              type="text"
+              onBlur={(event: React.FocusEvent) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
+              onChange={(event: React.ChangeEvent) => { onInputChange('name', event.target.value); }}
+            />
+            {displayNameError.shouldDisplay && <Typography className={classes.textError}>{displayNameError.errorMessage}</Typography>}
           </InputLabel>
 
           <br />
           <InputLabel title="Operator Public Key">
-            <TextInput type="text" onChange={(event: any) => { onInputChange('pubKey', event.target.value); }} />
+            <TextInput type="text"
+              className={publicKeyError.shouldDisplay ? classes.inputError : ''}
+              onChange={(event: React.ChangeEvent) => { onInputChange('publicKey', event.target.value); }}
+              onBlur={(event: React.FocusEvent) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
+            />
+            {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
           </InputLabel>
 
           <br />

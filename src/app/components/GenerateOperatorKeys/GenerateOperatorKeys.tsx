@@ -32,15 +32,14 @@ const GenerateOperatorKeys = () => {
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
 
   // Inputs validation
-  // TODO: add validation of proper formats
   useEffect(() => {
-    const isRegisterButtonEnabled = !userAgreed
+    const isRegisterButtonDisabled = !userAgreed
         || ssv.addingNewOperator
         || !inputsData.name
         || !inputsData.pubKey
         || displayNameError.shouldDisplay
         || publicKeyError.shouldDisplay;
-    setRegisterButtonEnabled(!isRegisterButtonEnabled);
+    setRegisterButtonEnabled(!isRegisterButtonDisabled);
     return () => {
       setRegisterButtonEnabled(false);
     };
@@ -79,6 +78,7 @@ const GenerateOperatorKeys = () => {
           <br />
           <InputLabel title="Display Name">
             <TextInput
+              data-testid="new-operator-name"
               className={displayNameError.shouldDisplay ? classes.inputError : ''}
               type="text"
               onBlur={(event: any) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
@@ -90,8 +90,9 @@ const GenerateOperatorKeys = () => {
           <br />
           <InputLabel title="Operator Public Key">
             <TextInput type="text"
+              data-testid="new-operator-key"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}
-              onChange={(event: any) => { onInputChange('publicKey', event.target.value); }}
+              onChange={(event: any) => { onInputChange('pubKey', event.target.value); }}
               onBlur={(event: any) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
             />
             {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
@@ -104,6 +105,7 @@ const GenerateOperatorKeys = () => {
                 checked={userAgreed}
                 onChange={(event) => { setUserAgreed(event.target.checked); }}
                 color="primary"
+                data-testid="terms-checkbox"
               />
             )}
             label={<Typography style={checkboxLabelStyle}>I have read and agree to the terms & conditions</Typography>}

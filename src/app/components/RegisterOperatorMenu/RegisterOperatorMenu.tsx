@@ -40,7 +40,7 @@ const RegisterOperatorMenu = () => {
         </Grid>
 
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <RouteLink to={config.routes.OPERATOR.GENERATE_KEYS}>
+          <RouteLink to={config.routes.OPERATOR.GENERATE_KEYS} data-testid={config.routes.OPERATOR.GENERATE_KEYS}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>

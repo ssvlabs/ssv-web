@@ -69,12 +69,12 @@ const GenerateOperatorKeys = () => {
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <br />
           <InputLabel title="Display Name">
-            <TextInput type="text" onChange={(event) => { onInputChange('name', event.target.value); }} />
+            <TextInput type="text" onChange={(event: any) => { onInputChange('name', event.target.value); }} />
           </InputLabel>
 
           <br />
           <InputLabel title="Operator Public Key">
-            <TextInput type="text" onChange={(event) => { onInputChange('pubKey', event.target.value); }} />
+            <TextInput type="text" onChange={(event: any) => { onInputChange('pubKey', event.target.value); }} />
           </InputLabel>
 
           <br />

@@ -83,9 +83,7 @@ const EnterValidatorPrivateKey = () => {
               <TextInput
                 type="text"
                 value={ssv.validatorKeyStorePassword}
-                onChange={(event) => {
-                            onInputChange(event.target.value);
-                        }}
+                onChange={(event: any) => onInputChange(event.target.value)}
               />
             </InputLabel>
 

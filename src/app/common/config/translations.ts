@@ -17,6 +17,14 @@ const translations = {
   HOME: {
     TITLE: 'Join SSV Network',
     DESCRIPTION: 'Create new operator and share validator keys with other operators',
+    MENUS: {
+      NEW_OPERATOR: {
+        TITLE: 'Create new Operator',
+      },
+      SHARE_VALIDATOR_KEY: {
+        TITLE: 'Share Validator Key',
+      },
+    },
   },
   OPERATOR: {
     REGISTER: {
@@ -26,6 +34,9 @@ const translations = {
     HOME: {
       TITLE: 'Join the SSV Network Operators',
       DESCRIPTION: 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.',
+      MENUS: {
+
+      },
     },
   },
 };

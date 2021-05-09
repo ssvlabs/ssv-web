@@ -36,7 +36,7 @@ const Home = () => {
         </Grid>
 
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <RouteLink to={config.routes.VALIDATOR.HOME}>
+          <RouteLink to={config.routes.VALIDATOR.HOME} data-testid={config.routes.VALIDATOR.HOME}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>

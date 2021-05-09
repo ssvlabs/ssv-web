@@ -6,11 +6,13 @@ const InputLabelWrapper = styled.div`
   display: block;
   font-size: 14px;
 `;
+
 const InputHeader = styled.div`
   display: flex;
   width: 100%;
   justifyContent: 'space-between';
 `;
+
 const Bar = styled.div`
   display: block;
   margin: 15px 0;

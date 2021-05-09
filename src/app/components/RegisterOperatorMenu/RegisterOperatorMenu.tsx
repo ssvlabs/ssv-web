@@ -2,14 +2,14 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 import { Link as MaterialLink } from '@material-ui/core';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import config, { translations } from '~app/common/config';
-import Header from '~app/common/components/Header';
-import UnStyledLink from '~app/common/components/UnStyledLink';
 import { useStyles } from '~app/components/Home/Home.styles';
+import UnStyledLink from '~app/common/components/UnStyledLink';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 const RouteLink = UnStyledLink(RouterLink);
 const OrganicLink = UnStyledLink(MaterialLink);

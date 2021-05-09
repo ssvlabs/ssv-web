@@ -3,19 +3,19 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Backdrop from '~app/common/components/Backdrop';
-import config, { translations } from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
+import SSVStore from '~app/common/stores/SSV.store';
+import Typography from '@material-ui/core/Typography';
+import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
-// import WalletStore from '~app/common/stores/Wallet.store';
+import config, { translations } from '~app/common/config';
+import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
+// import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
-import SSVStore from '~app/common/stores/SSV.store';
 import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
-import MessageDiv from '~app/common/components/MessageDiv';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();

@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 type MessageDivProps ={
     text: string
 };
+
 const MessageDiv = ({ text }: MessageDivProps) => {
     return (
       <Alert icon={false} severity="error">

@@ -113,6 +113,7 @@ const GenerateOperatorKeys = () => {
           />
 
           <Button
+            data-testid="register-operator-button"
             disabled={!registerButtonEnabled}
             variant="contained"
             color="primary"

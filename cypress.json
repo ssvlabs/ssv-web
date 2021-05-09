@@ -1,1 +1,7 @@
-{}
+{
+  "defaultCommandTimeout": 60000,
+  "video": false,
+  "env": {
+    "TEST_HEADLESS": true
+  }
+}

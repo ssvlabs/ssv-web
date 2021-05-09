@@ -36,43 +36,36 @@ class Threshold {
         return new Promise((resolve) => {
             bls.init(bls.BLS12_381)
                 .then(() => {
-                    this.validatorPrivateKey = bls.deserializeHexStrToSecretKey(privateKey);
-                    this.validatorPublicKey = this.validatorPrivateKey.getPublicKey();
                     const msk = [];
                     const mpk = [];
-                    const idVec = [];
 
-                    for (let i = 0; i < this.threshold; i += 1) {
-                        if (i === 0) {
-                            msk.push(this.validatorPrivateKey);
-                            mpk.push(this.validatorPublicKey);
-                        } else {
-                            const sk: SecretKeyType = new bls.SecretKey();
-                            sk.setByCSPRNG();
-                            msk.push(sk);
+                    // master key Polynomial
+                    this.validatorPrivateKey = bls.deserializeHexStrToSecretKey(privateKey);
+                    this.validatorPublicKey = this.validatorPrivateKey.getPublicKey();
 
-                            const pk = sk.getPublicKey();
-                            mpk.push(pk);
-                        }
+                     msk.push(this.validatorPrivateKey);
+                     mpk.push(this.validatorPublicKey);
+
+                    // construct poly
+                    for (let i = 1; i < this.threshold; i += 1) {
+                        const sk: SecretKeyType = new bls.SecretKey();
+                        sk.setByCSPRNG();
+                        msk.push(sk);
+                        const pk = sk.getPublicKey();
+                        mpk.push(pk);
                     }
 
-                    for (let i = 0; i < this.sharesNumber; i += 1) {
+                    // evaluate shares - starting from 1 because 0 is master key
+                    for (let i = 1; i <= this.sharesNumber; i += 1) {
                         const id = new bls.Id();
-                        id.setInt(i + 1);
-                        idVec.push(id);
+                        id.setInt(i);
                         const shareSecretKey = new bls.SecretKey();
-                        shareSecretKey.share(msk, idVec[i]);
+                        shareSecretKey.share(msk, id);
 
                         const sharePublicKey = new bls.PublicKey();
-                        sharePublicKey.share(mpk, idVec[i]);
+                        sharePublicKey.share(mpk, id);
 
                         this.validatorShares.push({ privateKey: shareSecretKey.serializeToHexStr(), publicKey: sharePublicKey.serializeToHexStr() });
-
-                        // const sig = sk.sign(msg);
-                        // sigVec.push(sig);
-                        // console.log(`this is public key(${i + 1}): ${pk.serializeToHexStr()}`);
-                        // console.log(`this is secret key(${i + 1}): ${sk.serializeToHexStr()}`);
-                        // console.log(i + ' : verify msg : ' + pk.verify(sig, msg))
                     }
 
                     const response: ISharesKeyPairs = {

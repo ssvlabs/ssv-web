@@ -84,8 +84,7 @@ class SSVStore {
   @action.bound
   async verifyOperatorPublicKey() {
     await this.wallet.connect();
-    const contract: Contract = await this.wallet.getContract();
-    console.log(contract);
+    // const contract: Contract = await this.wallet.getContract();
     return new Promise((resolve) => {
       resolve(true);
     });

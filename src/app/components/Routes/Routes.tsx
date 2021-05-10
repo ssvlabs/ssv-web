@@ -7,6 +7,7 @@ import SSVHome from '~app/components/Home';
 import RegisterValidator from '~app/components/RegisterValidator';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorMenu from '~app/components/RegisterOperatorMenu';
+import ConfirmationScreen from '~app/components/ConfirmationScreen';
 
 const Routes = () => {
   return (
@@ -22,6 +23,9 @@ const Routes = () => {
             </Route>
             <Route exact path={config.routes.OPERATOR.GENERATE_KEYS}>
               <GenerateOperatorKeys />
+            </Route>
+            <Route exact path={config.routes.OPERATOR.CONFIRMATION_PAGE}>
+              <ConfirmationScreen />
             </Route>
           </Switch>
         </Route>

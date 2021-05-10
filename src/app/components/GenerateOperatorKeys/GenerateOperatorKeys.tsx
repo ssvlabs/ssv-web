@@ -16,10 +16,12 @@ import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
+import { useHistory } from 'react-router-dom';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
+  const history = useHistory();
   const ssv: SSVStore = stores.ssv;
   // const wallet: WalletStore = stores.wallet;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
@@ -41,11 +43,6 @@ const GenerateOperatorKeys = () => {
     };
   }, [inputsData, displayNameError.shouldDisplay, publicKeyError.shouldDisplay]);
 
-  // Showing errors and success messages
-  useEffect(() => {
-
-  }, [ssv]);
-
   const onInputChange = (name: string, value: string) => {
     setInputsData({ ...inputsData, [name]: value });
   };
@@ -54,6 +51,8 @@ const GenerateOperatorKeys = () => {
     await ssv.verifyOperatorPublicKey().then((isExist) => {
       if (isExist) {
         setOperatorExist(true);
+      } else {
+        history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
       }
     });
     // await wallet.connect()
@@ -107,7 +106,7 @@ const GenerateOperatorKeys = () => {
             style={registerButtonStyle}
             onClick={onRegisterClick}
           >
-            Register
+            Next
           </Button>
           {ssv.addingNewOperator && <Backdrop />}
         </Grid>

@@ -86,7 +86,7 @@ class SSVStore {
     await this.wallet.connect();
     // const contract: Contract = await this.wallet.getContract();
     return new Promise((resolve) => {
-      resolve(true);
+      resolve(false);
     });
   }
 

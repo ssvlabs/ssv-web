@@ -51,6 +51,7 @@ interface V4Keystore {
  */
 class EthereumKeyStore {
   private readonly keyStoreData: any;
+  private privateKey: string = '';
 
   /**
    * Receive key store data from string or parsed JSON
@@ -72,6 +73,8 @@ class EthereumKeyStore {
    * @param password
    */
   async getPrivateKey(password: string = ''): Promise<string> {
+    // In case private key exist we return it
+    if (this.privateKey) return this.privateKey;
     let wallet;
     switch (this.keyStoreData.version) {
       case 1:
@@ -84,7 +87,10 @@ class EthereumKeyStore {
         wallet = await this.fromV4(this.keyStoreData, password);
         break;
     }
-    return wallet ? wallet.getPrivateKey().toString('hex') : '';
+    if (wallet) {
+      this.privateKey = wallet.getPrivateKey().toString('hex');
+    }
+    return this.privateKey;
   }
 
   /**

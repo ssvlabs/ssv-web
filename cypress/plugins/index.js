@@ -12,11 +12,26 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const path = require('path');
 /**
  * @type {Cypress.PluginConfig}
  */
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-}
+  const metaMaskPluginPath = path.join(process.cwd(), 'cypress', 'plugins', 'MetaMask', 'metamask-chrome-9.5.0');
+
+  on('before:browser:launch', (browser, launchOptions) => {
+    if (browser.family === 'chromium' && browser.name !== 'electron') {
+      launchOptions.extensions.push(metaMaskPluginPath);
+    }
+    if (browser.family === 'chromium' && browser.name !== 'electron') {
+      // auto open devtools
+      launchOptions.args.push('--auto-open-devtools-for-tabs');
+    }
+    if (browser.family === 'firefox') {
+      // auto open devtools
+      launchOptions.args.push('-devtools');
+    }
+    return launchOptions;
+  });
+};

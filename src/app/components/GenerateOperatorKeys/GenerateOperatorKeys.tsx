@@ -68,6 +68,7 @@ const GenerateOperatorKeys = () => {
           <br />
           <InputLabel title="Display Name">
             <TextInput
+              data-testid="new-operator-name"
               className={displayNameError.shouldDisplay ? classes.inputError : ''}
               type="text"
               onBlur={(event) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
@@ -79,6 +80,7 @@ const GenerateOperatorKeys = () => {
           <br />
           <InputLabel title="Operator Key" withHint toolTipText={'this should be an hyperlinked'}>
             <TextInput type="text"
+              data-testid="new-operator-key"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}
               onChange={(event) => { onInputChange('publicKey', event.target.value); }}
               onBlur={(event) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
@@ -90,6 +92,7 @@ const GenerateOperatorKeys = () => {
           {operatorExist && <MessageDiv text={'Operator already exists'} />}
 
           <Button
+            data-testid="register-operator-button"
             disabled={!registerButtonEnabled}
             variant="contained"
             color="primary"

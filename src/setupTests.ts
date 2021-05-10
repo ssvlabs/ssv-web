@@ -8,6 +8,7 @@ import 'jsdom-global/register';
 import '@testing-library/jest-dom/extend-expect';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
+// @ts-ignore
 window.crypto = {
     getRandomValues(buffer: Buffer) { return crypto.randomFillSync(buffer); },
 };

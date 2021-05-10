@@ -1,0 +1,8 @@
+{
+  "defaultCommandTimeout": 60000,
+  "video": false,
+  "screenshot": false,
+  "headless": true,
+  "browser": "chrome",
+  "baseUrl": "https://app.stage.ssv.network"
+}

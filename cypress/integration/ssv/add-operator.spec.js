@@ -10,11 +10,11 @@ const randomValueHex = (len) => {
     .slice(0, len);
 };
 
-const baseUrl = 'http://localhost:3000';
+const operatorPublicKeyLength = 128;
 
-context('Actions', () => {
+context('Add Validator', () => {
   before(() => {
-    cy.visit(baseUrl);
+    cy.visit(Cypress.config('baseUrl'));
   });
 
   it('should navigate to operator screen', () => {
@@ -25,7 +25,7 @@ context('Actions', () => {
 
     cy.location().should((location) => {
       expect(location.hash).to.be.empty;
-      expect(location.href).to.eq(`${baseUrl}${config.routes.OPERATOR.START}`);
+      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.START}`);
       expect(location.pathname).to.eq(config.routes.OPERATOR.START);
       expect(location.search).to.be.empty;
     });
@@ -41,16 +41,39 @@ context('Actions', () => {
 
     cy.location().should((location) => {
       expect(location.hash).to.be.empty;
-      expect(location.href).to.eq(`${baseUrl}${config.routes.OPERATOR.GENERATE_KEYS}`);
+      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.GENERATE_KEYS}`);
       expect(location.pathname).to.eq(config.routes.OPERATOR.GENERATE_KEYS);
       expect(location.search).to.be.empty;
     });
   });
 
   it('should fill up operator data with errors', () => {
-    const operatorName = 'TestOperator';
-    cy.get('[data-testid=new-operator-name]').type(operatorName);
-    cy.get('[data-testid=new-operator-key]').type(`${randomValueHex(42)}`);
-    cy.get('[data-testid="terms-checkbox"]').click();
+    const operatorName = 'TestOperator: 123';
+    cy.get('[data-testid=new-operator-name]').type(`${operatorName}`);
+    cy.get('[data-testid=new-operator-key]').type(`${randomValueHex(operatorPublicKeyLength + 1)}`);
+    cy.get('[data-testid="register-operator-button"]').should('be.disabled');
+    cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name should contain only alphanumeric characters.');
+    cy.get('[data-testid=new-operator-name]').clear().type('A');
+    cy.get('[data-testid=new-operator-key]').clear().type('A');
+    cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name must be between 3 to 20 characters.');
+    cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Invalid operator key - see our documentation to generate your key.');
+  });
+
+  it('should fill up operator data without errors', () => {
+    cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+    cy.get('[data-testid=new-operator-key]').clear().type(`${randomValueHex(operatorPublicKeyLength)}`);
+    cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+  });
+
+  it('should open Onboard.js provider dialog, select MetaMask and wait for user input', () => {
+    cy.get('[data-testid="register-operator-button"]').click();
+
+    if (!Cypress.config('headless')) {
+      cy.get('.bn-onboard-modal-content-header-heading').should('contain.text', 'Select a Wallet');
+      cy.get('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom').click();
+      cy.pause();
+      cy.waitFor('.MuiAlert-message');
+      cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
+    }
   });
 });

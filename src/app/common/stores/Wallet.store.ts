@@ -5,9 +5,11 @@ import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import StoresProvider from '~app/common/stores/StoresProvider';
 import NotificationsStore from '~app/common/stores/Notifications.store';
+import SSVStore from '~app/common/stores/SSV.store';
 
 class WalletStore {
   private notifications: NotificationsStore;
+  private ssv: SSVStore;
   private contract: Contract | undefined;
 
   @observable web3: any = null;
@@ -15,9 +17,10 @@ class WalletStore {
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
   @observable accountAddress: string = '';
-
+  
   constructor() {
     this.notifications = StoresProvider.getInstance().getStore('notifications');
+    this.ssv = StoresProvider.getInstance().getStore('ssv');
   }
 
   /**
@@ -78,12 +81,8 @@ class WalletStore {
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-          if (ready) {
             this.notifications.showMessage('Wallet is connected!', 'success');
             this.accountAddress = this.onboardSdk.getState().address;
-          } else {
-            this.notifications.showMessage('Wallet is not connected!', 'error');
-          }
           console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {

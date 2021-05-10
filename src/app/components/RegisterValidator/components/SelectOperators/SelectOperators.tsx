@@ -63,13 +63,9 @@ const SelectOperators = () => {
             &nbsp;Auto-select best operators
           </Button>
 
-          {!ssv.isLoading ?
-            ssv.operators.map((operator: IOperator) => (
-              <OperatorSelector key={`operator-selector-${operator.publicKey}`} indexedOperator={operator} />
-            ))
-          : (
-            null
-          )}
+          {ssv.operators.map((operator: IOperator) => (
+            <OperatorSelector key={`operator-selector-${operator.publicKey}`} indexedOperator={operator} />
+            ))}
 
           <Button
             disabled={!buttonEnabled}

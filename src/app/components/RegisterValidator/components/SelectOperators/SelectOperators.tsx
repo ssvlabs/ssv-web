@@ -11,13 +11,13 @@ import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Home/Home.styles';
 import OperatorSelector from './components/OperatorSelector';
-import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
+import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
 
 const SelectOperators = () => {
   const history = useHistory();
   const stores = useStores();
-  const ssv: SSVStore = stores.ssv;
+  const ssv: SsvStore = stores.ssv;
   const wallet: WalletStore = stores.wallet;
   const classes = useStyles();
   const registerButtonStyle = { width: '100%', marginTop: 30 };

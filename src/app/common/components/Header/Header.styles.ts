@@ -4,4 +4,7 @@ export const useStyles = makeStyles((theme) => ({
   header: {
     paddingBottom: theme.spacing(1),
   },
+  centralize: {
+    textAlign: 'center',
+  },
 }));

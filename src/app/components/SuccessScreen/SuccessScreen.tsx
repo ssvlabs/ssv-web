@@ -2,19 +2,48 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
 import SSVStore from '~app/common/stores/SSV.store';
-import { useHistory } from 'react-router-dom';
-import config from '~app/common/config';
+// import { useHistory } from 'react-router-dom';
+// import config from '~app/common/config';
+import Paper from '@material-ui/core/Paper';
+import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { translations } from '~app/common/config';
+import Header from '~app/common/components/Header';
 
 const SuccessScreen = () => {
     const stores = useStores();
-    const history = useHistory();
+    // const history = useHistory();
+    const classes = useStyles();
     const ssv: SSVStore = stores.ssv;
 
     useEffect(() => {
-        if (!ssv.newOperatorRegisterSuccessfully) history.push(config.routes.OPERATOR.START);
+        if (!ssv.newOperatorRegisterSuccessfully) {
+            console.log('adsasd');
+            // history.push(config.routes.OPERATOR.START);
+        }
     }, [ssv.newOperatorRegisterSuccessfully]);
+
     return (
-      <div>works!</div>
+      <Paper className={classes.mainContainer}>
+        <Grid className={classes.gridContainer} container direction="column" justify="center" alignItems="center">
+          <img className={classes.successIcon} src={'/images/checked.svg'} />
+          <Header centralize title={translations.OPERATOR.SUCCESS.TITLE} subtitle={translations.OPERATOR.SUCCESS.DESCRIPTION} />
+          <img className={classes.congratsIcon} src={'/images/congrats.svg'} />
+          <Paper className={classes.guideStepsContainerPaper}>
+            <Grid container wrap="nowrap" spacing={1}>
+              <Grid item md={8} xs={8}>
+                <Typography noWrap variant="h6" className={classes.guideStepText}>Monitor Node</Typography>
+                <Typography noWrap variant="caption">View yout operator performance in out explorer</Typography>
+              </Grid>
+              <Grid item md={4} xs={4}>
+                <ArrowForwardIosIcon className={classes.arrowIcon} />
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+      </Paper>
     );
 };
 

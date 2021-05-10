@@ -45,6 +45,7 @@ const ConfirmationScreen = () => {
          ssv.addNewOperator().then(() => {
              history.push(config.routes.OPERATOR.SUCCESS_PAGE);
          }).catch((error) => {
+             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
              console.log(error);
          });
     };

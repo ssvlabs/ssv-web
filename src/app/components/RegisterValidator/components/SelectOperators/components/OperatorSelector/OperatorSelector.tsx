@@ -4,10 +4,10 @@ import Select from '@material-ui/core/Select';
 import { useStores } from '~app/hooks/useStores';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
 import { useStyles } from './OperatorSelector.styles';
-import { OperatorName, OperatorScore, OperatorKey } from './components/Operator';
+import FormControl from '@material-ui/core/FormControl';
+import { OperatorName, OperatorKey } from './components/Operator';
+import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
 
 type OperatorSelectorProps = {
   indexedOperator: IOperator
@@ -28,8 +28,8 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
   };
 
   useEffect(() => {
-    if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.publicKey !== selectedOperator) {
-      selectOperatorMethod(indexedOperator.publicKey);
+    if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
+      selectOperatorMethod(indexedOperator.pubkey);
     }
   });
 
@@ -58,12 +58,11 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
             <MenuItem
               key={`menu-item-${operatorIndex}`}
               className={classes.menuItem}
-              value={operator.publicKey}
-              disabled={ssv.isOperatorSelected(operator.publicKey)}
+              value={operator.pubkey}
+              disabled={ssv.isOperatorSelected(operator.pubkey)}
               >
               <OperatorName>{operator.name}</OperatorName>
-              <OperatorScore>Score: {operator.score}</OperatorScore>
-              <OperatorKey>{operator.publicKey}</OperatorKey>
+              <OperatorKey>{operator.pubkey}</OperatorKey>
             </MenuItem>
             );
         })}

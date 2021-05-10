@@ -12,6 +12,10 @@ const config = {
       DECRYPT: '/validator/keystore/decrypt',
     },
   },
+  FEATURE: {
+    AUTO_SELECT: false,
+    SELECT_MINIMUM_OPERATORS: 4,
+  },
   links: {
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
   },

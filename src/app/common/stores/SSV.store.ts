@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
@@ -14,10 +15,11 @@ export interface INewOperatorTransaction {
 
 export interface IOperator {
   name: string,
-  publicKey: string,
-  score: number,
-  selected: boolean
-  autoSelected: boolean
+  pubkey: string,
+  paymentAddress?: string,
+  score?: number,
+  selected?: boolean
+  autoSelected?: boolean
 }
 
 class SSVStore {
@@ -71,9 +73,7 @@ class SSVStore {
         try {
           const keyStore = new EthereumKeyStore(string);
           return keyStore.getPrivateKey(this.validatorKeyStorePassword).then((answer) => {
-              if (typeof answer === 'string') {
-                this.setValidatorPrivateKey(answer);
-              }
+            this.setValidatorPrivateKey(answer);
           });
         } catch (error) {
           this.notifications.showMessage('something went wrong..', 'error');
@@ -114,7 +114,7 @@ class SSVStore {
         })
         .map((operator: IOperator, operatorIndex: number) => {
           indexes.push(operatorIndex);
-          return operator.publicKey.startsWith('0x') ? operator.publicKey.substr(2) : operator.publicKey;
+          return operator.pubkey.startsWith('0x') ? operator.pubkey.substr(2) : operator.pubkey;
         });
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
@@ -147,13 +147,13 @@ class SSVStore {
         .send({ from: ownerAddress })
         .on('receipt', (receipt: any) => {
           console.debug('Contract Receipt', receipt);
-          this.setIsLoading(false);
           this.newValidatorReceipt = receipt;
         })
         .on('error', (error: any) => {
           this.addingNewValidator = false;
           this.notifications.showMessage(error.message, 'error');
           console.debug('Contract Error', error);
+          this.setIsLoading(false);
         })
         .catch((error: any) => {
           this.addingNewValidator = false;
@@ -161,6 +161,7 @@ class SSVStore {
             this.notifications.showMessage(error.message, 'error');
           }
           console.debug('Contract Error', error);
+          this.setIsLoading(false);
         });
 
       // Listen for final event when it's added
@@ -173,17 +174,20 @@ class SSVStore {
             this.notifications.showMessage('You successfully added validator!', 'success');
           }
           console.debug({ error, event });
+          this.setIsLoading(false);
         })
         .on('error', (error: any, receipt: any) => {
           if (error) {
             this.notifications.showMessage(error.message, 'error');
           }
           console.debug({ error, receipt });
+          this.setIsLoading(false);
         });
     } catch (error) {
       console.error('Register Validator Error:', error);
       this.notifications.showMessage(error.message, 'error');
       this.addingNewValidator = false;
+      this.setIsLoading(false);
     }
   }
 
@@ -217,6 +221,7 @@ class SSVStore {
           this.addingNewOperator = false;
           this.notifications.showMessage(error.message, 'error');
           console.debug('Contract Error', error);
+          this.setIsLoading(false);
         })
         .catch((error: any) => {
           this.addingNewOperator = false;
@@ -224,6 +229,7 @@ class SSVStore {
             this.notifications.showMessage(error.message, 'error');
           }
           console.debug('Contract Error', error);
+          this.setIsLoading(false);
         });
 
       // Listen for final event when it's added
@@ -236,17 +242,20 @@ class SSVStore {
             this.notifications.showMessage('You successfully added operator!', 'success');
           }
           console.debug({ error, event });
+          this.setIsLoading(false);
         })
         .on('error', (error: any, receipt: any) => {
           if (error) {
             this.notifications.showMessage(error.message, 'error');
           }
           console.debug({ error, receipt });
+          this.setIsLoading(false);
         });
     } catch (error: any) {
       console.error('Register Operator Error:', error);
       this.notifications.showMessage(error.message, 'error');
       this.addingNewOperator = false;
+      this.setIsLoading(false);
     }
   }
 
@@ -272,7 +281,7 @@ class SSVStore {
    */
   findOperator(publicKey: string): { operator: IOperator | null, index: number } {
     for (let i = 0; i < this.operators?.length || 0; i += 1) {
-      if (this.operators[i].publicKey === publicKey) {
+      if (this.operators[i].pubkey === publicKey) {
         return { operator: this.operators[i], index: i };
       }
     }
@@ -282,7 +291,7 @@ class SSVStore {
   @action.bound
   isOperatorSelected(publicKey: string): boolean {
     const { operator } = this.findOperator(publicKey);
-    return operator ? operator.selected : false;
+    return operator ? Boolean(operator.selected) : false;
   }
 
   @action.bound
@@ -353,62 +362,23 @@ class SSVStore {
    */
   @computed
   get selectedEnoughOperators(): boolean {
-    return this.stats.selectedPercents >= SSVStore.OPERATORS_SELECTION_GAP;
+    return this.stats.selected >= config.FEATURE.SELECT_MINIMUM_OPERATORS;
   }
 
   @action.bound
   async loadOperators() {
     this.loadingOperators = true;
-    return new Promise((resolve => {
-      setTimeout(() => {
-        const operators = [
-          {
-            name: 'Operator #1',
-            publicKey: '0x1a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
-            score: 0.1,
-            selected: false,
-            autoSelected: false,
-          },
-          {
-            name: 'Operator #2',
-            publicKey: '0x2a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
-            score: 0.2,
-            selected: false,
-            autoSelected: false,
-          },
-          {
-            name: 'Operator #3',
-            publicKey: '0x3a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
-            score: 0.9,
-            selected: false,
-            autoSelected: false,
-          },
-          {
-            name: 'Operator #4',
-            publicKey: '0x4a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
-            score: 0.4,
-            selected: false,
-            autoSelected: false,
-          },
-          {
-            name: 'Operator #5',
-            publicKey: '0x5a1b7a4e12a5554bf00d74d0a4df5ef7420599574ee3eca102aee47bc14d5669',
-            score: 0.7,
-            selected: false,
-            autoSelected: false,
-          },
-        ];
-
-        this.operators = operators.sort((a, b) => {
-          if (a.score > b.score) return -1;
-          if (b.score > a.score) return 1;
-          return 0;
-        });
-
-        resolve(true);
-        this.loadingOperators = false;
-      }, 1000);
-    }));
+    const query = `
+    {
+      operators(first: 10) {
+        id
+        name
+        pubkey
+      }
+    }`;
+    const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);
+    const res = await axios.post(operatorsEndpointUrl, { query });
+    this.operators = res.data?.data?.operators ?? [];
   }
 }
 

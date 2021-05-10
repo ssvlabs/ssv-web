@@ -52,24 +52,22 @@ const SelectOperators = () => {
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
 
-          <Button
-            disabled={!ssv.operators.length}
-            variant="contained"
-            color="primary"
-            style={registerButtonStyle}
-            onClick={ssv.autoSelectOperators}
-          >
-            <AutorenewIcon />
-            &nbsp;Auto-select best operators
-          </Button>
+          {config.FEATURE.AUTO_SELECT ? (
+            <Button
+              disabled={!ssv.operators.length}
+              variant="contained"
+              color="primary"
+              style={registerButtonStyle}
+              onClick={ssv.autoSelectOperators}
+            >
+              <AutorenewIcon />
+              &nbsp;Auto-select best operators
+            </Button>
+          ) : ''}
 
-          {!ssv.isLoading ?
-            ssv.operators.map((operator: IOperator) => (
-              <OperatorSelector key={`operator-selector-${operator.publicKey}`} indexedOperator={operator} />
-            ))
-          : (
-            null
-          )}
+          {ssv.operators.slice(0, config.FEATURE.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
+            <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} />
+          ))}
 
           <Button
             disabled={!buttonEnabled}

@@ -6,6 +6,7 @@ const config = {
       START: '/operator',
       GENERATE_KEYS: '/operator/generate',
       CONFIRMATION_PAGE: '/operator/confirm',
+      SUCCESS_PAGE: '/operator/success',
     },
     VALIDATOR: {
       HOME: '/validator',

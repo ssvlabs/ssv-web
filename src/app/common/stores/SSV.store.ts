@@ -39,6 +39,9 @@ class SSVStore {
   @observable addingNewValidator: boolean = false;
   @observable newValidatorReceipt: any = null;
 
+  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '' };
+  @observable newOperatorRegisterSuccessfully: boolean = false;
+
   @observable isLoading: boolean = false;
 
   constructor() {
@@ -65,6 +68,11 @@ class SSVStore {
   }
 
   @action.bound
+  setOperatorKeys(pubKey: string, name: string) {
+    this.newOperatorKeys = { pubKey, name };
+  }
+
+  @action.bound
   async extractPrivateKey() {
     this.setIsLoading(true);
       await this.validatorPrivateKeyFile?.text().then((string) => {
@@ -83,9 +91,12 @@ class SSVStore {
 
   @action.bound
   async verifyOperatorPublicKey() {
+    // need to implement
     await this.wallet.connect();
+    this.setIsLoading(true);
     // const contract: Contract = await this.wallet.getContract();
     return new Promise((resolve) => {
+      this.setIsLoading(false);
       resolve(false);
     });
   }
@@ -188,22 +199,21 @@ class SSVStore {
   }
 
   @action.bound
-  async addNewOperator(transaction: INewOperatorTransaction) {
-    try {
-      if (!this.checkIfWalletReady()) {
-        return;
-      }
+  async addNewOperator() {
+    await this.wallet.connect();
+    const contract: Contract = await this.wallet.getContract();
+    const address: string = this.wallet.accountAddress;
+    this.setIsLoading(true);
+
+    return new Promise((resolve, reject) => {
+      const transaction: INewOperatorTransaction = this.newOperatorKeys;
       this.newOperatorReceipt = null;
       this.addingNewOperator = true;
 
       console.debug('Register Operator Transaction Data:', transaction);
-      await this.wallet.connect();
-      const contract: Contract = await this.wallet.getContract();
-      const address: string = this.wallet.accountAddress;
 
       // Send add operator transaction
-      contract.methods
-        .addOperator(
+      contract.methods.addOperator(
           transaction.name,
           transaction.pubKey,
           config.CONTRACT.PAYMENT_ADDRESS,
@@ -214,15 +224,10 @@ class SSVStore {
           this.newOperatorReceipt = receipt;
         })
         .on('error', (error: any) => {
+          reject(error);
+          this.setIsLoading(false);
           this.addingNewOperator = false;
           this.notifications.showMessage(error.message, 'error');
-          console.debug('Contract Error', error);
-        })
-        .catch((error: any) => {
-          this.addingNewOperator = false;
-          if (error) {
-            this.notifications.showMessage(error.message, 'error');
-          }
           console.debug('Contract Error', error);
         });
 
@@ -233,21 +238,20 @@ class SSVStore {
           if (error) {
             this.notifications.showMessage(error.message, 'error');
           } else {
+            resolve(event);
+            this.setIsLoading(false);
+            this.newOperatorRegisterSuccessfully = true;
             this.notifications.showMessage('You successfully added operator!', 'success');
           }
           console.debug({ error, event });
         })
         .on('error', (error: any, receipt: any) => {
-          if (error) {
-            this.notifications.showMessage(error.message, 'error');
-          }
+          reject(error);
+          this.setIsLoading(false);
+          this.notifications.showMessage(error.message, 'error');
           console.debug({ error, receipt });
         });
-    } catch (error: any) {
-      console.error('Register Operator Error:', error);
-      this.notifications.showMessage(error.message, 'error');
-      this.addingNewOperator = false;
-    }
+    });
   }
 
   @action.bound

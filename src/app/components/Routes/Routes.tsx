@@ -8,6 +8,7 @@ import RegisterValidator from '~app/components/RegisterValidator';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorMenu from '~app/components/RegisterOperatorMenu';
 import ConfirmationScreen from '~app/components/ConfirmationScreen';
+import SuccessScreen from '~app/components/SuccessScreen';
 
 const Routes = () => {
   return (
@@ -26,6 +27,9 @@ const Routes = () => {
             </Route>
             <Route exact path={config.routes.OPERATOR.CONFIRMATION_PAGE}>
               <ConfirmationScreen />
+            </Route>
+            <Route exact path={config.routes.OPERATOR.SUCCESS_PAGE}>
+              <SuccessScreen />
             </Route>
           </Switch>
         </Route>

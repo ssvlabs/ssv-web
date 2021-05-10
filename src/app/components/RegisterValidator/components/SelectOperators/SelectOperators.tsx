@@ -52,7 +52,7 @@ const SelectOperators = () => {
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
 
-          {config.FEATURE.AUTO_SELECT ? (
+          {config.FEATURE.OPERATORS.AUTO_SELECT ? (
             <Button
               disabled={!ssv.operators.length}
               variant="contained"
@@ -65,7 +65,7 @@ const SelectOperators = () => {
             </Button>
           ) : ''}
 
-          {ssv.operators.slice(0, config.FEATURE.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
+          {ssv.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
             <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} />
           ))}
 

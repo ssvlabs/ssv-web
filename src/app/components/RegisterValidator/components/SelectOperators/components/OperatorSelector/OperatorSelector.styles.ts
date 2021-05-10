@@ -19,7 +19,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     maxWidth: 300,
     '& ul': {
       padding: 3,
-      maxHeight: 400,
+      maxHeight: 300,
     },
     '& li': {
       width: 'inherit',

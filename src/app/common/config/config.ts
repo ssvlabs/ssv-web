@@ -13,8 +13,11 @@ const config = {
     },
   },
   FEATURE: {
-    AUTO_SELECT: false,
-    SELECT_MINIMUM_OPERATORS: 4,
+    OPERATORS: {
+      AUTO_SELECT: false,
+      SELECT_MINIMUM_OPERATORS: 4,
+      REQUEST_MINIMUM_OPERATORS: 50,
+    },
   },
   links: {
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,

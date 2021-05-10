@@ -362,7 +362,7 @@ class SSVStore {
    */
   @computed
   get selectedEnoughOperators(): boolean {
-    return this.stats.selected >= config.FEATURE.SELECT_MINIMUM_OPERATORS;
+    return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
   }
 
   @action.bound
@@ -370,7 +370,7 @@ class SSVStore {
     this.loadingOperators = true;
     const query = `
     {
-      operators(first: 10) {
+      operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
         id
         name
         pubkey

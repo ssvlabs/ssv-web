@@ -1,3 +1,6 @@
+// eslint-disable-next-line max-classes-per-file
+import React from 'react';
+
 /**
  * Flexible way to work with stores from another stores
  */
@@ -22,10 +25,21 @@ class StoresProvider {
   }
 
   /**
+   * Capitalize store name to match the class name in folder
+   * @param name
+   */
+  capitalize(name: string): string {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  /**
    * Get registered store by name
    * @param name
    */
   getStore(name: string): any {
+    if (!this.stores[name]) {
+      this.stores[name] = React.lazy(() => import(`~app/common/stores/${this.capitalize(name)}.store`));
+    }
     return this.stores[name] ?? null;
   }
 

@@ -8,7 +8,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SSVStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
@@ -24,7 +24,7 @@ const EnterValidatorPrivateKey = () => {
     const classes = useStyles();
     const history = useHistory();
     const stores = useStores();
-    const ssv: SSVStore = stores.ssv;
+    const ssv: SsvStore = stores.ssv;
     const registerButtonStyle = { width: '100%', marginTop: 30 };
     const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 

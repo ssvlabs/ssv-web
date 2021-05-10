@@ -22,7 +22,7 @@ export interface IOperator {
   autoSelected?: boolean
 }
 
-class SSVStore {
+class SsvStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
 
   protected wallet: WalletStore;
@@ -335,7 +335,7 @@ class SSVStore {
     // Select as many as necessary so the gap would be reached
     let selectedIndex = 0;
     let selectedPercents = 0.0;
-    while (selectedPercents < SSVStore.OPERATORS_SELECTION_GAP) {
+    while (selectedPercents < SsvStore.OPERATORS_SELECTION_GAP) {
       this.operators[selectedIndex].selected = true;
       this.operators[selectedIndex].autoSelected = true;
       selectedPercents = (((selectedIndex + 1) / this.operators.length) * 100.0);
@@ -382,4 +382,4 @@ class SSVStore {
   }
 }
 
-export default SSVStore;
+export default SsvStore;

@@ -3,11 +3,13 @@ import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
+import SsvStore from '~app/common/stores/Ssv.store';
 import StoresProvider from '~app/common/stores/StoresProvider';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
 class WalletStore {
   private notifications: NotificationsStore;
+  private ssv: SsvStore;
   private contract: Contract | undefined;
 
   @observable web3: any = null;
@@ -17,7 +19,9 @@ class WalletStore {
   @observable accountAddress: string = '';
 
   constructor() {
-    this.notifications = StoresProvider.getInstance().getStore('notifications');
+    const storeProvider: StoresProvider = StoresProvider.getInstance();
+    this.notifications = storeProvider.getStore('notifications');
+    this.ssv = storeProvider.getStore('ssv');
   }
 
   /**

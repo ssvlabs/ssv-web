@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SsvStore from '~app/common/stores/Ssv.store';
+import SSVStore from '~app/common/stores/SSV.store';
 import Typography from '@material-ui/core/Typography';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
@@ -20,7 +20,7 @@ import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/val
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
-  const ssv: SsvStore = stores.ssv;
+  const ssv: SSVStore = stores.ssv;
   // const wallet: WalletStore = stores.wallet;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [inputsData, setInputsData] = useState({ name: '', pubKey: '' });

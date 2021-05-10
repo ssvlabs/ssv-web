@@ -7,7 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { useStyles } from './OperatorSelector.styles';
 import FormControl from '@material-ui/core/FormControl';
 import { OperatorName, OperatorKey } from './components/Operator';
-import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
+import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
 
 type OperatorSelectorProps = {
   indexedOperator: IOperator
@@ -16,7 +16,7 @@ type OperatorSelectorProps = {
 const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
-  const ssv: SsvStore = stores.ssv;
+  const ssv: SSVStore = stores.ssv;
   const [selectedOperator, selectOperator] = useState('');
 
   const selectOperatorMethod = (publicKey: string) => {

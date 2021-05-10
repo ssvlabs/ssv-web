@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import { DropzoneArea } from 'material-ui-dropzone';
-import SsvStore from '~app/common/stores/Ssv.store';
+import SSVStore from '~app/common/stores/SSV.store';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
@@ -22,7 +22,7 @@ const EnterValidatorPrivateKey = () => {
   const classes = useStyles();
   const history = useHistory();
   const stores = useStores();
-  const ssv: SsvStore = stores.ssv;
+  const ssv: SSVStore = stores.ssv;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 

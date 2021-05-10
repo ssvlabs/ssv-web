@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 // import { useHistory } from 'react-router-dom';
 // import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-// import SsvStore from '~app/common/stores/Ssv.store';
+// import SSVStore from '~app/common/stores/SSV.store';
 import { translations } from '~app/common/config';
 import { useStyles } from '~app/components/Home/Home.styles';
 

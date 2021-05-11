@@ -12,10 +12,10 @@ import Header from '~app/common/components/Header';
 import SsvStore from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
-import DataSection from '~app/common/components/DataSection';
-import BackNavigation from '~app/common/components/BackNavigation';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import WalletStore from '~app/common/stores/Wallet.store';
+import DataSection from '~app/common/components/DataSection';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import BackNavigation from '~app/common/components/BackNavigation';
 
 const UnderLine = styled.div`
   display: flex;

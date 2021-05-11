@@ -1,13 +1,13 @@
 import axios from 'axios';
+import config from '~app/common/config';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
-import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet.store';
 import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+import ApiRequest, { RequestInfo } from '~lib/utils/ApiRequest';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
-import ApiRequest, { RequestInfo } from '~lib/utils/ApiRequest';
 
 export interface INewOperatorTransaction {
   name: string,
@@ -67,8 +67,8 @@ class SsvStore extends BaseStore {
   }
 
   @action.bound
-  setOperatorKeys(pubKey: string, name: string) {
-    this.newOperatorKeys = { pubKey, name };
+  setOperatorKeys(transaction: INewOperatorTransaction) {
+    this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
   }
 
   @action.bound
@@ -225,7 +225,7 @@ class SsvStore extends BaseStore {
         const requestInfo: RequestInfo = {
           url: String(config.links.LINK_COIN_EXCHANGE_API),
           method: 'GET',
-          header: { name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) },
+          headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
         };
 
         contract.methods.addOperator(

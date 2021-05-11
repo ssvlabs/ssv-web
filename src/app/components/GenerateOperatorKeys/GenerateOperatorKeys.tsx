@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SsvStore from '~app/common/stores/Ssv.store';
+import SsvStore, { INewOperatorTransaction } from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
@@ -48,7 +48,11 @@ const GenerateOperatorKeys = () => {
   };
 
   const onRegisterClick = async () => {
-    ssv.setOperatorKeys(inputsData.publicKey, inputsData.name);
+    const operatorKeys: INewOperatorTransaction = {
+      pubKey: inputsData.publicKey,
+      name: inputsData.name,
+    };
+    ssv.setOperatorKeys(operatorKeys);
     await ssv.verifyOperatorPublicKey().then((isExist) => {
       if (isExist) {
           setOperatorExist(true);

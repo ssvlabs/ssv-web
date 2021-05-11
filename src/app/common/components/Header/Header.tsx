@@ -11,7 +11,7 @@ type HeaderProps = {
 const Header = ({ title, subtitle, centralize }: HeaderProps) => {
   const classes = useStyles();
   return (
-    <div className={`${classes.header} ${centralize ? classes.centralize : ''}`}>
+    <div className={`${classes.header} ${centralize ? classes.centralized : ''}`}>
       <Typography variant="h6" data-testid="header-title">{title}</Typography>
       <Typography variant="subtitle1" style={{ fontSize: 13 }}>{subtitle}</Typography>
     </div>

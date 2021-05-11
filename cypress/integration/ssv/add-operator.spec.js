@@ -80,16 +80,18 @@ context('Add Validator', () => {
       cy.waitFor('[data-testid="final-register-button"]');
       cy.get('[data-testid="final-register-button"]').click();
 
-      let recipe;
       for (let i = 0; i < 5; i += 1) {
-        if (recipe) break;
         try {
-          cy.waitFor('.MuiAlert-message');
-          recipe = true;
-        } catch (e) {
           console.log('Waiting for recipe...');
+          cy.wait(60000);
+          if (cy.get('.MuiAlert-message')) {
+            break;
+          }
+        } catch (e) {
+          console.log('No recipe yet.');
         }
       }
+      cy.waitFor('.MuiAlert-message');
       cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
       closeMessage();
     });

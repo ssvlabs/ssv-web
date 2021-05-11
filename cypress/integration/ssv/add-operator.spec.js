@@ -64,15 +64,14 @@ context('Add Validator', () => {
     it('should open Onboard.js provider dialog, select MetaMask and wait for user input', () => {
       cy.get('[data-testid="register-operator-button"]').click();
 
-      cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
-      cy.waitFor('[data-testid="final-register-button"]');
-      cy.get('[data-testid="final-register-button"]').click();
-
       cy.waitFor('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom');
       cy.get('.bn-onboard-modal-content-header-heading').should('contain.text', 'Select a Wallet');
       cy.get('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom').click();
       cy.pause();
 
+      cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
+      cy.waitFor('[data-testid="final-register-button"]');
+      cy.get('[data-testid="final-register-button"]').click();
       cy.waitFor('.MuiAlert-message');
       cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
     });

@@ -318,10 +318,12 @@ class SsvStore extends BaseStore {
   }
 
   handleError(error: any, receipt?: any) {
-    const notifications: NotificationsStore = this.getStore('notifications');
-    notifications.showMessage(error.message, 'error');
-    if (receipt) console.debug({ error, receipt });
-    this.setIsLoading(false);
+    if (error?.message) {
+      const notifications: NotificationsStore = this.getStore('notifications');
+      notifications.showMessage(error?.message, 'error');
+      if (receipt) console.debug({ error, receipt });
+      this.setIsLoading(false);
+    }
   }
 
   @action.bound

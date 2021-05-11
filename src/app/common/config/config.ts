@@ -9,8 +9,11 @@ const config = {
     },
     VALIDATOR: {
       HOME: '/validator',
-      SELECT_OPERATORS: '/validator/operators',
+      IMPORT: '/validator/import',
+      CREATE: '/validator/create',
       DECRYPT: '/validator/keystore/decrypt',
+      SELECT_OPERATORS: '/validator/operators',
+      SUCCESS_PAGE: '/validator/success',
     },
   },
   FEATURE: {

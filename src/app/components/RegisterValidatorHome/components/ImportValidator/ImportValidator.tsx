@@ -18,7 +18,7 @@ import BackNavigation from '~app/common/components/BackNavigation';
 //  1. Create SSVStore to keep validator private key during the process
 //  2. Cleanup SSVStore once the process is finished or route changed to other flows
 //  3. Use SSVStore on further steps
-const EnterValidatorPrivateKey = () => {
+const ImportValidator = () => {
   const classes = useStyles();
   const history = useHistory();
   const stores = useStores();
@@ -83,4 +83,4 @@ const EnterValidatorPrivateKey = () => {
   );
 };
 
-export default observer(EnterValidatorPrivateKey);
+export default observer(ImportValidator);

@@ -33,7 +33,7 @@ export default class ApiRequest {
            // open the request with the verb and the url
            this.xhr.open(this.method, this.url);
            // attach the request with header
-           Object.keys(this.header).forEach((header: any) => this.xhr.setRequestHeader(header.name, header.value));
+           Object.keys(this.header).forEach((index: any) => this.xhr.setRequestHeader(this.header[index].name, this.header[index].value));
            // send the request
            this.xhr.send();
         });

@@ -11,7 +11,7 @@ import SsvStore from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
-import { useStyles } from '~app/components/Home/Home.styles';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 
 // TODO:

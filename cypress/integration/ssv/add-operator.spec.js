@@ -1,14 +1,7 @@
 /// <reference types="cypress" />
 /* eslint-disable no-undef */
-import crypto from 'crypto';
+import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
-
-const randomValueHex = (len) => {
-  return crypto
-    .randomBytes(Math.ceil(len / 2))
-    .toString('hex')
-    .slice(0, len);
-};
 
 const operatorPublicKeyLength = 128;
 
@@ -18,15 +11,15 @@ context('Add Validator', () => {
   });
 
   it('should navigate to operator screen', () => {
-    cy.get(`[data-testid="${config.routes.OPERATOR.START}"]`).click();
+    cy.get(`[data-testid="${config.routes.OPERATOR.HOME}"]`).click();
 
     cy.get('[data-testid=header-title]')
       .should('contain.text', translations.OPERATOR.HOME.TITLE);
 
     cy.location().should((location) => {
       expect(location.hash).to.be.empty;
-      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.START}`);
-      expect(location.pathname).to.eq(config.routes.OPERATOR.START);
+      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.HOME}`);
+      expect(location.pathname).to.eq(config.routes.OPERATOR.HOME);
       expect(location.search).to.be.empty;
     });
   });

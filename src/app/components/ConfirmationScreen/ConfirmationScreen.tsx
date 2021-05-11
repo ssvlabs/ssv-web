@@ -61,8 +61,7 @@ const ConfirmationScreen = () => {
   return (
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.HOME} text="Register Operator" />
-      <Header title={translations.OPERATOR.CONFIRMATION.TITLE}
-        subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />
+      <Header title={translations.OPERATOR.CONFIRMATION.TITLE} subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />
       <Grid container direction="column" justify="center" alignItems="center">
         <DataSection withTitle title={'Operator'}>
           <p>name</p>
@@ -86,6 +85,7 @@ const ConfirmationScreen = () => {
           <FormControlLabel
             control={(
               <Checkbox
+                data-testid="terms-and-conditions-checkbox"
                 checked={userAgreed}
                 onChange={(event) => {
                   setUserAgreed(event.target.checked);
@@ -97,6 +97,7 @@ const ConfirmationScreen = () => {
             style={checkboxLabelStyle}
           />
           <Button
+            data-testid="final-register-button"
             disabled={!userAgreed}
             variant="contained"
             color="primary"

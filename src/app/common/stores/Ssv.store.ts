@@ -219,80 +219,14 @@ class SsvStore extends BaseStore {
       });
   }
 
-  /**
-   * Send request or send gas estimation request with given constructed contract
-   * @param contractRequest contract request object
-   * @param from user account address
-   * @param shouldEstimate
-   */
-  requestContract(contractRequest: any, from: string, shouldEstimate: boolean): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const notifications: NotificationsStore = this.getStore('notifications');
-      this.setIsLoading(true);
-
-      // Estimate request
-      if (shouldEstimate) {
-        contractRequest
-          .estimateGas({ from })
-          .then((gasAmount: any) => {
-            this.addingNewOperator = true;
-            this.estimationGas = gasAmount * 0.000000001;
-            this.estimateGasInUSD()
-              .then((usd: number) => {
-                this.dollarEstimationGas = usd;
-                resolve(true);
-              })
-              .catch((error: any) => {
-                reject(error);
-              });
-          });
-        return;
-      }
-
-      // Do real request
-      contractRequest
-        .send({ from })
-        .on('receipt', (receipt: any) => {
-          console.debug('Contract Receipt', receipt);
-          this.newOperatorReceipt = receipt;
-          resolve(true);
-        })
-        .on('error', (error: any) => {
-          this.handleError(error);
-          this.addingNewOperator = false;
-          reject(error);
-        });
-
-      // Listen for final event when it's added
-      contractRequest.events
-        .OperatorAdded({}, (error: any, event: any) => {
-          this.addingNewOperator = false;
-          if (error) {
-            notifications.showMessage(error.message, 'error');
-          } else {
-            this.setIsLoading(false);
-            this.newOperatorRegisterSuccessfully = true;
-            notifications.showMessage('You successfully added operator!', 'success');
-            resolve(event);
-          }
-          console.debug({ error, event });
-          this.setIsLoading(false);
-        })
-        .on('error', (error: any, receipt: any) => {
-          notifications.showMessage(error.message, 'error');
-          console.debug({ error, receipt });
-          this.setIsLoading(false);
-          reject(error);
-        });
-    });
-  }
-
   @action.bound
   async addNewOperator(getGasEstimation: boolean = false) {
     const wallet: WalletStore = this.getStore('wallet');
+    const notifications: NotificationsStore = this.getStore('notifications');
     await wallet.connect();
     const contract: Contract = await wallet.getContract();
     const address: string = wallet.accountAddress;
+    this.setIsLoading(true);
 
     return new Promise((resolve, reject) => {
       const transaction: INewOperatorTransaction = this.newOperatorKeys;
@@ -302,14 +236,71 @@ class SsvStore extends BaseStore {
       console.debug('Register Operator Transaction Data:', transaction);
 
       // Send add operator transaction
-      const contractRequest = contract.methods.addOperator(
-        transaction.name,
-        transaction.pubKey,
-        config.CONTRACT.PAYMENT_ADDRESS,
-      );
-      return this.requestContract(contractRequest, address, getGasEstimation)
-        .then(() => resolve(true))
-        .catch((error: any) => reject(error));
+
+      if (getGasEstimation) {
+        const requestInfo: RequestData = {
+          url: String(config.links.LINK_COIN_EXCHANGE_API),
+          method: 'GET',
+          headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
+        };
+
+        contract.methods.addOperator(
+          transaction.name,
+          transaction.pubKey,
+          config.CONTRACT.PAYMENT_ADDRESS,
+        ).estimateGas({ from: address })
+          .then((gasAmount: any) => {
+            this.addingNewOperator = true;
+            this.estimationGas = gasAmount * 0.000000001;
+            new ApiRequest(requestInfo).sendRequest().then((response: any) => {
+              this.dollarEstimationGas = this.estimationGas * response.rate;
+              resolve(true);
+            }).then((error: any) => {
+              this.handleError(error);
+            });
+          })
+          .catch((error: any) => {
+            this.handleError(error);
+          });
+      } else {
+        contract.methods.addOperator(
+          transaction.name,
+          transaction.pubKey,
+          config.CONTRACT.PAYMENT_ADDRESS,
+        )
+          .send({ from: address })
+          .on('receipt', (receipt: any) => {
+            console.debug('Contract Receipt', receipt);
+            this.newOperatorReceipt = receipt;
+          })
+          .on('error', (error: any) => {
+            this.handleError(error);
+            this.addingNewOperator = false;
+            reject(error);
+          });
+
+        // Listen for final event when it's added
+        contract.events
+          .OperatorAdded({}, (error: any, event: any) => {
+            this.addingNewOperator = false;
+            if (error) {
+              notifications.showMessage(error.message, 'error');
+            } else {
+              this.setIsLoading(false);
+              this.newOperatorRegisterSuccessfully = true;
+              notifications.showMessage('You successfully added operator!', 'success');
+              resolve(event);
+            }
+            console.debug({ error, event });
+            this.setIsLoading(false);
+          })
+          .on('error', (error: any, receipt: any) => {
+            notifications.showMessage(error.message, 'error');
+            console.debug({ error, receipt });
+            this.setIsLoading(false);
+            reject(error);
+          });
+      }
     });
   }
 

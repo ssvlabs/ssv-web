@@ -9,7 +9,7 @@ import { useStores } from '~app/hooks/useStores';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useStyles } from './Confirmation.styles';
 import Header from '~app/common/components/Header';
-import SSVStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import DataSection from '~app/common/components/DataSection';
@@ -29,7 +29,7 @@ const ConfirmationScreen = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const ssv: SSVStore = stores.ssv;
+    const ssv: SsvStore = stores.ssv;
     const wallet: WalletStore = stores.wallet;
     const checkboxLabelStyle = { fontSize: '14px' };
     const registerButtonStyle = { width: '100%', marginTop: 30 };
@@ -54,6 +54,10 @@ const ConfirmationScreen = () => {
         return `${key.substr(0, 10)}...${key.substr(key.length - 10, 10)}`;
     };
 
+    const normalizeNumber = (number: number) => {
+        return number.toFixed(2);
+    };
+
     return (
       <Paper className={classes.mainContainer}>
         <BackNavigation to={config.routes.OPERATOR.START} text="Register Operator" />
@@ -70,11 +74,11 @@ const ConfirmationScreen = () => {
           <UnderLine />
           <DataSection withTitle title={'Est. Transaction Cost'}>
             <p>Transaction fee</p>
-            <p>0.0013ETH <strong>$2.15</strong></p>
+            <p>{ssv.estimationGas}ETH <strong>${normalizeNumber(ssv.dollarEstimationGas)}</strong></p>
           </DataSection>
           <DataSection withTitle={false}>
             <p><strong>Total</strong></p>
-            <p><strong>$2.15</strong></p>
+            <p><strong>${normalizeNumber(ssv.dollarEstimationGas)}</strong></p>
           </DataSection>
           <UnderLine />
           <Grid container direction="row" justify="space-between" alignItems="center" item xs={12} spacing={1}>

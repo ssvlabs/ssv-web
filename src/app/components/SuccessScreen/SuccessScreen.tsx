@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
-import SSVStore from '~app/common/stores/SSV.store';
+import SSVStore from '~app/common/stores/Ssv.store';
 // import { useHistory } from 'react-router-dom';
 // import config from '~app/common/config';
 import Paper from '@material-ui/core/Paper';

@@ -14,12 +14,23 @@ const config = {
       DECRYPT: '/validator/keystore/decrypt',
     },
   },
+  FEATURE: {
+    OPERATORS: {
+      AUTO_SELECT: false,
+      SELECT_MINIMUM_OPERATORS: 4,
+      REQUEST_MINIMUM_OPERATORS: 50,
+    },
+  },
   links: {
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
+    LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
   },
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
     NETWORK_ID: process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID,
+  },
+  COIN_KEY: {
+    COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },
   CONTRACT: {
     ADDRESS: '0x555fe4a050Bb5f392fD80dCAA2b6FCAf829f21e9',

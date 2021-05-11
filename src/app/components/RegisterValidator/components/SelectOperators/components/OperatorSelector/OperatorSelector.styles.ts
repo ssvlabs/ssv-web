@@ -12,14 +12,14 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     '& .MuiSelect-outlined': {
       paddingTop: 5,
       paddingBottom: 5,
-      minHeight: 55,
+      minHeight: 35,
     },
   },
   selectPaper: {
     maxWidth: 300,
     '& ul': {
       padding: 3,
-      maxHeight: 400,
+      maxHeight: 300,
     },
     '& li': {
       width: 'inherit',

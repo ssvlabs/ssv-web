@@ -11,13 +11,13 @@ import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Home/Home.styles';
 import OperatorSelector from './components/OperatorSelector';
-import SSVStore, { IOperator } from '~app/common/stores/SSV.store';
+import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
 
 const SelectOperators = () => {
   const history = useHistory();
   const stores = useStores();
-  const ssv: SSVStore = stores.ssv;
+  const ssv: SsvStore = stores.ssv;
   const wallet: WalletStore = stores.wallet;
   const classes = useStyles();
   const registerButtonStyle = { width: '100%', marginTop: 30 };
@@ -52,20 +52,22 @@ const SelectOperators = () => {
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
 
-          <Button
-            disabled={!ssv.operators.length}
-            variant="contained"
-            color="primary"
-            style={registerButtonStyle}
-            onClick={ssv.autoSelectOperators}
-          >
-            <AutorenewIcon />
-            &nbsp;Auto-select best operators
-          </Button>
+          {config.FEATURE.OPERATORS.AUTO_SELECT ? (
+            <Button
+              disabled={!ssv.operators.length}
+              variant="contained"
+              color="primary"
+              style={registerButtonStyle}
+              onClick={ssv.autoSelectOperators}
+            >
+              <AutorenewIcon />
+              &nbsp;Auto-select best operators
+            </Button>
+          ) : ''}
 
-          {ssv.operators.map((operator: IOperator) => (
-            <OperatorSelector key={`operator-selector-${operator.publicKey}`} indexedOperator={operator} />
-            ))}
+          {ssv.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
+            <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} />
+          ))}
 
           <Button
             disabled={!buttonEnabled}

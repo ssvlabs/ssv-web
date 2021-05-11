@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SSVStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
@@ -21,7 +21,7 @@ const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
   const history = useHistory();
-  const ssv: SSVStore = stores.ssv;
+  const ssv: SsvStore = stores.ssv;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [inputsData, setInputsData] = useState({ publicKey: '', name: '' });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
@@ -51,9 +51,12 @@ const GenerateOperatorKeys = () => {
     ssv.setOperatorKeys(inputsData.publicKey, inputsData.name);
     await ssv.verifyOperatorPublicKey().then((isExist) => {
       if (isExist) {
-        setOperatorExist(true);
+          setOperatorExist(true);
       } else {
-        history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+        ssv.addNewOperator(true).then(() => {
+          ssv.setIsLoading(false);
+          history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+        });
       }
     });
   };

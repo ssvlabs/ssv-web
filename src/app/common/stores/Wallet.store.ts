@@ -1,8 +1,9 @@
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
-import { Contract } from 'web3-eth-contract';
-import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
+import { Contract } from 'web3-eth-contract';
+import SsvStore from '~app/common/stores/Ssv.store';
+import { action, observable, computed } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
@@ -72,17 +73,16 @@ class WalletStore extends BaseStore {
     await this.init();
     if (!this.connected) {
       const notifications: NotificationsStore = this.getStore('notifications');
+      const ssv: SsvStore = this.getStore('ssv');
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-          if (ready) {
             notifications.showMessage('Wallet is connected!', 'success');
             this.accountAddress = this.onboardSdk.getState().address;
-          } else {
-            notifications.showMessage('Wallet is not connected!', 'error');
-          }
+            console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
+          ssv.setIsLoading(false);
           console.error('Wallet check errorMessage', error);
           notifications.showMessage('Wallet is not connected!', 'error');
         });

@@ -1,10 +1,11 @@
 import axios from 'axios';
+import config from '~app/common/config';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
-import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet.store';
 import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+import ApiRequest, { RequestInfo } from '~lib/utils/ApiRequest';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 
@@ -38,7 +39,13 @@ class SsvStore extends BaseStore {
   @observable addingNewValidator: boolean = false;
   @observable newValidatorReceipt: any = null;
 
+  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '' };
+  @observable newOperatorRegisterSuccessfully: boolean = false;
+
   @observable isLoading: boolean = false;
+
+  @observable estimationGas: number = 0;
+  @observable dollarEstimationGas: number = 0;
 
   /**
    * Returns true if wallet is ready
@@ -60,6 +67,11 @@ class SsvStore extends BaseStore {
   }
 
   @action.bound
+  setOperatorKeys(transaction: INewOperatorTransaction) {
+    this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
+  }
+
+  @action.bound
   async extractPrivateKey() {
     this.setIsLoading(true);
       await this.validatorPrivateKeyFile?.text().then((string) => {
@@ -77,24 +89,28 @@ class SsvStore extends BaseStore {
 
   @action.bound
   async verifyOperatorPublicKey() {
+    // need to implement
+    // const contract: Contract = await this.wallet.getContract();
     const wallet: WalletStore = this.getStore('wallet');
     await wallet.connect();
     return new Promise((resolve) => {
-      resolve(true);
+      this.setIsLoading(false);
+      resolve(false);
     });
   }
 
   @action.bound
   async addNewValidator() {
-    this.setIsLoading(true);
     const notifications: NotificationsStore = this.getStore('notifications');
+    const wallet: WalletStore = this.getStore('wallet');
+    if (!wallet.accountAddress) return;
+    this.setIsLoading(true);
     try {
       if (!this.checkIfWalletReady()) {
         return;
       }
       this.newValidatorReceipt = null;
       this.addingNewValidator = true;
-      const wallet: WalletStore = this.getStore('wallet');
       await wallet.connect();
       const contract: Contract = await wallet.getContract();
       const ownerAddress: string = wallet.accountAddress;
@@ -188,24 +204,50 @@ class SsvStore extends BaseStore {
   }
 
   @action.bound
-  async addNewOperator(transaction: INewOperatorTransaction) {
-    const notifications: NotificationsStore = this.getStore('notifications');
+  async addNewOperator(getGasEstimation: boolean = false) {
     const wallet: WalletStore = this.getStore('wallet');
-    try {
-      if (!this.checkIfWalletReady()) {
-        return;
-      }
+    const notifications: NotificationsStore = this.getStore('notifications');
+    await wallet.connect();
+    const contract: Contract = await wallet.getContract();
+    const address: string = wallet.accountAddress;
+    this.setIsLoading(true);
+
+    return new Promise((resolve, reject) => {
+      const transaction: INewOperatorTransaction = this.newOperatorKeys;
       this.newOperatorReceipt = null;
       this.addingNewOperator = true;
 
       console.debug('Register Operator Transaction Data:', transaction);
-      await wallet.connect();
-      const contract: Contract = await wallet.getContract();
-      const address: string = wallet.accountAddress;
 
       // Send add operator transaction
-      contract.methods
-        .addOperator(
+
+      if (getGasEstimation) {
+        const requestInfo: RequestInfo = {
+          url: String(config.links.LINK_COIN_EXCHANGE_API),
+          method: 'GET',
+          headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
+        };
+
+        contract.methods.addOperator(
+            transaction.name,
+            transaction.pubKey,
+            config.CONTRACT.PAYMENT_ADDRESS,
+        ).estimateGas({ from: address })
+            .then((gasAmount: any) => {
+              this.addingNewOperator = true;
+              this.estimationGas = gasAmount * 0.000000001;
+              new ApiRequest(requestInfo).sendRequest().then((response: any) => {
+                this.dollarEstimationGas = this.estimationGas * response.rate;
+                resolve(true);
+              }).then((error: any) => {
+                this.handleError(error);
+              });
+            })
+            .catch((error: any) => {
+              this.handleError(error);
+            });
+      } else {
+      contract.methods.addOperator(
           transaction.name,
           transaction.pubKey,
           config.CONTRACT.PAYMENT_ADDRESS,
@@ -216,18 +258,9 @@ class SsvStore extends BaseStore {
           this.newOperatorReceipt = receipt;
         })
         .on('error', (error: any) => {
+          reject(error);
+          this.handleError(error);
           this.addingNewOperator = false;
-          notifications.showMessage(error.message, 'error');
-          console.debug('Contract Error', error);
-          this.setIsLoading(false);
-        })
-        .catch((error: any) => {
-          this.addingNewOperator = false;
-          if (error) {
-            notifications.showMessage(error.message, 'error');
-          }
-          console.debug('Contract Error', error);
-          this.setIsLoading(false);
         });
 
       // Listen for final event when it's added
@@ -237,24 +270,22 @@ class SsvStore extends BaseStore {
           if (error) {
             notifications.showMessage(error.message, 'error');
           } else {
+            resolve(event);
+            this.setIsLoading(false);
+            this.newOperatorRegisterSuccessfully = true;
             notifications.showMessage('You successfully added operator!', 'success');
           }
           console.debug({ error, event });
           this.setIsLoading(false);
         })
         .on('error', (error: any, receipt: any) => {
-          if (error) {
-            notifications.showMessage(error.message, 'error');
-          }
+          reject(error);
+          notifications.showMessage(error.message, 'error');
           console.debug({ error, receipt });
           this.setIsLoading(false);
         });
-    } catch (error: any) {
-      console.error('Register Operator Error:', error);
-      notifications.showMessage(error.message, 'error');
-      this.addingNewOperator = false;
-      this.setIsLoading(false);
-    }
+      }
+    });
   }
 
   @action.bound
@@ -284,6 +315,13 @@ class SsvStore extends BaseStore {
       }
     }
     return { operator: null, index: -1 };
+  }
+
+  handleError(error: any, receipt?: any) {
+    const notifications: NotificationsStore = this.getStore('notifications');
+    notifications.showMessage(error.message, 'error');
+    if (receipt) console.debug({ error, receipt });
+    this.setIsLoading(false);
   }
 
   @action.bound

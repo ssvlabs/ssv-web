@@ -3,16 +3,16 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SsvStore from '~app/common/stores/Ssv.store';
+import SsvStore, { INewOperatorTransaction } from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
-// import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Home/Home.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
@@ -20,10 +20,10 @@ import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/val
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
+  const history = useHistory();
   const ssv: SsvStore = stores.ssv;
-  // const wallet: WalletStore = stores.wallet;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
-  const [inputsData, setInputsData] = useState({ name: '', pubKey: '' });
+  const [inputsData, setInputsData] = useState({ publicKey: '', name: '' });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [operatorExist, setOperatorExist] = useState(false);
@@ -33,40 +33,36 @@ const GenerateOperatorKeys = () => {
   // TODO: add validation of proper formats
   useEffect(() => {
     const isRegisterButtonEnabled = ssv.addingNewOperator
+        || !inputsData.name
+        || !inputsData.publicKey
         || displayNameError.shouldDisplay
         || publicKeyError.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
     };
-  }, [inputsData, displayNameError.shouldDisplay, publicKeyError.shouldDisplay]);
-
-  // Showing errors and success messages
-  useEffect(() => {
-
-  }, [ssv]);
+  }, [inputsData, displayNameError.shouldDisplay, publicKeyError.shouldDisplay, inputsData.name, inputsData.publicKey]);
 
   const onInputChange = (name: string, value: string) => {
     setInputsData({ ...inputsData, [name]: value });
   };
 
   const onRegisterClick = async () => {
+    const operatorKeys: INewOperatorTransaction = {
+      pubKey: inputsData.publicKey,
+      name: inputsData.name,
+    };
+    ssv.setOperatorKeys(operatorKeys);
     await ssv.verifyOperatorPublicKey().then((isExist) => {
       if (isExist) {
-        setOperatorExist(true);
+          setOperatorExist(true);
+      } else {
+        ssv.addNewOperator(true).then(() => {
+          ssv.setIsLoading(false);
+          history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+        });
       }
     });
-    // await wallet.connect()
-    //   .then(() => {
-    //     const transaction: INewOperatorTransaction = {
-    //       name: inputsData.name,
-    //       pubKey: inputsData.pubKey,
-    //     };
-    //     return ssv.addNewOperator(transaction);
-    //   })
-    //   .catch((error: any) => {
-    //     console.error(error);
-    //   });
   };
 
   return (
@@ -110,7 +106,7 @@ const GenerateOperatorKeys = () => {
             style={registerButtonStyle}
             onClick={onRegisterClick}
           >
-            Register
+            Next
           </Button>
           {ssv.addingNewOperator && <Backdrop />}
         </Grid>

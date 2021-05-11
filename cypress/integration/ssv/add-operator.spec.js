@@ -7,7 +7,7 @@ const operatorPublicKeyLength = 128;
 
 const closeMessage = () => {
   cy.get('.MuiAlert-action > .MuiButtonBase-root > .MuiIconButton-label > .MuiSvgIcon-root').click();
-}
+};
 
 context('Add Validator', () => {
   before(() => {
@@ -80,7 +80,16 @@ context('Add Validator', () => {
       cy.waitFor('[data-testid="final-register-button"]');
       cy.get('[data-testid="final-register-button"]').click();
 
-      cy.waitFor('.MuiAlert-message');
+      let recipe;
+      for (let i = 0; i < 5; i += 1) {
+        if (recipe) break;
+        try {
+          cy.waitFor('.MuiAlert-message');
+          recipe = true;
+        } catch (e) {
+          console.log('Waiting for recipe...');
+        }
+      }
       cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
       closeMessage();
     });

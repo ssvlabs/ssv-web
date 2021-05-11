@@ -160,6 +160,7 @@ class SsvStore extends BaseStore {
         .on('receipt', (receipt: any) => {
           console.debug('Contract Receipt', receipt);
           this.newValidatorReceipt = receipt;
+          this.setIsLoading(false);
         })
         .on('error', (error: any) => {
           this.addingNewValidator = false;
@@ -183,6 +184,8 @@ class SsvStore extends BaseStore {
           if (error) {
             notifications.showMessage(error.message, 'error');
           } else {
+            console.debug('Contract Receipt', event);
+            this.newValidatorReceipt = event;
             notifications.showMessage('You successfully added validator!', 'success');
           }
           console.debug({ error, event });

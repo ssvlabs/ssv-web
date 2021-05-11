@@ -68,7 +68,8 @@ context('Add Validator', () => {
       cy.get('.bn-onboard-modal-content-header-heading').should('contain.text', 'Select a Wallet');
       cy.get('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom').click();
 
-      cy.waitFor('.MuiAlert-message').should('contain.text', 'Wallet is connected!');
+      cy.waitFor('.MuiAlert-message');
+      cy.get('.MuiAlert-message').should('contain.text', 'Wallet is connected!');
 
       cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
       cy.waitFor('[data-testid="final-register-button"]');

@@ -8,7 +8,6 @@ import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import { DropzoneArea } from 'material-ui-dropzone';
 import SsvStore from '~app/common/stores/Ssv.store';
-import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
@@ -51,8 +50,8 @@ const ImportValidator = () => {
 
   return (
     <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.OPERATOR.HOME} text="Join SSV Network" />
-      <Header title={translations.VALIDATOR.ENTER_KEY.TITLE} subtitle={translations.VALIDATOR.ENTER_KEY.DESCRIPTION} />
+      <BackNavigation to={config.routes.VALIDATOR.HOME} text="Create Validator" />
+      <Header title={translations.VALIDATOR.IMPORT.TITLE} subtitle={translations.VALIDATOR.IMPORT.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
@@ -76,7 +75,6 @@ const ImportValidator = () => {
           >
             Next
           </Button>
-          <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>I don’t have a validator key</Typography>
         </Grid>
       </Grid>
     </Paper>

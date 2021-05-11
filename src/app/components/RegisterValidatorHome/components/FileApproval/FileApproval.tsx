@@ -9,7 +9,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import SsvStore from '~app/common/stores/Ssv.store';
-import Typography from '@material-ui/core/Typography';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
@@ -47,8 +46,10 @@ const EnterValidatorPrivateKey = () => {
     };
 
     const goToSelectOperators = async () => {
-        await ssv.extractPrivateKey();
+      const privateKey = await ssv.extractPrivateKey();
+      if (privateKey) {
         history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+      }
     };
 
     const removeKeyStoreFile = () => {
@@ -58,8 +59,7 @@ const EnterValidatorPrivateKey = () => {
     return (
       <Paper className={classes.mainContainer}>
         <BackNavigation to={config.routes.OPERATOR.HOME} text="Join SSV Network" />
-        <Header title={translations.VALIDATOR.ENTER_KEY.TITLE}
-          subtitle={translations.VALIDATOR.ENTER_KEY.SECURITY_DESCRIPTION} />
+        <Header title={translations.VALIDATOR.IMPORT.TITLE} subtitle={translations.VALIDATOR.IMPORT.DESCRIPTION} />
 
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
@@ -78,7 +78,7 @@ const EnterValidatorPrivateKey = () => {
                 </Grid>
               </Grid>
             </InputLabel>
-
+            <br />
             <InputLabel title="Keystore Password">
               <TextInput
                 type="text"
@@ -95,9 +95,6 @@ const EnterValidatorPrivateKey = () => {
               onClick={goToSelectOperators}>
               Next
             </Button>
-            <Typography style={{ textAlign: 'center', fontSize: 12, marginTop: 30 }}>
-              I don’t have a validator key
-            </Typography>
           </Grid>
         </Grid>
       </Paper>

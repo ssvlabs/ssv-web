@@ -10,6 +10,7 @@ const config = {
     VALIDATOR: {
       HOME: '/validator',
       IMPORT: '/validator/import',
+      SLASHING_WARNING: '/validator/slashing-warning',
       CREATE: '/validator/create',
       DECRYPT: '/validator/keystore/decrypt',
       SELECT_OPERATORS: '/validator/operators',

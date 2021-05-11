@@ -8,7 +8,6 @@ import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import OperatorSelector from './components/OperatorSelector';
 import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
@@ -18,7 +17,6 @@ const SelectOperators = () => {
   const history = useHistory();
   const stores = useStores();
   const ssv: SsvStore = stores.ssv;
-  const wallet: WalletStore = stores.wallet;
   const classes = useStyles();
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [buttonEnabled, setButtonEnabled] = useState(false);
@@ -40,13 +38,12 @@ const SelectOperators = () => {
   }, [ssv.operators, ssv.selectedEnoughOperators]);
 
   const onSelectOperatorsClick = async () => {
-    await wallet.connect();
-    await ssv.addNewValidator();
+    history.push(config.routes.VALIDATOR.SLASHING_WARNING);
   };
 
   return (
     <Paper className={classes.mainContainer}>
-      <HistoryBackNavigation text={translations.VALIDATOR.ENTER_KEY.TITLE} />
+      <HistoryBackNavigation text={translations.VALIDATOR.IMPORT.TITLE} />
       <Header title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} subtitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>

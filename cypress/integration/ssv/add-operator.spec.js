@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 /* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
 
@@ -80,20 +82,14 @@ context('Add Validator', () => {
       cy.waitFor('[data-testid="final-register-button"]');
       cy.get('[data-testid="final-register-button"]').click();
 
-      for (let i = 0; i < 5; i += 1) {
-        try {
-          console.log('Waiting for recipe...');
-          cy.wait(60000);
-          if (cy.get('.MuiAlert-message')) {
-            break;
-          }
-        } catch (e) {
-          console.log('No recipe yet.');
-        }
-      }
-      cy.waitFor('.MuiAlert-message');
-      cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
-      closeMessage();
+      cy.wait(60000).then(() => {
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        cy.exists('.MuiAlert-message').then(e => {
+          cy.waitFor('.MuiAlert-message');
+          cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
+          closeMessage();
+        });
+      });
     });
   }
 });

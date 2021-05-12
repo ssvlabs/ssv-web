@@ -2,11 +2,9 @@
 /* eslint-disable no-undef */
 import config, { translations } from '~app/common/config';
 
-const baseUrl = 'http://localhost:3000';
-
-context('Actions', () => {
+context('Welcome screen', () => {
   beforeEach(() => {
-    cy.visit(baseUrl);
+    cy.visit(Cypress.config('baseUrl'));
   });
 
   it('should show main menu', () => {

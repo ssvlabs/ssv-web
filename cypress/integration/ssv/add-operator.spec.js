@@ -11,7 +11,7 @@ const closeMessage = () => {
   cy.get('.MuiAlert-action > .MuiButtonBase-root > .MuiIconButton-label > .MuiSvgIcon-root').click();
 };
 
-context('Add Validator', () => {
+context('Add Operator', () => {
   before(() => {
     cy.visit(Cypress.config('baseUrl'));
   });

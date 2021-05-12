@@ -35,6 +35,9 @@ const config = {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
     NETWORK_ID: process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID,
   },
+  CONSTANTS: {
+    publicKeyLength: 128,
+  },
   COIN_KEY: {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },

@@ -5,11 +5,10 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
-// import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
 import { randomValueHex } from '~lib/utils/crypto';
+import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
@@ -26,7 +25,7 @@ const GenerateOperatorKeys = () => {
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   let initialOperatorKey = '';
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
-     initialOperatorKey = `0x${randomValueHex(128)}`;
+     initialOperatorKey = `0x${randomValueHex(config.CONSTANTS.publicKeyLength)}`;
   }
   const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });

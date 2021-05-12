@@ -84,7 +84,7 @@ class Threshold {
                         };
                         resolve(response);
                     } else {
-                        throw new Error();
+                        throw new Error('Unable to build shares');
                     }
                 });
         });

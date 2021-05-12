@@ -136,6 +136,8 @@ class SsvStore extends BaseStore {
       const threshold: Threshold = new Threshold();
       const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
+      if (!thresholdResult.shares) return;
+
       // Get list of selected operator's public keys
       const indexes: number[] = [];
       const operatorPublicKeys: string[] = this.operators
@@ -231,9 +233,9 @@ class SsvStore extends BaseStore {
         headers: [{ name: 'authorization', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
       };
      await new ApiRequest(requestInfo).sendRequest()
-          .then((response: any) => {
+       .then((response: any) => {
             this.dollarEstimationGas = this.estimationGas * response.USD;
-          });
+       });
   }
 
   @action.bound
@@ -264,6 +266,9 @@ class SsvStore extends BaseStore {
             this.addingNewOperator = true;
             this.estimationGas = gasAmount * 0.000000001;
             this.estimateGasInUSD().then(() => {
+              this.setIsLoading(false);
+              resolve(true);
+            }).catch(() => {
               this.setIsLoading(false);
               resolve(true);
             });

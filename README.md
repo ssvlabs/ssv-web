@@ -81,7 +81,7 @@ See our [docs and guides here](https://www.bloxstaking.com/blox-blog/)
 
 ## License
 
-GPL © [Blox SSV](https://github.com/bloxapp/ssv-web)
+GPLv3 © [Blox SSV](https://github.com/bloxapp/ssv-web)
 
 [github-actions-status]: https://github.com/bloxapp/ssv-web/workflows/Test/badge.svg?branch=stage
 [github-releases-download]: https://img.shields.io/github/downloads/guym-blox/ssv-web/total

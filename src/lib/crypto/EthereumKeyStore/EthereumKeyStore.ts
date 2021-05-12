@@ -66,6 +66,9 @@ class EthereumKeyStore {
     } else {
       this.keyStoreData = JSON.parse(String(keyStoreData));
     }
+    if (!this.keyStoreData.version) {
+      throw new Error('Invalid file type.');
+    }
   }
 
   /**
@@ -89,6 +92,9 @@ class EthereumKeyStore {
     }
     if (wallet) {
       this.privateKey = wallet.getPrivateKey().toString('hex');
+      if (!this.privateKey) {
+        throw new Error('Invalid file type.');
+      }
     }
     return this.privateKey;
   }
@@ -148,7 +154,7 @@ class EthereumKeyStore {
     const hashFunction: any = hashFunctions[json.crypto.checksum.function];
     const mac: Buffer = hashFunction(checksumBuffer);
     if (mac.toString('hex') !== json.crypto.checksum.message) {
-      throw new Error('Key derivation failed - possibly wrong passphrase');
+      throw new Error('Invalid keystore file password.');
     }
 
     const decipher = crypto.createDecipheriv(

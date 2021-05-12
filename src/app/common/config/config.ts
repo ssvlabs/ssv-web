@@ -1,17 +1,19 @@
 const config = {
   routes: {
-    START: '/start',
+    HOME: '/',
     OPERATOR: {
-      HOME: '/',
-      START: '/operator',
+      HOME: '/operator',
       GENERATE_KEYS: '/operator/generate',
       CONFIRMATION_PAGE: '/operator/confirm',
       SUCCESS_PAGE: '/operator/success',
     },
     VALIDATOR: {
       HOME: '/validator',
-      SELECT_OPERATORS: '/validator/operators',
+      IMPORT: '/validator/import',
+      CREATE: '/validator/create',
       DECRYPT: '/validator/keystore/decrypt',
+      SELECT_OPERATORS: '/validator/operators',
+      SUCCESS_PAGE: '/validator/success',
     },
   },
   FEATURE: {
@@ -19,6 +21,9 @@ const config = {
       AUTO_SELECT: false,
       SELECT_MINIMUM_OPERATORS: 4,
       REQUEST_MINIMUM_OPERATORS: 50,
+    },
+    TESTING: {
+      GENERATE_RANDOM_OPERATOR_KEY: process.env.REACT_APP_DEBUG,
     },
   },
   links: {

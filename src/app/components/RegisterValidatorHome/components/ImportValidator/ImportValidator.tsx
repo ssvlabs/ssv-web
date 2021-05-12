@@ -11,14 +11,14 @@ import SsvStore from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
-import { useStyles } from '~app/components/Home/Home.styles';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 
 // TODO:
 //  1. Create SSVStore to keep validator private key during the process
 //  2. Cleanup SSVStore once the process is finished or route changed to other flows
 //  3. Use SSVStore on further steps
-const EnterValidatorPrivateKey = () => {
+const ImportValidator = () => {
   const classes = useStyles();
   const history = useHistory();
   const stores = useStores();
@@ -83,4 +83,4 @@ const EnterValidatorPrivateKey = () => {
   );
 };
 
-export default observer(EnterValidatorPrivateKey);
+export default observer(ImportValidator);

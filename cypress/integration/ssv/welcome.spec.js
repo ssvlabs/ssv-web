@@ -11,7 +11,7 @@ context('Actions', () => {
 
   it('should show main menu', () => {
     cy.get('[data-testid=header-title]').should('contain.text', translations.HOME.TITLE);
-    cy.get(`[data-testid="${config.routes.OPERATOR.START}"] > .MuiPaper-root`)
+    cy.get(`[data-testid="${config.routes.OPERATOR.HOME}"] > .MuiPaper-root`)
       .should('contain.text', translations.HOME.MENUS.NEW_OPERATOR.TITLE);
     cy.get(`[data-testid="${config.routes.VALIDATOR.HOME}"] > .MuiPaper-root`)
       .should('contain.text', translations.HOME.MENUS.SHARE_VALIDATOR_KEY.TITLE);

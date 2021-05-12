@@ -1,16 +1,15 @@
 /// <reference types="cypress" />
 /* eslint-disable no-undef */
-import crypto from 'crypto';
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
 
-const randomValueHex = (len) => {
-  return crypto
-    .randomBytes(Math.ceil(len / 2))
-    .toString('hex')
-    .slice(0, len);
-};
-
 const operatorPublicKeyLength = 128;
+
+const closeMessage = () => {
+  cy.get('.MuiAlert-action > .MuiButtonBase-root > .MuiIconButton-label > .MuiSvgIcon-root').click();
+};
 
 context('Add Validator', () => {
   before(() => {
@@ -18,15 +17,15 @@ context('Add Validator', () => {
   });
 
   it('should navigate to operator screen', () => {
-    cy.get(`[data-testid="${config.routes.OPERATOR.START}"]`).click();
+    cy.get(`[data-testid="${config.routes.OPERATOR.HOME}"]`).click();
 
     cy.get('[data-testid=header-title]')
       .should('contain.text', translations.OPERATOR.HOME.TITLE);
 
     cy.location().should((location) => {
       expect(location.hash).to.be.empty;
-      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.START}`);
-      expect(location.pathname).to.eq(config.routes.OPERATOR.START);
+      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.HOME}`);
+      expect(location.pathname).to.eq(config.routes.OPERATOR.HOME);
       expect(location.search).to.be.empty;
     });
   });
@@ -55,6 +54,7 @@ context('Add Validator', () => {
     cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name should contain only alphanumeric characters.');
     cy.get('[data-testid=new-operator-name]').clear().type('A');
     cy.get('[data-testid=new-operator-key]').clear().type('A');
+    cy.get('[data-testid=new-operator-key]').blur();
     cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name must be between 3 to 20 characters.');
     cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Invalid operator key - see our documentation to generate your key.');
   });
@@ -62,18 +62,34 @@ context('Add Validator', () => {
   it('should fill up operator data without errors', () => {
     cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
     cy.get('[data-testid=new-operator-key]').clear().type(`${randomValueHex(operatorPublicKeyLength)}`);
+    cy.get('[data-testid=new-operator-key]').blur();
     cy.get('[data-testid="register-operator-button"]').should('be.enabled');
   });
 
-  it('should open Onboard.js provider dialog, select MetaMask and wait for user input', () => {
-    cy.get('[data-testid="register-operator-button"]').click();
+  if (!Cypress.config('headless')) {
+    it('should open Onboard.js provider dialog, select MetaMask and wait for user input', () => {
+      cy.get('[data-testid="register-operator-button"]').click();
 
-    if (!Cypress.config('headless')) {
+      cy.waitFor('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom');
       cy.get('.bn-onboard-modal-content-header-heading').should('contain.text', 'Select a Wallet');
       cy.get('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom').click();
-      cy.pause();
+
       cy.waitFor('.MuiAlert-message');
-      cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
-    }
-  });
+      cy.get('.MuiAlert-message').should('contain.text', 'Wallet is connected!');
+      closeMessage();
+
+      cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
+      cy.waitFor('[data-testid="final-register-button"]');
+      cy.get('[data-testid="final-register-button"]').click();
+
+      cy.wait(60000).then(() => {
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        cy.exists('.MuiAlert-message').then(e => {
+          cy.waitFor('.MuiAlert-message');
+          cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
+          closeMessage();
+        });
+      });
+    });
+  }
 });

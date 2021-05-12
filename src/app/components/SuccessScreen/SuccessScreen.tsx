@@ -20,7 +20,7 @@ const SuccessScreen = () => {
 
     useEffect(() => {
         if (!ssv.newOperatorRegisterSuccessfully) {
-            history.push(config.routes.OPERATOR.START);
+            history.push(config.routes.OPERATOR.HOME);
         }
     }, [ssv.newOperatorRegisterSuccessfully]);
 

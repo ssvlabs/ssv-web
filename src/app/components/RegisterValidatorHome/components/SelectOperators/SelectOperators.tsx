@@ -9,7 +9,7 @@ import Header from '~app/common/components/Header';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
-import { useStyles } from '~app/components/Home/Home.styles';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import OperatorSelector from './components/OperatorSelector';
 import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';

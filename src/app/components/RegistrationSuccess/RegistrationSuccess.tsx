@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Header from '~app/common/components/Header';
 // import SSVStore from '~app/common/stores/SSV.store';
 import { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Home/Home.styles';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 
 const RegistrationSuccess = () => {
   // TODO: cleanup all stores from sensitive information

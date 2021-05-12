@@ -33,7 +33,7 @@ const config = {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },
   CONTRACT: {
-    ADDRESS: '0x555fe4a050Bb5f392fD80dCAA2b6FCAf829f21e9',
+    ADDRESS: '0x423ce2e31Ae8A2752588f067dAB23C8A75A07365',
     PAYMENT_ADDRESS: '0xe52350A8335192905359c4c3C2149976dCC3D8bF',
     ABI: [
       {
@@ -75,6 +75,12 @@ const config = {
             'internalType': 'address',
             'name': 'ownerAddress',
             'type': 'address',
+          },
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'oess',
+            'type': 'bytes',
           },
         ],
         'name': 'ValidatorAdded',
@@ -145,38 +151,34 @@ const config = {
         'inputs': [
           {
             'internalType': 'string',
-            'name': 's',
+            'name': 'pubkey',
             'type': 'string',
           },
         ],
-        'name': 'fromHex',
+        'name': 'getOperator',
         'outputs': [
+          {
+            'internalType': 'string',
+            'name': '',
+            'type': 'string',
+          },
           {
             'internalType': 'bytes',
             'name': '',
             'type': 'bytes',
           },
-        ],
-        'stateMutability': 'pure',
-        'type': 'function',
-      },
-      {
-        'inputs': [
           {
-            'internalType': 'uint8',
-            'name': 'c',
-            'type': 'uint8',
-          },
-        ],
-        'name': 'fromHexChar',
-        'outputs': [
-          {
-            'internalType': 'uint8',
+            'internalType': 'uint256',
             'name': '',
-            'type': 'uint8',
+            'type': 'uint256',
+          },
+          {
+            'internalType': 'address',
+            'name': '',
+            'type': 'address',
           },
         ],
-        'stateMutability': 'pure',
+        'stateMutability': 'view',
         'type': 'function',
       },
       {

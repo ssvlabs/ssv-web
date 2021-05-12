@@ -28,6 +28,7 @@ class Threshold {
     protected validatorSigKey: any;
     protected threshold: number = 3;
     protected sharesNumber: number = 4;
+    protected verificationMessage: string = 'verification message';
 
     /**
      * Generate keys and return promise
@@ -38,13 +39,15 @@ class Threshold {
                 .then(() => {
                     const msk = [];
                     const mpk = [];
+                    const idVec = [];
+                    const signatureAggregation = [];
 
                     // master key Polynomial
                     this.validatorPrivateKey = bls.deserializeHexStrToSecretKey(privateKey);
                     this.validatorPublicKey = this.validatorPrivateKey.getPublicKey();
 
-                     msk.push(this.validatorPrivateKey);
-                     mpk.push(this.validatorPublicKey);
+                    msk.push(this.validatorPrivateKey);
+                    mpk.push(this.validatorPublicKey);
 
                     // construct poly
                     for (let i = 1; i < this.threshold; i += 1) {
@@ -59,23 +62,60 @@ class Threshold {
                     for (let i = 1; i <= this.sharesNumber; i += 1) {
                         const id = new bls.Id();
                         id.setInt(i);
+                        idVec.push(id);
                         const shareSecretKey = new bls.SecretKey();
                         shareSecretKey.share(msk, id);
 
                         const sharePublicKey = new bls.PublicKey();
                         sharePublicKey.share(mpk, id);
 
+                        const shareSignature = shareSecretKey.sign(this.verificationMessage);
+                        signatureAggregation.push(shareSignature);
+
                         this.validatorShares.push({ privateKey: shareSecretKey.serializeToHexStr(), publicKey: sharePublicKey.serializeToHexStr() });
                     }
 
-                    const response: ISharesKeyPairs = {
-                        validatorPrivateKey: this.validatorPrivateKey.serializeToHexStr(),
-                        validatorPublicKey: this.validatorPublicKey.serializeToHexStr(),
-                        shares: this.validatorShares,
-                    };
-                    resolve(response);
+                    // verify shares signature
+                    if (this.verifyShareSignatures(signatureAggregation, idVec)) {
+                        const response: ISharesKeyPairs = {
+                            validatorPrivateKey: this.validatorPrivateKey.serializeToHexStr(),
+                            validatorPublicKey: this.validatorPublicKey.serializeToHexStr(),
+                            shares: this.validatorShares,
+                        };
+                        resolve(response);
+                    } else {
+                        throw new Error();
+                    }
                 });
         });
+    }
+
+    verifyShareSignatures(signatureAggregation: string[], idVec: any) {
+        const idxVec: any = this.randSelect(this.threshold, this.sharesNumber);
+        const subIdVec: any = [];
+        const subSigVec = [];
+        for (let i = 0; i < idxVec.length; i += 1) {
+            const idx: number = idxVec[i];
+            subIdVec.push(idVec[idx]);
+            subSigVec.push(signatureAggregation[idx]);
+        }
+        const aggregationSignature = new bls.Signature();
+        aggregationSignature.recover(subSigVec, subIdVec);
+        return this.validatorPublicKey.verify(aggregationSignature, this.verificationMessage);
+    }
+
+    randSelect(k: number, n: number) {
+        const a = [];
+        let prev = -1;
+        for (let i = 0; i < k; i += 1) {
+            const v = this.randRange(prev + 1, n - (k - i) + 1);
+            a.push(v);
+            prev = v;
+        }
+        return a;
+    }
+    randRange(min: number, max: number) {
+        return min + Math.floor(Math.random() * (max - min));
     }
 }
 

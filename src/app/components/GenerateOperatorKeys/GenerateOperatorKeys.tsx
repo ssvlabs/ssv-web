@@ -54,6 +54,7 @@ const GenerateOperatorKeys = () => {
     };
     ssv.setOperatorKeys(operatorKeys);
     await ssv.verifyOperatorPublicKey().then((isExist) => {
+      ssv.setIsLoading(false);
       if (isExist) {
           setOperatorExist(true);
       } else {
@@ -62,6 +63,8 @@ const GenerateOperatorKeys = () => {
           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
         });
       }
+    }).catch(() => {
+      ssv.setIsLoading(false);
     });
   };
 

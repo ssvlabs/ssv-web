@@ -89,13 +89,17 @@ class SsvStore extends BaseStore {
 
   @action.bound
   async verifyOperatorPublicKey() {
-    // need to implement
-    // const contract: Contract = await this.wallet.getContract();
     const wallet: WalletStore = this.getStore('wallet');
     await wallet.connect();
+    const contract: Contract = await wallet.getContract();
+    const ownerAddress: string = wallet.accountAddress;
     return new Promise((resolve) => {
-      this.setIsLoading(false);
-      resolve(false);
+      this.setIsLoading(true);
+      contract.methods.getOperator(this.newOperatorKeys.pubKey).call({ from: ownerAddress }).then(() => {
+        resolve(true);
+      }).catch(() => {
+        resolve(false);
+      });
     });
   }
 
@@ -227,25 +231,23 @@ class SsvStore extends BaseStore {
           method: 'GET',
           headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
         };
-
         contract.methods.addOperator(
             transaction.name,
             transaction.pubKey,
             config.CONTRACT.PAYMENT_ADDRESS,
-        ).estimateGas({ from: address })
-            .then((gasAmount: any) => {
+        )
+        .estimateGas({ from: address }, ((error: any, gasAmount: any) => {
+            if (error) {
+              this.handleError({ message: 'Operator already exist' });
+            } else {
               this.addingNewOperator = true;
               this.estimationGas = gasAmount * 0.000000001;
               new ApiRequest(requestInfo).sendRequest().then((response: any) => {
                 this.dollarEstimationGas = this.estimationGas * response.rate;
                 resolve(true);
-              }).then((error: any) => {
-                this.handleError(error);
               });
-            })
-            .catch((error: any) => {
-              this.handleError(error);
-            });
+            }
+        }));
       } else {
       contract.methods.addOperator(
           transaction.name,

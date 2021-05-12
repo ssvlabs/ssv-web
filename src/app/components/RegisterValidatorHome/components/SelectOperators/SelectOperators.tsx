@@ -18,7 +18,7 @@ const SelectOperators = () => {
   const stores = useStores();
   const ssv: SsvStore = stores.ssv;
   const classes = useStyles();
-  const registerButtonStyle = { width: '100%', marginTop: 30 };
+  const registerButtonStyle = { width: '100%', marginTop: config.FEATURE.OPERATORS.AUTO_SELECT ? 146 : 100 };
   const [buttonEnabled, setButtonEnabled] = useState(false);
 
   useEffect(() => {
@@ -54,11 +54,11 @@ const SelectOperators = () => {
               disabled={!ssv.operators.length}
               variant="contained"
               color="primary"
-              style={registerButtonStyle}
+              style={{ width: '100%' }}
               onClick={ssv.autoSelectOperators}
             >
               <AutorenewIcon />
-              &nbsp;Auto-select best operators
+              &nbsp;Auto-select
             </Button>
           ) : ''}
 

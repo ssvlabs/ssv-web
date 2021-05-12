@@ -400,11 +400,9 @@ class SsvStore extends BaseStore {
 
     // Select as many as necessary so the gap would be reached
     let selectedIndex = 0;
-    let selectedPercents = 0.0;
-    while (selectedPercents < SsvStore.OPERATORS_SELECTION_GAP) {
+    while (!this.selectedEnoughOperators) {
       this.operators[selectedIndex].selected = true;
       this.operators[selectedIndex].autoSelected = true;
-      selectedPercents = (((selectedIndex + 1) / this.operators.length) * 100.0);
       selectedIndex += 1;
     }
     this.operators = Array.from(this.operators);

@@ -76,6 +76,7 @@ export const useStyles = makeStyles((theme) => ({
     gridContainer: {
         flexGrow: 1,
         flexDirection: 'column',
+        paddingTop: 10,
     },
     rowGridContainer: {
         flexGrow: 1,
@@ -93,28 +94,5 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(1),
         alignSelf: 'center',
         marginTop: theme.spacing(1),
-    },
-    inputAddonContainer: {
-        backgroundColor: 'rgba(242, 242, 242, 1)',
-        border: '1px solid rgba(215, 215, 215, 1)',
-        width: 45,
-        minHeight: 45,
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        display: 'flex',
-        alignItems: 'center',
-        alignContent: 'center',
-        cursor: 'pointer',
-    },
-    inputAddonImage: {
-        width: 30,
-        height: 30,
-        margin: 'auto',
-    },
-    wideWidthInput: {
-        width: '100%',
-        padding: 0,
-        height: 45,
     },
 }));

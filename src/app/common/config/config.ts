@@ -19,7 +19,7 @@ const config = {
   },
   FEATURE: {
     OPERATORS: {
-      AUTO_SELECT: false,
+      AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
       SELECT_MINIMUM_OPERATORS: 4,
       REQUEST_MINIMUM_OPERATORS: 50,
     },

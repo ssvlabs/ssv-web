@@ -1,22 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
+import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import { DropzoneArea } from 'material-ui-dropzone';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import { DropzoneArea } from 'material-ui-dropzone';
 import SsvStore from '~app/common/stores/Ssv.store';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 
-// TODO:
-//  1. Create SSVStore to keep validator private key during the process
-//  2. Cleanup SSVStore once the process is finished or route changed to other flows
-//  3. Use SSVStore on further steps
+const DropZoneContainer = styled.div`
+  & .MuiDropzoneArea-root {
+    border: 1px dashed rgba(0, 0, 0, 0.12);
+  }
+  & .MuiDropzoneArea-text {
+    padding-top: 30px;
+    color: rgba(215, 215, 215, 1);
+    font-size: 18px;
+  }
+  & .MuiDropzoneArea-icon {
+    color: rgba(215, 215, 215, 1);
+  }
+  & .MuiDropzonePreviewList-imageContainer {
+    margin: auto;
+  }
+  & .MuiDropzonePreviewList-image {
+    margin-top: 20px;
+    width: 30px;
+    height: 30px;
+  }
+`;
+
 const ImportValidator = () => {
   const classes = useStyles();
   const history = useHistory();
@@ -25,8 +44,6 @@ const ImportValidator = () => {
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
-  // Inputs validation
-  // TODO: add validation of proper formats
   useEffect(() => {
     setNextButtonEnabled(!!ssv.validatorPrivateKey || !!ssv.validatorPrivateKeyFile);
     return () => {
@@ -57,14 +74,19 @@ const ImportValidator = () => {
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <br />
           <br />
-          <InputLabel title="Validator Private key">
-            <DropzoneArea
-              onChange={onFileChange}
-              acceptedFiles={['.json']}
-              filesLimit={1}
-              maxFileSize={5000000}
-            />
-          </InputLabel>
+          <br />
+          <DropZoneContainer>
+            <InputLabel
+              title="Validator Private key">
+              <DropzoneArea
+                showPreviews={false}
+                onChange={onFileChange}
+                acceptedFiles={['.json']}
+                filesLimit={1}
+                maxFileSize={5000000}
+              />
+            </InputLabel>
+          </DropZoneContainer>
 
           <Button
             disabled={!nextButtonEnabled}

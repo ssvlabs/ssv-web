@@ -15,16 +15,12 @@ import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 
-// TODO:
-//  1. Create SSVStore to keep validator private key during the process
-//  2. Cleanup SSVStore once the process is finished or route changed to other flows
-//  3. Use SSVStore on further steps
 const EnterValidatorPrivateKey = () => {
     const classes = useStyles();
     const history = useHistory();
     const stores = useStores();
     const ssv: SsvStore = stores.ssv;
-    const registerButtonStyle = { width: '100%', marginTop: 30 };
+    const registerButtonStyle = { width: '100%', marginTop: 180 };
     const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
     useEffect(() => {
@@ -63,8 +59,6 @@ const EnterValidatorPrivateKey = () => {
 
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <br />
-            <br />
             <InputLabel title="Keystore File">
               <Grid container className={classes.fileContainer}>
                 <Grid item xs={1}>

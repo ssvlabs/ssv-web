@@ -212,17 +212,16 @@ class SsvStore extends BaseStore {
     }
   }
 
-  estimateGasInUSD(): Promise<number> {
-    const requestInfo: RequestData = {
-      url: String(config.links.LINK_COIN_EXCHANGE_API),
-      method: 'GET',
-      headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
-    };
-    return new ApiRequest(requestInfo)
-      .sendRequest()
-      .then((response: any) => {
-        return this.estimationGas * response.rate;
-      });
+  async estimateGasInUSD() {
+      const requestInfo: RequestData = {
+        url: String(config.links.LINK_COIN_EXCHANGE_API),
+        method: 'GET',
+        headers: [{ name: 'authorization', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
+      };
+     await new ApiRequest(requestInfo).sendRequest()
+          .then((response: any) => {
+            this.dollarEstimationGas = this.estimationGas * response.USD;
+          });
   }
 
   @action.bound
@@ -244,11 +243,6 @@ class SsvStore extends BaseStore {
       // Send add operator transaction
 
       if (getGasEstimation) {
-        const requestInfo: RequestData = {
-          url: String(config.links.LINK_COIN_EXCHANGE_API),
-          method: 'GET',
-          headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
-        };
         contract.methods.addOperator(
           transaction.name,
           transaction.pubKey,
@@ -257,12 +251,15 @@ class SsvStore extends BaseStore {
           .then((gasAmount: any) => {
             this.addingNewOperator = true;
             this.estimationGas = gasAmount * 0.000000001;
-            new ApiRequest(requestInfo).sendRequest().then((response: any) => {
-              this.dollarEstimationGas = this.estimationGas * response.rate;
+            this.estimateGasInUSD().then(() => {
+              this.setIsLoading(false);
               resolve(true);
-            }).then((error: any) => {
-              this.handleError(error);
             });
+            // new ApiRequest(requestInfo).sendRequest().then((response: any) => {
+            //   this.dollarEstimationGas = this.estimationGas * response.rate;
+            // }).then((error: any) => {
+            //   this.handleError(error);
+            // });
           })
           .catch((error: any) => {
             this.handleError(error);

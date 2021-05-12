@@ -44,8 +44,6 @@ const ConfirmationScreen = () => {
         await wallet.connect();
          ssv.addNewOperator().then(() => {
              history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-         }).catch(() => {
-             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
          });
     };
 

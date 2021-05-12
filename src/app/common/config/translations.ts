@@ -41,6 +41,7 @@ const translations = {
     },
     HOME: {
       TITLE: 'Join the SSV Network Operators',
+      TOOLTIP: 'Operators identifier in the SSV network. To generate your key see our documentation.',
       DESCRIPTION: 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.',
       MENUS: {
 

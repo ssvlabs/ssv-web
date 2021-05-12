@@ -62,7 +62,6 @@ const GenerateOperatorKeys = () => {
           setOperatorExist(isExist);
       } else {
         ssv.addNewOperator(true).then(() => {
-          ssv.setIsLoading(false);
           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
         });
       }
@@ -91,7 +90,7 @@ const GenerateOperatorKeys = () => {
           </InputLabel>
 
           <br />
-          <InputLabel title="Operator Key" withHint toolTipText={'this should be an hyperlinked'}>
+          <InputLabel title="Operator Key" withHint toolTipText={translations.OPERATOR.HOME.TOOLTIP}>
             <TextInput type="text"
               data-testid="new-operator-key"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}

@@ -1,9 +1,16 @@
 const translations = {
   VALIDATOR: {
-    ENTER_KEY: {
-      TITLE: 'Register Validator to SSV Network',
-      DESCRIPTION: 'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.',
-      SECURITY_DESCRIPTION: 'Your validator key is secured - it’s encrypted in your browser locally and never sent to our servers.',
+    HOME: {
+      TITLE: 'Run Validator with the SSV Network',
+      DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
+    },
+    IMPORT: {
+      TITLE: 'Enter Validator Key',
+      DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',
+    },
+    SLASHING_WARNING: {
+      TITLE: 'Slashing Warning',
+      DESCRIPTION: 'Your validator is currently active on beacon chain:',
     },
     SELECT_OPERATORS: {
       TITLE: 'Select Operators',

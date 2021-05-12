@@ -25,6 +25,7 @@ export interface IOperator {
 
 class SsvStore extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
+  private keyStore: EthereumKeyStore | undefined;
 
   @observable validatorPrivateKey: string = '';
   @observable validatorPrivateKeyFile: File | null = null;
@@ -66,6 +67,14 @@ class SsvStore extends BaseStore {
     this.isLoading = status;
   }
 
+  @computed
+  get validatorPublicKey() {
+    if (!this.keyStore) {
+      return false;
+    }
+    return this.keyStore.getPublicKey();
+  }
+
   @action.bound
   setOperatorKeys(transaction: INewOperatorTransaction) {
     this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
@@ -74,15 +83,18 @@ class SsvStore extends BaseStore {
   @action.bound
   async extractPrivateKey() {
     this.setIsLoading(true);
-    await this.validatorPrivateKeyFile?.text().then((string) => {
+    return this.validatorPrivateKeyFile?.text().then(async (string) => {
       try {
-        const keyStore = new EthereumKeyStore(string);
-        return keyStore.getPrivateKey(this.validatorKeyStorePassword).then((answer) => {
-          this.setValidatorPrivateKey(answer);
-        });
+        this.keyStore = new EthereumKeyStore(string);
+        const privateKey = await this.keyStore.getPrivateKey(this.validatorKeyStorePassword);
+        this.setValidatorPrivateKey(privateKey);
+        return privateKey;
       } catch (error) {
         const notifications: NotificationsStore = this.getStore('notifications');
-        notifications.showMessage('something went wrong..', 'error');
+        notifications.showMessage(error.message, 'error');
+        this.setValidatorPrivateKey('');
+        this.setIsLoading(false);
+        return '';
       }
     });
   }
@@ -390,11 +402,9 @@ class SsvStore extends BaseStore {
 
     // Select as many as necessary so the gap would be reached
     let selectedIndex = 0;
-    let selectedPercents = 0.0;
-    while (selectedPercents < SsvStore.OPERATORS_SELECTION_GAP) {
+    while (!this.selectedEnoughOperators) {
       this.operators[selectedIndex].selected = true;
       this.operators[selectedIndex].autoSelected = true;
-      selectedPercents = (((selectedIndex + 1) / this.operators.length) * 100.0);
       selectedIndex += 1;
     }
     this.operators = Array.from(this.operators);

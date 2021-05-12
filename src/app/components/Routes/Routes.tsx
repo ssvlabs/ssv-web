@@ -8,9 +8,10 @@ import SuccessScreen from '~app/components/SuccessScreen';
 import ConfirmationScreen from '~app/components/ConfirmationScreen';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
-// import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
+import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
 import ImportValidator from '~app/components/RegisterValidatorHome/components/ImportValidator';
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
+import SlashingWarning from '~app/components/RegisterValidatorHome/components/SlashingWarning';
 import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 
@@ -42,11 +43,13 @@ const Routes = () => {
         <Route path={config.routes.VALIDATOR.HOME}>
           <Switch>
             <Route exact path={config.routes.VALIDATOR.HOME}>
-              {/* <RegisterValidatorHome /> */}
-              <ImportValidator />
+              <RegisterValidatorHome />
             </Route>
             <Route exact path={config.routes.VALIDATOR.IMPORT}>
               <ImportValidator />
+            </Route>
+            <Route exact path={config.routes.VALIDATOR.SLASHING_WARNING}>
+              <SlashingWarning />
             </Route>
             <Route exact path={config.routes.VALIDATOR.CREATE}>
               <CreateValidator />

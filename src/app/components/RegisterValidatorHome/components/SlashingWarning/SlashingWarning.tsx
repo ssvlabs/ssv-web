@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import { useHistory } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -10,15 +11,14 @@ import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import SsvStore from '~app/common/stores/Ssv.store';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet.store';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
-import ValidatorPrivateKeyInput from '~app/common/components/ValidatorPrivateKeyInput';
+import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
-  const wallet: WalletStore = stores.wallet;
+  const history = useHistory();
   const ssv: SsvStore = stores.ssv;
   const checkboxLabelStyle = { fontSize: '13px' };
   const registerButtonStyle = { width: '100%', marginTop: 30 };
@@ -36,9 +36,11 @@ const SlashingWarning = () => {
     };
   }, [ssv.validatorPrivateKey, ssv.validatorPrivateKeyFile, userAgreed]);
 
-  const onRegisterValidatorClick = async () => {
-    await wallet.connect().then(async () => {
-      return ssv.addNewValidator();
+  const goToConfirmation = () => {
+    ssv.addNewValidator(true).then(() => {
+      history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
+    }).finally(() => {
+      ssv.setIsLoading(false);
     });
   };
 
@@ -50,7 +52,7 @@ const SlashingWarning = () => {
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
 
-          <ValidatorPrivateKeyInput validatorPublicKey={ssv.validatorPublicKey} />
+          <ValidatorKeyInput validatorKey={ssv.validatorPublicKey} />
 
           <br />
           <br />
@@ -86,7 +88,7 @@ const SlashingWarning = () => {
             variant="contained"
             color="primary"
             style={registerButtonStyle}
-            onClick={onRegisterValidatorClick}
+            onClick={goToConfirmation}
           >
             Next
           </Button>

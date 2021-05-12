@@ -112,24 +112,23 @@ class SsvStore extends BaseStore {
   }
 
   @action.bound
-  async addNewValidator() {
+  async addNewValidator(getGasEstimation?: boolean) {
     const notifications: NotificationsStore = this.getStore('notifications');
     const wallet: WalletStore = this.getStore('wallet');
+    this.newValidatorReceipt = null;
+    this.addingNewValidator = true;
+    await wallet.connect();
+    const contract: Contract = await wallet.getContract();
+    const ownerAddress: string = wallet.accountAddress;
+    const threshold: Threshold = new Threshold();
+    const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
+
     if (!wallet.accountAddress) return;
     this.setIsLoading(true);
-    try {
+    return new Promise((resolve, reject) => {
       if (!this.checkIfWalletReady()) {
-        return;
+        reject();
       }
-      this.newValidatorReceipt = null;
-      this.addingNewValidator = true;
-      await wallet.connect();
-      const contract: Contract = await wallet.getContract();
-      const ownerAddress: string = wallet.accountAddress;
-      // PrivateKey example: 45df68ab75bb7ed1063b7615298e81c1ca1b0c362ef2e93937b7bba9d7c43a94
-      const threshold: Threshold = new Threshold();
-      const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
-
       // Get list of selected operator's public keys
       const indexes: number[] = [];
       const operatorPublicKeys: string[] = this.operators
@@ -142,20 +141,18 @@ class SsvStore extends BaseStore {
         });
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
-        return share.publicKey.startsWith('0x') ? share.publicKey.substr(2) : share.publicKey;
+        return share.publicKey;
       });
       // Collect all private keys from shares
       const sharePrivateKeys: string[] = thresholdResult.shares.map((share: IShares) => {
-        return share.privateKey.startsWith('0x') ? share.privateKey.substr(2) : share.privateKey;
+        return share.privateKey;
       });
 
       // TODO: https://bloxxx.atlassian.net/browse/BLOXSSV-56
       const encryptedKeys: string[] = sharePrivateKeys;
 
       const payload = [
-        thresholdResult.validatorPublicKey.startsWith('0x')
-          ? thresholdResult.validatorPublicKey.substr(2)
-          : thresholdResult.validatorPublicKey,
+        thresholdResult.validatorPublicKey,
         operatorPublicKeys,
         indexes,
         sharePublicKeys,
@@ -165,57 +162,85 @@ class SsvStore extends BaseStore {
 
       console.debug('Add Validator Payload: ', payload);
 
-      // Send add operator transaction
-      contract.methods
-        .addValidator(...payload)
-        .send({ from: ownerAddress })
-        .on('receipt', (receipt: any) => {
-          console.debug('Contract Receipt', receipt);
-          this.newValidatorReceipt = receipt;
-          this.setIsLoading(false);
-        })
-        .on('error', (error: any) => {
-          this.addingNewValidator = false;
-          notifications.showMessage(error.message, 'error');
-          console.debug('Contract Error', error);
-          this.setIsLoading(false);
-        })
-        .catch((error: any) => {
-          this.addingNewValidator = false;
-          if (error) {
-            notifications.showMessage(error.message, 'error');
-          }
-          console.debug('Contract Error', error);
-          this.setIsLoading(false);
-        });
+      if (getGasEstimation) {
+        const requestInfo: RequestData = {
+          url: String(config.links.LINK_COIN_EXCHANGE_API),
+          method: 'GET',
+          headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
+        };
 
-      // Listen for final event when it's added
-      contract.events
-        .ValidatorAdded({}, (error: any, event: any) => {
-          this.addingNewValidator = false;
-          if (error) {
+        // Send add operator transaction
+        contract.methods
+          .addValidator(...payload)
+          .estimateGas({ from: ownerAddress })
+          .then((gasAmount: any) => {
+            this.addingNewOperator = true;
+            this.estimationGas = gasAmount * 0.000000001;
+            new ApiRequest(requestInfo).sendRequest().then((response: any) => {
+              this.dollarEstimationGas = this.estimationGas * response.rate;
+              resolve(true);
+            }).then((error: any) => {
+              this.handleError(error);
+            });
+          })
+          .catch((error: any) => {
+            this.handleError(error);
+            reject(error);
+          });
+      } else {
+        // Send add operator transaction
+        contract.methods
+          .addValidator(...payload)
+          .send({ from: ownerAddress })
+          .on('receipt', (receipt: any) => {
+            console.debug('Contract Receipt', receipt);
+            this.newValidatorReceipt = receipt;
+            this.setIsLoading(false);
+          })
+          .on('error', (error: any) => {
+            this.addingNewValidator = false;
             notifications.showMessage(error.message, 'error');
-          } else {
-            console.debug('Contract Receipt', event);
-            this.newValidatorReceipt = event;
-            notifications.showMessage('You successfully added validator!', 'success');
-          }
-          console.debug({ error, event });
-          this.setIsLoading(false);
-        })
-        .on('error', (error: any, receipt: any) => {
-          if (error) {
-            notifications.showMessage(error.message, 'error');
-          }
-          console.debug({ error, receipt });
-          this.setIsLoading(false);
-        });
-    } catch (error) {
-      console.error('Register Validator Error:', error);
-      notifications.showMessage(error.message, 'error');
-      this.addingNewValidator = false;
-      this.setIsLoading(false);
-    }
+            console.debug('Contract Error', error);
+            this.setIsLoading(false);
+            reject(error);
+          })
+          .catch((error: any) => {
+            this.addingNewValidator = false;
+            if (error) {
+              notifications.showMessage(error.message, 'error');
+              reject(error);
+            }
+            console.debug('Contract Error', error);
+            this.setIsLoading(false);
+            resolve(true);
+          });
+
+        // Listen for final event when it's added
+        contract.events
+          .ValidatorAdded({}, (error: any, event: any) => {
+            this.addingNewValidator = false;
+            if (error) {
+              notifications.showMessage(error.message, 'error');
+              reject(error);
+            } else {
+              console.debug('Contract Receipt', event);
+              this.newValidatorReceipt = event;
+              notifications.showMessage('You successfully added validator!', 'success');
+              resolve(event);
+            }
+            console.debug({ error, event });
+            this.setIsLoading(false);
+          })
+          .on('error', (error: any, receipt: any) => {
+            if (error) {
+              notifications.showMessage(error.message, 'error');
+              console.debug({ error, receipt });
+              reject(error);
+            }
+            this.setIsLoading(false);
+          });
+      }
+    });
   }
 
   estimateGasInUSD(): Promise<number> {

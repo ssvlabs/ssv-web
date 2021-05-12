@@ -3,25 +3,25 @@ import { observer } from 'mobx-react';
 import Link from '@material-ui/core/Link';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { useStyles } from './ValidatorKeyInput.styles';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import { useStyles } from './ValidatorPrivateKeyInput.styles';
 
 type ValidatorPrivateKeyInputProps = {
-  validatorPublicKey: string,
+  validatorKey: string,
 };
 
-const ValidatorPrivateKeyInput = (props: ValidatorPrivateKeyInputProps) => {
+const ValidatorKeyInput = (props: ValidatorPrivateKeyInputProps) => {
   const classes = useStyles();
-  const { validatorPublicKey } = props;
+  const { validatorKey } = props;
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
   return (
     <OutlinedInput
       className={classes.wideWidthInput}
       data-testid="validator-private-key-slashing-input"
       type="text"
-      value={validatorPublicKey}
+      value={validatorKey}
       endAdornment={(
-        <Link href={`${beaconchaBaseUrl}/validator/${validatorPublicKey}`} target="_blank">
+        <Link href={`${beaconchaBaseUrl}/validator/${validatorKey}`} target="_blank">
           <InputAdornment position="end" className={classes.inputAddonContainer}>
             <img src="/images/etherscan.png" alt="Beaconcha.in" className={classes.inputAddonImage} />
           </InputAdornment>
@@ -33,4 +33,4 @@ const ValidatorPrivateKeyInput = (props: ValidatorPrivateKeyInputProps) => {
   );
 };
 
-export default observer(ValidatorPrivateKeyInput);
+export default observer(ValidatorKeyInput);

@@ -3,18 +3,19 @@ const config = {
     HOME: '/',
     OPERATOR: {
       HOME: '/operator',
+      SUCCESS_PAGE: '/operator/success',
       GENERATE_KEYS: '/operator/generate',
       CONFIRMATION_PAGE: '/operator/confirm',
-      SUCCESS_PAGE: '/operator/success',
     },
     VALIDATOR: {
       HOME: '/validator',
       IMPORT: '/validator/import',
-      SLASHING_WARNING: '/validator/slashing-warning',
       CREATE: '/validator/create',
-      DECRYPT: '/validator/keystore/decrypt',
-      SELECT_OPERATORS: '/validator/operators',
       SUCCESS_PAGE: '/validator/success',
+      DECRYPT: '/validator/keystore/decrypt',
+      CONFIRMATION_PAGE: '/validator/confirm',
+      SELECT_OPERATORS: '/validator/operators',
+      SLASHING_WARNING: '/validator/slashing-warning',
     },
   },
   FEATURE: {

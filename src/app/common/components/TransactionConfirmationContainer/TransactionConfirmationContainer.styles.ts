@@ -10,8 +10,12 @@ export const useStyles = makeStyles((theme) => ({
         alignContent: 'center',
         margin: 'auto',
         flexDirection: 'row',
+        minHeight: 600,
     },
     gridUnderLine: {
         borderBottom: '1px solid black',
+    },
+    confirmationButtonContainer: {
+        bottom: 0,
     },
 }));

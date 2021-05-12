@@ -52,6 +52,7 @@ interface V4Keystore {
 class EthereumKeyStore {
   private readonly keyStoreData: any;
   private privateKey: string = '';
+  private wallet: Wallet | undefined;
 
   /**
    * Receive key store data from string or parsed JSON
@@ -71,6 +72,20 @@ class EthereumKeyStore {
     }
   }
 
+  getPublicKey() {
+    if (this.keyStoreData) {
+      switch (this.keyStoreData.version ?? this.keyStoreData.Version) {
+        case 1:
+          return this.keyStoreData.Address;
+        case 3:
+          return this.keyStoreData.id;
+        case 4:
+          return this.keyStoreData.pubkey;
+      }
+    }
+    return '';
+  }
+
   /**
    * Decrypt private key using user password
    * @param password
@@ -78,20 +93,19 @@ class EthereumKeyStore {
   async getPrivateKey(password: string = ''): Promise<string> {
     // In case private key exist we return it
     if (this.privateKey) return this.privateKey;
-    let wallet;
     switch (this.keyStoreData.version) {
       case 1:
-        wallet = await Wallet.fromV1(this.keyStoreData, password);
+        this.wallet = await Wallet.fromV1(this.keyStoreData, password);
         break;
       case 3:
-        wallet = await Wallet.fromV3(this.keyStoreData, password, true);
+        this.wallet = await Wallet.fromV3(this.keyStoreData, password, true);
         break;
       case 4:
-        wallet = await this.fromV4(this.keyStoreData, password);
+        this.wallet = await this.fromV4(this.keyStoreData, password);
         break;
     }
-    if (wallet) {
-      this.privateKey = wallet.getPrivateKey().toString('hex');
+    if (this.wallet) {
+      this.privateKey = this.wallet.getPrivateKey().toString('hex');
       if (!this.privateKey) {
         throw new Error('Invalid file type.');
       }

@@ -3,31 +3,31 @@ import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SsvStore from '~app/common/stores/Ssv.store';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
+import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 import { buildDataSections, IDataSection } from '~app/common/components/DataSection';
 import TransactionConfirmationContainer from '~app/common/components/TransactionConfirmationContainer';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
   const history = useHistory();
-  const ssv: SsvStore = stores.ssv;
-  const wallet: WalletStore = stores.wallet;
+  const walletStore: WalletStore = stores.Wallet;
+  const operatorStore: ContractOperator = stores.ContractOperator;
 
   useEffect(() => {
-    const shouldRedirect = !ssv.newOperatorKeys.pubKey && !ssv.newOperatorKeys.name;
+    const shouldRedirect = !operatorStore.newOperatorKeys.pubKey && !operatorStore.newOperatorKeys.name;
     if (shouldRedirect) history.push(config.routes.OPERATOR.HOME);
-  }, [ssv.newOperatorKeys.pubKey, ssv.newOperatorKeys.name]);
+  }, [operatorStore.newOperatorKeys.pubKey, operatorStore.newOperatorKeys.name]);
 
   const onRegisterClick = async () => {
-    await wallet.connect();
-    ssv.addNewOperator().then(() => {
+    await walletStore.connect();
+    operatorStore.addNewOperator().then(() => {
       history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-    }).catch((error) => {
+    }).catch((error: any) => {
       history.push(config.routes.OPERATOR.SUCCESS_PAGE);
       console.log(error);
     });
@@ -39,24 +39,24 @@ const OperatorConfirmation = () => {
     {
       title: 'Operator',
       name: 'name',
-      value: ssv.newOperatorKeys.name,
+      value: operatorStore.newOperatorKeys.name,
     },
     {
       title: '',
       name: 'key',
-      value: longStringShorten(ssv.newOperatorKeys.pubKey),
+      value: longStringShorten(operatorStore.newOperatorKeys.pubKey),
       divider: true,
     },
     {
       title: 'Est. Transaction Cost',
       name: 'Transaction fee',
-      value: <>{ssv.estimationGas}ETH <strong>${normalizeNumber(ssv.dollarEstimationGas)}</strong></>,
+      value: <>{operatorStore.estimationGas}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
       divider: true,
     },
     {
       title: '',
       name: <strong>Total</strong>,
-      value: <strong>${normalizeNumber(ssv.dollarEstimationGas)}</strong>,
+      value: <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong>,
     },
   ];
   const dataSections = buildDataSections(sections);

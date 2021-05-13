@@ -1,28 +1,27 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { useStores } from '~app/hooks/useStores';
-import SSVStore from '~app/common/stores/Ssv.store';
-import { useHistory } from 'react-router-dom';
-import config, { translations } from '~app/common/config';
-import Paper from '@material-ui/core/Paper';
-import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-
+import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
+import config, { translations } from '~app/common/config';
+import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
+import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 
 const SuccessScreen = () => {
     const stores = useStores();
     const history = useHistory();
     const classes = useStyles();
-    const ssv: SSVStore = stores.ssv;
+    const contractOperator: ContractOperator = stores.ContractOperator;
 
     useEffect(() => {
-        if (!ssv.newOperatorRegisterSuccessfully) {
+        if (!contractOperator.newOperatorRegisterSuccessfully) {
             history.push(config.routes.OPERATOR.HOME);
         }
-    }, [ssv.newOperatorRegisterSuccessfully]);
+    }, [contractOperator.newOperatorRegisterSuccessfully]);
 
     return (
       <Paper className={classes.mainContainer}>

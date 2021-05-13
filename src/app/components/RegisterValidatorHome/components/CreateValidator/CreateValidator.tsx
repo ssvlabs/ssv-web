@@ -4,34 +4,34 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import { DropzoneArea } from 'material-ui-dropzone';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import { DropzoneArea } from 'material-ui-dropzone';
-import SsvStore from '~app/common/stores/Ssv.store';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 
 const CreateValidator = () => {
   const classes = useStyles();
   const history = useHistory();
   const stores = useStores();
-  const ssv: SsvStore = stores.ssv;
+  const validatorStore: ContractValidator = stores.ContractValidator;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
   // Inputs validation
   // TODO: add validation of proper formats
   useEffect(() => {
-    setNextButtonEnabled(!!ssv.validatorPrivateKey || !!ssv.validatorPrivateKeyFile);
+    setNextButtonEnabled(!!validatorStore.validatorPrivateKey || !!validatorStore.validatorPrivateKeyFile);
     return () => {
       setNextButtonEnabled(false);
     };
-  }, [ssv.validatorPrivateKey, ssv.validatorPrivateKeyFile]);
+  }, [validatorStore.validatorPrivateKey, validatorStore.validatorPrivateKeyFile]);
 
   const goToSelectOperators = () => {
-    if (ssv.validatorPrivateKeyFile) {
+    if (validatorStore.validatorPrivateKeyFile) {
       history.push(config.routes.VALIDATOR.DECRYPT);
     } else {
       history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
@@ -40,7 +40,7 @@ const CreateValidator = () => {
 
   const onFileChange = (file: any) => {
     if (file !== null) {
-      ssv.setValidatorPrivateKeyFile(file[0]);
+      validatorStore.setValidatorPrivateKeyFile(file[0]);
     }
   };
 

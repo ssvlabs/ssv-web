@@ -9,38 +9,40 @@ import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SsvStore from '~app/common/stores/Ssv.store';
 import config, { translations } from '~app/common/config';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
+import ApplicationStore from '~app/common/stores/Application.store';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const history = useHistory();
-  const ssv: SsvStore = stores.ssv;
+  const validatorStore: ContractValidator = stores.ContractValidator;
+  const applicationStore: ApplicationStore = stores.Application;
   const checkboxLabelStyle = { fontSize: '13px' };
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [userAgreed, setUserAgreed] = useState(false);
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
   useEffect(() => {
-    const buttonEnabled = ssv.validatorPrivateKey
-      && ssv.validatorPrivateKeyFile
+    const buttonEnabled = validatorStore.validatorPrivateKey
+      && validatorStore.validatorPrivateKeyFile
       && userAgreed;
 
     setNextButtonEnabled(!!buttonEnabled);
     return () => {
       setNextButtonEnabled(false);
     };
-  }, [ssv.validatorPrivateKey, ssv.validatorPrivateKeyFile, userAgreed]);
+  }, [validatorStore.validatorPrivateKey, validatorStore.validatorPrivateKeyFile, userAgreed]);
 
   const goToConfirmation = () => {
-    ssv.addNewValidator(true).then(() => {
+    validatorStore.addNewValidator(true).then(() => {
       history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
     }).finally(() => {
-      ssv.setIsLoading(false);
+      applicationStore.setIsLoading(false);
     });
   };
 
@@ -52,7 +54,7 @@ const SlashingWarning = () => {
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
 
-          <ValidatorKeyInput validatorKey={ssv.validatorPublicKey} />
+          <ValidatorKeyInput validatorKey={validatorStore.validatorPublicKey} />
 
           <br />
           <br />

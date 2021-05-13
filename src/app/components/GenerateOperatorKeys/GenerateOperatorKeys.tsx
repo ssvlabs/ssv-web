@@ -4,29 +4,34 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
+import { useStores } from '~app/hooks/useStores';
+import { randomValueHex } from '~lib/utils/crypto';
+import Header from '~app/common/components/Header';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
-import { randomValueHex } from '~lib/utils/crypto';
+import WalletStore from '~app/common/stores/Wallet.store';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
-import SsvStore, { INewOperatorTransaction } from '~app/common/stores/Ssv.store';
+import ApplicationStore from '~app/common/stores/Application.store';
+import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
+import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
   const history = useHistory();
-  const ssv: SsvStore = stores.ssv;
+  const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
+  const applicationStore: ApplicationStore = stores.Application;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   let initialOperatorKey = '';
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
-     initialOperatorKey = `0x${randomValueHex(64)}`;
+     initialOperatorKey = `0x${randomValueHex(128)}`;
   }
   const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
@@ -36,7 +41,7 @@ const GenerateOperatorKeys = () => {
 
   // Inputs validation
   useEffect(() => {
-    const isRegisterButtonEnabled = ssv.addingNewOperator
+    const isRegisterButtonEnabled = contractOperator.addingNewOperator
         || !inputsData.name
         || !inputsData.publicKey
         || displayNameError.shouldDisplay
@@ -56,13 +61,12 @@ const GenerateOperatorKeys = () => {
       pubKey: inputsData.publicKey,
       name: inputsData.name,
     };
-    ssv.setOperatorKeys(operatorKeys);
-    await ssv.verifyOperatorPublicKey().then((isExist: boolean) => {
-      if (isExist) {
-          setOperatorExist(isExist);
-      } else {
-        ssv.addNewOperator(true).then(() => {
-          ssv.setIsLoading(false);
+    contractOperator.setOperatorKeys(operatorKeys);
+    await contractOperator.checkIfOperatorExists(inputsData.publicKey, walletStore.accountAddress).then((isExists: boolean) => {
+      setOperatorExist(isExists);
+      if (!isExists) {
+        contractOperator.addNewOperator(true).then(() => {
+          applicationStore.setIsLoading(false);
           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
         });
       }
@@ -103,6 +107,8 @@ const GenerateOperatorKeys = () => {
           <br />
           {operatorExist && <MessageDiv text={'Operator already exists'} />}
 
+          <EmptyPlaceholder height={110} />
+
           <Button
             data-testid="register-operator-button"
             disabled={!registerButtonEnabled}
@@ -113,7 +119,7 @@ const GenerateOperatorKeys = () => {
           >
             Next
           </Button>
-          {ssv.addingNewOperator && <Backdrop />}
+          {contractOperator.addingNewOperator && <Backdrop />}
         </Grid>
       </Grid>
     </Paper>

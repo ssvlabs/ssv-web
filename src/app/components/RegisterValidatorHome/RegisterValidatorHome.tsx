@@ -6,8 +6,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import UnStyledLink from '~app/common/components/UnStyledLink';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
 

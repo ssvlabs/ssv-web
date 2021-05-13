@@ -8,48 +8,48 @@ import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import SsvStore from '~app/common/stores/Ssv.store';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 
 const EnterValidatorPrivateKey = () => {
     const classes = useStyles();
     const history = useHistory();
     const stores = useStores();
-    const ssv: SsvStore = stores.ssv;
+    const validatorStore: ContractValidator = stores.ContractValidator;
     const registerButtonStyle = { width: '100%', marginTop: 180 };
     const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
     useEffect(() => {
         // If no required information for this step - return to first screen
-        if (!ssv.validatorPrivateKeyFile) {
+        if (!validatorStore.validatorPrivateKeyFile) {
             history.push(config.routes.VALIDATOR.HOME);
         }
-    }, [ssv.validatorPrivateKeyFile]);
+    }, [validatorStore.validatorPrivateKeyFile]);
 
     useEffect(() => {
-        setNextButtonEnabled(!!ssv.validatorKeyStorePassword);
+        setNextButtonEnabled(!!validatorStore.validatorKeyStorePassword);
         return () => {
             setNextButtonEnabled(false);
         };
-    }, [ssv.validatorKeyStorePassword]);
+    }, [validatorStore.validatorKeyStorePassword]);
 
     const onInputChange = (value: string) => {
-        ssv.setValidatorKeyStorePassword(value);
+        validatorStore.setValidatorKeyStorePassword(value);
     };
 
     const goToSelectOperators = async () => {
-      const privateKey = await ssv.extractPrivateKey();
+      const privateKey = await validatorStore.extractPrivateKey();
       if (privateKey) {
         history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
       }
     };
 
     const removeKeyStoreFile = () => {
-        ssv.setValidatorPrivateKeyFile(false);
+        validatorStore.setValidatorPrivateKeyFile(false);
     };
 
     return (
@@ -65,7 +65,7 @@ const EnterValidatorPrivateKey = () => {
                   <DoneIcon className={classes.doneIcon} />
                 </Grid>
                 <Grid className={classes.fileNameText} item xs={8}>
-                  {ssv.validatorPrivateKeyFile && ssv.validatorPrivateKeyFile.name}
+                  {validatorStore.validatorPrivateKeyFile && validatorStore.validatorPrivateKeyFile.name}
                 </Grid>
                 <Grid item xs={3}>
                   <ClearIcon onClick={removeKeyStoreFile} className={classes.clearIcon} />
@@ -76,7 +76,7 @@ const EnterValidatorPrivateKey = () => {
             <InputLabel title="Keystore Password">
               <TextInput
                 type="text"
-                value={ssv.validatorKeyStorePassword}
+                value={validatorStore.validatorKeyStorePassword}
                 onChange={(event: any) => onInputChange(event.target.value)}
               />
             </InputLabel>

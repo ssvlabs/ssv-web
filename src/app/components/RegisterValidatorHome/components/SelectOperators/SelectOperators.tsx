@@ -4,38 +4,42 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
+import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import OperatorSelector from './components/OperatorSelector';
-import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
+import ApplicationStore from '~app/common/stores/Application.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import OperatorSelector from './components/OperatorSelector';
 
 const SelectOperators = () => {
   const history = useHistory();
   const stores = useStores();
-  const ssv: SsvStore = stores.ssv;
+  const contractOperator: ContractOperator = stores.ContractOperator;
+  const contractValidator: ContractValidator = stores.ContractValidator;
+  const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles();
   const registerButtonStyle = { width: '100%', marginTop: config.FEATURE.OPERATORS.AUTO_SELECT ? 146 : 100 };
   const [buttonEnabled, setButtonEnabled] = useState(false);
 
   useEffect(() => {
-    setButtonEnabled(ssv.selectedEnoughOperators);
+    setButtonEnabled(contractOperator.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
-    if (!ssv.validatorPrivateKey && !ssv.validatorPrivateKeyFile) {
+    if (!contractValidator.validatorPrivateKey && !contractValidator.validatorPrivateKeyFile) {
       history.push(config.routes.VALIDATOR.HOME);
       return;
     }
-    if (!ssv.operators.length) {
-      ssv.setIsLoading(true);
-      ssv.loadOperators().then(() => {
-        ssv.setIsLoading(false);
+    if (!contractOperator.operators.length) {
+      applicationStore.setIsLoading(true);
+      contractOperator.loadOperators().then(() => {
+        applicationStore.setIsLoading(false);
       });
     }
-  }, [ssv.operators, ssv.selectedEnoughOperators]);
+  }, [contractOperator.operators, contractOperator.selectedEnoughOperators]);
 
   const onSelectOperatorsClick = async () => {
     history.push(config.routes.VALIDATOR.SLASHING_WARNING);
@@ -51,18 +55,18 @@ const SelectOperators = () => {
 
           {config.FEATURE.OPERATORS.AUTO_SELECT ? (
             <Button
-              disabled={!ssv.operators.length}
+              disabled={!contractOperator.operators.length}
               variant="contained"
               color="primary"
               style={{ width: '100%' }}
-              onClick={ssv.autoSelectOperators}
+              onClick={contractOperator.autoSelectOperators}
             >
               <AutorenewIcon />
               &nbsp;Auto-select
             </Button>
           ) : ''}
 
-          {ssv.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
+          {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
             <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} />
           ))}
 

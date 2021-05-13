@@ -1,10 +1,10 @@
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
-import config from '~app/common/config';
 import { Contract } from 'web3-eth-contract';
-import SsvStore from '~app/common/stores/Ssv.store';
 import { action, observable, computed } from 'mobx';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
 class WalletStore extends BaseStore {
@@ -51,9 +51,9 @@ class WalletStore extends BaseStore {
       await this.selectWalletAndCheckIfReady();
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
-      const notifications: NotificationsStore = this.getStore('notifications');
-      notifications.showMessage(message, 'error');
-      console.error(message);
+      const notificationsStore: NotificationsStore = this.getStore('Notifications');
+      notificationsStore.showMessage(message, 'error');
+      console.error('Connecting to wallet error:', message);
     }
   }
 
@@ -72,19 +72,19 @@ class WalletStore extends BaseStore {
     }
     await this.init();
     if (!this.connected) {
-      const notifications: NotificationsStore = this.getStore('notifications');
-      const ssv: SsvStore = this.getStore('ssv');
+      const applicationStore: ApplicationStore = this.getStore('Application');
+      const notificationsStore: NotificationsStore = this.getStore('Notifications');
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-            notifications.showMessage('Wallet is connected!', 'success');
+            notificationsStore.showMessage('Wallet is connected!', 'success');
             this.accountAddress = this.onboardSdk.getState().address;
             console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
-          ssv.setIsLoading(false);
+          applicationStore.setIsLoading(false);
           console.error('Wallet check errorMessage', error);
-          notifications.showMessage('Wallet is not connected!', 'error');
+          notificationsStore.showMessage('Wallet is not connected!', 'error');
         });
     }
   }
@@ -119,8 +119,21 @@ class WalletStore extends BaseStore {
     console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
-    const notifications: NotificationsStore = this.getStore('notifications');
-    notifications.showMessage('Successfully connected to Wallet!', 'success');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    notificationsStore.showMessage('Successfully connected to Wallet!', 'success');
+  }
+
+  /**
+   * Returns true if wallet is ready
+   * Otherwise returns false
+   */
+  checkIfWalletReady() {
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    if (!this.connected) {
+      notificationsStore.showMessage('Please connect your wallet first!', 'error');
+      return false;
+    }
+    return true;
   }
 }
 

@@ -2,19 +2,12 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-// import { useHistory } from 'react-router-dom';
-// import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
-// import SSVStore from '~app/common/stores/SSV.store';
 import { translations } from '~app/common/config';
+import Header from '~app/common/components/Header';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 
 const RegistrationSuccess = () => {
-  // TODO: cleanup all stores from sensitive information
   const classes = useStyles();
-  // const history = useHistory();
-  // const stores = useStores();
-  // const ssv: SSVStore = stores.ssv;
 
   return (
     <Paper className={classes.mainContainer}>

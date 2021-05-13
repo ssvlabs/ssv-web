@@ -73,7 +73,6 @@ const GenerateOperatorKeys = () => {
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.HOME} text={translations.OPERATOR.HOME.TITLE} />
       <Header title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
-
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <br />
@@ -101,7 +100,7 @@ const GenerateOperatorKeys = () => {
           </InputLabel>
 
           <br />
-          {operatorExist && <MessageDiv text={'Operator already exists'} />}
+          {operatorExist && <MessageDiv text={translations.OPERATOR.REGISTER.OPERATOR_EXIST_ERROR} />}
 
           <Button
             data-testid="register-operator-button"
@@ -113,7 +112,6 @@ const GenerateOperatorKeys = () => {
           >
             Next
           </Button>
-          {/* {ssv.addingNewOperator && <Backdrop />} */}
         </Grid>
       </Grid>
     </Paper>

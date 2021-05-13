@@ -5,7 +5,7 @@ describe('Check Notification Store', () => {
     it('Check error message', () => {
         const message = 'this is message';
         const severity = 'error';
-        const notification: NotificationsStore = rootStore.notifications;
+        const notification: NotificationsStore = rootStore.Notifications;
         notification.showMessage(message, severity);
         expect(notification.message).toEqual(message);
         expect(notification.messageSeverity).toEqual(severity);
@@ -14,7 +14,7 @@ describe('Check Notification Store', () => {
     it('Check success message', () => {
         const message = 'this is message';
         const severity = 'success';
-        const notification: NotificationsStore = rootStore.notifications;
+        const notification: NotificationsStore = rootStore.Notifications;
         notification.showMessage(message, severity);
         expect(notification.message).toEqual(message);
         expect(notification.messageSeverity).toEqual(severity);

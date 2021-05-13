@@ -3,27 +3,27 @@ import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import Threshold, { ISharesKeyPairs } from '~lib/crypto/Threshold';
 
 const operatorPrivateKey = `-----BEGIN RSA PRIVATE KEY-----
-                    MIICXQIBAAKBgQDlOJu6TyygqxfWT7eLtGDwajtNFOb9I5XRb6khyfD1Yt3YiCgQ
-                    WMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76xFxdU6jE0NQ+Z+zEdhUTooNR
-                    aY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4gwQco1KRMDSmXSMkDwIDAQAB
-                    AoGAfY9LpnuWK5Bs50UVep5c93SJdUi82u7yMx4iHFMc/Z2hfenfYEzu+57fI4fv
-                    xTQ//5DbzRR/XKb8ulNv6+CHyPF31xk7YOBfkGI8qjLoq06V+FyBfDSwL8KbLyeH
-                    m7KUZnLNQbk8yGLzB3iYKkRHlmUanQGaNMIJziWOkN+N9dECQQD0ONYRNZeuM8zd
-                    8XJTSdcIX4a3gy3GGCJxOzv16XHxD03GW6UNLmfPwenKu+cdrQeaqEixrCejXdAF
-                    z/7+BSMpAkEA8EaSOeP5Xr3ZrbiKzi6TGMwHMvC7HdJxaBJbVRfApFrE0/mPwmP5
-                    rN7QwjrMY+0+AbXcm8mRQyQ1+IGEembsdwJBAN6az8Rv7QnD/YBvi52POIlRSSIM
-                    V7SwWvSK4WSMnGb1ZBbhgdg57DXaspcwHsFV7hByQ5BvMtIduHcT14ECfcECQATe
-                    aTgjFnqE/lQ22Rk0eGaYO80cc643BXVGafNfd9fcvwBMnk0iGX0XRsOozVt5Azil
-                    psLBYuApa66NcVHJpCECQQDTjI2AQhFc1yRnCU/YgDnSpJVm1nASoRUnU8Jfm3Oz
-                    uku7JUXcVpt08DFSceCEX9unCuMcT72rAQlLpdZir876
-                    -----END RSA PRIVATE KEY-----`;
+                            MIICXQIBAAKBgQDMQ6q8kgHF2LEhGmnlaoKGIxJx2Bh/fb0vFTq0DPeeJgCNeYPJ
+                            2ClQ316p+EMBjXAY7bC81Y2u/FGubuAzfH0JC9ENnxnlBopnSYcCzNuxRe/MwIrs
+                            rLc1krHNpgFMYrTmsPjtB6cmA454SfdYO1lvcxUxCOdNQZc3PwxK8EHyoQIDAQAB
+                            AoGATiTU/K8e3oG3weJJAOtuY8KnG8aAGMYRyiFlA9yyHl6Ld5Q1RtLbe4T4wi2n
+                            9MAXUnIcWyGXwonk9caVHx1Q96TysDgkoALEsmq0so/bSgQGC53aUwrZEVdiwph4
+                            T0F+hLl8ov5eynHuiYMHFRgJdhHoco4NNKzCqZ0MX+KBVsECQQD/e0Mn6BLhPBOK
+                            o0fCkwYP20CsRPeU35gvUNEfak8FWz1fbFaf7n3d40j6lyABVQx2EjEDsZGhN6jl
+                            1dq/awhLAkEAzK3LVdFZgOh+t8rDU1T77DyTjexCJpXQ2E89mHL4MzlAMLKwRL31
+                            QAr3QiMJWTxHQ0aW6EvCjLGqc3Q5JY31QwJBAMM2z4jFtu9t9UyhGSsfJqmlEhTQ
+                            GhIii+nTqgeENt9T6WBpqwNHu9t5WYFJSsZZ00zA97znyOxUWHVOZHiRc2MCQQCP
+                            Tof1uDSQmzhN+vuzluckSm2NiwPt/CtTqHeaC7VYOBeHgTUFjHLwujzQ47Mh9aB3
+                            rC7wykqXM7YCTDfO4Yv9AkBP2igHYwm9Ly88sg4EOt+FvVhqzwjzldfotDFbb6Ly
+                            gECRZsqYkgW3Xzu74ZOs+L+jC3fmI4zYNSx3M4Vufy55
+                            -----END RSA PRIVATE KEY-----`;
 
-const operatorPublicKey = `-----BEGIN PUBLIC KEY-----
-                        MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDlOJu6TyygqxfWT7eLtGDwajtN
-                    FOb9I5XRb6khyfD1Yt3YiCgQWMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76
-                    xFxdU6jE0NQ+Z+zEdhUTooNRaY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4
-                    gwQco1KRMDSmXSMkDwIDAQAB
-                    -----END PUBLIC KEY-----`;
+const operatorPublicKey = `-----BEGIN RSA PUBLIC KEY-----
+                            MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDMQ6q8kgHF2LEhGmnlaoKGIxJx
+                            2Bh/fb0vFTq0DPeeJgCNeYPJ2ClQ316p+EMBjXAY7bC81Y2u/FGubuAzfH0JC9EN
+                            nxnlBopnSYcCzNuxRe/MwIrsrLc1krHNpgFMYrTmsPjtB6cmA454SfdYO1lvcxUx
+                            COdNQZc3PwxK8EHyoQIDAQAB
+                            -----END RSA PUBLIC KEY-----`;
 
 describe('Check Encryption shares', () => {
     it('should return encrypt shares without error', async () => {
@@ -31,6 +31,7 @@ describe('Check Encryption shares', () => {
         const threshold: Threshold = new Threshold();
         const thresholdResult: ISharesKeyPairs = await threshold.create(validatorPrivateKey);
         const encryptedShares: EncryptShare[] = new Encryption([operatorPublicKey], thresholdResult.shares).encrypt();
+
         let decrypted: string = '';
         encryptedShares.forEach((share: EncryptShare) => {
             const decrypt = new JSEncrypt({});

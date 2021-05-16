@@ -2,37 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import Header from '~app/common/components/Header';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
+import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import ApplicationStore from '~app/common/stores/Application.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
 
 const SelectOperators = () => {
-  const history = useHistory();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
-  const contractValidator: ContractValidator = stores.ContractValidator;
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles();
   const registerButtonStyle = { width: '100%', marginTop: config.FEATURE.OPERATORS.AUTO_SELECT ? 146 : 100 };
   const [buttonEnabled, setButtonEnabled] = useState(false);
+  const { redirectUrl, history } = useUserFlow();
+
+  useEffect(() => {
+    redirectUrl && history.push(redirectUrl);
+  }, [redirectUrl]);
 
   useEffect(() => {
     setButtonEnabled(contractOperator.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
-    if (!contractValidator.validatorPrivateKey && !contractValidator.validatorPrivateKeyFile) {
-      history.push(config.routes.VALIDATOR.HOME);
-      return;
-    }
     if (!contractOperator.operators.length) {
       applicationStore.setIsLoading(true);
       contractOperator.loadOperators().then(() => {

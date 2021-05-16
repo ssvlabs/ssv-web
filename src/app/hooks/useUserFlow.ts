@@ -76,6 +76,19 @@ const createValidatorFlow: IUserFlow = {
   ],
 };
 
+const validatorSelectOperatorsFlow: IUserFlow = {
+  name: 'Select Operators',
+  route: routes.VALIDATOR.SELECT_OPERATORS,
+  condition: () => {
+    const stores = useStores();
+    const contractValidator: ContractValidator = stores.ContractValidator;
+    return !!(contractValidator.validatorPrivateKey && contractValidator.validatorPrivateKeyFile);
+  },
+  depends: [
+    validatorsHomeFlow,
+  ],
+};
+
 const slashingWarningFlow: IUserFlow = {
   name: 'Slashing Warning',
   route: routes.VALIDATOR.SLASHING_WARNING,
@@ -124,6 +137,7 @@ const userFlows: IUserFlow[] = [
   importValidatorFlow,
   createValidatorFlow,
   importValidatorDecryptFlow,
+  validatorSelectOperatorsFlow,
   slashingWarningFlow,
   validatorConfirmationFlow,
   successScreen,

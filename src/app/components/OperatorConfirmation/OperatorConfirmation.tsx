@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
@@ -14,14 +14,13 @@ import TransactionConfirmationContainer from '~app/common/components/Transaction
 
 const OperatorConfirmation = () => {
   const stores = useStores();
-  const history = useHistory();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: ContractOperator = stores.ContractOperator;
+  const { redirectUrl, history } = useUserFlow();
 
   useEffect(() => {
-    const shouldRedirect = !operatorStore.newOperatorKeys.pubKey && !operatorStore.newOperatorKeys.name;
-    if (shouldRedirect) history.push(config.routes.OPERATOR.HOME);
-  }, [operatorStore.newOperatorKeys.pubKey, operatorStore.newOperatorKeys.name]);
+    redirectUrl && history.push(redirectUrl);
+  }, [redirectUrl]);
 
   const onRegisterClick = async () => {
     await walletStore.connect();

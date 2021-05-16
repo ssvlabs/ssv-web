@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import { useHistory } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
@@ -19,13 +19,17 @@ import ContractValidator from '~app/common/stores/contract/ContractValidator.sto
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
-  const history = useHistory();
   const validatorStore: ContractValidator = stores.ContractValidator;
   const applicationStore: ApplicationStore = stores.Application;
   const checkboxLabelStyle = { fontSize: '13px' };
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [userAgreed, setUserAgreed] = useState(false);
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
+  const { redirectUrl, history } = useUserFlow();
+
+  useEffect(() => {
+    redirectUrl && history.push(redirectUrl);
+  }, [redirectUrl]);
 
   useEffect(() => {
     const buttonEnabled = validatorStore.validatorPrivateKey

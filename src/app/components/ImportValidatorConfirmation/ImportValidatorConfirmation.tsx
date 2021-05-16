@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Link from '@material-ui/core/Link';
-import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import { normalizeNumber } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
@@ -17,10 +17,14 @@ import TransactionConfirmationContainer from '~app/common/components/Transaction
 
 const ImportValidatorConfirmation = () => {
   const stores = useStores();
-  const history = useHistory();
   const contractValidator: ContractValidator = stores.ContractValidator;
   const contractOperator: ContractOperator = stores.ContractOperator;
   const walletStore: WalletStore = stores.Wallet;
+  const { redirectUrl, history } = useUserFlow();
+
+  useEffect(() => {
+    redirectUrl && history.push(redirectUrl);
+  }, [redirectUrl]);
 
   const onRegisterValidatorClick = async () => {
     await walletStore.connect().then(async () => {

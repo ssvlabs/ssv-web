@@ -1,9 +1,9 @@
-import axios from 'axios';
-import config from '~app/common/config';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet.store';
+import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
@@ -270,8 +270,21 @@ class ContractOperator extends BaseStore {
       }
     }`;
     const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);
-    const res = await axios.post(operatorsEndpointUrl, { query });
-    this.operators = res.data?.data?.operators ?? [];
+
+    const requestInfo: RequestData = {
+      url: operatorsEndpointUrl,
+      method: 'POST',
+      headers: [
+        { name: 'content-type', value: 'application/json' },
+        { name: 'accept', value: 'application/json' },
+      ],
+      data: { query },
+    };
+    this.operators = await new ApiRequest(requestInfo)
+      .sendRequest()
+      .then((response: any) => {
+        return response.data?.operators ?? [];
+      });
   }
 }
 

@@ -42,9 +42,10 @@ const ConfirmationScreen = () => {
 
     const onRegisterClick = async () => {
       await wallet.connect();
-      ssv.addNewOperator().then(() => {
-        history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-      });
+      ssv.addNewOperator()
+          .then(() => {
+            history.push(config.routes.OPERATOR.SUCCESS_PAGE);
+           });
     };
 
   const keyDisplayName = (key: string) => {

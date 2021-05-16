@@ -232,10 +232,11 @@ class SsvStore extends BaseStore {
         method: 'GET',
         headers: [{ name: 'authorization', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
       };
+
      await new ApiRequest(requestInfo).sendRequest()
        .then((response: any) => {
             this.dollarEstimationGas = this.estimationGas * response.USD;
-       });
+        });
   }
 
   @action.bound

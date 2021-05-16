@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
+import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import TextInput from '~app/common/components/TextInput';
@@ -17,18 +17,14 @@ import ContractValidator from '~app/common/stores/contract/ContractValidator.sto
 
 const EnterValidatorPrivateKey = () => {
     const classes = useStyles();
-    const history = useHistory();
     const stores = useStores();
     const validatorStore: ContractValidator = stores.ContractValidator;
     const registerButtonStyle = { width: '100%', marginTop: 180 };
     const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
-
+    const { redirectUrl, history } = useUserFlow();
     useEffect(() => {
-        // If no required information for this step - return to first screen
-        if (!validatorStore.validatorPrivateKeyFile) {
-            history.push(config.routes.VALIDATOR.HOME);
-        }
-    }, [validatorStore.validatorPrivateKeyFile]);
+      redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
     useEffect(() => {
         setNextButtonEnabled(!!validatorStore.validatorKeyStorePassword);

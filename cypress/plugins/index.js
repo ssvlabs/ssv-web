@@ -12,7 +12,35 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
+import { execSync } from 'child_process';
+
+const generateNewMnemonic = () => {
+  const cliFolder = path.join(
+    process.cwd(),
+    'cypress',
+    'integration',
+    'ssv',
+    'cli',
+  );
+  const cliExecutablePath = path.join(
+    cliFolder,
+    'deposit.sh',
+  );
+  execSync(cliExecutablePath);
+  const validatorKeysFolder = path.join(cliFolder, 'validator_keys');
+  const dirCont = fs.readdirSync(validatorKeysFolder);
+  const files = dirCont.filter((elm) => {
+    return elm.match(/(keystore).*/ig);
+  });
+  if (files.length) {
+    const keystoreFilePath = path.join(validatorKeysFolder, files[0]);
+    return fs.readFileSync(keystoreFilePath).toString();
+  }
+  return '{}';
+};
+
 /**
  * @type {Cypress.PluginConfig}
  */
@@ -33,5 +61,9 @@ module.exports = (on, config) => {
       launchOptions.args.push('-devtools');
     }
     return launchOptions;
+  });
+
+  on('task', {
+    generateNewMnemonic,
   });
 };

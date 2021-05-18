@@ -4,35 +4,44 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
-import SsvStore, { INewOperatorTransaction } from '~app/common/stores/Ssv.store';
 import Typography from '@material-ui/core/Typography';
+import { useStores } from '~app/hooks/useStores';
+import { randomValueHex } from '~lib/utils/crypto';
+import Header from '~app/common/components/Header';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
+import WalletStore from '~app/common/stores/Wallet.store';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
-import { useStyles } from '~app/components/Home/Home.styles';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
+import ApplicationStore from '~app/common/stores/Application.store';
+import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
+import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
   const history = useHistory();
-  const ssv: SsvStore = stores.ssv;
+  const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
+  const applicationStore: ApplicationStore = stores.Application;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
-  const [inputsData, setInputsData] = useState({ publicKey: '', name: '' });
+  let initialOperatorKey = '';
+  if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
+     initialOperatorKey = `0x${randomValueHex(128)}`;
+  }
+  const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [operatorExist, setOperatorExist] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
 
   // Inputs validation
-  // TODO: add validation of proper formats
   useEffect(() => {
-    const isRegisterButtonEnabled = ssv.addingNewOperator
+    const isRegisterButtonEnabled = contractOperator.addingNewOperator
         || !inputsData.name
         || !inputsData.publicKey
         || displayNameError.shouldDisplay
@@ -52,13 +61,12 @@ const GenerateOperatorKeys = () => {
       pubKey: inputsData.publicKey,
       name: inputsData.name,
     };
-    ssv.setOperatorKeys(operatorKeys);
-    await ssv.verifyOperatorPublicKey().then((isExist) => {
-      if (isExist) {
-          setOperatorExist(true);
-      } else {
-        ssv.addNewOperator(true).then(() => {
-          ssv.setIsLoading(false);
+    contractOperator.setOperatorKeys(operatorKeys);
+    await contractOperator.checkIfOperatorExists(inputsData.publicKey, walletStore.accountAddress).then((isExists: boolean) => {
+      setOperatorExist(isExists);
+      if (!isExists) {
+        contractOperator.addNewOperator(true).then(() => {
+          applicationStore.setIsLoading(false);
           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
         });
       }
@@ -67,7 +75,7 @@ const GenerateOperatorKeys = () => {
 
   return (
     <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.OPERATOR.START} text="Join the SSV Network Operators" />
+      <BackNavigation to={config.routes.OPERATOR.HOME} text={translations.OPERATOR.HOME.TITLE} />
       <Header title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
@@ -91,12 +99,15 @@ const GenerateOperatorKeys = () => {
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}
               onChange={(event) => { onInputChange('publicKey', event.target.value); }}
               onBlur={(event) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
+              value={inputsData.publicKey}
             />
             {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
           </InputLabel>
 
           <br />
           {operatorExist && <MessageDiv text={'Operator already exists'} />}
+
+          <EmptyPlaceholder height={110} />
 
           <Button
             data-testid="register-operator-button"
@@ -108,7 +119,7 @@ const GenerateOperatorKeys = () => {
           >
             Next
           </Button>
-          {ssv.addingNewOperator && <Backdrop />}
+          {contractOperator.addingNewOperator && <Backdrop />}
         </Grid>
       </Grid>
     </Paper>

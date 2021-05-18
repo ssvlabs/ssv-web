@@ -65,12 +65,15 @@ class Threshold {
                         const sharePublicKey = new bls.PublicKey();
                         sharePublicKey.share(mpk, id);
 
-                        this.validatorShares.push({ privateKey: shareSecretKey.serializeToHexStr(), publicKey: sharePublicKey.serializeToHexStr() });
+                        this.validatorShares.push({
+                          privateKey: `0x${shareSecretKey.serializeToHexStr()}`,
+                          publicKey: `0x${sharePublicKey.serializeToHexStr()}`,
+                        });
                     }
 
                     const response: ISharesKeyPairs = {
-                        validatorPrivateKey: this.validatorPrivateKey.serializeToHexStr(),
-                        validatorPublicKey: this.validatorPublicKey.serializeToHexStr(),
+                        validatorPrivateKey: `0x${this.validatorPrivateKey.serializeToHexStr()}`,
+                        validatorPublicKey: `0x${this.validatorPublicKey.serializeToHexStr()}`,
                         shares: this.validatorShares,
                     };
                     resolve(response);

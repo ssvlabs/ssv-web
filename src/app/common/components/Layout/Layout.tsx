@@ -2,18 +2,18 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/Ssv.store';
 import Spinner from '~app/common/components/Spinner';
 import BarMessage from '~app/common/components/BarMessage';
+import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
 
 const Layout = ({ children }: any) => {
     const classes = useStyles();
     const stores = useStores();
-    const ssv: SsvStore = stores.ssv;
+    const applicationStore: ApplicationStore = stores.Application;
 
     const renderSpinner = () => {
-        if (ssv.isLoading) {
+        if (applicationStore.isLoading) {
             return <Spinner />;
         }
         return null;

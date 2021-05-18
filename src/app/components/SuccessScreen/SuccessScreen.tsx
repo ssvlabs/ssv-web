@@ -1,49 +1,58 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { useStores } from '~app/hooks/useStores';
-import SSVStore from '~app/common/stores/Ssv.store';
-import { useHistory } from 'react-router-dom';
-import config, { translations } from '~app/common/config';
-import Paper from '@material-ui/core/Paper';
-import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-
+import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
+import { translations } from '~app/common/config';
 import Header from '~app/common/components/Header';
+import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
+import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 
 const SuccessScreen = () => {
-    const stores = useStores();
-    const history = useHistory();
-    const classes = useStyles();
-    const ssv: SSVStore = stores.ssv;
+  const stores = useStores();
+  const classes = useStyles();
+  const { redirectUrl, history } = useUserFlow();
 
-    useEffect(() => {
-        if (!ssv.newOperatorRegisterSuccessfully) {
-            history.push(config.routes.OPERATOR.START);
-        }
-    }, [ssv.newOperatorRegisterSuccessfully]);
+  useEffect(() => {
+    redirectUrl && history.push(redirectUrl);
+  }, [redirectUrl]);
 
-    return (
-      <Paper className={classes.mainContainer}>
-        <Grid className={classes.gridContainer} container direction="column" justify="center" alignItems="center">
-          <img className={classes.successIcon} src={'/images/checked.svg'} />
-          <Header centralize title={translations.OPERATOR.SUCCESS.TITLE} subtitle={translations.OPERATOR.SUCCESS.DESCRIPTION} />
-          <img className={classes.congratsIcon} src={'/images/congrats.svg'} />
-          <Paper className={classes.guideStepsContainerPaper}>
-            <Grid container wrap="nowrap" spacing={1}>
-              <Grid item md={8} xs={8}>
-                <Typography noWrap variant="h6" className={classes.guideStepText}>Monitor Node</Typography>
-                <Typography noWrap variant="caption">View yout operator performance in out explorer</Typography>
-              </Grid>
-              <Grid item md={4} xs={4}>
-                <ArrowForwardIosIcon className={classes.arrowIcon} />
-              </Grid>
+  const contractOperator: ContractOperator = stores.ContractOperator;
+  const contractValidator: ContractValidator = stores.ContractValidator;
+  let header: any = '';
+
+  if (contractOperator.newOperatorRegisterSuccessfully) {
+    header =
+      <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.OPERATOR_DESCRIPTION} />;
+  } else if (contractValidator.newValidatorReceipt) {
+    header =
+      <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.VALIDATOR_DESCRIPTION} />;
+  }
+
+  return (
+    <Paper className={classes.mainContainer}>
+      <Grid className={classes.gridContainer} container direction="column" justify="center" alignItems="center">
+        <img className={classes.successIcon} src={'/images/checked.svg'} />
+        {header}
+        <img className={classes.congratsIcon} src={'/images/congrats.svg'} />
+        <Paper className={classes.guideStepsContainerPaper}>
+          <Grid container wrap="nowrap" spacing={1}>
+            <Grid item md={8} xs={8}>
+              <Typography noWrap variant="h6" className={classes.guideStepText}>Monitor Node</Typography>
+              <Typography noWrap variant="caption">View your operator performance in out explorer</Typography>
             </Grid>
-          </Paper>
-        </Grid>
-      </Paper>
-    );
+            <Grid item md={4} xs={4}>
+              <ArrowForwardIosIcon className={classes.arrowIcon} />
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+    </Paper>
+  );
 };
 
 export default observer(SuccessScreen);

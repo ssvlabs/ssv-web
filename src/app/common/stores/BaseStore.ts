@@ -22,15 +22,28 @@ class BaseStore {
   }
 
   /**
-   * Get registered store by name
+   * Get registered store by name, and if it was not registered before, register it on the fly.
+   *
+   * Store names should be consistent, example:
+   *  contract/ContractValidator.store.ts -> this.getStore('contracts/ContractValidator')
+   *  contract/ContractOperator.store.ts  -> this.getStore('contracts/ContractValidator')
+   *  foo/FooBar.store.ts                 -> this.getStore('foo/FooBar')
+   *
+   * In case when useStores() hook is used, you can get store as following, regardless of folder prefix:
+   *  const stores = useStores();
+   *  const contractValidator: ContractValidator = stores.ContractValidator;
+   *  const fooBar: FooBar = stores.FooBar;
+   *
    * @param name
    */
   getStore(name: string): any {
-    if (!BaseStore.stores[name]) {
-      const StoreClass: any = require(`~app/common/stores/${this.capitalize(name)}.store`).default;
-      BaseStore.stores[name] = new StoreClass();
+    const storeNameParts = name.split('/');
+    const storeName = storeNameParts[storeNameParts.length - 1];
+    if (!BaseStore.stores[storeName]) {
+      const StoreClass: any = require(`~app/common/stores/${name}.store`).default;
+      BaseStore.stores[storeName] = new StoreClass();
     }
-    return BaseStore.stores[name];
+    return BaseStore.stores[storeName];
   }
 
   /**

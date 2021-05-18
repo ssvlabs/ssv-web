@@ -1,12 +1,14 @@
 import { createContext } from 'react';
 import BaseStore from '~app/common/stores/BaseStore';
 
-const baseStore = BaseStore.getInstance();
-const rootStore: Record<string, any> = baseStore.preloadStores([
-  'notifications',
-  'wallet',
-  'ssv',
-]);
+const stores = [
+  'Application',
+  'Notifications',
+  'Wallet',
+  'contract/ContractOperator',
+  'contract/ContractValidator',
+];
+const rootStore: Record<string, any> = BaseStore.getInstance().preloadStores(stores);
 const rootStoreContext = createContext(rootStore);
 
 export {

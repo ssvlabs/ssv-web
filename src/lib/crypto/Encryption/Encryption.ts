@@ -18,12 +18,17 @@ export default class Encryption {
 
     encrypt() {
         const encryptedShares: EncryptShare[] = [];
-        Object.keys(this.operators).forEach((operator:any) => {
+        Object.keys(this.operators).forEach((operator: any) => {
             const encrypt = new JSEncrypt({});
             encrypt.setPublicKey(this.operators[operator]);
             const encrypted = encrypt.encrypt(this.shares[operator].privateKey);
-            const encryptedShare: EncryptShare = { operatorPublicKey: this.operators[operator], privateKey: String(encrypted), publicKey: this.shares[operator].publicKey };
+            const encryptedShare: EncryptShare = {
+                operatorPublicKey: this.operators[operator],
+                privateKey: String(encrypted),
+                publicKey: this.shares[operator].publicKey,
+            };
             encryptedShares.push(encryptedShare);
+            return encryptedShare;
         });
         return encryptedShares;
     }

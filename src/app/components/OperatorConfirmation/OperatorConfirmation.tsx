@@ -68,6 +68,7 @@ const OperatorConfirmation = () => {
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
       buttonText="Register Operator"
+      buttonTestId="final-register-button"
     >
       <EmptyPlaceholder height={150} />
     </TransactionConfirmationContainer>

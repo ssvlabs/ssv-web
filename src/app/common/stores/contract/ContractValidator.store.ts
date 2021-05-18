@@ -8,6 +8,7 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+// import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 
 class ContractValidator extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
@@ -95,6 +96,9 @@ class ContractValidator extends BaseStore {
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey;
       });
+
+      // const encryptedShares: EncryptShare[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
+      // console.log(encryptedShares);
       // Collect all private keys from shares
       const encryptedKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.privateKey;

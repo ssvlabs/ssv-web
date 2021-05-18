@@ -1,28 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Link from '@material-ui/core/Link';
-import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import { normalizeNumber } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet.store';
-import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { buildDataSections, IDataSection } from '~app/common/components/DataSection';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import TransactionConfirmationContainer from '~app/common/components/TransactionConfirmationContainer';
 
 const ImportValidatorConfirmation = () => {
   const stores = useStores();
-  const history = useHistory();
-  const ssv: SsvStore = stores.ssv;
-  const wallet: WalletStore = stores.wallet;
+  const contractValidator: ContractValidator = stores.ContractValidator;
+  const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
+  const { redirectUrl, history } = useUserFlow();
+
+  useEffect(() => {
+    redirectUrl && history.push(redirectUrl);
+  }, [redirectUrl]);
 
   const onRegisterValidatorClick = async () => {
-    await wallet.connect().then(async () => {
-      return ssv.addNewValidator().then(() => {
+    await walletStore.connect().then(async () => {
+      return contractValidator.addNewValidator().then(() => {
         history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
       });
     });
@@ -30,7 +36,7 @@ const ImportValidatorConfirmation = () => {
 
   const backNavigation = <BackNavigation to={config.routes.VALIDATOR.SLASHING_WARNING} text={translations.VALIDATOR.SLASHING_WARNING.TITLE} />;
   const header = <Header title={translations.VALIDATOR.CONFIRMATION.TITLE} subtitle={translations.VALIDATOR.CONFIRMATION.DESCRIPTION} />;
-  const operatorsList = ssv.operators.filter((operator: IOperator) => {
+  const operatorsList = contractOperator.operators.filter((operator: IOperator) => {
     return operator.selected;
   }).map((operator: IOperator, operatorIndex: number) => {
     return (
@@ -43,7 +49,7 @@ const ImportValidatorConfirmation = () => {
   const sections: IDataSection[] = [
     {
       title: <div style={{ paddingBottom: 7 }}>Validator<br /></div>,
-      component: <ValidatorKeyInput validatorKey={ssv.validatorPublicKey} />,
+      component: <ValidatorKeyInput validatorKey={contractValidator.validatorPublicKey} />,
       divider: true,
     },
     {
@@ -61,13 +67,13 @@ const ImportValidatorConfirmation = () => {
     },
     {
       name: 'Transaction fee',
-      value: <>{ssv.estimationGas}ETH <strong>${normalizeNumber(ssv.dollarEstimationGas)}</strong></>,
+      value: <>{contractOperator.estimationGas}ETH <strong>${normalizeNumber(contractOperator.dollarEstimationGas)}</strong></>,
       divider: true,
     },
     {
       title: '',
       name: <strong>Total</strong>,
-      value: <strong>${normalizeNumber(ssv.dollarEstimationGas)}</strong>,
+      value: <strong>${normalizeNumber(contractOperator.dollarEstimationGas)}</strong>,
     },
   ];
   const dataSections = buildDataSections(sections);

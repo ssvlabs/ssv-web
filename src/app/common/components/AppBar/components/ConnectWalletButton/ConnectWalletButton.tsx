@@ -6,18 +6,18 @@ import Button from '~app/common/components/AppBar/components/Button';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
-  const wallet: WalletStore = stores.wallet;
+  const walletStore: WalletStore = stores.Wallet;
   const walletImageStyle = { width: 24, height: 24, marginRight: 10, marginLeft: 0 };
 
   const onClick = () => {
-    if (wallet.connected) {
-      return wallet.disconnect();
+    if (walletStore.connected) {
+      return walletStore.disconnect();
     }
-    return wallet.connect();
+    return walletStore.connect();
   };
   let icon;
-  if (wallet.wallet?.name) {
-    switch (wallet.wallet.name) {
+  if (walletStore.wallet?.name) {
+    switch (walletStore.wallet.name) {
       case 'MetaMask':
         icon = '/images/metamask.svg';
         break;
@@ -37,10 +37,10 @@ const ConnectWalletButton = () => {
   };
   return (
     <Button variant="outlined" color="primary" onClick={onClick} style={{ textTransform: 'none' }}>
-      {wallet.connected ? (
+      {walletStore.connected ? (
         <>
-          {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${wallet.wallet.name}`} />}
-          {walletDisplayName(wallet.accountAddress)}
+          {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${walletStore.wallet.name}`} />}
+          {walletDisplayName(walletStore.accountAddress)}
         </>
       ) : 'Connect Wallet'}
     </Button>

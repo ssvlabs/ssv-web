@@ -1,0 +1,291 @@
+import { Contract } from 'web3-eth-contract';
+import { action, observable, computed } from 'mobx';
+import config from '~app/common/config';
+import BaseStore from '~app/common/stores/BaseStore';
+import WalletStore from '~app/common/stores/Wallet.store';
+import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import PriceEstimation from '~lib/utils/contract/PriceEstimation';
+import ApplicationStore from '~app/common/stores/Application.store';
+import NotificationsStore from '~app/common/stores/Notifications.store';
+
+export interface INewOperatorTransaction {
+  name: string,
+  pubKey: string,
+}
+
+export interface IOperator {
+  name: string,
+  pubkey: string,
+  paymentAddress?: string,
+  score?: number,
+  selected?: boolean
+  autoSelected?: boolean
+}
+
+class ContractOperator extends BaseStore {
+  public static OPERATORS_SELECTION_GAP = 66.66;
+
+  @observable operators: IOperator[] = [];
+  @observable loadingOperators: boolean = false;
+
+  @observable addingNewOperator: boolean = false;
+  @observable newOperatorReceipt: any = null;
+
+  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '' };
+  @observable newOperatorRegisterSuccessfully: boolean = false;
+
+  @observable estimationGas: number = 0;
+  @observable dollarEstimationGas: number = 0;
+
+  /**
+   * Set operator keys
+   * @param transaction
+   */
+  @action.bound
+  setOperatorKeys(transaction: INewOperatorTransaction) {
+    this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
+  }
+
+  /**
+   * Check if operator already exists in the contract
+   * @param publicKey
+   * @param fromAddress
+   * @param contract
+   */
+  @action.bound
+  async checkIfOperatorExists(publicKey: string, fromAddress: string, contract?: Contract): Promise<boolean> {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    await walletStore.connect();
+    const contractInstance = contract ?? await walletStore.getContract();
+    try {
+      const result = await contractInstance.methods.operators(publicKey).call({ from: fromAddress });
+      return result[1] !== '0x0000000000000000000000000000000000000000';
+    } catch (e) {
+      console.error('Exception from operator existence check:', e);
+      return true;
+    }
+  }
+
+  /**
+   * Add new operator
+   * @param getGasEstimation
+   */
+  @action.bound
+  async addNewOperator(getGasEstimation: boolean = false) {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const gasEstimation: PriceEstimation = new PriceEstimation();
+    await walletStore.connect();
+    const contract: Contract = await walletStore.getContract();
+    const address: string = walletStore.accountAddress;
+    applicationStore.setIsLoading(true);
+
+    return new Promise((resolve, reject) => {
+      if (!walletStore.checkIfWalletReady()) {
+        reject();
+      }
+      const transaction: INewOperatorTransaction = this.newOperatorKeys;
+      this.newOperatorReceipt = null;
+      this.addingNewOperator = true;
+
+      console.debug('Register Operator Transaction Data:', transaction);
+
+      // Send add operator transaction
+      const payload = [
+        transaction.name,
+        config.CONTRACT.PAYMENT_ADDRESS,
+        transaction.pubKey,
+      ];
+
+      if (getGasEstimation) {
+        contract.methods.addOperator(...payload)
+          .estimateGas({ from: address })
+          .then((gasAmount: any) => {
+            this.addingNewOperator = true;
+            this.estimationGas = gasAmount * 0.000000001;
+            gasEstimation
+              .estimateGasInUSD(this.estimationGas)
+              .then((rate: number) => {
+                this.dollarEstimationGas = this.estimationGas * rate;
+                resolve(true);
+              })
+              .catch((error: any) => {
+                applicationStore.displayUserError(error);
+              });
+          })
+          .catch((error: any) => {
+            applicationStore.displayUserError(error);
+          });
+      } else {
+        contract.methods.addOperator(...payload)
+          .send({ from: address })
+          .on('receipt', (receipt: any) => {
+            console.debug('Contract Receipt', receipt);
+            this.newOperatorReceipt = receipt;
+          })
+          .on('error', (error: any) => {
+            applicationStore.displayUserError(error);
+            this.addingNewOperator = false;
+            reject(error);
+          });
+
+        // Listen for final event when it's added
+        contract.events
+          .OperatorAdded({}, (error: any, event: any) => {
+            this.addingNewOperator = false;
+            if (error) {
+              notificationsStore.showMessage(error.message, 'error');
+            } else {
+              applicationStore.setIsLoading(false);
+              this.newOperatorRegisterSuccessfully = true;
+              notificationsStore.showMessage('You successfully added operator!', 'success');
+              resolve(event);
+            }
+            console.debug({ error, event });
+            applicationStore.setIsLoading(false);
+          })
+          .on('error', (error: any, receipt: any) => {
+            notificationsStore.showMessage(error.message, 'error');
+            console.debug({ error, receipt });
+            applicationStore.setIsLoading(false);
+            reject(error);
+          });
+      }
+    });
+  }
+
+  /**
+   * Find operator by publicKey
+   * @param publicKey
+   */
+  findOperator(publicKey: string): { operator: IOperator | null, index: number } {
+    for (let i = 0; i < this.operators?.length || 0; i += 1) {
+      if (this.operators[i].pubkey === publicKey) {
+        return { operator: this.operators[i], index: i };
+      }
+    }
+    return { operator: null, index: -1 };
+  }
+
+  /**
+   * Check if operator is selected
+   * @param publicKey
+   */
+  @action.bound
+  isOperatorSelected(publicKey: string): boolean {
+    const { operator } = this.findOperator(publicKey);
+    return operator ? Boolean(operator.selected) : false;
+  }
+
+  /**
+   * Unselect operator
+   * @param publicKey
+   */
+  @action.bound
+  unselectOperator(publicKey: string) {
+    if (this.isOperatorSelected(publicKey)) {
+      const { operator, index } = this.findOperator(publicKey);
+      if (operator) {
+        operator.selected = false;
+        operator.autoSelected = false;
+        this.operators[index] = operator;
+        this.operators = Array.from(this.operators);
+      }
+    }
+  }
+
+  /**
+   * Select operator
+   * @param publicKey
+   */
+  @action.bound
+  selectOperator(publicKey: string) {
+    const { operator, index } = this.findOperator(publicKey);
+    if (operator) {
+      operator.selected = true;
+      operator.autoSelected = false;
+      this.operators[index] = operator;
+      this.operators = Array.from(this.operators);
+    }
+  }
+
+  /**
+   * Automatically select necessary number of operators to reach gap requirements
+   */
+  @action.bound
+  autoSelectOperators() {
+    if (!this.operators.length) {
+      return;
+    }
+    // Deselect already selected once
+    for (let i = 0; i < this.operators.length; i += 1) {
+      this.operators[i].selected = false;
+      this.operators[i].autoSelected = false;
+    }
+
+    // Select as many as necessary so the gap would be reached
+    let selectedIndex = 0;
+    while (!this.selectedEnoughOperators) {
+      this.operators[selectedIndex].selected = true;
+      this.operators[selectedIndex].autoSelected = true;
+      selectedIndex += 1;
+    }
+    this.operators = Array.from(this.operators);
+  }
+
+  /**
+   * Get selection stats
+   */
+  @computed
+  get stats(): { total: number, selected: number, selectedPercents: number } {
+    const selected = this.operators.filter((op: IOperator) => op.selected).length;
+    return {
+      total: this.operators.length,
+      selected,
+      selectedPercents: ((selected / this.operators.length) * 100.0),
+    };
+  }
+
+  /**
+   * Check if selected necessary minimum of operators
+   */
+  @computed
+  get selectedEnoughOperators(): boolean {
+    return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
+  }
+
+  /**
+   * Load operators from external source
+   */
+  @action.bound
+  async loadOperators() {
+    this.loadingOperators = true;
+    const query = `
+    {
+      operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
+        id
+        name
+        pubkey
+      }
+    }`;
+    const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);
+
+    const requestInfo: RequestData = {
+      url: operatorsEndpointUrl,
+      method: 'POST',
+      headers: [
+        { name: 'content-type', value: 'application/json' },
+        { name: 'accept', value: 'application/json' },
+      ],
+      data: { query },
+    };
+    this.operators = await new ApiRequest(requestInfo)
+      .sendRequest()
+      .then((response: any) => {
+        return response.data?.operators ?? [];
+      });
+  }
+}
+
+export default ContractOperator;

@@ -11,6 +11,7 @@ import { useStyles } from './TransactionConfirmationContainer.styles';
 type TransactionConfirmationContainerProps = {
   onButtonClick: () => void,
   buttonText?: any,
+  buttonTestId?: string,
   agreement?: any,
   backNavigation?: any,
   header?: any,
@@ -20,7 +21,7 @@ type TransactionConfirmationContainerProps = {
 
 const TransactionConfirmationContainer = (props: TransactionConfirmationContainerProps) => {
   const { onButtonClick, buttonText, agreement, backNavigation,
-    header, dataSections, children } = props;
+    header, dataSections, children, buttonTestId } = props;
   const classes = useStyles();
   const checkboxLabelStyle = { fontSize: '14px' };
   const registerButtonStyle = { width: '100%', marginTop: 15 };
@@ -61,7 +62,7 @@ const TransactionConfirmationContainer = (props: TransactionConfirmationContaine
         <Grid container direction="row" justify="space-between" alignItems="center" item xs={12} md={12} spacing={1} className={classes.confirmationButtonContainer}>
           {agreementComponent}
           <Button
-            data-testid="transaction-confirmation-button"
+            data-testid={buttonTestId ?? 'confirm-button'}
             disabled={!userAgreed}
             variant="contained"
             color="primary"

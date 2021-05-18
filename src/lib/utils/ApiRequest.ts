@@ -1,7 +1,8 @@
 export interface RequestData {
   url: string,
   method: string,
-  headers: RequestHeader[],
+  headers?: RequestHeader[],
+  data?: FormData | object,
 }
 
 export interface RequestHeader {
@@ -12,13 +13,15 @@ export interface RequestHeader {
 export default class ApiRequest {
   private readonly url: string = '';
   private readonly method: string = '';
+  private readonly data: FormData | object | null = null;
   private readonly headers: RequestHeader[];
   private readonly xhr: XMLHttpRequest = new XMLHttpRequest();
 
   constructor(request: RequestData) {
     this.url = request.url;
     this.method = request.method;
-    this.headers = request.headers;
+    this.headers = request.headers ?? [];
+    this.data = request.data ?? null;
   }
 
   sendRequest() {
@@ -36,6 +39,14 @@ export default class ApiRequest {
         this.xhr.setRequestHeader(header.name, header.value);
       });
       // Send the request
+      if (this.data) {
+        if (this.data instanceof FormData) {
+          this.xhr.send(this.data);
+        } else {
+          this.xhr.send(JSON.stringify(this.data));
+        }
+        return;
+      }
       this.xhr.send();
     });
   }

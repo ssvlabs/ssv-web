@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Select from '@material-ui/core/Select';
-import { useStores } from '~app/hooks/useStores';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
-import { useStyles } from './OperatorSelector.styles';
 import FormControl from '@material-ui/core/FormControl';
+import { useStores } from '~app/hooks/useStores';
+import { useStyles } from './OperatorSelector.styles';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import { OperatorName, OperatorKey } from './components/Operator';
-import SsvStore, { IOperator } from '~app/common/stores/Ssv.store';
 
 type OperatorSelectorProps = {
   indexedOperator: IOperator
@@ -16,14 +16,14 @@ type OperatorSelectorProps = {
 const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
-  const ssv: SsvStore = stores.ssv;
+  const contractOperator: ContractOperator = stores.ContractOperator;
   const [selectedOperator, selectOperator] = useState('');
 
   const selectOperatorMethod = (publicKey: string) => {
     if (selectedOperator) {
-      ssv.unselectOperator(selectedOperator);
+      contractOperator.unselectOperator(selectedOperator);
     }
-    ssv.selectOperator(publicKey);
+    contractOperator.selectOperator(publicKey);
     selectOperator(publicKey);
   };
 
@@ -53,13 +53,13 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
         variant="outlined"
         MenuProps={{ classes: { paper: classes.selectPaper } }}
       >
-        {ssv.operators.map((operator: IOperator, operatorIndex: number) => {
+        {contractOperator.operators.map((operator: IOperator, operatorIndex: number) => {
           return (
             <MenuItem
               key={`menu-item-${operatorIndex}`}
               className={classes.menuItem}
               value={operator.pubkey}
-              disabled={ssv.isOperatorSelected(operator.pubkey)}
+              disabled={contractOperator.isOperatorSelected(operator.pubkey)}
               >
               <OperatorName>{operator.name}</OperatorName>
               <OperatorKey>{operator.pubkey}</OperatorKey>

@@ -40,9 +40,46 @@ const config = {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },
   CONTRACT: {
-    ADDRESS: '0x555fe4a050Bb5f392fD80dCAA2b6FCAf829f21e9',
+    ADDRESS: '0x1970F94e594b28b3c4C19eF1DC83621b58304cCa',
     PAYMENT_ADDRESS: '0xe52350A8335192905359c4c3C2149976dCC3D8bF',
     ABI: [
+      {
+        'anonymous': false,
+        'inputs': [
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'validatorPublicKey',
+            'type': 'bytes',
+          },
+          {
+            'indexed': false,
+            'internalType': 'uint256',
+            'name': 'index',
+            'type': 'uint256',
+          },
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'operatorPublicKey',
+            'type': 'bytes',
+          },
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'sharedPublicKey',
+            'type': 'bytes',
+          },
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'encryptedKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'OessAdded',
+        'type': 'event',
+      },
       {
         'anonymous': false,
         'inputs': [
@@ -54,15 +91,15 @@ const config = {
           },
           {
             'indexed': false,
-            'internalType': 'bytes',
-            'name': 'pubkey',
-            'type': 'bytes',
+            'internalType': 'address',
+            'name': 'ownerAddress',
+            'type': 'address',
           },
           {
             'indexed': false,
-            'internalType': 'address',
-            'name': 'paymentAddress',
-            'type': 'address',
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
           },
         ],
         'name': 'OperatorAdded',
@@ -73,15 +110,43 @@ const config = {
         'inputs': [
           {
             'indexed': false,
-            'internalType': 'bytes',
-            'name': 'pubkey',
-            'type': 'bytes',
-          },
-          {
-            'indexed': false,
             'internalType': 'address',
             'name': 'ownerAddress',
             'type': 'address',
+          },
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+          {
+            'components': [
+              {
+                'internalType': 'uint256',
+                'name': 'index',
+                'type': 'uint256',
+              },
+              {
+                'internalType': 'bytes',
+                'name': 'operatorPublicKey',
+                'type': 'bytes',
+              },
+              {
+                'internalType': 'bytes',
+                'name': 'sharedPublicKey',
+                'type': 'bytes',
+              },
+              {
+                'internalType': 'bytes',
+                'name': 'encryptedKey',
+                'type': 'bytes',
+              },
+            ],
+            'indexed': false,
+            'internalType': 'struct ISSVNetwork.Oess[]',
+            'name': 'oessList',
+            'type': 'tuple[]',
           },
         ],
         'name': 'ValidatorAdded',
@@ -95,14 +160,14 @@ const config = {
             'type': 'string',
           },
           {
-            'internalType': 'string',
-            'name': '_pubkey',
-            'type': 'string',
+            'internalType': 'address',
+            'name': '_ownerAddress',
+            'type': 'address',
           },
           {
-            'internalType': 'address',
-            'name': '_paymentAddress',
-            'type': 'address',
+            'internalType': 'bytes',
+            'name': '_publicKey',
+            'type': 'bytes',
           },
         ],
         'name': 'addOperator',
@@ -113,77 +178,34 @@ const config = {
       {
         'inputs': [
           {
-            'internalType': 'string',
-            'name': 'pubkey',
-            'type': 'string',
-          },
-          {
-            'internalType': 'string[]',
-            'name': 'operatorPubKeys',
-            'type': 'string[]',
-          },
-          {
-            'internalType': 'uint256[]',
-            'name': 'indexes',
-            'type': 'uint256[]',
-          },
-          {
-            'internalType': 'string[]',
-            'name': 'sharePubKeys',
-            'type': 'string[]',
-          },
-          {
-            'internalType': 'string[]',
-            'name': 'encryptedKeys',
-            'type': 'string[]',
-          },
-          {
             'internalType': 'address',
-            'name': 'ownerAddress',
+            'name': '_ownerAddress',
             'type': 'address',
+          },
+          {
+            'internalType': 'bytes',
+            'name': '_publicKey',
+            'type': 'bytes',
+          },
+          {
+            'internalType': 'bytes[]',
+            'name': '_operatorPublicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'bytes[]',
+            'name': '_sharesPublicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'bytes[]',
+            'name': '_encryptedKeys',
+            'type': 'bytes[]',
           },
         ],
         'name': 'addValidator',
         'outputs': [],
         'stateMutability': 'nonpayable',
-        'type': 'function',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'string',
-            'name': 's',
-            'type': 'string',
-          },
-        ],
-        'name': 'fromHex',
-        'outputs': [
-          {
-            'internalType': 'bytes',
-            'name': '',
-            'type': 'bytes',
-          },
-        ],
-        'stateMutability': 'pure',
-        'type': 'function',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'uint8',
-            'name': 'c',
-            'type': 'uint8',
-          },
-        ],
-        'name': 'fromHexChar',
-        'outputs': [
-          {
-            'internalType': 'uint8',
-            'name': '',
-            'type': 'uint8',
-          },
-        ],
-        'stateMutability': 'pure',
         'type': 'function',
       },
       {
@@ -193,6 +215,40 @@ const config = {
           {
             'internalType': 'uint256',
             'name': '',
+            'type': 'uint256',
+          },
+        ],
+        'stateMutability': 'view',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': '',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'operators',
+        'outputs': [
+          {
+            'internalType': 'string',
+            'name': 'name',
+            'type': 'string',
+          },
+          {
+            'internalType': 'address',
+            'name': 'ownerAddress',
+            'type': 'address',
+          },
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+          {
+            'internalType': 'uint256',
+            'name': 'score',
             'type': 'uint256',
           },
         ],

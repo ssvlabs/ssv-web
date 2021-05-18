@@ -3312,7 +3312,14 @@
     jest-diff "^25.2.1"
     pretty-format "^25.2.1"
 
-"@types/jsdom@^16.2.10":
+"@types/jsdom-global@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/jsdom-global/-/jsdom-global-3.0.2.tgz#627a2b45659ab923c70e92ce543305f9c3fb81fc"
+  integrity sha512-CFIPEDpO5vQWdQrVXrdSR2j5giiDuyb0hzZD04OJqMfizt7sh6WoqaLBdnP4w74yHDDcQkc0k5TzrXffhua3Jg==
+  dependencies:
+    "@types/jsdom" "*"
+
+"@types/jsdom@*", "@types/jsdom@^16.2.10":
   version "16.2.10"
   resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-16.2.10.tgz#c05ea94682d035943ae2453b79d56178496b6653"
   integrity sha512-q3aIjp3ehhVSXSbvNyuireAfvU2umRiZ2aLumyeZewCnoNaokrRDdTu5IvaeE9pzNtWHXrUnM9lb22Vl3W08EA==

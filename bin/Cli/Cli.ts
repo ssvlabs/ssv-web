@@ -1,8 +1,10 @@
 #!/usr/bin/env ts-node
 
 // recreate window object to support crypto
+import {EncryptShare} from "../../src/lib/crypto/Encryption/Encryption";
+
 require("jsdom-global/register");
-var nodeCrypto = require('crypto');
+const nodeCrypto = require('crypto');
 declare global {
   interface Window { crypto: any; }
 }
@@ -11,35 +13,56 @@ window.crypto = {
 };
 
 // imports
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
-import Threshold, {IShares, ISharesKeyPairs} from '~lib/crypto/Threshold';
+import {readFile, encryptShares, createThreshold, extractPrivateKey} from './helpers'
+import { ISharesKeyPairs} from '~lib/crypto/Threshold';
 import ErrnoException = NodeJS.ErrnoException;
 
 // variables
-const fs = require('fs');
 const argv = require('minimist');
 let isArgumentsValid: boolean = true;
-const requireArguments: string[] = ['filePath', 'password', 'operators'];
 const argumentsCMD = argv(process.argv.slice(2));
-
+const requireArguments: string[] = ['filePath', 'password', 'operators'];
+const operators = argumentsCMD.operators && JSON.parse(argumentsCMD.operators);
 // argumentsCMD validation
 for (const i in requireArguments) {
   if (!(requireArguments[i] in argumentsCMD)) {
     isArgumentsValid = false;
     console.log(`need ${requireArguments[i]} of the keystore`);
   }
+  if(requireArguments[i] == 'operators' && operators && operators.length !== 4){
+    isArgumentsValid = false;
+    console.log('4 Operators are requires')
+  }
 }
+
 if (isArgumentsValid) {
-  const operators = JSON.parse(argumentsCMD.operators);
   const { filePath } = argumentsCMD;
   const keystorePassword = argumentsCMD.password;
 
   // reading keystore file
   readFile(filePath).then((data: any) => {
     extractPrivateKey(data, keystorePassword).then((privateKey: any) => {
-      createThreshold(privateKey).then((response: ISharesKeyPairs) => {
-        console.log(operators)
-        const encryptedShares: EncryptShare[] = new Encryption([operatorPublicKey], thresholdResult.shares).encrypt();
+      createThreshold(privateKey).then((threshold: ISharesKeyPairs) => {
+        encryptShares(operators, threshold.shares).then((encryptedShares: EncryptShare[]) => {
+          const operatorsPublicKey: string[] = encryptedShares.map((share:EncryptShare) => {
+           return  share.operatorPublicKey
+          });
+
+          const sharePublicKey: string[] = encryptedShares.map((share:EncryptShare) => {
+            return  share.publicKey
+          });
+
+          const sharePrivateKey: string[] = encryptedShares.map((share:EncryptShare) => {
+            return  share.privateKey
+          });
+
+           console.log ([
+            privateKey,
+            operatorsPublicKey,
+            sharePublicKey,
+            sharePrivateKey
+          ])
+        })
       });
     }).catch((error: any) => {
       console.log(error);
@@ -48,42 +71,11 @@ if (isArgumentsValid) {
     console.log(error);
   });
 }
+// const payload = [
+//   ownerAddress,
+//   thresholdResult.validatorPublicKey,
+//   operatorPublicKeys,
+//   sharePublicKeys,
+//   encryptedKeys,
+// ];
 
-async function extractPrivateKey(file: string, keystorePassword: string) {
-  try {
-    const keyStore = new EthereumKeyStore(file);
-    return await keyStore.getPrivateKey(keystorePassword).then((privateKey: string) => privateKey);
-  } catch (error: any) {
-    console.log(error);
-    return null;
-  }
-}
-
-async function encryptShares(operatorsPublicKey: string[], shares: IShares[]) {
-  try {
-    const encryptedShares: EncryptShare[] = new Encryption(operatorsPublicKey, shares).encrypt();
-  } catch (error: any) {
-    console.log(error);
-    return null;
-  }
-}
-
-async function createThreshold(privateKey: string) {
-  try {
-    const threshold: Threshold = new Threshold();
-    return await threshold.create(privateKey);
-  } catch (error: any) {
-    return error;
-  }
-}
-
-async function readFile(filePath: string) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8', (err: ErrnoException, data: string) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(JSON.parse(data));
-    });
-  });
-}

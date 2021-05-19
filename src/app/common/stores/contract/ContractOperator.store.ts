@@ -92,14 +92,13 @@ class ContractOperator extends BaseStore {
       this.newOperatorReceipt = null;
       this.addingNewOperator = true;
 
-      console.debug('Register Operator Transaction Data:', transaction);
-
       // Send add operator transaction
       const payload = [
         transaction.name,
-        config.CONTRACT.PAYMENT_ADDRESS,
+        address,
         transaction.pubKey,
       ];
+      console.debug('Register Operator Transaction Data:', payload);
 
       if (getGasEstimation) {
         contract.methods.addOperator(...payload)

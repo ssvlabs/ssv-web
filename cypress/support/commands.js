@@ -25,6 +25,9 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+require('cypress-file-upload');
+
 function checkIfElementExists(element, attempts, waitTimeout) {
     attempts = attempts || 3;
     waitTimeout = waitTimeout || 30000;
@@ -48,4 +51,10 @@ function checkIfElementExists(element, attempts, waitTimeout) {
         }
     });
 }
+
+const closeMessage = () => {
+    cy.get('.MuiAlert-action > .MuiButtonBase-root > .MuiIconButton-label > .MuiSvgIcon-root').click();
+};
+
 Cypress.Commands.add('checkIfElementExists', checkIfElementExists);
+Cypress.Commands.add('closeMessage', closeMessage);

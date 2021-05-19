@@ -7,10 +7,6 @@ import config, { translations } from '~app/common/config';
 
 const operatorPublicKeyLength = 128;
 
-const closeMessage = () => {
-  cy.get('.MuiAlert-action > .MuiButtonBase-root > .MuiIconButton-label > .MuiSvgIcon-root').click();
-};
-
 context('Add Operator', () => {
   before(() => {
     cy.visit(Cypress.config('baseUrl'));
@@ -93,7 +89,7 @@ context('Add Operator', () => {
 
       cy.waitFor('.MuiAlert-message');
       cy.get('.MuiAlert-message').should('contain.text', 'Wallet is connected!');
-      closeMessage();
+      cy.closeMessage();
 
       cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
       cy.waitFor('[data-testid="final-register-button"]');
@@ -103,7 +99,7 @@ context('Add Operator', () => {
       cy.checkIfElementExists('.MuiAlert-message', 30, 10000).then(e => {
         cy.waitFor('.MuiAlert-message');
         cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
-        closeMessage();
+        cy.closeMessage();
       });
     });
   }

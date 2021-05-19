@@ -44,7 +44,6 @@ const config = {
   },
   CONTRACT: {
     ADDRESS: '0x1970F94e594b28b3c4C19eF1DC83621b58304cCa',
-    PAYMENT_ADDRESS: '0xe52350A8335192905359c4c3C2149976dCC3D8bF',
     ABI: [
       {
         'anonymous': false,

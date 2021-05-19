@@ -25,3 +25,5 @@ cypress/integration/examples
 cypress/videos
 cypress/screenshots
 cypress/plugins/MetaMask/metamask-chrome-9.5.0/*
+cypress/integration/ssv/cli/eth2.0-deposit-cli-master/*
+cypress/integration/ssv/cli/validator_keys/

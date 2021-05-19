@@ -31,7 +31,7 @@ const SelectOperators = () => {
     setButtonEnabled(contractOperator.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
-    if (!contractOperator.operators.length) {
+    if (!contractOperator.operators.length && !contractOperator.operatorsLoaded) {
       applicationStore.setIsLoading(true);
       contractOperator.loadOperators().then(() => {
         applicationStore.setIsLoading(false);

@@ -2,6 +2,9 @@
   "name": "ssv-web",
   "description": "Webapp to interact with SSV",
   "version": "1.0.0",
+  "bin": {
+    "ssv-cli": "bin/Cli/Cli.ts"
+  },
   "dependencies": {
     "@babel/core": "7.12.3",
     "@chainsafe/bls": "^6.0.1",
@@ -55,6 +58,7 @@
     "jest-circus": "26.6.0",
     "jest-resolve": "26.6.0",
     "jest-watch-typeahead": "0.6.1",
+    "jsencrypt": "^3.2.0",
     "link-module-alias": "^1.2.0",
     "lodash": "^4.17.21",
     "material-ui-dropzone": "^3.5.0",
@@ -194,6 +198,7 @@
     "@types/enzyme": "^3.10.8",
     "@types/jest": "^24.0.0",
     "@types/jsdom": "^16.2.10",
+    "@types/jsdom-global": "^3.0.2",
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.0.2",
     "@types/randombytes": "^2.0.0",

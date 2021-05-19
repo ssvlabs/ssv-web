@@ -26,7 +26,7 @@ class ContractOperator extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
 
   @observable operators: IOperator[] = [];
-  @observable loadingOperators: boolean = false;
+  @observable operatorsLoaded: boolean = false;
 
   @observable addingNewOperator: boolean = false;
   @observable newOperatorReceipt: any = null;
@@ -55,10 +55,12 @@ class ContractOperator extends BaseStore {
   @action.bound
   async checkIfOperatorExists(publicKey: string, fromAddress: string, contract?: Contract): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
-    await walletStore.connect();
-    const contractInstance = contract ?? await walletStore.getContract();
     try {
-      const result = await contractInstance.methods.operators(publicKey).call({ from: fromAddress });
+      await walletStore.connect();
+      const contractInstance = contract ?? await walletStore.getContract();
+      const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
+      this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
+      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: fromAddress });
       return result[1] !== '0x0000000000000000000000000000000000000000';
     } catch (e) {
       console.error('Exception from operator existence check:', e);
@@ -85,6 +87,7 @@ class ContractOperator extends BaseStore {
       if (!walletStore.checkIfWalletReady()) {
         reject();
       }
+
       const transaction: INewOperatorTransaction = this.newOperatorKeys;
       this.newOperatorReceipt = null;
       this.addingNewOperator = true;
@@ -103,15 +106,20 @@ class ContractOperator extends BaseStore {
           .then((gasAmount: any) => {
             this.addingNewOperator = true;
             this.estimationGas = gasAmount * 0.000000001;
-            gasEstimation
-              .estimateGasInUSD(this.estimationGas)
-              .then((rate: number) => {
-                this.dollarEstimationGas = this.estimationGas * rate;
-                resolve(true);
-              })
-              .catch((error: any) => {
-                applicationStore.displayUserError(error);
-              });
+            if (config.FEATURE.DOLLAR_CALCULATION) {
+              gasEstimation
+                  .estimateGasInUSD(this.estimationGas)
+                  .then((rate: number) => {
+                    this.dollarEstimationGas = this.estimationGas * rate;
+                    resolve(true);
+                  })
+                  .catch((error: any) => {
+                    applicationStore.displayUserError(error);
+                  });
+            } else {
+              this.dollarEstimationGas = this.estimationGas * 3377;
+              resolve(true);
+            }
           })
           .catch((error: any) => {
             applicationStore.displayUserError(error);
@@ -259,7 +267,6 @@ class ContractOperator extends BaseStore {
    */
   @action.bound
   async loadOperators() {
-    this.loadingOperators = true;
     const query = `
     {
       operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
@@ -282,6 +289,7 @@ class ContractOperator extends BaseStore {
     this.operators = await new ApiRequest(requestInfo)
       .sendRequest()
       .then((response: any) => {
+        this.operatorsLoaded = true;
         return response.data?.operators ?? [];
       });
   }

@@ -32,6 +32,15 @@ class WalletStore extends BaseStore {
   }
 
   @action.bound
+  encodeOperatorKey(operatorKey?: string) {
+    return this.web3.eth.abi.encodeParameter('string', operatorKey);
+  }
+  
+  decodeOperatorKey(operatorKey?: string) {
+    return this.web3.eth.abi.decodeParameter('string', operatorKey);
+  }
+
+  @action.bound
   clean() {
     this.accountAddress = '';
   }

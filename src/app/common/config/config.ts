@@ -42,7 +42,7 @@ const config = {
         COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
     },
     CONTRACT: {
-        ADDRESS: '0x1970F94e594b28b3c4C19eF1DC83621b58304cCa',
+        ADDRESS: '0x9640256dc8b8ae0be84B1a2885277Bc4F26869D7',
         ABI: [
             {
                 'anonymous': false,

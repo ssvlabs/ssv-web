@@ -35,6 +35,7 @@ class WalletStore extends BaseStore {
   encodeOperatorKey(operatorKey?: string) {
     return this.web3.eth.abi.encodeParameter('string', operatorKey);
   }
+  
   decodeOperatorKey(operatorKey?: string) {
     return this.web3.eth.abi.decodeParameter('string', operatorKey);
   }

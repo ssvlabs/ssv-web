@@ -26,7 +26,7 @@ class ContractOperator extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
 
   @observable operators: IOperator[] = [];
-  @observable loadingOperators: boolean = false;
+  @observable operatorsLoaded: boolean = false;
 
   @observable addingNewOperator: boolean = false;
   @observable newOperatorReceipt: any = null;
@@ -267,7 +267,6 @@ class ContractOperator extends BaseStore {
    */
   @action.bound
   async loadOperators() {
-    this.loadingOperators = true;
     const query = `
     {
       operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
@@ -290,6 +289,7 @@ class ContractOperator extends BaseStore {
     this.operators = await new ApiRequest(requestInfo)
       .sendRequest()
       .then((response: any) => {
+        this.operatorsLoaded = true;
         return response.data?.operators ?? [];
       });
   }

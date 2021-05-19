@@ -3,6 +3,7 @@ import Threshold, { IShares } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import ErrnoException = NodeJS.ErrnoException;
 import * as fs from 'fs';
+// const fs = require('fs');
 
 export async function extractPrivateKey(file: string, keystorePassword: string) {
     try {
@@ -38,7 +39,7 @@ export async function createThreshold(privateKey: string) {
 
 export async function readFile(filePath: string) {
     return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8', (err: ErrnoException, data: string) => {
+        fs.readFile(filePath, 'utf8', (err: ErrnoException | null, data: string) => {
             if (err) {
                 reject(err);
             } else {

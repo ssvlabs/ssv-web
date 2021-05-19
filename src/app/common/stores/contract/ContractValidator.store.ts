@@ -9,6 +9,7 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
+import config from '~app/common/config';
 
 class ContractValidator extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
@@ -97,13 +98,12 @@ class ContractValidator extends BaseStore {
         return share.publicKey;
       });
       const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey:string) => {
-        console.log(walletStore.decodeOperatorKey(operatorKey));
         return atob(walletStore.decodeOperatorKey(operatorKey));
       });
       const encryptedShares: EncryptShare[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
       // Collect all private keys from shares
       const encryptedKeys: string[] = encryptedShares.map((share: IShares) => {
-        return share.privateKey;
+        return walletStore.encodeOperatorKey(share.privateKey);
       });
 
       const payload = [
@@ -123,6 +123,7 @@ class ContractValidator extends BaseStore {
           .then((gasAmount: any) => {
             this.addingNewValidator = true;
             this.estimationGas = gasAmount * 0.000000001;
+            if (config.FEATURE.DOLLAR_CALCULATION) {
             gasEstimation
               .estimateGasInUSD(this.estimationGas)
               .then((rate: number) => {
@@ -132,6 +133,10 @@ class ContractValidator extends BaseStore {
               .catch((error: any) => {
                 applicationStore.displayUserError(error);
               });
+            } else {
+              this.dollarEstimationGas = this.estimationGas * 3377;
+              resolve(true);
+            }
           })
           .catch((error: any) => {
             applicationStore.displayUserError(error);

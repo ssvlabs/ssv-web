@@ -28,9 +28,9 @@ context('Add Validator', () => {
   });
 
   it('should generate keystore using "deposit" CLI and upload its data in file upload form', async () => {
-    cy.task('generateNewMnemonic').then((keystoreData) => {
+    cy.task('getKeyStoreData').then((keystoreData) => {
       cy.get('input[type="file"]').attachFile({
-        fileContent: keystoreData,
+        fileContent: JSON.parse(String(keystoreData)),
         fileName: 'keystore.json',
         mimeType: 'text/json',
       });

@@ -5,7 +5,7 @@
 import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
 
-const operatorPublicKeyLength = 128;
+const operatorPublicKeyLength = config.FEATURE.OPERATORS.VALID_KEY_LENGTH;
 
 context('Add Operator', () => {
   before(() => {

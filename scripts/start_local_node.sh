@@ -4,7 +4,7 @@ mkdir -p ./tmp
 cat ./tmp/local-node.pid | xargs kill -9
 npx hardhat node > ./tmp/accounts.txt &
 echo $! > ./tmp/local-node.pid
-npx -p node-notifier-cli notify -t 'SSV Webapp Testing' -m 'Starting local chain node...'
+#npx -p node-notifier-cli notify -t 'SSV Webapp Testing' -m 'Starting local chain node...'
 
 fetchstatus() {
   curl \
@@ -21,4 +21,15 @@ until [ "$urlstatus" = 200 ]; do  # until our result is success...
   urlstatus=$(fetchstatus)        # then poll again.
 done
 
-npx -p node-notifier-cli notify -t 'SSV Webapp Testing' -m 'Local chain node is being STARTED!'
+#npx -p node-notifier-cli notify -t 'SSV Webapp Testing' -m 'Local chain node is being STARTED!'
+
+pushd $(pwd)
+cd ./cypress/plugins
+git clone https://github.com/bloxapp/ssv-network.git
+cp -f ./ssv-network-tsconfig.json ./ssv-network/tsconfig.json
+cd ./ssv-network
+git reset --hard HEAD
+git pull
+npm i
+rm -rf ./cache
+npx hardhat run ./scripts/deploy.ts --network localhost

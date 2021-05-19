@@ -3,6 +3,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import config, { translations } from '~app/common/config';
+import testConfig from './config';
+
+config.CONTRACT.ADDRESS = testConfig.CONTRACT_ADDRESS;
 
 context('Add Validator', () => {
   before(() => {

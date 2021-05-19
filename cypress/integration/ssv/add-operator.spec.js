@@ -4,7 +4,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
+import testConfig from './config';
 
+config.CONTRACT.ADDRESS = testConfig.CONTRACT_ADDRESS;
 const operatorPublicKeyLength = config.FEATURE.OPERATORS.VALID_KEY_LENGTH;
 
 context('Add Operator', () => {
@@ -44,8 +46,8 @@ context('Add Operator', () => {
 
   it('should fill up operator data with errors', () => {
     const operatorName = 'TestOperator: 123';
-    cy.get('[data-testid=new-operator-name]').type(`${operatorName}`);
-    cy.get('[data-testid=new-operator-key]').type(`0x${randomValueHex(operatorPublicKeyLength + 1)}`);
+    cy.get('[data-testid=new-operator-name]').clear().type(`${operatorName}`);
+    cy.get('[data-testid=new-operator-key]').clear().type(`0x${randomValueHex(operatorPublicKeyLength + 1)}`);
     cy.get('[data-testid="register-operator-button"]').should('be.disabled');
     cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name should contain only alphanumeric characters.');
     cy.get('[data-testid=new-operator-name]').clear().type('A');

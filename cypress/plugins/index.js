@@ -12,7 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 import * as path from 'path';
-import { getSigners, getKeyStoreData, liftLocalNetworkNode } from './tasks';
+import { getSigners, getKeyStoreData, deployContract } from './tasks';
 
 /**
  * Browser launched hook
@@ -48,6 +48,6 @@ module.exports = (on, config) => {
   on('task', {
     getSigners,
     getKeyStoreData,
-    liftLocalNetworkNode,
+    deployContract,
   });
 };

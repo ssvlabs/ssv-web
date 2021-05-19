@@ -106,7 +106,7 @@ class ContractOperator extends BaseStore {
           .then((gasAmount: any) => {
             this.addingNewOperator = true;
             this.estimationGas = gasAmount * 0.000000001;
-            if (!config.CONDITIONAL.ESTIMATION) {
+            if (config.FEATURE.DOLLAR_CALCULATION) {
               gasEstimation
                   .estimateGasInUSD(this.estimationGas)
                   .then((rate: number) => {

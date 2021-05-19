@@ -1,3 +1,5 @@
+import config from '~app/common/config';
+
 interface ErrorObject {
     shouldDisplay: boolean,
     errorMessage: string
@@ -8,7 +10,7 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
     const regx = /^[A-Za-z0-9]+$/;
     if (value.length === 0) {
         response.errorMessage = 'Please enter an operator key.';
-    } else if (value.length !== 612) {
+    } else if (value.length !== config.FEATURE.OPERATORS.VALID_KEY_LENGTH) {
         response.errorMessage = 'Invalid operator key - see our documentation to generate your key.';
     } else if (!regx.test(value)) {
         response.errorMessage = 'Operator key should contain only alphanumeric characters.';

@@ -1,13 +1,13 @@
+import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+import Threshold, { IShares } from '~lib/crypto/Threshold';
+import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import ErrnoException = NodeJS.ErrnoException;
-import EthereumKeyStore from "../../src/lib/crypto/EthereumKeyStore";
-import Threshold, {IShares} from "../../src/lib/crypto/Threshold";
-import Encryption, {EncryptShare} from "../../src/lib/crypto/Encryption/Encryption";
-const fs = require('fs');
+import * as fs from 'fs';
 
 export async function extractPrivateKey(file: string, keystorePassword: string) {
     try {
         const keyStore = new EthereumKeyStore(file);
-        return await keyStore.getPrivateKey(keystorePassword).then((privateKey: string) => privateKey)
+        return await keyStore.getPrivateKey(keystorePassword).then((privateKey: string) => privateKey);
     } catch (error: any) {
         console.log(error);
         return error;
@@ -19,8 +19,8 @@ export async function encryptShares(operatorsPublicKey: string[], shares: IShare
         const decodedOperators = operatorsPublicKey.map((operator: string) => {
             return atob(operator);
         });
-        const  encryptedShares: EncryptShare[] = await new Encryption(decodedOperators, shares).encrypt();
-        return encryptedShares
+        const encryptedShares: EncryptShare[] = await new Encryption(decodedOperators, shares).encrypt();
+        return encryptedShares;
     } catch (error: any) {
         console.log(error);
         return error;
@@ -41,7 +41,7 @@ export async function readFile(filePath: string) {
         fs.readFile(filePath, 'utf8', (err: ErrnoException, data: string) => {
             if (err) {
                 reject(err);
-            }else{
+            } else {
                 resolve(JSON.parse(data));
             }
         });

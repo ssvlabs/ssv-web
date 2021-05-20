@@ -44,6 +44,7 @@ const translations = {
   },
   OPERATOR: {
     REGISTER: {
+      TOOL_TIP: 'Operators identifier in the SSV network. To generate your key see our documentation',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
     },

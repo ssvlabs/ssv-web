@@ -17,7 +17,7 @@ export const useStyles = makeStyles((theme) => ({
     title: {
         fontWeight: 'bold',
     },
-    congratsIcon: {
+    congratsImage: {
         width: '100px',
     },
     subTitle: {

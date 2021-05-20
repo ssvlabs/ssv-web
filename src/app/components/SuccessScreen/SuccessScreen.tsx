@@ -38,7 +38,7 @@ const SuccessScreen = () => {
       <Grid className={classes.gridContainer} container direction="column" justify="center" alignItems="center">
         <img className={classes.successIcon} src={'/images/checked.svg'} />
         {header}
-        <img className={classes.congratsIcon} src={'/images/congrats.svg'} />
+        <img className={classes.congratsImage} src={'/images/congrats.svg'} />
         <Paper className={classes.guideStepsContainerPaper}>
           <Grid container wrap="nowrap" spacing={1}>
             <Grid item md={8} xs={8}>

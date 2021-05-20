@@ -31,8 +31,11 @@ const OperatorConfirmation = () => {
       console.log(error);
     });
   };
+  const backNavigationClick = () => {
+    operatorStore.setAddingNewOperator(false);
+  };
 
-  const backNavigation = <BackNavigation to={config.routes.OPERATOR.HOME} text="Register Operator" />;
+  const backNavigation = <BackNavigation onClick={backNavigationClick} to={config.routes.OPERATOR.GENERATE_KEYS} text="Register Operator" />;
   const header = <Header title={translations.OPERATOR.CONFIRMATION.TITLE} subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />;
   const sections: IDataSection[] = [
     {

@@ -52,7 +52,7 @@ const SlashingWarning = () => {
 
   return (
     <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.VALIDATOR.IMPORT} text="Import Validator" />
+      <BackNavigation to={config.routes.VALIDATOR.IMPORT} text={translations.VALIDATOR.SELECT_OPERATORS.TITLE} />
       <Header title={translations.VALIDATOR.SLASHING_WARNING.TITLE} subtitle={translations.VALIDATOR.SLASHING_WARNING.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>

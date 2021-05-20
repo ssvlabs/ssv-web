@@ -43,9 +43,13 @@ const SelectOperators = () => {
     history.push(config.routes.VALIDATOR.SLASHING_WARNING);
   };
 
+  const unselectAllOperators = () => {
+    contractOperator.unselectAllOperators();
+  };
+
   return (
     <Paper className={classes.mainContainer}>
-      <HistoryBackNavigation text={translations.VALIDATOR.IMPORT.TITLE} />
+      <HistoryBackNavigation text={translations.VALIDATOR.IMPORT.TITLE} onClick={unselectAllOperators} />
       <Header title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} subtitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>

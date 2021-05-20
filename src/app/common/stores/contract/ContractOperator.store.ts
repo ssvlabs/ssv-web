@@ -226,10 +226,7 @@ class ContractOperator extends BaseStore {
       return;
     }
     // Deselect already selected once
-    for (let i = 0; i < this.operators.length; i += 1) {
-      this.operators[i].selected = false;
-      this.operators[i].autoSelected = false;
-    }
+    this.unselectAllOperators();
 
     // Select as many as necessary so the gap would be reached
     let selectedIndex = 0;
@@ -237,6 +234,15 @@ class ContractOperator extends BaseStore {
       this.operators[selectedIndex].selected = true;
       this.operators[selectedIndex].autoSelected = true;
       selectedIndex += 1;
+    }
+    this.operators = Array.from(this.operators);
+  }
+
+  @action.bound
+  unselectAllOperators() {
+    for (let i = 0; i < this.operators.length; i += 1) {
+      this.operators[i].selected = false;
+      this.operators[i].autoSelected = false;
     }
     this.operators = Array.from(this.operators);
   }

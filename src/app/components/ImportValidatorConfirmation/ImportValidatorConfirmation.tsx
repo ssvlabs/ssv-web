@@ -85,7 +85,7 @@ const ImportValidatorConfirmation = () => {
       header={header}
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
-      buttonText="Register Validator"
+      buttonText="Register validator"
     >
       <EmptyPlaceholder height={50} />
     </TransactionConfirmationContainer>

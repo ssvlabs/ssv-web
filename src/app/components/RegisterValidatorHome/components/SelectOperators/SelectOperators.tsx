@@ -24,6 +24,7 @@ const SelectOperators = () => {
   const { redirectUrl, history } = useUserFlow();
 
   useEffect(() => {
+    unselectAllOperators();
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
 
@@ -49,7 +50,7 @@ const SelectOperators = () => {
 
   return (
     <Paper className={classes.mainContainer}>
-      <HistoryBackNavigation text={translations.VALIDATOR.IMPORT.TITLE} onClick={unselectAllOperators} />
+      <HistoryBackNavigation to={config.routes.VALIDATOR.DECRYPT} text={translations.VALIDATOR.IMPORT.TITLE} onClick={unselectAllOperators} />
       <Header title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} subtitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>

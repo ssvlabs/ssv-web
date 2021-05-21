@@ -17,13 +17,31 @@ class ContractValidator extends BaseStore {
 
   @observable validatorPrivateKey: string = '';
   @observable validatorPrivateKeyFile: File | null = null;
-  @observable validatorKeyStorePassword: string = '';
+  @observable validatorKeyStorePassword: Buffer = Buffer.alloc(0);
 
   @observable addingNewValidator: boolean = false;
   @observable newValidatorReceipt: any = null;
 
   @observable estimationGas: number = 0;
   @observable dollarEstimationGas: number = 0;
+
+  @action.bound
+  cleanPrivateData() {
+    for (let i = 0; i < this.validatorKeyStorePassword.length; i += 1) {
+      this.validatorKeyStorePassword[i] = parseInt(String(Math.ceil(Math.random() * 50)), 16);
+    }
+    this.validatorKeyStorePassword = Buffer.from('');
+  }
+
+  @computed
+  get password() {
+    return this.validatorKeyStorePassword.toString().trim();
+  }
+
+  @action.bound
+  setPassword(value: string) {
+    this.validatorKeyStorePassword = Buffer.from(value);
+  }
 
   /**
    * Return validator public key
@@ -46,7 +64,7 @@ class ContractValidator extends BaseStore {
     return this.validatorPrivateKeyFile?.text().then(async (string) => {
       try {
         this.keyStore = new EthereumKeyStore(string);
-        const privateKey = await this.keyStore.getPrivateKey(this.validatorKeyStorePassword);
+        const privateKey = await this.keyStore.getPrivateKey(this.password);
         this.setValidatorPrivateKey(privateKey);
         applicationStore.setIsLoading(false);
         return privateKey;
@@ -215,15 +233,6 @@ class ContractValidator extends BaseStore {
   setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
     this.validatorPrivateKeyFile = validatorPrivateKeyFile;
     this.validatorPrivateKey = '';
-  }
-
-  /**
-   * Set password from keystore file
-   * @param validatorKeyStorePassword
-   */
-  @action.bound
-  setValidatorKeyStorePassword(validatorKeyStorePassword: string) {
-    this.validatorKeyStorePassword = validatorKeyStorePassword;
   }
 }
 

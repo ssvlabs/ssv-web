@@ -59,7 +59,7 @@ const ImportValidatorConfirmation = () => {
     },
     {
       name: <strong>Est. Transaction Cost</strong>,
-      value: <Link href="/" target="_blank">Need ETH?</Link>,
+      value: <Link href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link>,
     },
     {
       name: 'Network fee',
@@ -85,7 +85,7 @@ const ImportValidatorConfirmation = () => {
       header={header}
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
-      buttonText="Register Validator"
+      buttonText="Run validator"
     >
       <EmptyPlaceholder height={50} />
     </TransactionConfirmationContainer>

@@ -93,7 +93,7 @@ const GenerateOperatorKeys = () => {
           </InputLabel>
 
           <br />
-          <InputLabel title="Operator Key" withHint toolTipText={'this should be an hyperlinked'}>
+          <InputLabel title="Operator Key" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP}>
             <TextInput type="text"
               data-testid="new-operator-key"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}

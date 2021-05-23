@@ -46,6 +46,11 @@ class ContractOperator extends BaseStore {
     this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
   }
 
+  @action.bound
+  setAddingNewOperator(status: boolean) {
+    this.addingNewOperator = status;
+  }
+
   /**
    * Check if operator already exists in the contract
    * @param publicKey
@@ -78,19 +83,18 @@ class ContractOperator extends BaseStore {
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
-    await walletStore.connect();
     const contract: Contract = await walletStore.getContract();
     const address: string = walletStore.accountAddress;
-    applicationStore.setIsLoading(true);
 
     return new Promise((resolve, reject) => {
       if (!walletStore.checkIfWalletReady()) {
+        applicationStore.setIsLoading(false);
         reject();
       }
 
       const transaction: INewOperatorTransaction = this.newOperatorKeys;
       this.newOperatorReceipt = null;
-      this.addingNewOperator = true;
+      this.setAddingNewOperator(true);
 
       // Send add operator transaction
       const payload = [
@@ -104,7 +108,7 @@ class ContractOperator extends BaseStore {
         contract.methods.addOperator(...payload)
           .estimateGas({ from: address })
           .then((gasAmount: any) => {
-            this.addingNewOperator = true;
+            this.setAddingNewOperator(true);
             this.estimationGas = gasAmount * 0.000000001;
             if (config.FEATURE.DOLLAR_CALCULATION) {
               gasEstimation
@@ -133,14 +137,14 @@ class ContractOperator extends BaseStore {
           })
           .on('error', (error: any) => {
             applicationStore.displayUserError(error);
-            this.addingNewOperator = false;
+            this.setAddingNewOperator(false);
             reject(error);
           });
 
         // Listen for final event when it's added
         contract.events
           .OperatorAdded({}, (error: any, event: any) => {
-            this.addingNewOperator = false;
+            this.setAddingNewOperator(false);
             if (error) {
               notificationsStore.showMessage(error.message, 'error');
             } else {
@@ -226,10 +230,7 @@ class ContractOperator extends BaseStore {
       return;
     }
     // Deselect already selected once
-    for (let i = 0; i < this.operators.length; i += 1) {
-      this.operators[i].selected = false;
-      this.operators[i].autoSelected = false;
-    }
+    this.unselectAllOperators();
 
     // Select as many as necessary so the gap would be reached
     let selectedIndex = 0;
@@ -237,6 +238,15 @@ class ContractOperator extends BaseStore {
       this.operators[selectedIndex].selected = true;
       this.operators[selectedIndex].autoSelected = true;
       selectedIndex += 1;
+    }
+    this.operators = Array.from(this.operators);
+  }
+
+  @action.bound
+  unselectAllOperators() {
+    for (let i = 0; i < this.operators.length; i += 1) {
+      this.operators[i].selected = false;
+      this.operators[i].autoSelected = false;
     }
     this.operators = Array.from(this.operators);
   }

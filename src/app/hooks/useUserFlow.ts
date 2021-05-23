@@ -93,13 +93,12 @@ const slashingWarningFlow: IUserFlow = {
   name: 'Slashing Warning',
   route: routes.VALIDATOR.SLASHING_WARNING,
   depends: [
-    importValidatorFlow,
-    createValidatorFlow,
+    validatorSelectOperatorsFlow,
   ],
   condition: () => {
     const stores = useStores();
-    const contractValidator: ContractValidator = stores.ContractValidator;
-    return !!contractValidator.validatorPrivateKey;
+    const contractOperator: ContractOperator = stores.ContractOperator;
+    return !!contractOperator.operators?.length;
   },
 };
 
@@ -109,7 +108,14 @@ const validatorConfirmationFlow: IUserFlow = {
   depends: [
     slashingWarningFlow,
   ],
-  condition: slashingWarningFlow.condition,
+  condition: () => {
+    const stores = useStores();
+    const contractValidator: ContractValidator = stores.ContractValidator;
+    if (!contractValidator.validatorPrivateKey) {
+      return false;
+    }
+    return slashingWarningFlow.condition ? slashingWarningFlow.condition() : true;
+  },
 };
 
 const successScreen: IUserFlow = {
@@ -174,6 +180,14 @@ const dispatchUserFlow = (
   return null;
 };
 
+const setUserFlow = (userFlow: string) => {
+  localStorage.setItem('userFlow', userFlow);
+};
+
+const getUserFlow = () => {
+  return localStorage.getItem('userFlow');
+};
+
 const useUserFlow = () => {
   const history = useHistory();
   const currentRoute = useRouteMatch();
@@ -186,6 +200,8 @@ const useUserFlow = () => {
   }
 
   return {
+    setUserFlow,
+    getUserFlow,
     routes,
     history,
     path: currentRoute.path,

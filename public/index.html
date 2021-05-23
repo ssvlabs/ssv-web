@@ -16,12 +16,29 @@
             name="description"
             content="Manage Secret Shared Nodes Easy"
         />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="sandbox allow-forms allow-scripts allow-same-origin allow-top-navigation; frame-src 'self';"
+        />
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png"/>
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>
     </head>
-
-    <body>
+    <body style="padding: 0; margin: 0">
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"></div>
     </body>
+    <script type="text/javascript">
+        const shouldRenderApp = () => {
+            return window.location.hash !== '#protected' && !window.Cypress
+        };
+        const renderAppInIframe = () => {
+            const iframe = document.createElement('iframe');
+            iframe.src = window.location + '#protected';
+            iframe.width = '100%';
+            iframe.style = 'border: 0; height: 100vh;';
+            document.body.appendChild(iframe);
+        };
+        if (shouldRenderApp()) {
+            renderAppInIframe();
+        }
+    </script>
 </html>

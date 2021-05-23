@@ -6,6 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { DropzoneArea } from 'material-ui-dropzone';
+import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
@@ -43,6 +44,7 @@ const ImportValidator = () => {
   const validatorStore: ContractValidator = stores.ContractValidator;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
+  const { getUserFlow } = useUserFlow();
 
   useEffect(() => {
     setNextButtonEnabled(!!validatorStore.validatorPrivateKey || !!validatorStore.validatorPrivateKeyFile);
@@ -65,9 +67,17 @@ const ImportValidator = () => {
     }
   };
 
+  const getBackNavigationTitle = (): string => {
+    const userFlow = getUserFlow();
+    if (config.routes.VALIDATOR.CREATE === userFlow) {
+      return 'Create Validator';
+    }
+    return 'Import Validator';
+  };
+
   return (
     <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.VALIDATOR.HOME} text="Create Validator" />
+      <BackNavigation to={config.routes.VALIDATOR.HOME} text={getBackNavigationTitle()} />
       <Header title={translations.VALIDATOR.IMPORT.TITLE} subtitle={translations.VALIDATOR.IMPORT.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
@@ -89,6 +99,7 @@ const ImportValidator = () => {
           </DropZoneContainer>
 
           <Button
+            data-testid="select-operators-next"
             disabled={!nextButtonEnabled}
             variant="contained"
             color="primary"

@@ -1,10 +1,8 @@
 #!/bin/bash
 
 mkdir -p ./tmp
-cat ./tmp/local-node.pid | xargs kill -9
+lsof -ti tcp:8545 | xargs kill
 npx hardhat node > ./tmp/accounts.txt &
-echo $! > ./tmp/local-node.pid
-#npx -p node-notifier-cli notify -t 'SSV Webapp Testing' -m 'Starting local chain node...'
 
 fetchstatus() {
   curl \
@@ -20,8 +18,6 @@ until [ "$urlstatus" = 200 ]; do  # until our result is success...
   sleep 5                         # wait a second...
   urlstatus=$(fetchstatus)        # then poll again.
 done
-
-#npx -p node-notifier-cli notify -t 'SSV Webapp Testing' -m 'Local chain node is being STARTED!'
 
 pushd $(pwd)
 cd ./cypress/plugins

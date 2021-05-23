@@ -61,6 +61,7 @@ const EnterValidatorPrivateKey = () => {
           <br />
           <InputLabel title="Keystore Password">
             <TextInput
+              data-testid="keystore-password"
               type="text"
               value={validatorStore.password}
               onChange={(event: any) => validatorStore.setPassword(event.target.value)}
@@ -68,6 +69,7 @@ const EnterValidatorPrivateKey = () => {
           </InputLabel>
 
           <Button
+            data-testid="decrypt-keystore-button"
             disabled={!validatorStore.password.length}
             variant="contained"
             color="primary"

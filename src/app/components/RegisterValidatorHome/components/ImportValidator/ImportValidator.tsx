@@ -99,6 +99,7 @@ const ImportValidator = () => {
           </DropZoneContainer>
 
           <Button
+            data-testid="select-operators-next"
             disabled={!nextButtonEnabled}
             variant="contained"
             color="primary"

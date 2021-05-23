@@ -31,12 +31,26 @@ context('Add Validator', () => {
   });
 
   it('should generate keystore using "deposit" CLI and upload its data in file upload form', async () => {
-    cy.task('getKeyStoreData').then((keystoreData) => {
-      cy.get('input[type="file"]').attachFile({
-        fileContent: JSON.parse(String(keystoreData)),
-        fileName: 'keystore.json',
-        mimeType: 'text/json',
-      });
+    const keystoreData = await cy.task('getKeyStoreData');
+    await cy.get('input[type="file"]').attachFile({
+      fileContent: JSON.parse(String(keystoreData)),
+      fileName: 'keystore.json',
+      mimeType: 'text/json',
     });
+  });
+
+  it('should decrypt keystore data with password', () => {
+    // Click on next button
+    cy.get('[data-testid=select-operators-next]').should('be.enabled');
+    cy.get('[data-testid=select-operators-next]').click();
+
+    // Enter password and click next
+    cy.get('[data-testid="keystore-password"]').clear().type('testtest');
+    cy.get('[data-testid="decrypt-keystore-button"]').should('be.enabled');
+    cy.get('[data-testid="decrypt-keystore-button"]').click();
+  });
+
+  it('should select four operators from the lists', () => {
+
   });
 });

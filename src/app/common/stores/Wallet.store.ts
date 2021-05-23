@@ -24,7 +24,7 @@ class WalletStore extends BaseStore {
   async getContract(address?: string): Promise<Contract> {
     if (!this.contract && this.connected) {
       const contractAddress: string = config.CONTRACT.ADDRESS;
-      this.buildContract(address ?? contractAddress);
+      this.contract = this.buildContract(address ?? contractAddress);
     }
     // @ts-ignore
     return this.contract;
@@ -33,7 +33,7 @@ class WalletStore extends BaseStore {
   @action.bound
   buildContract(address: string) {
     const abi: any = config.CONTRACT.ABI;
-    this.contract = new this.web3.eth.Contract(abi, address);
+    return new this.web3.eth.Contract(abi, address);
   }
 
   @action.bound

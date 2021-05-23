@@ -90,6 +90,7 @@ const SlashingWarning = () => {
           />
 
           <Button
+            data-testid="register-validator"
             disabled={!nextButtonEnabled}
             variant="contained"
             color="primary"

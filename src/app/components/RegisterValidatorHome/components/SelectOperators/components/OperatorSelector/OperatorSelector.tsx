@@ -10,10 +10,11 @@ import ContractOperator, { IOperator } from '~app/common/stores/contract/Contrac
 import { OperatorName, OperatorKey } from './components/Operator';
 
 type OperatorSelectorProps = {
-  indexedOperator: IOperator
+  indexedOperator: IOperator,
+  dataTestId: string
 };
 
-const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
+const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
@@ -46,6 +47,7 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
         </InputLabel>
       )}
       <Select
+        data-testid={dataTestId}
         className={classes.select}
         labelId="operator-select-label"
         value={selectedOperator}

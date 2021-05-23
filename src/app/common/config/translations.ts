@@ -39,7 +39,7 @@ const translations = {
   },
   SUCCESS: {
     TITLE: 'Welcome to the SSV Network!',
-    OPERATOR_DESCRIPTION: 'With every new operator, out network grows stronger',
+    OPERATOR_DESCRIPTION: 'With every new operator, our network grows stronger',
     VALIDATOR_DESCRIPTION: 'Your validator is now running on the robust and secure infrastructure of our network',
   },
   OPERATOR: {

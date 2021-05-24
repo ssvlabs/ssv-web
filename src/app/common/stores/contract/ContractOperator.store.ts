@@ -2,7 +2,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -62,15 +62,9 @@ class ContractOperator extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
       await walletStore.connect();
-      console.log('pass');
       const contractInstance = contract ?? await walletStore.getContract();
-      console.log('contract!');
-      console.log(contractInstance);
       const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
-      console.log('encoded');
-      console.log(encodeOperatorKey);
       this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
-      console.log('result');
       const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: walletStore.accountAddress });
       return result[1] !== '0x0000000000000000000000000000000000000000';
     } catch (e) {

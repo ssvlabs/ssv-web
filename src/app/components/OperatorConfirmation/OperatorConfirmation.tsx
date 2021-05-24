@@ -4,7 +4,7 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';

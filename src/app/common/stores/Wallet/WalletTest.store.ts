@@ -42,6 +42,7 @@ class WalletTestStore extends BaseStore implements Wallet {
         return this.web3.eth.abi.encodeParameter('string', operatorKey);
     }
 
+    @action.bound
     decodeOperatorKey(operatorKey?: string) {
         return this.web3.eth.abi.decodeParameter('string', operatorKey);
     }

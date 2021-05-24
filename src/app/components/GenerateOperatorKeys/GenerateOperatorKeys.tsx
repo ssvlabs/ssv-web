@@ -10,7 +10,7 @@ import { randomValueHex } from '~lib/utils/crypto';
 import Header from '~app/common/components/Header';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';

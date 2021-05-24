@@ -6,8 +6,9 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
+import Wallet from '~app/common/stores/Wallet/abstractWallet';
 
-class WalletStore extends BaseStore {
+class WalletStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;
 
   @observable web3: any = null;

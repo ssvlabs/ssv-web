@@ -93,7 +93,7 @@ class WalletStore extends BaseStore {
         .catch((error: any) => {
           applicationStore.setIsLoading(false);
           console.error('Wallet check errorMessage', error);
-          notificationsStore.showMessage('Wallet is not connected!', 'error');
+          // notificationsStore.showMessage('Wallet is not connected!', 'error');
         });
     }
   }
@@ -128,8 +128,6 @@ class WalletStore extends BaseStore {
     console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    notificationsStore.showMessage('Successfully connected to Wallet!', 'success');
   }
 
   /**

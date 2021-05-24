@@ -26,9 +26,6 @@ const OperatorConfirmation = () => {
     await walletStore.connect();
     operatorStore.addNewOperator().then(() => {
       history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-    }).catch((error: any) => {
-      history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-      console.log(error);
     });
   };
   const backNavigationClick = () => {

@@ -136,8 +136,10 @@ class ContractOperator extends BaseStore {
             this.newOperatorReceipt = receipt;
           })
           .on('error', (error: any) => {
-            applicationStore.displayUserError(error);
             this.setAddingNewOperator(false);
+            notificationsStore.showMessage(error.message, 'error');
+            console.debug('Contract Error', error);
+            applicationStore.setIsLoading(false);
             reject(error);
           });
 

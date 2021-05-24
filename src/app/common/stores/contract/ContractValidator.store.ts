@@ -25,6 +25,8 @@ class ContractValidator extends BaseStore {
   @observable estimationGas: number = 0;
   @observable dollarEstimationGas: number = 0;
 
+  @observable createValidatorPayLoad: (string | string[])[] | undefined = undefined;
+
   @action.bound
   cleanPrivateData() {
     for (let i = 0; i < this.validatorKeyStorePassword.length; i += 1) {
@@ -87,50 +89,24 @@ class ContractValidator extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const operatorStore: ContractOperator = this.getStore('contract/ContractOperator');
     const gasEstimation: PriceEstimation = new PriceEstimation();
     this.newValidatorReceipt = null;
     this.addingNewValidator = true;
     await walletStore.connect();
     const contract: Contract = await walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
-    const threshold: Threshold = new Threshold();
-    const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
     if (!walletStore.accountAddress) return;
+
     applicationStore.setIsLoading(true);
+
+    const payload: (string | string[])[] = await this.createPayLoad();
+
     return new Promise((resolve, reject) => {
       if (!walletStore.checkIfWalletReady()) {
         reject();
       }
-      // Get list of selected operator's public keys
-      const operatorPublicKeys: string[] = operatorStore.operators
-        .filter((operator: IOperator) => {
-          return operator.selected;
-        })
-        .map((operator: IOperator) => {
-          return operator.pubkey;
-        });
-      // Collect all public keys from shares
-      const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
-        return share.publicKey;
-      });
-      const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey:string) => {
-        return atob(walletStore.decodeOperatorKey(operatorKey));
-      });
-      const encryptedShares: EncryptShare[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
-      // Collect all private keys from shares
-      const encryptedKeys: string[] = encryptedShares.map((share: IShares) => {
-        return walletStore.encodeOperatorKey(share.privateKey);
-      });
 
-      const payload = [
-        ownerAddress,
-        thresholdResult.validatorPublicKey,
-        operatorPublicKeys,
-        sharePublicKeys,
-        encryptedKeys,
-      ];
       console.debug('Add Validator Payload: ', payload);
 
       if (getGasEstimation) {
@@ -213,6 +189,51 @@ class ContractValidator extends BaseStore {
             applicationStore.setIsLoading(false);
           });
       }
+    });
+  }
+
+  @action.bound
+  async createPayLoad(): Promise<(string | string[])[]> {
+    if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const operatorStore: ContractOperator = this.getStore('contract/ContractOperator');
+    const ownerAddress: string = walletStore.accountAddress;
+    const threshold: Threshold = new Threshold();
+    const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
+
+    return new Promise((resolve, reject) => {
+      if (!walletStore.checkIfWalletReady() && !thresholdResult) {
+        reject();
+      }
+      // Get list of selected operator's public keys
+      const operatorPublicKeys: string[] = operatorStore.operators
+          .filter((operator: IOperator) => {
+            return operator.selected;
+          })
+          .map((operator: IOperator) => {
+            return operator.pubkey;
+          });
+      // Collect all public keys from shares
+      const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
+        return share.publicKey;
+      });
+      const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey: string) => {
+        return atob(walletStore.decodeOperatorKey(operatorKey));
+      });
+      const encryptedShares: EncryptShare[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
+      // Collect all private keys from shares
+      const encryptedKeys: string[] = encryptedShares.map((share: IShares) => {
+        return walletStore.encodeOperatorKey(share.privateKey);
+      });
+      const payLoad = [
+        ownerAddress,
+        thresholdResult.validatorPublicKey,
+        operatorPublicKeys,
+        sharePublicKeys,
+        encryptedKeys,
+      ];
+      this.createValidatorPayLoad = payLoad;
+      resolve(payLoad);
     });
   }
 

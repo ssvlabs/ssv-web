@@ -40,7 +40,13 @@ class BaseStore {
     const storeNameParts = name.split('/');
     const storeName = storeNameParts[storeNameParts.length - 1];
     if (!BaseStore.stores[storeName]) {
-      const StoreClass: any = require(`~app/common/stores/${name}.store`).default;
+      let StoreClass: any;
+      if (storeName === 'Wallet') {
+         const isTest: boolean = true || process.env.NODE_ENV;
+         StoreClass = require(`~app/common/stores/Wallet/${isTest ? 'WalletTest' : name}.store`).default;
+      } else {
+         StoreClass = require(`~app/common/stores/${name}.store`).default;
+      }
       BaseStore.stores[storeName] = new StoreClass();
     }
     return BaseStore.stores[storeName];

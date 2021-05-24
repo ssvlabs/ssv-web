@@ -62,10 +62,16 @@ class ContractOperator extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
       await walletStore.connect();
+      console.log('pass');
       const contractInstance = contract ?? await walletStore.getContract();
+      console.log('contract!');
+      console.log(contractInstance);
       const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
+      console.log('encoded');
+      console.log(encodeOperatorKey);
       this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
-      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: fromAddress });
+      console.log('result');
+      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: walletStore.accountAddress });
       return result[1] !== '0x0000000000000000000000000000000000000000';
     } catch (e) {
       console.error('Exception from operator existence check:', e);
@@ -146,10 +152,12 @@ class ContractOperator extends BaseStore {
         // Listen for final event when it's added
         contract.events
           .OperatorAdded({}, (error: any, event: any) => {
+            console.log('<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>');
             this.setAddingNewOperator(false);
             if (error) {
               notificationsStore.showMessage(error.message, 'error');
             } else {
+              console.log('<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>');
               applicationStore.setIsLoading(false);
               this.newOperatorRegisterSuccessfully = true;
               notificationsStore.showMessage('You successfully added operator!', 'success');

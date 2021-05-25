@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import Button from '~app/common/components/AppBar/components/Button';
 
 const ConnectWalletButton = () => {

@@ -2,7 +2,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -54,18 +54,17 @@ class ContractOperator extends BaseStore {
   /**
    * Check if operator already exists in the contract
    * @param publicKey
-   * @param fromAddress
    * @param contract
    */
   @action.bound
-  async checkIfOperatorExists(publicKey: string, fromAddress: string, contract?: Contract): Promise<boolean> {
+  async checkIfOperatorExists(publicKey: string, contract?: Contract): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
       await walletStore.connect();
       const contractInstance = contract ?? await walletStore.getContract();
       const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
       this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
-      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: fromAddress });
+      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: walletStore.accountAddress });
       return result[1] !== '0x0000000000000000000000000000000000000000';
     } catch (e) {
       console.error('Exception from operator existence check:', e);
@@ -85,6 +84,7 @@ class ContractOperator extends BaseStore {
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = await walletStore.getContract();
     const address: string = walletStore.accountAddress;
+    applicationStore.setIsLoading(true);
 
     return new Promise((resolve, reject) => {
       if (!walletStore.checkIfWalletReady()) {
@@ -131,35 +131,20 @@ class ContractOperator extends BaseStore {
       } else {
         contract.methods.addOperator(...payload)
           .send({ from: address })
-          .on('receipt', (receipt: any) => {
-            console.debug('Contract Receipt', receipt);
-            this.newOperatorReceipt = receipt;
+          .on('receipt', async (receipt: any) => {
+            const event: boolean = 'OperatorAdded' in receipt.events;
+            if (event) {
+              console.debug('Contract Receipt', receipt);
+              this.newOperatorReceipt = receipt;
+              applicationStore.setIsLoading(false);
+              this.newOperatorRegisterSuccessfully = true;
+              resolve(event);
+            }
           })
           .on('error', (error: any) => {
             this.setAddingNewOperator(false);
-            console.debug('Contract Error', error);
-            applicationStore.setIsLoading(false);
-            reject(error);
-          });
-
-        // Listen for final event when it's added
-        contract.events
-          .OperatorAdded({}, (error: any, event: any) => {
-            this.setAddingNewOperator(false);
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-            } else {
-              applicationStore.setIsLoading(false);
-              this.newOperatorRegisterSuccessfully = true;
-              notificationsStore.showMessage('You successfully added operator!', 'success');
-              resolve(event);
-            }
-            console.debug({ error, event });
-            applicationStore.setIsLoading(false);
-          })
-          .on('error', (error: any, receipt: any) => {
             notificationsStore.showMessage(error.message, 'error');
-            console.debug({ error, receipt });
+            console.debug('Contract Error', error);
             applicationStore.setIsLoading(false);
             reject(error);
           });

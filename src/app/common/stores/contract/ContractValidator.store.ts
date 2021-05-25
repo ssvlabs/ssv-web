@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -147,9 +147,13 @@ class ContractValidator extends BaseStore {
           .addValidator(...payload)
           .send({ from: ownerAddress })
           .on('receipt', (receipt: any) => {
-            console.debug('Contract Receipt', receipt);
-            this.newValidatorReceipt = receipt;
-            applicationStore.setIsLoading(false);
+            const event: boolean = 'ValidatorAdded' in receipt.events;
+            if (event) {
+              console.debug('Contract Receipt', receipt);
+              this.newValidatorReceipt = receipt;
+              applicationStore.setIsLoading(false);
+              resolve(event);
+            }
           })
           .on('error', (error: any) => {
             this.addingNewValidator = false;
@@ -166,30 +170,6 @@ class ContractValidator extends BaseStore {
             console.debug('Contract Error', error);
             applicationStore.setIsLoading(false);
             resolve(true);
-          });
-
-        // Listen for final event when it's added
-        contract.events
-          .ValidatorAdded({}, (error: any, event: any) => {
-            this.addingNewValidator = false;
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-              reject(error);
-            } else {
-              console.debug('Contract Receipt', event);
-              this.newValidatorReceipt = event;
-              resolve(event);
-            }
-            console.debug({ error, event });
-            applicationStore.setIsLoading(false);
-          })
-          .on('error', (error: any, receipt: any) => {
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-              console.debug({ error, receipt });
-              reject(error);
-            }
-            applicationStore.setIsLoading(false);
           });
       }
     });

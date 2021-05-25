@@ -5,6 +5,7 @@
 import config, { translations } from '~app/common/config';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import testConfig from './config';
+import { operatorKey } from './operator_keys/operatorKey';
 
 config.CONTRACT.ADDRESS = testConfig.CONTRACT_ADDRESS;
 const operatorPublicKeyLength = config.FEATURE.OPERATORS.VALID_KEY_LENGTH;
@@ -71,31 +72,55 @@ context('Add Operator', () => {
     cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Please enter an operator key.');
   });
 
-  it('should show error about existing operator public key', () => {
+   it('should fill up operator data without errors', () => {
     cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
     cy.get('[data-testid=new-operator-name]').blur();
-    cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(true, false));
+    cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(false, false));
     cy.get('[data-testid=new-operator-key]').blur();
     cy.get('[data-testid="register-operator-button"]').should('be.enabled');
-    cy.get('[data-testid="register-operator-button"]').click();
-    cy.get('.MuiAlert-message').should('contain.text', 'Operator already exists');
-  });
+    });
 
-  it('should show error about wrong operator public key format', () => {
+    it('should show error about wrong operator public key format', () => {
     cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
     cy.get('[data-testid=new-operator-name]').blur();
     cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(false, true));
     cy.get('[data-testid=new-operator-key]').blur();
     cy.get('[data-testid="register-operator-button"]').should('be.disabled');
     cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Invalid operator key - see our documentation to generate your key.');
-  });
+    });
 
-  it('should fill up operator data without errors', () => {
-    cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
-    cy.get('[data-testid=new-operator-name]').blur();
-    cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(false, false));
-    cy.get('[data-testid=new-operator-key]').blur();
-    cy.get('[data-testid="register-operator-button"]').should('be.enabled');
-    cy.get('[data-testid="register-operator-button"]').click();
-  });
+    it('should create operator', () => {
+      cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+      cy.get('[data-testid=new-operator-key]').clear().type(operatorKey);
+      cy.get('[data-testid=new-operator-key]').blur();
+      cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+      cy.get('[data-testid="register-operator-button"]').click();
+      cy.wait(600);
+      cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
+      cy.get('[data-testid="submit-operator"]').click();
+      cy.wait(600);
+      cy.location().should((location) => {
+        expect(location.hash).to.be.empty;
+        expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.SUCCESS_PAGE}`);
+        expect(location.pathname).to.eq(config.routes.OPERATOR.SUCCESS_PAGE);
+        expect(location.search).to.be.empty;
+      });
+      cy.get('[data-testid="success-image"]').should('be.visible');
+    });
+
+    it('should show error about existing operator public key', () => {
+      // Enter existing operator key
+      cy.visit(Cypress.config('baseUrl'));
+      cy.get(`[data-testid="${config.routes.OPERATOR.HOME}"]`).click();
+      const registerOperatorSelector = `[data-testid="${config.routes.OPERATOR.GENERATE_KEYS}"]`;
+      cy.waitFor(registerOperatorSelector);
+      cy.get(registerOperatorSelector).click();
+      cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+      cy.get('[data-testid=new-operator-name]').blur();
+      cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(true, false));
+      cy.get('[data-testid=new-operator-key]').blur();
+      cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+      cy.get('[data-testid="register-operator-button"]').click();
+      cy.get('.MuiAlert-message').should('contain.text', 'Operator already exists');
+    });
 });

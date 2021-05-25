@@ -46,7 +46,7 @@ const SuccessScreen = () => {
               <Typography noWrap variant="caption">View your operator performance in our explorer</Typography>
             </Grid>
             <Grid item md={4} xs={4}>
-              <ArrowForwardIosIcon className={classes.arrowIcon} />
+              <ArrowForwardIosIcon data-testid={'success-image'} className={classes.arrowIcon} />
             </Grid>
           </Grid>
         </Paper>

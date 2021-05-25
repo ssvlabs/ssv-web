@@ -4,7 +4,7 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
@@ -69,7 +69,7 @@ const OperatorConfirmation = () => {
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
       buttonText="Register Operator"
-      buttonTestId="final-register-button"
+      buttonTestId="submit-operator"
     >
       <EmptyPlaceholder height={150} />
     </TransactionConfirmationContainer>

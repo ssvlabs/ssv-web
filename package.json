@@ -121,7 +121,8 @@
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable",
     "local-node": "./scripts/start_local_node.sh",
-    "local-server": "./scripts/start_webapp_for_tests.sh"
+    "local-server": "./scripts/start_webapp_for_tests.sh",
+    "security:check": "./scripts/check_security.sh"
   },
   "license": "GPL-3.0",
   "eslintConfig": {

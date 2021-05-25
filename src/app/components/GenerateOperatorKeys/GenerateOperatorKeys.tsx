@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
-import { randomValueHex } from '~lib/utils/crypto';
 import Header from '~app/common/components/Header';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
@@ -16,6 +15,7 @@ import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
+import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { validatePublicKeyInput, validateDisplayNameInput } from '~lib/utils/validatesInputs';
@@ -31,7 +31,7 @@ const GenerateOperatorKeys = () => {
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   let initialOperatorKey = '';
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
-     initialOperatorKey = `0x${randomValueHex(128)}`;
+     initialOperatorKey = getRandomOperatorKey(false);
   }
   const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
@@ -105,7 +105,7 @@ const GenerateOperatorKeys = () => {
           </InputLabel>
 
           <br />
-          {operatorExist && <MessageDiv text={'Operator already exists'} />}
+          {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
 
           <EmptyPlaceholder height={110} />
 

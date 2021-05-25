@@ -38,7 +38,7 @@ const CreateValidator = () => {
     }
   };
 
-  const onFileChange = (file: any) => {
+  const onFileChange = (file: any[]) => {
     if (file !== null) {
       validatorStore.setValidatorPrivateKeyFile(file[0]);
     }

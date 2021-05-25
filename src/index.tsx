@@ -24,6 +24,19 @@ const renderApp = () => {
   );
 };
 
+const shouldRenderIframe = () => {
+  // @ts-ignore
+  return window.location.hash !== '#protected' && !window.Cypress;
+};
+
+const createIframe = () => {
+  const iframe = document.getElementById('self-frame');
+  // @ts-ignore
+  iframe.src = `${window.location}#protected`;
+  // @ts-ignore
+  iframe.style.display = '';
+};
+
 /**
  * Check if the app should be rendered.
  * Should be rendered in two cases:
@@ -35,7 +48,9 @@ const shouldRenderApp = () => {
   return window.location.hash === '#protected' || window.Cypress;
 };
 
-if (shouldRenderApp()) {
+if (shouldRenderIframe()) {
+  createIframe();
+} else if (shouldRenderApp()) {
   renderApp();
 }
 

@@ -58,7 +58,7 @@ const DataSection = ({ title, children }: DataSectionProps) => {
           {title}
         </SectionHeader>
       )}
-      <Grid container direction="row" justify="space-between" alignItems="center" item xs={12} md={12} spacing={1}>
+      <Grid container direction="row" justify="space-between" alignItems="center" item xs={12} md={12} spacing={0}>
         {children}
       </Grid>
     </>

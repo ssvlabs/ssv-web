@@ -35,6 +35,11 @@ class ContractValidator extends BaseStore {
     this.validatorKeyStorePassword = Buffer.from('');
   }
 
+  @action.bound
+  isFileFormatGood(): boolean {
+    return this.validatorPrivateKeyFile?.type === 'application/json';
+  }
+
   @computed
   get password() {
     return this.validatorKeyStorePassword.toString().trim();
@@ -60,23 +65,23 @@ class ContractValidator extends BaseStore {
    * Extract validator private key from keystore file
    */
   @action.bound
-  async extractPrivateKey() {
-    const applicationStore: ApplicationStore = this.getStore('Application');
-    applicationStore.setIsLoading(true);
-    return this.validatorPrivateKeyFile?.text().then(async (string) => {
-      try {
-        this.keyStore = new EthereumKeyStore(string);
-        const privateKey = await this.keyStore.getPrivateKey(this.password);
-        this.setValidatorPrivateKey(privateKey);
-        applicationStore.setIsLoading(false);
-        return privateKey;
-      } catch (error) {
-        const notificationsStore: NotificationsStore = this.getStore('Notifications');
-        notificationsStore.showMessage(error.message, 'error');
-        this.setValidatorPrivateKey('');
-        applicationStore.setIsLoading(false);
-        return '';
-      }
+  async extractPrivateKey(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const applicationStore: ApplicationStore = this.getStore('Application');
+      applicationStore.setIsLoading(true);
+      this.validatorPrivateKeyFile?.text().then(async (string) => {
+        try {
+          this.keyStore = new EthereumKeyStore(string);
+          const privateKey = await this.keyStore.getPrivateKey(this.password);
+          this.setValidatorPrivateKey(privateKey);
+          applicationStore.setIsLoading(false);
+          resolve(privateKey);
+        } catch (error) {
+          this.setValidatorPrivateKey('');
+          applicationStore.setIsLoading(false);
+          reject(error.message);
+        }
+      });
     });
   }
 

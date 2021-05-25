@@ -85,6 +85,7 @@ class ContractOperator extends BaseStore {
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = await walletStore.getContract();
     const address: string = walletStore.accountAddress;
+    applicationStore.setIsLoading(true);
 
     return new Promise((resolve, reject) => {
       if (!walletStore.checkIfWalletReady()) {
@@ -131,38 +132,20 @@ class ContractOperator extends BaseStore {
       } else {
         contract.methods.addOperator(...payload)
           .send({ from: address })
-          .on('receipt', (receipt: any) => {
-            console.debug('Contract Receipt', receipt);
-            this.newOperatorReceipt = receipt;
+          .on('receipt', async (receipt: any) => {
+            const event: boolean = 'OperatorAdded' in receipt.events;
+            if (event) {
+              console.debug('Contract Receipt', receipt);
+              this.newOperatorReceipt = receipt;
+              applicationStore.setIsLoading(false);
+              this.newOperatorRegisterSuccessfully = true;
+              resolve(event);
+            }
           })
           .on('error', (error: any) => {
             this.setAddingNewOperator(false);
             notificationsStore.showMessage(error.message, 'error');
             console.debug('Contract Error', error);
-            applicationStore.setIsLoading(false);
-            reject(error);
-          });
-
-        // Listen for final event when it's added
-        contract.events
-          .OperatorAdded({}, (error: any, event: any) => {
-            console.log('<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>');
-            this.setAddingNewOperator(false);
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-            } else {
-              console.log('<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>');
-              applicationStore.setIsLoading(false);
-              this.newOperatorRegisterSuccessfully = true;
-              notificationsStore.showMessage('You successfully added operator!', 'success');
-              resolve(event);
-            }
-            console.debug({ error, event });
-            applicationStore.setIsLoading(false);
-          })
-          .on('error', (error: any, receipt: any) => {
-            notificationsStore.showMessage(error.message, 'error');
-            console.debug({ error, receipt });
             applicationStore.setIsLoading(false);
             reject(error);
           });

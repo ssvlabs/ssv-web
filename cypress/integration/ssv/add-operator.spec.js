@@ -5,6 +5,7 @@
 import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
 import testConfig from './config';
+import { operatorKey } from './operator_keys/operatorKey';
 
 config.CONTRACT.ADDRESS = testConfig.CONTRACT_ADDRESS;
 const operatorPublicKeyLength = config.FEATURE.OPERATORS.VALID_KEY_LENGTH;
@@ -58,51 +59,46 @@ context('Add Operator', () => {
   });
 
   if (!Cypress.config('headless')) {
-    it('should show error about existing operator public key', () => {
-      // Enter existing operator key
-      const operatorName = 'TestOperator';
-      cy.get('[data-testid=new-operator-name]').clear().type(`${operatorName}`);
-      cy.get('[data-testid=new-operator-key]').clear().type('0x8d23b764021b4f3c86beb6d62cc820114f1da47b8521f6d29870e3889deb91055354c22e1da094cd4ca05b71398f056f8231a01bb4515a2a5997c890d910769f');
+
+    it('should fill up operator data without errors', () => {
+      cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+      cy.get('[data-testid=new-operator-key]').clear().type(operatorKey);
+      cy.get('[data-testid=new-operator-key]').blur();
+      cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+    });
+
+    it('should create operator', () => {
+      cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+      cy.get('[data-testid=new-operator-key]').clear().type(operatorKey);
       cy.get('[data-testid=new-operator-key]').blur();
       cy.get('[data-testid="register-operator-button"]').should('be.enabled');
       cy.get('[data-testid="register-operator-button"]').click();
-
-      // Wait for onboard widget
-      cy.waitFor('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom');
-      cy.get('.bn-onboard-modal-content-header-heading').should('contain.text', 'Select a Wallet');
-      cy.get('.bn-onboard-modal-select-wallets > :nth-child(1) > .bn-onboard-custom').click();
-
-      // Find error message
-      cy.waitFor('.MuiGrid-root > .MuiPaper-root > .MuiAlert-message');
-      cy.get('.MuiGrid-root > .MuiPaper-root > .MuiAlert-message').should('contain.text', 'Operator already exists');
-    });
-  }
-
-  it('should fill up operator data without errors', () => {
-    cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
-    cy.get('[data-testid=new-operator-key]').clear().type(`0x${randomValueHex(operatorPublicKeyLength)}`);
-    cy.get('[data-testid=new-operator-key]').blur();
-    cy.get('[data-testid="register-operator-button"]').should('be.enabled');
-  });
-
-  if (!Cypress.config('headless')) {
-    it('should open Onboard.js provider dialog, select MetaMask and wait for user input', () => {
-      cy.get('[data-testid="register-operator-button"]').click();
-
-      cy.waitFor('.MuiAlert-message');
-      cy.get('.MuiAlert-message').should('contain.text', 'Wallet is connected!');
-      cy.closeMessage();
-
+      cy.wait(600);
       cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
-      cy.waitFor('[data-testid="final-register-button"]');
-      cy.get('[data-testid="final-register-button"]').click();
-
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
-      cy.checkIfElementExists('.MuiAlert-message', 30, 10000).then(e => {
-        cy.waitFor('.MuiAlert-message');
-        cy.get('.MuiAlert-message').should('contain.text', 'You successfully added operator!');
-        cy.closeMessage();
+      cy.get('[data-testid="submit-operator"]').click();
+      cy.wait(600);
+      cy.location().should((location) => {
+        expect(location.hash).to.be.empty;
+        expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.OPERATOR.SUCCESS_PAGE}`);
+        expect(location.pathname).to.eq(config.routes.OPERATOR.SUCCESS_PAGE);
+        expect(location.search).to.be.empty;
       });
+      cy.get('[data-testid="success-image"]').should('be.visible');
+    });
+    it('should show error about existing operator public key', () => {
+      // Enter existing operator key
+      cy.visit(Cypress.config('baseUrl'));
+      cy.get(`[data-testid="${config.routes.OPERATOR.HOME}"]`).click();
+      const registerOperatorSelector = `[data-testid="${config.routes.OPERATOR.GENERATE_KEYS}"]`;
+      cy.waitFor(registerOperatorSelector);
+      cy.get(registerOperatorSelector).click();
+      const operatorName = 'myOperator';
+      cy.get('[data-testid=new-operator-name]').clear().type(`${operatorName}`);
+      cy.get('[data-testid=new-operator-key]').clear().type(operatorKey);
+      cy.get('[data-testid=new-operator-key]').blur();
+      cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+      cy.get('[data-testid="register-operator-button"]').click();
+      cy.get('.MuiGrid-root > .MuiPaper-root > .MuiAlert-message').should('contain.text', 'Operator already exists');
     });
   }
 });

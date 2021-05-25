@@ -86,9 +86,9 @@ class WalletTestStore extends BaseStore implements Wallet {
             return;
         }
         const notificationsStore: NotificationsStore = this.getStore('Notifications');
-        this.web3 = new Web3('ws://localhost:8545');
+        this.web3 = new Web3('ws://127.0.0.1:8545');
         const accounts = await this.web3.eth.getAccounts();
-        this.accountAddress = accounts[19];
+        this.accountAddress = accounts[0];
         notificationsStore.showMessage('Wallet is connected!', 'success');
     }
 

@@ -42,7 +42,7 @@ class BaseStore {
     if (!BaseStore.stores[storeName]) {
       let StoreClass: any;
       if (storeName === 'Wallet') {
-         const isTest: boolean = true;
+         const isTest: boolean = false;
          StoreClass = require(`~app/common/stores/Wallet/${isTest ? 'WalletTest' : name}.store`).default;
       } else {
          StoreClass = require(`~app/common/stores/${name}.store`).default;

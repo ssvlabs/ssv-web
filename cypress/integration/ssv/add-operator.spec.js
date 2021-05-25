@@ -2,8 +2,8 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { randomValueHex } from '~lib/utils/crypto';
 import config, { translations } from '~app/common/config';
+import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import testConfig from './config';
 import { operatorKey } from './operator_keys/operatorKey';
 
@@ -45,26 +45,49 @@ context('Add Operator', () => {
     });
   });
 
-  it('should fill up operator data with errors', () => {
+  it('should display wrong operator key error', () => {
+    // Wrong display name
     const operatorName = 'TestOperator: 123';
     cy.get('[data-testid=new-operator-name]').clear().type(`${operatorName}`);
-    cy.get('[data-testid=new-operator-key]').clear().type(`0x${randomValueHex(operatorPublicKeyLength + 1)}`);
+    cy.get('[data-testid=new-operator-name]').blur();
     cy.get('[data-testid="register-operator-button"]').should('be.disabled');
     cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name should contain only alphanumeric characters.');
-    cy.get('[data-testid=new-operator-name]').clear().type('A');
-    cy.get('[data-testid=new-operator-key]').clear().type('A');
+  });
+
+  it('should display empty operator name error', () => {
+    cy.get('[data-testid=new-operator-name]').clear();
+    cy.get('[data-testid=new-operator-name]').focus();
+    cy.get('[data-testid=new-operator-name]').blur();
+    cy.get('[data-testid="register-operator-button"]').should('be.disabled');
+    cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Please enter a display name.');
+  });
+
+  it('should display empty operator key error', () => {
+    cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+    cy.get('[data-testid=new-operator-name]').blur();
+    cy.get('[data-testid=new-operator-key]').clear();
+    cy.get('[data-testid=new-operator-key]').focus();
     cy.get('[data-testid=new-operator-key]').blur();
-    cy.get('[data-testid=new-operator-name]').parent().should('contain.text', 'Display name must be between 3 to 20 characters.');
-    cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Invalid operator key - see our documentation to generate your key.');
+    cy.get('[data-testid="register-operator-button"]').should('be.disabled');
+    cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Please enter an operator key.');
   });
 
   if (!Cypress.config('headless')) {
+   it('should fill up operator data without errors', () => {
+    cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+    cy.get('[data-testid=new-operator-name]').blur();
+    cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(false, false));
+    cy.get('[data-testid=new-operator-key]').blur();
+    cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+    });
 
-    it('should fill up operator data without errors', () => {
-      cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
-      cy.get('[data-testid=new-operator-key]').clear().type(operatorKey);
-      cy.get('[data-testid=new-operator-key]').blur();
-      cy.get('[data-testid="register-operator-button"]').should('be.enabled');
+    it('should show error about wrong operator public key format', () => {
+    cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+    cy.get('[data-testid=new-operator-name]').blur();
+    cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(false, true));
+    cy.get('[data-testid=new-operator-key]').blur();
+    cy.get('[data-testid="register-operator-button"]').should('be.disabled');
+    cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Invalid operator key - see our documentation to generate your key.');
     });
 
     it('should create operator', () => {
@@ -85,6 +108,7 @@ context('Add Operator', () => {
       });
       cy.get('[data-testid="success-image"]').should('be.visible');
     });
+
     it('should show error about existing operator public key', () => {
       // Enter existing operator key
       cy.visit(Cypress.config('baseUrl'));
@@ -92,13 +116,13 @@ context('Add Operator', () => {
       const registerOperatorSelector = `[data-testid="${config.routes.OPERATOR.GENERATE_KEYS}"]`;
       cy.waitFor(registerOperatorSelector);
       cy.get(registerOperatorSelector).click();
-      const operatorName = 'myOperator';
-      cy.get('[data-testid=new-operator-name]').clear().type(`${operatorName}`);
-      cy.get('[data-testid=new-operator-key]').clear().type(operatorKey);
+      cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
+      cy.get('[data-testid=new-operator-name]').blur();
+      cy.get('[data-testid=new-operator-key]').clear().type(getRandomOperatorKey(true, false));
       cy.get('[data-testid=new-operator-key]').blur();
       cy.get('[data-testid="register-operator-button"]').should('be.enabled');
       cy.get('[data-testid="register-operator-button"]').click();
-      cy.get('.MuiGrid-root > .MuiPaper-root > .MuiAlert-message').should('contain.text', 'Operator already exists');
+      cy.get('.MuiAlert-message').should('contain.text', 'Operator already exists');
     });
-  }
+  };
 });

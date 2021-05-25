@@ -36,7 +36,7 @@ const ConnectWalletButton = () => {
     if (!address) {
       return '';
     }
-    return `${address.substr(0, 6)}..${address.substr(address.length - 4, 4)}`;
+    return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
   };
   return (
     <Button variant="outlined" color="primary" onClick={onClick} style={{ textTransform: 'none' }}>

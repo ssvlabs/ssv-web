@@ -26,12 +26,12 @@ const EnterValidatorPrivateKey = () => {
 
   useEffect(() => {
     validatorStore.cleanPrivateData();
-    if (!validatorStore.isFileFormatGood() && !showErrorMessage) showMessage('Invalid file format - only .json files are supported', true);
+    if (!validatorStore.isJsonFile() && !showErrorMessage) showMessage('Invalid file format - only .json files are supported', true);
     redirectUrl && history.push(redirectUrl);
-  }, [redirectUrl, validatorStore.isFileFormatGood]);
+  }, [redirectUrl, validatorStore.isJsonFile]);
 
   const goToSelectOperators = async () => {
-    showMessage('', false);
+    hideMessage();
     validatorStore.extractPrivateKey().then(() => {
       history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     }).catch((error: string) => {
@@ -46,6 +46,11 @@ const EnterValidatorPrivateKey = () => {
   const showMessage = (text: string, status: boolean): void => {
     setErrorMessage(text);
     setShowErrorMessage(status);
+  };
+
+  const hideMessage = (): void => {
+    setErrorMessage('');
+    setShowErrorMessage(false);
   };
 
   const removeKeyStoreFile = () => {
@@ -63,7 +68,7 @@ const EnterValidatorPrivateKey = () => {
           <InputLabel title="Keystore File generated from CLI">
             <Grid container className={classes.fileContainer}>
               <Grid item xs={1}>
-                {validatorStore.isFileFormatGood() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon className={classes.badFormat} />}
+                {validatorStore.isJsonFile() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon className={classes.badFormat} />}
               </Grid>
               <Grid className={classes.fileNameText} item xs={8}>
                 {validatorStore.validatorPrivateKeyFile?.name}
@@ -92,7 +97,7 @@ const EnterValidatorPrivateKey = () => {
           </Grid>
           <Button
             data-testid="decrypt-keystore-button"
-            disabled={!validatorStore.password.length || !validatorStore.isFileFormatGood()}
+            disabled={!validatorStore.password.length || !validatorStore.isJsonFile()}
             variant="contained"
             color="primary"
             style={registerButtonStyle}

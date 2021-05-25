@@ -51,7 +51,7 @@ const ImportValidator = () => {
     }
   };
 
-  const onFileChange = (file: any) => {
+  const onFileChange = (file: any[]) => {
     if (file.length !== 0) {
       validatorStore.setValidatorPrivateKeyFile(file[0]);
       goToSelectOperators();

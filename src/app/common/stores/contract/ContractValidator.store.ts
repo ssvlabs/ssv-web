@@ -36,7 +36,7 @@ class ContractValidator extends BaseStore {
   }
 
   @action.bound
-  isFileFormatGood(): boolean {
+  isJsonFile(): boolean {
     return this.validatorPrivateKeyFile?.type === 'application/json';
   }
 

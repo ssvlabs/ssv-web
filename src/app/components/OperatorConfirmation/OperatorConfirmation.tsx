@@ -49,7 +49,7 @@ const OperatorConfirmation = () => {
     {
       title: 'Est. Transaction Cost',
       name: 'Transaction fee',
-      value: <>{operatorStore.estimationGas}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
+      value: <>{normalizeNumber(operatorStore.estimationGas, 4)}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
       divider: true,
     },
     {

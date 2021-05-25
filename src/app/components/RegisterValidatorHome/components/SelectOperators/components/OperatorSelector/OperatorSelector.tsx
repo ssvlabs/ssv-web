@@ -38,6 +38,9 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
     const operatorKey = String(event.target.value);
     selectOperatorMethod(operatorKey);
   };
+  const operatorKeySeralize = (publicKey: string) => {
+    return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
+  };
 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
@@ -64,7 +67,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
               disabled={contractOperator.isOperatorSelected(operator.pubkey)}
               >
               <OperatorName>{operator.name}</OperatorName>
-              <OperatorKey>{operator.pubkey}</OperatorKey>
+              <OperatorKey>{operatorKeySeralize(operator.pubkey)}</OperatorKey>
             </MenuItem>
             );
         })}

@@ -18,7 +18,7 @@ const translations = {
     },
     SELECT_OPERATORS: {
       TITLE: 'Select Operators',
-      DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
+      DESCRIPTION: 'Pick the team of network operators to run your validator.',
     },
     SUCCESS: {
       TITLE: 'Welcome to the SSV Network!',

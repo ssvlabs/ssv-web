@@ -2,7 +2,6 @@ name: Build & deploy
 
 on:
   push:
-  push:
     branches:
       - '**'
   pull_request:

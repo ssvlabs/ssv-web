@@ -1,12 +1,14 @@
 import { createContext } from 'react';
-import AppStore from '~app/App.store';
-import ValidatorsStore from '~app/components/Validators/Validators.store';
+import BaseStore from '~app/common/stores/BaseStore';
 
-const rootStore = {
-    app: new AppStore(),
-    validators: new ValidatorsStore(),
-};
-
+const stores = [
+  'Application',
+  'Notifications',
+  'Wallet',
+  'contract/ContractOperator',
+  'contract/ContractValidator',
+];
+const rootStore: Record<string, any> = BaseStore.getInstance().preloadStores(stores);
 const rootStoreContext = createContext(rootStore);
 
 export {

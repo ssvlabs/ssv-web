@@ -4,46 +4,27 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
-import { Link as MaterialLink } from '@material-ui/core';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import config from '~app/common/config';
+import Header from '~app/common/components/Header';
+import config, { translations } from '~app/common/config';
 import UnStyledLink from '~app/common/components/UnStyledLink';
-import Header from '~app/components/Welcome/components/Header';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 
 const RouteLink = UnStyledLink(RouterLink);
-const OrganicLink = UnStyledLink(MaterialLink);
 
 const Welcome = () => {
   const classes = useStyles();
-
   return (
     <Paper className={classes.mainContainer}>
-      <Header />
+      <Header title={translations.HOME.TITLE} subtitle={translations.HOME.DESCRIPTION} />
 
-      <Grid container wrap="nowrap" spacing={0} className={classes.guideStepsContainer}>
-        <Grid item xs zeroMinWidth className={classes.guideStepsContainer}>
-          <OrganicLink href={config.links.LINK_SSV_DEV_DOCS} target="_blank">
+      <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
+          <RouteLink to={config.routes.OPERATOR.HOME} data-testid={config.routes.OPERATOR.HOME}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Run SSV Node</Typography>
-                  <Typography noWrap variant="caption">See our developer documentation</Typography>
-                </Grid>
-                <Grid item md={4} xs={4}>
-                  <ArrowForwardIosIcon className={classes.arrowIcon} />
-                </Grid>
-              </Grid>
-            </Paper>
-          </OrganicLink>
-        </Grid>
-
-        <Grid item xs zeroMinWidth className={classes.guideStepsContainer}>
-          <RouteLink to={config.routes.OPERATOR.KEYS.GENERATE}>
-            <Paper className={classes.guideStepsContainerPaper}>
-              <Grid container wrap="nowrap" spacing={1}>
-                <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Generate operator keys</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Create new Operator</Typography>
                   <Typography noWrap variant="caption">Create your network identifier</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>
@@ -54,12 +35,12 @@ const Welcome = () => {
           </RouteLink>
         </Grid>
 
-        <Grid item xs zeroMinWidth className={classes.guideStepsContainer}>
-          <RouteLink to={config.routes.NETWORK.REGISTER}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
+          <RouteLink to={config.routes.VALIDATOR.HOME} data-testid={config.routes.VALIDATOR.HOME}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container wrap="nowrap" spacing={1}>
                 <Grid item md={8} xs={8}>
-                  <Typography noWrap variant="h6">Register to the network</Typography>
+                  <Typography noWrap variant="h6" className={classes.guideStepText}>Share Validator Key</Typography>
                   <Typography noWrap variant="caption">List yourself in the network operators registry</Typography>
                 </Grid>
                 <Grid item md={4} xs={4}>

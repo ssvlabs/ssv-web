@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { DropzoneArea } from 'material-ui-dropzone';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -42,16 +41,7 @@ const ImportValidator = () => {
   const history = useHistory();
   const stores = useStores();
   const validatorStore: ContractValidator = stores.ContractValidator;
-  const registerButtonStyle = { width: '100%', marginTop: 30 };
-  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
   const { getUserFlow } = useUserFlow();
-
-  useEffect(() => {
-    setNextButtonEnabled(!!validatorStore.validatorPrivateKey || !!validatorStore.validatorPrivateKeyFile);
-    return () => {
-      setNextButtonEnabled(false);
-    };
-  }, [validatorStore.validatorPrivateKey, validatorStore.validatorPrivateKeyFile]);
 
   const goToSelectOperators = () => {
     if (validatorStore.validatorPrivateKeyFile) {
@@ -61,9 +51,10 @@ const ImportValidator = () => {
     }
   };
 
-  const onFileChange = (file: any) => {
-    if (file !== null) {
+  const onFileChange = (file: any[]) => {
+    if (file.length !== 0) {
       validatorStore.setValidatorPrivateKeyFile(file[0]);
+      goToSelectOperators();
     }
   };
 
@@ -72,7 +63,7 @@ const ImportValidator = () => {
     if (config.routes.VALIDATOR.CREATE === userFlow) {
       return 'Create Validator';
     }
-    return 'Import Validator';
+    return 'Run Validator with the SSV Network';
   };
 
   return (
@@ -84,30 +75,17 @@ const ImportValidator = () => {
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <br />
           <br />
-          <br />
           <DropZoneContainer>
             <InputLabel
-              title="Validator Private key">
+              title="Keystore File generated from CLI">
               <DropzoneArea
                 showPreviews={false}
                 onChange={onFileChange}
-                acceptedFiles={['.json']}
                 filesLimit={1}
                 maxFileSize={5000000}
               />
             </InputLabel>
           </DropZoneContainer>
-
-          <Button
-            data-testid="select-operators-next"
-            disabled={!nextButtonEnabled}
-            variant="contained"
-            color="primary"
-            style={registerButtonStyle}
-            onClick={goToSelectOperators}
-          >
-            Next
-          </Button>
         </Grid>
       </Grid>
     </Paper>

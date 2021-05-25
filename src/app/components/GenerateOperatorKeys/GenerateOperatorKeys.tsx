@@ -105,7 +105,7 @@ const GenerateOperatorKeys = () => {
           </InputLabel>
 
           <br />
-          {operatorExist && <MessageDiv text={'Operator already exists'} />}
+          {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
 
           <EmptyPlaceholder height={110} />
 

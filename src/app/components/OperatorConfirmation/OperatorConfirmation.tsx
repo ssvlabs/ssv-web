@@ -37,12 +37,12 @@ const OperatorConfirmation = () => {
   const sections: IDataSection[] = [
     {
       title: 'Operator',
-      name: 'name',
+      name: 'Name',
       value: operatorStore.newOperatorKeys.name,
     },
     {
       title: '',
-      name: 'key',
+      name: 'Key',
       value: longStringShorten(operatorStore.newOperatorKeys.pubKey),
       divider: true,
     },
@@ -50,12 +50,13 @@ const OperatorConfirmation = () => {
       title: 'Est. Transaction Cost',
       name: 'Transaction fee',
       value: <>{operatorStore.estimationGas}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
-      divider: true,
+      divider: false,
     },
     {
       title: '',
       name: <strong>Total</strong>,
       value: <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong>,
+      divider: true,
     },
   ];
   const dataSections = buildDataSections(sections);

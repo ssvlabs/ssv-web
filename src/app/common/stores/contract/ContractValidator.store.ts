@@ -153,7 +153,6 @@ class ContractValidator extends BaseStore {
           })
           .on('error', (error: any) => {
             this.addingNewValidator = false;
-            notificationsStore.showMessage(error.message, 'error');
             console.debug('Contract Error', error);
             applicationStore.setIsLoading(false);
             reject(error);

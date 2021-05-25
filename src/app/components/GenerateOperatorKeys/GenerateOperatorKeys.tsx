@@ -9,7 +9,6 @@ import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
@@ -26,7 +25,6 @@ const GenerateOperatorKeys = () => {
   const stores = useStores();
   const history = useHistory();
   const contractOperator: ContractOperator = stores.ContractOperator;
-  const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
   const registerButtonStyle = { width: '100%', marginTop: 30 };
   let initialOperatorKey = '';
@@ -62,7 +60,7 @@ const GenerateOperatorKeys = () => {
       name: inputsData.name,
     };
     contractOperator.setOperatorKeys(operatorKeys);
-    await contractOperator.checkIfOperatorExists(inputsData.publicKey, walletStore.accountAddress).then((isExists: boolean) => {
+    await contractOperator.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
       setOperatorExist(isExists);
       if (!isExists) {
         contractOperator.addNewOperator(true).then(() => {

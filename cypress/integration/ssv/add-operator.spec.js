@@ -72,7 +72,6 @@ context('Add Operator', () => {
     cy.get('[data-testid=new-operator-key]').parent().should('contain.text', 'Please enter an operator key.');
   });
 
-  if (!Cypress.config('headless')) {
    it('should fill up operator data without errors', () => {
     cy.get('[data-testid=new-operator-name]').clear().type('TestOperator');
     cy.get('[data-testid=new-operator-name]').blur();
@@ -124,5 +123,4 @@ context('Add Operator', () => {
       cy.get('[data-testid="register-operator-button"]').click();
       cy.get('.MuiAlert-message').should('contain.text', 'Operator already exists');
     });
-  };
 });

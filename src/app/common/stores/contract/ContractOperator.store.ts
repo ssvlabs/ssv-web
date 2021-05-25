@@ -54,11 +54,10 @@ class ContractOperator extends BaseStore {
   /**
    * Check if operator already exists in the contract
    * @param publicKey
-   * @param fromAddress
    * @param contract
    */
   @action.bound
-  async checkIfOperatorExists(publicKey: string, fromAddress: string, contract?: Contract): Promise<boolean> {
+  async checkIfOperatorExists(publicKey: string, contract?: Contract): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
       await walletStore.connect();

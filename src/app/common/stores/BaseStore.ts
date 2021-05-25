@@ -42,7 +42,8 @@ class BaseStore {
     if (!BaseStore.stores[storeName]) {
       let StoreClass: any;
       if (storeName === 'Wallet') {
-         const isTest: boolean = true;
+         // @ts-ignore
+        const isTest: boolean = window?.Cypress;
          StoreClass = require(`~app/common/stores/Wallet/${isTest ? 'WalletTest' : name}.store`).default;
       } else {
          StoreClass = require(`~app/common/stores/${name}.store`).default;

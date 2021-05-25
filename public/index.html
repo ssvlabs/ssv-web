@@ -18,27 +18,22 @@
         />
         <meta
             http-equiv="Content-Security-Policy"
-            content="sandbox allow-forms allow-scripts allow-same-origin allow-top-navigation; frame-src 'self';"
+            content="connect-src 'self' data: https://api.thegraph.com wss://api.blocknative.com;
+                     frame-src 'self';
+                     default-src 'none';
+                     img-src 'self' data:;
+                     manifest-src 'self';
+                     script-src-elem 'self';
+                     script-src 'self' 'unsafe-eval';
+                     font-src *.gstatic.com;
+                     style-src-elem 'unsafe-inline';
+                     style-src 'unsafe-inline';"
         />
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png"/>
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>
     </head>
     <body style="padding: 0; margin: 0">
         <noscript>You need to enable JavaScript to run this app.</noscript>
+        <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
     </body>
-    <script type="text/javascript">
-        const shouldRenderApp = () => {
-            return window.location.hash !== '#protected' && !window.Cypress
-        };
-        const renderAppInIframe = () => {
-            const iframe = document.createElement('iframe');
-            iframe.src = window.location + '#protected';
-            iframe.width = '100%';
-            iframe.style = 'border: 0; height: 100vh;';
-            document.body.appendChild(iframe);
-        };
-        if (shouldRenderApp()) {
-            renderAppInIframe();
-        }
-    </script>
 </html>

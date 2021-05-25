@@ -2,6 +2,7 @@ name: Build & deploy
 
 on:
   push:
+  push:
     branches:
       - '**'
   pull_request:
@@ -38,6 +39,12 @@ jobs:
       - name: Run build
         run: BUILD_ENV=${{ secrets.BUILD_ENV }} yarn build
 
+  deploy-stage:
+    needs: [lint]
+    if: github.ref == 'refs/heads/stage'
+    runs-on: ubuntu-latest
+
+    steps:   
       - name: Configure AWS credentials for stage account
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -48,3 +55,20 @@ jobs:
       - name: Copy build dir to s3 bucket
         run: |
           aws s3 cp build/ s3://app.stage.ssv.network/ --recursive
+
+  deploy-main:
+    needs: [lint]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:   
+      - name: Configure AWS credentials for prod account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Copy build dir to s3 bucket
+        run: |
+          aws s3 cp build/ s3://app.testnet.ssv.network/ --recursive          

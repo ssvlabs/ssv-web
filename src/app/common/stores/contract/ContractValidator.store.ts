@@ -179,7 +179,6 @@ class ContractValidator extends BaseStore {
             } else {
               console.debug('Contract Receipt', event);
               this.newValidatorReceipt = event;
-              notificationsStore.showMessage('You successfully added validator!', 'success');
               resolve(event);
             }
             console.debug({ error, event });

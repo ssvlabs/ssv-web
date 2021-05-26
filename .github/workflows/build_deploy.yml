@@ -22,9 +22,6 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Run build
-        run: echo "sdfsdfsdf ${{ env.BUILD_ENV }}"
-
       - name: Install packages
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
@@ -35,9 +32,13 @@ jobs:
       - name: Run test
         run: yarn test
 
-      - name: Run build
-        run: BUILD_ENV=${{ secrets.BUILD_ENV }} yarn build
+      - name: Run stage build
+        if: github.ref == 'refs/heads/stage'
+        run: CONTRACT_ADDRESS=${{ env.STAGE_CONTRACT_ADDRESS }} yarn build
 
+      - name: Run prod build
+        if: github.ref == 'refs/heads/main'
+        run: CONTRACT_ADDRESS=${{ env.PROD_CONTRACT_ADDRESS }} yarn build
 
       - name: Deploy staging
         if: github.ref == 'refs/heads/stage'

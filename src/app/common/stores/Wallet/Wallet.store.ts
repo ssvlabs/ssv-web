@@ -6,8 +6,9 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
+import Wallet from '~app/common/stores/Wallet/abstractWallet';
 
-class WalletStore extends BaseStore {
+class WalletStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;
 
   @observable web3: any = null;
@@ -23,12 +24,17 @@ class WalletStore extends BaseStore {
   @action.bound
   async getContract(address?: string): Promise<Contract> {
     if (!this.contract && this.connected) {
-      const abi: any = config.CONTRACT.ABI;
       const contractAddress: string = config.CONTRACT.ADDRESS;
-      this.contract = new this.web3.eth.Contract(abi, address ?? contractAddress);
+      this.contract = this.buildContract(address ?? contractAddress);
     }
     // @ts-ignore
     return this.contract;
+  }
+
+  @action.bound
+  buildContract(address: string) {
+    const abi: any = config.CONTRACT.ABI;
+    return new this.web3.eth.Contract(abi, address);
   }
 
   @action.bound
@@ -93,7 +99,7 @@ class WalletStore extends BaseStore {
         .catch((error: any) => {
           applicationStore.setIsLoading(false);
           console.error('Wallet check errorMessage', error);
-          notificationsStore.showMessage('Wallet is not connected!', 'error');
+          // notificationsStore.showMessage('Wallet is not connected!', 'error');
         });
     }
   }
@@ -128,8 +134,6 @@ class WalletStore extends BaseStore {
     console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    notificationsStore.showMessage('Successfully connected to Wallet!', 'success');
   }
 
   /**

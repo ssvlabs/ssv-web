@@ -6,7 +6,7 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import { normalizeNumber } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
@@ -59,7 +59,7 @@ const ImportValidatorConfirmation = () => {
     },
     {
       name: <strong>Est. Transaction Cost</strong>,
-      value: <Link href="/" target="_blank">Need ETH?</Link>,
+      value: <Link href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link>,
     },
     {
       name: 'Network fee',
@@ -67,13 +67,13 @@ const ImportValidatorConfirmation = () => {
     },
     {
       name: 'Transaction fee',
-      value: <>{contractOperator.estimationGas}ETH <strong>${normalizeNumber(contractOperator.dollarEstimationGas)}</strong></>,
+      value: <>{normalizeNumber(contractValidator.estimationGas, 4)}ETH <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong></>,
       divider: true,
     },
     {
       title: '',
       name: <strong>Total</strong>,
-      value: <strong>${normalizeNumber(contractOperator.dollarEstimationGas)}</strong>,
+      value: <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong>,
     },
   ];
   const dataSections = buildDataSections(sections);
@@ -85,7 +85,7 @@ const ImportValidatorConfirmation = () => {
       header={header}
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
-      buttonText="Register Validator"
+      buttonText="Run validator"
     >
       <EmptyPlaceholder height={50} />
     </TransactionConfirmationContainer>

@@ -18,7 +18,7 @@ const translations = {
     },
     SELECT_OPERATORS: {
       TITLE: 'Select Operators',
-      DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
+      DESCRIPTION: 'Pick the team of network operators to run your validator.',
     },
     SUCCESS: {
       TITLE: 'Welcome to the SSV Network!',
@@ -39,11 +39,13 @@ const translations = {
   },
   SUCCESS: {
     TITLE: 'Welcome to the SSV Network!',
-    OPERATOR_DESCRIPTION: 'With every new operator, out network grows stronger',
+    OPERATOR_DESCRIPTION: 'With every new operator, our network grows stronger',
     VALIDATOR_DESCRIPTION: 'Your validator is now running on the robust and secure infrastructure of our network',
   },
   OPERATOR: {
+    OPERATOR_EXIST: 'Operator key has already been registered.',
     REGISTER: {
+      TOOL_TIP: 'Operators identifier in the SSV network. To generate your key see our documentation',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
     },

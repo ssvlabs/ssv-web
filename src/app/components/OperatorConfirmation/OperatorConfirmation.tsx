@@ -4,7 +4,7 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
@@ -26,23 +26,23 @@ const OperatorConfirmation = () => {
     await walletStore.connect();
     operatorStore.addNewOperator().then(() => {
       history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-    }).catch((error: any) => {
-      history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-      console.log(error);
     });
   };
+  const backNavigationClick = () => {
+    operatorStore.setAddingNewOperator(false);
+  };
 
-  const backNavigation = <BackNavigation to={config.routes.OPERATOR.HOME} text="Register Operator" />;
+  const backNavigation = <BackNavigation onClick={backNavigationClick} to={config.routes.OPERATOR.GENERATE_KEYS} text="Register Operator" />;
   const header = <Header title={translations.OPERATOR.CONFIRMATION.TITLE} subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />;
   const sections: IDataSection[] = [
     {
       title: 'Operator',
-      name: 'name',
+      name: 'Name',
       value: operatorStore.newOperatorKeys.name,
     },
     {
       title: '',
-      name: 'key',
+      name: 'Key',
       value: longStringShorten(operatorStore.newOperatorKeys.pubKey),
       divider: true,
     },
@@ -50,12 +50,13 @@ const OperatorConfirmation = () => {
       title: 'Est. Transaction Cost',
       name: 'Transaction fee',
       value: <>{operatorStore.estimationGas}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
-      divider: true,
+      divider: false,
     },
     {
       title: '',
       name: <strong>Total</strong>,
       value: <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong>,
+      divider: true,
     },
   ];
   const dataSections = buildDataSections(sections);
@@ -68,7 +69,7 @@ const OperatorConfirmation = () => {
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
       buttonText="Register Operator"
-      buttonTestId="final-register-button"
+      buttonTestId="submit-operator"
     >
       <EmptyPlaceholder height={150} />
     </TransactionConfirmationContainer>

@@ -12,6 +12,22 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
+    passwordInput: {
+        textSecurity: 'disc',
+    },
+    errorDiv: {
+        paddingLeft: '10px',
+        width: '100%',
+        color: 'red',
+        minHeight: '50px',
+        lineHeight: '50px',
+        backgroundColor: '#FDE6E5',
+    },
+    errorText: {
+    },
+    paddingTop: {
+        marginTop: '100px',
+    },
     inputWithHint: {
         backgroundColor: 'red',
         display: 'flex',
@@ -29,6 +45,10 @@ export const useStyles = makeStyles((theme) => ({
     doneIcon: {
       color: 'green',
       float: 'left',
+    },
+    badFormat: {
+        color: 'red',
+        float: 'left',
     },
     fileNameText: {
         textAlign: 'left',
@@ -76,7 +96,6 @@ export const useStyles = makeStyles((theme) => ({
     gridContainer: {
         flexGrow: 1,
         flexDirection: 'column',
-        paddingTop: 10,
     },
     rowGridContainer: {
         flexGrow: 1,

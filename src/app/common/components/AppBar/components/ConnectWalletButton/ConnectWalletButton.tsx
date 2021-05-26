@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import Button from '~app/common/components/AppBar/components/Button';
 
 const ConnectWalletButton = () => {
@@ -9,9 +9,12 @@ const ConnectWalletButton = () => {
   const walletStore: WalletStore = stores.Wallet;
   const walletImageStyle = { width: 24, height: 24, marginRight: 10, marginLeft: 0 };
 
+  const disconnectWalletWithPrompt = () => {
+    walletStore.disconnect().then(() => walletStore.connect());
+  };
   const onClick = () => {
     if (walletStore.connected) {
-      return walletStore.disconnect();
+      return disconnectWalletWithPrompt();
     }
     return walletStore.connect();
   };
@@ -33,7 +36,7 @@ const ConnectWalletButton = () => {
     if (!address) {
       return '';
     }
-    return `${address.substr(0, 4)}..${address.substr(address.length - 3, 3)}`;
+    return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
   };
   return (
     <Button variant="outlined" color="primary" onClick={onClick} style={{ textTransform: 'none' }}>

@@ -10,10 +10,11 @@ import ContractOperator, { IOperator } from '~app/common/stores/contract/Contrac
 import { OperatorName, OperatorKey } from './components/Operator';
 
 type OperatorSelectorProps = {
-  indexedOperator: IOperator
+  indexedOperator: IOperator,
+  dataTestId: string
 };
 
-const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
+const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
@@ -37,6 +38,9 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
     const operatorKey = String(event.target.value);
     selectOperatorMethod(operatorKey);
   };
+  const operatorKeySeralize = (publicKey: string) => {
+    return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
+  };
 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
@@ -46,6 +50,7 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
         </InputLabel>
       )}
       <Select
+        data-testid={dataTestId}
         className={classes.select}
         labelId="operator-select-label"
         value={selectedOperator}
@@ -62,7 +67,7 @@ const OperatorSelector = ({ indexedOperator }: OperatorSelectorProps) => {
               disabled={contractOperator.isOperatorSelected(operator.pubkey)}
               >
               <OperatorName>{operator.name}</OperatorName>
-              <OperatorKey>{operator.pubkey}</OperatorKey>
+              <OperatorKey>{operatorKeySeralize(operator.pubkey)}</OperatorKey>
             </MenuItem>
             );
         })}

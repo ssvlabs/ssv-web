@@ -24,7 +24,7 @@ export interface ISharesKeyPairs {
 class Threshold {
     protected validatorPrivateKey: any;
     protected validatorPublicKey: any;
-    protected validatorShares: Array<any> =[];
+    protected validatorShares: Array<any> = [];
     protected validatorSigKey: any;
     protected threshold: number = 3;
     protected sharesNumber: number = 4;
@@ -33,51 +33,55 @@ class Threshold {
      * Generate keys and return promise
      */
     async create(privateKey: string): Promise<ISharesKeyPairs> {
-        return new Promise((resolve) => {
-            bls.init(bls.BLS12_381)
-                .then(() => {
-                    const msk = [];
-                    const mpk = [];
+        return new Promise((resolve, reject) => {
+            try {
+                bls.init(bls.BLS12_381)
+                    .then(() => {
+                        const msk = [];
+                        const mpk = [];
 
-                    // master key Polynomial
-                    this.validatorPrivateKey = bls.deserializeHexStrToSecretKey(privateKey);
-                    this.validatorPublicKey = this.validatorPrivateKey.getPublicKey();
+                        // master key Polynomial
+                        this.validatorPrivateKey = bls.deserializeHexStrToSecretKey(privateKey);
+                        this.validatorPublicKey = this.validatorPrivateKey.getPublicKey();
 
-                     msk.push(this.validatorPrivateKey);
-                     mpk.push(this.validatorPublicKey);
+                        msk.push(this.validatorPrivateKey);
+                        mpk.push(this.validatorPublicKey);
 
-                    // construct poly
-                    for (let i = 1; i < this.threshold; i += 1) {
-                        const sk: SecretKeyType = new bls.SecretKey();
-                        sk.setByCSPRNG();
-                        msk.push(sk);
-                        const pk = sk.getPublicKey();
-                        mpk.push(pk);
-                    }
+                        // construct poly
+                        for (let i = 1; i < this.threshold; i += 1) {
+                            const sk: SecretKeyType = new bls.SecretKey();
+                            sk.setByCSPRNG();
+                            msk.push(sk);
+                            const pk = sk.getPublicKey();
+                            mpk.push(pk);
+                        }
 
-                    // evaluate shares - starting from 1 because 0 is master key
-                    for (let i = 1; i <= this.sharesNumber; i += 1) {
-                        const id = new bls.Id();
-                        id.setInt(i);
-                        const shareSecretKey = new bls.SecretKey();
-                        shareSecretKey.share(msk, id);
+                        // evaluate shares - starting from 1 because 0 is master key
+                        for (let i = 1; i <= this.sharesNumber; i += 1) {
+                            const id = new bls.Id();
+                            id.setInt(i);
+                            const shareSecretKey = new bls.SecretKey();
+                            shareSecretKey.share(msk, id);
 
-                        const sharePublicKey = new bls.PublicKey();
-                        sharePublicKey.share(mpk, id);
+                            const sharePublicKey = new bls.PublicKey();
+                            sharePublicKey.share(mpk, id);
 
-                        this.validatorShares.push({
-                          privateKey: `0x${shareSecretKey.serializeToHexStr()}`,
-                          publicKey: `0x${sharePublicKey.serializeToHexStr()}`,
-                        });
-                    }
+                            this.validatorShares.push({
+                                privateKey: `0x${shareSecretKey.serializeToHexStr()}`,
+                                publicKey: `0x${sharePublicKey.serializeToHexStr()}`,
+                            });
+                        }
 
-                    const response: ISharesKeyPairs = {
-                        validatorPrivateKey: `0x${this.validatorPrivateKey.serializeToHexStr()}`,
-                        validatorPublicKey: `0x${this.validatorPublicKey.serializeToHexStr()}`,
-                        shares: this.validatorShares,
-                    };
-                    resolve(response);
-                });
+                        const response: ISharesKeyPairs = {
+                            validatorPrivateKey: `0x${this.validatorPrivateKey.serializeToHexStr()}`,
+                            validatorPublicKey: `0x${this.validatorPublicKey.serializeToHexStr()}`,
+                            shares: this.validatorShares,
+                        };
+                        resolve(response);
+                    });
+            } catch (error: any) {
+                reject(error);
+            }
         });
     }
 }

@@ -12,14 +12,22 @@
 
 
 # SSV - Secret Shared Validator
+In order to supply a truly secure layer of your validator node, we're offering more decentralization! <br>
+The solution that we provide is called <a href="https://github.com/herumi/bls-wasm">Secret Share Validator</a> and its split into 2 sections
 
-The underlying design of the Ethereum 2.0 blockchain, requires validators to operate using a validation key that is stored on a hot wallet, which is risky due to its security and performance properties and serves as a single point of failure.
-Distributing validators’s validation key through secret sharing between multiple operators mitigates this risk and helps make the blockchain more decentralized.
 
 ### Add Validator
+From validator prospective the worst case you can have is when your validator node gets penalty or
+Slash events. The solution that we provide is to break the validator private key into (N) shares using 
+<a href="https://github.com/herumi/bls-wasm">Shamir Secret Share</a> , out of those shares we create for each share private & public key using <br>
+<a href="https://github.com/herumi/bls-wasm">BLS Signature</a>. We take the (N) preselected operators key by the validator and encrypt each share with
+One operator key to send him his share later encrypted. After the operators receive the shares they
+Start to collaborate in order to aggregate signatures to reach the full validator signature.<br>
+Our solution prevent from the validator the one point of failure issue when you depend on single node.
 
 ### Add Operator
-
+The term "Operator" is our invention for people who don't want to put a collateral of 32 ETH but still want to participate in blockchain and receive rewards.<br>
+All you need to do is to run the operator node using <a herf="https://github.com/bloxapp/ssv">SSV-NODE</a> take the public key from it and register as operator.
 ### Cli
 Another option we support is a CLI, all you need to do is to run the following command with the relevant arguments, and you receive a full translation data
 ```
@@ -28,8 +36,83 @@ ssv-cli --filePath=<keyStore> --password=<ketStore password> --operators=[<base6
 
 ### Testing
 
+#### Functional Tests
+
+`yarn test` - no watching mode
+
+`yarn test:dev` - run tests in watch mode
+
+Launches the test runner in the interactive watch mode.<br />
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+#### E2E Tests
+
+##### Unzip dependencies
+
+```
+unzip cypress/plugins/MetaMask/metamask-chrome-9.5.0.zip
+```
+
+```
+unzip cypress/integration/ssv/cli/eth2.0-deposit-cli-master.zip
+```
+
+##### Install deposit CLI dependencies
+
+For the virtualenv users, you can create a new venv:
+
+```
+cd cypress/integration/ssv/cli/eth2.0-deposit-cli-master
+pip3 install virtualenv
+virtualenv .venv
+source .venv/bin/activate
+```
+
+and install the dependencies:
+
+```
+python3 setup.py install
+pip3 install -r requirements.txt
+pip3 install pytest
+```
+
+Check that tests are passing before starting using deposit CLI for auto-generation of keystore files during running cypress:
+
+```
+cd cypress/integration/ssv/cli/eth2.0-deposit-cli-master
+source .venv/bin/activate
+python3 -m pytest .
+```
+
+### Building
+
+`yarn build`
+
+Builds the app for production to the `build` folder.<br />
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### Linting
+
+`yarn lint`
+
+Lint checks works on every change of source code.
+
+Also, lint happens before developer tries to commit (husky package).
+
+### Git Commits
+
+As said upper, on every commit attempt husky runs linter to check source code.
+
+### Git Pushes
+
 ## Tech Stack
 - <a href="https://web3js.readthedocs.io/en/v1.3.4/">Web3.js</a> - BlockChain integration for Web2
+- <a href="https://github.com/blocknative/onboard">Onboard</a> - Integration tool to wallets
 - <a href="https://reactjs.org/">React 16.8</a> - To handle front end tasks in scale
 - <a href="https://reacttraining.com/react-router/web/guides/quick-start">React Router</a> - For application navigation and routing
 - <a href="https://mobx.js.org/README.html">Mobx</a> - A UI state management and middleware to handle async operations

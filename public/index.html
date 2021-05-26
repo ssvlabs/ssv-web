@@ -16,12 +16,24 @@
             name="description"
             content="Manage Secret Shared Nodes Easy"
         />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="connect-src 'self' data: ws://localhost:8545 https://api.thegraph.com wss://api.blocknative.com;
+                     frame-src 'self';
+                     default-src 'none';
+                     img-src 'self' data:;
+                     manifest-src 'self';
+                     script-src-elem 'self';
+                     script-src 'self' 'unsafe-eval';
+                     font-src *.gstatic.com;
+                     style-src-elem 'unsafe-inline';
+                     style-src 'unsafe-inline';"
+        />
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png"/>
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>
     </head>
-
-    <body>
+    <body style="padding: 0; margin: 0">
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"></div>
+        <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
     </body>
 </html>

@@ -24,6 +24,7 @@ const SelectOperators = () => {
   const { redirectUrl, history } = useUserFlow();
 
   useEffect(() => {
+    unselectAllOperators();
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
 
@@ -43,9 +44,13 @@ const SelectOperators = () => {
     history.push(config.routes.VALIDATOR.SLASHING_WARNING);
   };
 
+  const unselectAllOperators = () => {
+    contractOperator.unselectAllOperators();
+  };
+
   return (
     <Paper className={classes.mainContainer}>
-      <HistoryBackNavigation text={translations.VALIDATOR.IMPORT.TITLE} />
+      <HistoryBackNavigation to={config.routes.VALIDATOR.DECRYPT} text={translations.VALIDATOR.IMPORT.TITLE} onClick={unselectAllOperators} />
       <Header title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} subtitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
@@ -64,11 +69,12 @@ const SelectOperators = () => {
             </Button>
           ) : ''}
 
-          {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator) => (
-            <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} />
+          {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, operatorIndex: number) => (
+            <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
           ))}
 
           <Button
+            data-testid="operators-selected-button"
             disabled={!buttonEnabled}
             variant="contained"
             color="primary"

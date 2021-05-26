@@ -34,11 +34,15 @@ jobs:
 
       - name: Run stage build
         if: github.ref == 'refs/heads/stage'
-        run: CONTRACT_ADDRESS=${{ env.STAGE_CONTRACT_ADDRESS }} yarn build
+        run: CONTRACT_ADDRESS="$CONTRACT_ADDRESS" yarn build
+        env:
+          CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
 
       - name: Run prod build
         if: github.ref == 'refs/heads/main'
-        run: CONTRACT_ADDRESS=${{ env.PROD_CONTRACT_ADDRESS }} yarn build
+        run: CONTRACT_ADDRESS="$CONTRACT_ADDRESS" yarn build
+        env:
+          CONTRACT_ADDRESS: ${{ env.PROD_CONTRACT_ADDRESS }}
 
       - name: Deploy staging
         if: github.ref == 'refs/heads/stage'

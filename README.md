@@ -13,17 +13,17 @@
 
 # SSV - Secret Shared Validator
 In order to supply a truly secure layer of your validator node, we're offering more decentralization! <br>
-The solution that we provide is called <a href="https://github.com/herumi/bls-wasm">Secret Share Validator</a> and its split into 2 sections
+The solution that we provide is called <a href="https://github.com/herumi/bls-wasm">Secret Share Validator</a>, and it's split into 2 sections
 
 
 ### Add Validator
-From validator prospective the worst case you can have is when your validator node gets penalty or
-Slash events. The solution that we provide is to break the validator private key into (N) shares using 
-<a href="https://github.com/herumi/bls-wasm">Shamir Secret Share</a> , out of those shares we create for each share private & public key using <br>
-<a href="https://github.com/herumi/bls-wasm">BLS Signature</a>. We take the (N) preselected operators key by the validator and encrypt each share with
-One operator key to send him his share later encrypted. After the operators receive the shares they
-Start to collaborate in order to aggregate signatures to reach the full validator signature.<br>
-Our solution prevent from the validator the one point of failure issue when you depend on single node.
+From a validator perspective, getting penalties (e.g., for inactivity) or worse - getting permanently slashed - must be avoided at all costs.
+The solution that we provide is to break the validator private keys into (N) shares using 
+<a href="https://github.com/herumi/bls-wasm">Shamir Secret Share</a>, out of those shares we create for each share <br> private & public key using 
+<a href="https://github.com/herumi/bls-wasm">BLS Signature</a>. When registering a validator, the user must select the amount of shares,
+and the specific operators on which the shares will run. Each share is encrypted with its respective operator key.
+After the operators receive the shares they start to collaborate in order to aggregate signatures to reach the full validator signature.<br>
+Our solution prevents the single point of failure issue which poses a major risk when depending on a single node.
 
 ### Add Operator
 The term "Operator" is our invention for people who don't want to put a collateral of 32 ETH but still want to participate in blockchain and receive rewards.<br>

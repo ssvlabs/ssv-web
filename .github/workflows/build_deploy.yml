@@ -34,7 +34,7 @@ jobs:
 
       - name: Run stage build
         if: github.ref == 'refs/heads/stage'
-        run: CONTRACT_ADDRESS="%CONTRACT_ADDRESS%} yarn build
+        run: CONTRACT_ADDRESS="%CONTRACT_ADDRESS%" yarn build
         env:
           CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
 

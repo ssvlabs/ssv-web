@@ -110,7 +110,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development INLINE_RUNTIME_CHUNK=false node scripts/start.js",
     "build": "cross-env INLINE_RUNTIME_CHUNK=false node scripts/build.js",
-    "test": "cross-env NODE_ENV=test INLINE_RUNTIME_CHUNK=false node scripts/test.js --watchAll=false",
+    "test": "cross-env NODE_ENV=test INLINE_RUNTIME_CHUNK=false node scripts/test.js --watchAll=false --verbose",
     "test:dev": "cross-env NODE_ENV=test INLINE_RUNTIME_CHUNK=false node scripts/test.js --coverage --reporters=default",
     "cy:open": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json",
     "cy:open:local": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json --config baseUrl=http://localhost:3000",

@@ -6,8 +6,8 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import { normalizeNumber } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
+import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
@@ -19,7 +19,7 @@ const ImportValidatorConfirmation = () => {
   const stores = useStores();
   const contractValidator: ContractValidator = stores.ContractValidator;
   const contractOperator: ContractOperator = stores.ContractOperator;
-  const walletStore: WalletStore = stores.Wallet;
+  const applicationStore: ApplicationStore = stores.Application;
   const { redirectUrl, history } = useUserFlow();
 
   useEffect(() => {
@@ -27,11 +27,12 @@ const ImportValidatorConfirmation = () => {
   }, [redirectUrl]);
 
   const onRegisterValidatorClick = async () => {
-    await walletStore.connect().then(async () => {
       return contractValidator.addNewValidator().then(() => {
+        applicationStore.setIsLoading(false);
         history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
+      }).catch(() => {
+        applicationStore.setIsLoading(false);
       });
-    });
   };
 
   const backNavigation = <BackNavigation to={config.routes.VALIDATOR.SLASHING_WARNING} text={translations.VALIDATOR.SLASHING_WARNING.TITLE} />;

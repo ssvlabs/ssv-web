@@ -100,7 +100,7 @@ class WalletTestStore extends BaseStore implements Wallet {
     checkIfWalletReady() {
         const notificationsStore: NotificationsStore = this.getStore('Notifications');
         if (!this.connected) {
-            notificationsStore.showMessage('Please connect your wallet first!', 'error');
+            notificationsStore.showMessage('Please connect your wallet', 'error');
             return false;
         }
         return true;

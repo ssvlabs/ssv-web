@@ -95,82 +95,76 @@ class ContractValidator extends BaseStore {
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
+    await walletStore.connect();
     this.newValidatorReceipt = null;
     this.addingNewValidator = true;
-    await walletStore.connect();
     const contract: Contract = await walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
-
-    if (!walletStore.accountAddress) return;
-
     applicationStore.setIsLoading(true);
 
-    const payload: (string | string[])[] = await this.createPayLoad();
-
-    return new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
       if (!walletStore.checkIfWalletReady()) {
         reject();
-      }
+      } else {
+        const payload: (string | string[])[] = await this.createPayLoad();
 
-      console.debug('Add Validator Payload: ', payload);
+        console.debug('Add Validator Payload: ', payload);
 
-      if (getGasEstimation) {
-        // Send add operator transaction
-        contract.methods
-          .addValidator(...payload)
-          .estimateGas({ from: ownerAddress })
-          .then((gasAmount: any) => {
-            this.addingNewValidator = true;
-            this.estimationGas = gasAmount * 0.000000001;
-            if (config.FEATURE.DOLLAR_CALCULATION) {
-            gasEstimation
-              .estimateGasInUSD(this.estimationGas)
-              .then((rate: number) => {
-                this.dollarEstimationGas = this.estimationGas * rate;
-                resolve(true);
+        if (getGasEstimation) {
+          // Send add operator transaction
+          contract.methods
+              .addValidator(...payload)
+              .estimateGas({ from: ownerAddress })
+              .then((gasAmount: any) => {
+                this.addingNewValidator = true;
+                this.estimationGas = gasAmount * 0.000000001;
+                if (config.FEATURE.DOLLAR_CALCULATION) {
+                  gasEstimation
+                      .estimateGasInUSD(this.estimationGas)
+                      .then((rate: number) => {
+                        this.dollarEstimationGas = this.estimationGas * rate;
+                        resolve(true);
+                      })
+                      .catch(() => {
+                        resolve(true);
+                      });
+                } else {
+                  this.dollarEstimationGas = this.estimationGas * 3377;
+                  resolve(true);
+                }
               })
               .catch((error: any) => {
-                applicationStore.displayUserError(error);
+                reject(error);
               });
-            } else {
-              this.dollarEstimationGas = this.estimationGas * 3377;
-              resolve(true);
-            }
-          })
-          .catch((error: any) => {
-            applicationStore.displayUserError(error);
-            reject(error);
-          });
-      } else {
-        // Send add operator transaction
-        contract.methods
-          .addValidator(...payload)
-          .send({ from: ownerAddress })
-          .on('receipt', (receipt: any) => {
-            const event: boolean = 'ValidatorAdded' in receipt.events;
-            if (event) {
-              console.debug('Contract Receipt', receipt);
-              this.newValidatorReceipt = receipt;
-              applicationStore.setIsLoading(false);
-              resolve(event);
-            }
-          })
-          .on('error', (error: any) => {
-            this.addingNewValidator = false;
-            console.debug('Contract Error', error);
-            applicationStore.setIsLoading(false);
-            reject(error);
-          })
-          .catch((error: any) => {
-            this.addingNewValidator = false;
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-              reject(error);
-            }
-            console.debug('Contract Error', error);
-            applicationStore.setIsLoading(false);
-            resolve(true);
-          });
+        } else {
+          // Send add operator transaction
+          contract.methods
+              .addValidator(...payload)
+              .send({ from: ownerAddress })
+              .on('receipt', (receipt: any) => {
+                const event: boolean = 'ValidatorAdded' in receipt.events;
+                if (event) {
+                  console.debug('Contract Receipt', receipt);
+                  this.newValidatorReceipt = receipt;
+                  resolve(event);
+                }
+              })
+              .on('error', (error: any) => {
+                this.addingNewValidator = false;
+                console.debug('Contract Error', error);
+                reject(error);
+              })
+              .catch((error: any) => {
+                this.addingNewValidator = false;
+                if (error) {
+                  notificationsStore.showMessage(error.message, 'error');
+                  reject(error);
+                }
+                console.debug('Contract Error', error);
+                resolve(true);
+              });
+        }
       }
     });
   }

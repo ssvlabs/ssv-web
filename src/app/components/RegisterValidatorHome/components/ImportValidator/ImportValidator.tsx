@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -42,19 +42,16 @@ const ImportValidator = () => {
   const stores = useStores();
   const validatorStore: ContractValidator = stores.ContractValidator;
   const { getUserFlow } = useUserFlow();
-
-  const goToSelectOperators = () => {
+  
+  useEffect(() => {
     if (validatorStore.validatorPrivateKeyFile) {
       history.push(config.routes.VALIDATOR.DECRYPT);
-    } else {
-      history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     }
-  };
+  }, [validatorStore.validatorPrivateKeyFile]);
 
   const onFileChange = (file: any[]) => {
     if (file.length !== 0) {
       validatorStore.setValidatorPrivateKeyFile(file[0]);
-      goToSelectOperators();
     }
   };
 

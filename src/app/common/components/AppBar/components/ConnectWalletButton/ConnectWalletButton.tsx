@@ -3,10 +3,12 @@ import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import Button from '~app/common/components/AppBar/components/Button';
+import ApplicationStore from '~app/common/stores/Application.store';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
+  const applicationStore: ApplicationStore = stores.Application;
   const walletImageStyle = { width: 24, height: 24, marginRight: 10, marginLeft: 0 };
 
   const disconnectWalletWithPrompt = () => {
@@ -14,6 +16,7 @@ const ConnectWalletButton = () => {
   };
   const onClick = () => {
     if (walletStore.connected) {
+      return applicationStore.setShowPopUp(true);
       return disconnectWalletWithPrompt();
     }
     return walletStore.connect();

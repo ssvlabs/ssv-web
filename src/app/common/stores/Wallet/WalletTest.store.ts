@@ -1,10 +1,8 @@
 import Web3 from 'web3';
-// import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-// import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
 
@@ -85,12 +83,10 @@ class WalletTestStore extends BaseStore implements Wallet {
         if (this.connected) {
             return;
         }
-        const notificationsStore: NotificationsStore = this.getStore('Notifications');
         this.web3 = new Web3('ws://localhost:8545');
         const accounts = await this.web3.eth.getAccounts();
         console.log(accounts[0]);
         this.accountAddress = accounts[0];
-        notificationsStore.showMessage('Wallet is connected!', 'success');
     }
 
     /**

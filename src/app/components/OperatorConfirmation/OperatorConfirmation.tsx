@@ -4,7 +4,6 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
@@ -14,7 +13,6 @@ import TransactionConfirmationContainer from '~app/common/components/Transaction
 
 const OperatorConfirmation = () => {
   const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: ContractOperator = stores.ContractOperator;
   const { redirectUrl, history } = useUserFlow();
 
@@ -23,16 +21,12 @@ const OperatorConfirmation = () => {
   }, [redirectUrl]);
 
   const onRegisterClick = async () => {
-    await walletStore.connect();
-    operatorStore.addNewOperator().then(() => {
-      history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-    });
-  };
-  const backNavigationClick = () => {
-    operatorStore.setAddingNewOperator(false);
+      operatorStore.addNewOperator().then(() => {
+        history.push(config.routes.OPERATOR.SUCCESS_PAGE);
+      });
   };
 
-  const backNavigation = <BackNavigation onClick={backNavigationClick} to={config.routes.OPERATOR.GENERATE_KEYS} text="Register Operator" />;
+  const backNavigation = <BackNavigation to={config.routes.OPERATOR.GENERATE_KEYS} text="Register Operator" />;
   const header = <Header title={translations.OPERATOR.CONFIRMATION.TITLE} subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />;
   const sections: IDataSection[] = [
     {

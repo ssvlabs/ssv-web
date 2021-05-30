@@ -16,7 +16,7 @@ const ConnectWalletButton = () => {
   };
   const onClick = () => {
     if (walletStore.connected) {
-      return applicationStore.setShowPopUp(true);
+      return applicationStore.setShowWalletPopUp(true);
       return disconnectWalletWithPrompt();
     }
     return walletStore.connect();

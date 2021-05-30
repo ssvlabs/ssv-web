@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -15,6 +14,7 @@ import BackNavigation from '~app/common/components/BackNavigation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 
 const SlashingWarning = () => {
   const classes = useStyles();
@@ -91,16 +91,13 @@ const SlashingWarning = () => {
             style={{ marginTop: 150 }}
           />
 
-          <Button
-            data-testid="register-validator"
-            disabled={!nextButtonEnabled}
-            variant="contained"
-            color="primary"
+          <CTAButton
+            testId={'register-validator'}
+            disable={!nextButtonEnabled}
             style={registerButtonStyle}
             onClick={goToConfirmation}
-          >
-            Next
-          </Button>
+            text={'Next'}
+          />
         </Grid>
       </Grid>
     </Paper>

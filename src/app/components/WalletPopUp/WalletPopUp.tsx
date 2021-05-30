@@ -1,22 +1,16 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import config from '~app/common/config';
+import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import { useStores } from '~app/hooks/useStores';
 import ClearIcon from '@material-ui/icons/Clear';
 import LaunchIcon from '@material-ui/icons/Launch';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-// import { useStores } from '~app/hooks/useStores';
-// import useUserFlow from '~app/hooks/useUserFlow';
-// import { translations } from '~app/common/config';
-// import Header from '~app/common/components/Header';
-import { useStyles } from '~app/components/WalletPopUp/WalletPopUp.styles';
-
-// import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
-// import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
-import ApplicationStore from '~app/common/stores/Application.store';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ApplicationStore from '~app/common/stores/Application.store';
+import { useStyles } from '~app/components/WalletPopUp/WalletPopUp.styles';
 
 const WalletPopUp = () => {
     const stores = useStores();
@@ -25,16 +19,16 @@ const WalletPopUp = () => {
     const walletStore: WalletStore = stores.Wallet;
 
     const changeWallet = () => {
-        applicationStore.setShowPopUp(false);
+        applicationStore.setShowWalletPopUp(false);
         walletStore.onboardSdk.walletSelect();
     };
 
     const closePopUp = () => {
-        applicationStore.setShowPopUp(false);
+        applicationStore.setShowWalletPopUp(false);
     };
 
     const openWalletAddress = () => {
-        window.open(`https://goerli.etherscan.io/address/${walletStore.accountAddress}`);
+        window.open(config.links.ETHER_SCAN_LINK + walletStore.accountAddress);
     };
 
     const copyToClipboard = () => {
@@ -69,17 +63,6 @@ const WalletPopUp = () => {
             </Grid>
           </Grid>
         </Grid>
-        {/* <Grid container className={classes.gridContainerAddress} spacing={0} justify="center"> */}
-        {/*  <Grid item xs={8}> */}
-        {/*    <div>{'0xhadh72ha27dh27a7d2auekh2u1heh1i27ayukq2'}</div> */}
-        {/*  </Grid> */}
-        {/*  <Grid item xs={2}> */}
-        {/*    <div>image</div> */}
-        {/*  </Grid> */}
-        {/*  <Grid item xs={2}> */}
-        {/*    <div>image</div> */}
-        {/*  </Grid> */}
-        {/* </Grid> */}
       </Dialog>
     );
 };

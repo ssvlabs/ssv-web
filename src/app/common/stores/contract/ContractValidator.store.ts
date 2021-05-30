@@ -95,7 +95,6 @@ class ContractValidator extends BaseStore {
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
-    await walletStore.connect();
     this.newValidatorReceipt = null;
     this.addingNewValidator = true;
     const contract: Contract = await walletStore.getContract();
@@ -104,9 +103,6 @@ class ContractValidator extends BaseStore {
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      if (!walletStore.checkIfWalletReady()) {
-        reject();
-      } else {
         const payload: (string | string[])[] = await this.createPayLoad();
 
         console.debug('Add Validator Payload: ', payload);
@@ -165,7 +161,6 @@ class ContractValidator extends BaseStore {
                 resolve(true);
               });
         }
-      }
     });
   }
 
@@ -178,10 +173,7 @@ class ContractValidator extends BaseStore {
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
-    return new Promise((resolve, reject) => {
-      if (!walletStore.checkIfWalletReady() && !thresholdResult) {
-        reject();
-      }
+    return new Promise((resolve) => {
       // Get list of selected operator's public keys
       const operatorPublicKeys: string[] = operatorStore.operators
           .filter((operator: IOperator) => {

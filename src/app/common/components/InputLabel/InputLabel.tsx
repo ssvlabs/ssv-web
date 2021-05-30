@@ -20,17 +20,18 @@ const Bar = styled.div`
 
 type InputLabelProps = {
   children: any,
-  title?: string
-  withHint?: boolean
-  toolTipText?: string
+  title?: string,
+  withHint?: boolean,
+  toolTipText?: string,
+  toolTipLink?: string
 };
 
-const InputLabel = ({ children, title, withHint, toolTipText }: InputLabelProps) => {
+const InputLabel = ({ children, title, withHint, toolTipText, toolTipLink }: InputLabelProps) => {
   return (
     <InputLabelWrapper>
       <InputHeader>
         {title}
-        {withHint && <Tooltip text={toolTipText} />}
+        {withHint && <Tooltip text={toolTipText} link={toolTipLink} />}
       </InputHeader>
       <Bar />
       {children}

@@ -8,10 +8,16 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
  */
 class ApplicationStore extends BaseStore {
   @observable isShowingLoading: boolean = false;
+  @observable showWalletPopUp: boolean = false;
 
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
+  }
+
+  @action.bound
+  setShowPopUp(status: boolean) {
+    this.showWalletPopUp = status;
   }
 
   @computed

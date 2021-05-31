@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { scrypt } from 'scrypt-js';
 import Wallet from 'ethereumjs-wallet';
 import { keccak256, sha256 } from 'ethereumjs-util';
+import { translations } from '~app/common/config';
 
 interface V4Keystore {
   crypto: {
@@ -68,7 +69,7 @@ class EthereumKeyStore {
       this.keyStoreData = JSON.parse(String(keyStoreData));
     }
     if (!this.keyStoreData.version) {
-      throw new Error('Invalid file type.');
+      throw new Error(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
     }
   }
 
@@ -107,7 +108,7 @@ class EthereumKeyStore {
     if (this.wallet) {
       this.privateKey = this.wallet.getPrivateKey().toString('hex');
       if (!this.privateKey) {
-        throw new Error('Invalid file type.');
+        throw new Error(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
       }
     }
     return this.privateKey;
@@ -168,7 +169,7 @@ class EthereumKeyStore {
     const hashFunction: any = hashFunctions[json.crypto.checksum.function];
     const mac: Buffer = hashFunction(checksumBuffer);
     if (mac.toString('hex') !== json.crypto.checksum.message) {
-      throw new Error('Invalid keystore file password.');
+      throw new Error(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
     }
 
     const decipher = crypto.createDecipheriv(

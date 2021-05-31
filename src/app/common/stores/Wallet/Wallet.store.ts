@@ -93,7 +93,6 @@ class WalletStore extends BaseStore implements Wallet {
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
             notificationsStore.showMessage('Wallet is connected!', 'success');
-            this.accountAddress = this.onboardSdk.getState().address;
             console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
@@ -104,6 +103,10 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
+  @action.bound
+  setAccountAddress(address: string) {
+    this.accountAddress = address;
+  }
   /**
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
@@ -119,6 +122,7 @@ class WalletStore extends BaseStore implements Wallet {
       networkId: Number(config.ONBOARD.NETWORK_ID),
       subscriptions: {
         wallet: this.onWalletConnected,
+        address: this.setAccountAddress,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
@@ -143,7 +147,7 @@ class WalletStore extends BaseStore implements Wallet {
   checkIfWalletReady() {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     if (!this.connected) {
-      notificationsStore.showMessage('Please connect your wallet first!', 'error');
+      notificationsStore.showMessage('Please connect your wallet', 'error');
       return false;
     }
     return true;

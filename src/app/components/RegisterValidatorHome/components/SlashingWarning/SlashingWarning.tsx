@@ -44,9 +44,11 @@ const SlashingWarning = () => {
 
   const goToConfirmation = () => {
     validatorStore.addNewValidator(true).then(() => {
-      history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
-    }).finally(() => {
       applicationStore.setIsLoading(false);
+      history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
+    }).catch(() => {
+      applicationStore.setIsLoading(false);
+      history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
     });
   };
 

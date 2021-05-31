@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import config from '~app/common/config';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import { useStores } from '~app/hooks/useStores';
@@ -8,6 +7,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import LaunchIcon from '@material-ui/icons/Launch';
 import Typography from '@material-ui/core/Typography';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import config from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/components/WalletPopUp/WalletPopUp.styles';
@@ -19,16 +19,16 @@ const WalletPopUp = () => {
     const walletStore: WalletStore = stores.Wallet;
 
     const changeWallet = () => {
-        applicationStore.setShowWalletPopUp(false);
+        applicationStore.showWalletPopUp(false);
         walletStore.onboardSdk.walletSelect();
     };
 
     const closePopUp = () => {
-        applicationStore.setShowWalletPopUp(false);
+        applicationStore.showWalletPopUp(false);
     };
 
     const openWalletAddress = () => {
-        window.open(config.links.ETHER_SCAN_LINK + walletStore.accountAddress);
+        window.open(`${config.links.ETHER_SCAN_LINK}${walletStore.accountAddress}`);
     };
 
     const copyToClipboard = () => {
@@ -36,7 +36,7 @@ const WalletPopUp = () => {
     };
 
     return (
-      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.showWalletPopUp}>
+      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
         <Grid wrap={'wrap'} container alignItems={'center'} item zeroMinWidth spacing={0}>
           <Grid item xs={12}>
             <ClearIcon onClick={closePopUp} className={classes.exitIcon} />

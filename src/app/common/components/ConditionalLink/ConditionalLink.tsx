@@ -1,6 +1,6 @@
 import React from 'react';
-import UnStyledLink from '~app/common/components/UnStyledLink';
 import { Link as RouterLink } from 'react-router-dom';
+import UnStyledLink from '~app/common/components/UnStyledLink';
 
 type ConditionalLinkParams = {
     children: any,

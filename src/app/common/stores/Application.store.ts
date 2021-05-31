@@ -9,7 +9,7 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
 
 class ApplicationStore extends BaseStore {
   @observable isShowingLoading: boolean = false;
-  @observable showWalletPopUp: boolean = false;
+  @observable walletPopUp: boolean = false;
   @observable walletConnectivity: boolean = false;
 
   @action.bound
@@ -18,8 +18,8 @@ class ApplicationStore extends BaseStore {
   }
 
   @action.bound
-  setShowWalletPopUp(status: boolean) {
-    this.showWalletPopUp = status;
+  showWalletPopUp(status: boolean) {
+    this.walletPopUp = status;
   }
 
   @action.bound

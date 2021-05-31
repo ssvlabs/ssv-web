@@ -7,6 +7,10 @@ const translations = {
     IMPORT: {
       TITLE: 'Enter Validator Key',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',
+      FILE_ERRORS: {
+        INVALID_FILE: 'Invalid file type.',
+        INVALID_PASSWORD: 'Invalid keystore file password.',
+      },
     },
     CONFIRMATION: {
       TITLE: 'Confirm Transaction',
@@ -45,7 +49,8 @@ const translations = {
   OPERATOR: {
     OPERATOR_EXIST: 'Operator key has already been registered.',
     REGISTER: {
-      TOOL_TIP: 'Operators identifier in the SSV network. To generate your key see our documentation',
+      TOOL_TIP_KEY: 'Generated as part of the SSV node setup - see our ',
+      TOOL_TIP_ADDRESS: 'Operators identifier in the SSV network, it also serves as its owner for management purposes. Make sure you enter an address you have ownership over.',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
     },
@@ -61,6 +66,9 @@ const translations = {
 
       },
     },
+  },
+  CTA_BUTTON: {
+    CONNECT: 'Connect Wallet',
   },
 };
 

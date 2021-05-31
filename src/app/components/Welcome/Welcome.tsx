@@ -17,7 +17,6 @@ const Welcome = () => {
   return (
     <Paper className={classes.mainContainer}>
       <Header title={translations.HOME.TITLE} subtitle={translations.HOME.DESCRIPTION} />
-
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <RouteLink to={config.routes.OPERATOR.HOME} data-testid={config.routes.OPERATOR.HOME}>

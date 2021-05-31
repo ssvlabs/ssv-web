@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/common/components/Spinner';
-import BarMessage from '~app/common/components/BarMessage';
 import WalletPopUp from '~app/components/WalletPopUp';
+import BarMessage from '~app/common/components/BarMessage';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
 

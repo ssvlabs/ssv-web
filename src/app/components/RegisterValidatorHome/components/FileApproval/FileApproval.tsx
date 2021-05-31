@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -14,6 +13,7 @@ import InputLabel from '~app/common/components/InputLabel';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 
 const EnterValidatorPrivateKey = () => {
   const registerButtonStyle = { width: '100%', marginTop: 20 };
@@ -35,8 +35,8 @@ const EnterValidatorPrivateKey = () => {
     validatorStore.extractPrivateKey().then(() => {
       history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     }).catch((error: string) => {
-      if (error !== 'Invalid keystore file password') {
-        showMessage('Invalid file type.', true);
+      if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
+        showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
       } else {
         showMessage(error, true);
       }
@@ -95,15 +95,13 @@ const EnterValidatorPrivateKey = () => {
               </div>
             )}
           </Grid>
-          <Button
-            data-testid="decrypt-keystore-button"
-            disabled={!validatorStore.password.length || !validatorStore.isJsonFile()}
-            variant="contained"
-            color="primary"
+          <CTAButton
+            testId={'decrypt-keystore-button'}
+            disable={!validatorStore.password.length || !validatorStore.isJsonFile()}
             style={registerButtonStyle}
-            onClick={goToSelectOperators}>
-            Next
-          </Button>
+            onClick={goToSelectOperators}
+            text={'Next'}
+          />
         </Grid>
       </Grid>
     </Paper>

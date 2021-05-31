@@ -6,11 +6,15 @@ import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
-import NotificationsStore from '~app/common/stores/Notifications.store';
 
 export interface INewOperatorTransaction {
   name: string,
   pubKey: string,
+  address: string,
+}
+
+interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
+  address?: string
 }
 
 export interface IOperator {
@@ -29,10 +33,9 @@ class ContractOperator extends BaseStore {
   @observable operators: IOperator[] = [];
   @observable operatorsLoaded: boolean = false;
 
-  @observable addingNewOperator: boolean = false;
   @observable newOperatorReceipt: any = null;
 
-  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '' };
+  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '' };
   @observable newOperatorRegisterSuccessfully: boolean = false;
 
   @observable estimationGas: number = 0;
@@ -43,13 +46,12 @@ class ContractOperator extends BaseStore {
    * @param transaction
    */
   @action.bound
-  setOperatorKeys(transaction: INewOperatorTransaction) {
-    this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
-  }
-
-  @action.bound
-  setAddingNewOperator(status: boolean) {
-    this.addingNewOperator = status;
+  setOperatorKeys(transaction: NewOperatorKeys) {
+    this.newOperatorKeys = {
+      pubKey: transaction.pubKey,
+      name: transaction.name,
+      address: transaction.address || this.newOperatorKeys.address,
+    };
   }
 
   /**
@@ -61,11 +63,10 @@ class ContractOperator extends BaseStore {
   async checkIfOperatorExists(publicKey: string, contract?: Contract): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
-      await walletStore.connect();
       const contractInstance = contract ?? await walletStore.getContract();
       const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
       this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
-      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: walletStore.accountAddress });
+      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: this.newOperatorKeys.address });
       return result[1] !== '0x0000000000000000000000000000000000000000';
     } catch (e) {
       console.error('Exception from operator existence check:', e);
@@ -81,21 +82,14 @@ class ContractOperator extends BaseStore {
   async addNewOperator(getGasEstimation: boolean = false) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const applicationStore: ApplicationStore = this.getStore('Application');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = await walletStore.getContract();
-    const address: string = walletStore.accountAddress;
+    const address: string = this.newOperatorKeys.address;
     applicationStore.setIsLoading(true);
 
     return new Promise((resolve, reject) => {
-      if (!walletStore.checkIfWalletReady()) {
-        applicationStore.setIsLoading(false);
-        reject();
-      }
-
       const transaction: INewOperatorTransaction = this.newOperatorKeys;
       this.newOperatorReceipt = null;
-      this.setAddingNewOperator(true);
 
       // Send add operator transaction
       const payload = [
@@ -104,12 +98,10 @@ class ContractOperator extends BaseStore {
         transaction.pubKey,
       ];
       console.debug('Register Operator Transaction Data:', payload);
-
       if (getGasEstimation) {
         contract.methods.addOperator(...payload)
-          .estimateGas({ from: address })
+          .estimateGas({ from: walletStore.accountAddress })
           .then((gasAmount: any) => {
-            this.setAddingNewOperator(true);
             this.estimationGas = gasAmount * 0.000000001;
             if (config.FEATURE.DOLLAR_CALCULATION) {
               gasEstimation
@@ -117,17 +109,11 @@ class ContractOperator extends BaseStore {
                   .then((rate: number) => {
                     this.dollarEstimationGas = this.estimationGas * rate;
                     resolve(true);
-                  })
-                  .catch((error: any) => {
-                    applicationStore.displayUserError(error);
                   });
             } else {
               this.dollarEstimationGas = this.estimationGas * 3377;
               resolve(true);
             }
-          })
-          .catch((error: any) => {
-            applicationStore.displayUserError(error);
           });
       } else {
         contract.methods.addOperator(...payload)
@@ -143,8 +129,6 @@ class ContractOperator extends BaseStore {
             }
           })
           .on('error', (error: any) => {
-            this.setAddingNewOperator(false);
-            notificationsStore.showMessage(error.message, 'error');
             console.debug('Contract Error', error);
             applicationStore.setIsLoading(false);
             reject(error);

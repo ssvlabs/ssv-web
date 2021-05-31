@@ -13,6 +13,7 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
+import CTAButton from '~app/common/components/CTAButton';
 
 const SelectOperators = () => {
   const stores = useStores();
@@ -73,16 +74,13 @@ const SelectOperators = () => {
             <OperatorSelector key={`operator-selector-${operator.ownerAddress}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
           ))}
 
-          <Button
-            data-testid="operators-selected-button"
-            disabled={!buttonEnabled}
-            variant="contained"
-            color="primary"
+          <CTAButton
+            testId={'operators-selected-button'}
+            disable={!buttonEnabled}
             style={registerButtonStyle}
             onClick={onSelectOperatorsClick}
-          >
-            Next
-          </Button>
+            text={'Next'}
+          />
         </Grid>
       </Grid>
     </Paper>

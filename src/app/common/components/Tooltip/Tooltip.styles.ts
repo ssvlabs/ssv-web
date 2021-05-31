@@ -25,4 +25,7 @@ export const useStyles = makeStyles(() => ({
         borderStyle: 'solid',
         borderColor: bloxColor,
     },
+    toolTipLink: {
+        color: '#fff',
+    },
 }));

@@ -4,9 +4,10 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { wallets } from '~app/common/stores/Wallet/wallets';
+import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
-import Wallet from '~app/common/stores/Wallet/abstractWallet';
 
 class WalletStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;
@@ -16,6 +17,7 @@ class WalletStore extends BaseStore implements Wallet {
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
   @observable accountAddress: string = '';
+  @observable addressVerification: any;
 
   /**
    * Get smart contract instance
@@ -69,6 +71,7 @@ class WalletStore extends BaseStore implements Wallet {
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
       notificationsStore.showMessage(message, 'error');
       console.error('Connecting to wallet error:', message);
+      return false;
     }
   }
 
@@ -88,11 +91,9 @@ class WalletStore extends BaseStore implements Wallet {
     await this.init();
     if (!this.connected) {
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-            notificationsStore.showMessage('Wallet is connected!', 'success');
             console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
@@ -120,6 +121,9 @@ class WalletStore extends BaseStore implements Wallet {
     const connectionConfig = {
       dappId: config.ONBOARD.API_KEY,
       networkId: Number(config.ONBOARD.NETWORK_ID),
+      walletSelect: {
+        wallets,
+      },
       subscriptions: {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
@@ -135,9 +139,19 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async onWalletConnected(wallet: any) {
-    console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
+    this.addressVerification = this.web3.utils.isAddress;
+    console.debug('Wallet Connected:', wallet);
+  }
+
+  @action.bound
+  async onWalletDisconnect() {
+    this.wallet = null;
+    this.web3 = null;
+    this.ready = false;
+    this.onboardSdk = null;
+    this.accountAddress = '';
   }
 
   /**

@@ -20,6 +20,7 @@ interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
 export interface IOperator {
   name: string,
   pubkey: string,
+  ownerAddress: string,
   paymentAddress?: string,
   score?: number,
   selected?: boolean
@@ -97,10 +98,9 @@ class ContractOperator extends BaseStore {
         transaction.pubKey,
       ];
       console.debug('Register Operator Transaction Data:', payload);
-
       if (getGasEstimation) {
         contract.methods.addOperator(...payload)
-          .estimateGas({ from: address })
+          .estimateGas({ from: walletStore.accountAddress })
           .then((gasAmount: any) => {
             this.estimationGas = gasAmount * 0.000000001;
             if (config.FEATURE.DOLLAR_CALCULATION) {
@@ -254,6 +254,7 @@ class ContractOperator extends BaseStore {
         id
         name
         pubkey
+        ownerAddress
       }
     }`;
     const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);

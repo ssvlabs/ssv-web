@@ -19,7 +19,7 @@ const Tooltip = ({ text, link }: ToolTipProps) => {
         {isShown && (
         <div className={classes.toolTipText}>
             {text}
-            {link ? <a className={classes.toolTipLink} target="_blank" href={link}>documentation.</a> : '.'}
+            {link ? <a className={classes.toolTipLink} target="_blank" href={link}>documentation</a> : ''}
         </div>
       )}
       </div>

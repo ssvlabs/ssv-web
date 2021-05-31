@@ -96,7 +96,7 @@ const GenerateOperatorKeys = () => {
           <InputLabel title="Operator Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}>
             <TextInput
               data-testid="new-operator-address"
-              className={displayNameError.shouldDisplay ? classes.inputError : ''}
+              className={addressError.shouldDisplay ? classes.inputError : ''}
               type="text"
               value={inputsData.address || walletStore.accountAddress}
               onBlur={(event) => { validateAddressInput(event.target.value, setAddressError); }}

@@ -67,7 +67,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
               disabled={contractOperator.isOperatorSelected(operator.pubkey)}
               >
               <OperatorName>{operator.name}</OperatorName>
-              <OperatorKey>{operatorKeySeralize(operator.pubkey)}</OperatorKey>
+              <OperatorKey>{operatorKeySeralize(operator.ownerAddress)}</OperatorKey>
             </MenuItem>
             );
         })}

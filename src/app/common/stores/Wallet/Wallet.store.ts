@@ -17,6 +17,7 @@ class WalletStore extends BaseStore implements Wallet {
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
   @observable accountAddress: string = '';
+  @observable addressVerification: any;
 
   /**
    * Get smart contract instance
@@ -140,6 +141,7 @@ class WalletStore extends BaseStore implements Wallet {
   async onWalletConnected(wallet: any) {
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
+    this.addressVerification = this.web3.utils.isAddress;
     console.debug('Wallet Connected:', wallet);
   }
 

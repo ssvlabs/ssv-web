@@ -23,7 +23,6 @@ const ConnectWalletButton = () => {
   };
   let icon;
   if (walletStore.wallet?.name) {
-    console.log(walletStore.wallet.name);
     switch (walletStore.wallet.name) {
       case 'MetaMask':
         icon = '/images/metamask.svg';

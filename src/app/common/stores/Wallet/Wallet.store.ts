@@ -105,8 +105,6 @@ class WalletStore extends BaseStore implements Wallet {
 
   @action.bound
   setAccountAddress(address: string) {
-    console.log('<<<<<<<<<<<<<<<<<<new address>>>>>>>>>>>>>>>>>>');
-    console.log(address);
     this.accountAddress = address;
   }
   /**

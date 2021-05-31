@@ -85,7 +85,6 @@ class WalletTestStore extends BaseStore implements Wallet {
         }
         this.web3 = new Web3('ws://localhost:8545');
         const accounts = await this.web3.eth.getAccounts();
-        console.log(accounts[0]);
         this.accountAddress = accounts[0];
     }
 

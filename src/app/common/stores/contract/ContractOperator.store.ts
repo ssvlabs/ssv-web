@@ -129,7 +129,6 @@ class ContractOperator extends BaseStore {
             }
           })
           .on('error', (error: any) => {
-            this.setAddingNewOperator(false);
             console.debug('Contract Error', error);
             applicationStore.setIsLoading(false);
             reject(error);

@@ -42,6 +42,12 @@ const OperatorConfirmation = () => {
     },
     {
       title: '',
+      name: 'Address',
+      value: longStringShorten(operatorStore.newOperatorKeys.address),
+      divider: false,
+    },
+    {
+      title: '',
       name: 'Key',
       value: longStringShorten(operatorStore.newOperatorKeys.pubKey),
       divider: true,
@@ -49,7 +55,7 @@ const OperatorConfirmation = () => {
     {
       title: 'Est. Transaction Cost',
       name: 'Transaction fee',
-      value: <>{operatorStore.estimationGas}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
+      value: <>{normalizeNumber(operatorStore.estimationGas, 5)}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
       divider: false,
     },
     {

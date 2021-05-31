@@ -63,6 +63,9 @@ const translations = {
       },
     },
   },
+  CTA_BUTTON: {
+    CONNECT: 'Connect Wallet',
+  },
 };
 
 export default translations;

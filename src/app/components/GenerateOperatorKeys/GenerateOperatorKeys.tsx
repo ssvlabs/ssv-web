@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
-import Backdrop from '~app/common/components/Backdrop';
 import TextInput from '~app/common/components/TextInput';
+import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
@@ -42,8 +41,7 @@ const GenerateOperatorKeys = () => {
 
   // Inputs validation
   useEffect(() => {
-    const isRegisterButtonEnabled = contractOperator.addingNewOperator
-        || !inputsData.name
+    const isRegisterButtonEnabled = !inputsData.name
         || !inputsData.publicKey
         || !inputsData.address
         || displayNameError.shouldDisplay
@@ -139,18 +137,13 @@ const GenerateOperatorKeys = () => {
           {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
 
           <EmptyPlaceholder height={110} />
-
-          <Button
-            data-testid="register-operator-button"
-            disabled={!registerButtonEnabled}
-            variant="contained"
-            color="primary"
+          <CTAButton
+            testId="register-operator-button"
+            disable={!registerButtonEnabled}
             style={registerButtonStyle}
             onClick={onRegisterClick}
-          >
-            Next
-          </Button>
-          {contractOperator.addingNewOperator && <Backdrop />}
+            text={'Next'}
+          />
         </Grid>
       </Grid>
     </Paper>

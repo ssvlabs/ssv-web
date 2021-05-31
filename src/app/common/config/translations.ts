@@ -7,6 +7,10 @@ const translations = {
     IMPORT: {
       TITLE: 'Enter Validator Key',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',
+      FILE_ERRORS: {
+        INVALID_FILE: 'Invalid file type.',
+        INVALID_PASSWORD: 'Invalid keystore file password.',
+      },
     },
     CONFIRMATION: {
       TITLE: 'Confirm Transaction',

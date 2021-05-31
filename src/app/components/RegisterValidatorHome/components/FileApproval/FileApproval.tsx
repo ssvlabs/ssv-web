@@ -32,15 +32,15 @@ const EnterValidatorPrivateKey = () => {
 
   const goToSelectOperators = async () => {
     hideMessage();
-      validatorStore.extractPrivateKey().then(() => {
-        history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
-      }).catch((error: string) => {
-        if (error !== 'Invalid keystore file password') {
-          showMessage('Invalid file type.', true);
-        } else {
-          showMessage(error, true);
-        }
-      });
+    validatorStore.extractPrivateKey().then(() => {
+      history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+    }).catch((error: string) => {
+      if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
+        showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
+      } else {
+        showMessage(error, true);
+      }
+    });
   };
 
   const showMessage = (text: string, status: boolean): void => {

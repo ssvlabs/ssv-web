@@ -5,9 +5,9 @@ import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { wallets } from '~app/common/stores/Wallet/wallets';
+import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
-import Wallet from '~app/common/stores/Wallet/abstractWallet';
 
 class WalletStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;

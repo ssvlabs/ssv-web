@@ -16,22 +16,23 @@ const ConnectWalletButton = () => {
   };
   const onClick = () => {
     if (walletStore.connected) {
-      return applicationStore.setShowPopUp(true);
+      return applicationStore.showWalletPopUp(true);
       return disconnectWalletWithPrompt();
     }
     return walletStore.connect();
   };
   let icon;
   if (walletStore.wallet?.name) {
+    console.log(walletStore.wallet.name);
     switch (walletStore.wallet.name) {
       case 'MetaMask':
         icon = '/images/metamask.svg';
         break;
-      case 'Torus':
-        icon = '/images/torus.png';
+      case 'Ledger':
+        icon = '/images/metamask.svg';
         break;
-      case 'Authereum':
-        icon = '/images/autherium.png';
+      case 'Trezor':
+        icon = '/images/metamask.svg';
         break;
     }
   }

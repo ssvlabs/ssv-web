@@ -94,6 +94,7 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     gridContainer: {
+        marginTop: '10px',
         flexGrow: 1,
         flexDirection: 'column',
     },

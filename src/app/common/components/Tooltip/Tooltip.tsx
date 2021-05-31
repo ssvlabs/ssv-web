@@ -4,9 +4,10 @@ import { useStyles } from './Tooltip.styles';
 
 type ToolTipProps = {
     text?: string,
+    link?: string
 };
 
-const Tooltip = ({ text }: ToolTipProps) => {
+const Tooltip = ({ text, link }: ToolTipProps) => {
     const [isShown, setIsShown] = useState(false);
     const classes = useStyles();
     return (
@@ -15,7 +16,12 @@ const Tooltip = ({ text }: ToolTipProps) => {
         onMouseLeave={() => setIsShown(false)}
       >
         <img className={classes.image} src={'/images/information-notice.png'} />
-        {isShown && <div className={classes.toolTipText}>{text}</div> }
+        {isShown && (
+        <div className={classes.toolTipText}>
+            {text}
+            {link ? <a className={classes.toolTipLink} target="_blank" href={link}>documentation.</a> : '.'}
+        </div>
+      )}
       </div>
     );
 };

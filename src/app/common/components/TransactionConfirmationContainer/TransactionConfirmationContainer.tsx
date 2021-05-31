@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import { useStyles } from './TransactionConfirmationContainer.styles';
 
 type TransactionConfirmationContainerProps = {
@@ -61,16 +61,13 @@ const TransactionConfirmationContainer = (props: TransactionConfirmationContaine
         {children ?? ''}
         <Grid container direction="row" justify="space-between" alignItems="center" item xs={12} md={12} spacing={1} className={classes.confirmationButtonContainer}>
           {agreementComponent}
-          <Button
-            data-testid={buttonTestId ?? 'confirm-button'}
-            disabled={!userAgreed}
-            variant="contained"
-            color="primary"
+          <CTAButton
+            testId={buttonTestId ?? 'confirm-button'}
+            disable={!userAgreed}
             style={registerButtonStyle}
             onClick={onButtonClick}
-          >
-            {buttonText}
-          </Button>
+            text={buttonText}
+          />
         </Grid>
       </Grid>
     </Paper>

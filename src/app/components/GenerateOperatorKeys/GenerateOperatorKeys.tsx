@@ -53,23 +53,28 @@ const GenerateOperatorKeys = () => {
     return () => {
       setRegisterButtonEnabled(false);
     };
-  }, [inputsData, walletStore.accountAddress, displayNameError.shouldDisplay, addressError.shouldDisplay, publicKeyError.shouldDisplay, inputsData.name, inputsData.publicKey]);
+  }, [inputsData,
+    walletStore.accountAddress,
+    displayNameError.shouldDisplay,
+    addressError.shouldDisplay,
+    publicKeyError.shouldDisplay,
+    inputsData.name,
+    inputsData.publicKey,
+  ]);
 
   const onInputChange = (name: string, value: string) => {
     setInputsData({ ...inputsData, [name]: value });
   };
 
   const onRegisterClick = async () => {
-    console.log('here mother fucker!!!!!');
-    console.log(walletStore.web3.utils.toChecksumAddress(inputsData.address));
+    const operatorKeys: INewOperatorTransaction = {
+      pubKey: inputsData.publicKey,
+      name: inputsData.name,
+      address: inputsData.address,
+    };
    if (!walletStore.web3.utils.toChecksumAddress(inputsData.address)) {
      setAddressError({ shouldDisplay: true, errorMessage: 'bla bla bla bs' });
     } else {
-     const operatorKeys: INewOperatorTransaction = {
-       pubKey: inputsData.publicKey,
-       name: inputsData.name,
-       address: inputsData.address,
-     };
      contractOperator.setOperatorKeys(operatorKeys);
      await contractOperator.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
        setOperatorExist(isExists);
@@ -89,7 +94,6 @@ const GenerateOperatorKeys = () => {
       <Header title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
-        <br />
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <InputLabel title="Operator Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}>
             <TextInput
@@ -115,7 +119,12 @@ const GenerateOperatorKeys = () => {
           </InputLabel>
 
           <br />
-          <InputLabel title="Operator Key" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY} toolTipLink={translations.OPERATOR.REGISTER.TOOL_TIP_KEY_LINK}>
+          <InputLabel 
+            title="Operator Key"
+            withHint
+            toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+            toolTipLink={config.links.TOOL_TIP_KEY_LINK}
+          >
             <TextInput type="text"
               data-testid="new-operator-key"
               className={publicKeyError.shouldDisplay ? classes.inputError : ''}

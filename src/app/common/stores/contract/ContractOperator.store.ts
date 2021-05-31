@@ -12,6 +12,7 @@ export interface INewOperatorTransaction {
   pubKey: string,
   address: string,
 }
+
 interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
   address?: string
 }

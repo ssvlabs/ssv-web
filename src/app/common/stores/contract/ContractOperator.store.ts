@@ -16,6 +16,7 @@ export interface INewOperatorTransaction {
 export interface IOperator {
   name: string,
   pubkey: string,
+  ownerAddress: string,
   paymentAddress?: string,
   score?: number,
   selected?: boolean
@@ -269,6 +270,7 @@ class ContractOperator extends BaseStore {
         id
         name
         pubkey
+        ownerAddress
       }
     }`;
     const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);

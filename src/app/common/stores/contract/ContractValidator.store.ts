@@ -178,10 +178,7 @@ class ContractValidator extends BaseStore {
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
-    return new Promise((resolve, reject) => {
-      if (!walletStore.checkIfWalletReady() && !thresholdResult) {
-        reject();
-      }
+    return new Promise((resolve) => {
       // Get list of selected operator's public keys
       const operatorPublicKeys: string[] = operatorStore.operators
           .filter((operator: IOperator) => {

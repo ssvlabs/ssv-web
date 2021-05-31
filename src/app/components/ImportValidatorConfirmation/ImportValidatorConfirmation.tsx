@@ -4,7 +4,7 @@ import Link from '@material-ui/core/Link';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
-import { normalizeNumber } from '~lib/utils/strings';
+import { normalizeNumber, longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -41,9 +41,9 @@ const ImportValidatorConfirmation = () => {
     return operator.selected;
   }).map((operator: IOperator, operatorIndex: number) => {
     return (
-      <div key={`operator-${operatorIndex}`} style={{ width: '100%' }}>
-        {operatorIndex + 1}. {operator.name}
-        <br />
+      <div key={`operator-${operatorIndex}`} style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <div>{operatorIndex + 1}. {operator.name}</div>
+        <div style={{ float: 'right' }}>{longStringShorten(operator.ownerAddress, 5)}</div>
       </div>
     );
   });

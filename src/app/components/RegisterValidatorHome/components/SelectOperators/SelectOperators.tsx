@@ -70,7 +70,7 @@ const SelectOperators = () => {
           ) : ''}
 
           {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, operatorIndex: number) => (
-            <OperatorSelector key={`operator-selector-${operator.pubkey}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
+            <OperatorSelector key={`operator-selector-${operator.ownerAddress}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
           ))}
 
           <Button

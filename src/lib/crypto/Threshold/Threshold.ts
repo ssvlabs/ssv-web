@@ -4,7 +4,8 @@ const bls = require('bls-eth-wasm/browser');
 
 export interface IShares {
     privateKey: string,
-    publicKey: string
+    publicKey: string,
+    id?: any
 }
 
 export interface ISharesKeyPairs {
@@ -69,6 +70,7 @@ class Threshold {
                             this.validatorShares.push({
                                 privateKey: `0x${shareSecretKey.serializeToHexStr()}`,
                                 publicKey: `0x${sharePublicKey.serializeToHexStr()}`,
+                                id,
                             });
                         }
 

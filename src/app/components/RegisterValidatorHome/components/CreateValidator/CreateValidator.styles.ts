@@ -43,8 +43,8 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: '10px',
     },
     doneIcon: {
-      color: 'green',
-      float: 'left',
+        color: 'green',
+        float: 'left',
     },
     badFormat: {
         color: 'red',
@@ -68,8 +68,10 @@ export const useStyles = makeStyles((theme) => ({
     },
     guideStepsContainerPaper: {
         cursor: 'pointer',
+        border: '1px solid black',
+        marginTop: '20px',
         margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),
+        padding: theme.spacing(2.5),
         '&:hover': {
             backgroundColor: 'aliceblue',
         },
@@ -94,13 +96,18 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     gridContainer: {
-        marginTop: '10px',
         flexGrow: 1,
         flexDirection: 'column',
+        '&:last-of-type': {
+            marginTop: '10px',
+        },
     },
     bodyText: {
-        marginBottom: '20px',
+        marginBottom: '15px',
         '&:last-of-type': {
+            marginBottom: '0px',
+        },
+        '&:nth-of-type(3)': {
             marginBottom: '0px',
         },
     },
@@ -119,6 +126,15 @@ export const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         marginRight: theme.spacing(1),
         alignSelf: 'center',
-        marginTop: theme.spacing(1),
+        marginTop: theme.spacing(0),
+    },
+    imageContainr: {
+        marginTop: '15px',
+        width: '100%',
+    },
+    rhinoImage: {
+        width: '25%',
+        // margin: 'auto',
+        float: 'right',
     },
 }));

@@ -5,7 +5,7 @@ import UnStyledLink from '~app/common/components/UnStyledLink';
 type ConditionalLinkParams = {
     children: any,
     to: string,
-    condition: string,
+    condition: string | boolean,
     onClick: React.Dispatch<void>,
 };
 const RouteLink = UnStyledLink(RouterLink);

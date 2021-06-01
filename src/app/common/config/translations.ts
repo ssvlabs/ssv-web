@@ -4,6 +4,19 @@ const translations = {
       TITLE: 'Run Validator with the SSV Network',
       DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
     },
+    CREATE: {
+      NAVIGATION_TEXT: 'Create Validator',
+      TITLE: 'Generate Validator Key',
+      DESCRIPTION: '',
+      BODY_TEXT: [
+          'Ethereum launchpad has developed a CLI app that you can download and use to generate your keys locally.',
+          'After you create your own keys, new files will be generated in your computer which are required for our setup:',
+          ' (1)   ‘Keystore’ (aka “validator key”) file',
+           '(2)   ‘Deposit data’ file',
+          'Follow the launchpad instructs and get your files and return to this setup.',
+          'Please note - any other action other than the key generation is not required.',
+      ],
+    },
     IMPORT: {
       TITLE: 'Enter Validator Key',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',

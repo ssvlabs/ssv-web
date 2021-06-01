@@ -143,6 +143,7 @@ class WalletStore extends BaseStore implements Wallet {
     this.web3 = new Web3(wallet.provider);
     this.addressVerification = this.web3.utils.isAddress;
     console.debug('Wallet Connected:', wallet);
+     console.log(this.web3);
   }
 
   @action.bound

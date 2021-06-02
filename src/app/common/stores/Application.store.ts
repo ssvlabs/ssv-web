@@ -17,6 +17,7 @@ class ApplicationStore extends BaseStore {
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
   }
+  
   @action.bound
   showTransactionPandingPopUp(status: boolean) {
     this.transactionPandingPopUp = status;

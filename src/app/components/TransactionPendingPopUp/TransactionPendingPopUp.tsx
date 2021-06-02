@@ -22,6 +22,7 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
     const copyToClipboard = () => {
         navigator.clipboard.writeText(walletStore.accountAddress);
     };
+
     return (
       <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.transactionPandingPopUp}>
         <Grid className={classes.gridWrapper} wrap={'wrap'} container alignItems={'center'}>

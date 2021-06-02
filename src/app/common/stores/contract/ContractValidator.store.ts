@@ -95,10 +95,11 @@ class ContractValidator extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
-    this.newValidatorReceipt = null;
-    this.addingNewValidator = true;
     const contract: Contract = await walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
+
+    this.newValidatorReceipt = null;
+    this.addingNewValidator = true;
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {

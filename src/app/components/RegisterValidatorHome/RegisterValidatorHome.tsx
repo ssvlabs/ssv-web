@@ -8,9 +8,9 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import ConditionalLink from '~app/common/components/ConditionalLink';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ConditionalLink from '~app/common/components/ConditionalLink';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();

@@ -10,9 +10,9 @@ import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const DropZoneContainer = styled.div`
   & .MuiDropzoneArea-root {

@@ -13,10 +13,10 @@ import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
 import { validatePublicKeyInput, validateDisplayNameInput, validateAddressInput } from '~lib/utils/validatesInputs';
 

@@ -9,12 +9,12 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ApplicationStore from '~app/common/stores/Application.store';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const SlashingWarning = () => {
   const classes = useStyles();

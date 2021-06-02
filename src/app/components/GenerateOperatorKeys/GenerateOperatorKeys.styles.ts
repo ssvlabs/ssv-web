@@ -67,20 +67,12 @@ export const useStyles = makeStyles((theme) => ({
         border: 'dashed thin gray',
     },
     guideStepsContainerPaper: {
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid black',
-        borderRadius: '0px',
-        textAlign: 'center',
         cursor: 'pointer',
-        width: '100%',
-        height: '150px',
         margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(2),
         '&:hover': {
             backgroundColor: 'aliceblue',
         },
-        flexDirection: 'row',
     },
     bigSquareButton: {
         minHeight: 150,
@@ -104,6 +96,7 @@ export const useStyles = makeStyles((theme) => ({
     gridContainer: {
         marginTop: '10px',
         flexGrow: 1,
+        flexDirection: 'column',
     },
     bodyText: {
         marginBottom: '20px',
@@ -122,7 +115,10 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 14,
     },
     arrowIcon: {
-        width: '30%',
-        margin: 'auto',
+        float: 'right',
+        marginLeft: 'auto',
+        marginRight: theme.spacing(1),
+        alignSelf: 'center',
+        marginTop: theme.spacing(1),
     },
 }));

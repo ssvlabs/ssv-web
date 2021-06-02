@@ -44,7 +44,7 @@ const translations = {
   },
   HOME: {
     TITLE: 'Join SSV Network',
-    DESCRIPTION: 'Create new operator and share validator keys with other operators',
+    DESCRIPTION: 'Run your validator on the decentralized infrastructure      of Ethereum staking or help maintain it as one of it`s operators.',
     MENUS: {
       NEW_OPERATOR: {
         TITLE: 'Create new Operator',

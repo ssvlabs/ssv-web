@@ -8,11 +8,11 @@ import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
 import { Link as MaterialLink } from '@material-ui/core';
 import config, { translations } from '~app/common/config';
-import ConditionalLink from '~app/common/components/ConditionalLink';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import UnStyledLink from '~app/common/components/UnStyledLink';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ConditionalLink from '~app/common/components/ConditionalLink';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const OrganicLink = UnStyledLink(MaterialLink);
 

@@ -35,6 +35,7 @@ const config = {
         LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
         ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
         TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
+        LAUNCHPAD_LINK: 'https://launchpad.ethereum.org/',
     },
     ONBOARD: {
         API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

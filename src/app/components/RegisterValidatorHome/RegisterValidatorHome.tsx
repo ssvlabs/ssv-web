@@ -33,7 +33,7 @@ const RegisterValidatorHome = () => {
       <br />
       <Grid container wrap="nowrap" spacing={3} className={classes.rowGridContainer}>
         <Grid item xs={6} md={6} zeroMinWidth className={classes.rowGridContainer}>
-          <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition={walletStore.connected} onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
+          <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
             <Paper>
               <Grid container wrap="nowrap" className={classes.bigSquareButton}>
                 <Grid item md={12} xs={12} className={classes.bigSquareButtonGrid}>

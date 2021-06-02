@@ -3,22 +3,22 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import Header from '~app/common/components/Header';
+import Typography from '@material-ui/core/Typography';
 import TextInput from '~app/common/components/TextInput';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
+import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
-import { validatePublicKeyInput, validateDisplayNameInput, validateAddressInput } from '~lib/utils/validatesInputs';
 import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
+import { validatePublicKeyInput, validateDisplayNameInput, validateAddressInput } from '~lib/utils/validatesInputs';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
@@ -70,27 +70,23 @@ const GenerateOperatorKeys = () => {
       name: inputsData.name,
       address: inputsData.address,
     };
-   if (!walletStore.web3.utils.toChecksumAddress(inputsData.address)) {
-     setAddressError({ shouldDisplay: true, errorMessage: 'bla bla bla bs' });
-    } else {
-     contractOperator.setOperatorKeys(operatorKeys);
-     await contractOperator.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
-       setOperatorExist(isExists);
-       if (!isExists) {
-         contractOperator.addNewOperator(true).then(() => {
-           applicationStore.setIsLoading(false);
-           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
-         });
-       }
-     });
-   }
+    applicationStore.setIsLoading(true);
+    contractOperator.setOperatorKeys(operatorKeys);
+    await contractOperator.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
+      setOperatorExist(isExists);
+      if (!isExists) {
+        contractOperator.addNewOperator(true).then(() => {
+          applicationStore.setIsLoading(false);
+          history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+        });
+      }
+    });
   };
 
   return (
     <Paper className={classes.mainContainer}>
       <BackNavigation to={config.routes.OPERATOR.HOME} text={translations.OPERATOR.HOME.TITLE} />
       <Header title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
-
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <InputLabel title="Operator Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}>

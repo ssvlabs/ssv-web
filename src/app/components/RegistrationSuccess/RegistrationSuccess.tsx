@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { translations } from '~app/common/config';
 import Header from '~app/common/components/Header';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const RegistrationSuccess = () => {
   const classes = useStyles();

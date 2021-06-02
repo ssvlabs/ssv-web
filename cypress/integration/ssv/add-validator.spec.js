@@ -33,12 +33,14 @@ context('Add Validator', () => {
 
   it('should generate keystore using "deposit" CLI and upload its data in file upload form', async () => {
     const keystoreData = await cy.task('getKeyStoreData');
-    cy.get('[data-testid="sub-header-title"]').should('contain.text', translations.VALIDATOR.IMPORT.DESCRIPTION);
     await cy.get('input[type="file"]').attachFile({
       fileContent: JSON.parse(String(keystoreData)),
       fileName: 'keystore.json',
       mimeType: 'application/json',
     });
+    cy.get('[data-testid="header-title"]').should('contain.text', translations.VALIDATOR.IMPORT.TITLE);
+    cy.get('[data-testid="sub-header-title"]').should('contain.text', translations.VALIDATOR.IMPORT.DESCRIPTION);
+    cy.get('[data-testid="file-input"]').should('contain.text', translations.VALIDATOR.IMPORT.DESCRIPTION);
   });
 
   it('should decrypt keystore data with password', () => {
@@ -63,10 +65,20 @@ context('Add Validator', () => {
   });
 
   it('should show slashing warning screen with decrypted private key', () => {
+    cy.get('[data-testid="header-title"]').should('contain.text', translations.VALIDATOR.SLASHING_WARNING.TITLE);
+    cy.get('[data-testid="sub-header-title"]').should('contain.text', translations.VALIDATOR.SLASHING_WARNING.DESCRIPTION);
     cy.get('[data-testid="validator-private-key-slashing-input"]').should('not.be.empty');
     cy.get('[data-testid="register-validator"]').should('be.disabled');
     cy.get('[data-testid="slashing-data-warning-checkbox"]').click();
     cy.get('[data-testid="register-validator"]').should('be.enabled');
     cy.get('[data-testid="register-validator"]').click();
+  });
+  it('should show confirmation screen', () => {
+    cy.get('[data-testid="header-title"]').should('contain.text', translations.VALIDATOR.CONFIRMATION.TITLE);
+    cy.get('[data-testid="confirm-button"]').should('be.disabled');
+    cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
+    cy.get('[data-testid="confirm-button"]').should('be.enabled');
+    cy.get('[data-testid="confirm-button"]').click();
+    cy.get('[data-testid="confirm-button"]').should('contain.text', translations.VALIDATOR.CONFIRMATION.TITLE);
   });
 });

@@ -53,7 +53,7 @@ const CreateValidator = () => {
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <br />
           <br />
-          <InputLabel title="Validator Private key">
+          <InputLabel data-testid={'file-input'} title={translations.VALIDATOR.IMPORT.INPUT_LABEL}>
             <DropzoneArea
               onChange={onFileChange}
               acceptedFiles={['.json']}

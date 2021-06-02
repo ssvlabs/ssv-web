@@ -10,6 +10,7 @@ config.CONTRACT.ADDRESS = testConfig.CONTRACT_ADDRESS;
 context('Add Validator', () => {
   before(() => {
     cy.visit(Cypress.config('baseUrl'));
+    cy.get('[data-testid="connect-to-wallet"]').click();
   });
 
   it('should navigate to validator screen', () => {
@@ -32,19 +33,15 @@ context('Add Validator', () => {
 
   it('should generate keystore using "deposit" CLI and upload its data in file upload form', async () => {
     const keystoreData = await cy.task('getKeyStoreData');
-    await cy.get('[data-testid=select-operators-next]').should('be.disabled');
+    cy.get('[data-testid="sub-header-title"]').should('contain.text', translations.VALIDATOR.IMPORT.DESCRIPTION);
     await cy.get('input[type="file"]').attachFile({
       fileContent: JSON.parse(String(keystoreData)),
       fileName: 'keystore.json',
-      mimeType: 'text/json',
+      mimeType: 'application/json',
     });
   });
 
   it('should decrypt keystore data with password', () => {
-    // Click on next button
-    cy.get('[data-testid=select-operators-next]').should('be.enabled');
-    cy.get('[data-testid=select-operators-next]').click();
-
     // Enter password and click next
     cy.get('[data-testid="decrypt-keystore-button"]').should('be.disabled');
     cy.get('[data-testid="keystore-password"]').clear().type('testtest');

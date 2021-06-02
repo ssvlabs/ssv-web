@@ -32,6 +32,9 @@ jobs:
       - name: Run test
         run: yarn test
 
+      - name: Run E2E tests
+        run: yarn cy:headless
+
       - name: Run stage build
         if: github.ref == 'refs/heads/stage'
         run: OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$CONTRACT_ADDRESS" yarn build  

@@ -9,4 +9,5 @@ export default abstract class Wallet {
     public abstract decodeOperatorKey(): string;
     public abstract encodeOperatorKey(): string;
     public abstract getContract(): Promise<Contract>;
+    public abstract checkConnection(): void;
 }

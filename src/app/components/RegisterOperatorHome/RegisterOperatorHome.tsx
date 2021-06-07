@@ -10,6 +10,7 @@ import { Link as MaterialLink } from '@material-ui/core';
 import config, { translations } from '~app/common/config';
 import UnStyledLink from '~app/common/components/UnStyledLink';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import BackNavigation from '~app/common/components/BackNavigation';
 import ConditionalLink from '~app/common/components/ConditionalLink';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
@@ -31,6 +32,7 @@ const RegisterOperatorHome = () => {
 
   return (
     <Paper className={classes.mainContainer}>
+      <BackNavigation to={config.routes.HOME} text={translations.HOME.TITLE} />
       <Header title={translations.OPERATOR.HOME.TITLE} subtitle={translations.OPERATOR.HOME.DESCRIPTION} />
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>

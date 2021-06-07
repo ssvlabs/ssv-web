@@ -9,6 +9,7 @@ import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import BackNavigation from '~app/common/components/BackNavigation';
 import ConditionalLink from '~app/common/components/ConditionalLink';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
@@ -29,6 +30,7 @@ const RegisterValidatorHome = () => {
 
   return (
     <Paper className={classes.mainContainer}>
+      <BackNavigation to={config.routes.HOME} text={translations.HOME.TITLE} />
       <Header title={translations.VALIDATOR.HOME.TITLE} subtitle={translations.VALIDATOR.HOME.DESCRIPTION} />
       <br />
       <Grid container wrap="nowrap" spacing={3} className={classes.rowGridContainer}>

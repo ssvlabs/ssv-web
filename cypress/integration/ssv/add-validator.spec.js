@@ -79,6 +79,7 @@ context('Add Validator', () => {
     cy.get('[data-testid="terms-and-conditions-checkbox"]').click();
     cy.get('[data-testid="confirm-button"]').should('be.enabled');
     cy.get('[data-testid="confirm-button"]').click();
-    cy.get('[data-testid="confirm-button"]').should('contain.text', translations.VALIDATOR.CONFIRMATION.TITLE);
+    cy.wait(200);
+    cy.get('[data-testid="success-page"]').should('be.visible');
   });
 });

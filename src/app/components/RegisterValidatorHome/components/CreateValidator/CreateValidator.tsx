@@ -46,7 +46,7 @@ const CreateValidator = () => {
             </Paper>
           </ConditionalLink>
         </Grid>
-        <div className={classes.imageContainr}>
+        <div className={classes.imageContainer}>
           <img className={classes.rhinoImage} src={'/images/rhino.png'} />
         </div>
       </Grid>

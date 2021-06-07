@@ -65,6 +65,7 @@ const GenerateOperatorKeys = () => {
   };
 
   const onRegisterClick = async () => {
+    setOperatorExist(false);
     const operatorKeys: INewOperatorTransaction = {
       pubKey: inputsData.publicKey,
       name: inputsData.name,
@@ -79,6 +80,8 @@ const GenerateOperatorKeys = () => {
           applicationStore.setIsLoading(false);
           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
         });
+      } else {
+        applicationStore.setIsLoading(false);
       }
     });
   };
@@ -89,14 +92,14 @@ const GenerateOperatorKeys = () => {
       <Header title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <InputLabel title="Operator Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}>
+          <InputLabel title="Owner Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}>
             <TextInput
               data-testid="new-operator-address"
               className={addressError.shouldDisplay ? classes.inputError : ''}
               type="text"
-              value={inputsData.address || walletStore.accountAddress}
+              disabled
+              value={walletStore.accountAddress}
               onBlur={(event) => { validateAddressInput(event.target.value, setAddressError); }}
-              onChange={(event) => { onInputChange('address', event.target.value); }}
             />
             {addressError.shouldDisplay && <Typography className={classes.textError}>{addressError.errorMessage}</Typography>}
           </InputLabel>

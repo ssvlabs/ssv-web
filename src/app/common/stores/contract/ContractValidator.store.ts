@@ -139,7 +139,7 @@ class ContractValidator extends BaseStore {
               .addValidator(...payload)
               .send({ from: ownerAddress })
               .on('receipt', (receipt: any) => {
-                const event: boolean = 'ValidatorAdded' in receipt.events;
+                const event: boolean = 'ValidatorAdded' in receipt.events || receipt.status;
                 if (event) {
                   console.debug('Contract Receipt', receipt);
                   this.newValidatorReceipt = receipt;

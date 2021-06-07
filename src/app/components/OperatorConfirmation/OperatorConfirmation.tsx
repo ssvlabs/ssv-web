@@ -37,6 +37,7 @@ const OperatorConfirmation = () => {
   };
 
   const handlePendingTransaction = (transactionHash: string) => {
+    setActionButtonText('Sending transaction…');
     setTxHash(transactionHash);
     setActionButtonText(translations.OPERATOR.CONFIRMATION.WAITING_FOR_CONFIRMATION);
     applicationStore.showTransactionPandingPopUp(true);
@@ -53,7 +54,7 @@ const OperatorConfirmation = () => {
     {
       title: '',
       name: 'Address',
-      value: longStringShorten(operatorStore.newOperatorKeys.address),
+      value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`,
       divider: false,
     },
     {

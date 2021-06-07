@@ -34,7 +34,7 @@ const SuccessScreen = () => {
   }
 
   return (
-    <Paper className={classes.mainContainer}>
+    <Paper data-testid={'success-page'} className={classes.mainContainer}>
       <Grid className={classes.gridContainer} container direction="column" justify="center" alignItems="center">
         <img className={classes.successIcon} src={'/images/checked.svg'} />
         {header}

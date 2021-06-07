@@ -26,7 +26,7 @@ const EnterValidatorPrivateKey = () => {
 
   useEffect(() => {
     validatorStore.cleanPrivateData();
-    if (!validatorStore.isJsonFile() && !showErrorMessage) showMessage('Invalid file format - only .json files are supported', true);
+    if (!validatorStore.isJsonFile() && !showErrorMessage) showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE_FORMAT, true);
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl, validatorStore.isJsonFile]);
 
@@ -68,7 +68,7 @@ const EnterValidatorPrivateKey = () => {
           <InputLabel title="Keystore File generated from CLI">
             <Grid container className={classes.fileContainer}>
               <Grid item xs={1}>
-                {validatorStore.isJsonFile() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon className={classes.badFormat} />}
+                {validatorStore.isJsonFile() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon data-testid="wrong-file-type" className={classes.badFormat} />}
               </Grid>
               <Grid className={classes.fileNameText} item xs={8}>
                 {validatorStore.validatorPrivateKeyFile?.name}
@@ -90,7 +90,7 @@ const EnterValidatorPrivateKey = () => {
           </InputLabel>
           <Grid className={classes.paddingTop} item xs={12}>
             {showErrorMessage && (
-              <div className={classes.errorDiv}>
+              <div data-testid="error-message" className={classes.errorDiv}>
                 {errorMessage}
               </div>
             )}

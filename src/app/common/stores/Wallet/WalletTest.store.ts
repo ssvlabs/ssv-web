@@ -51,6 +51,11 @@ class WalletTestStore extends BaseStore implements Wallet {
     }
 
     @action.bound
+    async checkConnection() {
+
+    }
+
+    @action.bound
     async disconnect() {
         if (this.connected) {
             this.accountAddress = '';

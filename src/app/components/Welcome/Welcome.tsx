@@ -17,7 +17,7 @@ const Welcome = () => {
     <Paper className={classes.mainContainer}>
       <Header title={translations.HOME.TITLE} subtitle={translations.HOME.DESCRIPTION} />
       <Grid container spacing={2} className={classes.gridContainer}>
-        <Grid item xs zeroMinWidth className={classes.gridContainer} spacing={1}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <RouteLink to={config.routes.VALIDATOR.HOME} data-testid={config.routes.VALIDATOR.HOME}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container spacing={1}>
@@ -30,7 +30,7 @@ const Welcome = () => {
           </RouteLink>
         </Grid>
 
-        <Grid item xs zeroMinWidth className={classes.gridContainer} spacing={1}>
+        <Grid item xs zeroMinWidth className={classes.gridContainer}>
           <RouteLink to={config.routes.OPERATOR.HOME} data-testid={config.routes.OPERATOR.HOME}>
             <Paper className={classes.guideStepsContainerPaper}>
               <Grid container spacing={1}>

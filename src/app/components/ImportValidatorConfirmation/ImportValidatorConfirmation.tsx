@@ -53,7 +53,7 @@ const ImportValidatorConfirmation = () => {
     return (
       <div key={`operator-${operatorIndex}`} style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
         <div>{operatorIndex + 1}. {operator.name}</div>
-        <div style={{ float: 'right' }}>{longStringShorten(operator.ownerAddress, 5)}</div>
+        <div style={{ float: 'right' }}>{`0x${longStringShorten(operator.ownerAddress.substring(2), 4)}`}</div>
       </div>
     );
   });

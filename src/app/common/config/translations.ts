@@ -6,15 +6,12 @@ const translations = {
     },
     CREATE: {
       NAVIGATION_TEXT: 'Create Validator',
-      TITLE: 'Generate Validator Key',
+      TITLE: 'Create Validator via Ethereum Launchpad',
       DESCRIPTION: '',
       BODY_TEXT: [
-          'Ethereum launchpad has developed a CLI app that you can download and use to generate your keys locally.',
-          'After you create your own keys, new files will be generated in your computer which are required for our setup:',
-          ' (1)   ‘Keystore’ (aka “validator key”) file',
-           '(2)   ‘Deposit data’ file',
-          'Follow the launchpad instructs and get your files and return to this setup.',
-          'Please note - any other action other than the key generation is not required.',
+          'You must have an active validator before running it on the SSV network.',
+          'Follow Ethereum’s launchpad instructions to generate new keys and deposit your validator to the deposit contract.',
+          'Please note to backup your newly created validator files, you will need them for our setup.',
       ],
     },
     IMPORT: {
@@ -43,8 +40,8 @@ const translations = {
     },
   },
   HOME: {
-    TITLE: 'Join SSV Network',
-    DESCRIPTION: 'Run your validator on the decentralized infrastructure      of Ethereum staking or help maintain it as one of it`s operators.',
+    TITLE: 'Join the SSV Network',
+    DESCRIPTION: 'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators.',
     MENUS: {
       NEW_OPERATOR: {
         TITLE: 'Create new Operator',
@@ -63,7 +60,7 @@ const translations = {
     OPERATOR_EXIST: 'Operator key has already been registered.',
     REGISTER: {
       TOOL_TIP_KEY: 'Generated as part of the SSV node setup - see our ',
-      TOOL_TIP_ADDRESS: 'Operators identifier in the SSV network, it also serves as its owner for management purposes. Make sure you enter an address you have ownership over.',
+      TOOL_TIP_ADDRESS: 'The operator’s admin address for management purposes.',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
     },
@@ -81,7 +78,7 @@ const translations = {
     },
   },
   CTA_BUTTON: {
-    CONNECT: 'Connect Wallet',
+    CONNECT: 'Connect to a wallet',
   },
 };
 

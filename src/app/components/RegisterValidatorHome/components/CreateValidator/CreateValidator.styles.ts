@@ -69,9 +69,9 @@ export const useStyles = makeStyles((theme) => ({
     guideStepsContainerPaper: {
         cursor: 'pointer',
         border: '1px solid black',
-        marginTop: '20px',
+        marginTop: '60px',
         margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2.5),
+        padding: theme.spacing(3.8),
         '&:hover': {
             backgroundColor: 'aliceblue',
         },
@@ -128,13 +128,12 @@ export const useStyles = makeStyles((theme) => ({
         alignSelf: 'center',
         marginTop: theme.spacing(0),
     },
-    imageContainr: {
+    imageContainer: {
         marginTop: '15px',
         width: '100%',
     },
     rhinoImage: {
-        width: '25%',
-        // margin: 'auto',
+        width: '30%',
         float: 'right',
     },
 }));

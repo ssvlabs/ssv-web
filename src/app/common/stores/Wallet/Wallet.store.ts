@@ -143,15 +143,27 @@ class WalletStore extends BaseStore implements Wallet {
     this.web3 = new Web3(wallet.provider);
     this.addressVerification = this.web3.utils.isAddress;
     console.debug('Wallet Connected:', wallet);
+    window.localStorage.setItem('selectedWallet', wallet.name);
+  }
+
+  @action.bound
+  async checkConnection() {
+    const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
+    if (selectedWallet) {
+      await this.init();
+      await this.onboardSdk.walletSelect(selectedWallet);
+    }
   }
 
   @action.bound
   async onWalletDisconnect() {
+    this.onboardSdk.walletReset();
     this.wallet = null;
     this.web3 = null;
     this.ready = false;
     this.onboardSdk = null;
     this.accountAddress = '';
+    window.localStorage.removeItem('selectedWallet');
   }
 
   /**

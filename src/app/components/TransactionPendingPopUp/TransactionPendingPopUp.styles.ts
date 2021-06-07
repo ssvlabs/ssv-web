@@ -22,6 +22,10 @@ export const useStyles = makeStyles(() => ({
         border: '1px solid black',
         width: '90%',
     },
+    transactionText: {
+      overflow: 'scroll',
+      textOverflow: 'clip',
+    },
     title: {
         fontWeight: 'bold',
         marginBottom: '10px',
@@ -62,6 +66,9 @@ export const useStyles = makeStyles(() => ({
     copyImage: {
         verticalAlign: 'middle',
         cursor: 'pointer',
+    },
+    linkHref: {
+      marginTop: '20px',
     },
     connectButton: {
         cursor: 'pointer',

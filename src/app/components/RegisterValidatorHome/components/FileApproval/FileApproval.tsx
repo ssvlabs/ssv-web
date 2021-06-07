@@ -10,10 +10,10 @@ import Header from '~app/common/components/Header';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import BackNavigation from '~app/common/components/BackNavigation';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const EnterValidatorPrivateKey = () => {
   const registerButtonStyle = { width: '100%', marginTop: 20 };

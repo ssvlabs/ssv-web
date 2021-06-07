@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
 import BackNavigation from '~app/common/components/BackNavigation';
+import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
+import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 import { buildDataSections, IDataSection } from '~app/common/components/DataSection';
 import TransactionConfirmationContainer from '~app/common/components/TransactionConfirmationContainer';
@@ -14,19 +16,33 @@ import TransactionConfirmationContainer from '~app/common/components/Transaction
 const OperatorConfirmation = () => {
   const stores = useStores();
   const operatorStore: ContractOperator = stores.ContractOperator;
+  const applicationStore: ApplicationStore = stores.Application;
   const { redirectUrl, history } = useUserFlow();
+  const [actionButtonText, setActionButtonText] = useState(translations.OPERATOR.CONFIRMATION.REGISTER_OPERATOR);
+  const [txHash, setTxHash] = useState('Register Operator');
 
   useEffect(() => {
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
 
   const onRegisterClick = async () => {
-      operatorStore.addNewOperator().then(() => {
+    setActionButtonText(translations.OPERATOR.CONFIRMATION.WAITING_FOR_TRANSACTION);
+      operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
+        applicationStore.showTransactionPandingPopUp(false);
         history.push(config.routes.OPERATOR.SUCCESS_PAGE);
+      }).catch(() => {
+        applicationStore.showTransactionPandingPopUp(false);
+        setActionButtonText(translations.OPERATOR.CONFIRMATION.REGISTER_OPERATOR);
       });
   };
 
-  const backNavigation = <BackNavigation to={config.routes.OPERATOR.GENERATE_KEYS} text="Register Operator" />;
+  const handlePendingTransaction = (transactionHash: string) => {
+    setTxHash(transactionHash);
+    setActionButtonText(translations.OPERATOR.CONFIRMATION.WAITING_FOR_CONFIRMATION);
+    applicationStore.showTransactionPandingPopUp(true);
+  };
+
+  const backNavigation = <BackNavigation to={config.routes.OPERATOR.GENERATE_KEYS} text={translations.OPERATOR.CONFIRMATION.REGISTER_OPERATOR} />;
   const header = <Header title={translations.OPERATOR.CONFIRMATION.TITLE} subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />;
   const sections: IDataSection[] = [
     {
@@ -68,9 +84,10 @@ const OperatorConfirmation = () => {
       header={header}
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
-      buttonText="Register Operator"
+      buttonText={actionButtonText}
       buttonTestId="submit-operator"
     >
+      <TransactionPendingPopUp txHash={txHash} />
       <EmptyPlaceholder height={150} />
     </TransactionConfirmationContainer>
   );

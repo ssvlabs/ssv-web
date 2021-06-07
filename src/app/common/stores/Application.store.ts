@@ -11,10 +11,16 @@ class ApplicationStore extends BaseStore {
   @observable isShowingLoading: boolean = false;
   @observable walletPopUp: boolean = false;
   @observable walletConnectivity: boolean = false;
+  @observable transactionPandingPopUp: boolean = false;
 
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
+  }
+  
+  @action.bound
+  showTransactionPandingPopUp(status: boolean) {
+    this.transactionPandingPopUp = status;
   }
 
   @action.bound

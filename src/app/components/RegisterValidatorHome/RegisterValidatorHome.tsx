@@ -8,9 +8,9 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import ConditionalLink from '~app/common/components/ConditionalLink';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ConditionalLink from '~app/common/components/ConditionalLink';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
@@ -33,7 +33,7 @@ const RegisterValidatorHome = () => {
       <br />
       <Grid container wrap="nowrap" spacing={3} className={classes.rowGridContainer}>
         <Grid item xs={6} md={6} zeroMinWidth className={classes.rowGridContainer}>
-          <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition={walletStore.connected} onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
+          <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
             <Paper>
               <Grid container wrap="nowrap" className={classes.bigSquareButton}>
                 <Grid item md={12} xs={12} className={classes.bigSquareButtonGrid}>

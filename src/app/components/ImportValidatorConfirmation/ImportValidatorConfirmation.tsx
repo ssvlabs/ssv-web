@@ -1,18 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Link from '@material-ui/core/Link';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
-import { normalizeNumber, longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
+import { normalizeNumber, longStringShorten } from '~lib/utils/strings';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { buildDataSections, IDataSection } from '~app/common/components/DataSection';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import TransactionConfirmationContainer from '~app/common/components/TransactionConfirmationContainer';
 
 const ImportValidatorConfirmation = () => {
@@ -20,18 +21,28 @@ const ImportValidatorConfirmation = () => {
   const contractValidator: ContractValidator = stores.ContractValidator;
   const contractOperator: ContractOperator = stores.ContractOperator;
   const applicationStore: ApplicationStore = stores.Application;
+  const [actionButtonText, setActionButtonText] = useState(translations.VALIDATOR.CONFIRMATION.RUN_VALIDATOR);
+  const [txHash, setTxHash] = useState('');
   const { redirectUrl, history } = useUserFlow();
 
   useEffect(() => {
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
 
+  const handlePendingTransaction = (transactionHash: string) => {
+    setTxHash(transactionHash);
+    setActionButtonText(translations.VALIDATOR.CONFIRMATION.WAITING_FOR_CONFIRMATION);
+    applicationStore.showTransactionPandingPopUp(true);
+  };
+
   const onRegisterValidatorClick = async () => {
-      return contractValidator.addNewValidator().then(() => {
-        applicationStore.setIsLoading(false);
+      setActionButtonText(translations.VALIDATOR.CONFIRMATION.WAITING_FOR_TRANSACTION);
+      return contractValidator.addNewValidator(false, handlePendingTransaction).then(() => {
+        applicationStore.showTransactionPandingPopUp(false);
         history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
       }).catch(() => {
-        applicationStore.setIsLoading(false);
+        applicationStore.showTransactionPandingPopUp(false);
+        setActionButtonText(translations.VALIDATOR.CONFIRMATION.RUN_VALIDATOR);
       });
   };
 
@@ -86,8 +97,9 @@ const ImportValidatorConfirmation = () => {
       header={header}
       dataSections={dataSections}
       agreement="I have read and agree to the terms & conditions"
-      buttonText="Run validator"
+      buttonText={actionButtonText}
     >
+      <TransactionPendingPopUp txHash={txHash} />
       <EmptyPlaceholder height={50} />
     </TransactionConfirmationContainer>
   );

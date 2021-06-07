@@ -67,20 +67,14 @@ export const useStyles = makeStyles((theme) => ({
         border: 'dashed thin gray',
     },
     guideStepsContainerPaper: {
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid black',
-        borderRadius: '0px',
-        textAlign: 'center',
         cursor: 'pointer',
-        width: '100%',
-        height: '150px',
+        border: '1px solid black',
+        marginTop: '20px',
         margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),
+        padding: theme.spacing(2.5),
         '&:hover': {
             backgroundColor: 'aliceblue',
         },
-        flexDirection: 'row',
     },
     bigSquareButton: {
         minHeight: 150,
@@ -102,12 +96,18 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     gridContainer: {
-        marginTop: '10px',
         flexGrow: 1,
+        flexDirection: 'column',
+        '&:last-of-type': {
+            marginTop: '10px',
+        },
     },
     bodyText: {
-        marginBottom: '20px',
+        marginBottom: '15px',
         '&:last-of-type': {
+            marginBottom: '0px',
+        },
+        '&:nth-of-type(3)': {
             marginBottom: '0px',
         },
     },
@@ -122,7 +122,19 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 14,
     },
     arrowIcon: {
-        width: '30%',
-        margin: 'auto',
+        float: 'right',
+        marginLeft: 'auto',
+        marginRight: theme.spacing(1),
+        alignSelf: 'center',
+        marginTop: theme.spacing(0),
+    },
+    imageContainr: {
+        marginTop: '15px',
+        width: '100%',
+    },
+    rhinoImage: {
+        width: '25%',
+        // margin: 'auto',
+        float: 'right',
     },
 }));

@@ -2,10 +2,9 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
-import ApplicationStore from '~app/common/stores/Application.store';
 
 export interface INewOperatorTransaction {
   name: string,
@@ -79,13 +78,12 @@ class ContractOperator extends BaseStore {
    * @param getGasEstimation
    */
   @action.bound
-  async addNewOperator(getGasEstimation: boolean = false) {
+  // eslint-disable-next-line no-unused-vars
+  async addNewOperator(getGasEstimation: boolean = false, callBack?: (txHash: string) => void) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = await walletStore.getContract();
     const address: string = this.newOperatorKeys.address;
-    applicationStore.setIsLoading(true);
 
     return new Promise((resolve, reject) => {
       const transaction: INewOperatorTransaction = this.newOperatorKeys;
@@ -123,14 +121,15 @@ class ContractOperator extends BaseStore {
             if (event) {
               console.debug('Contract Receipt', receipt);
               this.newOperatorReceipt = receipt;
-              applicationStore.setIsLoading(false);
               this.newOperatorRegisterSuccessfully = true;
               resolve(event);
             }
           })
-          .on('error', (error: any) => {
+            .on('transactionHash', (txHash: string) => {
+              callBack && callBack(txHash);
+            })
+            .on('error', (error: any) => {
             console.debug('Contract Error', error);
-            applicationStore.setIsLoading(false);
             reject(error);
           });
       }

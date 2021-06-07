@@ -4,10 +4,22 @@ const translations = {
       TITLE: 'Run Validator with the SSV Network',
       DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
     },
+    CREATE: {
+      NAVIGATION_TEXT: 'Create Validator',
+      TITLE: 'Generate Validator Key',
+      DESCRIPTION: '',
+      BODY_TEXT: [
+          'Ethereum launchpad has developed a CLI app that you can download and use to generate your keys locally.',
+          'After you create your own keys, new files will be generated in your computer which are required for our setup:',
+          ' (1)   ‘Keystore’ (aka “validator key”) file',
+           '(2)   ‘Deposit data’ file',
+          'Follow the launchpad instructs and get your files and return to this setup.',
+          'Please note - any other action other than the key generation is not required.',
+      ],
+    },
     IMPORT: {
       TITLE: 'Enter Validator Key',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',
-      INPUT_LABEL: 'Validator Private key',
       FILE_ERRORS: {
         INVALID_FILE: 'Invalid file type.',
         INVALID_PASSWORD: 'Invalid keystore file password.',
@@ -16,6 +28,9 @@ const translations = {
     CONFIRMATION: {
       TITLE: 'Confirm Transaction',
       DESCRIPTION: '',
+      RUN_VALIDATOR: 'Run validator',
+      WAITING_FOR_CONFIRMATION: 'Waiting for confirmation...',
+      WAITING_FOR_TRANSACTION: 'WAITING_FOR_TRANSACTION',
     },
     SLASHING_WARNING: {
       TITLE: 'Slashing Warning',
@@ -32,7 +47,7 @@ const translations = {
   },
   HOME: {
     TITLE: 'Join SSV Network',
-    DESCRIPTION: 'Create new operator and share validator keys with other operators',
+    DESCRIPTION: 'Run your validator on the decentralized infrastructure      of Ethereum staking or help maintain it as one of it`s operators.',
     MENUS: {
       NEW_OPERATOR: {
         TITLE: 'Create new Operator',
@@ -58,6 +73,9 @@ const translations = {
     CONFIRMATION: {
       TITLE: 'Confirmation Transaction',
       DESCRIPTION: '',
+      REGISTER_OPERATOR: 'Register Operator',
+      WAITING_FOR_CONFIRMATION: 'Waiting for confirmation...',
+      WAITING_FOR_TRANSACTION: 'WAITING_FOR_TRANSACTION',
     },
 
     HOME: {

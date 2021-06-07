@@ -7,13 +7,13 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
+import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
+import OperatorSelector from './components/OperatorSelector';
 import ApplicationStore from '~app/common/stores/Application.store';
 import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
-import OperatorSelector from './components/OperatorSelector';
-import CTAButton from '~app/common/components/CTAButton';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const SelectOperators = () => {
   const stores = useStores();

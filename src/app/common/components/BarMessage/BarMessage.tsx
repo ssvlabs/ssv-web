@@ -19,7 +19,7 @@ const BarMessage = () => {
         notificationsStore.setShowSnackBar(false);
     };
     return (
-      <Snackbar open={notificationsStore.showSnackBar} autoHideDuration={6000}>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleClose} open={notificationsStore.showSnackBar} autoHideDuration={2000}>
         <Alert className={classes.messageBar} onClose={handleClose} severity={notificationsStore.messageSeverity}>
           {notificationsStore.message}
         </Alert>

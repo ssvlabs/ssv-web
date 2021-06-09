@@ -12,4 +12,7 @@ export const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    changeNetwork: {
+        marginRight: '20px',
+    },
 }));

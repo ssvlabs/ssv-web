@@ -18,6 +18,7 @@ class WalletStore extends BaseStore implements Wallet {
   @observable onboardSdk: any = null;
   @observable accountAddress: string = '';
   @observable addressVerification: any;
+  @observable wrongNetwork: boolean = false;
 
   /**
    * Get smart contract instance
@@ -80,6 +81,11 @@ class WalletStore extends BaseStore implements Wallet {
     return this.accountAddress;
   }
 
+  @computed
+  get isWrongNetwork() {
+    return this.wrongNetwork;
+  }
+
   /**
    * Check wallet is ready to transact
    */
@@ -127,6 +133,7 @@ class WalletStore extends BaseStore implements Wallet {
       subscriptions: {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
+        network: this.onNetworkChange,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
@@ -144,6 +151,22 @@ class WalletStore extends BaseStore implements Wallet {
     this.addressVerification = this.web3.utils.isAddress;
     console.debug('Wallet Connected:', wallet);
     window.localStorage.setItem('selectedWallet', wallet.name);
+  }
+
+  @action.bound
+  async onNetworkChange(networkId: any) {
+    if (networkId !== 5) {
+      this.alertNetworkError();
+    } else {
+      this.wrongNetwork = false;
+    }
+  }
+
+  @action.bound
+   alertNetworkError() {
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    this.wrongNetwork = true;
+    notificationsStore.showMessage('Please change network to Goerli', 'error');
   }
 
   @action.bound

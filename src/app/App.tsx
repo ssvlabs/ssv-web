@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Main from '~app/components/Routes';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
+import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 declare global {
@@ -21,6 +22,7 @@ const App = () => {
     }, []);
   return (
     <>
+      <BarMessage />
       <AppBar />
       <Main />
       <CssBaseline />

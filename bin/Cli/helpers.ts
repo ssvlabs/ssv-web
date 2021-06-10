@@ -1,4 +1,4 @@
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+import EthereumKeyStore from 'eth2-keystore-js';
 import Threshold, { IShares } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import ErrnoException = NodeJS.ErrnoException;

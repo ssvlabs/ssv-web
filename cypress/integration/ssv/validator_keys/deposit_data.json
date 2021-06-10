@@ -7,7 +7,7 @@
     "deposit_message_root": "eaa3c0eb088a467854820d2937febb477bcd3371a96d27a76e4c290c6d3012ab",
     "deposit_data_root": "701027e4f6c25e3a63fece7c8f3fb3a5ab5067ccb989ea2337fa91ee34e66db6",
     "fork_version": "00002009",
-    "eth2_network_name": "pyrmont",
+    "eth2_network_name": "prater",
     "deposit_cli_version": "1.2.0"
   }
 ]

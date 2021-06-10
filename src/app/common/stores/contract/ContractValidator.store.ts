@@ -1,8 +1,8 @@
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
+import EthereumKeyStore from 'eth2-keystore-js';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';

@@ -26,7 +26,6 @@ const TransactionConfirmationContainer = (props: TransactionConfirmationContaine
   const checkboxLabelStyle = { fontSize: '14px' };
   const registerButtonStyle = { width: '100%', marginTop: 15 };
   const [userAgreed, setUserAgreed] = useState(!agreement?.length);
-
   const agreementComponent = agreement ? (
     <FormControlLabel
       control={(

@@ -105,7 +105,6 @@ class WalletStore extends BaseStore implements Wallet {
         .catch((error: any) => {
           applicationStore.setIsLoading(false);
           console.error('Wallet check errorMessage', error);
-          // notificationsStore.showMessage('Wallet is not connected!', 'error');
         });
     }
   }

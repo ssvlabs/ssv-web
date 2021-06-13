@@ -5,7 +5,7 @@ const translations = {
       DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
     },
     CREATE: {
-      NAVIGATION_TEXT: 'Create Validator',
+      NAVIGATION_TEXT: 'Run Validator with the SSV Network',
       TITLE: 'Create Validator via Ethereum Launchpad',
       DESCRIPTION: '',
       BODY_TEXT: [

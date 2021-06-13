@@ -95,7 +95,7 @@ const ImportValidatorConfirmation = () => {
       backNavigation={backNavigation}
       header={header}
       dataSections={dataSections}
-      agreement="I have read and agree to the terms & conditions"
+      agreement={config.ONBOARD.NETWORK_ID ? false : 'I have read and agree to the terms & conditions'}
       buttonText={actionButtonText}
     >
       <TransactionPendingPopUp txHash={txHash} />

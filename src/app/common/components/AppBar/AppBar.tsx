@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import MenuIcon from '@material-ui/icons/Menu';
+import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
@@ -17,26 +18,27 @@ type Button = {
     text: string,
     link: string,
     newPage?: boolean
+    active?: boolean
 };
 
 const AppBarComponent = () => {
     const classes = useStyles();
-    const { history } = useUserFlow();
     const stores = useStores();
+    const { history } = useUserFlow();
     const applicationStore: ApplicationStore = stores.Application;
 
     const buttons: Button[] = [
-        { text: 'ssv.network', link: config.routes.HOME },
-        { text: 'join', link: config.routes.HOME },
-        { text: 'my account', link: config.routes.HOME },
-        { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true },
-        { text: 'docs', link: 'https://docs.ssv.network/', newPage: true },
+        { text: 'ssv.network', link: config.routes.HOME, active: true },
+        { text: 'join', link: config.routes.HOME, active: true },
+        { text: 'my account', link: config.routes.HOME, active: false },
+        { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: false },
+        { text: 'docs', link: 'https://docs.ssv.network/', newPage: true, active: true },
     ];
     const menuButtons: Button[] = [
-        { text: 'Join the Network', link: config.routes.HOME },
-        { text: 'My Account', link: config.routes.HOME },
-        { text: 'Explorer', link: config.links.LINK_EXPLORER, newPage: true },
-        { text: 'Documentation', link: 'https://docs.ssv.network/', newPage: true },
+        { text: 'Join the Network', link: config.routes.HOME, active: true },
+        { text: 'My Account', link: config.routes.HOME, active: false },
+        { text: 'Explorer', link: config.links.LINK_EXPLORER, newPage: true, active: false },
+        { text: 'Documentation', link: 'https://docs.ssv.network/', newPage: true, active: true },
     ];
 
     const renderMenu = () => {
@@ -45,14 +47,15 @@ const AppBarComponent = () => {
             <Grid container spacing={0} justify="center" className={classes.menuDropDown}>
               {menuButtons.map((button: Button, index: number) => {
                   return (
-                    <Typography
-                      key={index}
-                      onClick={() => {
-                                    switchPage(button.link, button.newPage);
+                    <Tooltip key={index} title="Comming soon...">
+                      <Typography
+                        onClick={() => {
+                                    if (button.active) { switchPage(button.link, button.newPage); }
                                 }}
-                      className={classes.menuButton}>
-                      {button.text}
-                    </Typography>
+                        className={classes.menuButton}>
+                        {button.text}
+                      </Typography>
+                    </Tooltip>
                   );
               })}
             </Grid>
@@ -81,11 +84,13 @@ const AppBarComponent = () => {
             <Grid container className={classes.firstSection} justify="flex-start">
               {buttons.map((button: Button, index: number) => {
                         return (
-                          <Typography onClick={() => { switchPage(button.link, button.newPage); }}
-                            key={index} variant={index === 0 ? 'subtitle1' : 'subtitle1'}
-                            className={classes.button}>
-                            {button.text}
-                          </Typography>
+                          <Tooltip disableHoverListener={button.active} key={index} disableFocusListener disableTouchListener title="Comming soon...">
+                            <Typography onClick={() => { if (button.active) switchPage(button.link, button.newPage); }}
+                              key={index} variant={index === 0 ? 'subtitle1' : 'subtitle1'}
+                              className={classes.button}>
+                              {button.text}
+                            </Typography>
+                          </Tooltip>
                         );
                     })}
             </Grid>

@@ -1,6 +1,8 @@
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
+import { sha256 } from 'js-sha256';
 import config from '~app/common/config';
+import { moveIndex } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
@@ -277,15 +279,14 @@ class ContractOperator extends BaseStore {
       .then((response: any) => {
         this.operatorsLoaded = true;
         if (response.data) {
-          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return a.pubkey; });
+          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return sha256(a.pubkey); });
           // eslint-disable-next-line no-restricted-syntax
           for (const pubKey of verifiedOperators.pubKeys) {
             const verifiedIndex = operatorsPublicKey.indexOf(pubKey);
-            if (verifiedIndex !== -1) {
-              const verifiedOperator = response.data.operators[verifiedIndex];
-              verifiedOperator.verified = true;
-              response.data.operators.splice(verifiedIndex, 1);
-              response.data.operators.unshift(verifiedOperator);
+            if (verifiedIndex > -1) {
+              response.data.operators[verifiedIndex].verified = true;
+              moveIndex(response.data.operators, verifiedIndex, 0);
+              moveIndex(operatorsPublicKey, verifiedIndex, 0);
             }
           }
         }

@@ -24,14 +24,17 @@ const SuccessScreen = () => {
   const contractOperator: ContractOperator = stores.ContractOperator;
   const contractValidator: ContractValidator = stores.ContractValidator;
   let header: any = '';
+  let monitorHeader: string = '';
   let monitorText: string = '';
 
   if (contractOperator.newOperatorRegisterSuccessfully) {
     header = <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.OPERATOR_DESCRIPTION} />;
-    monitorText = 'Monitor Node';
+    monitorHeader = 'Monitor Node';
+    monitorText = 'View your operator performance in our explorer';
   } else if (contractValidator.newValidatorReceipt) {
     header = <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.VALIDATOR_DESCRIPTION} />;
-    monitorText = 'Monitor Validator';
+    monitorHeader = 'Monitor Validator';
+    monitorText = 'View your validator performance in our explorer';
   }
 
   return (
@@ -43,8 +46,8 @@ const SuccessScreen = () => {
         <Paper className={classes.guideStepsContainerPaper}>
           <Grid container wrap="nowrap" spacing={1}>
             <Grid item md={8} xs={8}>
-              <Typography noWrap variant="h6" className={classes.guideStepText}>{monitorText}</Typography>
-              <Typography noWrap variant="caption">View your operator performance in our explorer</Typography>
+              <Typography noWrap variant="h6" className={classes.guideStepText}>{monitorHeader}</Typography>
+              <Typography noWrap variant="caption">{monitorText}</Typography>
             </Grid>
             <Grid item md={4} xs={4}>
               <ArrowForwardIosIcon data-testid={'success-image'} className={classes.arrowIcon} />

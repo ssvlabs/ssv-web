@@ -11,6 +11,7 @@ import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 type OperatorSelectorProps = {
   indexedOperator: IOperator,
@@ -21,6 +22,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
   const [selectedOperator, selectOperator] = useState('');
   const selectOperatorMethod = (publicKey: string) => {
     if (selectedOperator) {
@@ -41,6 +43,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
     selectOperatorMethod(operatorKey);
   };
   const operatorKeySeralize = (publicKey: string) => {
+    console.log(publicKey);
     return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
   };
 
@@ -71,7 +74,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
                 <Grid container alignItems={'center'} direction="row" justify="space-between">
                   <Grid item>
                     <OperatorName>{operator.name}</OperatorName>
-                    <OperatorKey>{operatorKeySeralize(sha256(operator.pubkey))}</OperatorKey>
+                    <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
                   </Grid>
                   {operator.verified ? (
                     <div className={classes.verifiedText}>verified

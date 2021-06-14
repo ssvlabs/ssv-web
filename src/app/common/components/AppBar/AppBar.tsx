@@ -38,21 +38,23 @@ const AppBarComponent = () => {
         { text: 'Explorer', link: config.links.LINK_EXPLORER, newPage: true },
         { text: 'Documentation', link: 'https://docs.ssv.network/', newPage: true },
     ];
-    
+
     const renderMenu = () => {
         return (
           <div className={classes.fullScreen}>
             <Grid container spacing={0} justify="center" className={classes.menuDropDown}>
               {menuButtons.map((button: Button, index: number) => {
-                      return (
-                        <Typography
-                          key={index}
-                          onClick={() => { switchPage(button.link, button.newPage); }}
-                          className={classes.menuButton}>
-                          {button.text}
-                        </Typography>
-                      );   
-            })}
+                  return (
+                    <Typography
+                      key={index}
+                      onClick={() => {
+                                    switchPage(button.link, button.newPage);
+                                }}
+                      className={classes.menuButton}>
+                      {button.text}
+                    </Typography>
+                  );
+              })}
             </Grid>
           </div>
         );
@@ -79,7 +81,9 @@ const AppBarComponent = () => {
             <Grid container className={classes.firstSection} justify="flex-start">
               {buttons.map((button: Button, index: number) => {
                         return (
-                          <Typography onClick={() => { switchPage(button.link, button.newPage); }} key={index} variant={index === 0 ? 'subtitle1' : 'subtitle1'} className={classes.button}>
+                          <Typography onClick={() => { switchPage(button.link, button.newPage); }}
+                            key={index} variant={index === 0 ? 'subtitle1' : 'subtitle1'}
+                            className={classes.button}>
                             {button.text}
                           </Typography>
                         );

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { sha256 } from 'js-sha256';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useStores } from '~app/hooks/useStores';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 type OperatorSelectorProps = {
   indexedOperator: IOperator,
@@ -42,8 +42,8 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
     const operatorKey = String(event.target.value);
     selectOperatorMethod(operatorKey);
   };
+
   const operatorKeySeralize = (publicKey: string) => {
-    console.log(publicKey);
     return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
   };
 
@@ -70,7 +70,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
                 className={classes.menuItem}
                 value={operator.pubkey}
                 disabled={contractOperator.isOperatorSelected(operator.pubkey)}
-                    >
+              >
                 <Grid container alignItems={'center'} direction="row" justify="space-between">
                   <Grid item>
                     <OperatorName>{operator.name}</OperatorName>
@@ -80,7 +80,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
                     <div className={classes.verifiedText}>verified
                       <VerifiedUserIcon className={classes.verifiedIcon} />
                     </div>
-                      ) : ''}
+                  ) : ''}
                 </Grid>
               </MenuItem>
             );

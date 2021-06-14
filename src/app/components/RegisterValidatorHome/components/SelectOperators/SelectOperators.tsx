@@ -33,13 +33,13 @@ const SelectOperators = () => {
     setButtonEnabled(contractOperator.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
-    if (!contractOperator.operators.length && !contractOperator.operatorsLoaded) {
+    if (!contractOperator.operators.length && !contractOperator.operatorsLoaded && !contractOperator.loadingOperator) {
       applicationStore.setIsLoading(true);
       contractOperator.loadOperators().then(() => {
         applicationStore.setIsLoading(false);
       });
     }
-  }, [contractOperator.operators, contractOperator.selectedEnoughOperators]);
+  }, [contractOperator.operators, contractOperator.selectedEnoughOperators, contractOperator.loadingOperator]);
 
   const onSelectOperatorsClick = async () => {
     history.push(config.routes.VALIDATOR.SLASHING_WARNING);

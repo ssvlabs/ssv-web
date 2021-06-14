@@ -36,6 +36,7 @@ const config = {
         ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
         TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
         LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
+        LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
     },
     ONBOARD: {
         API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

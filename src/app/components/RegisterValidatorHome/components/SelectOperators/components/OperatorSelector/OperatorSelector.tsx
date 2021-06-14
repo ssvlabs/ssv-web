@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
+import { sha256 } from 'js-sha256';
+import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './OperatorSelector.styles';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
 
 type OperatorSelectorProps = {
   indexedOperator: IOperator,
-  dataTestId: string
+  dataTestId: string,
 };
 
 const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
   const [selectedOperator, selectOperator] = useState('');
-
   const selectOperatorMethod = (publicKey: string) => {
     if (selectedOperator) {
       contractOperator.unselectOperator(selectedOperator);
@@ -38,6 +42,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
     const operatorKey = String(event.target.value);
     selectOperatorMethod(operatorKey);
   };
+
   const operatorKeySeralize = (publicKey: string) => {
     return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
   };
@@ -48,7 +53,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
         <InputLabel id="operator-select-label" shrink variant="filled">
           Select Operator
         </InputLabel>
-      )}
+        )}
       <Select
         data-testid={dataTestId}
         className={classes.select}
@@ -57,20 +62,29 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
         onChange={onSelectOperator}
         variant="outlined"
         MenuProps={{ classes: { paper: classes.selectPaper } }}
-      >
+        >
         {contractOperator.operators.map((operator: IOperator, operatorIndex: number) => {
-          return (
-            <MenuItem
-              key={`menu-item-${operatorIndex}`}
-              className={classes.menuItem}
-              value={operator.pubkey}
-              disabled={contractOperator.isOperatorSelected(operator.pubkey)}
+            return (
+              <MenuItem
+                key={`menu-item-${operatorIndex}`}
+                className={classes.menuItem}
+                value={operator.pubkey}
+                disabled={contractOperator.isOperatorSelected(operator.pubkey)}
               >
-              <OperatorName>{operator.name}</OperatorName>
-              <OperatorKey>{operatorKeySeralize(operator.ownerAddress)}</OperatorKey>
-            </MenuItem>
+                <Grid container alignItems={'center'} direction="row" justify="space-between">
+                  <Grid item>
+                    <OperatorName>{operator.name}</OperatorName>
+                    <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
+                  </Grid>
+                  {operator.verified ? (
+                    <div className={classes.verifiedText}>verified
+                      <VerifiedUserIcon className={classes.verifiedIcon} />
+                    </div>
+                  ) : ''}
+                </Grid>
+              </MenuItem>
             );
-        })}
+          })}
       </Select>
     </FormControl>
   );

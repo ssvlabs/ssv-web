@@ -24,13 +24,14 @@ const SuccessScreen = () => {
   const contractOperator: ContractOperator = stores.ContractOperator;
   const contractValidator: ContractValidator = stores.ContractValidator;
   let header: any = '';
+  let monitorText: string = '';
 
   if (contractOperator.newOperatorRegisterSuccessfully) {
-    header =
-      <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.OPERATOR_DESCRIPTION} />;
+    header = <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.OPERATOR_DESCRIPTION} />;
+    monitorText = 'Monitor Node';
   } else if (contractValidator.newValidatorReceipt) {
-    header =
-      <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.VALIDATOR_DESCRIPTION} />;
+    header = <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.VALIDATOR_DESCRIPTION} />;
+    monitorText = 'Monitor Validator';
   }
 
   return (
@@ -42,7 +43,7 @@ const SuccessScreen = () => {
         <Paper className={classes.guideStepsContainerPaper}>
           <Grid container wrap="nowrap" spacing={1}>
             <Grid item md={8} xs={8}>
-              <Typography noWrap variant="h6" className={classes.guideStepText}>Monitor Validator</Typography>
+              <Typography noWrap variant="h6" className={classes.guideStepText}>{monitorText}</Typography>
               <Typography noWrap variant="caption">View your operator performance in our explorer</Typography>
             </Grid>
             <Grid item md={4} xs={4}>

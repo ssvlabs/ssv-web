@@ -4,6 +4,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import verifiedOperators from '~lib/utils/verifiedOperators.json';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 
 export interface INewOperatorTransaction {
@@ -24,6 +25,7 @@ export interface IOperator {
   score?: number,
   selected?: boolean
   autoSelected?: boolean
+  verified?: boolean
 }
 
 class ContractOperator extends BaseStore {
@@ -39,6 +41,8 @@ class ContractOperator extends BaseStore {
 
   @observable estimationGas: number = 0;
   @observable dollarEstimationGas: number = 0;
+
+  @observable loadingOperator: boolean = false;
 
   /**
    * Set operator keys
@@ -247,6 +251,7 @@ class ContractOperator extends BaseStore {
    */
   @action.bound
   async loadOperators() {
+    this.loadingOperator = true;
     const query = `
     {
       operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
@@ -271,6 +276,20 @@ class ContractOperator extends BaseStore {
       .sendRequest()
       .then((response: any) => {
         this.operatorsLoaded = true;
+        if (response.data) {
+          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return a.pubkey; });
+          // eslint-disable-next-line no-restricted-syntax
+          for (const pubKey of verifiedOperators.pubKeys) {
+            const verifiedIndex = operatorsPublicKey.indexOf(pubKey);
+            if (verifiedIndex !== -1) {
+              const verifiedOperator = response.data.operators[verifiedIndex];
+              verifiedOperator.verified = true;
+              response.data.operators.splice(verifiedIndex, 1);
+              response.data.operators.unshift(verifiedOperator);
+            }
+          }
+        }
+        this.loadingOperator = false;
         return response.data?.operators ?? [];
       });
   }

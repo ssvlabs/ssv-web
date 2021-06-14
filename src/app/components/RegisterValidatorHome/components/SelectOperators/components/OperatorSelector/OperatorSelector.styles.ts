@@ -34,4 +34,17 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+  verifiedText: {
+    padding: '2px',
+    display: 'flex',
+    fontSize: '12px',
+    alignItems: 'center',
+    backgroundColor: '#F2F2F2',
+    border: '1px solid #F2F2F2',
+    borderRadius: '20px 20px 20px 20px',
+  },
+  verifiedIcon: {
+    height: '18px',
+    color: 'blue',
+  },
 }));

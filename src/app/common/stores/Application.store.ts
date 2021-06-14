@@ -12,10 +12,17 @@ class ApplicationStore extends BaseStore {
   @observable walletPopUp: boolean = false;
   @observable walletConnectivity: boolean = false;
   @observable transactionPandingPopUp: boolean = false;
-
+  
+  @observable toolBarMenu: boolean = false;
+  
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
+  }
+
+  @action.bound
+  displayToolBarMenu(status: boolean) {
+    this.toolBarMenu = status;
   }
   
   @action.bound
@@ -36,6 +43,11 @@ class ApplicationStore extends BaseStore {
   @computed
   get isLoading() {
     return this.isShowingLoading;
+  }
+
+  @computed
+  get shouldDisplayToolBar() {
+    return this.toolBarMenu;
   }
 
   /**

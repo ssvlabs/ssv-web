@@ -45,17 +45,15 @@ const AppBarComponent = () => {
         return (
           <div className={classes.fullScreen}>
             <Grid container spacing={0} justify="center" className={classes.menuDropDown}>
-              {menuButtons.map((button: Button, index: number) => {
+              {menuButtons.map((button: Button) => {
                   return (
-                    <Tooltip key={index} title="Comming soon...">
-                      <Typography
-                        onClick={() => {
+                    <Typography
+                      onClick={() => {
                                     if (button.active) { switchPage(button.link, button.newPage); }
                                 }}
-                        className={classes.menuButton}>
-                        {button.text}
-                      </Typography>
-                    </Tooltip>
+                      className={classes.menuButton}>
+                      {button.text}
+                    </Typography>
                   );
               })}
             </Grid>

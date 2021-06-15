@@ -36,8 +36,6 @@ const AppBarComponent = () => {
     ];
     const menuButtons: Button[] = [
         { text: 'Join the Network', link: config.routes.HOME, active: true },
-        { text: 'My Account', link: config.routes.HOME, active: false },
-        { text: 'Explorer', link: config.links.LINK_EXPLORER, newPage: true, active: false },
         { text: 'Documentation', link: 'https://docs.ssv.network/', newPage: true, active: true },
     ];
 
@@ -45,9 +43,10 @@ const AppBarComponent = () => {
         return (
           <div className={classes.fullScreen}>
             <Grid container spacing={0} justify="center" className={classes.menuDropDown}>
-              {menuButtons.map((button: Button) => {
+              {menuButtons.map((button: Button, index: number) => {
                   return (
                     <Typography
+                      key={index}
                       onClick={() => {
                                     if (button.active) { switchPage(button.link, button.newPage); }
                                 }}

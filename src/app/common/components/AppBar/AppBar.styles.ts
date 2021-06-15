@@ -58,7 +58,7 @@ export const useStyles = makeStyles((theme) => ({
         padding: '20%',
     },
     menuDropDown: {
-        height: '70%',
+        height: '40%',
     },
     menuButton: {
         fontWeight: 'bold',

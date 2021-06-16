@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
+import CloseIcon from '@material-ui/icons/Close';
 import { useStores } from '~app/hooks/useStores';
 import LaunchIcon from '@material-ui/icons/Launch';
 import Typography from '@material-ui/core/Typography';
@@ -39,7 +40,7 @@ const WalletPopUp = () => {
 
     return (
       <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
-        <img src={'/images/delete.png'} aria-hidden="true" onClick={closePopUp} className={classes.exitIcon} />
+        <CloseIcon viewBox={'5 5 15 15'} fontSize={'large'} onClick={closePopUp} className={classes.exitIcon} />
         <Grid className={classes.gridWrapper}>
           <Grid wrap={'wrap'} container alignItems={'center'} spacing={0} className={classes.gridContainer}>
             <Grid>

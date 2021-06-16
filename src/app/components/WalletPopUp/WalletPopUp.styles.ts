@@ -2,12 +2,13 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
     gridWrapper: {
-        padding: '10px 25px 25px 25px',
+        padding: '40px',
         flexDirection: 'column',
-        // width: '500px',
+        alignItems: 'center',
+        alignContent: 'center',
     },
     gridContainer: {
-        marginBottom: '20px',
+        marginBottom: '40px',
         flexGrow: 1,
         flexDirection: 'row',
     },
@@ -20,10 +21,9 @@ export const useStyles = makeStyles(() => ({
         border: '1px solid black',
     },
     gridContainerAddress: {
+        maxWidth: '100%',
         borderRadius: '10px',
         margin: 'auto',
-        flexGrow: 1,
-        flexDirection: 'row',
         backgroundColor: '#F2F2F2',
     },
     dialogWrapper: {
@@ -43,8 +43,11 @@ export const useStyles = makeStyles(() => ({
         cursor: 'pointer',
     },
     exitIcon: {
-        width: '50px',
-        height: '40px',
+        position: 'absolute',
+        right: '20px',
+        top: '20px',
+        width: '25px',
+        height: '25px',
         cursor: 'pointer',
         float: 'right',
     },

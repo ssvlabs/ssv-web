@@ -19,10 +19,10 @@ const CTAButton = ({ testId, disable, style, onClick, text }: ButtonParams) => {
 
     const checkWalletConnected = async (fn: () => void) => {
         if (!walletStore.connected) await walletStore.connect();
-        if (!walletStore.isWrongNetwork) {
-            fn();
-        } else {
+        if (walletStore.isWrongNetwork) {
             walletStore.alertNetworkError();
+        } else {
+            fn();
         }
     };
 

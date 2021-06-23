@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import Link from '@material-ui/core/Link';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
@@ -21,6 +23,7 @@ const ImportValidatorConfirmation = () => {
   const contractValidator: ContractValidator = stores.ContractValidator;
   const contractOperator: ContractOperator = stores.ContractOperator;
   const applicationStore: ApplicationStore = stores.Application;
+  const walletStore: WalletStore = stores.Wallet;
   const [actionButtonText, setActionButtonText] = useState('Run validator');
   const [txHash, setTxHash] = useState('');
   const { redirectUrl, history } = useUserFlow();
@@ -53,7 +56,7 @@ const ImportValidatorConfirmation = () => {
     return (
       <div key={`operator-${operatorIndex}`} style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
         <div>{operatorIndex + 1}. {operator.name}</div>
-        <div style={{ float: 'right' }}>{`0x${longStringShorten(operator.ownerAddress.substring(2), 4)}`}</div>
+        <div style={{ float: 'right' }}>{longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4)}</div>
       </div>
     );
   });
@@ -78,7 +81,7 @@ const ImportValidatorConfirmation = () => {
     },
     {
       name: 'Transaction fee',
-      value: <>{normalizeNumber(contractValidator.estimationGas, 4)}ETH <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong></>,
+      value: <>{normalizeNumber(contractValidator.estimationGas, 4)}ETH &nbsp; <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong></>,
       divider: true,
     },
     {

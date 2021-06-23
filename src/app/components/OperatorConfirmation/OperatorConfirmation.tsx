@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
@@ -17,6 +19,7 @@ const OperatorConfirmation = () => {
   const stores = useStores();
   const operatorStore: ContractOperator = stores.ContractOperator;
   const applicationStore: ApplicationStore = stores.Application;
+  const walletStore: WalletStore = stores.Wallet;
   const { redirectUrl, history } = useUserFlow();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
   const [txHash, setTxHash] = useState('Register Operator');
@@ -52,20 +55,20 @@ const OperatorConfirmation = () => {
     },
     {
       title: '',
-      name: 'Address',
-      value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`,
+      name: 'Key',
+      value: longStringShorten(sha256(walletStore.decodeOperatorKey(operatorStore.newOperatorKeys.pubKey)), 4),
       divider: false,
     },
     {
       title: '',
-      name: 'Key',
-      value: longStringShorten(operatorStore.newOperatorKeys.pubKey),
+      name: 'Owner Address',
+      value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`,
       divider: true,
     },
     {
       title: 'Est. Transaction Cost',
       name: 'Transaction fee',
-      value: <>{normalizeNumber(operatorStore.estimationGas, 5)}ETH <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
+      value: <>{normalizeNumber(operatorStore.estimationGas, 5)}ETH &nbsp; <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
       divider: false,
     },
     {

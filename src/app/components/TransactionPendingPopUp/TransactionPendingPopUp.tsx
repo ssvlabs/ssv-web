@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Application.store';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 import { useStyles } from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp.styles';
 
 type TransactionPendingPopUpParams = {
@@ -15,10 +16,12 @@ type TransactionPendingPopUpParams = {
 const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
     const stores = useStores();
     const classes = useStyles();
+    const notificationsStore: NotificationsStore = stores.Notifications;
     const applicationStore: ApplicationStore = stores.Application;
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(txHash);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
 
     return (

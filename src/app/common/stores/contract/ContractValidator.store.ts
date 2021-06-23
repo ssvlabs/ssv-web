@@ -119,14 +119,14 @@ class ContractValidator extends BaseStore {
                   gasEstimation
                       .estimateGasInUSD(this.estimationGas)
                       .then((rate: number) => {
-                        this.dollarEstimationGas = this.estimationGas * rate;
+                        this.dollarEstimationGas = this.estimationGas * rate * 0;
                         resolve(true);
                       })
                       .catch(() => {
                         resolve(true);
                       });
                 } else {
-                  this.dollarEstimationGas = this.estimationGas * 3377;
+                  this.dollarEstimationGas = this.estimationGas * 3377 * 0;
                   resolve(true);
                 }
               })

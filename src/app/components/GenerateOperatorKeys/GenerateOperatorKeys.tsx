@@ -61,6 +61,7 @@ const GenerateOperatorKeys = () => {
   ]);
 
   const onInputChange = (name: string, value: string) => {
+    if (operatorExist) setOperatorExist(false);
     setInputsData({ ...inputsData, [name]: value });
   };
 

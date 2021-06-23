@@ -35,7 +35,7 @@ const WalletPopUp = () => {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(walletStore.accountAddress);
-        notificationsStore.showMessage('copied!', 'success');
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
 
     return (

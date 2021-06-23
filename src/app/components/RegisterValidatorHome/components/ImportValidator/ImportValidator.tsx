@@ -74,7 +74,8 @@ const ImportValidator = () => {
           <br />
           <DropZoneContainer>
             <InputLabel
-              title="Keystore File generated from CLI">
+              title="Keystore File"
+              subTitle="generated from CLI">
               <DropzoneArea
                 showPreviews={false}
                 onChange={onFileChange}

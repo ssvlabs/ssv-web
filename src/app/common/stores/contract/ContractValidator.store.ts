@@ -50,6 +50,13 @@ class ContractValidator extends BaseStore {
     this.validatorKeyStorePassword = Buffer.from(value);
   }
 
+  @action.bound
+  clearValidatorData() {
+    this.validatorPrivateKey = '';
+    this.validatorPrivateKeyFile = null;
+    this.cleanPrivateData();
+  }
+
   /**
    * Return validator public key
    */
@@ -143,6 +150,7 @@ class ContractValidator extends BaseStore {
                 if (event) {
                   console.debug('Contract Receipt', receipt);
                   this.newValidatorReceipt = receipt;
+                  this.clearValidatorData();
                   resolve(event);
                 }
               })

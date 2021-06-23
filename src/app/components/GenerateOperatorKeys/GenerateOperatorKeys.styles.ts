@@ -54,6 +54,7 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'left',
     },
     clearIcon: {
+        cursor: 'pointer',
         float: 'right',
     },
     fileContainer: {

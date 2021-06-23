@@ -65,7 +65,7 @@ const EnterValidatorPrivateKey = () => {
 
       <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
         <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <InputLabel title="Keystore File generated from CLI">
+          <InputLabel title="Keystore File" subTitle="generated from CLI">
             <Grid container className={classes.fileContainer}>
               <Grid item xs={1}>
                 {validatorStore.isJsonFile() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon className={classes.badFormat} />}

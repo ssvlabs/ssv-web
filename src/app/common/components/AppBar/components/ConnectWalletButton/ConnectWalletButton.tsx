@@ -42,7 +42,7 @@ const ConnectWalletButton = () => {
     return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
   };
   return (
-    <Button color="inherit" onClick={onClick} style={{ textTransform: 'none', border: '1px solid white' }}>
+    <Button color="inherit" onClick={onClick}>
       {walletStore.connected ? (
         <>
           {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${walletStore.wallet.name}`} />}
@@ -52,5 +52,4 @@ const ConnectWalletButton = () => {
     </Button>
   );
 };
-
 export default observer(ConnectWalletButton);

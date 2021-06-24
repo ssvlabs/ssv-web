@@ -4,8 +4,9 @@ import { useHistory } from 'react-router-dom';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 const BackNavigationLink = styled.div<Record<string, any>>`
+  font-family: Encode Sans;
   cursor: pointer;
-  font-weight: 400;
+  font-weight: 700;
   font-style: normal;
   color: ${({ color }) => color};
   font-size: 14px;
@@ -14,7 +15,7 @@ const BackNavigationLink = styled.div<Record<string, any>>`
 
 const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`
   cursor: pointer;
-  font-weight: 400;
+  font-weight: 700;
   font-style: normal;
   color: ${({ iconcolor }) => iconcolor};
   font-size: 16px;
@@ -37,7 +38,7 @@ type BackNavigationProps = {
 
 const BackNavigation = ({ to, text, color, onClick }: BackNavigationProps) => {
   const backText = text || 'Back';
-  const defaultColor = '#AAAAAA';
+  const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
   const history = useHistory();
   const onNavigationClicked = () => {

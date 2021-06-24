@@ -74,6 +74,8 @@ export const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: 'aliceblue',
         },
+        boxShadow: '0px 5px 13px rgba(91, 108, 132, 0.16)',
+        borderRadius: '6px',
     },
     bigSquareButton: {
         minHeight: 150,
@@ -95,7 +97,6 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     gridContainer: {
-        marginTop: '10px',
         flexGrow: 1,
         flexDirection: 'column',
     },
@@ -117,6 +118,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     arrowIcon: {
         float: 'right',
+        color: '#20EEC8',
         marginLeft: 'auto',
         marginRight: theme.spacing(1),
         alignSelf: 'center',

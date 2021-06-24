@@ -1,5 +1,6 @@
 const config = {
     routes: {
+        TEST: '/guy',
         HOME: '/',
         OPERATOR: {
             HOME: '/operator',

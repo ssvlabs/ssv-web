@@ -81,7 +81,7 @@ const ImportValidatorConfirmation = () => {
     },
     {
       name: 'Transaction fee',
-      value: <>{normalizeNumber(contractValidator.estimationGas, 4)}ETH &nbsp; <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong></>,
+      value: <>{normalizeNumber(contractValidator.estimationGas, 4)}&nbsp;ETH &nbsp; <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong></>,
       divider: true,
     },
     {

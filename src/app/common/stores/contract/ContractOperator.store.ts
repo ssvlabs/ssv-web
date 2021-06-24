@@ -115,7 +115,7 @@ class ContractOperator extends BaseStore {
                     resolve(true);
                   });
             } else {
-              this.dollarEstimationGas = this.estimationGas * 3377 * 0;
+              this.dollarEstimationGas = 0;
               resolve(true);
             }
           });

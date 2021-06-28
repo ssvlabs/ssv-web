@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Tooltip from '~app/common/components/Tooltip/Tooltip';
 
 const InputLabelWrapper = styled.div`
-  display: block;
   font-size: 14px;
 `;
 
@@ -11,30 +10,29 @@ const InputHeader = styled.div`
   display: flex;
   width: 100%;
   justifyContent: 'space-between';
-  align-items: center;
-`;
-
-const Bar = styled.div`
-  display: block;
-  margin: 15px 0;
+  align-items: flex-start;
 `;
 
 const Header = styled.p`
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: bold;
   white-space: nowrap;
   text-transform: none;
   display: inline-flex;
-  font-family: 'Roboto-Regular', 'Roboto', sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 18px;
+  font-size: 14px;
+  color: #A1ACBE;
+  margin: 0;
 `;
 const SubHeader = styled.p`
-  display: inline-flex;
-  margin: 5px 5px 3px 5px;
-  font-family: 'Roboto-Regular', 'Roboto', sans-serif;
-  font-weight: 400;
+  margin: 0px 0px 0px 5px;
+  font-family: Inter, sans-serif;
   font-style: normal;
-  font-size: 15px;
+  font-weight: bold;
+  white-space: nowrap;
+  text-transform: none;
+  display: inline-flex;
+  font-size: 12px;
   color: #AAAAAA;
 `;
 
@@ -55,7 +53,6 @@ const InputLabel = ({ children, title, subTitle, withHint, toolTipText, toolTipL
         <SubHeader>{subTitle}</SubHeader>
         {withHint && <Tooltip text={toolTipText} link={toolTipLink} />}
       </InputHeader>
-      <Bar />
       {children}
     </InputLabelWrapper>
   );

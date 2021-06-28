@@ -102,7 +102,7 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     gridContainer: {
-        marginTop: '10px',
+        flexDirection: 'column',
         flexGrow: 1,
     },
     bodyText: {

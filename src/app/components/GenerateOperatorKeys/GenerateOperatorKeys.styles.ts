@@ -12,6 +12,12 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
+    checkboxText: {
+        fontSize: '14px',
+        fontWeight: 500,
+        color: '#5B6C84',
+        fontFamily: 'Inter, sans-serif',
+    },
     passwordInput: {
         textSecurity: 'disc',
     },
@@ -19,6 +25,7 @@ export const useStyles = makeStyles((theme) => ({
         paddingLeft: '10px',
         width: '100%',
         color: 'red',
+        marginTop: '12px',
         minHeight: '50px',
         lineHeight: '50px',
         backgroundColor: '#FDE6E5',
@@ -26,14 +33,18 @@ export const useStyles = makeStyles((theme) => ({
     errorText: {
     },
     paddingTop: {
-        marginTop: '100px',
+        // marginTop: '100px',
     },
     inputWithHint: {
         backgroundColor: 'red',
         display: 'flex',
     },
     inputError: {
-        border: '1px solid red',
+        border: '1px solid red !important',
+    },
+    disable: {
+       background: '#DCE0E8 !important',
+       border: '1px solid #DCE0E8 !important',
     },
     textError: {
         fontSize: '0.8rem',
@@ -106,15 +117,21 @@ export const useStyles = makeStyles((theme) => ({
             marginBottom: '0px',
         },
     },
-    rowGridContainer: {
+    columnGridContainer: {
         flexGrow: 1,
-        flexDirection: 'row',
+        flexDirection: 'column',
     },
     guideStep: {
         marginBottom: theme.spacing(1),
     },
     guideStepText: {
-        fontSize: 14,
+        fontFamily: 'Inter, sans-serif',
+        fontStyle: 'normal',
+        fontWeight: 900,
+        fontSize: 18,
+    },
+    guideStepSubText: {
+        fontFamily: 'Inter, sans-serif',
     },
     arrowIcon: {
         float: 'right',

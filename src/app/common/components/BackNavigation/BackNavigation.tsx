@@ -4,21 +4,22 @@ import { useHistory } from 'react-router-dom';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 const BackNavigationLink = styled.div<Record<string, any>>`
-  font-family: Encode Sans;
+  font-family: Inter, sans-serif;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: bold;
   font-style: normal;
-  color: ${({ color }) => color};
-  font-size: 14px;
+  color: #A1ACBE;
+  font-size: 12px;
   text-decoration: none;
 `;
 
 const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`
   cursor: pointer;
-  font-weight: 700;
+  font-weight: bold;
   font-style: normal;
-  color: ${({ iconcolor }) => iconcolor};
-  font-size: 16px;
+  color: #A1ACBE;
+  font-size: 12px;
+  text-decoration: none;
 `;
 
 const BackNavigationWrapper = styled.div`
@@ -26,7 +27,6 @@ const BackNavigationWrapper = styled.div`
   flex-grow: 1;
   align-content: center;
   align-items: center;
-  margin-bottom: 10px;
 `;
 
 type BackNavigationProps = {

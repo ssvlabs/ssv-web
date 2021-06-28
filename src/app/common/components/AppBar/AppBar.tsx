@@ -41,17 +41,19 @@ const AppBarComponent = () => {
     const renderMenu = () => {
         return (
           <div className={classes.fullScreen}>
-            <Grid container spacing={0} justify="center" className={classes.menuDropDown}>
+            <Grid container spacing={4} justify="center">
               {menuButtons.map((button: Button, index: number) => {
                   return (
-                    <Typography
-                      key={index}
-                      onClick={() => {
-                                    if (button.active) { switchPage(button.link, button.newPage); }
-                                }}
-                      className={classes.menuButton}>
-                      {button.text}
-                    </Typography>
+                    <Grid item xs={12}>
+                      <Typography
+                        key={index}
+                        onClick={() => {
+                                  if (button.active) { switchPage(button.link, button.newPage); }
+                              }}
+                        className={classes.menuButton}>
+                        {button.text}
+                      </Typography>
+                    </Grid>
                   );
               })}
             </Grid>
@@ -77,14 +79,14 @@ const AppBarComponent = () => {
         <AppBar className={classes.bloxColor} position="static">
           <Toolbar>
             <Grid container justify={'space-between'} alignItems={'center'}>
-              <Grid item xs={3} md={4}>
+              <Grid item xs={4} md={4}>
                 <Typography onClick={() => { switchPage(config.routes.HOME); }}
                   variant={'subtitle1'}
                   className={classes.mainButton}>
                   ssv.network
                 </Typography>
               </Grid>
-              <Grid item md={3}>
+              <Grid item zeroMinWidth md={3}>
                 <Grid container justify={'space-around'}>
                   {buttons.map((button: Button, index: number) => {
                                               return (

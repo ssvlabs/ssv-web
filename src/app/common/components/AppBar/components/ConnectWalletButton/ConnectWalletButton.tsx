@@ -9,7 +9,7 @@ const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
-  const walletImageStyle = { width: 24, height: 24, marginRight: 10, marginLeft: 0 };
+  const walletImageStyle = { width: 24, height: 24, marginRight: 5, marginLeft: 0 };
 
   const disconnectWalletWithPrompt = () => {
     walletStore.disconnect().then(() => walletStore.connect());

@@ -44,7 +44,7 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
   };
 
   const operatorKeySeralize = (publicKey: string) => {
-    return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
+    return `${publicKey.substr(0, 4)}..${publicKey.substr(publicKey.length - 4, 4)}`;
   };
 
   return (

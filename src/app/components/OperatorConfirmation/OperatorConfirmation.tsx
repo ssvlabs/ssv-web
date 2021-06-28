@@ -1,19 +1,18 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
+import Screen from '~app/common/components/Screen/Screen';
+import DataSection from '~app/common/components/DataSection';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import BackNavigation from '~app/common/components/BackNavigation';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ApplicationStore from '~app/common/stores/Application.store';
-import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
-import { buildDataSections, IDataSection } from '~app/common/components/DataSection';
-import TransactionConfirmationContainer from '~app/common/components/TransactionConfirmationContainer';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
@@ -45,54 +44,41 @@ const OperatorConfirmation = () => {
     applicationStore.showTransactionPandingPopUp(true);
   };
 
-  const backNavigation = <BackNavigation to={config.routes.OPERATOR.GENERATE_KEYS} text="Register Operator" />;
-  const header = <Header title={translations.OPERATOR.CONFIRMATION.TITLE} subtitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION} />;
-  const sections: IDataSection[] = [
-    {
-      title: 'Operator',
-      name: 'Name',
-      value: operatorStore.newOperatorKeys.name,
-    },
-    {
-      title: '',
-      name: 'Key',
-      value: longStringShorten(sha256(walletStore.decodeOperatorKey(operatorStore.newOperatorKeys.pubKey)), 4),
-      divider: false,
-    },
-    {
-      title: '',
-      name: 'Owner Address',
-      value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`,
-      divider: true,
-    },
-    {
-      title: 'Est. Transaction Cost',
-      name: 'Transaction fee',
-      value: <>{normalizeNumber(operatorStore.estimationGas, 4)}&nbsp;ETH &nbsp; <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong></>,
-      divider: false,
-    },
-    {
-      title: '',
-      name: <strong>Total</strong>,
-      value: <strong>${normalizeNumber(operatorStore.dollarEstimationGas)}</strong>,
-      divider: true,
-    },
+  const data = [
+    [
+        { key: 'Operator', value: '' },
+        { key: 'Name', value: operatorStore.newOperatorKeys.name },
+        { key: 'Key', value: longStringShorten(sha256(walletStore.decodeOperatorKey(operatorStore.newOperatorKeys.pubKey)), 4) },
+        { key: 'Owner Address', value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}` },
+    ],
+    [
+      { key: 'Est. Transaction Cost', value: '' },
+      { key: 'Transaction fee', value: `${normalizeNumber(operatorStore.estimationGas, 5)}ETH `, strong: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
+      { key: 'Total', value: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
+    ],
   ];
-  const dataSections = buildDataSections(sections);
 
   return (
-    <TransactionConfirmationContainer
-      onButtonClick={onRegisterClick}
-      backNavigation={backNavigation}
-      header={header}
-      dataSections={dataSections}
-      agreement={config.ONBOARD.NETWORK_ID ? false : 'I have read and agree to the terms & conditions'}
-      buttonText={actionButtonText}
-      buttonTestId="submit-operator"
-    >
-      <TransactionPendingPopUp txHash={txHash} />
-      <EmptyPlaceholder height={150} />
-    </TransactionConfirmationContainer>
+    <Screen
+      navigationText={'Register Operator'}
+      navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
+      title={translations.OPERATOR.CONFIRMATION.TITLE}
+      subTitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION}
+      body={(
+        <Grid container spacing={4}>
+          <TransactionPendingPopUp txHash={txHash} />
+          <DataSection data={data} />
+        </Grid>
+      )}
+      actionButton={(
+        <CTAButton
+          testId={'submit-operator'}
+          disable={false}
+          onClick={onRegisterClick}
+          text={actionButtonText}
+        />
+      )}
+    />
   );
 };
 

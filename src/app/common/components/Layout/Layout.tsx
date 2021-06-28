@@ -21,7 +21,7 @@ const Layout = ({ children }: any) => {
 
     return (
       <Grid container className={classes.root} spacing={0} justify="center">
-        <Grid item xs={12} md={4}>
+        <Grid item xs={11} sm={5} md={5} lg={3} xl={3}>
           { children }
         </Grid>
         {renderSpinner()}

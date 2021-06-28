@@ -1,22 +1,19 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
+import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState } from 'react';
-import Link from '@material-ui/core/Link';
-import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import Header from '~app/common/components/Header';
+import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
+import Screen from '~app/common/components/Screen/Screen';
+import DataSection from '~app/common/components/DataSection';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import BackNavigation from '~app/common/components/BackNavigation';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ApplicationStore from '~app/common/stores/Application.store';
-import EmptyPlaceholder from '~app/common/components/EmptyPlaceholder';
 import { normalizeNumber, longStringShorten } from '~lib/utils/strings';
-import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
-import { buildDataSections, IDataSection } from '~app/common/components/DataSection';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
-import TransactionConfirmationContainer from '~app/common/components/TransactionConfirmationContainer';
 
 const ImportValidatorConfirmation = () => {
   const stores = useStores();
@@ -48,62 +45,46 @@ const ImportValidatorConfirmation = () => {
       });
   };
 
-  const backNavigation = <BackNavigation to={config.routes.VALIDATOR.SLASHING_WARNING} text={translations.VALIDATOR.SLASHING_WARNING.TITLE} />;
-  const header = <Header title={translations.VALIDATOR.CONFIRMATION.TITLE} subtitle={translations.VALIDATOR.CONFIRMATION.DESCRIPTION} />;
-  const operatorsList = contractOperator.operators.filter((operator: IOperator) => {
-    return operator.selected;
-  }).map((operator: IOperator, operatorIndex: number) => {
-    return (
-      <div key={`operator-${operatorIndex}`} style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <div>{operatorIndex + 1}. {operator.name}</div>
-        <div style={{ float: 'right' }}>{longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4)}</div>
-      </div>
-    );
-  });
-  const sections: IDataSection[] = [
-    {
-      title: <div style={{ paddingBottom: 7 }}>Validator<br /></div>,
-      component: <ValidatorKeyInput validatorKey={contractValidator.validatorPublicKey} />,
-      divider: true,
-    },
-    {
-      title: 'Operators',
-      component: operatorsList,
-      divider: true,
-    },
-    {
-      name: <strong>Est. Transaction Cost</strong>,
-      value: <Link href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link>,
-    },
-    {
-      name: 'Network fee',
-      value: 'FREE',
-    },
-    {
-      name: 'Transaction fee',
-      value: <>{normalizeNumber(contractValidator.estimationGas, 4)}&nbsp;ETH &nbsp; <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong></>,
-      divider: true,
-    },
-    {
-      title: '',
-      name: <strong>Total</strong>,
-      value: <strong>${normalizeNumber(contractValidator.dollarEstimationGas)}</strong>,
-    },
-  ];
-  const dataSections = buildDataSections(sections);
+    const data = [
+        [
+            { key: 'Operators', value: '', strong: '' },
+        ],
+        [
+            { key: 'Est. Transaction Cost', value: '' },
+            { key: 'Network fee', value: 'FREE', strong: '$0.00' },
+            { key: 'Transaction fee', value: 'FREE', strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
+            { key: 'Total', value: '', strong: `${normalizeNumber(contractValidator.dollarEstimationGas)}` },
+       ], 
+    ];
+
+    contractOperator.operators.forEach((operator: IOperator, index: number) => {
+          if (operator.selected) { data[0].push({
+              key: `${index + 1}. ${operator.name}`,
+              value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4), 
+          }); }
+    });
 
   return (
-    <TransactionConfirmationContainer
-      onButtonClick={onRegisterValidatorClick}
-      backNavigation={backNavigation}
-      header={header}
-      dataSections={dataSections}
-      agreement={config.ONBOARD.NETWORK_ID ? false : 'I have read and agree to the terms & conditions'}
-      buttonText={actionButtonText}
-    >
-      <TransactionPendingPopUp txHash={txHash} />
-      <EmptyPlaceholder height={50} />
-    </TransactionConfirmationContainer>
+    <Screen
+      navigationText={translations.VALIDATOR.SLASHING_WARNING.TITLE}
+      navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
+      title={translations.VALIDATOR.CONFIRMATION.TITLE}
+      subTitle={translations.VALIDATOR.CONFIRMATION.DESCRIPTION}
+      body={(
+        <Grid container spacing={4}>
+          <TransactionPendingPopUp txHash={txHash} />
+          <DataSection data={data} />
+        </Grid>
+      )}
+      actionButton={(
+        <CTAButton
+          testId={'confirm-button'}
+          disable={false}
+          onClick={onRegisterValidatorClick}
+          text={actionButtonText}
+        />
+      )}
+    />
   );
 };
 

@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import Header from '~app/common/components/Header';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
-import OperatorSelector from './components/OperatorSelector';
+import Screen from '~app/common/components/Screen/Screen';
 import ApplicationStore from '~app/common/stores/Application.store';
-import HistoryBackNavigation from '~app/common/components/HistoryBackNavigation';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import OperatorSelector from './components/OperatorSelector';
 
 const SelectOperators = () => {
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles();
-  const registerButtonStyle = { width: '100%', marginTop: config.FEATURE.OPERATORS.AUTO_SELECT ? 146 : 100 };
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
 
@@ -50,40 +47,43 @@ const SelectOperators = () => {
   };
 
   return (
-    <Paper className={classes.mainContainer}>
-      <HistoryBackNavigation to={config.routes.VALIDATOR.DECRYPT} text={translations.VALIDATOR.IMPORT.TITLE} onClick={unselectAllOperators} />
-      <Header title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} subtitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION} />
+    <Screen
+      navigationText={translations.VALIDATOR.IMPORT.TITLE}
+      navigationLink={config.routes.VALIDATOR.DECRYPT}
+      navigationOnClick={unselectAllOperators}
+      title={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
+      subTitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION}
+      body={(
+        <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
+          <Grid item xs zeroMinWidth className={classes.gridContainer}>
+            {config.FEATURE.OPERATORS.AUTO_SELECT ? (
+              <Button
+                disabled={!contractOperator.operators.length}
+                variant="contained"
+                color="primary"
+                style={{ width: '100%' }}
+                onClick={contractOperator.autoSelectOperators}
+                      >
+                <AutorenewIcon />
+                        &nbsp;Auto-select
+              </Button>
+            ) : ''}
 
-      <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
-        <Grid item xs zeroMinWidth className={classes.gridContainer}>
-
-          {config.FEATURE.OPERATORS.AUTO_SELECT ? (
-            <Button
-              disabled={!contractOperator.operators.length}
-              variant="contained"
-              color="primary"
-              style={{ width: '100%' }}
-              onClick={contractOperator.autoSelectOperators}
-            >
-              <AutorenewIcon />
-              &nbsp;Auto-select
-            </Button>
-          ) : ''}
-
-          {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, operatorIndex: number) => (
-            <OperatorSelector key={`operator-selector-${operatorIndex}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
-          ))}
-
-          <CTAButton
-            testId={'operators-selected-button'}
-            disable={!buttonEnabled}
-            style={registerButtonStyle}
-            onClick={onSelectOperatorsClick}
-            text={'Next'}
-          />
+            {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, operatorIndex: number) => (
+              <OperatorSelector key={`operator-selector-${operatorIndex}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
+            ))}
+          </Grid>
         </Grid>
-      </Grid>
-    </Paper>
+      )}
+      actionButton={(
+        <CTAButton
+          testId={'operators-selected-button'}
+          disable={!buttonEnabled}
+          onClick={onSelectOperatorsClick}
+          text={'Next'}
+        />
+      )}
+    />
   );
 };
 

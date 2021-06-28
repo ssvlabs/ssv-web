@@ -37,7 +37,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
   verifiedText: {
     padding: '2px',
     display: 'flex',
-    fontSize: '12px',
+    fontSize: '10px',
     alignItems: 'center',
     backgroundColor: '#F2F2F2',
     border: '1px solid #F2F2F2',

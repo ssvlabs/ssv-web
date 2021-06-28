@@ -1,69 +1,73 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const toolBarColor = '#323232';
+const toolBarColor = '#A1ACBE';
 
 export const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: toolBarColor,
         flexGrow: 1,
+        alignItems: 'center',
     },
     bloxColor: {
         backgroundColor: toolBarColor,
-    },
-    firstSection: {
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '30%',
-    },
-    secondSection: {
-        width: '68%',
-        alignItems: 'flex-end',
-    },
-    menuIcon: {
-        cursor: 'pointer',
-        height: '24px',
-    },
-    walletButton: {
-    },
-    menu: {
-        [theme.breakpoints.up('lg')]: {
-            display: 'none',
-        },
     },
     button: {
         textDecoration: 'none',
         color: 'white',
         cursor: 'pointer',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 'bold',
         userSelect: 'none',
-        '&:first-child': {
-            fontWeight: 'bolder',
-        },
+        fontStyle: 'normal',
+        fontSize: '12px',
+        lineHeight: '150%',
+        textTransform: 'uppercase',
         [theme.breakpoints.down('md')]: {
-            '&:not(:first-child)': {
                 display: 'none',
-            },
         },
     },
-    title: {
-        flexGrow: 1,
-        flexDirection: 'row',
+    mainButton: {
+        textDecoration: 'none',
+        color: 'white',
+        cursor: 'pointer',
+        userSelect: 'none',
+        fontFamily: 'Fira Code',
+        fontStyle: 'normal',
+        fontWeight: 500,
+        fontSize: '14px',
+    },
+    menuIcon: {
+        cursor: 'pointer',
+        fontSize: '40px',
+        marginTop: '5px',
+    },
+    menu: {
+        verticalAlign: 'center',
+        [theme.breakpoints.up('lg')]: {
+            display: 'none',
+        },
     },
     fullScreen: {
         color: 'white',
         position: 'absolute',
         backgroundColor: toolBarColor,
-        height: '100%',
+        height: '25%',
         width: '100%',
         textAlign: 'center',
-        padding: '20%',
+        paddingTop: '32px',
         zIndex: 1000,
-    },
-    menuDropDown: {
-        height: '40%',
     },
     menuButton: {
         fontWeight: 'bold',
         width: '100%',
         margin: 'auto',
+        color: 'white',
+        cursor: 'pointer',
+        fontFamily: 'Inter, sans-serif',
+        userSelect: 'none',
+        fontStyle: 'normal',
+        fontSize: '12px',
+        lineHeight: '150%',
+        textTransform: 'uppercase',
     },
 }));

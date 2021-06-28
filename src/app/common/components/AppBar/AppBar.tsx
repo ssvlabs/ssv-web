@@ -28,7 +28,6 @@ const AppBarComponent = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     const buttons: Button[] = [
-        { text: 'ssv.network', link: config.routes.HOME, active: true },
         { text: 'join', link: config.routes.HOME, active: true },
         { text: 'my account', link: config.routes.HOME, active: false },
         { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: false },
@@ -42,17 +41,17 @@ const AppBarComponent = () => {
     const renderMenu = () => {
         return (
           <div className={classes.fullScreen}>
-            <Grid container spacing={0} justify="center" className={classes.menuDropDown}>
+            <Grid container spacing={4} justify="center">
               {menuButtons.map((button: Button, index: number) => {
                   return (
-                    <Typography
-                      key={index}
-                      onClick={() => {
-                                    if (button.active) { switchPage(button.link, button.newPage); }
-                                }}
-                      className={classes.menuButton}>
-                      {button.text}
-                    </Typography>
+                    <Grid item xs={12}>
+                      <Typography
+                        key={index}
+                        onClick={() => { if (button.active) { switchPage(button.link, button.newPage); } }}
+                        className={classes.menuButton}>
+                        {button.text}
+                      </Typography>
+                    </Grid>
                   );
               })}
             </Grid>
@@ -73,38 +72,51 @@ const AppBarComponent = () => {
         applicationStore.displayToolBarMenu(status);
     };
 
-  return (
-    <div className={classes.root}>
-      <AppBar className={classes.bloxColor} position="static">
-        <Toolbar>
-          <Grid container direction="row" justify="space-around">
-            <Grid container className={classes.firstSection} justify="flex-start">
-              {buttons.map((button: Button, index: number) => {
-                        return (
+    return (
+      <div className={classes.root}>
+        <AppBar className={classes.bloxColor} position="static">
+          <Toolbar>
+            <Grid container justify={'space-between'} alignItems={'center'}>
+              <Grid item xs={4} md={4}>
+                <Typography onClick={() => { switchPage(config.routes.HOME); }}
+                  variant={'subtitle1'}
+                  className={classes.mainButton}>
+                  ssv.network
+                </Typography>
+              </Grid>
+              <Grid item zeroMinWidth md={3}>
+                <Grid container justify={'space-around'}>
+                  {buttons.map((button: Button, index: number) => {
+                      return (
+                        <Grid item key={index}>
                           <Tooltip disableHoverListener={button.active} key={index} disableFocusListener disableTouchListener title="Comming soon...">
                             <Typography onClick={() => { if (button.active) switchPage(button.link, button.newPage); }}
-                              key={index} variant={index === 0 ? 'subtitle1' : 'subtitle1'}
+                              variant={'subtitle1'}
                               className={classes.button}>
                               {button.text}
                             </Typography>
                           </Tooltip>
-                        );
-                    })}
-            </Grid>
-            <Grid className={classes.secondSection} container spacing={1} justify="flex-end">
-              <Grid item className={classes.walletButton}>
-                <ConnectWalletButton />
+                        </Grid>
+                      );
+                  })}
+                </Grid>
               </Grid>
-              <Grid item className={classes.menu} onClick={() => { handleClick(!applicationStore.shouldDisplayToolBar); }}>
-                {applicationStore.shouldDisplayToolBar ? <CloseIcon className={classes.menuIcon} /> : <MenuIcon className={classes.menuIcon} />}
+              <Grid item xs={8} md={4}>
+                <Grid container spacing={1} alignItems={'center'} justify={'flex-end'}>
+                  <Grid item>
+                    <ConnectWalletButton />
+                  </Grid>
+                  <Grid item className={classes.menu} onClick={() => { handleClick(!applicationStore.shouldDisplayToolBar); }}>
+                    {applicationStore.shouldDisplayToolBar ? <CloseIcon className={classes.menuIcon} /> : <MenuIcon className={classes.menuIcon} />}
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
-      {applicationStore.shouldDisplayToolBar && renderMenu()}
-    </div>
-  );
+          </Toolbar>
+        </AppBar>
+        {applicationStore.shouldDisplayToolBar && renderMenu()}
+      </div>
+    );
 };
 
 export default observer(AppBarComponent);

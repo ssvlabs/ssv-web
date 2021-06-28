@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const bloxColor = '#3f51b5';
+const bloxColor = '#0000ff';
 
 export const useStyles = makeStyles(() => ({
     toolTipWrapper: {

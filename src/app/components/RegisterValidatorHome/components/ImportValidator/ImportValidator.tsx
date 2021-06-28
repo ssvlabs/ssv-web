@@ -1,16 +1,14 @@
-import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import { useHistory } from 'react-router-dom';
 import { DropzoneArea } from 'material-ui-dropzone';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
+import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
-import BackNavigation from '~app/common/components/BackNavigation';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
@@ -64,29 +62,30 @@ const ImportValidator = () => {
   };
 
   return (
-    <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.VALIDATOR.HOME} text={getBackNavigationTitle()} />
-      <Header title={translations.VALIDATOR.IMPORT.TITLE} subtitle={translations.VALIDATOR.IMPORT.DESCRIPTION} />
-
-      <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
-        <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <br />
-          <br />
-          <DropZoneContainer>
-            <InputLabel
-              title="Keystore File"
-              subTitle="generated from CLI">
-              <DropzoneArea
-                showPreviews={false}
-                onChange={onFileChange}
-                filesLimit={1}
-                maxFileSize={5000000}
-              />
-            </InputLabel>
-          </DropZoneContainer>
-        </Grid>
-      </Grid>
-    </Paper>
+    <Screen
+      navigationText={getBackNavigationTitle()}
+      navigationLink={config.routes.VALIDATOR.HOME}
+      title={translations.VALIDATOR.IMPORT.TITLE}
+      subTitle={translations.VALIDATOR.IMPORT.DESCRIPTION}
+      body={(
+        <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
+          <Grid item xs zeroMinWidth className={classes.gridContainer}>
+            <DropZoneContainer>
+              <InputLabel
+                title="Keystore File"
+                subTitle="generated from CLI">
+                <DropzoneArea
+                  showPreviews={false}
+                  onChange={onFileChange}
+                  filesLimit={1}
+                  maxFileSize={5000000}
+                />
+              </InputLabel>
+            </DropZoneContainer>
+          </Grid>
+        </Grid>  
+      )}
+    />
   );
 };
 

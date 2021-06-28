@@ -1,32 +1,32 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     gridWrapper: {
+        width: '500px',
         padding: '40px',
-        flexDirection: 'column',
-        alignItems: 'center',
-        alignContent: 'center',
+        [theme.breakpoints.down('xs')]: {
+          width: '350px',
+            padding: '30px',
+        },
     },
     gridContainer: {
-        marginBottom: '40px',
+        alignItems: 'center',
         flexGrow: 1,
         flexDirection: 'row',
     },
+    header: {
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: 800,
+      fontSize: '20px',
+    },
+    gridContainerAddress: {
+        border: '1px solid black',
+    },
     connectButton: {
         cursor: 'pointer',
-        marginLeft: '5px',
         backgroundColor: 'inherit',
         padding: '10px',
         borderRadius: '10px',
-        border: '1px solid black',
-    },
-    gridContainerAddress: {
-        maxWidth: '100%',
-        borderRadius: '10px',
-        margin: 'auto',
-        backgroundColor: '#F2F2F2',
-    },
-    dialogWrapper: {
         border: '1px solid black',
     },
     gridItem: {
@@ -39,8 +39,23 @@ export const useStyles = makeStyles(() => ({
         margin: '0px',
         padding: '0px',
     },
-    cursor: {
+    accountAddress: {
+      paddingLeft: '5px',
+    },
+    lunchIconWrapper: {
+        textAlign: 'center',
+        borderLeft: '1px solid black',
+        minHeight: '35px',
+        backgroundColor: '#F2F2F2',
+        display: 'block',
+        margin: 'auto',
         cursor: 'pointer',
+    },
+    launchIcon: {
+      display: 'block',
+      height: '35px',
+      width: '25px',
+      margin: 'auto',
     },
     exitIcon: {
         position: 'absolute',

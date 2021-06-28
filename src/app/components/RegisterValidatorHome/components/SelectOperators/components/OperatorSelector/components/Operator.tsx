@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const OperatorName = styled.div`
-  font-size: 13px;
+  font-size: 12px;
   margin-left: 0;
   text-overflow: ellipsis;
   overflow: hidden;

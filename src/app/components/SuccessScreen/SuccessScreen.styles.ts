@@ -39,7 +39,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     gridContainer: {
         flexGrow: 1,
-        flexDirection: 'column',
+        flexDirection: 'row',
     },
     arrowIcon: {
         float: 'right',

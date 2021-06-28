@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
+import { useHistory } from 'react-router-dom';
 import { Link as MaterialLink } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
@@ -37,13 +37,13 @@ const RegisterOperatorHome = () => {
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <OrganicLink href={config.links.LINK_SSV_DEV_DOCS} target="_blank">
-              <LinkButton text1={'Run SSV Node'} text2={'See our developer documentation'} />
+              <LinkButton primaryLabel={'Run SSV Node'} secondaryLabel={'See our developer documentation'} />
             </OrganicLink>
           </Grid>
 
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={walletStore.connected} onClick={redirectToGenerateKeys}>
-              <LinkButton text1={'Register operator'} text2={'List yourself as one of the network operators'} />
+              <LinkButton primaryLabel={'Register operator'} secondaryLabel={'List yourself as one of the network operators'} />
             </ConditionalLink>
           </Grid>
         </Grid>

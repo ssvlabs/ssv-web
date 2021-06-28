@@ -18,13 +18,15 @@ const DataSection = ({ data }: any) => {
                       <Typography className={`${d.key === 'Total' ? classes.total : ''}`}>{d.key}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography className={`${classes.dataValue} ${d.key === 'Total' ? classes.total : ''}`}>{
-                                        d.value}{d.strong && <strong>&nbsp;{d.strong}</strong>}
+                      <Typography
+                        className={`${classes.dataValue} ${d.key === 'Total' ? classes.total : ''}`}
+                      >
+                        {d.value}{d.strong && <strong>&nbsp;{d.strong}</strong>}
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
-                    ))}
+              ))}
             </Grid>
           </Grid>
         ))}

@@ -19,12 +19,12 @@ const Welcome = () => {
         <Grid container spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <RouteLink to={config.routes.VALIDATOR.HOME} data-testid={config.routes.VALIDATOR.HOME}>
-              <LinkButton text1={'Run validator'} text2={''} />
+              <LinkButton primaryLabel={'Run validator'} secondaryLabel={''} />
             </RouteLink>
           </Grid>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <RouteLink to={config.routes.OPERATOR.HOME} data-testid={config.routes.OPERATOR.HOME}>
-              <LinkButton text1={'Join as operator'} text2={''} />
+              <LinkButton primaryLabel={'Join as operator'} secondaryLabel={''} />
             </RouteLink>
           </Grid>
         </Grid>

@@ -47,9 +47,7 @@ const AppBarComponent = () => {
                     <Grid item xs={12}>
                       <Typography
                         key={index}
-                        onClick={() => {
-                                  if (button.active) { switchPage(button.link, button.newPage); }
-                              }}
+                        onClick={() => { if (button.active) { switchPage(button.link, button.newPage); } }}
                         className={classes.menuButton}>
                         {button.text}
                       </Typography>
@@ -89,18 +87,18 @@ const AppBarComponent = () => {
               <Grid item zeroMinWidth md={3}>
                 <Grid container justify={'space-around'}>
                   {buttons.map((button: Button, index: number) => {
-                                              return (
-                                                <Grid item key={index}>
-                                                  <Tooltip disableHoverListener={button.active} key={index} disableFocusListener disableTouchListener title="Comming soon...">
-                                                    <Typography onClick={() => { if (button.active) switchPage(button.link, button.newPage); }}
-                                                      variant={'subtitle1'}
-                                                      className={classes.button}>
-                                                      {button.text}
-                                                    </Typography>
-                                                  </Tooltip>
-                                                </Grid>
-                                              );
-                                          })}
+                      return (
+                        <Grid item key={index}>
+                          <Tooltip disableHoverListener={button.active} key={index} disableFocusListener disableTouchListener title="Comming soon...">
+                            <Typography onClick={() => { if (button.active) switchPage(button.link, button.newPage); }}
+                              variant={'subtitle1'}
+                              className={classes.button}>
+                              {button.text}
+                            </Typography>
+                          </Tooltip>
+                        </Grid>
+                      );
+                  })}
                 </Grid>
               </Grid>
               <Grid item xs={8} md={4}>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
@@ -67,7 +67,7 @@ const SelectOperators = () => {
                 <AutorenewIcon />
                         &nbsp;Auto-select
               </Button>
-                  ) : ''}
+            ) : ''}
 
             {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, operatorIndex: number) => (
               <OperatorSelector key={`operator-selector-${operatorIndex}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />

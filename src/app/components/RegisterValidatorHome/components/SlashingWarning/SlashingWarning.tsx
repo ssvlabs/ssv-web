@@ -83,15 +83,15 @@ const SlashingWarning = () => {
                 checked={userAgreed}
                 onChange={(event) => { setUserAgreed(event.target.checked); }}
                 color="primary"
-                      />
-                  )}
+              />
+            )}
             label={(
               <Typography className={classes.checkboxText}>
                 I understand that running my validator simultaneously in multiple setups will cause slashing
                 to my validator.
               </Typography>
-                  )}
-              />
+            )}
+          />
           <br />
           <br />
           <CTAButton
@@ -99,7 +99,7 @@ const SlashingWarning = () => {
             disable={!nextButtonEnabled}
             onClick={goToConfirmation}
             text={'Next'}
-              />
+          />
         </Grid>
       )}
     />

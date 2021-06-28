@@ -58,7 +58,10 @@ const ImportValidatorConfirmation = () => {
     ];
 
     contractOperator.operators.forEach((operator: IOperator, index: number) => {
-          if (operator.selected) data[0].push({ key: `${index + 1}. ${operator.name}`, value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4) });
+          if (operator.selected) { data[0].push({
+              key: `${index + 1}. ${operator.name}`,
+              value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4), 
+          }); }
     });
 
   return (

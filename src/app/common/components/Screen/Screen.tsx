@@ -1,11 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useStyles } from '~app/common/components/Screen/Screen.styles';
 import Header from '~app/common/components/Header';
 import BackNavigation from '~app/common/components/BackNavigation';
+import { useStyles } from '~app/common/components/Screen/Screen.styles';
 
-type Params = {
+type ScreenParams = {
     icon?: string,
     title: string,
     subTitle: string,
@@ -17,11 +17,11 @@ type Params = {
     align?: boolean;
 };
 
-const Screen = ({ icon, title, subTitle, navigationLink, navigationOnClick, navigationText, body, actionButton, align = false }: Params) => {
+const Screen = ({ icon, title, subTitle, navigationLink, navigationOnClick, navigationText, body, actionButton, align = false }: ScreenParams) => {
     const classes = useStyles();
 
     return (
-      <Grid container className={classes.root} spacing={0} justify="center">
+      <Grid container spacing={0} justify="center">
         {icon && (
           <Grid zeroMinWidth item xs={12} md={12}>
             <img className={classes.icon} src={icon} />
@@ -33,14 +33,14 @@ const Screen = ({ icon, title, subTitle, navigationLink, navigationOnClick, navi
         <Grid item xs={12} md={12} className={`${classes.header} ${align && classes.align}`}>
           <Header title={title} subtitle={subTitle} />
         </Grid>
-        <Grid className={classes.body} item xs={12} md={12}>
+        <Grid item xs={12} md={12}>
           { body }
         </Grid>
         {actionButton && (
-        <Grid item xs={12} md={12} className={classes.bottom}>
-          {actionButton}
-        </Grid>
-)}
+          <Grid item xs={12} md={12} className={classes.bottom}>
+            {actionButton}
+          </Grid>
+        )}
       </Grid>
     );
 };

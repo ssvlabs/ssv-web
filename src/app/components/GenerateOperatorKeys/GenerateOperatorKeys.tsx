@@ -122,14 +122,14 @@ const GenerateOperatorKeys = () => {
               withHint
               toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
               toolTipLink={config.links.TOOL_TIP_KEY_LINK}
-                  >
+            >
               <TextInput type="text"
                 data-testid="new-operator-key"
                 className={publicKeyError.shouldDisplay ? classes.inputError : ''}
                 onChange={(event) => { onInputChange('publicKey', event.target.value); }}
                 onBlur={(event) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
                 value={inputsData.publicKey}
-                    />
+              />
               {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
             </InputLabel>
 
@@ -144,7 +144,7 @@ const GenerateOperatorKeys = () => {
           disable={!registerButtonEnabled}
           onClick={onRegisterClick}
           text={'Next'}
-          />
+        />
       )}
     />
   );

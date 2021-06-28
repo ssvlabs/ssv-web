@@ -5,8 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import ConditionalLink from '~app/common/components/ConditionalLink';
-import { useStyles } from '~app/components/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import { useStyles } from '~app/components/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 
 const CreateValidator = () => {
   const classes = useStyles();
@@ -26,19 +26,19 @@ const CreateValidator = () => {
           <Grid item xs className={classes.gridContainer}>
             <Grid container spacing={2}>
               {translations.VALIDATOR.CREATE.BODY_TEXT.map((text: string) => {
-                return (
-                  <Grid key={text} item>
-                    <Typography className={classes.bodyText} variant="subtitle1">
-                      {text}
-                    </Typography>
-                  </Grid>
-                );
-              })}
+                    return (
+                      <Grid key={text} item>
+                        <Typography className={classes.bodyText} variant="subtitle1">
+                          {text}
+                        </Typography>
+                      </Grid>
+                    );
+                  })}
             </Grid>
           </Grid>
           <Grid item xs className={classes.gridContainer}>
             <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition={false} onClick={redirectToLaunchpad}>
-              <LinkButton text1={'Visit Ethereum launchpad'} text2={''} />
+              <LinkButton primaryLabel={'Visit Ethereum launchpad'} secondaryLabel={''} />
             </ConditionalLink>
           </Grid>
           <Grid item xs className={classes.gridContainer}>

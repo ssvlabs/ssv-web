@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { isMobile } from 'react-device-detect';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
+import { isMobile } from 'react-device-detect';
 import CloseIcon from '@material-ui/icons/Close';
 import LaunchIcon from '@material-ui/icons/Launch';
 import Typography from '@material-ui/core/Typography';
@@ -39,7 +39,7 @@ const WalletPopUp = () => {
     };
 
     return (
-      <Dialog className={classes.dialogWrapper} aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
+      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
         <CloseIcon viewBox={'5 5 15 15'} fontSize={'large'} onClick={closePopUp} className={classes.exitIcon} />
         <Grid container className={classes.gridWrapper} spacing={4}>
           <Grid item xs={12}>

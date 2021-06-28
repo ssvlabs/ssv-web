@@ -16,7 +16,6 @@ export const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         border: '1px solid black',
         marginTop: '60px',
-        // margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(3.8),
         '&:hover': {
             backgroundColor: 'aliceblue',
@@ -39,13 +38,5 @@ export const useStyles = makeStyles((theme) => ({
     rhinoImage: {
         float: 'right',
         width: '125px',
-        /*  display: 'block',
-          float: 'right',
-          position: 'relative',
-          [theme.breakpoints.down('xl')]: {
-              top: '60px',
-          }, */
-        // right: '1px',
-        // bottom: '1px',
     },
 }));

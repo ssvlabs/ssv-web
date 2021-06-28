@@ -4,12 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
+import Screen from '~app/common/components/Screen/Screen';
+import ConditionalLink from '~app/common/components/ConditionalLink';
+import LinkButton from '~app/common/components/LinkButton/LinkButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
-import Screen from '~app/common/components/Screen/Screen';
-import LinkButton from '~app/common/components/LinkButton/LinkButton';
-import ConditionalLink from '~app/common/components/ConditionalLink';
 
 const SuccessScreen = () => {
   const stores = useStores();
@@ -46,7 +46,7 @@ const SuccessScreen = () => {
         <Grid className={classes.gridContainer} container spacing={5}>
           <Grid item xs>
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={(() => { })}>
-              <LinkButton text1={monitorHeader} text2={monitorText} />
+              <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} />
             </ConditionalLink>
           </Grid>
         </Grid>

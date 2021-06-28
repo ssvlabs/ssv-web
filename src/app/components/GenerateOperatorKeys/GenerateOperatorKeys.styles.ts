@@ -32,9 +32,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     errorText: {
     },
-    paddingTop: {
-        // marginTop: '100px',
-    },
     inputWithHint: {
         backgroundColor: 'red',
         display: 'flex',

@@ -60,7 +60,7 @@ const EnterValidatorPrivateKey = () => {
     if (fileName.length > 34 && isMobile) {
       return `${fileName.slice(0, 12)}...${fileName.slice(fileName.length - 14, fileName.length)}`;
     } 
-      return fileName;
+    return fileName;
   };
 
   return (
@@ -96,12 +96,12 @@ const EnterValidatorPrivateKey = () => {
                 onChange={(event: any) => validatorStore.setPassword(event.target.value)}
                     />
             </InputLabel>
-            <Grid className={classes.paddingTop} item xs={12}>
+            <Grid item xs={12}>
               {showErrorMessage && (
                 <div className={classes.errorDiv}>
                   {errorMessage}
                 </div>
-                    )}
+              )}
             </Grid>
           </Grid>
         </Grid>

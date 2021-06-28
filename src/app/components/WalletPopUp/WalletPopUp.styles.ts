@@ -29,9 +29,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: '10px',
         border: '1px solid black',
     },
-    dialogWrapper: {
-        // border: '1px solid black',
-    },
     gridItem: {
         padding: '5px',
         flexGrow: 1,

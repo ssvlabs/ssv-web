@@ -74,6 +74,7 @@ export const useStyles = makeStyles((theme) => ({
         alignContent: 'center',
         height: '50px',
         border: 'dashed thin gray',
+        marginTop: '12px',
     },
     guideStepsContainerPaper: {
         cursor: 'pointer',

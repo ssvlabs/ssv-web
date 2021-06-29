@@ -1,9 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles((theme) => ({
-  headerWrapper: {
-    paddingBottom: theme.spacing(1),
-  },
+export const useStyles = makeStyles(() => ({
   centralized: {
     textAlign: 'center',
   },
@@ -12,9 +9,9 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily: 'Inter, sans-serif',
     fontStyle: 'normal',
     fontWeight: 900,
-    fontSize: '24px',
+    fontSize: '28px',
     color: '#21D7B5',
-    marginBottom: '12px',
+    // marginBottom: '12px',
   },
   subHeader: {
     fontFamily: 'Inter, sans-serif',

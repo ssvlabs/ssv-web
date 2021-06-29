@@ -11,6 +11,7 @@ const BackNavigationLink = styled.div<Record<string, any>>`
   color: #A1ACBE;
   font-size: 12px;
   text-decoration: none;
+  text-transform: uppercase;
 `;
 
 const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`

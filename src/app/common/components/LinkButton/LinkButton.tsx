@@ -17,8 +17,8 @@ const LinkButton = ({ primaryLabel, secondaryLabel, icon }: any) => {
             <img src={icon} className={classes.icon} />
           </Grid>
           )}
-          <Grid item xs={8} className={`${secondaryLabel ? '' : classes.textWrapper}`}>
-            <Typography variant="h6" className={classes.guideStepText}>{primaryLabel}</Typography>
+          <Grid item xs={9} className={`${secondaryLabel ? '' : classes.textWrapper}`}>
+            <Typography variant="h6" noWrap className={classes.guideStepText}>{primaryLabel}</Typography>
             <Typography variant="caption" noWrap className={classes.guideStepSubText}>{secondaryLabel}</Typography>
           </Grid>
           <Grid item xs={1}>

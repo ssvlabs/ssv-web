@@ -1,6 +1,7 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import React, { useEffect, useState } from 'react';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
@@ -11,12 +12,21 @@ import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { normalizeNumber, longStringShorten } from '~lib/utils/strings';
+import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
+import { useStyles } from './ImportValidatorConfirmation.styles';
+
+interface data {
+    key: string,
+    value: any,
+    strong?: string
+}
 
 const ImportValidatorConfirmation = () => {
   const stores = useStores();
+  const classes = useStyles();
   const contractValidator: ContractValidator = stores.ContractValidator;
   const contractOperator: ContractOperator = stores.ContractOperator;
   const applicationStore: ApplicationStore = stores.Application;
@@ -45,22 +55,22 @@ const ImportValidatorConfirmation = () => {
       });
   };
 
-    const data = [
+    const data: data[][] = [
         [
             { key: 'Operators', value: '', strong: '' },
         ],
         [
-            { key: 'Est. Transaction Cost', value: '' },
-            { key: 'Network fee', value: 'FREE', strong: '$0.00' },
-            { key: 'Transaction fee', value: 'FREE', strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
-            { key: 'Total', value: '', strong: `${normalizeNumber(contractValidator.dollarEstimationGas)}` },
-       ], 
+            { key: 'Est. Transaction Cost', value: <Link href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link> },
+            { key: 'Network fee', value: 'FREE ', strong: '$0.00' },
+            { key: 'Transaction fee', value: `${normalizeNumber(contractValidator.estimationGas, 4)} ETH `, strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
+            { key: 'Total', value: '', strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
+       ],
     ];
 
     contractOperator.operators.forEach((operator: IOperator, index: number) => {
           if (operator.selected) { data[0].push({
               key: `${index + 1}. ${operator.name}`,
-              value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4), 
+              value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4),
           }); }
     });
 
@@ -71,7 +81,11 @@ const ImportValidatorConfirmation = () => {
       title={translations.VALIDATOR.CONFIRMATION.TITLE}
       subTitle={translations.VALIDATOR.CONFIRMATION.DESCRIPTION}
       body={(
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
+          <Grid item xs>
+            <div className={classes.validatorText}>Validator</div>
+            <ValidatorKeyInput validatorKey={contractValidator.validatorPublicKey} />
+          </Grid>
           <TransactionPendingPopUp txHash={txHash} />
           <DataSection data={data} />
         </Grid>

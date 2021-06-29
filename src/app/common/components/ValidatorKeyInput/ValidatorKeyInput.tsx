@@ -19,6 +19,7 @@ const ValidatorKeyInput = (props: ValidatorPrivateKeyInputProps) => {
       className={classes.wideWidthInput}
       data-testid="validator-private-key-slashing-input"
       type="text"
+      inputProps={{ className: classes.input }}
       value={validatorKey}
       endAdornment={(
         <Link href={`${beaconchaBaseUrl}/validator/${validatorKey}`} target="_blank">

@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     bottom: {
         position: 'absolute',
-        bottom: '10%',
+        bottom: '2%',
         width: '93%',
         [theme.breakpoints.up('sm')]: {
             width: '45%',

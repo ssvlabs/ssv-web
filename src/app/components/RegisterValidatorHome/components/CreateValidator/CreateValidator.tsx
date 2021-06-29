@@ -20,7 +20,7 @@ const CreateValidator = () => {
       navigationText={translations.VALIDATOR.CREATE.NAVIGATION_TEXT}
       navigationLink={config.routes.VALIDATOR.HOME}
       title={translations.VALIDATOR.CREATE.TITLE}
-      subTitle={''}
+      subTitle={'You must have an active validator before running it on the SSV network.'}
       body={(
         <Grid container wrap="nowrap" spacing={4} className={classes.gridContainer}>
           <Grid item xs className={classes.gridContainer}>
@@ -49,5 +49,4 @@ const CreateValidator = () => {
     />
   );
 };
-
 export default observer(CreateValidator);

@@ -1,6 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   inputAddonContainer: {
     backgroundColor: '#FAFAFA',
     borderLeft: '1px solid rgba(215, 215, 215, 1)',
@@ -24,5 +24,12 @@ export const useStyles = makeStyles(() => ({
     width: '100%',
     padding: 0,
     height: 40,
+  },
+  input: {
+    width: 'calc(86% - 3px)',
+    paddingLeft: '10px',
+    [theme.breakpoints.down('lg')]: {
+      width: 'calc(86% - 10px)',
+    },
   },
 }));

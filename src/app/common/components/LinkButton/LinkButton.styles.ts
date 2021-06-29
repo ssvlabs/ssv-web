@@ -31,9 +31,9 @@ export const useStyles = makeStyles((theme) => ({
         fontFamily: 'Inter, sans-serif',
         fontStyle: 'normal',
         fontWeight: 500,
-        fontSize: '14px',
+        fontSize: '0.85rem',
         [theme.breakpoints.down('md')]: {
-            fontSize: '12px',
+            fontSize: '0.65rem',
         },
         color: '#A1ACBE',
     },
@@ -48,6 +48,7 @@ export const useStyles = makeStyles((theme) => ({
         float: 'left',
     },
     arrowIcon: {
+        width: '30px',
         float: 'right',
         color: '#20EEC8',
         height: '100%',

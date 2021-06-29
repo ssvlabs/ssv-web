@@ -25,12 +25,15 @@ const SuccessScreen = () => {
   let subTitle: any = '';
   let monitorHeader: string = '';
   let monitorText: string = '';
+  let icon: string = '';
 
   if (contractOperator.newOperatorRegisterSuccessfully) {
+    icon = 'success_operator_icon';
     subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
     monitorHeader = 'Monitor Node';
     monitorText = 'View your operator performance in our explorer';
   } else if (contractValidator.newValidatorReceipt) {
+    icon = 'success_validator_icon';
     subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
     monitorHeader = 'Monitor Validator';
     monitorText = 'View your validator performance in our explorer';
@@ -44,7 +47,7 @@ const SuccessScreen = () => {
       body={(
         <Grid className={classes.gridContainer} container spacing={5}>
           <Grid item xs>
-            <img src={'/images/success_icon.svg'} className={classes.icon} />
+            <img src={`/images/${icon}.svg`} className={classes.icon} />
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={(() => { })}>
               <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} />
             </ConditionalLink>

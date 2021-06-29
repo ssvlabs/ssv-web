@@ -53,7 +53,7 @@ const OperatorConfirmation = () => {
     ],
     [
       { key: 'Est. Transaction Cost', value: '' },
-      { key: 'Transaction fee', value: `${normalizeNumber(operatorStore.estimationGas, 5)}ETH `, strong: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
+      { key: 'Transaction fee', value: `${normalizeNumber(operatorStore.estimationGas, 5)} ETH `, strong: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
       { key: 'Total', value: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
     ],
   ];

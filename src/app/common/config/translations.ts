@@ -9,7 +9,6 @@ const translations = {
       TITLE: 'Create Validator via Ethereum Launchpad',
       DESCRIPTION: '',
       BODY_TEXT: [
-          'You must have an active validator before running it on the SSV network.',
           'Follow Ethereum’s launchpad instructions to generate new keys and deposit your validator to the deposit contract.',
           'Please note to backup your newly created validator files, you will need them for our setup.',
       ],

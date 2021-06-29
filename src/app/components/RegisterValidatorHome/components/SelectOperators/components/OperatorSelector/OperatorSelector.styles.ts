@@ -16,6 +16,10 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     },
   },
   selectPaper: {
+    border: '2px solid #3f51b5',
+    borderRadius: '0',
+    backgroundColor: 'none',
+    borderTop: 'none',
     maxWidth: 300,
     '& ul': {
       padding: 3,

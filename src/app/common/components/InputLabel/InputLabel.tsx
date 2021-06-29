@@ -9,8 +9,7 @@ const InputLabelWrapper = styled.div`
 const InputHeader = styled.div`
   display: flex;
   width: 100%;
-  justifyContent: 'space-between';
-  align-items: flex-start;
+  align-items: center;
 `;
 
 const Header = styled.p`
@@ -20,7 +19,7 @@ const Header = styled.p`
   white-space: nowrap;
   text-transform: none;
   display: inline-flex;
-  font-size: 14px;
+  font-size: 12px;
   color: #A1ACBE;
   margin: 0;
 `;

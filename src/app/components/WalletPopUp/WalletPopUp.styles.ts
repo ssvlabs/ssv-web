@@ -40,7 +40,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
         padding: '0px',
     },
     accountAddress: {
-      paddingLeft: '5px',
+        overflow: 'scroll',
+        paddingLeft: '5px',
     },
     lunchIconWrapper: {
         textAlign: 'center',

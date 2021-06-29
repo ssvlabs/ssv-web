@@ -38,13 +38,13 @@ const SuccessScreen = () => {
 
   return (
     <Screen
-      icon={'/images/checked.svg'}
       align
       title={translations.SUCCESS.TITLE}
       subTitle={subTitle}
       body={(
         <Grid className={classes.gridContainer} container spacing={5}>
           <Grid item xs>
+            <img src={'/images/success_icon.svg'} className={classes.icon} />
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={(() => { })}>
               <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} />
             </ConditionalLink>

@@ -6,7 +6,6 @@ import BackNavigation from '~app/common/components/BackNavigation';
 import { useStyles } from '~app/common/components/Screen/Screen.styles';
 
 type ScreenParams = {
-    icon?: string,
     title: string,
     subTitle: string,
     navigationText?: string
@@ -17,16 +16,11 @@ type ScreenParams = {
     align?: boolean;
 };
 
-const Screen = ({ icon, title, subTitle, navigationLink, navigationOnClick, navigationText, body, actionButton, align = false }: ScreenParams) => {
+const Screen = ({ title, subTitle, navigationLink, navigationOnClick, navigationText, body, actionButton, align = false }: ScreenParams) => {
     const classes = useStyles();
 
     return (
       <Grid container spacing={0} justify="center">
-        {icon && (
-          <Grid zeroMinWidth item xs={12} md={12}>
-            <img className={classes.icon} src={icon} />
-          </Grid>
-        )}
         <Grid className={classes.navigation} item xs={12} md={12}>
           {navigationLink && <BackNavigation to={navigationLink} text={navigationText} onClick={navigationOnClick} />}
         </Grid>

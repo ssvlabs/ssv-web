@@ -1,11 +1,6 @@
 import { makeStyles, Theme } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
-    icon: {
-        display: 'block',
-        margin: 'auto',
-        width: '80px',
-    },
     align: {
         textAlign: 'center',
     },
@@ -23,6 +18,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
         position: 'absolute',
         bottom: '10%',
         width: '93%',
+        [theme.breakpoints.up('sm')]: {
+            width: '45%',
+            bottom: '20%',
+        },
         [theme.breakpoints.up('lg')]: {
             width: '25%',
             bottom: '20%',

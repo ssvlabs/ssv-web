@@ -8,7 +8,7 @@ export const useStyles = makeStyles(() => ({
         display: 'inline-block',
     },
     image: {
-        width: '20px',
+        verticalAlign: 'middle',
     },
     toolTipText: {
         width: '200px',

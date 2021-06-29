@@ -6,17 +6,22 @@ import Typography from '@material-ui/core/Typography';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { useStyles } from '~app/common/components/LinkButton/LinkButton.styles';
 
-const LinkButton = ({ primaryLabel, secondaryLabel }: any) => {
+const LinkButton = ({ primaryLabel, secondaryLabel, icon }: any) => {
     const classes = useStyles();
 
     return (
       <Paper className={classes.guideStepsContainerPaper}>
-        <Grid container wrap="nowrap" spacing={1}>
-          <Grid item md={8} xs={8}>
-            <Typography variant="h6" className={classes.guideStepText}>{primaryLabel}</Typography>
-            <Typography variant="caption" className={classes.guideStepSubText}>{secondaryLabel}</Typography>
+        <Grid container wrap="nowrap" spacing={0} justify={'space-between'}>
+          {icon && (
+          <Grid item>
+            <img src={icon} className={classes.icon} />
           </Grid>
-          <Grid item md={4} xs={4}>
+          )}
+          <Grid item xs={8} className={`${secondaryLabel ? '' : classes.textWrapper}`}>
+            <Typography variant="h6" className={classes.guideStepText}>{primaryLabel}</Typography>
+            <Typography variant="caption" noWrap className={classes.guideStepSubText}>{secondaryLabel}</Typography>
+          </Grid>
+          <Grid item xs={1}>
             <ArrowForwardIosIcon className={classes.arrowIcon} />
           </Grid>
         </Grid>

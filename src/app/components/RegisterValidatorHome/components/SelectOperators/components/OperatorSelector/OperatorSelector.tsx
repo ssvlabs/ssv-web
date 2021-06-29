@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
 import { sha256 } from 'js-sha256';
+import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
@@ -72,15 +71,29 @@ const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps
                 disabled={contractOperator.isOperatorSelected(operator.pubkey)}
               >
                 <Grid container alignItems={'center'} direction="row" justify="space-between">
-                  <Grid item>
+                  <Grid item xs={5}>
                     <OperatorName>{operator.name}</OperatorName>
                     <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
                   </Grid>
-                  {operator.verified ? (
-                    <div className={classes.verifiedText}>verified
-                      <VerifiedUserIcon className={classes.verifiedIcon} />
-                    </div>
-                  ) : ''}
+                  <Grid item xs={5}>
+                    <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>
+                      <Grid item xs={6} md={6}>
+                        {operator.verified ? (
+                          <Grid container className={classes.verifiedText}>
+                            <Grid item xs={8}>
+                              verified
+                            </Grid>
+                            <Grid item xs={4}>
+                              <img src={'/images/checkmark_icon.svg'} className={classes.verifiedIcon} />
+                            </Grid>
+                          </Grid>
+                        ) : ''}
+                      </Grid>
+                      <Grid item>
+                        <img src={'/images/chart_icon.svg'} className={classes.chartIcon} />
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </MenuItem>
             );

@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
   inputAddonContainer: {
-    backgroundColor: 'rgba(242, 242, 242, 1)',
+    backgroundColor: '#FAFAFA',
     borderLeft: '1px solid rgba(215, 215, 215, 1)',
     width: 40,
     minHeight: 40,

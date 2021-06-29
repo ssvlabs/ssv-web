@@ -23,7 +23,7 @@ const ValidatorKeyInput = (props: ValidatorPrivateKeyInputProps) => {
       endAdornment={(
         <Link href={`${beaconchaBaseUrl}/validator/${validatorKey}`} target="_blank">
           <InputAdornment position="end" className={classes.inputAddonContainer}>
-            <img src="/images/etherscan.png" alt="Beaconcha.in" className={classes.inputAddonImage} />
+            <img src="/images/external_link.svg" alt="Beaconcha.in" className={classes.inputAddonImage} />
           </InputAdornment>
         </Link>
       )}

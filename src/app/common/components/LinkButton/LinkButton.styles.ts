@@ -4,7 +4,7 @@ export const useStyles = makeStyles((theme) => ({
     guideStepsContainerPaper: {
         cursor: 'pointer',
         margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),
+        padding: theme.spacing(2) - 4,
         border: '2px solid transparent',
         '&:hover': {
             borderSizing: 'border-box',
@@ -12,6 +12,10 @@ export const useStyles = makeStyles((theme) => ({
         },
         boxShadow: '0px 5px 13px rgba(91, 108, 132, 0.16)',
         borderRadius: '6px',
+    },
+    textWrapper: {
+        display: 'flex',
+        alignItems: 'center',
     },
     guideStepText: {
         fontFamily: 'Inter, sans-serif',
@@ -32,6 +36,16 @@ export const useStyles = makeStyles((theme) => ({
             fontSize: '12px',
         },
         color: '#A1ACBE',
+    },
+    iconWrapper: {
+        display: 'flex',
+    },
+    icon: {
+        display: 'block',
+        width: '50px',
+        height: '50px',
+        margin: 'auto',
+        float: 'left',
     },
     arrowIcon: {
         float: 'right',

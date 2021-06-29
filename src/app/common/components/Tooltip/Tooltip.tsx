@@ -15,7 +15,7 @@ const Tooltip = ({ text, link }: ToolTipProps) => {
         onMouseEnter={() => setIsShown(true)}
         onMouseLeave={() => setIsShown(false)}
       >
-        <img className={classes.image} src={'/images/information-notice.png'} />
+        <img className={classes.image} src={'/images/hint.svg'} />
         {isShown && (
         <div className={classes.toolTipText}>
             {text}

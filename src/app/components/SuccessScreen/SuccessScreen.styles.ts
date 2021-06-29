@@ -41,6 +41,9 @@ export const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexDirection: 'row',
     },
+    icon: {
+      width: '100%',
+    },
     arrowIcon: {
         float: 'right',
         marginLeft: 'auto',

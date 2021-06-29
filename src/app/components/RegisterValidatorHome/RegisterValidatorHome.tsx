@@ -36,12 +36,12 @@ const RegisterValidatorHome = () => {
         <Grid container wrap="nowrap" spacing={3} className={classes.columnGridContainer}>
           <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
             <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
-              <LinkButton primaryLabel={'Create Validator'} secondaryLabel={''} />
+              <LinkButton primaryLabel={'Create Validator'} secondaryLabel={''} icon={'images/create_validator_icon.svg'} />
             </ConditionalLink>
           </Grid>
           <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
             <ConditionalLink to={config.routes.VALIDATOR.IMPORT} condition={walletStore.connected} onClick={() => redirectTo(config.routes.VALIDATOR.IMPORT)}>
-              <LinkButton primaryLabel={'Import Validator'} secondaryLabel={''} />
+              <LinkButton primaryLabel={'Import Validator'} secondaryLabel={''} icon={'images/import_validator_icon.svg'} />
             </ConditionalLink>
           </Grid>
         </Grid>

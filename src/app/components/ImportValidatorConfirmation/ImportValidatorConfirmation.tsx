@@ -18,7 +18,7 @@ import ContractOperator, { IOperator } from '~app/common/stores/contract/Contrac
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import { useStyles } from './ImportValidatorConfirmation.styles';
 
-interface data {
+interface dataSection {
     key: string,
     value: any,
     strong?: string
@@ -55,7 +55,7 @@ const ImportValidatorConfirmation = () => {
       });
   };
 
-    const data: data[][] = [
+    const data: dataSection[][] = [
         [
             { key: 'Operators', value: '', strong: '' },
         ],

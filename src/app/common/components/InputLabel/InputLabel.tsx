@@ -8,8 +8,8 @@ const InputLabelWrapper = styled.div`
 
 const InputHeader = styled.div`
   display: flex;
-  width: 100%;
   align-items: center;
+  width: 100%;
 `;
 
 const Header = styled.p`
@@ -17,14 +17,14 @@ const Header = styled.p`
   font-style: normal;
   font-weight: bold;
   white-space: nowrap;
-  text-transform: none;
   display: inline-flex;
   font-size: 12px;
   color: #A1ACBE;
   margin: 0;
+  text-transform: uppercase;
 `;
 const SubHeader = styled.p`
-  margin: 0px 0px 0px 5px;
+  margin: 0 0 0 5px;
   font-family: Inter, sans-serif;
   font-style: normal;
   font-weight: bold;

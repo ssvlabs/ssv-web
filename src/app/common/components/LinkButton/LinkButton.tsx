@@ -11,7 +11,7 @@ const LinkButton = ({ primaryLabel, secondaryLabel, icon }: any) => {
 
     return (
       <Paper className={classes.guideStepsContainerPaper}>
-        <Grid container wrap="nowrap" spacing={0} justify={'space-between'}>
+        <Grid container wrap="nowrap" spacing={1} justify={'space-between'}>
           {icon && (
           <Grid item>
             <img src={icon} className={classes.icon} />

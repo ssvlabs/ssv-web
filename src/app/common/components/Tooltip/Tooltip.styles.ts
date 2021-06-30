@@ -5,7 +5,7 @@ const bloxColor = '#0000ff';
 export const useStyles = makeStyles(() => ({
     toolTipWrapper: {
         position: 'relative',
-        display: 'inline-block',
+        display: 'inline-flex',
     },
     image: {
         verticalAlign: 'middle',

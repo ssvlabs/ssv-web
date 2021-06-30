@@ -45,7 +45,6 @@ export const useStyles = makeStyles((theme) => ({
         width: '50px',
         height: '50px',
         margin: 'auto',
-        float: 'left',
     },
     arrowIcon: {
         width: '30px',

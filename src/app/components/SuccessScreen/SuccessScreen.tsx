@@ -32,7 +32,7 @@ const SuccessScreen = () => {
     subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
     monitorHeader = 'Monitor Node';
     monitorText = 'View your operator performance in our explorer';
-  } else if (contractValidator.newValidatorReceipt || true) {
+  } else if (contractValidator.newValidatorReceipt) {
     icon = 'success_validator_icon';
     subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
     monitorHeader = 'Monitor Validator';

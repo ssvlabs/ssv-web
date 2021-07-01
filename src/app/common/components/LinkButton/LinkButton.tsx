@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-// import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { useStyles } from '~app/common/components/LinkButton/LinkButton.styles';
 
 const LinkButton = ({ primaryLabel, secondaryLabel, icon }: any) => {
@@ -23,7 +22,6 @@ const LinkButton = ({ primaryLabel, secondaryLabel, icon }: any) => {
           </Grid>
           <Grid item xs={1} className={classes.arrowIconWrapper}>
             <img src={'/images/arrow_icon.svg'} className={classes.arrowIcon} />
-            {/* <ArrowForwardIosIcon className={classes.arrowIcon} /> */}
           </Grid>
         </Grid>
       </Paper>

@@ -1,30 +1,25 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles((theme: Theme) => ({
+export const useStyles = makeStyles(() => ({
+    root: {
+        fontFamily: 'Encode Sans',
+    },
     align: {
         textAlign: 'center',
     },
     navigation: {
-        marginTop: '28px',
-        [theme.breakpoints.up('lg')]: {
-            marginTop: '54px',
+        height: '20px',
+        marginTop: '54px',
+        '@media (max-width: 480px)': {
+            marginTop: '28px',
         },
-        marginBottom: '24px',
     },
     header: {
-        marginBottom: '32px',
+        '@media (max-width: 480px)': {
+        },
+        marginTop: '23px',
     },
-    bottom: {
-        position: 'absolute',
-        bottom: '2%',
-        width: '93%',
-        [theme.breakpoints.up('sm')]: {
-            width: '45%',
-            bottom: '20%',
-        },
-        [theme.breakpoints.up('lg')]: {
-            width: '25%',
-            bottom: '20%',
-        },
+    body: {
+        marginTop: '24px',
     },
 }));

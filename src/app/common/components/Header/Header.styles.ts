@@ -6,15 +6,17 @@ export const useStyles = makeStyles(() => ({
   },
   header: {
     letterSpacing: '0px',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'Encode Sans',
     fontStyle: 'normal',
     fontWeight: 900,
     fontSize: '28px',
-    color: '#21D7B5',
-    // marginBottom: '12px',
+    color: '#20EEC8',
+    '@media (max-width: 480px)': {
+      fontSize: '24px',
+    },
   },
   subHeader: {
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'Encode Sans',
     fontStyle: 'normal',
     fontWeight: 500,
     fontSize: '14px',

@@ -41,10 +41,10 @@ const AppBarComponent = () => {
     const renderMenu = () => {
         return (
           <div className={classes.fullScreen}>
-            <Grid container spacing={4} justify="center">
+            <Grid container justify="center">
               {menuButtons.map((button: Button, index: number) => {
                   return (
-                    <Grid item xs={12}>
+                    <Grid item xs={12} className={classes.menuButtonWrapper}>
                       <Typography
                         key={index}
                         onClick={() => { if (button.active) { switchPage(button.link, button.newPage); } }}
@@ -75,7 +75,7 @@ const AppBarComponent = () => {
     return (
       <div className={classes.root}>
         <AppBar className={classes.bloxColor} position="static">
-          <Toolbar>
+          <Toolbar className={classes.toolbar}>
             <Grid container justify={'space-between'} alignItems={'center'}>
               <Grid item xs={4} md={4}>
                 <Typography onClick={() => { switchPage(config.routes.HOME); }}

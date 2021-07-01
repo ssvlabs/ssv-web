@@ -33,7 +33,7 @@ const RegisterValidatorHome = () => {
       title={translations.VALIDATOR.HOME.TITLE}
       subTitle={translations.VALIDATOR.HOME.DESCRIPTION}
       body={(
-        <Grid container wrap="nowrap" spacing={3} className={classes.columnGridContainer}>
+        <Grid container wrap="nowrap" spacing={0} className={classes.columnGridContainer}>
           <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
             <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
               <LinkButton primaryLabel={'Create Validator'} secondaryLabel={''} icon={'images/create_validator_icon.svg'} />

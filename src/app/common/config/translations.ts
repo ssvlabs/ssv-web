@@ -70,7 +70,7 @@ const translations = {
 
     HOME: {
       TITLE: 'Join the SSV Network Operators',
-      DESCRIPTION: 'To join the network of operators you must run an SSV node.\nSetup your node, generate operator keys and register to the network.',
+      DESCRIPTION: 'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.',
       MENUS: {
 
       },

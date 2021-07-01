@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) => ({
     guideStepsContainerPaper: {
         cursor: 'pointer',
+        height: '79px',
         margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(2) - 4,
         border: '2px solid transparent',
@@ -13,28 +14,29 @@ export const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 5px 13px rgba(91, 108, 132, 0.16)',
         borderRadius: '6px',
     },
+    gridWrapper: {
+      height: '100%',
+    },
     textWrapper: {
+        marginLeft: '16px',
+        '@media (max-width: 480px)': {
+            marginLeft: '10px',
+        },
         display: 'flex',
         alignItems: 'center',
     },
     guideStepText: {
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 900,
         fontSize: '18px',
         color: '#5B6C84',
-        [theme.breakpoints.down('md')]: {
-          fontSize: '14px',
-        },
     },
     guideStepSubText: {
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 500,
-        fontSize: '0.85rem',
-        [theme.breakpoints.down('md')]: {
-            fontSize: '0.65rem',
-        },
+        fontSize: '14px',
         color: '#A1ACBE',
     },
     iconWrapper: {
@@ -46,10 +48,10 @@ export const useStyles = makeStyles((theme) => ({
         height: '50px',
         margin: 'auto',
     },
+    arrowIconWrapper: {
+        display: 'flex',
+    },
     arrowIcon: {
-        width: '30px',
-        float: 'right',
-        color: '#20EEC8',
-        height: '100%',
+      width: '16px',
     },
 }));

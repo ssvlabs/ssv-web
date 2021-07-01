@@ -20,7 +20,7 @@ export const useStyles = makeStyles(() => ({
     connectText: {
         padding: '0px',
         margin: '0px',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '9px',

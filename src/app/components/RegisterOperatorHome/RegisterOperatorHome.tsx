@@ -37,7 +37,7 @@ const RegisterOperatorHome = () => {
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <OrganicLink href={config.links.LINK_SSV_DEV_DOCS} target="_blank">
-              <LinkButton primaryLabel={'Run SSV Node'} secondaryLabel={'See our developer documentation'} />
+              <LinkButton primaryLabel={'Run SSV node'} secondaryLabel={'See our developer documentation'} />
             </OrganicLink>
           </Grid>
 

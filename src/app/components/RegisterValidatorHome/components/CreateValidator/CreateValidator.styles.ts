@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme) => ({
       fontSize: '14px',
       color: '#5B6C84',
       fontStyle: 'normal',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'Encode Sans',
       fontWeight: 500,
     },
     guideStepsContainerPaper: {

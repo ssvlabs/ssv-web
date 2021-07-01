@@ -20,6 +20,7 @@ import { useStyles } from './ImportValidatorConfirmation.styles';
 
 interface dataSection {
     key: string,
+    header?: true,
     value: any,
     strong?: string
 }
@@ -57,21 +58,24 @@ const ImportValidatorConfirmation = () => {
 
     const data: dataSection[][] = [
         [
-            { key: 'Operators', value: '', strong: '' },
+            { key: 'OPERATORS', header: true, value: '', strong: '' },
         ],
         [
-            { key: 'Est. Transaction Cost', value: <Link href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link> },
+            { key: 'EST. TRANSACTION COST', header: true, value: <Link className={classes.etherLink} href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link> },
             { key: 'Network fee', value: 'FREE ', strong: '$0.00' },
             { key: 'Transaction fee', value: `${normalizeNumber(contractValidator.estimationGas, 4)} ETH `, strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
-            { key: 'Total', value: '', strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
+            { key: 'Total', header: true, value: '', strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
        ],
     ];
 
-    contractOperator.operators.forEach((operator: IOperator, index: number) => {
-          if (operator.selected) { data[0].push({
-              key: `${index + 1}. ${operator.name}`,
-              value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4),
-          }); }
+    let indexNumber: number = 0;
+    contractOperator.operators.forEach((operator: IOperator) => {
+          if (operator.selected) {
+              indexNumber += 1;
+              data[0].push({
+                  key: `${indexNumber}. ${operator.name}`,
+                  value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4),
+              }); }
     });
 
   return (
@@ -82,8 +86,8 @@ const ImportValidatorConfirmation = () => {
       subTitle={translations.VALIDATOR.CONFIRMATION.DESCRIPTION}
       body={(
         <Grid container spacing={3}>
-          <Grid item xs>
-            <div className={classes.validatorText}>Validator</div>
+          <Grid item xs className={classes.validatorTextWrapper}>
+            <div className={classes.validatorText}>VALIDATOR</div>
             <ValidatorKeyInput validatorKey={contractValidator.validatorPublicKey} />
           </Grid>
           <TransactionPendingPopUp txHash={txHash} />

@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 const BackNavigationLink = styled.div<Record<string, any>>`
-  font-family: Inter, sans-serif;
+  font-family: Encode Sans;
   cursor: pointer;
   font-weight: bold;
   font-style: normal;

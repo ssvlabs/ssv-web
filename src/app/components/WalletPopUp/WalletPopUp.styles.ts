@@ -15,7 +15,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'row',
     },
     header: {
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'Encode Sans',
       fontWeight: 800,
       fontSize: '20px',
     },

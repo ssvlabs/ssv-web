@@ -41,6 +41,12 @@ export const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexDirection: 'row',
     },
+    successImage: {
+      marginTop: '10px',
+    },
+    linkWrapper: {
+      marginTop: '40px',
+    },
     icon: {
       width: '100%',
     },

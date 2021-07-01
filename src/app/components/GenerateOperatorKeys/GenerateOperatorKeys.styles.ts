@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         fontWeight: 500,
         color: '#5B6C84',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
     },
     passwordInput: {
         textSecurity: 'disc',
@@ -31,6 +31,9 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: '#FDE6E5',
     },
     errorText: {
+    },
+    gridItem: {
+      marginBottom: '18px',
     },
     inputWithHint: {
         backgroundColor: 'red',
@@ -123,13 +126,13 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     guideStepText: {
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 900,
         fontSize: 18,
     },
     guideStepSubText: {
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
     },
     arrowIcon: {
         float: 'right',

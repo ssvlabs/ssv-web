@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
+import { isMobile } from 'react-device-detect';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/common/components/TextInput';
@@ -16,6 +17,8 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
 import { validatePublicKeyInput, validateDisplayNameInput, validateAddressInput } from '~lib/utils/validatesInputs';
+
+const buttonActionMargin = isMobile ? '98px' : '102px';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
@@ -89,9 +92,10 @@ const GenerateOperatorKeys = () => {
       navigationLink={config.routes.OPERATOR.HOME}
       title={translations.OPERATOR.REGISTER.TITLE}
       subTitle={translations.OPERATOR.REGISTER.DESCRIPTION}
+      buttonFromBody={buttonActionMargin}
       body={(
-        <Grid container direction={'column'} spacing={2}>
-          <Grid item>
+        <Grid container direction={'column'}>
+          <Grid item className={classes.gridItem}>
             <InputLabel title="Owner Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}>
               <TextInput
                 data-testid="new-operator-address"
@@ -104,7 +108,7 @@ const GenerateOperatorKeys = () => {
               {addressError.shouldDisplay && <Typography className={classes.textError}>{addressError.errorMessage}</Typography>}
             </InputLabel>
           </Grid>
-          <Grid item>
+          <Grid item className={classes.gridItem}>
             <InputLabel title="Display Name">
               <TextInput
                 data-testid="new-operator-name"

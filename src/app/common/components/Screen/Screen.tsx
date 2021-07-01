@@ -14,24 +14,36 @@ type ScreenParams = {
     body?: any;
     actionButton?: any;
     align?: boolean;
+    buttonFromBody?: string;
 };
 
-const Screen = ({ title, subTitle, navigationLink, navigationOnClick, navigationText, body, actionButton, align = false }: ScreenParams) => {
+const Screen = (screenParams: ScreenParams) => {
+    const {
+        title,
+        subTitle,
+        navigationLink,
+        navigationOnClick,
+        navigationText,
+        body,
+        actionButton,
+        align = false,
+        buttonFromBody,
+    } = screenParams;
     const classes = useStyles();
 
     return (
-      <Grid container spacing={0} justify="center">
+      <Grid container spacing={0} justify="center" className={classes.root}>
         <Grid className={classes.navigation} item xs={12} md={12}>
           {navigationLink && <BackNavigation to={navigationLink} text={navigationText} onClick={navigationOnClick} />}
         </Grid>
         <Grid item xs={12} md={12} className={`${classes.header} ${align && classes.align}`}>
           <Header title={title} subtitle={subTitle} />
         </Grid>
-        <Grid item xs={12} md={12}>
+        <Grid item xs={12} md={12} className={classes.body}>
           { body }
         </Grid>
         {actionButton && (
-          <Grid item xs={12} md={12} className={classes.bottom}>
+          <Grid item xs={12} md={12} style={{ marginTop: buttonFromBody ?? '102px', marginBottom: '54px' }}>
             {actionButton}
           </Grid>
         )}

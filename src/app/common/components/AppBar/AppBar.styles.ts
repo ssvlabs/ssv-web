@@ -11,11 +11,14 @@ export const useStyles = makeStyles((theme) => ({
     bloxColor: {
         backgroundColor: toolBarColor,
     },
+    toolbar: {
+      height: '60px',
+    },
     button: {
         textDecoration: 'none',
         color: 'white',
         cursor: 'pointer',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
         fontWeight: 'bold',
         userSelect: 'none',
         fontStyle: 'normal',
@@ -51,10 +54,10 @@ export const useStyles = makeStyles((theme) => ({
         color: 'white',
         position: 'absolute',
         backgroundColor: toolBarColor,
-        height: '25%',
+        height: '187px',
         width: '100%',
         textAlign: 'center',
-        paddingTop: '32px',
+        // paddingTop: '32px',
         zIndex: 1000,
     },
     menuButton: {
@@ -63,11 +66,14 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         color: 'white',
         cursor: 'pointer',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Encode Sans',
         userSelect: 'none',
         fontStyle: 'normal',
         fontSize: '12px',
         lineHeight: '150%',
         textTransform: 'uppercase',
+    },
+    menuButtonWrapper: {
+        marginTop: '32px',
     },
 }));

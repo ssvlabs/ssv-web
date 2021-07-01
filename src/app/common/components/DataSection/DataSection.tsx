@@ -9,13 +9,13 @@ const DataSection = ({ data }: any) => {
     return (
       <>
         {data.map((section: any, index: number) => (
-          <Grid item key={index}>
+          <Grid xs={12} item key={index}>
             <Grid container spacing={0}>
               {section.map((d: any, sectionIndex: number) => (
                 <Grid item className={classes.section} xs={12} key={sectionIndex}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <Typography className={`${d.key === 'Total' ? classes.total : ''}`}>{d.key}</Typography>
+                      <Typography className={`${d.header ? classes.header : classes.subHeader} ${d.key === 'Total' ? classes.total : ''}`}>{d.key}</Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography

@@ -2,10 +2,9 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
   inputAddonContainer: {
-    backgroundColor: '#FAFAFA',
-    borderLeft: '1px solid rgba(215, 215, 215, 1)',
+    borderLeft: '1px solid gainsboro',
     width: 40,
-    minHeight: 40,
+    minHeight: '48px',
     position: 'absolute',
     right: 0,
     top: 0,
@@ -16,14 +15,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
   },
   inputAddonImage: {
-    width: 30,
-    height: 30,
+    width: 23,
+    height: 23,
     margin: 'auto',
   },
   wideWidthInput: {
     width: '100%',
     padding: 0,
-    height: 40,
+    height: '48px',
+    borderRadius: '6px',
   },
   input: {
     width: 'calc(86% - 3px)',

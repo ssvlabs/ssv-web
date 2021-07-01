@@ -20,6 +20,8 @@ const SelectOperators = () => {
   const classes = useStyles();
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
+  const [openMenu, setOpenMenu] = useState(null);
+  // const [selectedOperator, selectOperator] = useState('');
 
   useEffect(() => {
     unselectAllOperators();
@@ -69,8 +71,14 @@ const SelectOperators = () => {
               </Button>
             ) : ''}
 
-            {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, operatorIndex: number) => (
-              <OperatorSelector key={`operator-selector-${operatorIndex}`} indexedOperator={operator} dataTestId={`select-operator-${operatorIndex}`} />
+            {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, index: number) => (
+              <OperatorSelector
+                shouldOpenMenu={openMenu === index}
+                index={index}
+                setOpenMenu={setOpenMenu}
+                dataTestid={`operator-selector-${index}`}
+                indexedOperator={operator}
+              />
             ))}
           </Grid>
         </Grid>

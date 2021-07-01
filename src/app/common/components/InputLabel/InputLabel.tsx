@@ -10,10 +10,11 @@ const InputHeader = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  margin-bottom: 5px;
 `;
 
 const Header = styled.p`
-  font-family: Inter, sans-serif;
+  font-family: Encode Sans;
   font-style: normal;
   font-weight: bold;
   white-space: nowrap;
@@ -25,7 +26,7 @@ const Header = styled.p`
 `;
 const SubHeader = styled.p`
   margin: 0 0 0 5px;
-  font-family: Inter, sans-serif;
+  font-family: Encode Sans;
   font-style: normal;
   font-weight: bold;
   white-space: nowrap;

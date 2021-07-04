@@ -23,6 +23,9 @@ export const useStyles = makeStyles(() => ({
         width: '90%',
     },
     transactionText: {
+        '&::-webkit-scrollbar': {
+            display: 'none',
+        },
       overflow: 'scroll',
       textOverflow: 'clip',
     },

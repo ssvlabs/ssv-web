@@ -9,7 +9,7 @@ import { useStyles } from '~app/common/components/CTAButton/CTAButton.styles';
 type ButtonParams = {
     text: string,
     disable: boolean,
-    onClick: any,
+    onClick?: any,
     testId: string,
 };
 
@@ -18,13 +18,11 @@ const CTAButton = ({ testId, disable, onClick, text }: ButtonParams) => {
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
 
-    const checkWalletConnected = async (fn: () => void) => {
+    const checkWalletConnected = async () => {
         if (!walletStore.connected) await walletStore.connect();
         if (walletStore.isWrongNetwork) {
             walletStore.alertNetworkError();
-        } else {
-            fn();
-        }
+        } else if (onClick) onClick();
     };
 
     return (
@@ -34,9 +32,7 @@ const CTAButton = ({ testId, disable, onClick, text }: ButtonParams) => {
         variant="contained"
         color="primary"
         className={classes.button}
-        onClick={async () => {
-            await checkWalletConnected(onClick);
-        }}
+        onClick={checkWalletConnected}
       >
         {walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
       </Button>

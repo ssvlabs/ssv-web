@@ -9,12 +9,24 @@ import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const DropZoneContainer = styled.div`
   & .MuiDropzoneArea-root {
-    border: 1px dashed rgba(0, 0, 0, 0.12);
+    background-image: url('/images/drop_zone_icon.svg'), url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='4' ry='4' stroke='rgba(91, 108, 132, 1)' stroke-width='3' stroke-dasharray='10%2c 10' stroke-dashoffset='30' stroke-linecap='square'/%3e%3c/svg%3e");
+    background-repeat: no-repeat, repeat;
+    animation: none;
+    background-color: #FAFAFA;
+    animation: none !important;
+    background-position: center !important;
+    border: none;
+    background-size: auto !important;
+    border-radius: 4px;
+  }
+  & .MuiDropzoneArea-active {
+    background-color: red !important;
   }
   & .MuiDropzoneArea-text {
     padding-top: 30px;
@@ -22,6 +34,7 @@ const DropZoneContainer = styled.div`
     font-size: 18px;
   }
   & .MuiDropzoneArea-icon {
+    display: none;
     color: rgba(215, 215, 215, 1);
   }
   & .MuiDropzonePreviewList-imageContainer {
@@ -75,6 +88,7 @@ const ImportValidator = () => {
                 title="Keystore File"
                 subTitle="generated from CLI">
                 <DropzoneArea
+                  dropzoneText={''}
                   showPreviews={false}
                   onChange={onFileChange}
                   filesLimit={1}
@@ -84,6 +98,13 @@ const ImportValidator = () => {
             </DropZoneContainer>
           </Grid>
         </Grid>  
+      )}
+      actionButton={(
+        <CTAButton
+          testId={'confirm-button'}
+          disable
+          text={'Next'}
+          />
       )}
     />
   );

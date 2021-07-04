@@ -92,7 +92,7 @@ const GenerateOperatorKeys = () => {
       navigationLink={config.routes.OPERATOR.HOME}
       title={translations.OPERATOR.REGISTER.TITLE}
       subTitle={translations.OPERATOR.REGISTER.DESCRIPTION}
-      buttonFromBody={buttonActionMargin}
+      styleOptions={{ actionButtonMarginTop: buttonActionMargin }}
       body={(
         <Grid container direction={'column'}>
           <Grid item className={classes.gridItem}>

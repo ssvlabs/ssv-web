@@ -28,6 +28,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
         padding: '10px',
         border: '1px solid #5B6C84',
         borderRadius: '6px',
+        '&:hover': {
+          backgroundColor: 'rgba(220, 224, 232, 0.5)',
+        },
     },
     gridItem: {
         padding: '5px',

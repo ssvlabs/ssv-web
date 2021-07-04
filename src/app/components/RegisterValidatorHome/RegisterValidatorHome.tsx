@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
@@ -9,6 +9,7 @@ import Screen from '~app/common/components/Screen/Screen';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ConditionalLink from '~app/common/components/ConditionalLink';
 import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const RegisterValidatorHome = () => {
@@ -16,7 +17,12 @@ const RegisterValidatorHome = () => {
   const stores = useStores();
   const history = useHistory();
   const { setUserFlow } = useUserFlow();
+  const validatorStore: ContractValidator = stores.ContractValidator;
   const walletStore: WalletStore = stores.Wallet;
+  
+  useEffect(() => {
+      validatorStore.clearValidatorData();
+  });
 
   const redirectTo = async (route: string) => {
     await walletStore.connect();

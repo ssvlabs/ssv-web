@@ -72,6 +72,7 @@ const SelectOperators = () => {
 
             {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, index: number) => (
               <OperatorSelector
+                key={index}
                 shouldOpenMenu={openMenu === index}
                 index={index}
                 setOpenMenu={setOpenMenu}

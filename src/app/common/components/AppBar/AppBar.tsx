@@ -13,7 +13,6 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Application.store';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
 
 type Button = {
@@ -26,7 +25,6 @@ type Button = {
 const AppBarComponent = () => {
     const classes = useStyles();
     const stores = useStores();
-    const validatorStore: ContractValidator = stores.ContractValidator;
     const operatorStore: ContractOperator = stores.ContractOperator;
     const { history } = useUserFlow();
     const applicationStore: ApplicationStore = stores.Application;
@@ -67,7 +65,6 @@ const AppBarComponent = () => {
         if (newPage) {
             window.open(link, '_blank');
         } else {
-            validatorStore.clearValidatorData();
             operatorStore.clearOperatorData();
             history.push(link);
         }

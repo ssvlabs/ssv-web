@@ -43,7 +43,7 @@ const RegisterOperatorHome = () => {
 
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={walletStore.connected} onClick={redirectToGenerateKeys}>
-              <LinkButton primaryLabel={'Register operator'} secondaryLabel={'List yourself as one of the network operators'} />
+              <LinkButton primaryLabel={'Register operator'} secondaryLabel={'Sign up as one of the network operators'} />
             </ConditionalLink>
           </Grid>
         </Grid>

@@ -18,7 +18,7 @@ const LinkButton = ({ primaryLabel, secondaryLabel, icon }: any) => {
           )}
           <Grid item xs={10} className={`${secondaryLabel ? '' : classes.textWrapper}`}>
             <Typography variant="h6" noWrap className={classes.guideStepText}>{primaryLabel}</Typography>
-            <Typography variant="caption" className={classes.guideStepSubText}>{secondaryLabel}</Typography>
+            <Typography variant="subtitle2" className={classes.guideStepSubText}>{secondaryLabel}</Typography>
           </Grid>
           <Grid item xs={1} className={classes.arrowIconWrapper}>
             <img src={'/images/arrow_icon.svg'} className={classes.arrowIcon} />

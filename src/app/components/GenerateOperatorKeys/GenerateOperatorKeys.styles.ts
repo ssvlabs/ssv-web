@@ -70,7 +70,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     clearIcon: {
         cursor: 'pointer',
-        // float: 'right',
     },
     fileContainer: {
         display: 'flex',

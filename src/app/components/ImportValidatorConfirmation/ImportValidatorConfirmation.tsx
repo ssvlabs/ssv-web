@@ -62,7 +62,6 @@ const ImportValidatorConfirmation = () => {
         ],
         [
             { key: 'EST. TRANSACTION COST', header: true, value: <Link className={classes.etherLink} href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link> },
-            { key: 'Network fee', value: 'FREE ', strong: '$0.00' },
             { key: 'Transaction fee', value: `${normalizeNumber(contractValidator.estimationGas, 4)} ETH `, strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
             { key: 'Total', header: true, value: '', strong: `$${normalizeNumber(contractValidator.dollarEstimationGas)}` },
        ],

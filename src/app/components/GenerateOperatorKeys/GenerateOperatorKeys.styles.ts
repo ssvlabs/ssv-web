@@ -20,6 +20,9 @@ export const useStyles = makeStyles((theme) => ({
     },
     passwordInput: {
         textSecurity: 'disc',
+        border: '1px solid #5B6C84',
+        boxSizing: 'border-box',
+        borderRadius: '6px',
     },
     errorDiv: {
         paddingLeft: '10px',
@@ -53,9 +56,10 @@ export const useStyles = makeStyles((theme) => ({
     privateKeyTextInput: {
         marginBottom: '10px',
     },
-    doneIcon: {
-        color: 'green',
+    approvedIcon: {
         float: 'left',
+        width: '39px',
+        height: '39px',
     },
     badFormat: {
         color: 'red',
@@ -66,7 +70,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     clearIcon: {
         cursor: 'pointer',
-        float: 'right',
     },
     fileContainer: {
         display: 'flex',
@@ -75,9 +78,11 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         width: '100%',
         alignContent: 'center',
-        height: '50px',
-        border: 'dashed thin gray',
+        height: '79px',
+        boxSizing: 'border-box',
+        borderRadius: '6px',
         marginTop: '12px',
+        backgroundImage: 'url("data:image/svg+xml,%3csvg width=\'100%25\' height=\'100%25\' xmlns=\'http://www.w3.org/2000/svg\'%3e%3crect width=\'100%25\' height=\'100%25\' fill=\'none\' rx=\'4\' ry=\'4\' stroke=\'rgba(91, 108, 132, 1)\' stroke-width=\'3\' stroke-dasharray=\'10%2c 10\' stroke-dashoffset=\'30\' stroke-linecap=\'square\'/%3e%3c/svg%3e")',
     },
     guideStepsContainerPaper: {
         cursor: 'pointer',

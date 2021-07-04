@@ -47,6 +47,19 @@ class ContractOperator extends BaseStore {
   @observable loadingOperator: boolean = false;
 
   /**
+   * clear operator store
+   */
+  @action.bound
+  clearOperatorData() {
+    this.newOperatorKeys = {
+      pubKey: '',
+      name: '',
+      address: '',
+    };
+    this.newOperatorRegisterSuccessfully = false;
+  }
+
+  /**
    * Set operator keys
    * @param transaction
    */

@@ -21,7 +21,6 @@ const SelectOperators = () => {
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
   const [openMenu, setOpenMenu] = useState(null);
-  // const [selectedOperator, selectOperator] = useState('');
 
   useEffect(() => {
     unselectAllOperators();

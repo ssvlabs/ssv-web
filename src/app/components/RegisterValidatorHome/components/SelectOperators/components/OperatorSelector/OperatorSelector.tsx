@@ -46,7 +46,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
   };
 
   const renderOperator = (operator: any, menu: boolean = true) => {
-    const key = Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 100001);
+    const key = Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 91239123);
     return (
       <Grid
         key={key}

@@ -53,6 +53,7 @@ const SlashingWarning = () => {
       navigationText={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       navigationLink={config.routes.VALIDATOR.SELECT_OPERATORS}
       title={translations.VALIDATOR.SLASHING_WARNING.TITLE}
+      styleOptions={{ actionButtonMarginTop: '192px', bodyMarginTop: '12px' }}
       subTitle={translations.VALIDATOR.SLASHING_WARNING.DESCRIPTION}
       body={(
         <Grid container wrap="nowrap" spacing={4} className={classes.gridContainer}>
@@ -62,12 +63,11 @@ const SlashingWarning = () => {
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <Typography variant="subtitle1" className={classes.checkboxText}>
               Running a validator simultaneously to the SSV network will cause slashing to your validator.
-              To avoid slashing,
             </Typography>
           </Grid>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             <Typography variant="subtitle1" className={classes.checkboxText}>
-              <b>shut down your existing validator setup</b> before importing your validator to
+              To avoid slashing, <b>shut down your existing validator setup</b> before importing your validator to
               run with our network.
             </Typography>
           </Grid>

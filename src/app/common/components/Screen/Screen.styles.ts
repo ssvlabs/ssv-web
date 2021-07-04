@@ -20,6 +20,5 @@ export const useStyles = makeStyles(() => ({
         marginTop: '23px',
     },
     body: {
-        marginTop: '24px',
     },
 }));

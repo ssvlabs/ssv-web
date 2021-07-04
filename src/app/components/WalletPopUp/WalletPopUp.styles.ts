@@ -2,8 +2,6 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     gridWrapper: {
-        width: '500px',
-        padding: '40px',
         [theme.breakpoints.down('xs')]: {
           width: '350px',
             padding: '30px',
@@ -15,19 +13,21 @@ export const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'row',
     },
     header: {
-      fontFamily: 'Encode Sans',
-      fontWeight: 800,
-      fontSize: '20px',
+        color: '#20EEC8',
+        fontFamily: 'Encode Sans',
+        fontWeight: 800,
+        fontSize: '20px',
     },
     gridContainerAddress: {
+        borderRadius: '6px',
         border: '1px solid black',
     },
     connectButton: {
         cursor: 'pointer',
         backgroundColor: 'inherit',
         padding: '10px',
-        borderRadius: '10px',
-        border: '1px solid black',
+        border: '1px solid #5B6C84',
+        borderRadius: '6px',
     },
     gridItem: {
         padding: '5px',
@@ -37,15 +37,22 @@ export const useStyles = makeStyles((theme: Theme) => ({
     dialog: {
         flex: '0 0 auto',
         margin: '0px',
-        padding: '0px',
+        padding: '40px',
+        '@media (max-width: 480px)': {
+            padding: '10px',
+        },
     },
     accountAddress: {
+        '&::-webkit-scrollbar': {
+            display: 'none',
+        },
         overflow: 'scroll',
         paddingLeft: '5px',
     },
     lunchIconWrapper: {
         textAlign: 'center',
         borderLeft: '1px solid black',
+        borderRadius: '0px 6px 6px 0px',
         minHeight: '35px',
         backgroundColor: '#F2F2F2',
         display: 'block',

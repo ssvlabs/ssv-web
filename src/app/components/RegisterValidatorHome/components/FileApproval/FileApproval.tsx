@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { isMobile } from 'react-device-detect';
-import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
@@ -52,6 +51,7 @@ const EnterValidatorPrivateKey = () => {
   };
 
   const removeKeyStoreFile = () => {
+    validatorStore.clearValidatorData();
     validatorStore.setValidatorPrivateKeyFile(false);
     history.push(config.routes.VALIDATOR.IMPORT);
   };
@@ -67,6 +67,7 @@ const EnterValidatorPrivateKey = () => {
     <Screen
       navigationText={'Run Validator with the SSV Network'}
       navigationLink={config.routes.VALIDATOR.HOME}
+      styleOptions={{ actionButtonMarginTop: '183px' }}
       title={translations.VALIDATOR.IMPORT.TITLE}
       subTitle={translations.VALIDATOR.IMPORT.DESCRIPTION}
       body={(
@@ -74,14 +75,14 @@ const EnterValidatorPrivateKey = () => {
           <Grid item>
             <InputLabel title="Keystore File" subTitle="generated from CLI">
               <Grid container className={classes.fileContainer}>
-                <Grid item xs={1}>
-                  {validatorStore.isJsonFile() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon className={classes.badFormat} />}
+                <Grid item xs={2} lg={1}>
+                  {validatorStore.isJsonFile() ? <img className={classes.approvedIcon} src={'/images/approved_file_icon.svg'} /> : <ClearIcon className={classes.badFormat} />}
                 </Grid>
-                <Grid className={classes.fileNameText} item xs={10}>
+                <Grid className={classes.fileNameText} item xs={9} lg={10}>
                   {validatorStore.validatorPrivateKeyFile?.name && serializeFileName(validatorStore.validatorPrivateKeyFile.name)}
                 </Grid>
-                <Grid item xs={1}>
-                  <ClearIcon onClick={removeKeyStoreFile} className={classes.clearIcon} />
+                <Grid item xs={1} lg={1} onClick={removeKeyStoreFile}>
+                  <img className={classes.clearIcon} src={'/images/remove_icon.svg'} />
                 </Grid>
               </Grid>
             </InputLabel>

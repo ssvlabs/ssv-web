@@ -14,7 +14,22 @@ type ScreenParams = {
     body?: any;
     actionButton?: any;
     align?: boolean;
-    buttonFromBody?: string;
+    styleOptions?: Style
+};
+
+type Style = {
+    actionButtonMarginTop?: string
+    bodyMarginTop?: string
+};
+
+const defaultStyle = {
+    body: {
+        marginTop: '24px',
+    },
+    button: {
+        marginTop: '102px',
+        marginBottom: '54px',
+    },
 };
 
 const Screen = (screenParams: ScreenParams) => {
@@ -27,7 +42,7 @@ const Screen = (screenParams: ScreenParams) => {
         body,
         actionButton,
         align = false,
-        buttonFromBody,
+        styleOptions,
     } = screenParams;
     const classes = useStyles();
 
@@ -39,11 +54,14 @@ const Screen = (screenParams: ScreenParams) => {
         <Grid item xs={12} md={12} className={`${classes.header} ${align && classes.align}`}>
           <Header title={title} subtitle={subTitle} />
         </Grid>
-        <Grid item xs={12} md={12} className={classes.body}>
+        <Grid item xs={12} md={12} className={classes.body} style={{ marginTop: styleOptions?.bodyMarginTop ?? defaultStyle.body.marginTop }}>
           { body }
         </Grid>
         {actionButton && (
-          <Grid item xs={12} md={12} style={{ marginTop: buttonFromBody ?? '102px', marginBottom: '54px' }}>
+          <Grid item xs={12} md={12} style={{ 
+              marginTop: styleOptions?.actionButtonMarginTop ?? defaultStyle.button.marginTop,
+              marginBottom: defaultStyle.button.marginBottom, 
+          }}>
             {actionButton}
           </Grid>
         )}

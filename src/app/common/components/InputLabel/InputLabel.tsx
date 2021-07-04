@@ -28,12 +28,12 @@ const SubHeader = styled.p`
   margin: 0 0 0 5px;
   font-family: Encode Sans;
   font-style: normal;
-  font-weight: bold;
+  font-weight: 500;
   white-space: nowrap;
   text-transform: none;
   display: inline-flex;
-  font-size: 12px;
-  color: #AAAAAA;
+  font-size: 14px;
+  color: #A1ACBE;
 `;
 
 type InputLabelProps = {

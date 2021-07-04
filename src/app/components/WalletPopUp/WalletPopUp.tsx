@@ -39,7 +39,7 @@ const WalletPopUp = () => {
     };
 
     return (
-      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
+      <Dialog PaperProps={{ className: classes.dialog }} aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
         <CloseIcon viewBox={'5 5 15 15'} fontSize={'large'} onClick={closePopUp} className={classes.exitIcon} />
         <Grid container className={classes.gridWrapper} spacing={4}>
           <Grid item xs={12}>

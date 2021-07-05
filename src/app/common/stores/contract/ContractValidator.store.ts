@@ -54,7 +54,9 @@ class ContractValidator extends BaseStore {
   clearValidatorData() {
     this.validatorPrivateKey = '';
     this.validatorPrivateKeyFile = null;
+    this.createValidatorPayLoad = undefined;
     this.cleanPrivateData();
+    console.log(this.createValidatorPayLoad);
   }
 
   /**

@@ -36,7 +36,6 @@ export const useStyles = makeStyles((theme) => ({
         fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 500,
-        fontSize: '14px',
         color: '#A1ACBE',
     },
     iconWrapper: {

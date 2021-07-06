@@ -137,6 +137,7 @@ class WalletStore extends BaseStore implements Wallet {
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
     this.onboardSdk = Onboard(connectionConfig);
+    this.onboardSdk.walletReset();
   }
 
   /**

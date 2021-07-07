@@ -1,6 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const bloxColor = '#0000ff';
+const toolTipColor = '#d3fcf4';
+const toolTipTextColor = '#637386';
 
 export const useStyles = makeStyles(() => ({
     toolTipWrapper: {
@@ -11,9 +12,10 @@ export const useStyles = makeStyles(() => ({
         verticalAlign: 'middle',
     },
     toolTipText: {
+        boxShadow: '0px 5px 13px rgba(91, 108, 132, 0.16)',
         width: '200px',
-        color: '#fff',
-        backgroundColor: bloxColor,
+        color: '#637386',
+        backgroundColor: toolTipColor,
         textAlign: 'center',
         borderRadius: '6px',
         padding: '10px 0',
@@ -23,9 +25,9 @@ export const useStyles = makeStyles(() => ({
         position: 'absolute',
         borderWidth: '3px',
         borderStyle: 'solid',
-        borderColor: bloxColor,
+        borderColor: toolTipColor,
     },
     toolTipLink: {
-        color: '#fff',
+        color: toolTipTextColor,
     },
 }));

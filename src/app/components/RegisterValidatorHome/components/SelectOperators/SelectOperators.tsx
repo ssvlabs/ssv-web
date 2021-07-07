@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import { isMobile } from 'react-device-detect';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -12,6 +13,8 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
+
+const actionButtonMargin = isMobile ? '130px' : '180px';
 
 const SelectOperators = () => {
   const stores = useStores();
@@ -54,6 +57,7 @@ const SelectOperators = () => {
       navigationOnClick={unselectAllOperators}
       title={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       subTitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       body={(
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>

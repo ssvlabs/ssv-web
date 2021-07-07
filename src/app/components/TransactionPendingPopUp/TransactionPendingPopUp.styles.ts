@@ -8,9 +8,18 @@ export const useStyles = makeStyles(() => ({
         marginBottom: '20px',
         flexGrow: 1,
         flexDirection: 'column',
+        width: '550px',
+        '@media (max-width: 1024px)': {
+            width: '450px',
+        },
+        '@media (max-width: 450px)': {
+            width: '350px',
+        },
+        '@media (max-width: 380px)': {
+            width: '300px',
+        },
     },
     gridContainer: {
-        width: '90%',
         margin: 'auto',
         padding: '5px',
         textAlign: 'center',
@@ -65,6 +74,15 @@ export const useStyles = makeStyles(() => ({
         '50%': {
             transform: 'scale(1)',
         },
+    },
+    validatorText: {
+        float: 'left',
+        marginBottom: '6px',
+        fontFamily: 'Encode Sans',
+        fontStyle: 'normal',
+        color: '#A1ACBE',
+        fontSize: '12px',
+        fontWeight: 'bold',
     },
     copyImage: {
         verticalAlign: 'middle',

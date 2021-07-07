@@ -2,15 +2,13 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
-import { isMobile } from 'react-device-detect';
 import CloseIcon from '@material-ui/icons/Close';
-import LaunchIcon from '@material-ui/icons/Launch';
 import Typography from '@material-ui/core/Typography';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/components/WalletPopUp/WalletPopUp.styles';
+import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput/ValidatorKeyInput';
 
 const WalletPopUp = () => {
     const stores = useStores();
@@ -25,17 +23,6 @@ const WalletPopUp = () => {
 
     const closePopUp = () => {
         applicationStore.showWalletPopUp(false);
-    };
-
-    const openWalletAddress = () => {
-        window.open(`${config.links.ETHER_SCAN_LINK}${walletStore.accountAddress}`);
-    };
-
-    const serializeAddress = (address: string) => {
-        if (isMobile) {
-            return `${address.slice(0, 10)}...${address.slice(address.length - 10, address.length)}`;
-        }
-        return address;
     };
 
     return (
@@ -53,15 +40,8 @@ const WalletPopUp = () => {
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <Grid container className={`${classes.gridContainer} ${classes.gridContainerAddress}`}>
-              <Grid item xs={10} md={10} lg={11}>
-                <Typography className={classes.accountAddress}>{serializeAddress(walletStore.accountAddress)}</Typography>
-              </Grid>
-              <Grid item xs={2} md={2} lg={1}>
-                <div className={classes.lunchIconWrapper}>
-                  <LaunchIcon className={classes.launchIcon} onClick={openWalletAddress} />
-                </div>
-              </Grid>
+            <Grid container>
+              <ValidatorKeyInput link={`https://goerli.etherscan.io/address/${walletStore.accountAddress}`} validatorKey={walletStore.accountAddress} />
             </Grid>
           </Grid>
         </Grid>

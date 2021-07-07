@@ -13,6 +13,8 @@ import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
+const actionButtonMargin = isMobile ? '159px' : '189px';
+
 const EnterValidatorPrivateKey = () => {
   const { redirectUrl, history } = useUserFlow();
   const classes = useStyles();
@@ -58,7 +60,7 @@ const EnterValidatorPrivateKey = () => {
   
   const serializeFileName = (fileName: string) => {
     if (fileName.length > 34 && isMobile) {
-      return `${fileName.slice(0, 12)}...${fileName.slice(fileName.length - 14, fileName.length)}`;
+      return `${fileName.slice(0, 15)}...${fileName.slice(fileName.length - 15, fileName.length)}`;
     } 
     return fileName;
   };
@@ -67,7 +69,7 @@ const EnterValidatorPrivateKey = () => {
     <Screen
       navigationText={'Run Validator with the SSV Network'}
       navigationLink={config.routes.VALIDATOR.HOME}
-      styleOptions={{ actionButtonMarginTop: '183px' }}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       title={translations.VALIDATOR.IMPORT.TITLE}
       subTitle={translations.VALIDATOR.IMPORT.DESCRIPTION}
       body={(
@@ -81,7 +83,7 @@ const EnterValidatorPrivateKey = () => {
                 <Grid className={classes.fileNameText} item xs={9} lg={10}>
                   {validatorStore.validatorPrivateKeyFile?.name && serializeFileName(validatorStore.validatorPrivateKeyFile.name)}
                 </Grid>
-                <Grid item xs={1} lg={1} onClick={removeKeyStoreFile}>
+                <Grid item xs={1} lg={1} onClick={removeKeyStoreFile} className={classes.removeIconWrapper}>
                   <img className={classes.clearIcon} src={'/images/remove_icon.svg'} />
                 </Grid>
               </Grid>

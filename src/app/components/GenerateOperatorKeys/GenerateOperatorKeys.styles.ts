@@ -66,7 +66,13 @@ export const useStyles = makeStyles((theme) => ({
         float: 'left',
     },
     fileNameText: {
+        '@media (min-width: 1024px)': {
+            paddingLeft: '10px',
+        },
         textAlign: 'left',
+    },
+    removeIconWrapper: {
+      display: 'flex',
     },
     clearIcon: {
         cursor: 'pointer',

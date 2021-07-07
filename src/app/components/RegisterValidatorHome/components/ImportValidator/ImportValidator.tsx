@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
+import { isMobile } from 'react-device-detect';
 import { useHistory } from 'react-router-dom';
 import { DropzoneArea } from 'material-ui-dropzone';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -47,6 +48,8 @@ const DropZoneContainer = styled.div`
   }
 `;
 
+const actionButtonMargin = isMobile ? '90px' : '120px';
+
 const ImportValidator = () => {
   const classes = useStyles();
   const history = useHistory();
@@ -80,6 +83,7 @@ const ImportValidator = () => {
       navigationLink={config.routes.VALIDATOR.HOME}
       title={translations.VALIDATOR.IMPORT.TITLE}
       subTitle={translations.VALIDATOR.IMPORT.DESCRIPTION}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       body={(
         <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>

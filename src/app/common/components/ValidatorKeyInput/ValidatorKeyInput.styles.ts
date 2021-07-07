@@ -27,9 +27,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   input: {
     width: 'calc(86% - 3px)',
+    fontSize: '14px',
     paddingLeft: '10px',
     [theme.breakpoints.down('lg')]: {
-      width: 'calc(86% - 10px)',
+      width: 'calc(86% - 13px)',
     },
   },
 }));

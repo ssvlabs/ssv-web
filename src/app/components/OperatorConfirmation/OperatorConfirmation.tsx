@@ -2,6 +2,7 @@ import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
+import { isMobile } from 'react-device-detect';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
@@ -13,6 +14,8 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
+
+const actionButtonMargin = isMobile ? '160px' : '195px';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
@@ -46,13 +49,13 @@ const OperatorConfirmation = () => {
 
   const data = [
     [
-        { key: 'Operator', value: '' },
+        { key: 'Operator', header: true, value: '' },
         { key: 'Name', value: operatorStore.newOperatorKeys.name },
         { key: 'Key', value: longStringShorten(sha256(walletStore.decodeOperatorKey(operatorStore.newOperatorKeys.pubKey)), 4) },
         { key: 'Owner Address', value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}` },
     ],
     [
-      { key: 'Est. Transaction Cost', value: '' },
+      { key: 'Est. Transaction Cost', header: true, value: '' },
       { key: 'Transaction fee', value: `${normalizeNumber(operatorStore.estimationGas, 5)} ETH `, strong: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
       { key: 'Total', value: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
     ],
@@ -64,6 +67,7 @@ const OperatorConfirmation = () => {
       navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
       title={translations.OPERATOR.CONFIRMATION.TITLE}
       subTitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       body={(
         <Grid container spacing={4}>
           <TransactionPendingPopUp txHash={txHash} />

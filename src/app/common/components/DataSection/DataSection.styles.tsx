@@ -2,38 +2,37 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
     header: {
+        lineHeight: '1.5',
         fontFamily: 'Encode Sans',
-        fontWeight: 'bold',
+        fontWeight: 700,
         fontSize: '12px',
+        color: '#A1ACBE',
+        textTransform: 'uppercase',
     },
     subHeader: {
+        lineHeight: '1.5',
+        fontWeight: 500,
         fontFamily: 'Encode Sans',
         fontSize: '14px',
+        color: '#5B6C84',
     },
     section: {
         fontFamily: 'Encode Sans',
         '&:first-of-type': {
-            fontSize: '12px',
-            marginBottom: '8px',
-            fontFamily: 'Encode Sans',
+            marginBottom: '10px',
             fontStyle: 'normal',
-            fontWeight: 'bold',
-            color: '#A1ACBE',
-            '&:p': {
-
-            },
         },
         '&:not(:first-of-type)': {
             marginBottom: '4px',
-            fontFamily: 'Encode Sans',
             fontStyle: 'normal',
-            fontSize: '14px',
-            fontWeight: '500',
-            color: '#5B6C84',
         },
         marginBottom: '4px',
     },
     dataValue: {
+        fontWeight: 500,
+        fontFamily: 'Encode Sans',
+        fontSize: '14px',
+        color: '#5B6C84',
         textAlign: 'right',
     },
     key: {
@@ -41,9 +40,6 @@ export const useStyles = makeStyles(() => ({
             fontWeight: 'bold',
             fontFamily: 'Encode Sans',
         },
-    },
-    value: {
-        color: '#5B6C84',
     },
     total: {
         marginTop: '8px',

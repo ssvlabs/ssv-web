@@ -9,7 +9,7 @@ const DataSection = ({ data }: any) => {
     return (
       <>
         {data.map((section: any, index: number) => (
-          <Grid xs={12} item key={index}>
+          <Grid xs={12} item key={index} style={{ marginBottom: index === 0 ? '20px' : '0px' }}>
             <Grid container spacing={0}>
               {section.map((d: any, sectionIndex: number) => (
                 <Grid item className={classes.section} xs={12} key={sectionIndex}>

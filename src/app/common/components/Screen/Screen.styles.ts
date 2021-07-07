@@ -15,9 +15,7 @@ export const useStyles = makeStyles(() => ({
         },
     },
     header: {
-        '@media (max-width: 480px)': {
-        },
-        marginTop: '23px',
+       marginTop: '23px',
     },
     body: {
     },

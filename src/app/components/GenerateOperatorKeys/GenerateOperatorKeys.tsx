@@ -18,7 +18,7 @@ import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperator
 import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
 import { validatePublicKeyInput, validateDisplayNameInput, validateAddressInput } from '~lib/utils/validatesInputs';
 
-const buttonActionMargin = isMobile ? '98px' : '102px';
+const actionButtonMargin = isMobile ? '52px' : '102px';
 
 const GenerateOperatorKeys = () => {
   const classes = useStyles();
@@ -92,7 +92,7 @@ const GenerateOperatorKeys = () => {
       navigationLink={config.routes.OPERATOR.HOME}
       title={translations.OPERATOR.REGISTER.TITLE}
       subTitle={translations.OPERATOR.REGISTER.DESCRIPTION}
-      styleOptions={{ actionButtonMarginTop: buttonActionMargin }}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       body={(
         <Grid container direction={'column'}>
           <Grid item className={classes.gridItem}>

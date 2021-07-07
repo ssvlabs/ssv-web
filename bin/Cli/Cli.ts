@@ -41,6 +41,7 @@ if (isArgumentsValid) {
     // reading keystore file
     readFile(filePath).then((data: any) => {
         extractPrivateKey(data, keystorePassword).then((privateKey: any) => {
+            console.log(privateKey);
             createThreshold(privateKey).then((threshold: ISharesKeyPairs) => {
                 encryptShares(operators, threshold.shares).then((encryptedShares: EncryptShare[]) => {
                     const operatorsPublicKey: string[] = encryptedShares.map((share: EncryptShare) => {

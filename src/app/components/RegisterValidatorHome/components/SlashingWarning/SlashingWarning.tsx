@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
+import { isMobile } from 'react-device-detect';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useStores } from '~app/hooks/useStores';
@@ -13,6 +14,8 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+
+const actionButtonMargin = isMobile ? '76px' : '136px';
 
 const SlashingWarning = () => {
   const classes = useStyles();
@@ -53,7 +56,7 @@ const SlashingWarning = () => {
       navigationText={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       navigationLink={config.routes.VALIDATOR.SELECT_OPERATORS}
       title={translations.VALIDATOR.SLASHING_WARNING.TITLE}
-      styleOptions={{ actionButtonMarginTop: '192px', bodyMarginTop: '12px' }}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin, bodyMarginTop: '12px' }}
       subTitle={translations.VALIDATOR.SLASHING_WARNING.DESCRIPTION}
       body={(
         <Grid container wrap="nowrap" spacing={4} className={classes.gridContainer}>

@@ -32,7 +32,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
 
   useEffect(() => {
     if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
-      selectOperatorMethod(indexedOperator.pubkey);
+      selectOperatorMethod(indexedOperator);
     }
   });
 

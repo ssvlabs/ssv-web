@@ -183,7 +183,8 @@ class ContractOperator extends BaseStore {
    * @param publicKey
    */
   @action.bound
-  unselectOperator(publicKey: string) {
+  unselectOperator(unSelectOperator: any) {
+    const publicKey: string = unSelectOperator.pubkey;
     if (this.isOperatorSelected(publicKey)) {
       const { operator, index } = this.findOperator(publicKey);
       if (operator) {

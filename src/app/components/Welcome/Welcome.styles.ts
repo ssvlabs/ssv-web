@@ -43,8 +43,8 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: '10px',
     },
     doneIcon: {
-      color: 'green',
-      float: 'left',
+        color: 'green',
+        float: 'left',
     },
     badFormat: {
         color: 'red',
@@ -67,12 +67,20 @@ export const useStyles = makeStyles((theme) => ({
         border: 'dashed thin gray',
     },
     guideStepsContainerPaper: {
+        display: 'flex',
+        alignItems: 'center',
+        border: '1px solid black',
+        borderRadius: '0px',
+        textAlign: 'center',
         cursor: 'pointer',
+        width: '100%',
+        height: '150px',
         margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(2),
         '&:hover': {
             backgroundColor: 'aliceblue',
         },
+        flexDirection: 'row',
     },
     bigSquareButton: {
         minHeight: 150,
@@ -94,8 +102,14 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     gridContainer: {
-        flexGrow: 1,
         flexDirection: 'column',
+        flexGrow: 1,
+    },
+    bodyText: {
+        marginBottom: '20px',
+        '&:last-of-type': {
+            marginBottom: '0px',
+        },
     },
     rowGridContainer: {
         flexGrow: 1,
@@ -108,10 +122,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 14,
     },
     arrowIcon: {
-        float: 'right',
-        marginLeft: 'auto',
-        marginRight: theme.spacing(1),
-        alignSelf: 'center',
-        marginTop: theme.spacing(1),
+        width: '30%',
+        margin: 'auto',
     },
 }));

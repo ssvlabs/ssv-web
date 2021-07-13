@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+import EthereumKeyStore from 'eth2-keystore-js';
 
 describe('Check private key decryption', () => {
   it('Should decrypt without error', async () => {

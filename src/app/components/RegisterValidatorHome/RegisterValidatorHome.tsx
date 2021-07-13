@@ -1,54 +1,58 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { Link as RouterLink } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
+import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import Header from '~app/common/components/Header';
 import config, { translations } from '~app/common/config';
-import UnStyledLink from '~app/common/components/UnStyledLink';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
-
-const RouteLink = UnStyledLink(RouterLink);
+import Screen from '~app/common/components/Screen/Screen';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ConditionalLink from '~app/common/components/ConditionalLink';
+import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
+  const stores = useStores();
+  const history = useHistory();
   const { setUserFlow } = useUserFlow();
+  const validatorStore: ContractValidator = stores.ContractValidator;
+  const walletStore: WalletStore = stores.Wallet;
+  
+  useEffect(() => {
+      validatorStore.clearValidatorData();
+  });
+
+  const redirectTo = async (route: string) => {
+    await walletStore.connect();
+    if (walletStore.connected) {
+      setUserFlow(route);
+      history.push(route);
+    }
+  };
 
   return (
-    <Paper className={classes.mainContainer}>
-      <Header title={translations.VALIDATOR.HOME.TITLE} subtitle={translations.VALIDATOR.HOME.DESCRIPTION} />
-      <br />
-      <Grid container wrap="nowrap" spacing={3} className={classes.rowGridContainer}>
-        <Grid item xs={6} md={6} zeroMinWidth className={classes.rowGridContainer}>
-          <RouteLink to={config.routes.VALIDATOR.CREATE} data-testid={config.routes.VALIDATOR.CREATE} onClick={() => setUserFlow(config.routes.VALIDATOR.CREATE)}>
-            <Paper>
-              <Grid container wrap="nowrap" className={classes.bigSquareButton}>
-                <Grid item md={12} xs={12} className={classes.bigSquareButtonGrid}>
-                  <img src="/images/etherium.png" alt="Create Validator" className={classes.bigSquareButtonIcon} />
-                  <Typography noWrap variant="h6" className={classes.guideStepText}>Create Validator</Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </RouteLink>
+    <Screen
+      navigationText={translations.HOME.TITLE}
+      navigationLink={config.routes.HOME}
+      title={translations.VALIDATOR.HOME.TITLE}
+      subTitle={translations.VALIDATOR.HOME.DESCRIPTION}
+      body={(
+        <Grid container wrap="nowrap" spacing={0} className={classes.columnGridContainer}>
+          <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
+            <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
+              <LinkButton primaryLabel={'Create Validator'} secondaryLabel={''} icon={'images/create_validator_icon.svg'} />
+            </ConditionalLink>
+          </Grid>
+          <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
+            <ConditionalLink to={config.routes.VALIDATOR.IMPORT} condition={walletStore.connected} onClick={() => redirectTo(config.routes.VALIDATOR.IMPORT)}>
+              <LinkButton primaryLabel={'Import Validator'} secondaryLabel={''} icon={'images/import_validator_icon.svg'} />
+            </ConditionalLink>
+          </Grid>
         </Grid>
-
-        <Grid item xs={6} md={6} zeroMinWidth className={classes.rowGridContainer}>
-          <RouteLink to={config.routes.VALIDATOR.IMPORT} data-testid={config.routes.VALIDATOR.IMPORT} onClick={() => setUserFlow(config.routes.VALIDATOR.IMPORT)}>
-            <Paper>
-              <Grid container wrap="nowrap" className={classes.bigSquareButton}>
-                <Grid item md={12} xs={12} className={classes.bigSquareButtonGrid}>
-                  <img src="/images/etherium.png" alt="Import Validator" className={classes.bigSquareButtonIcon} />
-                  <Typography noWrap variant="h6" className={classes.guideStepText}>Import Validator</Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </RouteLink>
-        </Grid>
-      </Grid>
-
-    </Paper>
+      )}
+    />
   );
 };
 

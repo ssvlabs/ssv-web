@@ -1,8 +1,8 @@
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
+import * as fs from 'fs';
+import EthereumKeyStore from 'eth2-keystore-js';
 import Threshold, { IShares } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import ErrnoException = NodeJS.ErrnoException;
-import * as fs from 'fs';
 // const fs = require('fs');
 
 export async function extractPrivateKey(file: string, keystorePassword: string) {

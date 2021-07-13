@@ -1,6 +1,6 @@
 import JSEncrypt from 'jsencrypt';
-import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import Threshold, { ISharesKeyPairs } from '~lib/crypto/Threshold';
+import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import { operatorPrivateKey, operatorPublicKey } from './RsaKeys';
 
 describe('Check Encryption shares', () => {

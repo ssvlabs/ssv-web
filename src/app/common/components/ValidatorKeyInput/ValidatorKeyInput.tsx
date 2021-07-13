@@ -8,22 +8,30 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 
 type ValidatorPrivateKeyInputProps = {
   validatorKey: string,
+  link?: string,
+  newTab?: boolean,
+  image?: string, 
+  imageCallBack?: any,
 };
 
 const ValidatorKeyInput = (props: ValidatorPrivateKeyInputProps) => {
   const classes = useStyles();
-  const { validatorKey } = props;
+  const { validatorKey, link, newTab = true, image, imageCallBack } = props;
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
+  const href: string = link || `${beaconchaBaseUrl}/validator/${validatorKey}`;
+  const shouldBlank: string = newTab ? '_blank' : '';
+  const img: string = image ?? '/images/external_link.svg';
   return (
     <OutlinedInput
       className={classes.wideWidthInput}
       data-testid="validator-private-key-slashing-input"
       type="text"
+      inputProps={{ className: classes.input }}
       value={validatorKey}
       endAdornment={(
-        <Link href={`${beaconchaBaseUrl}/validator/${validatorKey}`} target="_blank">
+        <Link href={href} target={shouldBlank} onClick={() => { imageCallBack && imageCallBack(); }}>
           <InputAdornment position="end" className={classes.inputAddonContainer}>
-            <img src="/images/etherscan.png" alt="Beaconcha.in" className={classes.inputAddonImage} />
+            <img src={img} alt="Beaconcha.in" className={classes.inputAddonImage} />
           </InputAdornment>
         </Link>
       )}

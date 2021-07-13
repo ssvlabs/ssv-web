@@ -1,78 +1,116 @@
 import React, { useEffect, useState } from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './OperatorSelector.styles';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
+import config from '~app/common/config';
 
 type OperatorSelectorProps = {
+  dataTestid: string,
+  index: number
+  setOpenMenu: any,
+  shouldOpenMenu: boolean,
   indexedOperator: IOperator,
-  dataTestId: string
 };
 
-const OperatorSelector = ({ indexedOperator, dataTestId }: OperatorSelectorProps) => {
+const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index, dataTestid }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
   const [selectedOperator, selectOperator] = useState('');
-
-  const selectOperatorMethod = (publicKey: string) => {
+  const selectOperatorMethod = (operator: any) => {
     if (selectedOperator) {
       contractOperator.unselectOperator(selectedOperator);
     }
-    contractOperator.selectOperator(publicKey);
-    selectOperator(publicKey);
+    contractOperator.selectOperator(operator.pubkey);
+    selectOperator(operator);
   };
 
   useEffect(() => {
     if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
-      selectOperatorMethod(indexedOperator.pubkey);
+      selectOperatorMethod(indexedOperator);
     }
   });
 
-  const onSelectOperator = (event: any) => {
-    const operatorKey = String(event.target.value);
-    selectOperatorMethod(operatorKey);
+  const onSelectOperator = (operator: any) => {
+    selectOperatorMethod(operator);
+    setOpenMenu(null);
   };
+
   const operatorKeySeralize = (publicKey: string) => {
-    return `${publicKey.substr(0, 6)}..${publicKey.substr(publicKey.length - 4, 4)}`;
+    return `${publicKey.substr(0, 4)}...${publicKey.substr(publicKey.length - 4, 4)}`;
+  };
+  
+  const redirectTo = (pubKey: string) => {
+    window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeOperatorKey(pubKey))}`);
+  };
+
+  const renderOperator = (operator: any, menu: boolean = true) => {
+    const key = Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 91239123);
+    return (
+      <Grid
+        key={key}
+        container
+        alignItems={'center'}
+        direction="row"
+        justify="space-between"
+        className={`${menu && classes.menuItem} ${menu && operator.selected && classes.disable}`}
+      >
+        <Grid item xs={5} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
+          <OperatorName>{operator.name}</OperatorName>
+          <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
+        </Grid>
+        <Grid item xs={5} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
+          <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>
+            <Grid item xs={6} md={6}>
+              {operator.verified ? (
+                <Grid container className={classes.verifiedText}>
+                  <Grid item xs={8}>
+                    verified
+                  </Grid>
+                  <Grid item xs={4}>
+                    <img src={'/images/checkmark_icon.svg'} className={classes.verifiedIcon} />
+                  </Grid>
+                </Grid>
+            ) : ''}
+            </Grid>
+            <Grid item onClick={() => { redirectTo(operator.pubkey); }}>
+              <img src={'/images/chart_icon.svg'} className={classes.chartIcon} />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+);
   };
 
   return (
-    <FormControl variant="outlined" className={classes.formControl}>
-      {!selectedOperator && (
-        <InputLabel id="operator-select-label" shrink variant="filled">
-          Select Operator
-        </InputLabel>
-      )}
-      <Select
-        data-testid={dataTestId}
-        className={classes.select}
-        labelId="operator-select-label"
-        value={selectedOperator}
-        onChange={onSelectOperator}
-        variant="outlined"
-        MenuProps={{ classes: { paper: classes.selectPaper } }}
+    <div key={index}>
+      <button 
+        data-testid={dataTestid}
+        className={`${classes.selectButton} ${shouldOpenMenu && classes.selected}`}
+        onClick={() => setOpenMenu(shouldOpenMenu ? null : index)}
       >
-        {contractOperator.operators.map((operator: IOperator, operatorIndex: number) => {
+        { selectedOperator ? (
+                renderOperator(selectedOperator, false)
+        )
+            : <> Select Operator <img src={'/images/arrow_up_icon.svg'} className={`${classes.buttonArrow} ${shouldOpenMenu && classes.arrowSelected}`} /></>
+        }
+      </button>
+      {shouldOpenMenu && (
+      <div className={classes.menuWrapper}>
+        {contractOperator.operators.map((operator: IOperator) => {
           return (
-            <MenuItem
-              key={`menu-item-${operatorIndex}`}
-              className={classes.menuItem}
-              value={operator.pubkey}
-              disabled={contractOperator.isOperatorSelected(operator.pubkey)}
-              >
-              <OperatorName>{operator.name}</OperatorName>
-              <OperatorKey>{operatorKeySeralize(operator.pubkey)}</OperatorKey>
-            </MenuItem>
-            );
+              renderOperator(operator)
+          );
         })}
-      </Select>
-    </FormControl>
+      </div>
+    )}
+    </div>
   );
 };
 

@@ -2,10 +2,11 @@ import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
 
 const AppBarButton = styled(Button)`
-  background-color: white;
-  &:hover {
-    background-color: white!important;
-  }
+  color: white;
+  background-color: #5B6C84;
+  text-transform: none;
+  border-radius: 4px;
+  width: 100%;
 `;
 
 export default AppBarButton;

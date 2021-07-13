@@ -1,25 +1,33 @@
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
+import { sha256 } from 'js-sha256';
 import config from '~app/common/config';
+import { moveIndex } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import verifiedOperators from '~lib/utils/verifiedOperators.json';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
-import ApplicationStore from '~app/common/stores/Application.store';
-import NotificationsStore from '~app/common/stores/Notifications.store';
 
 export interface INewOperatorTransaction {
   name: string,
   pubKey: string,
+  address: string,
+}
+
+interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
+  address?: string
 }
 
 export interface IOperator {
   name: string,
   pubkey: string,
+  ownerAddress: string,
   paymentAddress?: string,
   score?: number,
   selected?: boolean
   autoSelected?: boolean
+  verified?: boolean
 }
 
 class ContractOperator extends BaseStore {
@@ -28,27 +36,40 @@ class ContractOperator extends BaseStore {
   @observable operators: IOperator[] = [];
   @observable operatorsLoaded: boolean = false;
 
-  @observable addingNewOperator: boolean = false;
   @observable newOperatorReceipt: any = null;
 
-  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '' };
+  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '' };
   @observable newOperatorRegisterSuccessfully: boolean = false;
 
   @observable estimationGas: number = 0;
   @observable dollarEstimationGas: number = 0;
+
+  @observable loadingOperator: boolean = false;
+
+  /**
+   * clear operator store
+   */
+  @action.bound
+  clearOperatorData() {
+    this.newOperatorKeys = {
+      pubKey: '',
+      name: '',
+      address: '',
+    };
+    this.newOperatorRegisterSuccessfully = false;
+  }
 
   /**
    * Set operator keys
    * @param transaction
    */
   @action.bound
-  setOperatorKeys(transaction: INewOperatorTransaction) {
-    this.newOperatorKeys = { pubKey: transaction.pubKey, name: transaction.name };
-  }
-
-  @action.bound
-  setAddingNewOperator(status: boolean) {
-    this.addingNewOperator = status;
+  setOperatorKeys(transaction: NewOperatorKeys) {
+    this.newOperatorKeys = {
+      pubKey: transaction.pubKey,
+      name: transaction.name,
+      address: transaction.address || this.newOperatorKeys.address,
+    };
   }
 
   /**
@@ -60,11 +81,10 @@ class ContractOperator extends BaseStore {
   async checkIfOperatorExists(publicKey: string, contract?: Contract): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
-      await walletStore.connect();
       const contractInstance = contract ?? await walletStore.getContract();
       const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
       this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
-      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: walletStore.accountAddress });
+      const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: this.newOperatorKeys.address });
       return result[1] !== '0x0000000000000000000000000000000000000000';
     } catch (e) {
       console.error('Exception from operator existence check:', e);
@@ -77,24 +97,16 @@ class ContractOperator extends BaseStore {
    * @param getGasEstimation
    */
   @action.bound
-  async addNewOperator(getGasEstimation: boolean = false) {
+  // eslint-disable-next-line no-unused-vars
+  async addNewOperator(getGasEstimation: boolean = false, callBack?: (txHash: string) => void) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const applicationStore: ApplicationStore = this.getStore('Application');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = await walletStore.getContract();
-    const address: string = walletStore.accountAddress;
-    applicationStore.setIsLoading(true);
+    const address: string = this.newOperatorKeys.address;
 
     return new Promise((resolve, reject) => {
-      if (!walletStore.checkIfWalletReady()) {
-        applicationStore.setIsLoading(false);
-        reject();
-      }
-
       const transaction: INewOperatorTransaction = this.newOperatorKeys;
       this.newOperatorReceipt = null;
-      this.setAddingNewOperator(true);
 
       // Send add operator transaction
       const payload = [
@@ -103,30 +115,22 @@ class ContractOperator extends BaseStore {
         transaction.pubKey,
       ];
       console.debug('Register Operator Transaction Data:', payload);
-
       if (getGasEstimation) {
         contract.methods.addOperator(...payload)
-          .estimateGas({ from: address })
+          .estimateGas({ from: walletStore.accountAddress })
           .then((gasAmount: any) => {
-            this.setAddingNewOperator(true);
             this.estimationGas = gasAmount * 0.000000001;
             if (config.FEATURE.DOLLAR_CALCULATION) {
               gasEstimation
                   .estimateGasInUSD(this.estimationGas)
                   .then((rate: number) => {
-                    this.dollarEstimationGas = this.estimationGas * rate;
+                    this.dollarEstimationGas = this.estimationGas * rate * 0;
                     resolve(true);
-                  })
-                  .catch((error: any) => {
-                    applicationStore.displayUserError(error);
                   });
             } else {
-              this.dollarEstimationGas = this.estimationGas * 3377;
+              this.dollarEstimationGas = 0;
               resolve(true);
             }
-          })
-          .catch((error: any) => {
-            applicationStore.displayUserError(error);
           });
       } else {
         contract.methods.addOperator(...payload)
@@ -136,16 +140,15 @@ class ContractOperator extends BaseStore {
             if (event) {
               console.debug('Contract Receipt', receipt);
               this.newOperatorReceipt = receipt;
-              applicationStore.setIsLoading(false);
               this.newOperatorRegisterSuccessfully = true;
               resolve(event);
             }
           })
-          .on('error', (error: any) => {
-            this.setAddingNewOperator(false);
-            notificationsStore.showMessage(error.message, 'error');
+            .on('transactionHash', (txHash: string) => {
+              callBack && callBack(txHash);
+            })
+            .on('error', (error: any) => {
             console.debug('Contract Error', error);
-            applicationStore.setIsLoading(false);
             reject(error);
           });
       }
@@ -180,7 +183,8 @@ class ContractOperator extends BaseStore {
    * @param publicKey
    */
   @action.bound
-  unselectOperator(publicKey: string) {
+  unselectOperator(unSelectOperator: any) {
+    const publicKey: string = unSelectOperator.pubkey;
     if (this.isOperatorSelected(publicKey)) {
       const { operator, index } = this.findOperator(publicKey);
       if (operator) {
@@ -263,12 +267,14 @@ class ContractOperator extends BaseStore {
    */
   @action.bound
   async loadOperators() {
+    this.loadingOperator = true;
     const query = `
     {
       operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
         id
         name
         pubkey
+        ownerAddress
       }
     }`;
     const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);
@@ -286,6 +292,19 @@ class ContractOperator extends BaseStore {
       .sendRequest()
       .then((response: any) => {
         this.operatorsLoaded = true;
+        if (response.data) {
+          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return sha256(a.pubkey); });
+          // eslint-disable-next-line no-restricted-syntax
+          for (const pubKey of verifiedOperators.pubKeys) {
+            const verifiedIndex = operatorsPublicKey.indexOf(pubKey);
+            if (verifiedIndex > -1) {
+              response.data.operators[verifiedIndex].verified = true;
+              moveIndex(response.data.operators, verifiedIndex, 0);
+              moveIndex(operatorsPublicKey, verifiedIndex, 0);
+            }
+          }
+        }
+        this.loadingOperator = false;
         return response.data?.operators ?? [];
       });
   }

@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-require("jsdom-global/register");
+require('jsdom-global/register');
 const nodeCrypto = require('crypto');
 declare global {
     interface Window { crypto: any; }
@@ -36,11 +36,12 @@ for (const i in requireArguments) {
 
 if (isArgumentsValid) {
     const { filePath } = argumentsCMD;
-    const keystorePassword = argumentsCMD.password;
+    const keystorePassword = argumentsCMD.password.toString();
 
     // reading keystore file
     readFile(filePath).then((data: any) => {
         extractPrivateKey(data, keystorePassword).then((privateKey: any) => {
+            console.log(privateKey);
             createThreshold(privateKey).then((threshold: ISharesKeyPairs) => {
                 encryptShares(operators, threshold.shares).then((encryptedShares: EncryptShare[]) => {
                     const operatorsPublicKey: string[] = encryptedShares.map((share: EncryptShare) => {
@@ -56,15 +57,19 @@ if (isArgumentsValid) {
                     });
 
                     console.log([
-                        privateKey,
+                        threshold.validatorPublicKey,
                         operatorsPublicKey,
                         sharePublicKey,
                         sharePrivateKey,
                     ]);
+                }).catch((error: any) => {
+                    console.log(error);
                 });
+            }).catch((error: any) => {
+                console.log(error);
             });
-        }).catch((error: any) => {
-            console.log(error);
+        }).catch(() => {
+            console.log('Invalid keystore file password.');
         });
     }).catch((error: ErrnoException) => {
         console.log(error);

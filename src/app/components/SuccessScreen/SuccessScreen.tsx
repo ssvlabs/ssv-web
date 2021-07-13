@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import { translations } from '~app/common/config';
-import Header from '~app/common/components/Header';
+import config, { translations } from '~app/common/config';
+import Screen from '~app/common/components/Screen/Screen';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ConditionalLink from '~app/common/components/ConditionalLink';
+import LinkButton from '~app/common/components/LinkButton/LinkButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
@@ -22,36 +23,50 @@ const SuccessScreen = () => {
   }, [redirectUrl]);
 
   const contractOperator: ContractOperator = stores.ContractOperator;
+  const walletStore: WalletStore = stores.Wallet;
   const contractValidator: ContractValidator = stores.ContractValidator;
-  let header: any = '';
+  let subTitle: any = '';
+  let monitorHeader: string = '';
+  let monitorText: string = '';
+  let icon: string = '';
+  let explorerLink: string = '';
 
   if (contractOperator.newOperatorRegisterSuccessfully) {
-    header =
-      <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.OPERATOR_DESCRIPTION} />;
+    icon = 'success_operator_icon';
+    subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
+    monitorHeader = 'Monitor Node';
+    monitorText = 'View your operator performance in our explorer';
+    explorerLink = `${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeOperatorKey(contractOperator.newOperatorKeys.pubKey))}`;
   } else if (contractValidator.newValidatorReceipt) {
-    header =
-      <Header centralize title={translations.SUCCESS.TITLE} subtitle={translations.SUCCESS.VALIDATOR_DESCRIPTION} />;
+    icon = 'success_validator_icon';
+    subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
+    monitorHeader = 'Monitor Validator';
+    monitorText = 'View your validator performance in our explorer';
+    explorerLink = `${config.links.LINK_EXPLORER}/validators/${contractValidator.validatorPublicKey}`;
   }
 
+  const redirectTo = () => {
+    window.open(explorerLink);
+  };
+
   return (
-    <Paper className={classes.mainContainer}>
-      <Grid className={classes.gridContainer} container direction="column" justify="center" alignItems="center">
-        <img className={classes.successIcon} src={'/images/checked.svg'} />
-        {header}
-        <img className={classes.congratsImage} src={'/images/congrats.svg'} />
-        <Paper className={classes.guideStepsContainerPaper}>
-          <Grid container wrap="nowrap" spacing={1}>
-            <Grid item md={8} xs={8}>
-              <Typography noWrap variant="h6" className={classes.guideStepText}>Monitor Validator</Typography>
-              <Typography noWrap variant="caption">View your operator performance in our explorer</Typography>
-            </Grid>
-            <Grid item md={4} xs={4}>
-              <ArrowForwardIosIcon data-testid={'success-image'} className={classes.arrowIcon} />
-            </Grid>
+    <Screen
+      align
+      title={translations.SUCCESS.TITLE}
+      subTitle={subTitle}
+      body={(
+        <Grid className={classes.gridContainer} container spacing={0}>
+          <Grid item xs={12} className={classes.successImage}>
+            <img src={`/images/${icon}.svg`} className={classes.icon} />
           </Grid>
-        </Paper>
-      </Grid>
-    </Paper>
+          <Grid item xs={12} className={classes.linkWrapper}>
+            <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={redirectTo}>
+              <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} />
+            </ConditionalLink>
+          </Grid>
+        </Grid>
+      )}
+    />
   );
 };
 

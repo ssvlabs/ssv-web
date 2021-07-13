@@ -4,9 +4,10 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { wallets } from '~app/common/stores/Wallet/wallets';
+import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
-import Wallet from '~app/common/stores/Wallet/abstractWallet';
 
 class WalletStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;
@@ -16,6 +17,8 @@ class WalletStore extends BaseStore implements Wallet {
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
   @observable accountAddress: string = '';
+  @observable addressVerification: any;
+  @observable wrongNetwork: boolean = false;
 
   /**
    * Get smart contract instance
@@ -69,12 +72,18 @@ class WalletStore extends BaseStore implements Wallet {
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
       notificationsStore.showMessage(message, 'error');
       console.error('Connecting to wallet error:', message);
+      return false;
     }
   }
 
   @computed
   get connected() {
     return this.accountAddress;
+  }
+
+  @computed
+  get isWrongNetwork() {
+    return this.wrongNetwork;
   }
 
   /**
@@ -88,17 +97,14 @@ class WalletStore extends BaseStore implements Wallet {
     await this.init();
     if (!this.connected) {
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-            notificationsStore.showMessage('Wallet is connected!', 'success');
             console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
           applicationStore.setIsLoading(false);
           console.error('Wallet check errorMessage', error);
-          // notificationsStore.showMessage('Wallet is not connected!', 'error');
         });
     }
   }
@@ -120,13 +126,18 @@ class WalletStore extends BaseStore implements Wallet {
     const connectionConfig = {
       dappId: config.ONBOARD.API_KEY,
       networkId: Number(config.ONBOARD.NETWORK_ID),
+      walletSelect: {
+        wallets,
+      },
       subscriptions: {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
+        network: this.onNetworkChange,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
     this.onboardSdk = Onboard(connectionConfig);
+    this.onboardSdk.walletReset();
   }
 
   /**
@@ -135,9 +146,47 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async onWalletConnected(wallet: any) {
-    console.debug('Wallet Connected:', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
+    this.addressVerification = this.web3.utils.isAddress;
+    console.debug('Wallet Connected:', wallet);
+    window.localStorage.setItem('selectedWallet', wallet.name);
+  }
+
+  @action.bound
+  async onNetworkChange(networkId: any) {
+    if (networkId !== 5) {
+      this.alertNetworkError();
+    } else {
+      this.wrongNetwork = false;
+    }
+  }
+
+  @action.bound
+   alertNetworkError() {
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    this.wrongNetwork = true;
+    notificationsStore.showMessage('Please change network to Goerli', 'error');
+  }
+
+  @action.bound
+  async checkConnection() {
+    const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
+    if (selectedWallet) {
+      await this.init();
+      await this.onboardSdk.walletSelect(selectedWallet);
+    }
+  }
+
+  @action.bound
+  async onWalletDisconnect() {
+    this.onboardSdk.walletReset();
+    this.wallet = null;
+    this.web3 = null;
+    this.ready = false;
+    this.onboardSdk = null;
+    this.accountAddress = '';
+    window.localStorage.removeItem('selectedWallet');
   }
 
   /**

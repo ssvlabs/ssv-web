@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import DoneIcon from '@material-ui/icons/Done';
+import { isMobile } from 'react-device-detect';
 import ClearIcon from '@material-ui/icons/Clear';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
+import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
-import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import BackNavigation from '~app/common/components/BackNavigation';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+
+const actionButtonMargin = isMobile ? '159px' : '189px';
 
 const EnterValidatorPrivateKey = () => {
-  const registerButtonStyle = { width: '100%', marginTop: 20 };
   const { redirectUrl, history } = useUserFlow();
   const classes = useStyles();
   const stores = useStores();
@@ -54,59 +53,71 @@ const EnterValidatorPrivateKey = () => {
   };
 
   const removeKeyStoreFile = () => {
+    validatorStore.clearValidatorData();
     validatorStore.setValidatorPrivateKeyFile(false);
     history.push(config.routes.VALIDATOR.IMPORT);
   };
+  
+  const serializeFileName = (fileName: string) => {
+    if (fileName.length > 34 && isMobile) {
+      return `${fileName.slice(0, 15)}...${fileName.slice(fileName.length - 15, fileName.length)}`;
+    } 
+    return fileName;
+  };
 
   return (
-    <Paper className={classes.mainContainer}>
-      <BackNavigation to={config.routes.VALIDATOR.HOME} text="Run Validator with the SSV Network" />
-      <Header title={translations.VALIDATOR.IMPORT.TITLE} subtitle={translations.VALIDATOR.IMPORT.DESCRIPTION} />
-
-      <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
-        <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <InputLabel title="Keystore File generated from CLI">
-            <Grid container className={classes.fileContainer}>
-              <Grid item xs={1}>
-                {validatorStore.isJsonFile() ? <DoneIcon className={classes.doneIcon} /> : <ClearIcon className={classes.badFormat} />}
+    <Screen
+      navigationText={'Run Validator with the SSV Network'}
+      navigationLink={config.routes.VALIDATOR.HOME}
+      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
+      title={translations.VALIDATOR.IMPORT.TITLE}
+      subTitle={translations.VALIDATOR.IMPORT.DESCRIPTION}
+      body={(
+        <Grid container className={classes.gridContainer} spacing={2}>
+          <Grid item>
+            <InputLabel title="Keystore File" subTitle="generated from CLI">
+              <Grid container className={classes.fileContainer}>
+                <Grid item xs={2} lg={1}>
+                  {validatorStore.isJsonFile() ? <img className={classes.approvedIcon} src={'/images/approved_file_icon.svg'} /> : <ClearIcon className={classes.badFormat} />}
+                </Grid>
+                <Grid className={classes.fileNameText} item xs={9} lg={10}>
+                  {validatorStore.validatorPrivateKeyFile?.name && serializeFileName(validatorStore.validatorPrivateKeyFile.name)}
+                </Grid>
+                <Grid item xs={1} lg={1} onClick={removeKeyStoreFile} className={classes.removeIconWrapper}>
+                  <img className={classes.clearIcon} src={'/images/remove_icon.svg'} />
+                </Grid>
               </Grid>
-              <Grid className={classes.fileNameText} item xs={8}>
-                {validatorStore.validatorPrivateKeyFile?.name}
-              </Grid>
-              <Grid item xs={3}>
-                <ClearIcon onClick={removeKeyStoreFile} className={classes.clearIcon} />
-              </Grid>
-            </Grid>
-          </InputLabel>
-          <br />
-          <InputLabel title="Keystore Password">
-            <TextInput
-              data-testid="keystore-password"
-              type="text"
-              className={classes.passwordInput}
-              value={validatorStore.password}
-              onChange={(event: any) => validatorStore.setPassword(event.target.value)}
-            />
-          </InputLabel>
-          <Grid className={classes.paddingTop} item xs={12}>
-            {showErrorMessage && (
-              <div className={classes.errorDiv}>
-                {errorMessage}
-              </div>
-            )}
+            </InputLabel>
           </Grid>
-          <Button
-            data-testid="decrypt-keystore-button"
-            disabled={!validatorStore.password.length || !validatorStore.isJsonFile()}
-            variant="contained"
-            color="primary"
-            style={registerButtonStyle}
-            onClick={goToSelectOperators}>
-            Next
-          </Button>
+          <Grid item>
+            <InputLabel title="Keystore Password">
+              <TextInput
+                data-testid="keystore-password"
+                type="text"
+                className={classes.passwordInput}
+                value={validatorStore.password}
+                onChange={(event: any) => validatorStore.setPassword(event.target.value)}
+                    />
+            </InputLabel>
+            <Grid item xs={12}>
+              {showErrorMessage && (
+                <div className={classes.errorDiv}>
+                  {errorMessage}
+                </div>
+              )}
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Paper>
+      )}
+      actionButton={(
+        <CTAButton
+          testId={'decrypt-keystore-button'}
+          disable={!validatorStore.password.length || !validatorStore.isJsonFile()}
+          onClick={goToSelectOperators}
+          text={'Next'}
+        />
+      )}
+    />
   );
 };
 

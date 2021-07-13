@@ -6,23 +6,48 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
  * Base store provides singe source of true
  * for keeping all stores instances in one place
  */
+
 class ApplicationStore extends BaseStore {
   @observable isShowingLoading: boolean = false;
-  @observable showWalletPopUp: boolean = false;
-
+  @observable walletPopUp: boolean = false;
+  @observable walletConnectivity: boolean = false;
+  @observable transactionPandingPopUp: boolean = false;
+  
+  @observable toolBarMenu: boolean = false;
+  
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
   }
 
   @action.bound
-  setShowPopUp(status: boolean) {
-    this.showWalletPopUp = status;
+  displayToolBarMenu(status: boolean) {
+    this.toolBarMenu = status;
+  }
+  
+  @action.bound
+  showTransactionPandingPopUp(status: boolean) {
+    this.transactionPandingPopUp = status;
+  }
+
+  @action.bound
+  showWalletPopUp(status: boolean) {
+    this.walletPopUp = status;
+  }
+
+  @action.bound
+  setWalletConnectivity(show: boolean) {
+    this.walletConnectivity = show;
   }
 
   @computed
   get isLoading() {
     return this.isShowingLoading;
+  }
+
+  @computed
+  get shouldDisplayToolBar() {
+    return this.toolBarMenu;
   }
 
   /**

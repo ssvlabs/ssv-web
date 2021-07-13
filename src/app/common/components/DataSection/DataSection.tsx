@@ -1,68 +1,36 @@
 import React from 'react';
-import styled from 'styled-components';
+import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { useStyles } from './DataSection.styles';
 
-const UnderLine = styled.div`
-  display: flex;
-  width: 100%;
-  border-bottom: solid 1px #efefef;
-  margin-bottom: 20px;
-  margin-top: 20px;
-`;
-
-export type IDataSection = {
-  title?: any,
-  name?: any,
-  component?: any,
-  value?: any,
-  divider?: boolean
-};
-
-export const buildDataSections = (dataSections: IDataSection[]) => {
-  const pStyle = { paddingTop: 5, paddingBottom: 5, marginTop: 0, marginBottom: 0 };
-  return dataSections.map((dataSection: IDataSection, dataSectionIndex: number) => {
+const DataSection = ({ data }: any) => {
+    const classes = useStyles();
     return (
-      <div style={{ width: '100%' }} key={`data-section-${dataSectionIndex}`}>
-        <DataSection
-          title={dataSection.title}
-        >
-          {dataSection.component ? <>{dataSection.component}</> : ''}
-          {dataSection.name ? <p style={pStyle}>{dataSection.name}</p> : ''}
-          {dataSection.value ? <p style={pStyle}>{dataSection.value}</p> : ''}
-        </DataSection>
-        {dataSection.divider ? <UnderLine /> : ''}
-      </div>
+      <>
+        {data.map((section: any, index: number) => (
+          <Grid xs={12} item key={index} style={{ marginBottom: index === 0 ? '20px' : '0px' }}>
+            <Grid container spacing={0}>
+              {section.map((d: any, sectionIndex: number) => (
+                <Grid item className={classes.section} xs={12} key={sectionIndex}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <Typography className={`${d.header ? classes.header : classes.subHeader} ${d.key === 'Total' ? classes.total : ''}`}>{d.key}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        className={`${classes.dataValue} ${d.key === 'Total' ? classes.total : ''}`}
+                      >
+                        {d.value}{d.strong && <strong>&nbsp;{d.strong}</strong>}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        ))}
+      </>
     );
-  });
 };
-
-type DataSectionProps = {
-  title?: string,
-  children: any
-};
-
-const SectionHeader = styled.div`
-  display: flex;
-  width: 100%;
-  font-weight: bold;
-  margin: 0;
-  padding-top: 0;
-  padding-bottom: 5px;
-`;
-
-const DataSection = ({ title, children }: DataSectionProps) => {
-  return (
-    <>
-      {title && (
-        <SectionHeader>
-          {title}
-        </SectionHeader>
-      )}
-      <Grid container direction="row" justify="space-between" alignItems="center" item xs={12} md={12} spacing={0}>
-        {children}
-      </Grid>
-    </>
-  );
-};
-
-export default DataSection;
+export default observer(DataSection);

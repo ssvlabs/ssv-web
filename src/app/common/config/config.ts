@@ -1,5 +1,6 @@
 const config = {
     routes: {
+        TEST: '/guy',
         HOME: '/',
         OPERATOR: {
             HOME: '/operator',
@@ -23,7 +24,7 @@ const config = {
         OPERATORS: {
             AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
             SELECT_MINIMUM_OPERATORS: 4,
-            REQUEST_MINIMUM_OPERATORS: 50,
+            REQUEST_MINIMUM_OPERATORS: 1000,
             VALID_KEY_LENGTH: 612,
         },
         TESTING: {
@@ -33,6 +34,10 @@ const config = {
     links: {
         LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
         LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
+        ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
+        TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
+        LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
+        LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
     },
     ONBOARD: {
         API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

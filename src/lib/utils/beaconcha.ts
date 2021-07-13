@@ -12,7 +12,7 @@ export const getBaseBeaconchaUrl = (networkId?: number) => {
   const finalNetworkId = networkId ?? process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID;
   switch (parseInt(String(finalNetworkId), 10)) {
     case NETWORKS.GOERLI:
-      return 'https://pyrmont.beaconcha.in';
+      return 'https://prater.beaconcha.in';
     case NETWORKS.MAINNET:
       return 'https://beaconcha.in';
   }

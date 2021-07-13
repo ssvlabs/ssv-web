@@ -9,14 +9,14 @@ const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
-  const walletImageStyle = { width: 24, height: 24, marginRight: 10, marginLeft: 0 };
+  const walletImageStyle = { width: 24, height: 24, marginRight: 5, marginLeft: 0 };
 
   const disconnectWalletWithPrompt = () => {
     walletStore.disconnect().then(() => walletStore.connect());
   };
   const onClick = () => {
     if (walletStore.connected) {
-      return applicationStore.setShowPopUp(true);
+      return applicationStore.showWalletPopUp(true);
       return disconnectWalletWithPrompt();
     }
     return walletStore.connect();
@@ -27,11 +27,11 @@ const ConnectWalletButton = () => {
       case 'MetaMask':
         icon = '/images/metamask.svg';
         break;
-      case 'Torus':
-        icon = '/images/torus.png';
+      case 'Ledger':
+        icon = '/images/metamask.svg';
         break;
-      case 'Authereum':
-        icon = '/images/autherium.png';
+      case 'Trezor':
+        icon = '/images/metamask.svg';
         break;
     }
   }
@@ -42,7 +42,7 @@ const ConnectWalletButton = () => {
     return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
   };
   return (
-    <Button variant="outlined" color="primary" onClick={onClick} style={{ textTransform: 'none' }}>
+    <Button color="inherit" onClick={onClick}>
       {walletStore.connected ? (
         <>
           {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${walletStore.wallet.name}`} />}
@@ -52,5 +52,4 @@ const ConnectWalletButton = () => {
     </Button>
   );
 };
-
 export default observer(ConnectWalletButton);

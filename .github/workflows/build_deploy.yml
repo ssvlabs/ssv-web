@@ -34,17 +34,28 @@ jobs:
 
       - name: Run stage build
         if: github.ref == 'refs/heads/stage'
-        run: OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$CONTRACT_ADDRESS" yarn build  
+        run: >
+          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
         env:
           CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
+          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          EXPLORER_URL: "https://explorer.stage.ssv.network/"
+
 
       - name: Run prod build
         if: github.ref == 'refs/heads/main'
-        run: OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$CONTRACT_ADDRESS" yarn build
+        run: >
+          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
         env:
           CONTRACT_ADDRESS: ${{ secrets.PROD_CONTRACT_ADDRESS }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
+          GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          EXPLORER_URL: "https://explorer.ssv.network/"
 
       - name: Deploy staging
         if: github.ref == 'refs/heads/stage'

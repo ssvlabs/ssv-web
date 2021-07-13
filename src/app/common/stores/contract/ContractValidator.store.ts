@@ -1,15 +1,15 @@
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
+import EthereumKeyStore from 'eth2-keystore-js';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import EthereumKeyStore from '~lib/crypto/EthereumKeyStore';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
-import config from '~app/common/config';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 
 class ContractValidator extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
@@ -48,6 +48,15 @@ class ContractValidator extends BaseStore {
   @action.bound
   setPassword(value: string) {
     this.validatorKeyStorePassword = Buffer.from(value);
+  }
+
+  @action.bound
+  clearValidatorData() {
+    this.validatorPrivateKey = '';
+    this.validatorPrivateKeyFile = null;
+    this.createValidatorPayLoad = undefined;
+    this.cleanPrivateData();
+    console.log(this.createValidatorPayLoad);
   }
 
   /**
@@ -90,23 +99,19 @@ class ContractValidator extends BaseStore {
    * @param getGasEstimation
    */
   @action.bound
-  async addNewValidator(getGasEstimation?: boolean) {
+  // eslint-disable-next-line no-unused-vars
+  async addNewValidator(getGasEstimation?: boolean, callBack?: (txHash: string) => void) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
-    await walletStore.connect();
-    this.newValidatorReceipt = null;
-    this.addingNewValidator = true;
     const contract: Contract = await walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
-    applicationStore.setIsLoading(true);
+
+    this.newValidatorReceipt = null;
+    this.addingNewValidator = true;
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      if (!walletStore.checkIfWalletReady()) {
-        reject();
-      } else {
         const payload: (string | string[])[] = await this.createPayLoad();
 
         console.debug('Add Validator Payload: ', payload);
@@ -123,14 +128,14 @@ class ContractValidator extends BaseStore {
                   gasEstimation
                       .estimateGasInUSD(this.estimationGas)
                       .then((rate: number) => {
-                        this.dollarEstimationGas = this.estimationGas * rate;
+                        this.dollarEstimationGas = this.estimationGas * rate * 0;
                         resolve(true);
                       })
                       .catch(() => {
                         resolve(true);
                       });
                 } else {
-                  this.dollarEstimationGas = this.estimationGas * 3377;
+                  this.dollarEstimationGas = 0;
                   resolve(true);
                 }
               })
@@ -147,8 +152,12 @@ class ContractValidator extends BaseStore {
                 if (event) {
                   console.debug('Contract Receipt', receipt);
                   this.newValidatorReceipt = receipt;
+                  this.clearValidatorData();
                   resolve(event);
                 }
+              })
+              .on('transactionHash', (txHash: string) => {
+                callBack && callBack(txHash);
               })
               .on('error', (error: any) => {
                 this.addingNewValidator = false;
@@ -165,7 +174,6 @@ class ContractValidator extends BaseStore {
                 resolve(true);
               });
         }
-      }
     });
   }
 
@@ -178,10 +186,7 @@ class ContractValidator extends BaseStore {
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
 
-    return new Promise((resolve, reject) => {
-      if (!walletStore.checkIfWalletReady() && !thresholdResult) {
-        reject();
-      }
+    return new Promise((resolve) => {
       // Get list of selected operator's public keys
       const operatorPublicKeys: string[] = operatorStore.operators
           .filter((operator: IOperator) => {

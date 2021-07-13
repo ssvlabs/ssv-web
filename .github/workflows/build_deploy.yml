@@ -41,7 +41,7 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: https://explorer.stage.ssv.network/
+          EXPLORER_URL: "https://explorer.stage.ssv.network/"
 
 
       - name: Run prod build
@@ -53,7 +53,7 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: https://explorer.ssv.network/
+          EXPLORER_URL: "https://explorer.ssv.network/"
 
       - name: Deploy staging
         if: github.ref == 'refs/heads/stage'

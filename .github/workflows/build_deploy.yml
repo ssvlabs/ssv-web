@@ -39,7 +39,7 @@ jobs:
         env:
           CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
-          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }
+          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network/"
 

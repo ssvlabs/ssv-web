@@ -32,12 +32,13 @@ const AppBarComponent = () => {
     const buttons: Button[] = [
         { text: 'join', link: config.routes.HOME, active: true },
         { text: 'my account', link: config.routes.HOME, active: false },
-        { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: false },
+        { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: true },
         { text: 'docs', link: 'https://docs.ssv.network/', newPage: true, active: true },
     ];
     const menuButtons: Button[] = [
         { text: 'Join the Network', link: config.routes.HOME, active: true },
         { text: 'Documentation', link: 'https://docs.ssv.network/', newPage: true, active: true },
+        { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: true },
     ];
 
     const renderMenu = () => {
@@ -46,9 +47,8 @@ const AppBarComponent = () => {
             <Grid container justify="center">
               {menuButtons.map((button: Button, index: number) => {
                   return (
-                    <Grid item xs={12} className={classes.menuButtonWrapper}>
+                    <Grid key={index} item xs={12} className={classes.menuButtonWrapper}>
                       <Typography
-                        key={index}
                         onClick={() => { if (button.active) { switchPage(button.link, button.newPage); } }}
                         className={classes.menuButton}>
                         {button.text}

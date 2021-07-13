@@ -7,6 +7,7 @@ import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
+import config from '~app/common/config';
 
 type OperatorSelectorProps = {
   dataTestid: string,
@@ -44,6 +45,10 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
   const operatorKeySeralize = (publicKey: string) => {
     return `${publicKey.substr(0, 4)}...${publicKey.substr(publicKey.length - 4, 4)}`;
   };
+  
+  const redirectTo = (pubKey: string) => {
+    window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeOperatorKey(pubKey))}`);
+  };
 
   const renderOperator = (operator: any, menu: boolean = true) => {
     const key = Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 100001) + Math.floor(Math.random() * 91239123);
@@ -55,13 +60,12 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
         direction="row"
         justify="space-between"
         className={`${menu && classes.menuItem} ${menu && operator.selected && classes.disable}`}
-        onClick={() => { !operator.selected && onSelectOperator(operator); }}
       >
-        <Grid item xs={5}>
+        <Grid item xs={5} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
           <OperatorName>{operator.name}</OperatorName>
           <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={5} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
           <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>
             <Grid item xs={6} md={6}>
               {operator.verified ? (
@@ -75,7 +79,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
                 </Grid>
             ) : ''}
             </Grid>
-            <Grid item>
+            <Grid item onClick={() => { redirectTo(operator.pubkey); }}>
               <img src={'/images/chart_icon.svg'} className={classes.chartIcon} />
             </Grid>
           </Grid>

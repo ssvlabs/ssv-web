@@ -61,13 +61,13 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
         justify="space-between"
         className={`${menu && classes.menuItem} ${menu && operator.selected && classes.disable}`}
       >
-        <Grid item xs={5} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
+        <Grid item xs={7} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
           <OperatorName>{operator.name}</OperatorName>
           <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
         </Grid>
-        <Grid item xs={5} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
+        <Grid item xs={5}>
           <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>
-            <Grid item xs={6} md={6}>
+            <Grid item xs={6} md={6} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
               {operator.verified ? (
                 <Grid container className={classes.verifiedText}>
                   <Grid item xs={8}>

@@ -76,6 +76,12 @@ const translations = {
       },
     },
   },
+  UPGRADE: {
+    HOME: {
+      TITLE: 'Upgrade CDT to SSV Tokens',
+      SUBTITLE: 'Token upgrades are irreversible - CDT to SSV conversion is a one way path.',
+    },
+  },
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',
   },

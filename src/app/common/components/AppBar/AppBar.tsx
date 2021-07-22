@@ -11,6 +11,7 @@ import config from '~app/common/config';
 import { useStyles } from './AppBar.styles';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
+import { isUpgradePage } from '~lib/utils/navigation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
@@ -88,8 +89,9 @@ const AppBarComponent = () => {
                 </Typography>
               </Grid>
               <Grid item zeroMinWidth md={3}>
-                <Grid container justify={'space-around'}>
-                  {buttons.map((button: Button, index: number) => {
+                {!isUpgradePage() ? (
+                  <Grid container justify={'space-around'}>
+                    {buttons.map((button: Button, index: number) => {
                       return (
                         <Grid item key={index}>
                           <Tooltip disableHoverListener={button.active} key={index} disableFocusListener disableTouchListener title="Comming soon...">
@@ -100,18 +102,21 @@ const AppBarComponent = () => {
                             </Typography>
                           </Tooltip>
                         </Grid>
-                      );
-                  })}
-                </Grid>
+                        );
+                    })}
+                  </Grid>
+                ) : ''}
               </Grid>
               <Grid item xs={8} md={4}>
                 <Grid container spacing={1} alignItems={'center'} justify={'flex-end'}>
                   <Grid item>
                     <ConnectWalletButton />
                   </Grid>
-                  <Grid item className={classes.menu} onClick={() => { handleClick(!applicationStore.shouldDisplayToolBar); }}>
-                    {applicationStore.shouldDisplayToolBar ? <CloseIcon className={classes.menuIcon} /> : <MenuIcon className={classes.menuIcon} />}
-                  </Grid>
+                  {!isUpgradePage() ? (
+                    <Grid item className={classes.menu} onClick={() => { handleClick(!applicationStore.shouldDisplayToolBar); }}>
+                      {applicationStore.shouldDisplayToolBar ? <CloseIcon className={classes.menuIcon} /> : <MenuIcon className={classes.menuIcon} />}
+                    </Grid>
+                  ) : ''}
                 </Grid>
               </Grid>
             </Grid>

@@ -14,7 +14,9 @@ type UpgradeStateProps = {
   body?: any;
   actionButton?: any;
   align?: boolean;
-  styleOptions?: Style
+  styleOptions?: Style;
+  hideTopIcons?: boolean;
+  headerStyle?: any;
 };
 
 type Style = {
@@ -35,19 +37,26 @@ const defaultStyle = {
 const UpgradeState = (upgradeStateProps: UpgradeStateProps) => {
   const {
     title, subTitle, navigationLink, navigationOnClick,
-    navigationText, body, styleOptions,
+    navigationText, body, styleOptions, hideTopIcons,
+    headerStyle,
   } = upgradeStateProps;
   const classes = useStyles();
 
   return (
     <Grid container spacing={0} justify="center" className={classes.root}>
-      <Grid style={{ marginTop: 20 }} item xs={12} md={12}>
-        {navigationLink && <BackNavigation to={navigationLink} text={navigationText} onClick={navigationOnClick} />}
+      <Grid item xs={12} md={12}>
+        {(navigationLink || navigationOnClick) && (
+          <BackNavigation
+            to={navigationLink ?? null}
+            text={navigationText}
+            onClick={navigationOnClick}
+          />
+        )}
       </Grid>
 
-      <img src="/images/upgrade.svg" />
+      {!hideTopIcons ? <img src="/images/upgrade.svg" /> : ''}
 
-      <Grid item xs={12} md={12} className={`${classes.header}`}>
+      <Grid item xs={12} md={12} className={`${classes.header}`} style={headerStyle ?? {}}>
         <Header title={title} subtitle={subTitle} />
       </Grid>
 

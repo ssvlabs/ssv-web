@@ -18,7 +18,7 @@ export const useStyles = makeStyles(() => ({
         },
     },
     header: {
-       marginTop: '23px',
+        marginTop: '23px',
         textAlign: 'center',
     },
     body: {

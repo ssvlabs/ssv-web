@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { FormControl, OutlinedInput } from '@material-ui/core';
-import { useStores } from '~app/hooks/useStores';
-import UpgradeStore from '~app/common/stores/Upgrade.store';
-import { useStyles } from '~app/components/UpgradeHome/components/ConversionState/ConversionState.styles';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { useStores } from '~app/hooks/useStores';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
+import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
+import { useStyles } from '~app/components/UpgradeHome/components/ConversionState/ConversionState.styles';
 
 const MaxButton = styled.div`
   font-style: normal;
@@ -33,12 +36,14 @@ const ConvertArrowContainer = styled.div`
   width: 100%;
   display: block;
   text-align: center;
-  padding-bottom: 10px;
-  margin-top: -13px;
+  padding-bottom: 15px;
+  margin-top: -8px;
+  margin-left: 17.5px;
 `;
 
 const MiddlePartContainer = styled.div`
   display: block;
+  padding-right: 35px;
 `;
 
 const RateContainer = styled.div`
@@ -59,7 +64,7 @@ const RateValue = styled.div`
   margin-left: auto;
 `;
 
-const SingleUpgradeButton = styled(Button)`
+export const ActionButton = styled(Button)`
   background-color: #5B6C84;
   color: white;
   cursor: pointer;
@@ -67,35 +72,65 @@ const SingleUpgradeButton = styled(Button)`
   margin-bottom: 25px;
   font-size: 18px;
   text-transform: none;
+  width: 100%;
+  
   &:hover {
     color: #5B6C84;
+  }
+  &.Mui-disabled {
+    color: rgba(0, 0, 0, 0.26);
+    background-color: lightgray;
   }
 `;
 
 const ConversionState = () => {
   const classes = useStyles();
   const stores = useStores();
+  const upgradeStore: UpgradeStore = stores.Upgrade;
+  const walletStore: WalletStore = stores.Wallet;
   const [cdtValue, setCdtValue] = useState(0);
   const [ssvValue, setSsvValue] = useState(0);
-  const upgradeStore: UpgradeStore = stores.Upgrade;
+  const [cdtError, setCdtError] = useState(false);
   const cdtImageStyle = {
     width: 59,
     height: 25,
   };
 
+  // Check CDT Balance ASAP if connected
   useEffect(() => {
-    setSsvValue(upgradeStore.ssvValue);
+    if (walletStore.connected) {
+      upgradeStore.loadAccountCdtBalance().then((balance: number) => {
+        console.debug('User have CDT balance of:', balance, 'wei');
+      });
+    }
+  }, [walletStore.connected]);
+
+  // Update SSV value once CDT value is defined
+  useEffect(() => {
+    if (upgradeStore.cdtValue) {
+      setSsvValue(upgradeStore.ssvValue);
+    }
   }, [upgradeStore.cdtValue]);
 
-  useEffect(() => {
-    const numRegex = new RegExp(/^\d+(\.\d+)?$/);
-    if (numRegex.test(String(cdtValue))) {
-      upgradeStore.setCdtValue(cdtValue);
-    }
-    if (!cdtValue) {
+  const onUpgradeButtonClick = () => {
+    upgradeStore.setStep(UpgradeSteps.confirmTransaction);
+  };
+
+  const onCdtInputChange = (event: any) => {
+    const numRegex = new RegExp(/^[0-9]\d*\.?\d*$/);
+    setCdtValue(event.target.value);
+
+    if (numRegex.test(event.target.value)) {
+      upgradeStore.setCdtValue(parseFloat(String(event.target.value)));
+      setCdtError(false);
+    } else {
       upgradeStore.setCdtValue(0);
+      setCdtError(true);
     }
-  }, [cdtValue]);
+  };
+
+  const insufficientBalance = upgradeStore.isLoadedBalance && !upgradeStore.cdtBalance;
+  const upgradeButtonDisabled = !upgradeStore.cdtValue || !upgradeStore.ssvValue || insufficientBalance;
 
   return (
     <Grid container spacing={0} justify="center" className={classes.root}>
@@ -103,17 +138,17 @@ const ConversionState = () => {
         <FormControl variant="outlined" className={classes.formControl}>
           <OutlinedInput
             id="cdt-input"
+            key="cdt-input"
             type="text"
             value={cdtValue}
-            onChange={(event: any) => {
-              const numRegex = new RegExp(/^(?!0{2,})\d{0,}((\.?)\d{0,}?)$/);
-              if (numRegex.test(event.target.value)) setCdtValue(event.target.value);
-            }}
+            error={cdtError}
+            onChange={onCdtInputChange}
             endAdornment={(
               <InputAdornment position="end">
                 <>
                   {upgradeStore.cdtBalance ? (
                     <MaxButton onClick={() => {
+                      setCdtError(false);
                       setCdtValue(upgradeStore.cdtBalance);
                       upgradeStore.setCdtValue(upgradeStore.cdtBalance);
                     }}>
@@ -125,19 +160,24 @@ const ConversionState = () => {
               </InputAdornment>
             )}
           />
-          <MiddlePartContainer>
-            {upgradeStore.cdtBalance ? (
-              <BalanceLabel>
-                Balance: {upgradeStore.cdtBalance} CDT
-              </BalanceLabel>
-            ) : ''}
-            <ConvertArrowContainer style={!upgradeStore.cdtBalance ? { marginTop: 10 } : {}}>
-              <img src="/images/conversion-arrow.svg" />
-            </ConvertArrowContainer>
-          </MiddlePartContainer>
+        </FormControl>
+
+        <MiddlePartContainer>
+          {upgradeStore.cdtBalance ? (
+            <BalanceLabel>
+              Balance: {upgradeStore.cdtBalance} CDT
+            </BalanceLabel>
+          ) : ''}
+          <ConvertArrowContainer style={!upgradeStore.cdtBalance ? { marginTop: 10 } : {}}>
+            <img src="/images/conversion-arrow.svg" />
+          </ConvertArrowContainer>
+        </MiddlePartContainer>
+
+        <FormControl variant="outlined" className={classes.formControl}>
           <OutlinedInput
             disabled
             id="ssv-input"
+            key="ssv-input"
             type="text"
             value={ssvValue}
             endAdornment={(
@@ -146,13 +186,24 @@ const ConversionState = () => {
               </InputAdornment>
             )}
           />
+
           <RateContainer>
             <RateLabel>Rate</RateLabel>
             <RateValue>1 CDT = 0.01 SSV</RateValue>
           </RateContainer>
-          <SingleUpgradeButton>
-            Upgrade
-          </SingleUpgradeButton>
+
+          {walletStore.connected ? (
+            <ActionButton
+              onClick={onUpgradeButtonClick}
+              disabled={upgradeButtonDisabled}
+            >
+              {insufficientBalance ? 'Insufficient CDT balance' : 'Upgrade'}
+            </ActionButton>
+          ) : (
+            <ConnectWalletButton
+              buttonComponent={ActionButton}
+            />
+          )}
         </FormControl>
       </Grid>
     </Grid>

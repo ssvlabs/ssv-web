@@ -17,7 +17,7 @@ const MaxButton = styled.div`
   font-weight: 600;
   font-size: 12px;
   color: #A1ACBE;
-  cursor: pointer!important;
+  cursor: pointer !important;
   margin-right: 10px;
 `;
 
@@ -73,10 +73,11 @@ export const ActionButton = styled(Button)`
   font-size: 18px;
   text-transform: none;
   width: 100%;
-  
+
   &:hover {
     color: #5B6C84;
   }
+
   &.Mui-disabled {
     color: rgba(0, 0, 0, 0.26);
     background-color: lightgray;
@@ -116,6 +117,10 @@ const ConversionState = () => {
     upgradeStore.setStep(UpgradeSteps.confirmTransaction);
   };
 
+  /**
+   * CDT input change callback.
+   * @param event
+   */
   const onCdtInputChange = (event: any) => {
     const numRegex = new RegExp(/^[0-9]\d*\.?\d*$/);
     setCdtValue(event.target.value);
@@ -129,7 +134,18 @@ const ConversionState = () => {
     }
   };
 
-  const insufficientBalance = upgradeStore.isLoadedBalance && !upgradeStore.cdtBalance;
+  /**
+   * Select as many CDT for conversion as user have on balance.
+   */
+  const setMaxCdt = () => {
+    setCdtError(false);
+    // @ts-ignore
+    setCdtValue(upgradeStore.cdtBalance);
+    // @ts-ignore
+    upgradeStore.setCdtValue(upgradeStore.cdtBalance);
+  };
+
+  const insufficientBalance = upgradeStore.cdtBalance !== null && !upgradeStore.cdtBalance;
   const upgradeButtonDisabled = !upgradeStore.cdtValue || !upgradeStore.ssvValue || insufficientBalance;
 
   return (
@@ -146,12 +162,8 @@ const ConversionState = () => {
             endAdornment={(
               <InputAdornment position="end">
                 <>
-                  {upgradeStore.cdtBalance ? (
-                    <MaxButton onClick={() => {
-                      setCdtError(false);
-                      setCdtValue(upgradeStore.cdtBalance);
-                      upgradeStore.setCdtValue(upgradeStore.cdtBalance);
-                    }}>
+                  {upgradeStore.cdtBalance !== null ? (
+                    <MaxButton onClick={() => setMaxCdt()}>
                       MAX
                     </MaxButton>
                   ) : ''}

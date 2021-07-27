@@ -17,11 +17,10 @@ class UpgradeStore extends BaseStore {
 
   // Amounts
   @observable userCdtValue: number = 0;
-  @observable userCdtBalance: number = 0;
-  @observable loadedCdtBalance: boolean = false;
+  @observable userCdtBalance: number | null = null;
 
   // Allowance
-  @observable approvedAllowance: boolean = false;
+  @observable userAllowance: number | string | null = null;
 
   // Contracts
   @observable cdtContractInstance: Contract | null = null;
@@ -35,7 +34,10 @@ class UpgradeStore extends BaseStore {
   get cdtContract(): Contract {
     if (!this.cdtContractInstance) {
       const walletStore: WalletStore = this.getStore('Wallet');
-      this.cdtContractInstance = new walletStore.web3.eth.Contract(config.CONTRACTS.CDT.ABI, config.CONTRACTS.CDT.CONTRACT_ADDRESS);
+      this.cdtContractInstance = new walletStore.web3.eth.Contract(
+        config.CONTRACTS.CDT.ABI,
+        config.CONTRACTS.CDT.CONTRACT_ADDRESS,
+      );
     }
     return <Contract> this.cdtContractInstance;
   }
@@ -47,7 +49,10 @@ class UpgradeStore extends BaseStore {
   get ssvContract(): Contract {
     if (!this.ssvContractInstance) {
       const walletStore: WalletStore = this.getStore('Wallet');
-      this.ssvContractInstance = new walletStore.web3.eth.Contract(config.CONTRACTS.SSV.ABI, config.CONTRACTS.SSV.CONTRACT_ADDRESS);
+      this.ssvContractInstance = new walletStore.web3.eth.Contract(
+        config.CONTRACTS.SSV.ABI,
+        config.CONTRACTS.SSV.CONTRACT_ADDRESS,
+      );
     }
     return <Contract> this.ssvContractInstance;
   }
@@ -59,18 +64,12 @@ class UpgradeStore extends BaseStore {
   get upgradeContract(): Contract {
     if (!this.upgradeContractInstance) {
       const walletStore: WalletStore = this.getStore('Wallet');
-      this.upgradeContractInstance = new walletStore.web3.eth.Contract(config.CONTRACTS.DEX.ABI, config.CONTRACTS.DEX.CONTRACT_ADDRESS);
+      this.upgradeContractInstance = new walletStore.web3.eth.Contract(
+        config.CONTRACTS.DEX.ABI,
+        config.CONTRACTS.DEX.CONTRACT_ADDRESS,
+      );
     }
     return <Contract> this.upgradeContractInstance;
-  }
-
-  /**
-   * Set step of UI
-   * @param step
-   */
-  @action.bound
-  setStep(step: number) {
-    this.upgradeStep = step;
   }
 
   /**
@@ -79,24 +78,6 @@ class UpgradeStore extends BaseStore {
   @computed
   get step() {
     return this.upgradeStep;
-  }
-
-  /**
-   * Save entered amount of CDT for conversion (coming from UI input)
-   * @param value
-   */
-  @action.bound
-  setCdtValue(value: number) {
-    this.userCdtValue = value;
-  }
-
-  /**
-   * Set user CDT balance after reading it from CDT contract.
-   * @param balance
-   */
-  @action.bound
-  setCdtBalance(balance: number) {
-    this.userCdtBalance = this.getStore('Wallet').web3.utils.fromWei(String(balance), 'ether');
   }
 
   /**
@@ -124,20 +105,141 @@ class UpgradeStore extends BaseStore {
   }
 
   /**
-   * Check if allowance has been approved and return boolean corresponding value.
+   * Check if userAllowance has been approved and return boolean corresponding value.
    */
   @computed
-  get isApprovedAllowance() {
-    return this.approvedAllowance;
+  get approvedAllowance() {
+    return this.userAllowance;
   }
 
   /**
-   * Set allowance value as boolean.
+   * Get user account address from wallet.
+   */
+  get accountAddress(): String {
+    return this.getStore('Wallet').accountAddress;
+  }
+
+  /**
+   * Set step of UI
+   * @param step
+   */
+  @action.bound
+  setStep(step: number) {
+    this.upgradeStep = step;
+  }
+
+  /**
+   * Save entered amount of CDT for conversion (coming from UI input)
+   * @param value
+   */
+  @action.bound
+  setCdtValue(value: number) {
+    this.userCdtValue = value;
+  }
+
+  /**
+   * Set user CDT balance after reading it from CDT contract.
+   * @param balance
+   */
+  @action.bound
+  setCdtBalance(balance: number | null) {
+    if (!balance) {
+      this.userCdtBalance = balance;
+      return;
+    }
+    this.userCdtBalance = this.getStore('Wallet').web3.utils.fromWei(String(balance), 'ether');
+  }
+
+  /**
+   * Set userAllowance value as boolean.
    * @param approved
    */
   @action.bound
-  setApprovedAllowance(approved: boolean) {
-    this.approvedAllowance = approved;
+  setApprovedAllowance(approved: number | string | null) {
+    this.userAllowance = approved;
+  }
+
+  /**
+   *  Call userAllowance function in order to know if it has been set or not for SSV contract by user account.
+   */
+  @action.bound
+  async checkAllowance(): Promise<number> {
+    return this.cdtContract
+      .methods
+      .allowance(
+        this.accountAddress,
+        config.CONTRACTS.DEX.CONTRACT_ADDRESS,
+      )
+      .call()
+      .then((allowance: number) => {
+        // const allowanceValue = parseFloat(String(allowance));
+        // const weiValue = this.getStore('Wallet').web3.utils.toWei(String(allowanceValue), 'ether');
+        this.setApprovedAllowance(parseFloat(String(allowance)));
+        // DEV: stub to show first allowance button
+        // this.setApprovedAllowance(0);
+        return this.userAllowance;
+      });
+  }
+
+  /**
+   * Set allowance to get CDT from user account.
+   */
+  @action.bound
+  async approveAllowance(amount?: number, estimate: boolean = false): Promise<any> {
+    const cdtValue = String(amount ?? `1${new Array(30).fill(0).join('')}`);
+    const weiValue = this.getStore('Wallet').web3.utils.toWei(cdtValue, 'ether');
+
+    if (!estimate) {
+      console.debug('Approving:', { cdtValue, weiValue });
+    }
+
+    const methodCall = this.cdtContract
+      .methods
+      .approve(config.CONTRACTS.DEX.CONTRACT_ADDRESS, weiValue);
+
+    if (estimate) {
+      return methodCall
+        .estimateGas({ from: this.accountAddress })
+        .then((gasAmount: number) => {
+          const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
+          return parseFloat(floatString);
+        });
+    }
+
+    return methodCall
+      .send({ from: this.accountAddress })
+      .then(() => {
+        return cdtValue;
+      });
+  }
+
+  /**
+   * Convert CDT to SSV
+   * @param estimate
+   */
+  @action.bound
+  async convertCdtToSsv(estimate: boolean = false): Promise<any> {
+    console.debug(`${estimate ? 'Estimating' : 'Converting'} ${this.userCdtValue} CDT..`);
+    
+    const weiValue = this.getStore('Wallet').web3.utils.toWei(String(this.userCdtValue), 'ether');
+    const methodCall = this.upgradeContract
+      .methods
+      .convertCDTToSSV(weiValue);
+
+    if (estimate) {
+      return methodCall
+        .estimateGas({ from: this.accountAddress })
+        .then((gasAmount: number) => {
+          const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
+          return parseFloat(floatString);
+        });
+    }
+
+    return methodCall
+      .send({ from: this.accountAddress })
+      .then((conversionResult: any) => {
+        return conversionResult;
+      });
   }
 
   /**
@@ -148,21 +250,12 @@ class UpgradeStore extends BaseStore {
   async loadAccountCdtBalance(): Promise<number> {
     return this.cdtContract
       .methods
-      .balanceOf(this.getStore('Wallet').accountAddress)
+      .balanceOf(this.accountAddress)
       .call()
       .then((balance: number) => {
         this.setCdtBalance(balance);
-        this.loadedCdtBalance = true;
         return balance;
       });
-  }
-
-  /**
-   * Flag which tells that CDT balance is already fetched from the CDT contract.
-   */
-  @computed
-  get isLoadedBalance() {
-    return this.loadedCdtBalance;
   }
 
   /**

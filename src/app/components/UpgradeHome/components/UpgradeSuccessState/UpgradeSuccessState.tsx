@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import Link from '@material-ui/core/Link';
@@ -6,8 +6,8 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
-import { useStyles } from '~app/components/UpgradeHome/components/UpgradeSuccessState/UpgradeSuccessState.styles';
 import { ActionButton } from '~app/components/UpgradeHome/components/ConversionState/ConversionState';
+import { useStyles } from '~app/components/UpgradeHome/components/UpgradeSuccessState/UpgradeSuccessState.styles';
 
 const AddSSVToMetamaskButton = styled(Button)`
   border: 1px solid #5B6C84;
@@ -17,11 +17,11 @@ const AddSSVToMetamaskButton = styled(Button)`
   padding-left: 15px;
   padding-right: 15px;
   margin: auto;
-  
+
   &:hover, &:active, &:focus {
     background-color: rgba(0, 0, 0, 0.04);
   }
-  
+
   & img {
     width: 20px;
     height: 20px;
@@ -53,6 +53,7 @@ const BackLink = styled.div`
 
 const LearnMoreLink = styled(Link)`
   margin-top: 100px;
+
   &:hover {
     text-decoration: none;
   }
@@ -70,6 +71,11 @@ const UpgradeSuccessState = () => {
   const onAddSsvToMetamaskClick = () => {
     upgradeStore.registerSSVTokenInMetamask();
   };
+
+  useEffect(() => {
+    upgradeStore.setApprovedAllowance(null);
+    upgradeStore.setCdtBalance(null);
+  }, [upgradeStore.approvedAllowance, upgradeStore.cdtValue]);
 
   return (
     <Grid container spacing={0} justify="center" className={classes.root}>

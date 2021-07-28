@@ -5,22 +5,25 @@ import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import Button from '~app/common/components/AppBar/components/Button';
 import ApplicationStore from '~app/common/stores/Application.store';
 
-const ConnectWalletButton = () => {
+type ConnectWalletButtonProps = {
+  buttonComponent?: any;
+  buttonText?: string;
+};
+
+const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
+  const { buttonComponent, buttonText } = props;
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
   const walletImageStyle = { width: 24, height: 24, marginRight: 5, marginLeft: 0 };
 
-  const disconnectWalletWithPrompt = () => {
-    walletStore.disconnect().then(() => walletStore.connect());
-  };
   const onClick = () => {
     if (walletStore.connected) {
       return applicationStore.showWalletPopUp(true);
-      return disconnectWalletWithPrompt();
     }
     return walletStore.connect();
   };
+
   let icon;
   if (walletStore.wallet?.name) {
     switch (walletStore.wallet.name) {
@@ -35,21 +38,25 @@ const ConnectWalletButton = () => {
         break;
     }
   }
+
   const walletDisplayName = (address: string) => {
     if (!address) {
       return '';
     }
     return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
   };
+
+  const ConnectButton = buttonComponent ?? Button;
+
   return (
-    <Button color="inherit" onClick={onClick}>
+    <ConnectButton color="inherit" onClick={onClick}>
       {walletStore.connected ? (
         <>
           {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${walletStore.wallet.name}`} />}
           {walletDisplayName(walletStore.accountAddress)}
         </>
-      ) : 'Connect Wallet'}
-    </Button>
+      ) : buttonText ?? 'Connect Wallet'}
+    </ConnectButton>
   );
 };
 export default observer(ConnectWalletButton);

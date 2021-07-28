@@ -21,15 +21,23 @@ const MaxButton = styled.div`
   margin-right: 10px;
 `;
 
+const BalanceLabelContainer = styled.div`
+  display: flex;
+  width: 100%;
+`;
+
 const BalanceLabel = styled.div`
   font-weight: 600;
   font-size: 12px;
-  display: block;
+  display: inline-block;
   text-align: right;
   color: #A1ACBE;
   padding-top: 3px;
   padding-bottom: 3px;
   padding-right: 15px;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 0;
 `;
 
 const ConvertArrowContainer = styled.div`
@@ -43,7 +51,7 @@ const ConvertArrowContainer = styled.div`
 
 const MiddlePartContainer = styled.div`
   display: block;
-  padding-right: 35px;
+  width: 100%;
 `;
 
 const RateContainer = styled.div`
@@ -126,7 +134,17 @@ const ConversionState = () => {
     setCdtValue(event.target.value);
 
     if (numRegex.test(event.target.value)) {
-      upgradeStore.setCdtValue(parseFloat(String(event.target.value)));
+      const value = parseFloat(String(event.target.value));
+      if (upgradeStore.cdtBalance !== null) {
+        if (value <= upgradeStore.cdtBalance) {
+          upgradeStore.setCdtValue(value);
+          setCdtError(false);
+        } else {
+          setCdtError(true);
+        }
+        return;
+      }
+      upgradeStore.setCdtValue(value);
       setCdtError(false);
     } else {
       upgradeStore.setCdtValue(0);
@@ -138,15 +156,18 @@ const ConversionState = () => {
    * Select as many CDT for conversion as user have on balance.
    */
   const setMaxCdt = () => {
+    if (!upgradeStore.cdtBalance) {
+      return;
+    }
     setCdtError(false);
     // @ts-ignore
-    setCdtValue(upgradeStore.cdtBalance);
+    setCdtValue(upgradeStore.toFixedNumber(upgradeStore.cdtBalance));
     // @ts-ignore
     upgradeStore.setCdtValue(upgradeStore.cdtBalance);
   };
 
   const insufficientBalance = upgradeStore.cdtBalance !== null && !upgradeStore.cdtBalance;
-  const upgradeButtonDisabled = !upgradeStore.cdtValue || !upgradeStore.ssvValue || insufficientBalance;
+  const upgradeButtonDisabled = cdtError || !upgradeStore.cdtValue || !upgradeStore.ssvValue || insufficientBalance;
 
   return (
     <Grid container spacing={0} justify="center" className={classes.root}>
@@ -174,16 +195,20 @@ const ConversionState = () => {
           />
         </FormControl>
 
-        <MiddlePartContainer>
-          {upgradeStore.cdtBalance ? (
-            <BalanceLabel>
-              Balance: {upgradeStore.cdtBalance} CDT
-            </BalanceLabel>
-          ) : ''}
-          <ConvertArrowContainer style={!upgradeStore.cdtBalance ? { marginTop: 10 } : {}}>
-            <img src="/images/conversion-arrow.svg" />
-          </ConvertArrowContainer>
-        </MiddlePartContainer>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <MiddlePartContainer>
+            {upgradeStore.cdtBalance ? (
+              <BalanceLabelContainer>
+                <BalanceLabel onClick={() => setMaxCdt()}>
+                  Balance: {upgradeStore.toFixedNumber(upgradeStore.cdtBalance).toString()} CDT
+                </BalanceLabel>
+              </BalanceLabelContainer>
+            ) : ''}
+            <ConvertArrowContainer style={!upgradeStore.cdtBalance ? { marginTop: 10 } : {}}>
+              <img src="/images/conversion-arrow.svg" />
+            </ConvertArrowContainer>
+          </MiddlePartContainer>
+        </FormControl>
 
         <FormControl variant="outlined" className={classes.formControl}>
           <OutlinedInput

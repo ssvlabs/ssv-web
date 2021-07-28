@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import Layout from '~app/common/components/Layout';
@@ -19,12 +20,17 @@ import ValidatorTransactionConfirmation from '~app/components/ImportValidatorCon
 import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 
+const UpgradeGrid = styled(Grid)`
+  overflow-x: hidden;
+  overflow-y: scroll;
+`;
+
 const Routes = () => {
   if (isUpgradePage()) {
     return (
-      <Grid container>
+      <UpgradeGrid container>
         <UpgradeHome />
-      </Grid>
+      </UpgradeGrid>
     );
   }
   return (

@@ -73,7 +73,7 @@ const UpgradeSuccessState = () => {
   };
 
   const getSsvTokenUrl = () => {
-    return `https://${upgradeStore.isTestnet ? 'goerli.' : ''}etherscan.io/token/${upgradeStore.getContractAddress('ssv')}`;
+    return `https://${upgradeStore.isTestnet ? 'goerli.' : ''}etherscan.io/tx/${upgradeStore.getUpgradeTxHash()}`;
   };
 
   useEffect(() => {

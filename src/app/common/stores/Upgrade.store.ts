@@ -1,5 +1,6 @@
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
+import { FixedNumber } from '@ethersproject/bignumber';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
@@ -27,6 +28,9 @@ class UpgradeStore extends BaseStore {
   @observable ssvContractInstance: Contract | null = null;
   @observable upgradeContractInstance: Contract | null = null;
 
+  // Results
+  @observable upgradeTxHash: string = '';
+
   /**
    * Returns instance of CDT old contract
    */
@@ -41,7 +45,7 @@ class UpgradeStore extends BaseStore {
     }
     return <Contract> this.cdtContractInstance;
   }
-
+  
   /**
    * Returns instance of SSV contract
    */
@@ -123,6 +127,21 @@ class UpgradeStore extends BaseStore {
   get isTestnet() {
     const params = new URLSearchParams(window.location.search);
     return params.get('testnet');
+  }
+
+  @action.bound
+  getUpgradeTxHash() {
+    return this.upgradeTxHash;
+  }
+
+  @action.bound
+  setUpgradeTxHash(txHash: string) {
+    this.upgradeTxHash = txHash;
+  }
+
+  @action.bound
+  toFixedNumber(num: any) {
+    return FixedNumber.from(num);
   }
 
   /**

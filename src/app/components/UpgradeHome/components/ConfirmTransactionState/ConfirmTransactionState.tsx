@@ -132,6 +132,7 @@ const ConfirmTransactionState = () => {
         console.debug('Conversion result:', result);
         setUpgraded(true);
         upgradeStore.setStep(UpgradeSteps.upgradeSuccess);
+        upgradeStore.setUpgradeTxHash(result.transactionHash);
       }
       return result;
     }).catch((error: any) => {
@@ -146,6 +147,10 @@ const ConfirmTransactionState = () => {
     });
   };
 
+  /**
+   * Approve button states
+   * @param props
+   */
   const renderApproveButtonText = (props: { approving: boolean, approved: boolean }) => {
     // eslint-disable-next-line react/prop-types
     if (props.approved) {
@@ -162,6 +167,10 @@ const ConfirmTransactionState = () => {
     return 'Approve';
   };
 
+  /**
+   * Upgrade button states
+   * @param props
+   */
   const renderUpgradeButtonText = (props: { upgrading: boolean, upgraded: boolean }) => {
     // eslint-disable-next-line react/prop-types
     if (props.upgraded) {
@@ -178,31 +187,45 @@ const ConfirmTransactionState = () => {
     return 'Upgrade';
   };
 
+  /**
+   * Calculate total estimation.
+   */
+  const calculateEstimation = () => {
+    let finalEstimation = 0.0;
+    upgradeCdtToSsv(true).then((exchangeEstimation: any) => {
+      if (!Number.isNaN(parseFloat(String(exchangeEstimation)))) {
+        finalEstimation += parseFloat(String(exchangeEstimation));
+        console.debug('Upgrade CDT to SSV estimation:', finalEstimation, 'ETH');
+      }
+    }).finally(() => {
+      approveAllowance(true).then((allowanceEstimation: any) => {
+        if (!Number.isNaN(parseFloat(String(allowanceEstimation)))) {
+          finalEstimation += parseFloat(String(allowanceEstimation));
+          console.debug('Allowance Estimation:', parseFloat(String(allowanceEstimation)), 'ETH');
+        }
+      }).finally(() => {
+        setEstimationValue(finalEstimation.toFixed(20));
+        console.debug('Final Estimation:', finalEstimation.toFixed(20));
+      });
+    });
+  };
+
+  /**
+   * Check allowance for user.
+   */
+  const checkAllowance = () => {
+    upgradeStore.checkAllowance().then((allowance: any) => {
+      console.debug('Allowance value:', allowance);
+    });
+  };
+
   // Allowance effect
   useEffect(() => {
     if (upgradeStore.approvedAllowance === null) {
-      upgradeStore.checkAllowance().then((allowance: any) => {
-        console.debug('Allowance value:', allowance);
-      });
-      let finalEstimation = 0.0;
-      upgradeCdtToSsv(true).then((exchangeEstimation: any) => {
-        if (!Number.isNaN(parseFloat(String(exchangeEstimation)))) {
-          finalEstimation += parseFloat(String(exchangeEstimation));
-          console.debug('Upgrade CDT to SSV estimation:', finalEstimation, 'ETH');
-        }
-      }).finally(() => {
-        approveAllowance(true).then((allowanceEstimation: any) => {
-          if (!Number.isNaN(parseFloat(String(allowanceEstimation)))) {
-            finalEstimation += parseFloat(String(allowanceEstimation));
-            console.debug('Allowance Estimation:', parseFloat(String(allowanceEstimation)), 'ETH');
-          }
-        }).finally(() => {
-          setEstimationValue(finalEstimation.toFixed(18));
-          console.debug('Final Estimation:', finalEstimation.toFixed(18));
-        });
-      });
+      checkAllowance();
     }
-  }, [upgradeStore.approvedAllowance]);
+    calculateEstimation();
+  });
 
   // Buttons states
   useEffect(() => {

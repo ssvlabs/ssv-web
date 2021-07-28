@@ -5,12 +5,13 @@ import { Alert } from '@material-ui/lab';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import UpgradeFAQ from '~app/components/UpgradeHome/components/UpgradeFAQ';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
 import UpgradeState from '~app/components/UpgradeHome/components/UpgradeState';
 import ConversionState from '~app/components/UpgradeHome/components/ConversionState';
 import DisclaimerState from '~app/components/UpgradeHome/components/DisclaimerState';
-import ConfirmTransactionState from '~app/components/UpgradeHome/components/ConfirmTransactionState';
 import UpgradeSuccessState from '~app/components/UpgradeHome/components/UpgradeSuccessState';
+import ConfirmTransactionState from '~app/components/UpgradeHome/components/ConfirmTransactionState';
 
 const UpgradeContainer = styled.div`
   max-width: 100%;
@@ -107,6 +108,7 @@ const UpgradeHome = () => {
         <Alert severity="warning">You are working in testnet.</Alert>
       ) : ''}
       <UpgradeState {...upgradeStateProps} />
+      <UpgradeFAQ />
     </UpgradeContainer>
   );
 };

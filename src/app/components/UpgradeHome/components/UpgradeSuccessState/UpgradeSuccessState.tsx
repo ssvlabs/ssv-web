@@ -68,8 +68,12 @@ const UpgradeSuccessState = () => {
     upgradeStore.setStep(UpgradeSteps.home);
   };
 
-  const onAddSsvToMetamaskClick = () => {
-    upgradeStore.registerSSVTokenInMetamask();
+  const onAddSsvToMetamaskClick = async () => {
+    await upgradeStore.registerSSVTokenInMetamask();
+  };
+
+  const getSsvTokenUrl = () => {
+    return `https://${upgradeStore.isTestnet ? 'goerli.' : ''}etherscan.io/token/${upgradeStore.getContractAddress('ssv')}`;
   };
 
   useEffect(() => {
@@ -85,7 +89,9 @@ const UpgradeSuccessState = () => {
           <img src="/images/metamask.svg" alt="MetaMask" />
         </AddSSVToMetamaskButton>
 
-        <ViewOnExplorerLink href="/">View on explorer</ViewOnExplorerLink>
+        <ViewOnExplorerLink href={getSsvTokenUrl()} target="_blank">
+          View on explorer
+        </ViewOnExplorerLink>
 
         <LearnMoreLink
           href="https://ssv.network"

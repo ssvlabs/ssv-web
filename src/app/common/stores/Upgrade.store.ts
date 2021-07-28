@@ -36,7 +36,7 @@ class UpgradeStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       this.cdtContractInstance = new walletStore.web3.eth.Contract(
         config.CONTRACTS.CDT.ABI,
-        config.CONTRACTS.CDT.CONTRACT_ADDRESS,
+        this.getContractAddress('cdt'),
       );
     }
     return <Contract> this.cdtContractInstance;
@@ -51,7 +51,7 @@ class UpgradeStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       this.ssvContractInstance = new walletStore.web3.eth.Contract(
         config.CONTRACTS.SSV.ABI,
-        config.CONTRACTS.SSV.CONTRACT_ADDRESS,
+        this.getContractAddress('ssv'),
       );
     }
     return <Contract> this.ssvContractInstance;
@@ -66,7 +66,7 @@ class UpgradeStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       this.upgradeContractInstance = new walletStore.web3.eth.Contract(
         config.CONTRACTS.DEX.ABI,
-        config.CONTRACTS.DEX.CONTRACT_ADDRESS,
+        this.getContractAddress('dex'),
       );
     }
     return <Contract> this.upgradeContractInstance;
@@ -119,6 +119,26 @@ class UpgradeStore extends BaseStore {
     return this.getStore('Wallet').accountAddress;
   }
 
+  @computed
+  get isTestnet() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('testnet');
+  }
+
+  /**
+   * Gets the contract address regarding the testnet/mainnet flag in url search params.
+   * By default mainnet is used.
+   * If testnet used - show warning in the top of the page.
+   * @param contract
+   */
+  @action.bound
+  getContractAddress(contract: string): string {
+    const contractType = String(contract).toUpperCase();
+    // @ts-ignore
+    const contractData = config.CONTRACTS[contractType].CONTRACT_ADDRESS;
+    return this.isTestnet ? contractData.TESTNET : contractData.MAINNET;
+  }
+
   /**
    * Set step of UI
    * @param step
@@ -168,7 +188,7 @@ class UpgradeStore extends BaseStore {
       .methods
       .allowance(
         this.accountAddress,
-        config.CONTRACTS.DEX.CONTRACT_ADDRESS,
+        this.getContractAddress('dex'),
       )
       .call()
       .then((allowance: number) => {
@@ -186,8 +206,8 @@ class UpgradeStore extends BaseStore {
    */
   @action.bound
   async approveAllowance(amount?: number, estimate: boolean = false): Promise<any> {
-    const cdtValue = String(amount ?? `1${new Array(30).fill(0).join('')}`);
-    const weiValue = this.getStore('Wallet').web3.utils.toWei(cdtValue, 'ether');
+    const cdtValue = String(amount ?? '115792089237316195423570985008687907853269984665640564039457584007913129639935');
+    const weiValue = amount ? this.getStore('Wallet').web3.utils.toWei(cdtValue, 'ether') : cdtValue;
 
     if (!estimate) {
       console.debug('Approving:', { cdtValue, weiValue });
@@ -195,7 +215,7 @@ class UpgradeStore extends BaseStore {
 
     const methodCall = this.cdtContract
       .methods
-      .approve(config.CONTRACTS.DEX.CONTRACT_ADDRESS, weiValue);
+      .approve(this.getContractAddress('dex'), weiValue);
 
     if (estimate) {
       return methodCall
@@ -220,7 +240,7 @@ class UpgradeStore extends BaseStore {
   @action.bound
   async convertCdtToSsv(estimate: boolean = false): Promise<any> {
     console.debug(`${estimate ? 'Estimating' : 'Converting'} ${this.userCdtValue} CDT..`);
-    
+
     const weiValue = this.getStore('Wallet').web3.utils.toWei(String(this.userCdtValue), 'ether');
     const methodCall = this.upgradeContract
       .methods
@@ -263,8 +283,37 @@ class UpgradeStore extends BaseStore {
    */
   @action.bound
   registerSSVTokenInMetamask() {
-    // TODO
-    console.debug('TODO: register token in user metamask');
+    return new Promise((resolve, reject) => {
+      return this.getStore('Wallet').web3.currentProvider.send({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: this.getContractAddress('ssv'),
+            symbol: 'SSV',
+            decimals: 18,
+          },
+        },
+      }, (error: any, success: any) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(success);
+        }
+      });
+    }).then((success: any) => {
+      if (success) {
+        this.getStore('Notifications')
+          .showMessage('SSV successfully added to wallet!', 'success');
+      } else {
+        this.getStore('Notifications')
+          .showMessage('Can not add SSV to wallet!', 'error');
+      }
+    }).catch((error: any) => {
+      console.error('Can not add SSV token to wallet', error);
+      this.getStore('Notifications')
+        .showMessage(`Can not add SSV to wallet: ${error.message}`, 'error');
+    });
   }
 }
 

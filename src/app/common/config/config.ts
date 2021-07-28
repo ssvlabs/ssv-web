@@ -278,7 +278,10 @@ const config = {
   },
   CONTRACTS: {
     CDT: {
-      CONTRACT_ADDRESS: process.env.REACT_APP_CDT_CONTRACT_ADDRESS,
+      CONTRACT_ADDRESS: {
+        TESTNET: '0x07015138087772921648d45E8Ed865291d876F0D',
+        MAINNET: '',
+      },
       ABI: [
         {
           'anonymous': false,
@@ -560,7 +563,10 @@ const config = {
       ],
     },
     SSV: {
-      CONTRACT_ADDRESS: process.env.REACT_APP_SSV_CONTRACT_ADDRESS,
+      CONTRACT_ADDRESS: {
+        TESTNET: '0xA52fe9624551318B715381FD3436aC64c204882C',
+        MAINNET: '',
+      },
       ABI: [
         {
           'anonymous': false,
@@ -943,7 +949,10 @@ const config = {
       ],
     },
     DEX: {
-      CONTRACT_ADDRESS: process.env.REACT_APP_DEX_CONTRACT_ADDRESS,
+      CONTRACT_ADDRESS: {
+        TESTNET: '0x4fC2eC65faeFcec4b3b7829A596A616e8807Fe29',
+        MAINNET: '',
+      },
       ABI: [
         {
           'anonymous': false,

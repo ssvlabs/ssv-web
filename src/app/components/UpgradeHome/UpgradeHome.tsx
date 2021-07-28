@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
+import { Alert } from '@material-ui/lab';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
@@ -19,6 +20,7 @@ const UpgradeContainer = styled.div`
   display: flex;
   align-content: center;
   align-items: center;
+  flex-direction: column;
 `;
 
 const UpgradeHome = () => {
@@ -101,6 +103,9 @@ const UpgradeHome = () => {
 
   return (
     <UpgradeContainer>
+      {upgradeStore.isTestnet ? (
+        <Alert severity="warning">You are working in testnet.</Alert>
+      ) : ''}
       <UpgradeState {...upgradeStateProps} />
     </UpgradeContainer>
   );

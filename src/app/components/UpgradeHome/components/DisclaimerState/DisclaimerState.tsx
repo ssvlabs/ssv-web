@@ -42,18 +42,23 @@ const DisclaimerState = () => {
         <DisclaimerRow>
           <DisclaimerText>
             <DisclaimerHeader>NO REVERSIBILITY.</DisclaimerHeader>
-            Your CDT Tokens will be upgraded to SSV Tokens based on a predetermined fixed ratio of 1 CDT = 0.010 SSV (the &quot;SSV Upgrade&quot;).
-            The SSV Upgrade will be final and irreversible and you will not be able to retrieve your CDTs after clicking &quot;UPGRADE&quot;.
+            Your CDT Tokens will be upgraded to SSV Tokens based on a predetermined fixed ratio of 1 SSV = 100 CDT
+            (the &quot;SSV Upgrade&quot;).
+            The SSV Upgrade will be final and irreversible and you will not be able to retrieve your CDTs after
+            clicking &quot;UPGRADE&quot;.
           </DisclaimerText>
         </DisclaimerRow>
 
         <DisclaimerRow>
           <DisclaimerText>
             <DisclaimerHeader>NO WARRANTY.</DisclaimerHeader>
-            The SSV Upgrade is an entirely open-source code provided by Coin-dash Ltd (&quot;Coin-dash&quot; or &quot;We&quot;) on an
-            &quot;as-is&quot; and &quot;as-available&quot; basis without any warranty whatsoever. Although the SSV Upgrade is audited by
+            The SSV Upgrade is an entirely open-source code provided by Coin-dash Ltd
+            (&quot;Coin-dash&quot; or &quot;We&quot;) on an
+            &quot;as-is&quot; and &quot;as-available&quot; basis without any warranty whatsoever. Although the SSV
+            Upgrade is audited by
             an unaffiliated third-party, the code may contain bugs, errors, defects and vulnerabilities that may result
-            in you incurring severe loss and damages, including failing to complete the SSV Upgrade or losing all of your funds.
+            in you incurring severe loss and damages, including failing to complete the SSV Upgrade or losing all of
+            your funds.
           </DisclaimerText>
         </DisclaimerRow>
 
@@ -61,17 +66,21 @@ const DisclaimerState = () => {
           <DisclaimerText>
             <DisclaimerHeader>NO LIABILITY.</DisclaimerHeader>
             The SSV Upgrade will be done at your own risk and you will solely be responsible for any loss or damage that
-            result from the SSV Upgrade. We shall not be liable under no circumstances for any or all loss or damage arising
-            from or relating to the SSV Upgrade, and you further expressly waive and release Coin-dash from such loss or damages if occurred.
+            result from the SSV Upgrade. We shall not be liable under no circumstances for any or all loss or damage
+            arising
+            from or relating to the SSV Upgrade, and you further expressly waive and release Coin-dash from such loss or
+            damages if occurred.
           </DisclaimerText>
         </DisclaimerRow>
 
         <DisclaimerRow>
           <DisclaimerText>
             <DisclaimerHeader>UPGRADE IS OPTIONAL.</DisclaimerHeader>
-            The SSV Upgrade is a technical version update to the CDT Tokens meant to add new features and functionalities
+            The SSV Upgrade is a technical version update to the CDT Tokens meant to add new features and
+            functionalities
             and allow users to participate in the SSV Platform. The SSV Upgrade is strictly voluntary and optional.
-            It does not constitute a redemption, distribution, allocation, payment, &quot;airdrop&quot; or sale of tokens, or a solicitation,
+            It does not constitute a redemption, distribution, allocation, payment, &quot;airdrop&quot; or sale of
+            tokens, or a solicitation,
             recommendation or offering in respect of any of the above.
           </DisclaimerText>
         </DisclaimerRow>

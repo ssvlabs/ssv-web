@@ -249,7 +249,7 @@ const ConfirmTransactionState = () => {
 
         <ConfirmTransactionInfoRow>
           <ConfirmTransactionInfoLabel>Rate</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>1 CDT = 0.01 SSV</ConfirmTransactionInfo>
+          <ConfirmTransactionInfo>1 SSV = 100 CDT</ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow>

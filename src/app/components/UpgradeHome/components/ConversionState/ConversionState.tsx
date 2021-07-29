@@ -226,7 +226,7 @@ const ConversionState = () => {
 
           <RateContainer>
             <RateLabel>Rate</RateLabel>
-            <RateValue>1 CDT = 0.01 SSV</RateValue>
+            <RateValue>1 SSV = 100 CDT</RateValue>
           </RateContainer>
 
           {walletStore.connected ? (

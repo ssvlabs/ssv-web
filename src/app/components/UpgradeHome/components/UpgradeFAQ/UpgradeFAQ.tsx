@@ -76,7 +76,7 @@ const UpgradeFAQ = () => {
           }}>
             {faqItem.question}
             <UpgradeFAQIconIndicator>
-              {expanded[faqIndex] ? <ExpandMoreIcon style={iconStyle} /> : <ExpandLessIcon style={iconStyle} />}
+              {expanded[faqIndex] ? <ExpandLessIcon style={iconStyle} /> : <ExpandMoreIcon style={iconStyle} />}
             </UpgradeFAQIconIndicator>
           </UpgradeFAQHeader>
           <UpgradeFAQContent expanded={expanded[faqIndex]}>

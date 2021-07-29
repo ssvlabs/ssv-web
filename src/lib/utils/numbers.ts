@@ -15,7 +15,7 @@ export const getPrecision = (numeric: number | string) => {
     if (!precision) {
       try {
         const numberParts = String(numeric).split('.');
-        precision = numberParts[1].length;
+        precision = numberParts[1].length + 1;
       } catch (error) {
         //
       }

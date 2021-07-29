@@ -15,6 +15,7 @@ export const UpgradeSteps = {
 class UpgradeStore extends BaseStore {
   // UI states
   @observable upgradeStep: number = UpgradeSteps.home;
+  @observable userAgreedOnTerms: boolean = false;
 
   // Amounts
   @observable userCdtValue: number | string = 0;
@@ -129,6 +130,11 @@ class UpgradeStore extends BaseStore {
     return params.get('testnet');
   }
 
+  @computed
+  get isUserAgreedOnTerms() {
+    return this.userAgreedOnTerms;
+  }
+
   @action.bound
   getUpgradeTxHash() {
     return this.upgradeTxHash;
@@ -165,6 +171,11 @@ class UpgradeStore extends BaseStore {
   @action.bound
   setStep(step: number) {
     this.upgradeStep = step;
+  }
+  
+  @action.bound
+  setUserAgreedOnTerms(agreed: boolean) {
+    this.userAgreedOnTerms = agreed;
   }
 
   /**

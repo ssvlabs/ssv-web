@@ -79,7 +79,7 @@ const ConfirmTransactionState = () => {
   const [estimationValue, setEstimationValue] = useState('0.0');
 
   // Button states
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [checkboxChecked, setCheckboxChecked] = useState(upgradeStore.isUserAgreedOnTerms);
   const [approveButtonDisabled, setApproveButtonDisabled] = useState(true);
   const [twoStepsUpgradeButtonDisabled, setTwoStepsUpgradeButtonDisabled] = useState(true);
   const [oneStepUpgradeButtonDisabled, setOneStepUpgradeButtonDisabled] = useState(true);

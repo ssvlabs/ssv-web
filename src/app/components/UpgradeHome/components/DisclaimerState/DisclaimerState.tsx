@@ -33,7 +33,9 @@ const DisclaimerState = () => {
   const upgradeStore: UpgradeStore = stores.Upgrade;
 
   const onAgreeButtonClick = () => {
+    upgradeStore.setUserAgreedOnTerms(true);
     upgradeStore.setStep(UpgradeSteps.confirmTransaction);
+    window.scrollTo(0, 0);
   };
 
   return (

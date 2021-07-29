@@ -6,6 +6,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
+import { formatFloatToMaxPrecision } from '~lib/utils/numbers';
 import ProgressStepper from '~app/common/components/ProgressStepper';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
@@ -191,22 +192,10 @@ const ConfirmTransactionState = () => {
    * Calculate total estimation.
    */
   const calculateEstimation = () => {
-    let finalEstimation = 0.0;
     upgradeCdtToSsv(true).then((exchangeEstimation: any) => {
       if (!Number.isNaN(parseFloat(String(exchangeEstimation)))) {
-        finalEstimation += parseFloat(String(exchangeEstimation));
-        console.debug('Upgrade CDT to SSV estimation:', finalEstimation, 'ETH');
+        setEstimationValue(formatFloatToMaxPrecision(exchangeEstimation));
       }
-    }).finally(() => {
-      approveAllowance(true).then((allowanceEstimation: any) => {
-        if (!Number.isNaN(parseFloat(String(allowanceEstimation)))) {
-          finalEstimation += parseFloat(String(allowanceEstimation));
-          console.debug('Allowance Estimation:', parseFloat(String(allowanceEstimation)), 'ETH');
-        }
-      }).finally(() => {
-        setEstimationValue(finalEstimation.toFixed(20));
-        console.debug('Final Estimation:', finalEstimation.toFixed(20));
-      });
     });
   };
 
@@ -215,7 +204,9 @@ const ConfirmTransactionState = () => {
    */
   const checkAllowance = () => {
     upgradeStore.checkAllowance().then((allowance: any) => {
+      setEstimationValue('Processing..');
       console.debug('Allowance value:', allowance);
+      return allowance;
     });
   };
 
@@ -225,7 +216,7 @@ const ConfirmTransactionState = () => {
       checkAllowance();
     }
     calculateEstimation();
-  });
+  }, [upgradeStore.approveAllowance, estimationValue]);
 
   // Buttons states
   useEffect(() => {
@@ -244,7 +235,7 @@ const ConfirmTransactionState = () => {
 
         <ConfirmTransactionInfoRow>
           <ConfirmTransactionInfoLabel>To</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>{upgradeStore.ssvValue} SSV</ConfirmTransactionInfo>
+          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(upgradeStore.ssvValue)} SSV</ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow>
@@ -254,7 +245,7 @@ const ConfirmTransactionState = () => {
 
         <ConfirmTransactionInfoRow>
           <ConfirmTransactionInfoLabel>Transaction fee</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>{estimationValue} ETH</ConfirmTransactionInfo>
+          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(estimationValue)} ETH</ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow style={{ padding: 20 }} />

@@ -17,7 +17,7 @@ class UpgradeStore extends BaseStore {
   @observable upgradeStep: number = UpgradeSteps.home;
 
   // Amounts
-  @observable userCdtValue: number = 0;
+  @observable userCdtValue: number | string = 0;
   @observable userCdtBalance: number | null = null;
 
   // Allowance
@@ -45,7 +45,7 @@ class UpgradeStore extends BaseStore {
     }
     return <Contract> this.cdtContractInstance;
   }
-  
+
   /**
    * Returns instance of SSV contract
    */
@@ -97,7 +97,7 @@ class UpgradeStore extends BaseStore {
    */
   @computed
   get ssvValue() {
-    return this.userCdtValue * 0.01;
+    return parseFloat(String(this.userCdtValue)) * 0.01;
   }
 
   /**
@@ -172,7 +172,7 @@ class UpgradeStore extends BaseStore {
    * @param value
    */
   @action.bound
-  setCdtValue(value: number) {
+  setCdtValue(value: number | string) {
     this.userCdtValue = value;
   }
 
@@ -182,10 +182,12 @@ class UpgradeStore extends BaseStore {
    */
   @action.bound
   setCdtBalance(balance: number | null) {
+    // Case when we need to unset the balance.
     if (!balance) {
       this.userCdtBalance = balance;
       return;
     }
+    // Otherwise we set it in wei
     this.userCdtBalance = this.getStore('Wallet').web3.utils.fromWei(String(balance), 'ether');
   }
 

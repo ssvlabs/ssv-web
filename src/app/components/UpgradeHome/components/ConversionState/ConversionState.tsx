@@ -7,6 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useStores } from '~app/hooks/useStores';
+import { formatFloatToMaxPrecision } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
@@ -97,8 +98,8 @@ const ConversionState = () => {
   const stores = useStores();
   const upgradeStore: UpgradeStore = stores.Upgrade;
   const walletStore: WalletStore = stores.Wallet;
-  const [cdtValue, setCdtValue] = useState(0);
-  const [ssvValue, setSsvValue] = useState(0);
+  const [cdtValue, setCdtValue] = useState('0.0');
+  const [ssvValue, setSsvValue] = useState('0.0');
   const [cdtError, setCdtError] = useState(false);
   const cdtImageStyle = {
     width: 59,
@@ -117,7 +118,7 @@ const ConversionState = () => {
   // Update SSV value once CDT value is defined
   useEffect(() => {
     if (upgradeStore.cdtValue) {
-      setSsvValue(upgradeStore.ssvValue);
+      setSsvValue(formatFloatToMaxPrecision(upgradeStore.ssvValue));
     }
   }, [upgradeStore.cdtValue]);
 
@@ -137,14 +138,14 @@ const ConversionState = () => {
       const value = parseFloat(String(event.target.value));
       if (upgradeStore.cdtBalance !== null) {
         if (value <= upgradeStore.cdtBalance) {
-          upgradeStore.setCdtValue(value);
+          upgradeStore.setCdtValue(formatFloatToMaxPrecision(value));
           setCdtError(false);
         } else {
           setCdtError(true);
         }
         return;
       }
-      upgradeStore.setCdtValue(value);
+      upgradeStore.setCdtValue(formatFloatToMaxPrecision(value));
       setCdtError(false);
     } else {
       upgradeStore.setCdtValue(0);
@@ -160,10 +161,8 @@ const ConversionState = () => {
       return;
     }
     setCdtError(false);
-    // @ts-ignore
-    setCdtValue(upgradeStore.toFixedNumber(upgradeStore.cdtBalance));
-    // @ts-ignore
-    upgradeStore.setCdtValue(upgradeStore.cdtBalance);
+    setCdtValue(formatFloatToMaxPrecision(upgradeStore.cdtBalance));
+    upgradeStore.setCdtValue(formatFloatToMaxPrecision(upgradeStore.cdtBalance));
   };
 
   const insufficientBalance = upgradeStore.cdtBalance !== null && !upgradeStore.cdtBalance;
@@ -180,6 +179,11 @@ const ConversionState = () => {
             value={cdtValue}
             error={cdtError}
             onChange={onCdtInputChange}
+            onFocus={() => {
+              if (cdtValue === '0.0') {
+                setCdtValue('');
+              }
+            }}
             endAdornment={(
               <InputAdornment position="end">
                 <>
@@ -200,7 +204,7 @@ const ConversionState = () => {
             {upgradeStore.cdtBalance ? (
               <BalanceLabelContainer>
                 <BalanceLabel onClick={() => setMaxCdt()}>
-                  Balance: {upgradeStore.toFixedNumber(upgradeStore.cdtBalance).toString()} CDT
+                  Balance: {formatFloatToMaxPrecision(upgradeStore.cdtBalance)} CDT
                 </BalanceLabel>
               </BalanceLabelContainer>
             ) : ''}

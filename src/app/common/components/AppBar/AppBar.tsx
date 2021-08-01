@@ -68,7 +68,7 @@ const AppBarComponent = () => {
 
   const switchPage = (link: string, newPage: boolean = false) => {
     if (isUpgradePage()) {
-      window.location.href = '/';
+      window.location.href = 'https://ssv.network';
       return;
     }
     if (newPage) {

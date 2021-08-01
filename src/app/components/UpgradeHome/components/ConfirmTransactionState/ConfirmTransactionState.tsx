@@ -7,6 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
 import { formatFloatToMaxPrecision } from '~lib/utils/numbers';
+import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ProgressStepper from '~app/common/components/ProgressStepper';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
@@ -77,6 +78,7 @@ const ConfirmTransactionState = () => {
   const [upgrading, setUpgrading] = useState(false);
   const [allowanceApproved, setAllowanceApproved] = useState(false);
   const [estimationValue, setEstimationValue] = useState('0.0');
+  const [usdEstimationValue, setUsdEstimationValue] = useState('0.0');
 
   // Button states
   const [checkboxChecked, setCheckboxChecked] = useState(upgradeStore.isUserAgreedOnTerms);
@@ -195,6 +197,9 @@ const ConfirmTransactionState = () => {
     upgradeCdtToSsv(true).then((exchangeEstimation: any) => {
       if (!Number.isNaN(parseFloat(String(exchangeEstimation)))) {
         setEstimationValue(formatFloatToMaxPrecision(exchangeEstimation));
+        return new PriceEstimation().estimateGasInUSD(exchangeEstimation).then((usdEstimation: any) => {
+          setUsdEstimationValue(formatFloatToMaxPrecision(usdEstimation));
+        });
       }
     });
   };
@@ -245,7 +250,8 @@ const ConfirmTransactionState = () => {
 
         <ConfirmTransactionInfoRow>
           <ConfirmTransactionInfoLabel>Transaction fee</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(estimationValue)} ETH</ConfirmTransactionInfo>
+          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(estimationValue)} ETH {usdEstimationValue ?
+            <b>`$${usdEstimationValue}`</b> : ''}</ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow style={{ padding: 20 }} />

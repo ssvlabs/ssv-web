@@ -3,6 +3,7 @@ import { action, computed, observable } from 'mobx';
 import { FixedNumber } from '@ethersproject/bignumber';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { formatFloatToMaxPrecision } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 export const UpgradeSteps = {
@@ -135,6 +136,38 @@ class UpgradeStore extends BaseStore {
     return this.userAgreedOnTerms;
   }
 
+  /**
+   * Balance format should include 4 decimals (e.g. 1.12345678 → 1.1234)
+   * In cases where the 4 decimals are all 0’s, show all digits until the last digit that is not 0
+   * (e.g. 1.000001234 → 1.000001).
+   *
+   * @param maxNonZeroFraction
+   */
+  @action.bound
+  cdtBalanceFormatted(maxNonZeroFraction: number = 4) {
+    const maxPrecisionBalanceString = formatFloatToMaxPrecision(<number> this.cdtBalance);
+    if (maxPrecisionBalanceString.indexOf('.') === -1) {
+      return maxPrecisionBalanceString;
+    }
+    const parts = maxPrecisionBalanceString.split('.');
+    const leftPart = parts[0];
+    let rightPart = parts[1];
+    const rightNumbers = [];
+    let allRightZeros = true;
+    for (let i = 0; i < rightPart.length; i += 1) {
+      const rightDigit = rightPart.substring(i, i + 1);
+      if (rightDigit !== '0') {
+        allRightZeros = false;
+      }
+      rightNumbers.push(rightDigit);
+      if (rightNumbers.length >= maxNonZeroFraction && !allRightZeros) {
+        break;
+      }
+    }
+    rightPart = rightNumbers.join('');
+    return `${leftPart}.${rightPart}`;
+  }
+
   @action.bound
   getUpgradeTxHash() {
     return this.upgradeTxHash;
@@ -172,7 +205,7 @@ class UpgradeStore extends BaseStore {
   setStep(step: number) {
     this.upgradeStep = step;
   }
-  
+
   @action.bound
   setUserAgreedOnTerms(agreed: boolean) {
     this.userAgreedOnTerms = agreed;

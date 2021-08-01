@@ -204,7 +204,7 @@ const ConversionState = () => {
             {upgradeStore.cdtBalance ? (
               <BalanceLabelContainer>
                 <BalanceLabel onClick={() => setMaxCdt()}>
-                  Balance: {formatFloatToMaxPrecision(upgradeStore.cdtBalance)} CDT
+                  Balance: {upgradeStore.cdtBalanceFormatted()} CDT
                 </BalanceLabel>
               </BalanceLabelContainer>
             ) : ''}

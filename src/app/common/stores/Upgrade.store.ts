@@ -315,6 +315,7 @@ class UpgradeStore extends BaseStore {
       return methodCall
         .estimateGas({ from: this.accountAddress })
         .then((gasAmount: number) => {
+          console.debug(`Estimated Gas Amount is ${gasAmount} Gwei`);
           const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
           return parseFloat(floatString);
         });

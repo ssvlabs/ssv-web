@@ -250,8 +250,8 @@ const ConfirmTransactionState = () => {
 
         <ConfirmTransactionInfoRow>
           <ConfirmTransactionInfoLabel>Transaction fee</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(estimationValue)} ETH {usdEstimationValue ?
-            <b>`$${usdEstimationValue}`</b> : ''}</ConfirmTransactionInfo>
+          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(estimationValue)} ETH {parseFloat(usdEstimationValue) ?
+            <b>${usdEstimationValue}</b> : ''}</ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow style={{ padding: 20 }} />

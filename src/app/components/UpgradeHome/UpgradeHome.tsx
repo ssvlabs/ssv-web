@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { Alert } from '@material-ui/lab';
+import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import WalletPopUp from '~app/components/WalletPopUp/WalletPopUp';
 import UpgradeFAQ from '~app/components/UpgradeHome/components/UpgradeFAQ';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
 import UpgradeState from '~app/components/UpgradeHome/components/UpgradeState';
@@ -22,6 +24,11 @@ const UpgradeContainer = styled.div`
   align-content: center;
   align-items: center;
   flex-direction: column;
+`;
+
+const UpgradeGrid = styled(Grid)`
+  overflow-x: hidden;
+  overflow-y: scroll;
 `;
 
 const UpgradeHome = () => {
@@ -103,13 +110,16 @@ const UpgradeHome = () => {
   }, [upgradeStore.step, walletStore.connected]);
 
   return (
-    <UpgradeContainer>
-      {upgradeStore.isTestnet ? (
-        <Alert severity="warning">You are working in testnet.</Alert>
-      ) : ''}
-      <UpgradeState {...upgradeStateProps} />
-      <UpgradeFAQ />
-    </UpgradeContainer>
+    <UpgradeGrid container>
+      <UpgradeContainer>
+        {upgradeStore.isTestnet ? (
+          <Alert severity="warning">You are working in testnet.</Alert>
+        ) : ''}
+        <UpgradeState {...upgradeStateProps} />
+        <UpgradeFAQ />
+        <WalletPopUp />
+      </UpgradeContainer>
+    </UpgradeGrid>
   );
 };
 

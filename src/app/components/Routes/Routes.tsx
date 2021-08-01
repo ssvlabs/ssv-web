@@ -1,9 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Switch, Route } from 'react-router-dom';
+import styled from 'styled-components';
+import Grid from '@material-ui/core/Grid';
+import { Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import Layout from '~app/common/components/Layout';
+import { isUpgradePage } from '~lib/utils/navigation';
+import UpgradeHome from '~app/components/UpgradeHome';
 import SuccessScreen from '~app/components/SuccessScreen';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
@@ -16,7 +20,19 @@ import ValidatorTransactionConfirmation from '~app/components/ImportValidatorCon
 import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 
+const UpgradeGrid = styled(Grid)`
+  overflow-x: hidden;
+  overflow-y: scroll;
+`;
+
 const Routes = () => {
+  if (isUpgradePage()) {
+    return (
+      <UpgradeGrid container>
+        <UpgradeHome />
+      </UpgradeGrid>
+    );
+  }
   return (
     <Layout>
       <Switch>

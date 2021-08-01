@@ -43,7 +43,7 @@ const BackNavigation = ({ to, text, color, onClick }: BackNavigationProps) => {
   const usedColor = color || defaultColor;
   const history = useHistory();
   const onNavigationClicked = () => {
-    history.push(to);
+    to && history.push(to);
     if (typeof onClick === 'function') {
       onClick();
     }

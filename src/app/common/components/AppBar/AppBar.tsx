@@ -23,6 +23,16 @@ type Button = {
   active?: boolean
 };
 
+// Subscribe to messages coming from secured frame.
+window.onmessage = (event: MessageEvent) => {
+  const { message, data } = event.data;
+  switch (message) {
+    case 'window.location.href':
+      window.location.href = data;
+      break;
+  }
+};
+
 const AppBarComponent = () => {
   const classes = useStyles();
   const stores = useStores();
@@ -68,7 +78,10 @@ const AppBarComponent = () => {
 
   const switchPage = (link: string, newPage: boolean = false) => {
     if (isUpgradePage()) {
-      window.location.href = 'https://ssv.network';
+      window.top.postMessage({
+        message: 'window.location.href',
+        data: 'https://ssv.network',
+      }, '*');
       return;
     }
     if (newPage) {

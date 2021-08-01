@@ -4,28 +4,26 @@ import { Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import Layout from '~app/common/components/Layout';
-import { isUpgradePage } from '~lib/utils/navigation';
 import UpgradeHome from '~app/components/UpgradeHome';
 import SuccessScreen from '~app/components/SuccessScreen';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
 import OperatorTransactionConfirmation from '~app/components/OperatorConfirmation';
+import ValidatorTransactionConfirmation from '~app/components/ImportValidatorConfirmation';
 import ImportValidator from '~app/components/RegisterValidatorHome/components/ImportValidator';
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/RegisterValidatorHome/components/SlashingWarning';
-import ValidatorTransactionConfirmation from '~app/components/ImportValidatorConfirmation';
 import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 
 const Routes = () => {
-  if (isUpgradePage()) {
-    return <UpgradeHome />;
-  }
-  
   return (
-    <Layout>
-      <Switch>
+    <Switch>
+      <Route path={config.routes.UPGRADE}>
+        <UpgradeHome />
+      </Route>
+      <Layout>
         <Route exact path={config.routes.HOME}>
           <Welcome />
         </Route>
@@ -75,8 +73,8 @@ const Routes = () => {
             </Route>
           </Switch>
         </Route>
-      </Switch>
-    </Layout>
+      </Layout>
+    </Switch>
   );
 };
 

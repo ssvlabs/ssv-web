@@ -2,6 +2,7 @@ const config = {
   routes: {
     TEST: '/guy',
     HOME: '/',
+    UPGRADE: '/upgrade',
     OPERATOR: {
       HOME: '/operator',
       SUCCESS_PAGE: '/operator/success',
@@ -279,7 +280,7 @@ const config = {
   CONTRACTS: {
     CDT: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0x07015138087772921648d45E8Ed865291d876F0D',
+        TESTNET: '0x1581BB29CA8C229eC7ba1175BDCC0f9eDDEE3e4e',
         MAINNET: '',
       },
       ABI: [
@@ -564,7 +565,7 @@ const config = {
     },
     SSV: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0xA52fe9624551318B715381FD3436aC64c204882C',
+        TESTNET: '0xA190d91811B2e329572f4C3e7b9A84709770fF80',
         MAINNET: '',
       },
       ABI: [
@@ -950,7 +951,7 @@ const config = {
     },
     DEX: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0x4fC2eC65faeFcec4b3b7829A596A616e8807Fe29',
+        TESTNET: '0x0D5818803D3d1aeF82C098524aA3D5DDEaEb80AE',
         MAINNET: '',
       },
       ABI: [

@@ -47,7 +47,6 @@ const ConvertArrowContainer = styled.div`
   text-align: center;
   padding-bottom: 15px;
   margin-top: -8px;
-  margin-left: 17.5px;
 `;
 
 const MiddlePartContainer = styled.div`
@@ -204,7 +203,7 @@ const ConversionState = () => {
             {upgradeStore.cdtBalance ? (
               <BalanceLabelContainer>
                 <BalanceLabel onClick={() => setMaxCdt()}>
-                  Balance: {formatFloatToMaxPrecision(upgradeStore.cdtBalance)} CDT
+                  Balance: {upgradeStore.cdtBalanceFormatted()} CDT
                 </BalanceLabel>
               </BalanceLabelContainer>
             ) : ''}

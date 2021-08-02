@@ -39,7 +39,7 @@
   />
 
   <meta
-    content="connect-src 'self' data: https://www.google-analytics.com https://registry.walletconnect.org/data/wallets.json ws://localhost:8545 https://*.infura.io wss://bridge.walletconnect.org https://api.thegraph.com wss://api.blocknative.com;
+    content="connect-src 'self' data: https://rest.coinapi.io https://www.google-analytics.com https://registry.walletconnect.org/data/wallets.json ws://localhost:8545 https://*.infura.io wss://bridge.walletconnect.org https://api.thegraph.com wss://api.blocknative.com;
                      img-src 'self' data: https://registry.walletconnect.org/;
                      manifest-src 'self';
                      script-src-elem 'self' http://www.googletagmanager.com;
@@ -56,7 +56,8 @@
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <noscript>
   <iframe height="0"
-          src='%REACT_APP_GOOGLE_TAG_URL%%REACT_APP_GOOGLE_TAG_SECRET%' style="display:none;visibility:hidden" width="0"></iframe>
+          src='%REACT_APP_GOOGLE_TAG_URL%%REACT_APP_GOOGLE_TAG_SECRET%' style="display:none;visibility:hidden"
+          width="0"></iframe>
 </noscript>
 <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
 </body>

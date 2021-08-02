@@ -116,7 +116,7 @@ const UpgradeHome = () => {
           <Alert severity="warning">You are working in testnet.</Alert>
         ) : ''}
         <UpgradeState {...upgradeStateProps} />
-        <UpgradeFAQ />
+        {upgradeStore.step === UpgradeSteps.home ? <UpgradeFAQ /> : ''}
         <WalletPopUp />
       </UpgradeContainer>
     </UpgradeGrid>

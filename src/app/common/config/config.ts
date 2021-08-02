@@ -39,6 +39,7 @@ const config = {
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+    GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
   },
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

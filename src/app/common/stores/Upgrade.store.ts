@@ -4,6 +4,7 @@ import { FixedNumber } from '@ethersproject/bignumber';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { formatFloatToMaxPrecision } from '~lib/utils/numbers';
+import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 export const UpgradeSteps = {
@@ -317,7 +318,15 @@ class UpgradeStore extends BaseStore {
         .then((gasAmount: number) => {
           console.debug(`Estimated Gas Amount is ${gasAmount} wei`);
           const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
-          return parseFloat(floatString);
+          const etherGasAmount = parseFloat(floatString);
+          const requestInfo: RequestData = {
+            url: config.links.GASNOW_API_URL,
+            method: 'GET',
+          };
+          return new ApiRequest(requestInfo).sendRequest().then((response: any) => {
+            const { data } = response;
+            return data?.standard * etherGasAmount;
+          });
         });
     }
 
@@ -368,10 +377,7 @@ class UpgradeStore extends BaseStore {
         }
       });
     }).then((success: any) => {
-      if (success) {
-        this.getStore('Notifications')
-          .showMessage('SSV successfully added to wallet!', 'success');
-      } else {
+      if (!success) {
         this.getStore('Notifications')
           .showMessage('Can not add SSV to wallet!', 'error');
       }

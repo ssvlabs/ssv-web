@@ -99,7 +99,7 @@ class UpgradeStore extends BaseStore {
    */
   @computed
   get ssvValue() {
-    return parseFloat(String(this.userCdtValue)) * 0.01;
+    return parseFloat(String(this.userCdtValue)) / 100.0;
   }
 
   /**

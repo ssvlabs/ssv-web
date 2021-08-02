@@ -119,6 +119,7 @@ const ConfirmTransactionState = () => {
       if (!estimate) {
         setApproving(false);
       }
+      calculateEstimation();
     });
   };
 
@@ -211,8 +212,8 @@ const ConfirmTransactionState = () => {
    */
   const checkAllowance = () => {
     upgradeStore.checkAllowance().then((allowance: any) => {
-      setEstimationValue('Processing..');
-      console.debug('Allowance value:', allowance);
+      console.debug('User Allowance Value:', allowance);
+      calculateEstimation();
       return allowance;
     });
   };
@@ -223,7 +224,7 @@ const ConfirmTransactionState = () => {
       checkAllowance();
     }
     calculateEstimation();
-  }, [upgradeStore.approveAllowance, estimationValue]);
+  }, [upgradeStore.approvedAllowance, estimationValue]);
 
   // Buttons states
   useEffect(() => {
@@ -251,10 +252,14 @@ const ConfirmTransactionState = () => {
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow>
-          <ConfirmTransactionInfoLabel>Transaction fee</ConfirmTransactionInfoLabel>
+          <ConfirmTransactionInfoLabel>Est. Transaction fee</ConfirmTransactionInfoLabel>
           <ConfirmTransactionInfo>
-            {!Number.isNaN(parseFloat(estimationValue)) ? parseFloat(estimationValue).toFixed(6) : '0'} ETH
-            {!Number.isNaN(usdEstimationValue) && usdEstimationValue ? <b>&nbsp;${usdEstimationValue}</b> : ''}
+            {!Number.isNaN(parseFloat(estimationValue)) && (
+              <>
+                {parseFloat(estimationValue).toFixed(6)} ETH
+                {!Number.isNaN(usdEstimationValue) && usdEstimationValue ? <b>&nbsp;${usdEstimationValue}</b> : ''}
+              </>
+            )}
           </ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 

@@ -281,7 +281,7 @@ const config = {
   CONTRACTS: {
     CDT: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0x1581BB29CA8C229eC7ba1175BDCC0f9eDDEE3e4e',
+        TESTNET: '0x211369c208664EaC550e9E3c2205fa1123861b82',
         MAINNET: '',
       },
       ABI: [
@@ -566,7 +566,7 @@ const config = {
     },
     SSV: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0xA190d91811B2e329572f4C3e7b9A84709770fF80',
+        TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
         MAINNET: '',
       },
       ABI: [
@@ -952,7 +952,7 @@ const config = {
     },
     DEX: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0x0D5818803D3d1aeF82C098524aA3D5DDEaEb80AE',
+        TESTNET: '0xF83129B78c41F3728678617E1f198b827434aeb3',
         MAINNET: '',
       },
       ABI: [

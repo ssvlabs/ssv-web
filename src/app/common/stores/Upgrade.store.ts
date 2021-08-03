@@ -195,7 +195,10 @@ class UpgradeStore extends BaseStore {
     const contractType = String(contract).toUpperCase();
     // @ts-ignore
     const contractData = config.CONTRACTS[contractType].CONTRACT_ADDRESS;
-    return this.isTestnet ? contractData.TESTNET : contractData.MAINNET;
+    if (!this.isTestnet) {
+      return contractData.MAINNET;
+    }
+    return contractData.TESTNET;
   }
 
   /**

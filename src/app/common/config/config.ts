@@ -282,7 +282,7 @@ const config = {
     CDT: {
       CONTRACT_ADDRESS: {
         TESTNET: '0x211369c208664EaC550e9E3c2205fa1123861b82',
-        MAINNET: '',
+        MAINNET: '0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af',
       },
       ABI: [
         {
@@ -567,7 +567,7 @@ const config = {
     SSV: {
       CONTRACT_ADDRESS: {
         TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
-        MAINNET: '',
+        MAINNET: '0x584d44D3E36F3690a4170Dad0238DF5441d41f1c',
       },
       ABI: [
         {
@@ -953,7 +953,7 @@ const config = {
     DEX: {
       CONTRACT_ADDRESS: {
         TESTNET: '0xF83129B78c41F3728678617E1f198b827434aeb3',
-        MAINNET: '',
+        MAINNET: '0xc398C2935a274a3a39D86B4E3d36dabA616442e6',
       },
       ABI: [
         {

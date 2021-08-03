@@ -131,7 +131,10 @@ const ConversionState = () => {
    */
   const onCdtInputChange = (event: any) => {
     const numRegex = new RegExp(/^[0-9]\d*\.?\d*$/);
-    setCdtValue(event.target.value);
+
+    if (/^[0-9.]+$/gi.test(event.target.value) || !event.target.value) {
+      setCdtValue(event.target.value);
+    }
 
     if (numRegex.test(event.target.value)) {
       const value = parseFloat(String(event.target.value));
@@ -164,7 +167,7 @@ const ConversionState = () => {
     upgradeStore.setCdtValue(formatFloatToMaxPrecision(upgradeStore.cdtBalance));
   };
 
-  const insufficientBalance = upgradeStore.cdtBalance !== null && !upgradeStore.cdtBalance;
+  const insufficientBalance = (upgradeStore.cdtBalance !== null && (!upgradeStore.cdtBalance || upgradeStore.cdtBalance < parseFloat(cdtValue)));
   const upgradeButtonDisabled = cdtError || !upgradeStore.cdtValue || !upgradeStore.ssvValue || insufficientBalance;
 
   return (

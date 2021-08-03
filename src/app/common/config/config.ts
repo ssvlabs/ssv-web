@@ -39,6 +39,7 @@ const config = {
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+    GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
   },
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
@@ -280,8 +281,8 @@ const config = {
   CONTRACTS: {
     CDT: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0x1581BB29CA8C229eC7ba1175BDCC0f9eDDEE3e4e',
-        MAINNET: '',
+        TESTNET: '0x211369c208664EaC550e9E3c2205fa1123861b82',
+        MAINNET: '0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af',
       },
       ABI: [
         {
@@ -565,8 +566,8 @@ const config = {
     },
     SSV: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0xA190d91811B2e329572f4C3e7b9A84709770fF80',
-        MAINNET: '',
+        TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
+        MAINNET: '0x584d44D3E36F3690a4170Dad0238DF5441d41f1c',
       },
       ABI: [
         {
@@ -951,8 +952,8 @@ const config = {
     },
     DEX: {
       CONTRACT_ADDRESS: {
-        TESTNET: '0x0D5818803D3d1aeF82C098524aA3D5DDEaEb80AE',
-        MAINNET: '',
+        TESTNET: '0xF83129B78c41F3728678617E1f198b827434aeb3',
+        MAINNET: '0xc398C2935a274a3a39D86B4E3d36dabA616442e6',
       },
       ABI: [
         {

@@ -77,8 +77,8 @@ const ConfirmTransactionState = () => {
   const [upgraded, setUpgraded] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
   const [allowanceApproved, setAllowanceApproved] = useState(false);
-  const [estimationValue, setEstimationValue] = useState('0.0');
-  const [usdEstimationValue, setUsdEstimationValue] = useState('0.0');
+  const [estimationValue, setEstimationValue] = useState('');
+  const [usdEstimationValue, setUsdEstimationValue] = useState('');
 
   // Button states
   const [checkboxChecked, setCheckboxChecked] = useState(upgradeStore.isUserAgreedOnTerms);
@@ -119,6 +119,7 @@ const ConfirmTransactionState = () => {
       if (!estimate) {
         setApproving(false);
       }
+      calculateEstimation();
     });
   };
 
@@ -196,9 +197,11 @@ const ConfirmTransactionState = () => {
   const calculateEstimation = () => {
     upgradeCdtToSsv(true).then((exchangeEstimation: any) => {
       if (!Number.isNaN(parseFloat(String(exchangeEstimation)))) {
-        setEstimationValue(formatFloatToMaxPrecision(exchangeEstimation));
+        setEstimationValue(parseFloat(String(exchangeEstimation)).toFixed(6));
         return new PriceEstimation().estimateGasInUSD(exchangeEstimation).then((usdEstimation: any) => {
-          setUsdEstimationValue(formatFloatToMaxPrecision(usdEstimation));
+          if (usdEstimation && usdEstimation !== 'NaN' && !Number.isNaN(parseFloat(String(usdEstimation)).toFixed(2))) {
+            setUsdEstimationValue(parseFloat(String(usdEstimation)).toFixed(2));
+          }
         });
       }
     });
@@ -209,8 +212,8 @@ const ConfirmTransactionState = () => {
    */
   const checkAllowance = () => {
     upgradeStore.checkAllowance().then((allowance: any) => {
-      setEstimationValue('Processing..');
-      console.debug('Allowance value:', allowance);
+      console.debug('User Allowance Value:', allowance);
+      calculateEstimation();
       return allowance;
     });
   };
@@ -221,7 +224,7 @@ const ConfirmTransactionState = () => {
       checkAllowance();
     }
     calculateEstimation();
-  }, [upgradeStore.approveAllowance, estimationValue]);
+  }, [upgradeStore.approvedAllowance, estimationValue]);
 
   // Buttons states
   useEffect(() => {
@@ -249,9 +252,15 @@ const ConfirmTransactionState = () => {
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow>
-          <ConfirmTransactionInfoLabel>Transaction fee</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>{formatFloatToMaxPrecision(estimationValue)} ETH {parseFloat(usdEstimationValue) ?
-            <b>${parseFloat(usdEstimationValue).toFixed(2)}</b> : ''}</ConfirmTransactionInfo>
+          <ConfirmTransactionInfoLabel>Est. Transaction fee</ConfirmTransactionInfoLabel>
+          <ConfirmTransactionInfo>
+            {!Number.isNaN(parseFloat(estimationValue)) && (
+              <>
+                {parseFloat(estimationValue).toFixed(6)} ETH
+                {!Number.isNaN(usdEstimationValue) && usdEstimationValue ? <b>&nbsp;${usdEstimationValue}</b> : ''}
+              </>
+            )}
+          </ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow style={{ padding: 20 }} />

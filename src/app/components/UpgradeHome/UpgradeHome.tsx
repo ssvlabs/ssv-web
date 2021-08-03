@@ -5,10 +5,10 @@ import { Alert } from '@material-ui/lab';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import WalletPopUp from '~app/components/WalletPopUp/WalletPopUp';
 import UpgradeFAQ from '~app/components/UpgradeHome/components/UpgradeFAQ';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
+import WalletStore, { Networks } from '~app/common/stores/Wallet/Wallet.store';
 import UpgradeState from '~app/components/UpgradeHome/components/UpgradeState';
 import ConversionState from '~app/components/UpgradeHome/components/ConversionState';
 import DisclaimerState from '~app/components/UpgradeHome/components/DisclaimerState';
@@ -43,6 +43,13 @@ const UpgradeHome = () => {
     navigationLink: '',
   };
   const [upgradeStateProps, setUpgradeStepProps] = useState(defaultUpgradeStateProps);
+
+  if (!upgradeStore.isTestnet) {
+    walletStore.setNetworkId(Networks.MAINNET);
+  } else {
+    walletStore.setNetworkId(Networks.GOERLI);
+  }
+  console.debug('Current Network ID:', walletStore.networkId);
 
   const reflectUpgradeState = () => {
     const goHome = () => {

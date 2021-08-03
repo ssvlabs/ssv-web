@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
-import { action, observable, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { wallets } from '~app/common/stores/Wallet/wallets';
@@ -9,9 +9,13 @@ import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
-class WalletStore extends BaseStore implements Wallet {
-  private contract: Contract | undefined;
+export const Networks = {
+  MAINNET: 1,
+  GOERLI: 5,
+};
 
+class WalletStore extends BaseStore implements Wallet {
+  @observable networkId: number | null = null;
   @observable web3: any = null;
   @observable ready: boolean = false;
   @observable wallet: any = null;
@@ -19,6 +23,17 @@ class WalletStore extends BaseStore implements Wallet {
   @observable accountAddress: string = '';
   @observable addressVerification: any;
   @observable wrongNetwork: boolean = false;
+  private contract: Contract | undefined;
+
+  @computed
+  get connected() {
+    return this.accountAddress;
+  }
+
+  @computed
+  get isWrongNetwork() {
+    return this.wrongNetwork;
+  }
 
   /**
    * Get smart contract instance
@@ -44,7 +59,7 @@ class WalletStore extends BaseStore implements Wallet {
   encodeOperatorKey(operatorKey?: string) {
     return this.web3.eth.abi.encodeParameter('string', operatorKey);
   }
-  
+
   decodeOperatorKey(operatorKey?: string) {
     return this.web3.eth.abi.decodeParameter('string', operatorKey);
   }
@@ -76,16 +91,6 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  @computed
-  get connected() {
-    return this.accountAddress;
-  }
-
-  @computed
-  get isWrongNetwork() {
-    return this.wrongNetwork;
-  }
-
   /**
    * Check wallet is ready to transact
    */
@@ -100,7 +105,7 @@ class WalletStore extends BaseStore implements Wallet {
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck()
         .then((ready: boolean) => {
-            console.debug(`Wallet is ${ready} for transaction:`);
+          console.debug(`Wallet is ${ready} for transaction:`);
         })
         .catch((error: any) => {
           applicationStore.setIsLoading(false);
@@ -113,6 +118,12 @@ class WalletStore extends BaseStore implements Wallet {
   setAccountAddress(address: string) {
     this.accountAddress = address;
   }
+
+  @action.bound
+  setNetworkId(networkId: number) {
+    this.networkId = networkId;
+  }
+
   /**
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
@@ -125,7 +136,7 @@ class WalletStore extends BaseStore implements Wallet {
     console.debug('Initializing OnBoard SDK..');
     const connectionConfig = {
       dappId: config.ONBOARD.API_KEY,
-      networkId: Number(config.ONBOARD.NETWORK_ID),
+      networkId: this.networkId || Number(config.ONBOARD.NETWORK_ID),
       walletSelect: {
         wallets,
       },
@@ -155,7 +166,7 @@ class WalletStore extends BaseStore implements Wallet {
 
   @action.bound
   async onNetworkChange(networkId: any) {
-    if (networkId !== 5) {
+    if ([Networks.MAINNET, Networks.GOERLI].indexOf(networkId) === -1) {
       this.alertNetworkError();
     } else {
       this.wrongNetwork = false;
@@ -163,10 +174,10 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   @action.bound
-   alertNetworkError() {
+  alertNetworkError() {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     this.wrongNetwork = true;
-    notificationsStore.showMessage('Please change network to Goerli', 'error');
+    notificationsStore.showMessage('Please change network to Mainnet or Goerli', 'error');
   }
 
   @action.bound

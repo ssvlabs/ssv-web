@@ -47,7 +47,7 @@ const UpgradeHome = () => {
   const [upgradeStateProps, setUpgradeStepProps] = useState(defaultUpgradeStateProps);
   const restrictedDefaultValue: any = null;
   const [isCountryRestricted, setCountryRestricted] = useState(restrictedDefaultValue);
-  const [checkingCountryRestriction, setCheckingCountryRestriction] = useState(false);
+  const [checkingCountryRestriction, setCheckingCountryRestriction] = useState(true);
 
   // Check if user country is restricted
   useEffect(() => {

@@ -33,6 +33,7 @@ const config = {
     },
   },
   links: {
+    COMPLIANCE_URL: process.env.REACT_APP_COMPLIANCE_URL,
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
     ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,

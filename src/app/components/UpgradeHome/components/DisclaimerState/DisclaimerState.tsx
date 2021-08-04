@@ -44,10 +44,10 @@ const DisclaimerState = () => {
         <DisclaimerRow>
           <DisclaimerText>
             <DisclaimerHeader>NO REVERSIBILITY.</DisclaimerHeader>
-            Your CDT Tokens will be upgraded to SSV Tokens based on a predetermined fixed ratio of 1 SSV = 100 CDT
+            Your CDT Tokens will be upgraded to SSV Tokens based on a predetermined fixed ratio of 1 CDT = 0.01 SSV
             (the &quot;SSV Upgrade&quot;).
-            The SSV Upgrade will be final and irreversible and you will not be able to retrieve your CDTs after
-            clicking &quot;UPGRADE&quot;.
+            The SSV Upgrade will be final and irreversible. Once upgraded (after clicking &quot;UPGRADE&quot;), you will
+            not be able to retrieve your CDTs.
           </DisclaimerText>
         </DisclaimerRow>
 

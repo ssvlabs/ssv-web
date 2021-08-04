@@ -3,9 +3,11 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { Alert } from '@material-ui/lab';
 import Grid from '@material-ui/core/Grid';
+import { CircularProgress } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import WalletPopUp from '~app/components/WalletPopUp/WalletPopUp';
+import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import UpgradeFAQ from '~app/components/UpgradeHome/components/UpgradeFAQ';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
 import WalletStore, { Networks } from '~app/common/stores/Wallet/Wallet.store';
@@ -43,13 +45,30 @@ const UpgradeHome = () => {
     navigationLink: '',
   };
   const [upgradeStateProps, setUpgradeStepProps] = useState(defaultUpgradeStateProps);
+  const restrictedDefaultValue: any = null;
+  const [isCountryRestricted, setCountryRestricted] = useState(restrictedDefaultValue);
+  const [checkingCountryRestriction, setCheckingCountryRestriction] = useState(true);
 
-  if (!upgradeStore.isTestnet) {
-    walletStore.setNetworkId(Networks.MAINNET);
-  } else {
-    walletStore.setNetworkId(Networks.GOERLI);
-  }
-  console.debug('Current Network ID:', walletStore.networkId);
+  // Check if user country is restricted
+  useEffect(() => {
+    if (isCountryRestricted === null) {
+      setCheckingCountryRestriction(true);
+      checkUserCountryRestriction().then((isRestricted: boolean) => {
+        setCountryRestricted(isRestricted);
+      }).finally(() => {
+        setCheckingCountryRestriction(false);
+      });
+    }
+  }, [isCountryRestricted]);
+
+  // Switch network depending of the flag in URL
+  useEffect(() => {
+    if (!upgradeStore.isTestnet) {
+      walletStore.setNetworkId(Networks.MAINNET);
+    } else {
+      walletStore.setNetworkId(Networks.GOERLI);
+    }
+  }, [upgradeStore.isTestnet]);
 
   const reflectUpgradeState = () => {
     const goHome = () => {
@@ -115,6 +134,33 @@ const UpgradeHome = () => {
   useEffect(() => {
     reflectUpgradeState();
   }, [upgradeStore.step, walletStore.connected]);
+
+  if (checkingCountryRestriction) {
+    return (
+      <UpgradeGrid container>
+        <UpgradeContainer>
+          <br />
+          <br />
+          <CircularProgress />
+          <br />
+          <h1>Checking your country..</h1>
+        </UpgradeContainer>
+      </UpgradeGrid>
+    );
+  }
+
+  if (isCountryRestricted) {
+    return (
+      <UpgradeGrid container>
+        <UpgradeContainer>
+          <br />
+          <br />
+          <br />
+          <h1>Your country is restricted.</h1>
+        </UpgradeContainer>
+      </UpgradeGrid>
+    );
+  }
 
   return (
     <UpgradeGrid container>

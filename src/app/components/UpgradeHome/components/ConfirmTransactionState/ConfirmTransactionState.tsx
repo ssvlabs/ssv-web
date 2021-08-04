@@ -7,7 +7,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
 import { formatFloatToMaxPrecision } from '~lib/utils/numbers';
-import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ProgressStepper from '~app/common/components/ProgressStepper';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import UpgradeStore, { UpgradeSteps } from '~app/common/stores/Upgrade.store';
@@ -77,8 +76,6 @@ const ConfirmTransactionState = () => {
   const [upgraded, setUpgraded] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
   const [allowanceApproved, setAllowanceApproved] = useState(false);
-  const [estimationValue, setEstimationValue] = useState('');
-  const [usdEstimationValue, setUsdEstimationValue] = useState('');
 
   // Button states
   const [checkboxChecked, setCheckboxChecked] = useState(upgradeStore.isUserAgreedOnTerms);
@@ -119,7 +116,6 @@ const ConfirmTransactionState = () => {
       if (!estimate) {
         setApproving(false);
       }
-      calculateEstimation();
     });
   };
 
@@ -192,28 +188,11 @@ const ConfirmTransactionState = () => {
   };
 
   /**
-   * Calculate total estimation.
-   */
-  const calculateEstimation = () => {
-    upgradeCdtToSsv(true).then((exchangeEstimation: any) => {
-      if (!Number.isNaN(parseFloat(String(exchangeEstimation)))) {
-        setEstimationValue(parseFloat(String(exchangeEstimation)).toFixed(6));
-        return new PriceEstimation().estimateGasInUSD(exchangeEstimation).then((usdEstimation: any) => {
-          if (usdEstimation && usdEstimation !== 'NaN' && !Number.isNaN(parseFloat(String(usdEstimation)).toFixed(2))) {
-            setUsdEstimationValue(parseFloat(String(usdEstimation)).toFixed(2));
-          }
-        });
-      }
-    });
-  };
-
-  /**
    * Check allowance for user.
    */
   const checkAllowance = () => {
     upgradeStore.checkAllowance().then((allowance: any) => {
       console.debug('User Allowance Value:', allowance);
-      calculateEstimation();
       return allowance;
     });
   };
@@ -223,8 +202,7 @@ const ConfirmTransactionState = () => {
     if (upgradeStore.approvedAllowance === null) {
       checkAllowance();
     }
-    calculateEstimation();
-  }, [upgradeStore.approvedAllowance, estimationValue]);
+  }, [upgradeStore.approvedAllowance]);
 
   // Buttons states
   useEffect(() => {
@@ -249,18 +227,6 @@ const ConfirmTransactionState = () => {
         <ConfirmTransactionInfoRow>
           <ConfirmTransactionInfoLabel>Rate</ConfirmTransactionInfoLabel>
           <ConfirmTransactionInfo>1 SSV = 100 CDT</ConfirmTransactionInfo>
-        </ConfirmTransactionInfoRow>
-
-        <ConfirmTransactionInfoRow>
-          <ConfirmTransactionInfoLabel>Est. Transaction fee</ConfirmTransactionInfoLabel>
-          <ConfirmTransactionInfo>
-            {!Number.isNaN(parseFloat(estimationValue)) && (
-              <>
-                {parseFloat(estimationValue).toFixed(6)} ETH
-                {!Number.isNaN(usdEstimationValue) && usdEstimationValue ? <b>&nbsp;${usdEstimationValue}</b> : ''}
-              </>
-            )}
-          </ConfirmTransactionInfo>
         </ConfirmTransactionInfoRow>
 
         <ConfirmTransactionInfoRow style={{ padding: 20 }} />

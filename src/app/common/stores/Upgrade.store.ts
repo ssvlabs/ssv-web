@@ -320,7 +320,7 @@ class UpgradeStore extends BaseStore {
         url: config.links.GASNOW_API_URL,
         method: 'GET',
       };
-      return new ApiRequest(requestInfo).sendRequest().then(async (response: any) => {
+      return new ApiRequest(requestInfo).sendRequest().then((response: any) => {
         const { data } = response;
         const gasPrice = data?.standard;
         if (estimate) {

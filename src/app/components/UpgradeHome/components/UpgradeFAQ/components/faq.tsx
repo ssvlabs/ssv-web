@@ -57,7 +57,7 @@ const faq = [
   },
   {
     question: <>What wallets are supported by the swap interface?</>,
-    answer: <>At the moment the interface supports: <br />MetaMask, Ledger via MetaMask and Trezr via MetaMask.</>,
+    answer: <>At the moment the interface supports: <br />MetaMask, Ledger via MetaMask and Trezor via MetaMask.</>,
   },
   {
     question: <>Is the upgrade contract audited?</>,

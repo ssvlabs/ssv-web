@@ -315,29 +315,50 @@ class UpgradeStore extends BaseStore {
       .methods
       .convertCDTToSSV(weiValue);
 
-    if (estimate) {
-      return methodCall
-        .estimateGas({ from: this.accountAddress })
-        .then((gasAmount: number) => {
-          console.debug(`Estimated Gas Amount is ${gasAmount} wei`);
-          const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
-          const etherGasAmount = parseFloat(floatString);
-          const requestInfo: RequestData = {
-            url: config.links.GASNOW_API_URL,
-            method: 'GET',
-          };
-          return new ApiRequest(requestInfo).sendRequest().then((response: any) => {
-            const { data } = response;
-            return data?.standard * etherGasAmount;
-          });
-        });
-    }
-
-    return methodCall
-      .send({ from: this.accountAddress })
-      .then((conversionResult: any) => {
-        return conversionResult;
+    return new Promise((resolve, reject) => {
+      const requestInfo: RequestData = {
+        url: config.links.GASNOW_API_URL,
+        method: 'GET',
+      };
+      return new ApiRequest(requestInfo).sendRequest().then(async (response: any) => {
+        const { data } = response;
+        const gasPrice = data?.standard;
+        if (estimate) {
+          methodCall
+            .estimateGas({
+              from: this.accountAddress,
+              gasPrice,
+            })
+            .then((gasAmount: number) => {
+              console.debug(`Estimated Gas Amount is ${gasAmount} wei`);
+              const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
+              const etherGasAmount = parseFloat(floatString);
+              resolve(gasPrice * etherGasAmount);
+            })
+            .catch((error: any) => {
+              reject(error);
+            });
+        } else {
+          methodCall
+            .send({
+              from: this.accountAddress,
+              gasPrice,
+            })
+            .on('error', (error: any) => {
+              console.error('Upgrade Error', error);
+              reject(error);
+            })
+            .on('receipt', async (receipt: any) => {
+              console.debug('Received Receipt', receipt);
+              const event: boolean = 'CDTToSSVConverted' in receipt.events;
+              if (event) {
+                console.debug('Upgrade Receipt', receipt);
+                resolve(receipt);
+              }
+            });
+        }
       });
+    });
   }
 
   /**

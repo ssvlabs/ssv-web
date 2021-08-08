@@ -316,7 +316,7 @@ class UpgradeStore extends BaseStore {
         .balanceOf(this.getContractAddress('dex'))
         .call()
         .then((balance: any) => {
-          const ssvBalance = this.getStore('Wallet').web3.utils.fromWei(balance, 'ether');
+          const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
           resolve(ssvBalance);
         })
         .catch((error: any) => {

@@ -22,6 +22,7 @@ class UpgradeStore extends BaseStore {
   // Amounts
   @observable userCdtValue: number | string = 0;
   @observable userCdtBalance: number | null = null;
+  @observable ssvContractBalanceValue: number | null = null;
 
   // Allowance
   @observable userAllowance: number | string | null = null;
@@ -135,6 +136,11 @@ class UpgradeStore extends BaseStore {
   @computed
   get isUserAgreedOnTerms() {
     return this.userAgreedOnTerms;
+  }
+
+  @computed
+  get ssvContractBalance() {
+    return this.ssvContractBalanceValue;
   }
 
   /**
@@ -300,6 +306,23 @@ class UpgradeStore extends BaseStore {
       .then(() => {
         return cdtValue;
       });
+  }
+
+  @action.bound
+  async getSsvContractBalance(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.ssvContract
+        .methods
+        .balanceOf(this.getContractAddress('dex'))
+        .call()
+        .then((balance: any) => {
+          const ssvBalance = this.getStore('Wallet').web3.utils.fromWei(balance, 'ether');
+          resolve(ssvBalance);
+        })
+        .catch((error: any) => {
+          reject(error);
+        });
+    });
   }
 
   /**

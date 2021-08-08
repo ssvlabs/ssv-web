@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { Alert } from '@material-ui/lab';
 import Grid from '@material-ui/core/Grid';
-import { CircularProgress } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import WalletPopUp from '~app/components/WalletPopUp/WalletPopUp';
@@ -137,15 +136,7 @@ const UpgradeHome = () => {
 
   if (checkingCountryRestriction) {
     return (
-      <UpgradeGrid container>
-        <UpgradeContainer>
-          <br />
-          <br />
-          <CircularProgress />
-          <br />
-          <h1>Checking your country..</h1>
-        </UpgradeContainer>
-      </UpgradeGrid>
+      <UpgradeGrid container />
     );
   }
 
@@ -156,7 +147,8 @@ const UpgradeHome = () => {
           <br />
           <br />
           <br />
-          <h1>Your country is restricted.</h1>
+          <h1>We are sorry but this service is restricted in your country. For additional information, feel free to
+            reach us at <a href="mailto:contact@bloxstaking.com">contact@bloxstaking.com</a></h1>
         </UpgradeContainer>
       </UpgradeGrid>
     );

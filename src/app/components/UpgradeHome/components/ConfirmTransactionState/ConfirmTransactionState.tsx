@@ -76,6 +76,10 @@ const ConfirmTransactionState = () => {
   const [upgraded, setUpgraded] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
   const [allowanceApproved, setAllowanceApproved] = useState(false);
+  const [insufficientSsvContractBalance, setInsufficientSsvContractBalance] = useState(false);
+  const [checkingSsvContractBalance, setCheckingSsvContractBalance] = useState(false);
+  const [checkingAllowance, setCheckingAllowance] = useState(false);
+  const [checkboxDisabled, setCheckboxDisabled] = useState(false);
 
   // Button states
   const [checkboxChecked, setCheckboxChecked] = useState(upgradeStore.isUserAgreedOnTerms);
@@ -172,6 +176,9 @@ const ConfirmTransactionState = () => {
    * @param props
    */
   const renderUpgradeButtonText = (props: { upgrading: boolean, upgraded: boolean }) => {
+    if (insufficientSsvContractBalance) {
+      return 'Insufficient SSV balance in upgrade contract';
+    }
     // eslint-disable-next-line react/prop-types
     if (props.upgraded) {
       return 'Upgraded';
@@ -191,9 +198,23 @@ const ConfirmTransactionState = () => {
    * Check allowance for user.
    */
   const checkAllowance = () => {
+    setCheckingAllowance(true);
     upgradeStore.checkAllowance().then((allowance: any) => {
       console.debug('User Allowance Value:', allowance);
+      setCheckingAllowance(false);
       return allowance;
+    });
+  };
+
+  /**
+   * Check contract balance of SSV tokens.
+   */
+  const checkSsvContractBalance = () => {
+    setCheckingSsvContractBalance(true);
+    upgradeStore.getSsvContractBalance().then((ssvBalance: any) => {
+      setInsufficientSsvContractBalance(!ssvBalance);
+      setCheckingSsvContractBalance(false);
+      return ssvBalance;
     });
   };
 
@@ -202,14 +223,68 @@ const ConfirmTransactionState = () => {
     if (upgradeStore.approvedAllowance === null) {
       checkAllowance();
     }
-  }, [upgradeStore.approvedAllowance]);
+    if (upgradeStore.ssvContractBalance === null) {
+      checkSsvContractBalance();
+    }
+  }, [upgradeStore.approvedAllowance, upgradeStore.ssvContractBalance]);
 
   // Buttons states
   useEffect(() => {
+    setCheckboxDisabled(upgrading || approving || checkingSsvContractBalance || insufficientSsvContractBalance);
     setApproveButtonDisabled(!checkboxChecked || allowanceApproved || approving);
-    setTwoStepsUpgradeButtonDisabled(!allowanceApproved || !checkboxChecked || upgraded || upgrading);
-    setOneStepUpgradeButtonDisabled(!checkboxChecked || upgraded || upgrading);
-  }, [checkboxChecked, allowanceApproved, approving, upgraded, upgrading]);
+    setTwoStepsUpgradeButtonDisabled(!allowanceApproved || !checkboxChecked || upgraded || upgrading || checkingSsvContractBalance || insufficientSsvContractBalance);
+    setOneStepUpgradeButtonDisabled(!checkboxChecked || upgraded || upgrading || checkingSsvContractBalance || insufficientSsvContractBalance);
+  }, [
+    checkboxChecked, allowanceApproved, approving, upgraded,
+    upgrading, checkingSsvContractBalance, insufficientSsvContractBalance,
+  ]);
+
+  const renderActionButtons = () => {
+    const upgradeButton = (
+      <ActionButton
+        disabled={oneStepUpgradeButtonDisabled}
+        onClick={() => upgradeCdtToSsv()}
+      >
+        {renderUpgradeButtonText({ upgrading, upgraded })}
+      </ActionButton>
+    );
+
+    if (checkingSsvContractBalance || checkingAllowance) {
+      return '';
+    }
+
+    if (insufficientSsvContractBalance) {
+      return upgradeButton;
+    }
+
+    if (upgradeStore.approvedAllowance !== null && !upgradeStore.approvedAllowance) {
+      return (
+        <>
+          <ActionButtonsContainer>
+            <ActionButton
+              disabled={approveButtonDisabled}
+              onClick={() => approveAllowance()}
+            >
+              {renderApproveButtonText({ approving, approved: allowanceApproved })}
+            </ActionButton>
+            <ActionButton
+              disabled={twoStepsUpgradeButtonDisabled}
+              onClick={() => upgradeCdtToSsv()}
+            >
+              {renderUpgradeButtonText({ upgrading, upgraded })}
+            </ActionButton>
+          </ActionButtonsContainer>
+
+          <ProgressStepper
+            step={!allowanceApproved ? 1 : 2}
+            steps={2}
+            done={upgraded}
+          />
+        </>
+      );
+    }
+    return upgradeButton;
+  };
 
   return (
     <Grid container spacing={0} justify="center" className={classes.root}>
@@ -237,47 +312,13 @@ const ConfirmTransactionState = () => {
             onChange={onCheckboxChange}
             color="primary"
             style={{ padding: 0, marginRight: 10 }}
-            disabled={upgrading || approving}
+            disabled={checkboxDisabled}
           />
           I acknowledge that I read and understood the upgrade <a href="/" onClick={navigateToDisclaimer}>disclaimer</a>
         </InputLabel>
         <ConfirmTransactionInfoRow style={{ padding: 5 }} />
 
-        {upgradeStore.approvedAllowance !== null ? (
-          <>
-            {!upgradeStore.approvedAllowance ? (
-              <>
-                <ActionButtonsContainer>
-                  <ActionButton
-                    disabled={approveButtonDisabled}
-                    onClick={() => approveAllowance()}
-                  >
-                    {renderApproveButtonText({ approving, approved: allowanceApproved })}
-                  </ActionButton>
-                  <ActionButton
-                    disabled={twoStepsUpgradeButtonDisabled}
-                    onClick={() => upgradeCdtToSsv()}
-                  >
-                    {renderUpgradeButtonText({ upgrading, upgraded })}
-                  </ActionButton>
-                </ActionButtonsContainer>
-
-                <ProgressStepper
-                  step={!allowanceApproved ? 1 : 2}
-                  steps={2}
-                  done={upgraded}
-                />
-              </>
-            ) : (
-              <ActionButton
-                disabled={oneStepUpgradeButtonDisabled}
-                onClick={() => upgradeCdtToSsv()}
-              >
-                {renderUpgradeButtonText({ upgrading, upgraded })}
-              </ActionButton>
-            )}
-          </>
-        ) : ''}
+        {renderActionButtons()}
       </Grid>
     </Grid>
   );

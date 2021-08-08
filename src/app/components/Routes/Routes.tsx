@@ -4,7 +4,6 @@ import { Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import Layout from '~app/common/components/Layout';
-import UpgradeHome from '~app/components/UpgradeHome';
 import SuccessScreen from '~app/components/SuccessScreen';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
@@ -20,9 +19,6 @@ import SelectOperators from '~app/components/RegisterValidatorHome/components/Se
 const Routes = () => {
   return (
     <Switch>
-      <Route path={config.routes.UPGRADE}>
-        <UpgradeHome />
-      </Route>
       <Layout>
         <Route exact path={config.routes.HOME}>
           <Welcome />

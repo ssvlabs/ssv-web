@@ -48,11 +48,10 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
       );
       if (currentCountry) {
         detectedCountry = currentCountry;
-        console.debug('Detected user country:', detectedCountry);
         break;
       }
     } catch (error) {
-      console.error('Detecting country failed using:', countryGetter.url);
+      //
     }
   }
   return detectedCountry;

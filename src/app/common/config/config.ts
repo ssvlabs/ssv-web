@@ -961,7 +961,7 @@ const config = {
           'anonymous': false,
           'inputs': [
             {
-              'indexed': false,
+              'indexed': true,
               'internalType': 'address',
               'name': 'sender',
               'type': 'address',

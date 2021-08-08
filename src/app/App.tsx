@@ -8,18 +8,19 @@ import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 declare global {
-    interface Window {
-        ethereum: any;
-        web3: any;
-    }
+  interface Window {
+    ethereum: any;
+    web3: any;
+  }
 }
 
 const App = () => {
-    const stores = useStores();
-    const walletStore: WalletStore = stores.Wallet;
-    React.useEffect(() => {
-        walletStore.checkConnection();
-    }, []);
+  const stores = useStores();
+  const walletStore: WalletStore = stores.Wallet;
+  React.useEffect(() => {
+    walletStore.checkConnection();
+  }, []);
+
   return (
     <>
       <BarMessage />

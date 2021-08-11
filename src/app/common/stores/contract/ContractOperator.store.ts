@@ -294,8 +294,8 @@ class ContractOperator extends BaseStore {
         this.operatorsLoaded = true;
         let operatorsList: any = [];
         if (response.data) {
-          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return sha256(a.pubkey); });
           response.data.operators.sort(dynamicSort('name'));
+          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return sha256(a.pubkey); });
           // eslint-disable-next-line no-restricted-syntax
           for (const pubKey of verifiedOperators.pubKeys) {
             const verifiedIndex = operatorsPublicKey.indexOf(pubKey);
@@ -303,6 +303,7 @@ class ContractOperator extends BaseStore {
               response.data.operators[verifiedIndex].verified = true;
               operatorsList.push(response.data.operators[verifiedIndex]);
               response.data.operators.splice(verifiedIndex, 1);
+              operatorsPublicKey.splice(verifiedIndex, 1);
             }
           }
 

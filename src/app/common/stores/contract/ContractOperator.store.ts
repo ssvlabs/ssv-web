@@ -2,10 +2,10 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import { sha256 } from 'js-sha256';
 import config from '~app/common/config';
-import { moveIndex } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import { dynamicSort } from '~lib/utils/sort';
 import verifiedOperators from '~lib/utils/verifiedOperators.json';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 
@@ -292,20 +292,25 @@ class ContractOperator extends BaseStore {
       .sendRequest()
       .then((response: any) => {
         this.operatorsLoaded = true;
+        let operatorsList: any = [];
         if (response.data) {
           const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return sha256(a.pubkey); });
+          response.data.operators.sort(dynamicSort('name'));
           // eslint-disable-next-line no-restricted-syntax
           for (const pubKey of verifiedOperators.pubKeys) {
             const verifiedIndex = operatorsPublicKey.indexOf(pubKey);
             if (verifiedIndex > -1) {
               response.data.operators[verifiedIndex].verified = true;
-              moveIndex(response.data.operators, verifiedIndex, 0);
-              moveIndex(operatorsPublicKey, verifiedIndex, 0);
+              operatorsList.push(response.data.operators[verifiedIndex]);
+              response.data.operators.splice(verifiedIndex, 1);
             }
           }
+
+          operatorsList.sort(dynamicSort('name'));
+          operatorsList = [...operatorsList, ...response.data.operators];
         }
         this.loadingOperator = false;
-        return response.data?.operators ?? [];
+        return operatorsList;
       });
   }
 }

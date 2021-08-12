@@ -16,7 +16,6 @@ import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperator
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
 
-const actionButtonMargin = isMobile ? '130px' : '140px';
 const WarningMessage = styled.div`
   margin-bottom: 20px;
   color: black;
@@ -32,6 +31,7 @@ const WarningIconWrapper = styled.div`
 `;
 
 const WarningTextWrapper = styled.div`
+  padding-left: 10px;
   font-size: 13px;
   @media (max-width: 768px) {
     font-size: 10px;
@@ -57,6 +57,7 @@ const SelectOperators = () => {
   const { redirectUrl, history } = useUserFlow();
   const [openMenu, setOpenMenu] = useState(null);
   const [allOperatorsVerified, setAllOperatorVerified] = useState(true);
+  const [actionButtonMargin, setActionButtonMargin] = useState(isMobile ? '130px' : '140px');
 
   useEffect(() => {
     unselectAllOperators();
@@ -84,6 +85,9 @@ const SelectOperators = () => {
     }
     if (allOperatorsVerified !== allOperatorsAreVerified) {
       setAllOperatorVerified(allOperatorsAreVerified);
+    }
+    if (!allOperatorsAreVerified) {
+      setActionButtonMargin('100px');
     }
   }, [contractOperator.operators]);
 
@@ -141,9 +145,8 @@ const SelectOperators = () => {
               </WarningIconWrapper>
               <WarningTextWrapper>
                 <WarningTextHeader>You have selected an operator that is not verified.</WarningTextHeader>
-                <WarningTextSubHeader>Operators that were not reviewed and their identify is not
-                  confirmed,</WarningTextSubHeader>
-                <WarningTextSubHeader> may pose a threat to your validator performance</WarningTextSubHeader>
+                <WarningTextSubHeader>Operators that were not reviewed and their identify is not confirmed</WarningTextSubHeader>
+                <WarningTextSubHeader> may pose a threat to your validator performance.</WarningTextSubHeader>
                 <WarningTextSubHeader>Please proceed only if you know and trust this
                   operator.</WarningTextSubHeader>
               </WarningTextWrapper>

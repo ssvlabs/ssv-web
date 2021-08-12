@@ -42,8 +42,8 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
     setOpenMenu(null);
   };
 
-  const operatorKeySeralize = (publicKey: string) => {
-    return `${publicKey.substr(0, 4)}...${publicKey.substr(publicKey.length - 4, 4)}`;
+  const operatorAddressSeralize = (address: string) => {
+    return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
   };
   
   const redirectTo = (pubKey: string) => {
@@ -63,7 +63,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
       >
         <Grid item xs={7} onClick={() => { !operator.selected && onSelectOperator(operator); }}>
           <OperatorName>{operator.name}</OperatorName>
-          <OperatorKey>{operatorKeySeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
+          <OperatorKey>{operatorAddressSeralize(operator.ownerAddress)}</OperatorKey>
         </Grid>
         <Grid item xs={5}>
           <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>

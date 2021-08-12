@@ -40,7 +40,8 @@ const WarningTextWrapper = styled.div`
 `;
 
 const WarningTextSubHeader = styled.p`
-  margin: 5px 0px 0px 0px
+  line-break: auto;
+  margin: 5px 0px 0px 0px;
 `;
 
 const WarningTextHeader = styled.p`
@@ -145,10 +146,8 @@ const SelectOperators = () => {
               </WarningIconWrapper>
               <WarningTextWrapper>
                 <WarningTextHeader>You have selected an operator that is not verified.</WarningTextHeader>
-                <WarningTextSubHeader>Operators that were not reviewed and their identify is not confirmed</WarningTextSubHeader>
-                <WarningTextSubHeader> may pose a threat to your validator performance.</WarningTextSubHeader>
-                <WarningTextSubHeader>Please proceed only if you know and trust this
-                  operator.</WarningTextSubHeader>
+                <WarningTextSubHeader>Operators that were not reviewed and their identify is not confirmed may pose a threat to your validator performance.</WarningTextSubHeader>
+                <WarningTextSubHeader>Please proceed only if you know and trust this operator.</WarningTextSubHeader>
               </WarningTextWrapper>
             </WarningMessage>
             )}

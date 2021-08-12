@@ -39,8 +39,7 @@ const WarningTextWrapper = styled.div`
   
 `;
 
-const WarningTextSubHeader = styled.p`
-  line-break: auto;
+const WarningTextSubHeader = styled.div`
   margin: 5px 0px 0px 0px;
 `;
 

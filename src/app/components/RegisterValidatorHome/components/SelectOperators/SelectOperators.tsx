@@ -1,11 +1,13 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { isMobile } from 'react-device-detect';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
+import WarningIcon from '@material-ui/icons/Warning';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
@@ -14,7 +16,37 @@ import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperator
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
 
-const actionButtonMargin = isMobile ? '130px' : '180px';
+const WarningMessage = styled.div`
+  margin-bottom: 20px;
+  color: black;
+  display: flex;
+  background-color: rgb(255, 244, 229);
+  justify-content: space-evenly;
+  padding: 20px 12px 20px 12px;
+`;
+
+const WarningIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const WarningTextWrapper = styled.div`
+  padding-left: 10px;
+  font-size: 13px;
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
+  
+`;
+
+const WarningTextSubHeader = styled.div`
+  margin: 5px 0px 0px 0px;
+`;
+
+const WarningTextHeader = styled.p`
+  margin: 0px 0px 5px 0px;
+  font-weight: 600;
+`;
 
 const SelectOperators = () => {
   const stores = useStores();
@@ -24,6 +56,8 @@ const SelectOperators = () => {
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
   const [openMenu, setOpenMenu] = useState(null);
+  const [allOperatorsVerified, setAllOperatorVerified] = useState(true);
+  const [actionButtonMargin, setActionButtonMargin] = useState(isMobile ? '130px' : '140px');
 
   useEffect(() => {
     unselectAllOperators();
@@ -41,6 +75,21 @@ const SelectOperators = () => {
       });
     }
   }, [contractOperator.operators, contractOperator.selectedEnoughOperators, contractOperator.loadingOperator]);
+  
+  useEffect(() => {
+    let allOperatorsAreVerified = true;
+    if (contractOperator.operators) {
+      contractOperator.operators.forEach((operator) => {
+        if (operator.selected && !operator.verified) allOperatorsAreVerified = false;
+      });
+    }
+    if (allOperatorsVerified !== allOperatorsAreVerified) {
+      setAllOperatorVerified(allOperatorsAreVerified);
+    }
+    if (!allOperatorsAreVerified) {
+      setActionButtonMargin('100px');
+    }
+  }, [contractOperator.operators]);
 
   const onSelectOperatorsClick = async () => {
     history.push(config.routes.VALIDATOR.SLASHING_WARNING);
@@ -88,12 +137,26 @@ const SelectOperators = () => {
         </Grid>
       )}
       actionButton={(
-        <CTAButton
-          testId={'operators-selected-button'}
-          disable={!buttonEnabled}
-          onClick={onSelectOperatorsClick}
-          text={'Next'}
-        />
+        <>
+          {!allOperatorsVerified && (
+            <WarningMessage>
+              <WarningIconWrapper>
+                <WarningIcon fontSize={isMobile ? 'default' : 'large'} style={{ color: 'orange' }} />
+              </WarningIconWrapper>
+              <WarningTextWrapper>
+                <WarningTextHeader>You have selected an operator that is not verified.</WarningTextHeader>
+                <WarningTextSubHeader>Operators that were not reviewed and their identify is not confirmed may pose a threat to your validator performance.</WarningTextSubHeader>
+                <WarningTextSubHeader>Please proceed only if you know and trust this operator.</WarningTextSubHeader>
+              </WarningTextWrapper>
+            </WarningMessage>
+            )}
+          <CTAButton
+            testId={'operators-selected-button'}
+            disable={!buttonEnabled}
+            onClick={onSelectOperatorsClick}
+            text={'Next'}
+            />
+        </>
       )}
     />
   );

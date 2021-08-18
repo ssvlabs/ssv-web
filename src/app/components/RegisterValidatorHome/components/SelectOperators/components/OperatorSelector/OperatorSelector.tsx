@@ -23,11 +23,12 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
   const contractOperator: ContractOperator = stores.ContractOperator;
   const walletStore: WalletStore = stores.Wallet;
   const [selectedOperator, selectOperator] = useState('');
+
   const selectOperatorMethod = (operator: any) => {
     if (selectedOperator) {
       contractOperator.unselectOperator(selectedOperator);
     }
-    contractOperator.selectOperator(operator.pubkey);
+    contractOperator.selectOperator(operator.pubkey, index + 1);
     selectOperator(operator);
   };
 

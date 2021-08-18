@@ -6,6 +6,7 @@ import { useStyles } from './DataSection.styles';
 
 const DataSection = ({ data }: any) => {
     const classes = useStyles();
+    console.log(data);
     return (
       <>
         {data.map((section: any, index: number) => (

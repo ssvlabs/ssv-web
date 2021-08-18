@@ -20,9 +20,10 @@ import { useStyles } from './ImportValidatorConfirmation.styles';
 
 interface dataSection {
     key: string,
-    header?: true,
     value: any,
+    header?: true,
     strong?: string
+    selectedPosition?: number
 }
 
 const ImportValidatorConfirmation = () => {
@@ -67,16 +68,14 @@ const ImportValidatorConfirmation = () => {
        ],
     ];
 
-    let indexNumber: number = 0;
     contractOperator.operators.forEach((operator: IOperator) => {
           if (operator.selected) {
-              indexNumber += 1;
-              data[0].push({
-                  key: `${indexNumber}. ${operator.name}`,
+              data[0].splice(operator.selectedPosition, 0, {
+                  key: `${operator.selectedPosition}. ${operator.name}`,
                   value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4),
               }); }
     });
-
+    
   return (
     <Screen
       navigationText={translations.VALIDATOR.SLASHING_WARNING.TITLE}

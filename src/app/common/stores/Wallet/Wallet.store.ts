@@ -4,6 +4,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+// import { isUpgradePage } from '~lib/utils/navigation';
 import { wallets } from '~app/common/stores/Wallet/wallets';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -166,7 +167,7 @@ class WalletStore extends BaseStore implements Wallet {
 
   @action.bound
   async onNetworkChange(networkId: any) {
-    if ([Networks.MAINNET, Networks.GOERLI].indexOf(networkId) === -1) {
+    if (networkId !== 5) {
       this.alertNetworkError();
     } else {
       this.wrongNetwork = false;
@@ -177,7 +178,7 @@ class WalletStore extends BaseStore implements Wallet {
   alertNetworkError() {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     this.wrongNetwork = true;
-    notificationsStore.showMessage('Please change network to Mainnet or Goerli', 'error');
+    notificationsStore.showMessage('Please change network to Goerli', 'error');
   }
 
   @action.bound

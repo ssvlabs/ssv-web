@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -53,6 +53,7 @@ const SelectOperators = () => {
   const contractOperator: ContractOperator = stores.ContractOperator;
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles();
+  const wrapperRef = useRef(null);
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
   const [openMenu, setOpenMenu] = useState(null);
@@ -63,6 +64,21 @@ const SelectOperators = () => {
     unselectAllOperators();
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      // @ts-ignore
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setOpenMenu(null);
+      }
+    }
+    // Bind the event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [wrapperRef]);
 
   useEffect(() => {
     setButtonEnabled(contractOperator.selectedEnoughOperators);
@@ -108,7 +124,7 @@ const SelectOperators = () => {
       subTitle={translations.VALIDATOR.SELECT_OPERATORS.DESCRIPTION}
       styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       body={(
-        <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
+        <Grid ref={wrapperRef} container wrap="nowrap" spacing={0} className={classes.gridContainer}>
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             {config.FEATURE.OPERATORS.AUTO_SELECT ? (
               <Button

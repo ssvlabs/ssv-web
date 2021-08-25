@@ -20,6 +20,7 @@ interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
 }
 
 export interface IOperator {
+  selectedPosition: number;
   name: string,
   pubkey: string,
   ownerAddress: string,
@@ -201,9 +202,10 @@ class ContractOperator extends BaseStore {
    * @param publicKey
    */
   @action.bound
-  selectOperator(publicKey: string) {
+  selectOperator(publicKey: string, selectedIndex: number) {
     const { operator, index } = this.findOperator(publicKey);
     if (operator) {
+      operator.selectedPosition = selectedIndex;
       operator.selected = true;
       operator.autoSelected = false;
       this.operators[index] = operator;

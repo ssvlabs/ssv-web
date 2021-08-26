@@ -60,6 +60,10 @@ const ImportValidatorConfirmation = () => {
     const data: dataSection[][] = [
         [
             { key: 'OPERATORS', header: true, value: '', strong: '' },
+            { key: '', value: '' },
+            { key: '', value: '' },
+            { key: '', value: '' },
+            { key: '', value: '' },
         ],
         [
             { key: 'EST. TRANSACTION COST', header: true, value: <Link className={classes.etherLink} href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need ETH?</Link> },
@@ -70,10 +74,11 @@ const ImportValidatorConfirmation = () => {
 
     contractOperator.operators.forEach((operator: IOperator) => {
           if (operator.selected) {
-              data[0].splice(operator.selectedPosition, 0, {
+              data[0].splice(operator.selectedPosition, 1, {
                   key: `${operator.selectedPosition}. ${operator.name}`,
                   value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4),
-              }); }
+              });
+          }
     });
     
   return (

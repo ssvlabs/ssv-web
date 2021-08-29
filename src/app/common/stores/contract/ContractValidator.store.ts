@@ -56,7 +56,6 @@ class ContractValidator extends BaseStore {
     this.validatorPrivateKeyFile = null;
     this.createValidatorPayLoad = undefined;
     this.cleanPrivateData();
-    console.log(this.createValidatorPayLoad);
   }
 
   /**
@@ -185,7 +184,6 @@ class ContractValidator extends BaseStore {
     const ownerAddress: string = walletStore.accountAddress;
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
-
     return new Promise((resolve) => {
       // Get list of selected operator's public keys
       const operatorPublicKeys: string[] = operatorStore.operators

@@ -1,7 +1,7 @@
 {
   "name": "ssv-web",
   "description": "Webapp to interact with SSV",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": {
     "ssv-cli": "bin/Cli/Cli.ts"
   },

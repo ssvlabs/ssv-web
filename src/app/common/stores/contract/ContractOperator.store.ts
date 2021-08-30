@@ -287,11 +287,12 @@ class ContractOperator extends BaseStore {
       ],
       data: { query },
     };
-    this.operatorsLoaded = true;
+
     this.operators = await new ApiRequest(requestInfo)
       .sendRequest()
       .then((response: any) => {
         this.loadingOperator = false;
+        this.operatorsLoaded = true;
         const adaptedOperators = response.operators.map((operator: any) => {
           return this.operatorAdapter(operator);
         });
@@ -300,10 +301,11 @@ class ContractOperator extends BaseStore {
   }
   
   operatorAdapter(_object: { name: any; owner_address: any; public_key: any; verified: any; }) {
+    const walletStore: WalletStore = this.getStore('Wallet');
     return {
       name: _object.name,
       ownerAddress: _object.owner_address,
-      pubkey: _object.public_key,
+      pubkey: walletStore.encodeOperatorKey(_object.public_key),
       verified: _object.verified,
     };
   }

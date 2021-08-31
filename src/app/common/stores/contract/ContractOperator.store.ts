@@ -1,12 +1,9 @@
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
-import { sha256 } from 'js-sha256';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { dynamicSort } from '~lib/utils/sort';
-import verifiedOperators from '~lib/utils/verifiedOperators.json';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 
 export interface INewOperatorTransaction {
@@ -283,38 +280,34 @@ class ContractOperator extends BaseStore {
 
     const requestInfo: RequestData = {
       url: operatorsEndpointUrl,
-      method: 'POST',
+      method: 'GET',
       headers: [
         { name: 'content-type', value: 'application/json' },
         { name: 'accept', value: 'application/json' },
       ],
       data: { query },
     };
+
     this.operators = await new ApiRequest(requestInfo)
       .sendRequest()
       .then((response: any) => {
-        this.operatorsLoaded = true;
-        let operatorsList: any = [];
-        if (response.data) {
-          response.data.operators.sort(dynamicSort('name'));
-          const operatorsPublicKey: string[] = response.data?.operators.map((a: any) => { return sha256(a.pubkey); });
-          // eslint-disable-next-line no-restricted-syntax
-          for (const pubKey of verifiedOperators.pubKeys) {
-            const verifiedIndex = operatorsPublicKey.indexOf(pubKey);
-            if (verifiedIndex > -1) {
-              response.data.operators[verifiedIndex].verified = true;
-              operatorsList.push(response.data.operators[verifiedIndex]);
-              response.data.operators.splice(verifiedIndex, 1);
-              operatorsPublicKey.splice(verifiedIndex, 1);
-            }
-          }
-
-          operatorsList.sort(dynamicSort('name'));
-          operatorsList = [...operatorsList, ...response.data.operators];
-        }
         this.loadingOperator = false;
-        return operatorsList;
+        this.operatorsLoaded = true;
+        const adaptedOperators = response.operators.map((operator: any) => {
+          return this.operatorAdapter(operator);
+        });
+        return adaptedOperators;
       });
+  }
+  
+  operatorAdapter(_object: { name: any; owner_address: any; public_key: any; verified: any; }) {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    return {
+      name: _object.name,
+      ownerAddress: _object.owner_address,
+      pubkey: walletStore.encodeOperatorKey(_object.public_key),
+      verified: _object.verified,
+    };
   }
 }
 

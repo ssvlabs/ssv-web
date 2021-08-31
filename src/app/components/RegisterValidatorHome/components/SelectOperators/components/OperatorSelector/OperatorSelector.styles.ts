@@ -35,6 +35,9 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     borderRadius: '6px 6px 0px 0px',
     borderBottom: 'none',
   },
+  menuLoader: {
+    textAlign: 'center',
+  },
   menuWrapper: {
     width: '30%',
     '@media (max-width: 1025)': {

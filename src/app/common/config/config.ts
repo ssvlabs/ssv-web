@@ -568,7 +568,7 @@ const config = {
     SSV: {
       CONTRACT_ADDRESS: {
         TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
-        MAINNET: '0x584d44D3E36F3690a4170Dad0238DF5441d41f1c',
+        MAINNET: '0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54',
       },
       ABI: [
         {
@@ -954,7 +954,7 @@ const config = {
     DEX: {
       CONTRACT_ADDRESS: {
         TESTNET: '0xF83129B78c41F3728678617E1f198b827434aeb3',
-        MAINNET: '0xc398C2935a274a3a39D86B4E3d36dabA616442e6',
+        MAINNET: '0x2bf73A478cc6a7bA4E6758A3A52AbDc8CDBa735E',
       },
       ABI: [
         {

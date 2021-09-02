@@ -300,13 +300,14 @@ class ContractOperator extends BaseStore {
       });
   }
   
-  operatorAdapter(_object: { name: any; owner_address: any; public_key: any; verified: any; }) {
+  operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
     const walletStore: WalletStore = this.getStore('Wallet');
     return {
       name: _object.name,
       ownerAddress: _object.owner_address,
       pubkey: walletStore.encodeOperatorKey(_object.public_key),
-      verified: _object.verified,
+      verified: _object.type === 'verified_operator',
+      dappNode: _object.type === 'dapp_node',
     };
   }
 }

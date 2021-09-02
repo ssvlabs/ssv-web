@@ -26,6 +26,7 @@ export interface IOperator {
   selected?: boolean
   autoSelected?: boolean
   verified?: boolean
+  dappNode?: boolean
 }
 
 class ContractOperator extends BaseStore {

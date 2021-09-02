@@ -96,7 +96,7 @@ const SelectOperators = () => {
     let allOperatorsAreVerified = true;
     if (contractOperator.operators) {
       contractOperator.operators.forEach((operator) => {
-        if (operator.selected && !operator.verified) allOperatorsAreVerified = false;
+        if (operator.selected && !(operator.verified || operator.dappNode)) allOperatorsAreVerified = false;
       });
     }
     if (allOperatorsVerified !== allOperatorsAreVerified) {

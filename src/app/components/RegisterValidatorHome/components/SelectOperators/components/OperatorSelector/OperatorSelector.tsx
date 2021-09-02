@@ -109,13 +109,14 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
             <Grid item xs={6} md={6} onClick={() => {
                 !operator.selected && onSelectOperator(operator);
               }}>
-              {operator.verified ? (
-                <Grid container className={classes.verifiedText}>
+              {operator.verified || operator.dappNode ? (
+                <Grid container className={operator.verified ? classes.verifiedText : classes.dappNode}>
                   <Grid item xs={8}>
-                    verified
+                    {operator.verified ? 'Verified' : 'DAppNode'}
                   </Grid>
                   <Grid item xs={4}>
-                    <img src={'/images/checkmark_icon.svg'} className={classes.verifiedIcon} />
+                    {operator.verified && <img src={'/images/checkmark_icon.svg'} className={classes.verifiedIcon} />}
+                    {operator.dappNode && <img src={'/images/checkmark_icon_dappnode.svg'} className={classes.dappNodeIcon} />}
                   </Grid>
                 </Grid>
                 ) : ''}

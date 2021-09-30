@@ -9,6 +9,7 @@ window.crypto = {
     getRandomValues: function(buffer:Buffer) { return nodeCrypto.randomFillSync(buffer);}
 };
 // imports
+import Web3 from 'web3';
 import ErrnoException = NodeJS.ErrnoException;
 import { ISharesKeyPairs } from '~lib/crypto/Threshold';
 import { EncryptShare } from '~lib/crypto/Encryption/Encryption';
@@ -21,6 +22,7 @@ const argumentsCMD = argv(process.argv.slice(2));
 
 const requireArguments: string[] = ['filePath', 'password', 'operators'];
 const operators = argumentsCMD.operators && argumentsCMD.operators.split(',');
+const web3 = new Web3();
 
 // argumentsCMD validation
 for (const i in requireArguments) {
@@ -36,16 +38,16 @@ for (const i in requireArguments) {
 
 if (isArgumentsValid) {
     const { filePath } = argumentsCMD;
+
     const keystorePassword = argumentsCMD.password.toString();
 
     // reading keystore file
     readFile(filePath).then((data: any) => {
         extractPrivateKey(data, keystorePassword).then((privateKey: any) => {
-            console.log(privateKey);
             createThreshold(privateKey).then((threshold: ISharesKeyPairs) => {
                 encryptShares(operators, threshold.shares).then((encryptedShares: EncryptShare[]) => {
                     const operatorsPublicKey: string[] = encryptedShares.map((share: EncryptShare) => {
-                        return share.operatorPublicKey;
+                        return web3.eth.abi.encodeParameter('string', share.operatorPublicKey);
                     });
 
                     const sharePublicKey: string[] = encryptedShares.map((share: EncryptShare) => {
@@ -53,15 +55,16 @@ if (isArgumentsValid) {
                     });
 
                     const sharePrivateKey: string[] = encryptedShares.map((share: EncryptShare) => {
-                        return share.privateKey;
+                        return web3.eth.abi.encodeParameter('string', share.privateKey);
                     });
-
-                    console.log([
+                    const payload = [
                         threshold.validatorPublicKey,
                         operatorsPublicKey,
                         sharePublicKey,
                         sharePrivateKey,
-                    ]);
+                    ];
+
+                    console.log(payload);
                 }).catch((error: any) => {
                     console.log(error);
                 });

@@ -13,6 +13,7 @@ const config = {
       HOME: '/validator',
       IMPORT: '/validator/import',
       CREATE: '/validator/create',
+      DEPOSIT_VALIDATOR: '/validator/deposit',
       SUCCESS_PAGE: '/validator/success',
       DECRYPT: '/validator/keystore/decrypt',
       CONFIRMATION_PAGE: '/validator/confirm',

@@ -13,6 +13,16 @@ const translations = {
           'Please note to backup your newly created validator files, you will need them for our setup.',
       ],
     },
+    DEPOSIT: {
+      NAVIGATION_TEXT: 'Enter Validator Key',
+      TITLE: 'Deposit Validator via Ethereum Launchpad',
+      SUB_TITLE: 'You must deposit your validator before running it on the SSV network.',
+      DESCRIPTION: '',
+      BODY_TEXT: [
+        'Follow Ethereum\'s launchpad instructions to deposit your validator to the deposit contract.',
+        'There is no need to wait until your validator is active on the beacon chain, you can return to register your validator to our network while it\'s pending on the staking queue, once it gets activated, your selected operators will operate it immediately.',
+      ],
+    },
     IMPORT: {
       TITLE: 'Enter Validator Key',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',

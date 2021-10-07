@@ -12,6 +12,8 @@ import InputLabel from '~app/common/components/InputLabel';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import ApiRequest from '~lib/utils/ApiRequest';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 
 const actionButtonMargin = isMobile ? '159px' : '189px';
 
@@ -32,7 +34,14 @@ const EnterValidatorPrivateKey = () => {
   const goToSelectOperators = async () => {
     hideMessage();
     validatorStore.extractPrivateKey().then(() => {
-      history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+      const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}`;
+      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET' }).sendRequest().then((response: any) => {
+        if (typeof response.data === 'object' && response.data !== null && response.data?.activationepoch) {
+          history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+        } else {
+          history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+        }
+      });
     }).catch((error: string) => {
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
         showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);

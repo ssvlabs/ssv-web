@@ -52,9 +52,9 @@ const EnterValidatorPrivateKey = () => {
     hideMessage();
     const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
-      const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}`;
+      const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
-        if (typeof response.data === 'object' && response.data !== null && response.data?.activationepoch) {
+        if (typeof response.data === 'object' && response.data !== null && response.data?.valid_signature) {
           validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);

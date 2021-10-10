@@ -277,7 +277,7 @@ class ContractOperator extends BaseStore {
         ownerAddress
       }
     }`;
-    const operatorsEndpointUrl = String(process.env.REACT_APP_OPERATORS_ENDPOINT);
+    const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}?randomize=true`;
 
     const requestInfo: RequestData = {
       url: operatorsEndpointUrl,

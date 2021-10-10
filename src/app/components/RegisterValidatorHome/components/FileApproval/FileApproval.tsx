@@ -22,8 +22,25 @@ const EnterValidatorPrivateKey = () => {
   const classes = useStyles();
   const stores = useStores();
   const validatorStore: ContractValidator = stores.ContractValidator;
+  const [inProgress, setInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+  useEffect(() => {
+    const listener = async (event: any) => {
+      if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+        // event.preventDefault();
+        if (!inProgress) {
+          setInProgress(true);
+          await goToSelectOperators();
+        }
+      }
+    };
+    document.addEventListener('keydown', listener);
+    return () => {
+      document.removeEventListener('keydown', listener);
+    };
+  }, [inProgress]);
 
   useEffect(() => {
     validatorStore.cleanPrivateData();
@@ -33,16 +50,19 @@ const EnterValidatorPrivateKey = () => {
 
   const goToSelectOperators = async () => {
     hideMessage();
+    const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}`;
-      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET' }).sendRequest().then((response: any) => {
+      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
         if (typeof response.data === 'object' && response.data !== null && response.data?.activationepoch) {
-          history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+          validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
         }
+        setInProgress(false);
       });
     }).catch((error: string) => {
+      setInProgress(false);
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
         showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
       } else {

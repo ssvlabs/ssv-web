@@ -82,11 +82,9 @@ class ContractValidator extends BaseStore {
           this.keyStore = new EthereumKeyStore(string);
           const privateKey = await this.keyStore.getPrivateKey(this.password);
           this.setValidatorPrivateKey(privateKey);
-          applicationStore.setIsLoading(false);
           resolve(privateKey);
         } catch (error) {
           this.setValidatorPrivateKey('');
-          applicationStore.setIsLoading(false);
           reject(error.message);
         }
       });

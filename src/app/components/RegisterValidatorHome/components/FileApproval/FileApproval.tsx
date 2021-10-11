@@ -10,8 +10,11 @@ import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import ApplicationStore from '~app/common/stores/Application.store';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import ApiRequest from '~lib/utils/ApiRequest';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 
 const actionButtonMargin = isMobile ? '159px' : '189px';
 
@@ -20,8 +23,26 @@ const EnterValidatorPrivateKey = () => {
   const classes = useStyles();
   const stores = useStores();
   const validatorStore: ContractValidator = stores.ContractValidator;
+  const applicationStore: ApplicationStore = stores.Application;
+  const [inProgress, setInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+  useEffect(() => {
+    const listener = async (event: any) => {
+      if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+        // event.preventDefault();
+        if (!inProgress) {
+          setInProgress(true);
+          await goToSelectOperators();
+        }
+      }
+    };
+    document.addEventListener('keydown', listener);
+    return () => {
+      document.removeEventListener('keydown', listener);
+    };
+  }, [inProgress]);
 
   useEffect(() => {
     validatorStore.cleanPrivateData();
@@ -31,9 +52,21 @@ const EnterValidatorPrivateKey = () => {
 
   const goToSelectOperators = async () => {
     hideMessage();
+    const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
-      history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+      const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
+      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
+        if (typeof response.data === 'object' && response.data !== null && response.data?.valid_signature) {
+          validatorSelectionPage();
+        } else {
+          history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+        }
+        setInProgress(false);
+        applicationStore.setIsLoading(false);
+      });
     }).catch((error: string) => {
+      setInProgress(false);
+      applicationStore.setIsLoading(false);
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
         showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
       } else {
@@ -57,11 +90,11 @@ const EnterValidatorPrivateKey = () => {
     validatorStore.setValidatorPrivateKeyFile(false);
     history.push(config.routes.VALIDATOR.IMPORT);
   };
-  
+
   const serializeFileName = (fileName: string) => {
     if (fileName.length > 34 && isMobile) {
       return `${fileName.slice(0, 15)}...${fileName.slice(fileName.length - 15, fileName.length)}`;
-    } 
+    }
     return fileName;
   };
 

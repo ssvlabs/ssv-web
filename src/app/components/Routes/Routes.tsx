@@ -14,6 +14,7 @@ import ImportValidator from '~app/components/RegisterValidatorHome/components/Im
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/RegisterValidatorHome/components/SlashingWarning';
 import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
+import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 
 const Routes = () => {
@@ -54,6 +55,9 @@ const Routes = () => {
             </Route>
             <Route exact path={config.routes.VALIDATOR.CREATE}>
               <CreateValidator />
+            </Route>
+            <Route exact path={config.routes.VALIDATOR.DEPOSIT_VALIDATOR}>
+              <DepositViaLaunchpad />
             </Route>
             <Route exact path={config.routes.VALIDATOR.DECRYPT}>
               <FileApproval />

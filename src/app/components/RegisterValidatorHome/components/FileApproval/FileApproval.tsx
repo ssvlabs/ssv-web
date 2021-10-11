@@ -10,6 +10,7 @@ import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import ApplicationStore from '~app/common/stores/Application.store';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import ApiRequest from '~lib/utils/ApiRequest';
@@ -22,6 +23,7 @@ const EnterValidatorPrivateKey = () => {
   const classes = useStyles();
   const stores = useStores();
   const validatorStore: ContractValidator = stores.ContractValidator;
+  const applicationStore: ApplicationStore = stores.Application;
   const [inProgress, setInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -60,9 +62,11 @@ const EnterValidatorPrivateKey = () => {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
         }
         setInProgress(false);
+        applicationStore.setIsLoading(false);
       });
     }).catch((error: string) => {
       setInProgress(false);
+      applicationStore.setIsLoading(false);
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
         showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
       } else {
@@ -86,11 +90,11 @@ const EnterValidatorPrivateKey = () => {
     validatorStore.setValidatorPrivateKeyFile(false);
     history.push(config.routes.VALIDATOR.IMPORT);
   };
-  
+
   const serializeFileName = (fileName: string) => {
     if (fileName.length > 34 && isMobile) {
       return `${fileName.slice(0, 15)}...${fileName.slice(fileName.length - 15, fileName.length)}`;
-    } 
+    }
     return fileName;
   };
 

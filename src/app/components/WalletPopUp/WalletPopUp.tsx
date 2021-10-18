@@ -32,7 +32,7 @@ const WalletPopUp = () => {
           <Grid item xs={12}>
             <Grid container spacing={1} className={classes.gridContainer}>
               <Grid item>
-                <Typography className={classes.header}>Wallet Addresss</Typography>
+                <Typography className={classes.header}>Wallet Address</Typography>
               </Grid>
               <Grid item>
                 <button className={classes.connectButton} onClick={changeWallet}>Change</button>

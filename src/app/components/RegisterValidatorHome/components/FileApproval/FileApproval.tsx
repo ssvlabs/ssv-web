@@ -56,7 +56,8 @@ const EnterValidatorPrivateKey = () => {
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
-        if (typeof response.data === 'object' && response.data !== null && response.data?.valid_signature) {
+        const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
+        if (response.data !== null && conditionalDataExtraction?.valid_signature) {
           validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);

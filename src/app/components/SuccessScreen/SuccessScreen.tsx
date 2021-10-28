@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
@@ -57,7 +58,7 @@ const SuccessScreen = () => {
       body={(
         <Grid className={classes.gridContainer} container spacing={0}>
           <Grid item xs={12} className={classes.successImage}>
-            <img src={`/images/${icon}.svg`} className={classes.icon} />
+            <img src={getImage(`${icon}.svg`)} className={classes.icon} />
           </Grid>
           <Grid item xs={12} className={classes.linkWrapper}>
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={redirectTo}>

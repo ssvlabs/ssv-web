@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import { getImage } from '~lib/utils/filePath';
 import Header from '~app/common/components/Header';
 import BackNavigation from '~app/common/components/BackNavigation';
 import { useStyles } from '~app/components/UpgradeHome/components/UpgradeState/UpgradeState.styles';
@@ -54,7 +55,7 @@ const UpgradeState = (upgradeStateProps: UpgradeStateProps) => {
         )}
       </Grid>
 
-      {!hideTopIcons ? <img src="/images/upgrade.svg" /> : ''}
+      {!hideTopIcons ? <img src={getImage('/images/upgrade.svg')} /> : ''}
 
       <Grid item xs={12} md={12} className={`${classes.header}`} style={headerStyle ?? {}}>
         <Header title={title} subtitle={subTitle} />

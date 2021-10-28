@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { getImage } from '~lib/utils/filePath';
 
 const ProgressStep = styled.div<{ isActive: boolean }>`
   background: ${({ isActive }) => {
@@ -85,7 +86,7 @@ const ProgressStepper = (props: ProgressStepperProps) => {
               ) : ''}
               <img
                 key={`progress-step-done-${s}`}
-                src="/images/step-done.svg"
+                src={getImage('step-done.svg')}
                 alt="Done"
               />
             </React.Fragment>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStyles } from './Tooltip.styles';
+import { getImage } from '~lib/utils/filePath';
 
 type ToolTipProps = {
     text?: string,
@@ -15,7 +16,7 @@ const Tooltip = ({ text, link }: ToolTipProps) => {
         onMouseEnter={() => setIsShown(true)}
         onMouseLeave={() => setIsShown(false)}
       >
-        <img className={classes.image} src={'/images/hint.svg'} />
+        <img className={classes.image} src={getImage('hint.svg')} />
         {isShown && (
         <div className={classes.toolTipText}>
             {text}

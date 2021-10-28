@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { getImage } from '~lib/utils/filePath';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import ConditionalLink from '~app/common/components/ConditionalLink';
@@ -42,7 +43,7 @@ const CreateValidator = () => {
             </ConditionalLink>
           </Grid>
           <Grid item xs className={classes.gridContainer}>
-            <img className={classes.rhinoImage} src={'/images/rhino.png'} />
+            <img className={classes.rhinoImage} src={getImage('rhino.png')} />
           </Grid>
         </Grid>
       )}

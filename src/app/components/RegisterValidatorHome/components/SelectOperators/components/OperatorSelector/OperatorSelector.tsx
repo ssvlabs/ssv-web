@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import config from '~app/common/config';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
-import config from '~app/common/config';
 // import { debounce } from '@material-ui/core';
 // import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -115,8 +116,8 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
                     {operator.verified ? 'Verified' : 'DAppNode'}
                   </Grid>
                   <Grid item xs={4}>
-                    {operator.verified && <img src={'/images/checkmark_icon.svg'} className={classes.verifiedIcon} />}
-                    {operator.dappNode && <img src={'/images/checkmark_icon_dappnode.svg'} className={classes.dappNodeIcon} />}
+                    {operator.verified && <img src={getImage('checkmark_icon.svg')} className={classes.verifiedIcon} />}
+                    {operator.dappNode && <img src={getImage('checkmark_icon_dappnode.svg')} className={classes.dappNodeIcon} />}
                   </Grid>
                 </Grid>
                 ) : ''}
@@ -124,7 +125,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
             <Grid item onClick={() => {
                 redirectTo(operator.pubkey);
               }}>
-              <img src={'/images/chart_icon.svg'} className={classes.chartIcon} />
+              <img src={getImage('chart_icon.svg')} className={classes.chartIcon} />
             </Grid>
           </Grid>
         </Grid>
@@ -142,7 +143,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
         { selectedOperator ? (
                 renderOperator({ operator: selectedOperator, menu: false })
         )
-            : <> Select Operator <img src={'/images/arrow_up_icon.svg'} className={`${classes.buttonArrow} ${shouldOpenMenu && classes.arrowSelected}`} /></>
+            : <> Select Operator <img src={getImage('arrow_up_icon.svg')} className={`${classes.buttonArrow} ${shouldOpenMenu && classes.arrowSelected}`} /></>
         }
       </button>
       {shouldOpenMenu && (

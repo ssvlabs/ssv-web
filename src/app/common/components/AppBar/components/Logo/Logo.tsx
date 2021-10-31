@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { getImage } from '~lib/utils/filePath';
 
 const Logo = styled.img`
   vertical-align: center;
@@ -8,7 +9,7 @@ const Logo = styled.img`
 `;
 
 const LogoComponent = () => (
-  <Logo src="/images/logo.svg" alt="SSV" />
+  <Logo src={getImage('logo.svg')} alt="SSV" />
 );
 
 export default LogoComponent;

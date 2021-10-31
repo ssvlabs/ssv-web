@@ -4,6 +4,7 @@ import Link from '@material-ui/core/Link';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useStyles } from './ValidatorKeyInput.styles';
+import { getImage } from '~lib/utils/filePath';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 
 type ValidatorPrivateKeyInputProps = {
@@ -20,7 +21,7 @@ const ValidatorKeyInput = (props: ValidatorPrivateKeyInputProps) => {
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
   const href: string = link || `${beaconchaBaseUrl}/validator/${validatorKey}`;
   const shouldBlank: string = newTab ? '_blank' : '';
-  const img: string = image ?? '/images/external_link.svg';
+  const img: string = image ?? getImage('external_link.svg');
   return (
     <OutlinedInput
       className={classes.wideWidthInput}

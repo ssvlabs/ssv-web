@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { isMobile } from 'react-device-detect';
 import ClearIcon from '@material-ui/icons/Clear';
+import { getImage } from '~lib/utils/filePath';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/common/components/TextInput';
@@ -56,7 +57,8 @@ const EnterValidatorPrivateKey = () => {
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
-        if (typeof response.data === 'object' && response.data !== null && response.data?.valid_signature) {
+        const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
+        if (response.data !== null && conditionalDataExtraction?.valid_signature) {
           validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
@@ -111,13 +113,13 @@ const EnterValidatorPrivateKey = () => {
             <InputLabel title="Keystore File" subTitle="generated from CLI">
               <Grid container className={classes.fileContainer}>
                 <Grid item xs={2} lg={1}>
-                  {validatorStore.isJsonFile() ? <img className={classes.approvedIcon} src={'/images/approved_file_icon.svg'} /> : <ClearIcon className={classes.badFormat} />}
+                  {validatorStore.isJsonFile() ? <img className={classes.approvedIcon} src={getImage('approved_file_icon.svg')} /> : <ClearIcon className={classes.badFormat} />}
                 </Grid>
                 <Grid className={classes.fileNameText} item xs={9} lg={10}>
                   {validatorStore.validatorPrivateKeyFile?.name && serializeFileName(validatorStore.validatorPrivateKeyFile.name)}
                 </Grid>
                 <Grid item xs={1} lg={1} onClick={removeKeyStoreFile} className={classes.removeIconWrapper}>
-                  <img className={classes.clearIcon} src={'/images/remove_icon.svg'} />
+                  <img className={classes.clearIcon} src={getImage('remove_icon.svg')} />
                 </Grid>
               </Grid>
             </InputLabel>

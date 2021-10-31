@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
@@ -42,12 +43,12 @@ const RegisterValidatorHome = () => {
         <Grid container wrap="nowrap" spacing={0} className={classes.columnGridContainer}>
           <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
             <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition onClick={() => redirectTo(config.routes.VALIDATOR.CREATE)}>
-              <LinkButton primaryLabel={'Create Validator'} secondaryLabel={''} icon={'images/create_validator_icon.svg'} />
+              <LinkButton primaryLabel={'Create Validator'} secondaryLabel={''} icon={getImage('create_validator_icon.svg')} />
             </ConditionalLink>
           </Grid>
           <Grid item xs={12} md={12} zeroMinWidth className={classes.columnGridContainer}>
             <ConditionalLink to={config.routes.VALIDATOR.IMPORT} condition={walletStore.connected} onClick={() => redirectTo(config.routes.VALIDATOR.IMPORT)}>
-              <LinkButton primaryLabel={'Import Validator'} secondaryLabel={''} icon={'images/import_validator_icon.svg'} />
+              <LinkButton primaryLabel={'Import Validator'} secondaryLabel={''} icon={getImage('import_validator_icon.svg')} />
             </ConditionalLink>
           </Grid>
         </Grid>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import Button from '~app/common/components/AppBar/components/Button';
@@ -28,13 +29,13 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   if (walletStore.wallet?.name) {
     switch (walletStore.wallet.name) {
       case 'MetaMask':
-        icon = '/images/metamask.svg';
+        icon = getImage('metamask.svg');
         break;
       case 'Ledger':
-        icon = '/images/metamask.svg';
+        icon = getImage('metamask.svg');
         break;
       case 'Trezor':
-        icon = '/images/metamask.svg';
+        icon = getImage('metamask.svg');
         break;
     }
   }

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import DataTable from '~app/common/components/DataTable';
-import { useStyles } from './MyAccount.styles';
-import MyBalance from '~app/components/MyAccount/components/MyBalance';
 import { useStores } from '~app/hooks/useStores';
-import AllowanceStore from '~app/common/stores/Allowance.store';
+import SsvStore from '~app/common/stores/Ssv.store';
+import DataTable from '~app/common/components/DataTable';
+import MyBalance from '~app/components/MyAccount/components/MyBalance';
+import { useStyles } from './MyAccount.styles';
 
 const validatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'BALANCE', 'EST. APR', ''];
 const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', ''];
@@ -13,7 +13,7 @@ const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', '']
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
-    const allowanceStore: AllowanceStore = stores.Allowance;
+    const allowanceStore: SsvStore = stores.Allowance;
     const [width, setWidth] = React.useState(window.innerWidth);
     const breakPoints = [
         { width: 768, operatorHeader: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''], validatorHeaders: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''] },
@@ -49,7 +49,7 @@ const MyAccount = () => {
 
     return (
       <Grid container className={classes.Wrapper}>
-        <Grid onClick={() => { allowanceStore.approveAllowance(); }}>asdlkasndajndjkasdnjaksnd</Grid>
+        {/* <Grid onClick={() => { allowanceStore.checkAllowance(); }}>asdlkasndajndjkasdnjaksnd</Grid> */}
         <Grid container item xs={12} className={classes.Header}>
           <Grid item xs={6}>
             <span className={classes.HeaderText}>

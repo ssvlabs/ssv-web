@@ -57,10 +57,7 @@ const config = {
   },
   CONTRACTS: {
     SSV: {
-      CONTRACT_ADDRESS: {
-        TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
-        MAINNET: '0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54',
-      },
+      ADDRESS: String(process.env.REACT_APP_SSV_CONTRACT_ADDRESS),
       ABI: [
         {
           'anonymous': false,

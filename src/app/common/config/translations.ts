@@ -1,4 +1,9 @@
 const translations = {
+  MY_ACCOUNT: {
+    DEPOSIT: {
+      NAVIGATION_TEXT: 'back to my account',
+    },
+  },
   VALIDATOR: {
     HOME: {
       TITLE: 'Run Validator with the SSV Network',

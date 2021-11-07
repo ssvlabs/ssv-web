@@ -6,6 +6,7 @@ import Welcome from '~app/components/Welcome';
 import MyAccount from '~app/components/MyAccount';
 import Layout from '~app/common/components/Layout';
 import SuccessScreen from '~app/components/SuccessScreen';
+import Deposit from '~app/components/MyAccount/components/Deposit';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
@@ -21,17 +22,18 @@ import SelectOperators from '~app/components/RegisterValidatorHome/components/Se
 
 const Routes = () => {
   const classes = useStyles();
+  console.log(Deposit());
     return (
       <>
         <Switch>
           <Layout layoutClassName={classes.dashboardRoot}>
-            <Route exact path={config.routes.MY_ACCOUNT.DASHBOARD}>
+            <Route path={config.routes.MY_ACCOUNT.DASHBOARD}>
               <Switch>
                 <Route exact path={config.routes.MY_ACCOUNT.DASHBOARD}>
                   <MyAccount />
                 </Route>
                 <Route exact path={config.routes.MY_ACCOUNT.DEPOSIT}>
-                  <RegisterOperatorHome />
+                  <Deposit />
                 </Route>
                 <Route exact path={config.routes.MY_ACCOUNT.WITHDRAW}>
                   <RegisterOperatorHome />

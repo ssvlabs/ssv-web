@@ -13,7 +13,7 @@ export const UpgradeSteps = {
     upgradeSuccess: 3,
 };
 
-class AllowanceStore extends BaseStore {
+class SsvStore extends BaseStore {
     // UI states
     @observable upgradeStep: number = UpgradeSteps.home;
     @observable userAgreedOnTerms: boolean = false;
@@ -27,27 +27,11 @@ class AllowanceStore extends BaseStore {
     @observable userAllowance: number | string | null = null;
 
     // Contracts
-    @observable cdtContractInstance: Contract | null = null;
     @observable ssvContractInstance: Contract | null = null;
     @observable upgradeContractInstance: Contract | null = null;
 
     // Results
     @observable upgradeTxHash: string = '';
-
-    /**
-     * Returns instance of CDT old contract
-     */
-    @computed
-    get cdtContract(): Contract {
-        if (!this.cdtContractInstance) {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            this.cdtContractInstance = new walletStore.web3.eth.Contract(
-                config.CONTRACTS.CDT.ABI,
-                this.getContractAddress('cdt'),
-            );
-        }
-        return <Contract> this.cdtContractInstance;
-    }
 
     /**
      * Returns instance of SSV contract
@@ -57,7 +41,7 @@ class AllowanceStore extends BaseStore {
         if (!this.ssvContractInstance) {
             const walletStore: WalletStore = this.getStore('Wallet');
             this.ssvContractInstance = new walletStore.web3.eth.Contract(
-                config.CONTRACTS.CDT.ABI,
+                config.CONTRACTS.SSV.ABI,
 
                 this.getContractAddress('ssv'),
 
@@ -258,7 +242,7 @@ class AllowanceStore extends BaseStore {
      */
     @action.bound
     async checkAllowance(): Promise<number> {
-        return this.cdtContract
+        return this.ssvContract
             .methods
             .allowance(
                 this.accountAddress,
@@ -287,7 +271,7 @@ class AllowanceStore extends BaseStore {
             console.debug('Approving:', { cdtValue, weiValue });
         }
 
-        const methodCall = this.cdtContract
+        const methodCall = this.ssvContract
             .methods
             .approve(this.getContractAddress('ssv_network'), weiValue);
 
@@ -363,7 +347,7 @@ class AllowanceStore extends BaseStore {
      */
     @action.bound
     async loadAccountCdtBalance(): Promise<number> {
-        return this.cdtContract
+        return this.ssvContract
             .methods
             .balanceOf(this.accountAddress)
             .call()
@@ -409,4 +393,4 @@ class AllowanceStore extends BaseStore {
     }
 }
 
-export default AllowanceStore;
+export default SsvStore;

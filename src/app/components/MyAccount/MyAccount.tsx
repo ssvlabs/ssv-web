@@ -49,7 +49,7 @@ const MyAccount = () => {
 
     return (
       <Grid container className={classes.Wrapper}>
-        <Grid onClick={() => { allowanceStore.checkAllowance(); }}>asdlkasndajndjkasdnjaksnd</Grid>
+        <Grid onClick={() => { allowanceStore.approveAllowance(); }}>asdlkasndajndjkasdnjaksnd</Grid>
         <Grid container item xs={12} className={classes.Header}>
           <Grid item xs={6}>
             <span className={classes.HeaderText}>

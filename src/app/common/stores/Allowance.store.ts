@@ -289,7 +289,7 @@ class AllowanceStore extends BaseStore {
 
         const methodCall = this.cdtContract
             .methods
-            .approve(this.getContractAddress('dex'), weiValue);
+            .approve(this.getContractAddress('ssv_network'), weiValue);
 
         if (estimate) {
             return methodCall

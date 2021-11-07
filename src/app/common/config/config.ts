@@ -56,8 +56,11 @@ const config = {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },
   CONTRACTS: {
-    CDT: {
-      ADDRESS: String(process.env.REACT_APP_CDT_CONTRACT_ADDRESS),
+    SSV: {
+      CONTRACT_ADDRESS: {
+        TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
+        MAINNET: '0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54',
+      },
       ABI: [
         {
           'anonymous': false,
@@ -82,6 +85,25 @@ const config = {
             },
           ],
           'name': 'Approval',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'previousOwner',
+              'type': 'address',
+            },
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'newOwner',
+              'type': 'address',
+            },
+          ],
+          'name': 'OwnershipTransferred',
           'type': 'event',
         },
         {
@@ -177,6 +199,37 @@ const config = {
           'type': 'function',
         },
         {
+          'inputs': [
+            {
+              'internalType': 'uint256',
+              'name': 'amount',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'burn',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'address',
+              'name': 'account',
+              'type': 'address',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'amount',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'burnFrom',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
           'inputs': [],
           'name': 'decimals',
           'outputs': [
@@ -245,6 +298,24 @@ const config = {
           'type': 'function',
         },
         {
+          'inputs': [
+            {
+              'internalType': 'address',
+              'name': 'to',
+              'type': 'address',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'amount',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'mint',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
           'inputs': [],
           'name': 'name',
           'outputs': [
@@ -255,6 +326,26 @@ const config = {
             },
           ],
           'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
+          'name': 'owner',
+          'outputs': [
+            {
+              'internalType': 'address',
+              'name': '',
+              'type': 'address',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
+          'name': 'renounceOwnership',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
           'type': 'function',
         },
         {
@@ -333,6 +424,19 @@ const config = {
               'type': 'bool',
             },
           ],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'address',
+              'name': 'newOwner',
+              'type': 'address',
+            },
+          ],
+          'name': 'transferOwnership',
+          'outputs': [],
           'stateMutability': 'nonpayable',
           'type': 'function',
         },

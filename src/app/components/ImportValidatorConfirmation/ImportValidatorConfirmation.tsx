@@ -76,7 +76,7 @@ const ImportValidatorConfirmation = () => {
           if (operator.selected) {
               data[0].splice(operator.selectedPosition, 1, {
                   key: `${operator.selectedPosition}. ${operator.name}`,
-                  value: longStringShorten(sha256(walletStore.decodeOperatorKey(operator.pubkey)), 4),
+                  value: longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4),
               });
           }
     });

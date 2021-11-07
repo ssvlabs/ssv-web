@@ -196,12 +196,12 @@ class ContractValidator extends BaseStore {
         return share.publicKey;
       });
       const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey: string) => {
-        return atob(walletStore.decodeOperatorKey(operatorKey));
+        return atob(walletStore.decodeKey(operatorKey));
       });
       const encryptedShares: EncryptShare[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
       // Collect all private keys from shares
       const encryptedKeys: string[] = encryptedShares.map((share: IShares) => {
-        return walletStore.encodeOperatorKey(share.privateKey);
+        return walletStore.encodeKey(share.privateKey);
       });
       const payLoad = [
         ownerAddress,

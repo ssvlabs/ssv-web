@@ -15,12 +15,12 @@ import { OperatorName, OperatorKey } from './components/Operator';
 type OperatorSelectorProps = {
   dataTestid: string,
   index: number
-  setOpenMenu: any,
+  openMenuWithIndex: any,
   shouldOpenMenu: boolean,
   indexedOperator: IOperator,
 };
 
-const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index, dataTestid }: OperatorSelectorProps) => {
+const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, index, dataTestid }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
@@ -59,7 +59,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
 
   const onSelectOperator = (operator: any) => {
     selectOperatorMethod(operator);
-    setOpenMenu(null);
+    openMenuWithIndex(null);
   };
 
   const operatorAddressSeralize = (address: string) => {
@@ -67,11 +67,11 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
   };
   
   const redirectTo = (pubKey: string) => {
-    window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeOperatorKey(pubKey))}`);
+    window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(pubKey))}`);
   };
 
   const closeMenu = () => {
-    setOpenMenu(shouldOpenMenu ? null : index);
+    openMenuWithIndex(shouldOpenMenu ? null : index);
     // setBatchIndex(10);
   };
 
@@ -103,7 +103,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, setOpenMenu, index,
             !operator.selected && onSelectOperator(operator);
           }}>
           <OperatorName>{operator.name}</OperatorName>
-          <OperatorKey>{operatorAddressSeralize(sha256(walletStore.decodeOperatorKey(operator.pubkey)))}</OperatorKey>
+          <OperatorKey>{operatorAddressSeralize(sha256(walletStore.decodeKey(operator.pubkey)))}</OperatorKey>
         </Grid>
         <Grid item xs={5}>
           <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>

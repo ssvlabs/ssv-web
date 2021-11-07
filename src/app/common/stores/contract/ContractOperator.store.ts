@@ -81,7 +81,7 @@ class ContractOperator extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     try {
       const contractInstance = contract ?? await walletStore.getContract();
-      const encodeOperatorKey = await walletStore.encodeOperatorKey(publicKey);
+      const encodeOperatorKey = await walletStore.encodeKey(publicKey);
       this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey });
       const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: this.newOperatorKeys.address });
       return result[1] !== '0x0000000000000000000000000000000000000000';
@@ -306,7 +306,7 @@ class ContractOperator extends BaseStore {
     return {
       name: _object.name,
       ownerAddress: _object.owner_address,
-      pubkey: walletStore.encodeOperatorKey(_object.public_key),
+      pubkey: walletStore.encodeKey(_object.public_key),
       verified: _object.type === 'verified_operator',
       dappNode: _object.type === 'dapp_node',
     };

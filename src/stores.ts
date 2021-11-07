@@ -5,7 +5,6 @@ const stores = [
   'Application',
   'Notifications',
   'Wallet',
-  'Upgrade',
   'contract/ContractOperator',
   'contract/ContractValidator',
 ];

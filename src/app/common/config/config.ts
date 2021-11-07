@@ -57,9 +57,7 @@ const config = {
   },
   CONTRACTS: {
     CDT: {
-      CONTRACT_ADDRESS: {
-        ADDRESS: String(process.env.REACT_APP_CDT_CONTRACT_ADDRESS),
-      },
+      ADDRESS: String(process.env.REACT_APP_CDT_CONTRACT_ADDRESS),
       ABI: [
         {
           'anonymous': false,

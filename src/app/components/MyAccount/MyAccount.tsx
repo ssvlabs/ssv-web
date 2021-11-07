@@ -13,7 +13,7 @@ const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', '']
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
-    const allowanceStore: AllowanceStore = stores.AllowanceStore;
+    const allowanceStore: AllowanceStore = stores.Allowance;
     const [width, setWidth] = React.useState(window.innerWidth);
     const breakPoints = [
         { width: 768, operatorHeader: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''], validatorHeaders: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''] },
@@ -23,7 +23,6 @@ const MyAccount = () => {
     const [operatorsHeader, setOperatorHeader] = useState(operatorHeaderInit);
 
     React.useEffect(() => {
-        console.log(allowanceStore.checkAllowance());
         /* Inside of a "useEffect" hook add an event listener that updates
            the "width" state variable when the window size changes */
         window.addEventListener('resize', () => setWidth(window.innerWidth));
@@ -31,7 +30,7 @@ const MyAccount = () => {
         /* passing an empty array as the dependencies of the effect will cause this
            effect to only run when the component mounts, and not each time it updates.
            We only want the listener to be added once */
-    }, []);
+    }, [allowanceStore]);
     
     React.useEffect(() => {
         let isBigScreen = true;
@@ -50,6 +49,7 @@ const MyAccount = () => {
 
     return (
       <Grid container className={classes.Wrapper}>
+        <Grid onClick={() => { allowanceStore.checkAllowance(); }}>asdlkasndajndjkasdnjaksnd</Grid>
         <Grid container item xs={12} className={classes.Header}>
           <Grid item xs={6}>
             <span className={classes.HeaderText}>

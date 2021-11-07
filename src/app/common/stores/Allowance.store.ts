@@ -201,11 +201,9 @@ class AllowanceStore extends BaseStore {
     getContractAddress(contract: string): string {
         const contractType = String(contract).toUpperCase();
         // @ts-ignore
-        const contractData = config.CONTRACTS[contractType].CONTRACT_ADDRESS;
-        if (!this.isTestnet) {
-            return contractData.MAINNET;
-        }
-        return contractData.TESTNET;
+        const contractData = config.CONTRACTS[contractType].ADDRESS;
+
+        return contractData;
     }
 
     /**
@@ -264,7 +262,7 @@ class AllowanceStore extends BaseStore {
             .methods
             .allowance(
                 this.accountAddress,
-                this.getContractAddress('dex'),
+                this.getContractAddress('ssv_network'),
             )
             .call()
             .then((allowance: number) => {
@@ -274,7 +272,7 @@ class AllowanceStore extends BaseStore {
                 // DEV: stub to show first allowance button
                 // this.setApprovedAllowance(0);
                 return this.userAllowance;
-            });
+            }).catch((e: any) => { console.log(e); });
     }
 
     /**

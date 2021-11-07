@@ -4,6 +4,7 @@ import BaseStore from '~app/common/stores/BaseStore';
 const stores = [
   'Application',
   'Notifications',
+  'Allowance',
   'Wallet',
   'contract/ContractOperator',
   'contract/ContractValidator',

@@ -4,12 +4,16 @@ import { Grid } from '@material-ui/core';
 import DataTable from '~app/common/components/DataTable';
 import { useStyles } from './MyAccount.styles';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
+import { useStores } from '~app/hooks/useStores';
+import AllowanceStore from '~app/common/stores/Allowance.store';
 
 const validatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'BALANCE', 'EST. APR', ''];
 const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', ''];
 
 const MyAccount = () => {
     const classes = useStyles();
+    const stores = useStores();
+    const allowanceStore: AllowanceStore = stores.AllowanceStore;
     const [width, setWidth] = React.useState(window.innerWidth);
     const breakPoints = [
         { width: 768, operatorHeader: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''], validatorHeaders: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''] },
@@ -19,6 +23,7 @@ const MyAccount = () => {
     const [operatorsHeader, setOperatorHeader] = useState(operatorHeaderInit);
 
     React.useEffect(() => {
+        console.log(allowanceStore.checkAllowance());
         /* Inside of a "useEffect" hook add an event listener that updates
            the "width" state variable when the window size changes */
         window.addEventListener('resize', () => setWidth(window.innerWidth));

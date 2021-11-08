@@ -115,7 +115,8 @@ class ContractOperator extends BaseStore {
         transaction.name,
         address,
         transaction.pubKey,
-        transaction.fee,
+        // @ts-ignore
+        walletStore.web3.utils.toWei(transaction.fee),
       ];
       console.debug('Register Operator Transaction Data:', payload);
       if (getGasEstimation) {
@@ -134,7 +135,7 @@ class ContractOperator extends BaseStore {
               this.dollarEstimationGas = 0;
               resolve(true);
             }
-          });
+          }).catch((e: any) => { console.log(e); });
       } else {
         contract.methods.registerOperator(...payload)
           .send({ from: address })

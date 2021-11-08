@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/Ssv.store';
 import DataTable from '~app/common/components/DataTable';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
 import { useStyles } from './MyAccount.styles';
+import { operators, validators } from './template';
 
 const validatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'BALANCE', 'EST. APR', ''];
 const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', ''];
@@ -13,6 +17,7 @@ const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', '']
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
+    const history = useHistory();
     const allowanceStore: SsvStore = stores.Allowance;
     const [width, setWidth] = React.useState(window.innerWidth);
     const breakPoints = [
@@ -21,6 +26,7 @@ const MyAccount = () => {
     ];
     const [validatorsHeader, setValidatorHeader] = useState(validatorHeaderInit);
     const [operatorsHeader, setOperatorHeader] = useState(operatorHeaderInit);
+    const [dropDownMenu, displayDropDownMenu] = useState(false);
 
     React.useEffect(() => {
         /* Inside of a "useEffect" hook add an event listener that updates
@@ -57,9 +63,15 @@ const MyAccount = () => {
             </span>
           </Grid>
           <Grid item xs={6}>
-            <button className={classes.AddButton}>
-              <span className={classes.AddButtonText}>+ Add</span>
-            </button>
+            <Grid className={classes.AddButton} onClick={() => { displayDropDownMenu(!dropDownMenu); }}>
+              <Typography className={classes.AddButtonText}>+ Add</Typography>
+              {dropDownMenu && (
+                <Grid container className={classes.AddButtonDropDown}>
+                  <Grid item xs={12} className={classes.AddButtonDropDownItem} onClick={() => { history.push(config.routes.VALIDATOR.HOME); }}>Run Validator</Grid>
+                  <Grid item xs={12} className={classes.AddButtonDropDownItem} onClick={() => { history.push(config.routes.OPERATOR.HOME); }}>Register Operator</Grid>
+                </Grid>
+              )}
+            </Grid>
           </Grid>
         </Grid>
         <Grid container item xs={12}>
@@ -72,11 +84,11 @@ const MyAccount = () => {
                 title={'Operators'}
                 headers={operatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
-                data={[{}, {}, {}, {}, {}]}
+                data={operators}
                 totalCount={100}
                 page={1}
                 onChangePage={() => {}}
-                isLoading
+                isLoading={false}
               />
             </Grid>
             <Grid className={classes.Table}>
@@ -84,11 +96,11 @@ const MyAccount = () => {
                 title={'Validators'}
                 headers={validatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
-                data={[{}, {}, {}, {}, {}]}
+                data={validators}
                 totalCount={100}
                 page={1}
                 onChangePage={() => {}}
-                isLoading
+                isLoading={false}
               />
             </Grid>
           </Grid>

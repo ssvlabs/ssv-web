@@ -6,7 +6,6 @@ import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
 import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 
 declare global {
   interface Window {
@@ -18,9 +17,7 @@ declare global {
 const App = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
-  const operatorStore: ContractOperator = stores.ContractOperator;
   React.useEffect(() => {
-    operatorStore.loadOperators;
     walletStore.checkConnection();
   }, []);
 

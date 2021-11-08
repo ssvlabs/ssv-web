@@ -246,7 +246,7 @@ class SsvStore extends BaseStore {
             .methods
             .allowance(
                 this.accountAddress,
-                this.getContractAddress('ssv_network'),
+                this.getContractAddress('ssv_registry'),
             )
             .call()
             .then((allowance: number) => {
@@ -273,7 +273,7 @@ class SsvStore extends BaseStore {
 
         const methodCall = this.ssvContract
             .methods
-            .approve(this.getContractAddress('ssv_network'), weiValue);
+            .approve(this.getContractAddress('ssv_registry'), weiValue);
 
         if (estimate) {
             return methodCall

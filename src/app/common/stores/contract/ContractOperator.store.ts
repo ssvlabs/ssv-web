@@ -8,6 +8,7 @@ import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 
 export interface INewOperatorTransaction {
   name: string,
+  fee?: number,
   pubKey: string,
   address: string,
 }
@@ -37,7 +38,7 @@ class ContractOperator extends BaseStore {
 
   @observable newOperatorReceipt: any = null;
 
-  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '' };
+  @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '', fee: 0 };
   @observable newOperatorRegisterSuccessfully: boolean = false;
 
   @observable estimationGas: number = 0;
@@ -54,6 +55,7 @@ class ContractOperator extends BaseStore {
       pubKey: '',
       name: '',
       address: '',
+      fee: 0,
     };
     this.newOperatorRegisterSuccessfully = false;
   }
@@ -68,6 +70,7 @@ class ContractOperator extends BaseStore {
       pubKey: transaction.pubKey,
       name: transaction.name,
       address: transaction.address || this.newOperatorKeys.address,
+      fee: transaction.fee || this.newOperatorKeys.fee,
     };
   }
 
@@ -112,10 +115,11 @@ class ContractOperator extends BaseStore {
         transaction.name,
         address,
         transaction.pubKey,
+        transaction.fee,
       ];
       console.debug('Register Operator Transaction Data:', payload);
       if (getGasEstimation) {
-        contract.methods.addOperator(...payload)
+        contract.methods.registerOperator(...payload)
           .estimateGas({ from: walletStore.accountAddress })
           .then((gasAmount: any) => {
             this.estimationGas = gasAmount * 0.000000001;
@@ -132,7 +136,7 @@ class ContractOperator extends BaseStore {
             }
           });
       } else {
-        contract.methods.addOperator(...payload)
+        contract.methods.registerOperator(...payload)
           .send({ from: address })
           .on('receipt', async (receipt: any) => {
             const event: boolean = 'OperatorAdded' in receipt.events;
@@ -307,6 +311,7 @@ class ContractOperator extends BaseStore {
       name: _object.name,
       ownerAddress: _object.owner_address,
       pubkey: walletStore.encodeKey(_object.public_key),
+      fee: walletStore.getContract(),
       verified: _object.type === 'verified_operator',
       dappNode: _object.type === 'dapp_node',
     };

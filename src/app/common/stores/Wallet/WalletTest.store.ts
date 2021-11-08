@@ -22,7 +22,7 @@ class WalletTestStore extends BaseStore implements Wallet {
     @action.bound
     async getContract(address?: string): Promise<Contract> {
         if (!this.contract && this.connected) {
-            const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
+            const contractAddress: string = config.CONTRACTS.SSV_REGISTRY.ADDRESS;
             this.contract = this.buildContract(address ?? contractAddress);
         }
         // @ts-ignore
@@ -31,7 +31,7 @@ class WalletTestStore extends BaseStore implements Wallet {
 
     @action.bound
     buildContract(address: string) {
-        const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
+        const abi: any = config.CONTRACTS.SSV_REGISTRY.ABI;
         return new this.web3.eth.Contract(abi, address);
     }
 

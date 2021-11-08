@@ -47,7 +47,7 @@ export const useStyles = makeStyles(() => ({
         width: '728px',
     },
     Table: {
-        width: '728px',
+        maxWidth: '728px',
         border: 'solid 1px #5b6c84',
         marginBottom: '20px',
         borderRadius: '8px',

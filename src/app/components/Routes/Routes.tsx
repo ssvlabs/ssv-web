@@ -7,6 +7,7 @@ import MyAccount from '~app/components/MyAccount';
 import Layout from '~app/common/components/Layout';
 import SuccessScreen from '~app/components/SuccessScreen';
 import Deposit from '~app/components/MyAccount/components/Deposit';
+import Withdraw from '~app/components/MyAccount/components/Withdraw';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
@@ -22,7 +23,7 @@ import SelectOperators from '~app/components/RegisterValidatorHome/components/Se
 
 const Routes = () => {
   const classes = useStyles();
-  console.log(Deposit());
+
     return (
       <>
         <Switch>
@@ -36,7 +37,7 @@ const Routes = () => {
                   <Deposit />
                 </Route>
                 <Route exact path={config.routes.MY_ACCOUNT.WITHDRAW}>
-                  <RegisterOperatorHome />
+                  <Withdraw />
                 </Route>
               </Switch>
             </Route>

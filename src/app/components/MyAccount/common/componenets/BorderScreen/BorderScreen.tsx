@@ -9,9 +9,9 @@ type Navigation = {
 };
 
 type Props = {
-    link: Navigation,
+    link?: Navigation,
     body: any,
-    bottom: any,
+    bottom?: any,
     header: string,
     headerChildren?: any,
     withConversion: boolean,
@@ -31,7 +31,7 @@ const BorderScreen = (props: Props) => {
     return (
       <Grid container className={classes.BorderScreenWrapper}>
         <Grid item className={classes.LinkWrapper}>
-          <BackNavigation to={link.to} text={link.text} />
+          {link && <BackNavigation to={link.to} text={link.text} />}
         </Grid>
         <Grid item container className={classes.ScreenWrapper}>
           <Grid container item className={classes.Section}>
@@ -48,16 +48,18 @@ const BorderScreen = (props: Props) => {
             </Grid>
             )}
           </Grid>
-          {body.map((section: any) => {
+          {body.map((section: any, index: number) => {
             return (
-              <Grid item container className={classes.Section}>
+              <Grid key={index} item container className={classes.Section}>
                 {section}
               </Grid>
             );
           })}
+          {bottom && (
           <Grid container item>
-            {bottom && bottom}
+            {bottom}
           </Grid>
+)}
         </Grid>
       </Grid>
     );

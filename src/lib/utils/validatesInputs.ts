@@ -51,3 +51,16 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
     }
     callback(response);
 };
+
+export const validateFeeInput = (value: string, callback: React.Dispatch<ErrorObject>) :void => {
+    // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
+
+    const response = { shouldDisplay: false, errorMessage: '' };
+    // eslint-disable-next-line radix
+    if (10 ** (-14) > parseFloat(value) / 2398050) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please set a greater fee amount.';
+    }
+
+    callback(response);
+};

@@ -10,7 +10,7 @@ export const useStyles = makeStyles(() => ({
     },
     ScreenWrapper: {
         border: 'solid 1px #5b6c84',
-        height: '416px',
+        // height: '416px',
         borderRadius: '8px',
         backgroundColor: '#fff',
     },

@@ -7,6 +7,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/Ssv.store';
 import DataTable from '~app/common/components/DataTable';
+import Rows from '~app/components/MyAccount/common/componenets/Rows';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
 import { useStyles } from './MyAccount.styles';
 import { operators, validators } from './template';
@@ -20,9 +21,11 @@ const MyAccount = () => {
     const history = useHistory();
     const allowanceStore: SsvStore = stores.Allowance;
     const [width, setWidth] = React.useState(window.innerWidth);
+    const [displayStatus, setDisplayStatus] = useState(true);
+    const [displayValidators, setDisplayValidators] = useState(true);
     const breakPoints = [
-        { width: 768, operatorHeader: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''], validatorHeaders: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''] },
-        { width: 499, operatorHeader: ['PUBLIC KEY', 'REVENUE'], validatorHeaders: ['PUBLIC KEY', 'BALANCE'] },
+        { width: 768, operatorHeader: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''], validatorHeaders: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''], callBack: setDisplayStatus },
+        { width: 499, operatorHeader: ['PUBLIC KEY', 'REVENUE'], validatorHeaders: ['PUBLIC KEY', 'BALANCE'], callBack: setDisplayValidators },
     ];
     const [validatorsHeader, setValidatorHeader] = useState(validatorHeaderInit);
     const [operatorsHeader, setOperatorHeader] = useState(operatorHeaderInit);
@@ -37,7 +40,7 @@ const MyAccount = () => {
            effect to only run when the component mounts, and not each time it updates.
            We only want the listener to be added once */
     }, [allowanceStore]);
-    
+
     React.useEffect(() => {
         let isBigScreen = true;
         breakPoints.forEach((breakPoint) => {
@@ -45,6 +48,9 @@ const MyAccount = () => {
                 isBigScreen = false;
                 setOperatorHeader(breakPoint.operatorHeader);
                 setValidatorHeader(breakPoint.validatorHeaders);
+                breakPoint.callBack(false);
+            } else if (!displayValidators || !displayStatus) {
+                breakPoint.callBack(true);
             }
         });
         if (isBigScreen && validatorsHeader.length < 5 && operatorsHeader.length < 5) {
@@ -84,7 +90,7 @@ const MyAccount = () => {
                 title={'Operators'}
                 headers={operatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
-                data={operators}
+                data={Rows({ items: operators, shouldDisplayStatus: displayStatus, shouldDisplayValidators: displayValidators })}
                 totalCount={100}
                 page={1}
                 onChangePage={() => {}}
@@ -96,11 +102,11 @@ const MyAccount = () => {
                 title={'Validators'}
                 headers={validatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
-                data={validators}
+                data={Rows({ items: validators, shouldDisplayStatus: displayStatus, shouldDisplayValidators: displayValidators })}
                 totalCount={100}
                 page={1}
                 onChangePage={() => {}}
-                isLoading={false}
+                // isLoading
               />
             </Grid>
           </Grid>

@@ -19,7 +19,7 @@ export const useStyles = makeStyles(() => ({
         width: '528px',
         height: '80px',
         margin: '8px 0 0',
-        padding: '16px',
+        padding: '13px 16px 13px 16px',
         borderRadius: '6px',
         border: 'solid 1px #e1e5ec',
         backgroundColor: '#f7f8fb',
@@ -32,9 +32,22 @@ export const useStyles = makeStyles(() => ({
     },
     Balance: {
         fontSize: '28px',
+        height: '24px',
+        fontWeight: 500,
+        lineHeight: 0.86,
+        color: '#a1acbe',
+    },
+    BalanceInput: {
+        backgroundColor: 'transparent',
+        fontSize: '28px',
         fontWeight: 500,
         lineHeight: '0.86',
         color: '#a1acbe',
+        outline: 'none',
+        '&:focus': {
+            border: 'none !important',
+            outline: 'none',
+        },
     },
     MaxButtonText: {
         fontSize: '24px',
@@ -43,6 +56,13 @@ export const useStyles = makeStyles(() => ({
         textAlign: 'right',
         color: '#2a323e',
         margin: '0px 0.7px 0px 15.3px',
+    },
+    BalanceInputDollar: {
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.43,
+        color: '#5b6c84',
+        marginTop: '10px',
     },
     WalletBalance: {
         marginRight: '0.7px',
@@ -59,5 +79,12 @@ export const useStyles = makeStyles(() => ({
         lineHeight: 1,
         textAlign: 'left',
         color: '#2a323e',
+    },
+    CTAWrapper: {
+        padding: '16px',
+        borderRadius: '6px',
+        fontSize: '18px',
+        fontWeight: 600,
+        lineHeight: 1.28,
     },
 }));

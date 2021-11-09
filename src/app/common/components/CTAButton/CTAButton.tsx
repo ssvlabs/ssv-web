@@ -10,7 +10,7 @@ type ButtonParams = {
     text: string,
     disable: boolean,
     onClick?: any,
-    testId: string,
+    testId?: string,
 };
 
 const CTAButton = ({ testId, disable, onClick, text }: ButtonParams) => {

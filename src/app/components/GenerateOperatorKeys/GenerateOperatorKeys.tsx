@@ -16,7 +16,12 @@ import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
-import { validatePublicKeyInput, validateDisplayNameInput, validateAddressInput } from '~lib/utils/validatesInputs';
+import {
+  validatePublicKeyInput,
+  validateDisplayNameInput,
+  validateAddressInput,
+  validateFeeInput,
+} from '~lib/utils/validatesInputs';
 
 const actionButtonMargin = isMobile ? '52px' : '102px';
 
@@ -31,10 +36,11 @@ const GenerateOperatorKeys = () => {
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
      initialOperatorKey = getRandomOperatorKey(false);
   }
-  const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '', address: walletStore.accountAddress });
+  const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '', fee: 0 });
   const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const [feeError, setFeeError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [operatorExist, setOperatorExist] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
 
@@ -42,10 +48,12 @@ const GenerateOperatorKeys = () => {
   useEffect(() => {
     const isRegisterButtonEnabled = !inputsData.name
         || !inputsData.publicKey
-        || !inputsData.address
+        || !inputsData.fee
+        || !walletStore.accountAddress
         || displayNameError.shouldDisplay
         || publicKeyError.shouldDisplay
-        || addressError.shouldDisplay;
+        || addressError.shouldDisplay
+        || feeError.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
@@ -53,10 +61,12 @@ const GenerateOperatorKeys = () => {
   }, [inputsData,
     walletStore.accountAddress,
     displayNameError.shouldDisplay,
+    feeError.shouldDisplay,
     addressError.shouldDisplay,
     publicKeyError.shouldDisplay,
     inputsData.name,
     inputsData.publicKey,
+    inputsData.fee,
   ]);
 
   const onInputChange = (name: string, value: string) => {
@@ -69,7 +79,8 @@ const GenerateOperatorKeys = () => {
     const operatorKeys: INewOperatorTransaction = {
       pubKey: inputsData.publicKey,
       name: inputsData.name,
-      address: inputsData.address,
+      address: walletStore.accountAddress,
+      fee: inputsData.fee,
     };
     applicationStore.setIsLoading(true);
     contractOperator.setOperatorKeys(operatorKeys);
@@ -135,6 +146,26 @@ const GenerateOperatorKeys = () => {
                 value={inputsData.publicKey}
               />
               {publicKeyError.shouldDisplay && <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
+            </InputLabel>
+
+            <br />
+            {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
+          </Grid>
+          <Grid item>
+            <InputLabel
+              title="yearly fee per validator"
+              withHint
+              toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+              toolTipLink={config.links.TOOL_TIP_KEY_LINK}
+            >
+              <TextInput type="text"
+                data-testid="new-operator-fee"
+                className={`${classes.feeInput} ${feeError.shouldDisplay ? classes.inputError : ''}`}
+                onChange={(event) => { onInputChange('fee', event.target.value); }}
+                onBlur={(event) => { validateFeeInput(event.target.value, setFeeError); }}
+                value={inputsData.fee}
+               />
+              {feeError.shouldDisplay && <Typography className={classes.textError}>{feeError.errorMessage}</Typography>}
             </InputLabel>
 
             <br />

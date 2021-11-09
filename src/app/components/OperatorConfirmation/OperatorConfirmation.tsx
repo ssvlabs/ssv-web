@@ -51,7 +51,7 @@ const OperatorConfirmation = () => {
     [
         { key: 'Operator', header: true, value: '' },
         { key: 'Name', value: operatorStore.newOperatorKeys.name },
-        { key: 'Key', value: longStringShorten(sha256(walletStore.decodeOperatorKey(operatorStore.newOperatorKeys.pubKey)), 4) },
+        { key: 'Key', value: longStringShorten(sha256(walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey)), 4) },
         { key: 'Owner Address', value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}` },
     ],
     [

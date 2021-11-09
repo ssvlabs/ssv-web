@@ -56,7 +56,7 @@ const SelectOperators = () => {
   const wrapperRef = useRef(null);
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
-  const [openMenu, setOpenMenu] = useState(null);
+  const [openMenu, openMenuWithIndex] = useState(null);
   const [allOperatorsVerified, setAllOperatorVerified] = useState(true);
   const [actionButtonMargin, setActionButtonMargin] = useState(isMobile ? '130px' : '140px');
 
@@ -69,7 +69,7 @@ const SelectOperators = () => {
     function handleClickOutside(event: any) {
       // @ts-ignore
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setOpenMenu(null);
+        openMenuWithIndex(null);
       }
     }
     // Bind the event listener
@@ -144,7 +144,7 @@ const SelectOperators = () => {
                 key={index}
                 shouldOpenMenu={openMenu === index}
                 index={index}
-                setOpenMenu={setOpenMenu}
+                openMenuWithIndex={openMenuWithIndex}
                 dataTestid={`operator-selector-${index}`}
                 indexedOperator={operator}
               />

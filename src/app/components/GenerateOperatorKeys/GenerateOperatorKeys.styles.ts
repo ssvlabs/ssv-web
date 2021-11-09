@@ -33,10 +33,9 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: '50px',
         backgroundColor: '#FDE6E5',
     },
-    errorText: {
-    },
+    errorText: {},
     gridItem: {
-      marginBottom: '18px',
+        marginBottom: '18px',
     },
     inputWithHint: {
         backgroundColor: 'red',
@@ -45,9 +44,31 @@ export const useStyles = makeStyles((theme) => ({
     inputError: {
         border: '1px solid red !important',
     },
+    feeInputWrapper: {
+        verticalAlign: 'middle',
+        fontSize: '15px',
+        width: '100%',
+        height: '48px',
+        background: '#FFFFFF',
+        border: '1px solid #5B6C84',
+        boxSizing: 'border-box',
+        borderRadius: '6px',
+        paddingLeft: '10px',
+        marginTop: '8px',
+    },
+    feeInput: {
+        '&::after': {
+            content: '"akjsdbajksnbdjkasndjklasndjkansjdknasjkdnasjkdnjkasndjkansjkdn"',
+        },
+        margin: 'auto auto auto 0px',
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.43,
+        color: '#a1acbe',
+    },
     disable: {
-       background: '#DCE0E8 !important',
-       border: '1px solid #DCE0E8 !important',
+        background: '#DCE0E8 !important',
+        border: '1px solid #DCE0E8 !important',
     },
     textError: {
         fontSize: '0.8rem',
@@ -72,7 +93,7 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'left',
     },
     removeIconWrapper: {
-      display: 'flex',
+        display: 'flex',
     },
     clearIcon: {
         cursor: 'pointer',

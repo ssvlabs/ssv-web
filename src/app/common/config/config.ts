@@ -1,8 +1,13 @@
 const config = {
   routes: {
-    TEST: '/guy',
     HOME: '/',
-    UPGRADE: '/upgrade',
+    MY_ACCOUNT: {
+      DASHBOARD: '/dashboard',
+      DEPOSIT: '/dashboard/deposit',
+      WITHDRAW: '/dashboard/withdraw',
+      HEALTHY: '/dashboard/healthy',
+      LIQUIDATED: '/dashboard/liquidated',
+    },
     OPERATOR: {
       HOME: '/operator',
       SUCCESS_PAGE: '/operator/success',
@@ -50,527 +55,9 @@ const config = {
   COIN_KEY: {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },
-  CONTRACT: {
-    ADDRESS: String(process.env.REACT_APP_CONTRACT_ADDRESS),
-    ABI: [
-      {
-        'anonymous': false,
-        'inputs': [
-          {
-            'indexed': false,
-            'internalType': 'bytes',
-            'name': 'validatorPublicKey',
-            'type': 'bytes',
-          },
-          {
-            'indexed': false,
-            'internalType': 'uint256',
-            'name': 'index',
-            'type': 'uint256',
-          },
-          {
-            'indexed': false,
-            'internalType': 'bytes',
-            'name': 'operatorPublicKey',
-            'type': 'bytes',
-          },
-          {
-            'indexed': false,
-            'internalType': 'bytes',
-            'name': 'sharedPublicKey',
-            'type': 'bytes',
-          },
-          {
-            'indexed': false,
-            'internalType': 'bytes',
-            'name': 'encryptedKey',
-            'type': 'bytes',
-          },
-        ],
-        'name': 'OessAdded',
-        'type': 'event',
-      },
-      {
-        'anonymous': false,
-        'inputs': [
-          {
-            'indexed': false,
-            'internalType': 'string',
-            'name': 'name',
-            'type': 'string',
-          },
-          {
-            'indexed': false,
-            'internalType': 'address',
-            'name': 'ownerAddress',
-            'type': 'address',
-          },
-          {
-            'indexed': false,
-            'internalType': 'bytes',
-            'name': 'publicKey',
-            'type': 'bytes',
-          },
-        ],
-        'name': 'OperatorAdded',
-        'type': 'event',
-      },
-      {
-        'anonymous': false,
-        'inputs': [
-          {
-            'indexed': false,
-            'internalType': 'address',
-            'name': 'ownerAddress',
-            'type': 'address',
-          },
-          {
-            'indexed': false,
-            'internalType': 'bytes',
-            'name': 'publicKey',
-            'type': 'bytes',
-          },
-          {
-            'components': [
-              {
-                'internalType': 'uint256',
-                'name': 'index',
-                'type': 'uint256',
-              },
-              {
-                'internalType': 'bytes',
-                'name': 'operatorPublicKey',
-                'type': 'bytes',
-              },
-              {
-                'internalType': 'bytes',
-                'name': 'sharedPublicKey',
-                'type': 'bytes',
-              },
-              {
-                'internalType': 'bytes',
-                'name': 'encryptedKey',
-                'type': 'bytes',
-              },
-            ],
-            'indexed': false,
-            'internalType': 'struct ISSVNetwork.Oess[]',
-            'name': 'oessList',
-            'type': 'tuple[]',
-          },
-        ],
-        'name': 'ValidatorAdded',
-        'type': 'event',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'string',
-            'name': '_name',
-            'type': 'string',
-          },
-          {
-            'internalType': 'address',
-            'name': '_ownerAddress',
-            'type': 'address',
-          },
-          {
-            'internalType': 'bytes',
-            'name': '_publicKey',
-            'type': 'bytes',
-          },
-        ],
-        'name': 'addOperator',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'address',
-            'name': '_ownerAddress',
-            'type': 'address',
-          },
-          {
-            'internalType': 'bytes',
-            'name': '_publicKey',
-            'type': 'bytes',
-          },
-          {
-            'internalType': 'bytes[]',
-            'name': '_operatorPublicKeys',
-            'type': 'bytes[]',
-          },
-          {
-            'internalType': 'bytes[]',
-            'name': '_sharesPublicKeys',
-            'type': 'bytes[]',
-          },
-          {
-            'internalType': 'bytes[]',
-            'name': '_encryptedKeys',
-            'type': 'bytes[]',
-          },
-        ],
-        'name': 'addValidator',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      },
-      {
-        'inputs': [],
-        'name': 'operatorCount',
-        'outputs': [
-          {
-            'internalType': 'uint256',
-            'name': '',
-            'type': 'uint256',
-          },
-        ],
-        'stateMutability': 'view',
-        'type': 'function',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'bytes',
-            'name': '',
-            'type': 'bytes',
-          },
-        ],
-        'name': 'operators',
-        'outputs': [
-          {
-            'internalType': 'string',
-            'name': 'name',
-            'type': 'string',
-          },
-          {
-            'internalType': 'address',
-            'name': 'ownerAddress',
-            'type': 'address',
-          },
-          {
-            'internalType': 'bytes',
-            'name': 'publicKey',
-            'type': 'bytes',
-          },
-          {
-            'internalType': 'uint256',
-            'name': 'score',
-            'type': 'uint256',
-          },
-        ],
-        'stateMutability': 'view',
-        'type': 'function',
-      },
-      {
-        'inputs': [],
-        'name': 'validatorCount',
-        'outputs': [
-          {
-            'internalType': 'uint256',
-            'name': '',
-            'type': 'uint256',
-          },
-        ],
-        'stateMutability': 'view',
-        'type': 'function',
-      },
-    ],
-  },
   CONTRACTS: {
-    CDT: {
-      CONTRACT_ADDRESS: {
-        TESTNET: '0x211369c208664EaC550e9E3c2205fa1123861b82',
-        MAINNET: '0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af',
-      },
-      ABI: [
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'owner',
-              'type': 'address',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'Approval',
-          'type': 'event',
-        },
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'from',
-              'type': 'address',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'to',
-              'type': 'address',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'Transfer',
-          'type': 'event',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'owner',
-              'type': 'address',
-            },
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-          ],
-          'name': 'allowance',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'approve',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'account',
-              'type': 'address',
-            },
-          ],
-          'name': 'balanceOf',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'decimals',
-          'outputs': [
-            {
-              'internalType': 'uint8',
-              'name': '',
-              'type': 'uint8',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'subtractedValue',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'decreaseAllowance',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'addedValue',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'increaseAllowance',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'initialize',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'name',
-          'outputs': [
-            {
-              'internalType': 'string',
-              'name': '',
-              'type': 'string',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'symbol',
-          'outputs': [
-            {
-              'internalType': 'string',
-              'name': '',
-              'type': 'string',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'totalSupply',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'recipient',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'transfer',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'sender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'address',
-              'name': 'recipient',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'transferFrom',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-      ],
-    },
     SSV: {
-      CONTRACT_ADDRESS: {
-        TESTNET: '0xb562DAcf4E5ec37637893a306BB4E47C51d2e432',
-        MAINNET: '0x584d44D3E36F3690a4170Dad0238DF5441d41f1c',
-      },
+      ADDRESS: String(process.env.REACT_APP_SSV_CONTRACT_ADDRESS),
       ABI: [
         {
           'anonymous': false,
@@ -952,11 +439,8 @@ const config = {
         },
       ],
     },
-    DEX: {
-      CONTRACT_ADDRESS: {
-        TESTNET: '0xF83129B78c41F3728678617E1f198b827434aeb3',
-        MAINNET: '0xc398C2935a274a3a39D86B4E3d36dabA616442e6',
-      },
+    SSV_REGISTRY: {
+      ADDRESS: String(process.env.REACT_APP_REGISTRY_CONTRACT_ADDRESS),
       ABI: [
         {
           'anonymous': false,
@@ -964,31 +448,413 @@ const config = {
             {
               'indexed': true,
               'internalType': 'address',
-              'name': 'sender',
+              'name': 'ownerAddress',
               'type': 'address',
             },
             {
               'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'OperatorActivated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'string',
+              'name': 'name',
+              'type': 'string',
+            },
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'OperatorAdded',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'OperatorDeleted',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'indexed': false,
               'internalType': 'uint256',
-              'name': 'cdtAmount',
+              'name': 'blockNumber',
               'type': 'uint256',
             },
             {
               'indexed': false,
               'internalType': 'uint256',
-              'name': 'ssvAmount',
+              'name': 'fee',
               'type': 'uint256',
             },
           ],
-          'name': 'CDTToSSVConverted',
+          'name': 'OperatorFeeUpdated',
           'type': 'event',
         },
         {
-          'inputs': [],
-          'name': 'cdtToken',
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'OperatorInactivated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint256',
+              'name': 'blockNumber',
+              'type': 'uint256',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint256',
+              'name': 'score',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'OperatorScoreUpdated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'previousOwner',
+              'type': 'address',
+            },
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'newOwner',
+              'type': 'address',
+            },
+          ],
+          'name': 'OwnershipTransferred',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'ValidatorActivated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'bytes',
+                  'name': 'operatorPublicKey',
+                  'type': 'bytes',
+                },
+                {
+                  'internalType': 'bytes',
+                  'name': 'sharedPublicKey',
+                  'type': 'bytes',
+                },
+                {
+                  'internalType': 'bytes',
+                  'name': 'encryptedKey',
+                  'type': 'bytes',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVRegistry.Oess[]',
+              'name': 'oessList',
+              'type': 'tuple[]',
+            },
+          ],
+          'name': 'ValidatorAdded',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'ValidatorDeleted',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'ValidatorInactivated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'bytes',
+                  'name': 'operatorPublicKey',
+                  'type': 'bytes',
+                },
+                {
+                  'internalType': 'bytes',
+                  'name': 'sharedPublicKey',
+                  'type': 'bytes',
+                },
+                {
+                  'internalType': 'bytes',
+                  'name': 'encryptedKey',
+                  'type': 'bytes',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVRegistry.Oess[]',
+              'name': 'oessList',
+              'type': 'tuple[]',
+            },
+          ],
+          'name': 'ValidatorUpdated',
+          'type': 'event',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'activateOperator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'activateValidator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'deactivateOperator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'deactivateValidator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'deleteOperator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'deleteValidator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'operatorPublicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'getOperatorCurrentFee',
           'outputs': [
             {
-              'internalType': 'contract IERC20',
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'getOperatorOwner',
+          'outputs': [
+            {
+              'internalType': 'address',
               'name': '',
               'type': 'address',
             },
@@ -999,34 +865,81 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint256',
-              'name': '_amount',
-              'type': 'uint256',
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
             },
           ],
-          'name': 'convertCDTToSSV',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
+          'name': 'getOperatorsByOwnerAddress',
+          'outputs': [
+            {
+              'internalType': 'bytes[]',
+              'name': '',
+              'type': 'bytes[]',
+            },
+          ],
+          'stateMutability': 'view',
           'type': 'function',
         },
         {
           'inputs': [
             {
-              'internalType': 'contract IERC20',
-              'name': '_cdtTokenAddress',
-              'type': 'address',
-            },
-            {
-              'internalType': 'contract IERC20',
-              'name': '_ssvTokenAddress',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': '_rate',
-              'type': 'uint256',
+              'internalType': 'bytes',
+              'name': 'validatorPublicKey',
+              'type': 'bytes',
             },
           ],
+          'name': 'getOperatorsByValidator',
+          'outputs': [
+            {
+              'internalType': 'bytes[]',
+              'name': 'operatorPublicKeys',
+              'type': 'bytes[]',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'getValidatorOwner',
+          'outputs': [
+            {
+              'internalType': 'address',
+              'name': '',
+              'type': 'address',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+          ],
+          'name': 'getValidatorsByAddress',
+          'outputs': [
+            {
+              'internalType': 'bytes[]',
+              'name': '',
+              'type': 'bytes[]',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
           'name': 'initialize',
           'outputs': [],
           'stateMutability': 'nonpayable',
@@ -1034,7 +947,7 @@ const config = {
         },
         {
           'inputs': [],
-          'name': 'rate',
+          'name': 'operatorCount',
           'outputs': [
             {
               'internalType': 'uint256',
@@ -1046,13 +959,249 @@ const config = {
           'type': 'function',
         },
         {
-          'inputs': [],
-          'name': 'ssvToken',
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'operators',
           'outputs': [
             {
-              'internalType': 'contract IERC20',
+              'internalType': 'string',
+              'name': '',
+              'type': 'string',
+            },
+            {
+              'internalType': 'address',
               'name': '',
               'type': 'address',
+            },
+            {
+              'internalType': 'bytes',
+              'name': '',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+            {
+              'internalType': 'bool',
+              'name': '',
+              'type': 'bool',
+            },
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
+          'name': 'owner',
+          'outputs': [
+            {
+              'internalType': 'address',
+              'name': '',
+              'type': 'address',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'string',
+              'name': 'name',
+              'type': 'string',
+            },
+            {
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'fee',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'registerOperator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'operatorPublicKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'sharesPublicKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'encryptedKeys',
+              'type': 'bytes[]',
+            },
+          ],
+          'name': 'registerValidator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
+          'name': 'renounceOwnership',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'address',
+              'name': 'newOwner',
+              'type': 'address',
+            },
+          ],
+          'name': 'transferOwnership',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'fee',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'updateOperatorFee',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'score',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'updateOperatorScore',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'operatorPublicKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'sharesPublicKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'encryptedKeys',
+              'type': 'bytes[]',
+            },
+          ],
+          'name': 'updateValidator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
+          'name': 'validatorCount',
+          'outputs': [
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'validators',
+          'outputs': [
+            {
+              'internalType': 'address',
+              'name': '',
+              'type': 'address',
+            },
+            {
+              'internalType': 'bytes',
+              'name': '',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'bool',
+              'name': '',
+              'type': 'bool',
+            },
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
             },
           ],
           'stateMutability': 'view',

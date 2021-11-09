@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Main from '~app/components/Routes';
+import Routes from '~app/components/Routes';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
 import BarMessage from '~app/common/components/BarMessage';
@@ -25,7 +25,7 @@ const App = () => {
     <>
       <BarMessage />
       <AppBar />
-      <Main />
+      <Routes />
       <CssBaseline />
     </>
   );

@@ -6,7 +6,7 @@ export default abstract class Wallet {
     public abstract connect(): void;
     public abstract disconnect(): void;
     public abstract clean(): void;
-    public abstract decodeOperatorKey(): string;
-    public abstract encodeOperatorKey(): string;
+    public abstract decodeKey(): string;
+    public abstract encodeKey(): string;
     public abstract getContract(): Promise<Contract>;
 }

@@ -1,4 +1,9 @@
 const translations = {
+  MY_ACCOUNT: {
+    DEPOSIT: {
+      NAVIGATION_TEXT: 'back to my account',
+    },
+  },
   VALIDATOR: {
     HOME: {
       TITLE: 'Run Validator with the SSV Network',
@@ -84,20 +89,6 @@ const translations = {
       MENUS: {
 
       },
-    },
-  },
-  UPGRADE: {
-    HOME: {
-      TITLE: 'Upgrade CDT to SSV Tokens',
-      SUBTITLE: 'Token upgrades are irreversible - CDT to SSV conversion is a one way path.',
-    },
-    CONFIRM_TRANSACTION: {
-      TITLE: 'Confirm Transaction',
-      SUBTITLE: '',
-    },
-    UPGRADE_SUCCESS: {
-      TITLE: 'Upgrade Successful',
-      SUBTITLE: 'Your new tokens has been sent to your wallet.',
     },
   },
   CTA_BUTTON: {

@@ -1,3 +1,4 @@
+import screenSizes from '~lib/utils/screenSizes';
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
@@ -25,5 +26,24 @@ export const useStyles = makeStyles(() => ({
     '@media (max-width: 480px)': {
       width: '90%',
     },
+  },
+  dashboardRoot: {
+    fontFamily: 'Encode Sans',
+    '& *': {
+      fontFamily: 'Encode Sans',
+    },
+    '& input': {
+      outline: 0,
+      '&:focus': {
+        border: '1px solid #A1ACBE',
+      },
+    },
+    flexGrow: 1,
+    width: '95%',
+    margin: 'auto',
+    [screenSizes.lg]: {
+      width: '728px',
+    },
+    maxWidth: '1080px',
   },
 }));

@@ -37,7 +37,7 @@ const SuccessScreen = () => {
     subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
     monitorHeader = 'Monitor Node';
     monitorText = 'View your operator performance in our explorer';
-    explorerLink = `${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeOperatorKey(contractOperator.newOperatorKeys.pubKey))}`;
+    explorerLink = `${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(contractOperator.newOperatorKeys.pubKey))}`;
   } else if (contractValidator.newValidatorReceipt) {
     icon = 'success_validator_icon';
     subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;

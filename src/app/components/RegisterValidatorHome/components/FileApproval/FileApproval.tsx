@@ -58,11 +58,13 @@ const EnterValidatorPrivateKey = () => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
         const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
-        if ((response.data !== null && conditionalDataExtraction?.valid_signature) || true) {
-          validatorSelectionPage();
-        } else {
-          history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
-        }
+        validatorSelectionPage();
+        console.log(conditionalDataExtraction);
+        // if ((response.data !== null && conditionalDataExtraction?.valid_signature) || true) {
+        //   validatorSelectionPage();
+        // } else {
+        //   history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+        // }
         setInProgress(false);
         applicationStore.setIsLoading(false);
       });

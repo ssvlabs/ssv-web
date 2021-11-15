@@ -4,6 +4,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import ContractSsvStore from '~app/common/stores/contract/ContractSsv.store';
 import { wallets } from '~app/common/stores/Wallet/wallets';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -17,7 +18,7 @@ export const Networks = {
 class WalletStore extends BaseStore implements Wallet {
   @observable networkId: number | null = null;
   @observable web3: any = null;
-  @observable ready: boolean = false;
+  @observable walletConnected: boolean = false;
   @observable wallet: any = null;
   @observable onboardSdk: any = null;
   @observable accountAddress: string = '';
@@ -40,9 +41,9 @@ class WalletStore extends BaseStore implements Wallet {
    * @param address
    */
   @action.bound
-  async getContract(address?: string): Promise<Contract> {
-    if (!this.contract && this.connected) {
-      const contractAddress: string = config.CONTRACTS.SSV_REGISTRY.ADDRESS;
+  getContract(address?: string): Contract {
+    if (!this.contract && this.walletConnected) {
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
       this.contract = this.buildContract(address ?? contractAddress);
     }
     // @ts-ignore
@@ -51,16 +52,19 @@ class WalletStore extends BaseStore implements Wallet {
 
   @action.bound
   buildContract(address: string) {
-    const abi: any = config.CONTRACTS.SSV_REGISTRY.ABI;
+    const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
     return new this.web3.eth.Contract(abi, address);
   }
 
   @action.bound
   encodeKey(operatorKey?: string) {
+    if (!operatorKey) return '';
     return this.web3.eth.abi.encodeParameter('string', operatorKey);
   }
 
+  @action.bound
   decodeKey(operatorKey?: string) {
+    if (!operatorKey) return '';
     return this.web3.eth.abi.decodeParameter('string', operatorKey);
   }
 
@@ -100,6 +104,7 @@ class WalletStore extends BaseStore implements Wallet {
       return;
     }
     await this.init();
+    await this.initUserInfo();
     if (!this.connected) {
       const applicationStore: ApplicationStore = this.getStore('Application');
       await this.onboardSdk.walletSelect();
@@ -115,6 +120,20 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   @action.bound
+  async initUserInfo() {
+    const contractSsvStore: ContractSsvStore = this.getStore('ContractSsv');
+    const networkContract = this.getContract();
+
+    console.log(networkContract);
+    await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
+      contractSsvStore.networkFee = 0.00001755593086049;
+      contractSsvStore.liquidationCollateral = response;
+    });
+
+    await contractSsvStore.checkAllowance();
+  }
+
+  @action.bound
   setAccountAddress(address: string) {
     this.accountAddress = address;
   }
@@ -122,6 +141,12 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   setNetworkId(networkId: number) {
     this.networkId = networkId;
+  }
+
+  @action.bound
+  onBalanceChange() {
+    const ssvContract: ContractSsvStore = this.getStore('ContractSsv');
+    ssvContract.getSsvContractBalance();
   }
 
   /**
@@ -144,6 +169,7 @@ class WalletStore extends BaseStore implements Wallet {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
         network: this.onNetworkChange,
+        balance: this.onBalanceChange,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
@@ -160,6 +186,7 @@ class WalletStore extends BaseStore implements Wallet {
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     this.addressVerification = this.web3.utils.isAddress;
+    this.walletConnected = true;
     console.debug('Wallet Connected:', wallet);
     window.localStorage.setItem('selectedWallet', wallet.name);
   }
@@ -186,6 +213,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (selectedWallet) {
       await this.init();
       await this.onboardSdk.walletSelect(selectedWallet);
+      await this.initUserInfo();
     }
   }
 
@@ -194,9 +222,9 @@ class WalletStore extends BaseStore implements Wallet {
     this.onboardSdk.walletReset();
     this.wallet = null;
     this.web3 = null;
-    this.ready = false;
     this.onboardSdk = null;
     this.accountAddress = '';
+    this.walletConnected = false;
     window.localStorage.removeItem('selectedWallet');
   }
 

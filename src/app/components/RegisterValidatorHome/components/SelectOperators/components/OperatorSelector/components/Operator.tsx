@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
-export const OperatorName = styled.div`
+export const OperatorName = styled.span`
   font-size: 14px;
   color: #2A323E;
   font-weight: 500;
   font-family: Encode Sans;
-  margin-left: 0;
+  margin-right: 16px;
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 2px;

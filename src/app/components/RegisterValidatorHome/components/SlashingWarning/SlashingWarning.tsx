@@ -10,7 +10,7 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import ApplicationStore from '~app/common/stores/Application.store';
+// import ApplicationStore from '~app/common/stores/Application.store';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
@@ -21,7 +21,6 @@ const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const validatorStore: ContractValidator = stores.ContractValidator;
-  const applicationStore: ApplicationStore = stores.Application;
   const [userAgreed, setUserAgreed] = useState(false);
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
   const { redirectUrl, history } = useUserFlow();
@@ -42,19 +41,13 @@ const SlashingWarning = () => {
   }, [validatorStore.validatorPrivateKey, validatorStore.validatorPrivateKeyFile, userAgreed]);
 
   const goToConfirmation = () => {
-    validatorStore.addNewValidator(true).then(() => {
-      applicationStore.setIsLoading(false);
       history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
-    }).catch(() => {
-      applicationStore.setIsLoading(false);
-      history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
-    });
   };
 
   return (
     <Screen
-      navigationText={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
-      navigationLink={config.routes.VALIDATOR.SELECT_OPERATORS}
+      navigationText={translations.VALIDATOR.ACCOUNT_BALANCE.TITLE}
+      navigationLink={config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE}
       title={translations.VALIDATOR.SLASHING_WARNING.TITLE}
       styleOptions={{ actionButtonMarginTop: actionButtonMargin, bodyMarginTop: '12px' }}
       subTitle={translations.VALIDATOR.SLASHING_WARNING.DESCRIPTION}

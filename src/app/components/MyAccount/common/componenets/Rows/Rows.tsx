@@ -34,7 +34,7 @@ const Rows = (props: Props) => {
         const isOperator = name;
         return (
           <Grid container item>
-            {isOperator && <Grid xs={12} className={classes.Name}>{name}</Grid>}
+            {isOperator && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
             <Grid container item>
               <Grid className={isOperator ? classes.PublicKey : classes.PublicKeyBold}>{longStringShorten(publicKey, 4)}</Grid>
               <Grid className={classes.copyImage} />
@@ -48,7 +48,7 @@ const Rows = (props: Props) => {
         const isActive = status === 'active';
         return (
           <Grid container item className={`${classes.Status} ${isActive ? classes.Active : classes.Inactive}`}>
-            <Grid xs={12}>{status}</Grid>
+            <Grid item xs={12} className={classes.StatusText}>{status}</Grid>
           </Grid>
         );
     };
@@ -56,8 +56,8 @@ const Rows = (props: Props) => {
     const displayBalance = (amount: string | undefined) => {
         return (
           <Grid container item>
-            <Grid xs={12} className={classes.Balance}>{amount} SSV</Grid>
-            <Grid xs={12} className={classes.DollarBalance}>~$5.02</Grid>
+            <Grid item xs={12} className={classes.Balance}>{amount} SSV</Grid>
+            <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid>
           </Grid>
         );
     };
@@ -65,7 +65,7 @@ const Rows = (props: Props) => {
     const displayValidatorOrApr = (amount: string | undefined) => {
         return (
           <Grid container item>
-            <Grid xs={12} className={classes.ValidatorApr}>{amount}</Grid>
+            <Grid item xs={12} className={classes.ValidatorApr}>{amount}</Grid>
           </Grid>
         );
     };

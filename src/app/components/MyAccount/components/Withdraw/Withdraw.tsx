@@ -8,6 +8,8 @@ import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScr
 import { useStyles } from './Withdrew.styles';
 import { getImage } from '~lib/utils/filePath';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Typography from '@material-ui/core/Typography';
 // import { validateAddressInput } from '~lib/utils/validatesInputs';
 
 const Title = styled.div`
@@ -24,6 +26,7 @@ const Title = styled.div`
 const Withdraw = () => {
     const classes = useStyles();
     const [inputValue, setInputValut] = useState('0');
+    const [userAgree, setUserAgreement] = useState(false);
 
     // @ts-ignore
     return (
@@ -93,10 +96,25 @@ const Withdraw = () => {
               ]}
           bottom={(
             <Grid item xs={12} className={classes.CTAWrapper}>
+              <FormControlLabel
+                onClick={() => { setUserAgreement(!userAgree); }}
+                style={{ marginBottom: '10px' }}
+                control={(
+                  <Grid className={classes.CheckboxWrapper}>
+                    <Grid className={userAgree ? classes.Checkbox : ''} />
+                  </Grid>
+                )}
+                label={(
+                  <Typography className={classes.Agreement}>
+                    I understand that withdrawing this amount will liquidate my account
+                  </Typography>
+                )}
+                />
               <CTAButton
-                disable={false}
+                disable={!userAgree}
                 onClick={() => { console.log('bla'); }}
                 text={'Withdraw'}
+                backgroundColor={userAgree ? '#d3030d' : '#ec1c2640'}
               />
             </Grid>
           )}

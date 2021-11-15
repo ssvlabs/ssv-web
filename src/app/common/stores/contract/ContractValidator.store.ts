@@ -94,6 +94,7 @@ class ContractValidator extends BaseStore {
   /**
    * Add new validator
    * @param getGasEstimation
+   * @param callBack
    */
   @action.bound
   // eslint-disable-next-line no-unused-vars
@@ -101,7 +102,7 @@ class ContractValidator extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
-    const contract: Contract = await walletStore.getContract();
+    const contract: Contract = walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
 
     this.newValidatorReceipt = null;
@@ -116,7 +117,7 @@ class ContractValidator extends BaseStore {
         if (getGasEstimation) {
           // Send add operator transaction
           contract.methods
-              .addValidator(...payload)
+              .registerValidator(...payload)
               .estimateGas({ from: ownerAddress })
               .then((gasAmount: any) => {
                 this.addingNewValidator = true;
@@ -142,7 +143,7 @@ class ContractValidator extends BaseStore {
         } else {
           // Send add operator transaction
           contract.methods
-              .addValidator(...payload)
+              .registerValidator(...payload)
               .send({ from: ownerAddress })
               .on('receipt', (receipt: any) => {
                 const event: boolean = 'ValidatorAdded' in receipt.events;
@@ -179,18 +180,13 @@ class ContractValidator extends BaseStore {
     if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorStore: ContractOperator = this.getStore('contract/ContractOperator');
-    const ownerAddress: string = walletStore.accountAddress;
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
     return new Promise((resolve) => {
       // Get list of selected operator's public keys
-      const operatorPublicKeys: string[] = operatorStore.operators
-          .filter((operator: IOperator) => {
-            return operator.selected;
-          })
-          .map((operator: IOperator) => {
-            return operator.pubkey;
-          });
+      const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+        return operator.pubkey;
+      });
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey;
@@ -204,11 +200,11 @@ class ContractValidator extends BaseStore {
         return walletStore.encodeKey(share.privateKey);
       });
       const payLoad = [
-        ownerAddress,
         thresholdResult.validatorPublicKey,
         operatorPublicKeys,
         sharePublicKeys,
         encryptedKeys,
+        walletStore.web3.utils.toWei('182.5'),
       ];
       this.createValidatorPayLoad = payLoad;
       resolve(payLoad);

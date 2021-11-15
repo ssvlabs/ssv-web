@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/Ssv.store';
+import ContractSsvStore from '~app/common/stores/contract/ContractSsv.store';
 import DataTable from '~app/common/components/DataTable';
 import Rows from '~app/components/MyAccount/common/componenets/Rows';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
@@ -19,10 +19,12 @@ const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
     const history = useHistory();
-    const allowanceStore: SsvStore = stores.Allowance;
+    const allowanceStore: ContractSsvStore = stores.Allowance;
     const [width, setWidth] = React.useState(window.innerWidth);
     const [displayStatus, setDisplayStatus] = useState(true);
     const [displayValidators, setDisplayValidators] = useState(true);
+    const [operatorsPage, setOperatorsPage] = useState(0);
+    const [validatorsPage, setValidatorsPage] = useState(0);
     const breakPoints = [
         { width: 768, operatorHeader: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''], validatorHeaders: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''], callBack: setDisplayStatus },
         { width: 499, operatorHeader: ['PUBLIC KEY', 'REVENUE'], validatorHeaders: ['PUBLIC KEY', 'BALANCE'], callBack: setDisplayValidators },
@@ -91,9 +93,9 @@ const MyAccount = () => {
                 headers={operatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
                 data={Rows({ items: operators, shouldDisplayStatus: displayStatus, shouldDisplayValidators: displayValidators })}
-                totalCount={100}
-                page={1}
-                onChangePage={() => {}}
+                totalCount={operators.length}
+                page={operatorsPage}
+                onChangePage={setOperatorsPage}
                 isLoading={false}
               />
             </Grid>
@@ -103,9 +105,9 @@ const MyAccount = () => {
                 headers={validatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
                 data={Rows({ items: validators, shouldDisplayStatus: displayStatus, shouldDisplayValidators: displayValidators })}
-                totalCount={100}
-                page={1}
-                onChangePage={() => {}}
+                totalCount={0}
+                page={validatorsPage}
+                onChangePage={setValidatorsPage}
                 // isLoading
               />
             </Grid>

@@ -12,6 +12,17 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         flexDirection: 'row',
     },
+    TotalFees: {
+        marginBottom: '32px',
+        justifyContent: 'space-between',
+    },
+    TotalFeesHeader: {
+        textTransform: 'uppercase',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        lineHeight: 1.5,
+        color: '#a1acbe',
+    },
     checkboxText: {
         fontSize: '14px',
         fontWeight: 500,
@@ -173,5 +184,17 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(1),
         alignSelf: 'center',
         marginTop: theme.spacing(1),
+    },
+    Fee: {
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.43,
+        color: '#5b6c84',
+    },
+    FeeDollar: {
+        fontSize: '12px',
+        fontWeight: 500,
+        lineHeight: 1.5,
+        color: '#a1acbe',
     },
 }));

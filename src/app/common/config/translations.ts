@@ -28,6 +28,16 @@ const translations = {
         'There is no need to wait until your validator is active on the beacon chain, you can return to register your validator to our network while it\'s pending on the staking queue, once it gets activated, your selected operators will operate it immediately.',
       ],
     },
+    BALANCE_AND_FEE: {
+      NAVIGATION_TEXT: 'select operators',
+      TITLE: 'Account Balances and Fees',
+      SUB_TITLE: '',
+      DESCRIPTION: '',
+      BODY_TEXT: [
+        'Fees are presented as annual payments but are paid to operators continuously as an on-going process. They are set by each operator and could change according to their decision.',
+        'When you register a new validator to the network you are required to deposit sufficient balance for a year, but it\'s under your sole responsibility to make sure your account always holds enough balance for it\'s operation.',
+      ],
+    },
     IMPORT: {
       TITLE: 'Enter Validator Key',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',
@@ -42,6 +52,10 @@ const translations = {
     },
     SLASHING_WARNING: {
       TITLE: 'Slashing Warning',
+      DESCRIPTION: 'Your validator is currently active on beacon chain:',
+    },
+    ACCOUNT_BALANCE: {
+      TITLE: 'account balance',
       DESCRIPTION: 'Your validator is currently active on beacon chain:',
     },
     SELECT_OPERATORS: {
@@ -67,7 +81,7 @@ const translations = {
   },
   SUCCESS: {
     TITLE: 'Welcome to the SSV Network!',
-    OPERATOR_DESCRIPTION: 'With every new operator, our network grows stronger',
+    OPERATOR_DESCRIPTION: 'Your operator has been successfully registered! With every new operator, our network grows stronger',
     VALIDATOR_DESCRIPTION: 'Your validator is now running on the robust and secure infrastructure of our network',
   },
   OPERATOR: {

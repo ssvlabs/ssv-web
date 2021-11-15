@@ -1,11 +1,15 @@
-import React from 'react';
 import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
+import { getImage } from '~lib/utils/filePath';
+import { useStores } from '~app/hooks/useStores';
+import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/common/components/Tooltip/Tooltip';
+import IntegerInput from '~app/common/components/IntegerInput';
+import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from './Deposit.styles';
-import { getImage } from '~lib/utils/filePath';
 
 const Title = styled.div`
   height: 18px;
@@ -21,6 +25,13 @@ const Title = styled.div`
 
 const Deposit = () => {
     const classes = useStyles();
+    const stores = useStores();
+    const [inputValue, setInputValue] = useState(0.0);
+    const contractSsv: ContractSsv = stores.ContractSsv;
+    
+    useEffect(() => {
+        contractSsv.getSsvContractBalance();
+    });
 
     return (
       <div className={classes.DepositWrapper}>
@@ -36,20 +47,23 @@ const Deposit = () => {
                         </Grid>
                         <Grid container item xs={12} className={classes.BalanceWrapper}>
                           <Grid item container xs={12}>
-                            <Grid item xs={6} className={classes.Balance}>
-                              0.0
+                            <Grid item xs={6}>
+                              <IntegerInput
+                                onChange={(e) => { // @ts-ignore
+                                    setInputValue(e.target.value); }}
+                                value={inputValue}
+                                className={classes.Balance}
+                              />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                              <Grid item onClick={() => {
-                                            console.log('need to implement');
-                                        }}>
+                              <Grid item onClick={() => { contractSsv.deposit(inputValue); }}>
                                 <img className={classes.MaxButtonImage} src={getImage('max-button.svg')} />
                               </Grid>
                               <Grid item className={classes.MaxButtonText}>SSV</Grid>
                             </Grid>
                           </Grid>
                           <Grid item xs={12} className={classes.WalletBalance}>
-                            Wallet Balance: 10,000 SSV
+                            Wallet Balance: {contractSsv.ssvBalance} SSV
                           </Grid>
                         </Grid>
                       </Grid>
@@ -64,10 +78,9 @@ const Deposit = () => {
               ),
           ]}
           bottom={(
-            <Grid container item>
-              <Grid container item>
-                <Grid item></Grid>
-                <Grid item></Grid>
+            <Grid container className={classes.ButtonWrapper}>
+              <Grid item xs>
+                <CTAButton text={'Deposit'} disable={false} onClick={() => { console.log('asd'); }} withAllowance />
               </Grid>
             </Grid>
           )}

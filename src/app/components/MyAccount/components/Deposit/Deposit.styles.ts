@@ -18,10 +18,15 @@ export const useStyles = makeStyles(() => ({
         cursor: 'pointer',
     },
     Balance: {
+        backgroundColor: 'transparent',
+        border: 'none !important',
         fontSize: '28px',
         fontWeight: 500,
         lineHeight: '0.86',
         color: '#a1acbe',
+        '&:focus': {
+            outline: 'none',
+        },
     },
     MaxButtonText: {
         fontSize: '24px',
@@ -46,5 +51,8 @@ export const useStyles = makeStyles(() => ({
         lineHeight: 1,
         textAlign: 'left',
         color: '#2a323e',
+    },
+    ButtonWrapper: {
+        margin: '16px',
     },
 }));

@@ -4,17 +4,19 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { isMobile } from 'react-device-detect';
+import WarningIcon from '@material-ui/icons/Warning';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import WarningIcon from '@material-ui/icons/Warning';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
+import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
+import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 
 const WarningMessage = styled.div`
   margin-bottom: 20px;
@@ -50,8 +52,9 @@ const WarningTextHeader = styled.p`
 
 const SelectOperators = () => {
   const stores = useStores();
-  const contractOperator: ContractOperator = stores.ContractOperator;
+  const contractSsv: ContractSsv = stores.ContractSsv;
   const applicationStore: ApplicationStore = stores.Application;
+  const contractOperator: ContractOperator = stores.ContractOperator;
   const classes = useStyles();
   const wrapperRef = useRef(null);
   const [buttonEnabled, setButtonEnabled] = useState(false);
@@ -81,6 +84,7 @@ const SelectOperators = () => {
   }, [wrapperRef]);
 
   useEffect(() => {
+    if (redirectUrl) return;
     setButtonEnabled(contractOperator.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
@@ -90,25 +94,23 @@ const SelectOperators = () => {
         applicationStore.setIsLoading(false);
       });
     }
-  }, [contractOperator.operators, contractOperator.selectedEnoughOperators, contractOperator.loadingOperator]);
-  
+  }, [redirectUrl, contractOperator.operators, contractOperator.selectedEnoughOperators, contractOperator.loadingOperator]);
+
   useEffect(() => {
     let allOperatorsAreVerified = true;
-    if (contractOperator.operators) {
-      contractOperator.operators.forEach((operator) => {
-        if (operator.selected && !(operator.verified || operator.dappNode)) allOperatorsAreVerified = false;
-      });
-    }
+    Object.values(contractOperator.selectedOperators).forEach((operator: IOperator) => {
+      if (!operator.verified && !operator.dappNode) allOperatorsAreVerified = false;
+    });
     if (allOperatorsVerified !== allOperatorsAreVerified) {
       setAllOperatorVerified(allOperatorsAreVerified);
     }
     if (!allOperatorsAreVerified) {
       setActionButtonMargin('100px');
     }
-  }, [contractOperator.operators]);
+  }, [JSON.stringify(contractOperator.selectedOperators)]);
 
   const onSelectOperatorsClick = async () => {
-    history.push(config.routes.VALIDATOR.SLASHING_WARNING);
+    history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
 
   const unselectAllOperators = () => {
@@ -166,6 +168,14 @@ const SelectOperators = () => {
               </WarningTextWrapper>
             </WarningMessage>
             )}
+          <Grid container className={classes.TotalFees} justify={'space-between'}>
+            <Grid item className={classes.TotalFeesHeader}>
+              Total Operators Yearly Fee
+            </Grid>
+            <Grid item>
+              <SsvAndSubTitle ssv={contractSsv.getFeeForYear(contractOperator.getSelectedOperatorsFee)} subText={'/year'} subTextCenter={false} />
+            </Grid>
+          </Grid>
           <CTAButton
             testId={'operators-selected-button'}
             disable={!buttonEnabled}

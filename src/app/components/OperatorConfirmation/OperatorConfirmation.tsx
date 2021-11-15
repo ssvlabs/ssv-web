@@ -6,25 +6,30 @@ import { isMobile } from 'react-device-detect';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
+import { longStringShorten } from '~lib/utils/strings';
 import Screen from '~app/common/components/Screen/Screen';
 import DataSection from '~app/common/components/DataSection';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ApplicationStore from '~app/common/stores/Application.store';
-import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
+import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
+import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirmation.styles';
 
 const actionButtonMargin = isMobile ? '160px' : '195px';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
-  const operatorStore: ContractOperator = stores.ContractOperator;
+  const classes = useStyles();
   const applicationStore: ApplicationStore = stores.Application;
-  const walletStore: WalletStore = stores.Wallet;
+    const contractOperator: ContractOperator = stores.ContractOperator;
+    const contractSsv: ContractSsv = stores.ContractSsv;
+    const walletStore: WalletStore = stores.Wallet;
   const { redirectUrl, history } = useUserFlow();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
   const [txHash, setTxHash] = useState('Register Operator');
+  const [checked, setCheckBox] = useState(false);
 
   useEffect(() => {
     redirectUrl && history.push(redirectUrl);
@@ -32,7 +37,7 @@ const OperatorConfirmation = () => {
 
   const onRegisterClick = async () => {
       setActionButtonText('Waiting for confirmation...');
-      operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
+      contractOperator.addNewOperator(false, handlePendingTransaction).then(() => {
         applicationStore.showTransactionPandingPopUp(false);
         history.push(config.routes.OPERATOR.SUCCESS_PAGE);
       }).catch(() => {
@@ -50,14 +55,13 @@ const OperatorConfirmation = () => {
   const data = [
     [
         { key: 'Operator', header: true, value: '' },
-        { key: 'Name', value: operatorStore.newOperatorKeys.name },
-        { key: 'Key', value: longStringShorten(sha256(walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey)), 4) },
-        { key: 'Owner Address', value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}` },
+        { key: 'Name', value: contractOperator.newOperatorKeys.name },
+        { key: 'Fee', value: <Grid container><Grid item xs={12}>{contractSsv.getFeeForYear(contractOperator.newOperatorKeys.fee)} SSV</Grid> <Grid item xs={12} className={classes.YearText}>/year</Grid></Grid> },
+        { key: <Grid className={classes.UnderLine} />, value: <Grid className={classes.UnderLine} /> },
     ],
     [
-      { key: 'Est. Transaction Cost', header: true, value: '' },
-      { key: 'Transaction fee', value: `${normalizeNumber(operatorStore.estimationGas, 5)} ETH `, strong: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
-      { key: 'Total', value: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
+        { key: 'Key', value: longStringShorten(sha256(walletStore.decodeKey(contractOperator.newOperatorKeys.pubKey)), 4) },
+        { key: 'Owner Address', value: `0x${longStringShorten(contractOperator.newOperatorKeys.address.substring(2), 4)}` },
     ],
   ];
 
@@ -69,15 +73,17 @@ const OperatorConfirmation = () => {
       subTitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION}
       styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
       body={(
-        <Grid container spacing={4}>
+        <Grid container spacing={0}>
           <TransactionPendingPopUp txHash={txHash} />
           <DataSection data={data} />
         </Grid>
       )}
       actionButton={(
         <CTAButton
+          checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
+          checkBoxesCallBack={[setCheckBox]}
           testId={'submit-operator'}
-          disable={false}
+          disable={!checked}
           onClick={onRegisterClick}
           text={actionButtonText}
         />

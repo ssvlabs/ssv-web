@@ -27,14 +27,14 @@ const operatorsHomeFlow: IUserFlow = {
 const operatorConfirmation: IUserFlow = {
   name: 'Operator Confirmation',
   route: routes.OPERATOR.CONFIRMATION_PAGE,
+  depends: [
+    operatorsHomeFlow,
+  ],
   condition: () => {
     const stores = useStores();
     const contractOperator: ContractOperator = stores.ContractOperator;
     return !!contractOperator.newOperatorKeys.pubKey && !!contractOperator.newOperatorKeys.name;
   },
-  depends: [
-    operatorsHomeFlow,
-  ],
 };
 
 const validatorsHomeFlow: IUserFlow = {

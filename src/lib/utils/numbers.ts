@@ -24,6 +24,11 @@ export const getPrecision = (numeric: number | string) => {
   return precision;
 };
 
+export const roundNumber = (num: number, rlength: number) => {
+  // eslint-disable-next-line no-restricted-properties
+  return Math.round(num * Math.pow(10, rlength)) / Math.pow(10, rlength);
+};
+
 /**
  * Format float number to maximum precision unlike regular floats does.
  * @param numeric
@@ -42,4 +47,34 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
     floatString = floatString.replace('.', '');
   }
   return floatString;
+};
+
+export const formatNumberToUi = (num: number) => {
+  if (!num) return;
+  if (num < 1) {
+    const splitNumber = num.toString().split('.');
+    const number = splitNumber[0];
+    let decimal = splitNumber[1];
+    let deleteFromIndex = 0;
+    let shouldContinue = true;
+    let indexLoop = 0;
+    // @ts-ignore
+    while (deleteFromIndex === 0 || shouldContinue) {
+      if (decimal[indexLoop] !== '0') {
+        deleteFromIndex = indexLoop;
+        shouldContinue = false;
+      } else {
+        indexLoop += 1;
+      }
+    }
+    decimal = decimal.slice(0, deleteFromIndex + 2);
+    return `${number}.${decimal}`;
+  }
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+};
+
+export const roundCryptoValueString = (desiredNumber: number, decimalPlaces: number = 18) => {
+  const arr = desiredNumber.toString().split('.');
+  const fraction = arr[1].substr(0, decimalPlaces);
+  return `${arr[0]}.${fraction}`;
 };

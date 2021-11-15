@@ -80,7 +80,7 @@ const GenerateOperatorKeys = () => {
       pubKey: inputsData.publicKey,
       name: inputsData.name,
       address: walletStore.accountAddress,
-      fee: inputsData.fee,
+      fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
     };
     applicationStore.setIsLoading(true);
     contractOperator.setOperatorKeys(operatorKeys);

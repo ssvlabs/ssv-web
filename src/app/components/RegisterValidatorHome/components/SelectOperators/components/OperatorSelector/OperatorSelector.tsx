@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import { debounce } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
-import { useStyles } from './OperatorSelector.styles';
 import { OperatorName, OperatorKey } from './components/Operator';
-// import { debounce } from '@material-ui/core';
+import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
+import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 // import LinearProgress from '@material-ui/core/LinearProgress';
+import { useStyles } from './OperatorSelector.styles';
 
 type OperatorSelectorProps = {
   dataTestid: string,
@@ -24,36 +25,40 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
   const classes = useStyles();
   const stores = useStores();
   const contractOperator: ContractOperator = stores.ContractOperator;
+  const contractSsv: ContractSsv = stores.ContractSsv;
   const walletStore: WalletStore = stores.Wallet;
   const [selectedOperator, selectOperator] = useState('');
-  // const [batchIndex, setBatchIndex] = useState(20);
+  const [batchIndex, setBatchIndex] = useState(20);
   // const [loadingBatch, setLoadingBatch] = useState(false);
   // const [progressPercentage, setProgressPercentage] = useState(0);
 
   useEffect(() => {
-    if (indexedOperator.selected && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
+    if (contractOperator.isOperatorSelected(indexedOperator.pubkey) && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
       selectOperatorMethod(indexedOperator);
     }
   });
 
-  // const lazyLoad = debounce(async (e) => {
-  //   const element = e.target;
-  //
-  //   if (element.scrollTop + element.offsetHeight > element.scrollHeight - 200) {
-  //     if (contractOperator.operators.length > batchIndex && !loadingBatch) {
-  //       setLoadingBatch(true);
-  //       await progressBar(10);
-  //       setBatchIndex(batchIndex + 20);
-  //       setLoadingBatch(false);
-  //     }
-  //   }
-  // }, 100);
+  const lazyLoad = debounce(async (e) => {
+    const element = e.target;
+
+    if (element.scrollTop + element.offsetHeight > element.scrollHeight - 200) {
+      if (contractOperator.operators.length > batchIndex) {
+        // setLoadingBatch(true);
+        // await progressBar(10);
+        // setTimeout(() => {
+        //   setLoadingBatch(false);
+        //
+        // }, 2000);
+        setBatchIndex(batchIndex + 20);
+      }
+    }
+  }, 100);
 
   const selectOperatorMethod = (operator: any) => {
     if (selectedOperator) {
-      contractOperator.unselectOperator(selectedOperator);
+      contractOperator.unselectOperator(index);
     }
-    contractOperator.selectOperator(operator.pubkey, index + 1);
+    contractOperator.selectOperator(operator, index);
     selectOperator(operator);
   };
 
@@ -72,7 +77,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
 
   const closeMenu = () => {
     openMenuWithIndex(shouldOpenMenu ? null : index);
-    // setBatchIndex(10);
+    setBatchIndex(10);
   };
 
   // const progressBar = async (percentage: number) => {
@@ -90,38 +95,44 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
   // };
 
   const renderOperator = ({ operator, menu, key }: { operator: any, menu?: boolean, key?: number }) => {
+    const operatorSelected = contractOperator.isOperatorSelected(operator.pubkey);
     return (
-      <Grid
-        key={key}
-        container
-        alignItems={'center'}
-        direction="row"
-        justify="space-between"
-        className={`${menu && classes.menuItem} ${menu && operator.selected && classes.disable}`}
-        >
-        <Grid item xs={7} onClick={() => {
-            !operator.selected && onSelectOperator(operator);
-          }}>
-          <OperatorName>{operator.name}</OperatorName>
-          <OperatorKey>{operatorAddressSeralize(sha256(walletStore.decodeKey(operator.pubkey)))}</OperatorKey>
-        </Grid>
-        <Grid item xs={5}>
-          <Grid container className={classes.verifiedWrapper} justify={'flex-end'} spacing={2}>
-            <Grid item xs={6} md={6} onClick={() => {
-                !operator.selected && onSelectOperator(operator);
-              }}>
-              {operator.verified || operator.dappNode ? (
-                <Grid container className={operator.verified ? classes.verifiedText : classes.dappNode}>
-                  <Grid item xs={8}>
-                    {operator.verified ? 'Verified' : 'DAppNode'}
+      <Grid key={key} container className={`${menu && classes.menuItem} ${menu && operatorSelected && classes.disable}`} onClick={() => { !operatorSelected && onSelectOperator(operator); }}>
+        <Grid item container xs={7} onClick={() => { !operatorSelected && onSelectOperator(operator); }}>
+          <Grid item xs>
+            <Grid container>
+              <Grid item>
+                <OperatorName>{`${operator.name}`}</OperatorName>
+              </Grid>
+              <Grid item xs onClick={() => { !operatorSelected && onSelectOperator(operator); }}>
+                {operator.verified || operator.dappNode ? (
+                  <Grid container className={operator.verified ? classes.verifiedText : classes.dappNode}>
+                    <Grid item xs={8}>
+                      {operator.verified ? 'Verified' : 'DAppNode'}
+                    </Grid>
+                    <Grid item xs>
+                      {operator.verified && <img src={getImage('checkmark_icon.svg')} className={classes.verifiedIcon} />}
+                      {operator.dappNode && <img src={getImage('checkmark_icon_dappnode.svg')} className={classes.dappNodeIcon} />}
+                    </Grid>
                   </Grid>
-                  <Grid item xs={4}>
-                    {operator.verified && <img src={getImage('checkmark_icon.svg')} className={classes.verifiedIcon} />}
-                    {operator.dappNode && <img src={getImage('checkmark_icon_dappnode.svg')} className={classes.dappNodeIcon} />}
-                  </Grid>
-                </Grid>
                 ) : ''}
+              </Grid>
             </Grid>
+            <Grid>
+              <OperatorKey>{operatorAddressSeralize(sha256(walletStore.decodeKey(operator.pubkey)))}</OperatorKey>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid container xs>
+          <Grid item xs={12} className={classes.Fee}>
+            {contractSsv.getFeeForYear(operator.fee)} SSV
+          </Grid>
+          <Grid className={classes.FeeDollar}>
+            ~$0
+          </Grid>
+        </Grid>
+        <Grid item xs>
+          <Grid container className={classes.verifiedWrapper} justify={'flex-end'}>
             <Grid item onClick={() => {
                 redirectTo(operator.pubkey);
               }}>
@@ -147,13 +158,17 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
         }
       </button>
       {shouldOpenMenu && (
-      <div className={classes.menuWrapper}>
-        {contractOperator.operators.map((operator: IOperator, operatorIndex) => {
+      <div className={classes.menuWrapper} onScroll={lazyLoad}>
+        <Grid container className={classes.DropDownMenuHeader}>
+          <Grid item xs={6}>OPERATOR NAME</Grid>
+          <Grid item xs className={classes.YearlyFeeHeader}>YEARLY FEE</Grid>
+        </Grid>
+        {contractOperator.operators.slice(0, batchIndex).map((operator: IOperator, operatorIndex) => {
           return (
               renderOperator({ operator, menu: true, key: operatorIndex })
           );
         })}
-        {/* {loadingBatch && <div className={classes.menuLoader}><LinearProgress variant="determinate" value={progressPercentage} /></div>} */}
+        {/* {loadingBatch && <div className={classes.menuLoader}></div>} */}
       </div>
     )}
     </div>

@@ -57,7 +57,7 @@ export const validateFeeInput = (value: string, callback: React.Dispatch<ErrorOb
 
     const response = { shouldDisplay: false, errorMessage: '' };
     // eslint-disable-next-line radix
-    if (10 ** (-14) > parseFloat(value) / 2398050) {
+    if (10 ** (-14) > parseFloat(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a greater fee amount.';
     }

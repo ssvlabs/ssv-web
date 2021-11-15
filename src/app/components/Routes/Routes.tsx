@@ -20,6 +20,7 @@ import SlashingWarning from '~app/components/RegisterValidatorHome/components/Sl
 import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
 import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
+import AccountBalanceAndFee from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee';
 
 const Routes = () => {
   const classes = useStyles();
@@ -73,6 +74,9 @@ const Routes = () => {
                 </Route>
                 <Route exact path={config.routes.VALIDATOR.IMPORT}>
                   <ImportValidator />
+                </Route>
+                <Route exact path={config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE}>
+                  <AccountBalanceAndFee />
                 </Route>
                 <Route exact path={config.routes.VALIDATOR.SLASHING_WARNING}>
                   <SlashingWarning />

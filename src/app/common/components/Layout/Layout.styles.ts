@@ -14,18 +14,20 @@ export const useStyles = makeStyles(() => ({
       },
     },
     flexGrow: 1,
-    maxWidth: '100%',
-    width: '30%',
+    maxWidth: '540px',
     margin: 'auto',
-    '@media (max-width: 1024px)': {
-      width: '45%',
-    },
-    '@media (max-width: 768px)': {
-      width: '50%',
-    },
-    '@media (max-width: 480px)': {
+    // maxWidth: '100%',
+    // width: '30%',
+    // margin: 'auto',
+    '@media (max-width: 767px)': {
       width: '90%',
     },
+    // '@media (max-width: 768px)': {
+    //   width: '50%',
+    // },
+    // '@media (max-width: 480px)': {
+    //   width: '90%',
+    // },
   },
   dashboardRoot: {
     fontFamily: 'Encode Sans',

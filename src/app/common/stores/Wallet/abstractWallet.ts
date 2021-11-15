@@ -8,5 +8,5 @@ export default abstract class Wallet {
     public abstract clean(): void;
     public abstract decodeKey(): string;
     public abstract encodeKey(): string;
-    public abstract getContract(): Promise<Contract>;
+    public abstract getContract(): Contract;
 }

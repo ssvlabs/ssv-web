@@ -41,6 +41,9 @@ export const useStyles = makeStyles(() => ({
         fontSize: '12px',
         fontWeight: 600,
     },
+    StatusText: {
+        textTransform: 'capitalize',
+    },
     Active: {
         backgroundColor: 'rgba(6, 182, 79, 0.12)',
         color: '#06b64f',

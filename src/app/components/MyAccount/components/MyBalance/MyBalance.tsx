@@ -1,8 +1,11 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
+import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 import { useStyles } from './MyBalance.styles';
 
 // type HeaderProps = {
@@ -27,8 +30,10 @@ const ActionButtonText = styled.div<{ deposit?: boolean }>`
 `;
 
 const MyBalance = () => {
+    const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
+    const contractSsv: ContractSsv = stores.ContractSsv;
 
     return (
       <Grid container className={classes.MyBalanceWrapper}>
@@ -41,7 +46,7 @@ const MyBalance = () => {
             Current Balance
           </Grid>
           <Grid item xs={12} className={classes.CurrentBalance}>
-            274.77 SSV
+            {contractSsv.networkContractBalance} SSV
           </Grid>
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
             ~$449.52
@@ -70,4 +75,4 @@ const MyBalance = () => {
     );
 };
 
-export default MyBalance;
+export default observer(MyBalance);

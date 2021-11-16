@@ -34,7 +34,7 @@ const CTAButton = ({
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
     const contractSsv: ContractSsv = stores.ContractSsv;
-    const [userAllowance, setUserAllowance] = useState(contractSsv.approvedAllowance || false);
+    const [userAllowance, setUserAllowance] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
 
     const checkWalletConnected = async (onClickCallBack: any) => {
@@ -66,10 +66,8 @@ const CTAButton = ({
             variant="contained"
             color={'primary'}
             className={classes.button}
-            onClick={() => {
-                    checkWalletConnected(onClick);
-                }}
-            >
+            onClick={() => { checkWalletConnected(onClick); }}
+          >
             {walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
           </Button>
         );
@@ -86,10 +84,8 @@ const CTAButton = ({
                 variant="contained"
                 color={'primary'}
                 className={classes.button}
-                onClick={() => {
-                            checkWalletConnected(allowNetworkContract);
-                        }}
-                    >
+                onClick={() => { checkWalletConnected(allowNetworkContract); }}
+              >
                 {approveButtonText}
               </Button>
             </Grid>
@@ -101,10 +97,8 @@ const CTAButton = ({
                 variant="contained"
                 color={'primary'}
                 className={classes.button}
-                onClick={() => {
-                            checkWalletConnected(onClick);
-                        }}
-                    >
+                onClick={() => { checkWalletConnected(onClick); }}
+              >
                 {walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
               </Button>
             </Grid>
@@ -130,7 +124,7 @@ const CTAButton = ({
                 text={checkboxText} /></Grid>
             );
         })}
-        {((contractSsv.approvedAllowance && userAllowance) || !withAllowance) ? regulerButton() : userNeedApproval()}
+        {(contractSsv.approvedAllowance || !withAllowance) ? regulerButton() : userNeedApproval()}
       </Grid>
     );
 };

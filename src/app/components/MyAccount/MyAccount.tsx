@@ -19,7 +19,7 @@ const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
     const history = useHistory();
-    const allowanceStore: ContractSsvStore = stores.Allowance;
+    const ssvStore: ContractSsvStore = stores.Allowance;
     const [width, setWidth] = React.useState(window.innerWidth);
     const [displayStatus, setDisplayStatus] = useState(true);
     const [displayValidators, setDisplayValidators] = useState(true);
@@ -41,7 +41,7 @@ const MyAccount = () => {
         /* passing an empty array as the dependencies of the effect will cause this
            effect to only run when the component mounts, and not each time it updates.
            We only want the listener to be added once */
-    }, [allowanceStore]);
+    }, [ssvStore]);
 
     React.useEffect(() => {
         let isBigScreen = true;
@@ -63,7 +63,6 @@ const MyAccount = () => {
 
     return (
       <Grid container className={classes.Wrapper}>
-        {/* <Grid onClick={() => { allowanceStore.checkAllowance(); }}>asdlkasndajndjkasdnjaksnd</Grid> */}
         <Grid container item xs={12} className={classes.Header}>
           <Grid item xs={6}>
             <span className={classes.HeaderText}>

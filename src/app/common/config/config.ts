@@ -953,6 +953,70 @@ const config = {
           'stateMutability': 'nonpayable',
           'type': 'function',
         },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'score',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'updateOperatorScore',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'operatorPublicKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'sharesPublicKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'bytes[]',
+              'name': 'encryptedKeys',
+              'type': 'bytes[]',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'tokenAmount',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'updateValidator',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint256',
+              'name': 'tokenAmount',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'withdraw',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
       ],
     },
   },

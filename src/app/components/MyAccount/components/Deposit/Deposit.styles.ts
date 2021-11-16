@@ -27,6 +27,10 @@ export const useStyles = makeStyles(() => ({
         '&:focus': {
             outline: 'none',
         },
+        '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+            '-webkit-appearance': 'none',
+            display: 'none',
+        },
     },
     MaxButtonText: {
         fontSize: '24px',
@@ -43,6 +47,7 @@ export const useStyles = makeStyles(() => ({
         fontWeight: 500,
         lineHeight: 1.43,
         color: '#5b6c84',
+        cursor: 'pointer',
     },
     AmountOfDays: {
         marginTop: '16px',

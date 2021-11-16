@@ -31,11 +31,20 @@ export const useStyles = makeStyles(() => ({
         cursor: 'pointer',
     },
     Balance: {
+        backgroundColor: 'transparent',
+        border: 'none !important',
         fontSize: '28px',
         height: '24px',
         fontWeight: 500,
         lineHeight: 0.86,
         color: '#a1acbe',
+        '&:focus': {
+            outline: 'none',
+        },
+        '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+            '-webkit-appearance': 'none',
+            display: 'none',
+        },
     },
     BalanceInput: {
         backgroundColor: 'transparent',

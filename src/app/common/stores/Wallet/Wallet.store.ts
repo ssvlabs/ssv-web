@@ -104,7 +104,6 @@ class WalletStore extends BaseStore implements Wallet {
       return;
     }
     await this.init();
-    await this.initUserInfo();
     if (!this.connected) {
       const applicationStore: ApplicationStore = this.getStore('Application');
       await this.onboardSdk.walletSelect();
@@ -122,14 +121,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initUserInfo() {
     const contractSsvStore: ContractSsvStore = this.getStore('ContractSsv');
-    const networkContract = this.getContract();
-
-    console.log(networkContract);
-    await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
-      contractSsvStore.networkFee = 0.00001755593086049;
-      contractSsvStore.liquidationCollateral = response;
-    });
-
+    await contractSsvStore.getNetworkFees();
     await contractSsvStore.checkAllowance();
   }
 
@@ -144,9 +136,11 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   @action.bound
-  onBalanceChange() {
+  async getBalances() {
+    await this.initUserInfo();
     const ssvContract: ContractSsvStore = this.getStore('ContractSsv');
-    ssvContract.getSsvContractBalance();
+    await ssvContract.getSsvContractBalance();
+    await ssvContract.getNetworkContractBalance();
   }
 
   /**
@@ -169,7 +163,7 @@ class WalletStore extends BaseStore implements Wallet {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
         network: this.onNetworkChange,
-        balance: this.onBalanceChange,
+        balance: this.getBalances,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
@@ -213,7 +207,6 @@ class WalletStore extends BaseStore implements Wallet {
     if (selectedWallet) {
       await this.init();
       await this.onboardSdk.walletSelect(selectedWallet);
-      await this.initUserInfo();
     }
   }
 

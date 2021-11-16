@@ -8,6 +8,7 @@ import { roundNumber } from '~lib/utils/numbers';
 class ContractSsv extends BaseStore {
     // Amount
     @observable ssvBalance: number = 0;
+    @observable networkContractBalance: number = 0;
 
     // Calculation props
     @observable networkFee: number = 0;
@@ -65,23 +66,58 @@ class ContractSsv extends BaseStore {
     getContractAddress(contract: string): string {
         const contractType = String(contract).toUpperCase();
         // @ts-ignore
-        const contractData = config.CONTRACTS[contractType].ADDRESS;
+        return config.CONTRACTS[contractType].ADDRESS;
+    }
 
-        return contractData;
+    @action.bound
+    async getNetworkFees() {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const networkContract = walletStore.getContract();
+        await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
+            this.networkFee = 0.00001755593086049;
+            this.liquidationCollateral = response;
+        });
     }
 
     /**
      * Deposit ssv
-     * @param contract
+     * @param amount
      */
     @action.bound
-    async deposit(amount: number) {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        walletStore.getContract().methods
-            .deposit(amount).call()
-            .then((response: any) => {
-                console.log(response);
+    async deposit(amount: string) {
+        return new Promise<boolean>((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const ssvAmount = walletStore.web3.utils.toWei(amount);
+            walletStore.getContract().methods
+                .deposit(ssvAmount).send({ from: this.accountAddress })
+                .then(() => {
+                    this.getSsvContractBalance().then(() => {
+                        resolve(true);
+                    });
+                }).catch(() => {
+                resolve(false);
             });
+        });
+    }
+
+    /**
+     * Deposit ssv
+     * @param amount
+     */
+    @action.bound
+    async withdrawSsv(amount: string) {
+        return new Promise<boolean>((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const ssvAmount = walletStore.web3.utils.toWei(amount);
+            walletStore.getContract().methods.withdraw(ssvAmount).send({ from: this.accountAddress })
+                .then(() => {
+                    this.getNetworkContractBalance().then((balance: any) => {
+                        this.networkContractBalance = balance;
+                    });
+                }).catch(() => {
+                resolve(false);
+            });
+        });
     }
 
     /**
@@ -158,6 +194,9 @@ class ContractSsv extends BaseStore {
             });
     }
 
+    /**
+     * Get account balance on ssv contract
+     */
     @action.bound
     async getSsvContractBalance(): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -168,6 +207,28 @@ class ContractSsv extends BaseStore {
                 .then((balance: any) => {
                     const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
                     this.ssvBalance = ssvBalance;
+                    resolve(ssvBalance);
+                })
+                .catch((error: any) => {
+                    reject(error);
+                });
+        });
+    }
+
+    /**
+     * Get account balance on network contract
+     */
+    @action.bound
+    async getNetworkContractBalance(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            walletStore.getContract()
+                .methods
+                .totalBalanceOf(this.accountAddress)
+                .call()
+                .then((balance: any) => {
+                    const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
+                    this.networkContractBalance = ssvBalance;
                     resolve(ssvBalance);
                 })
                 .catch((error: any) => {

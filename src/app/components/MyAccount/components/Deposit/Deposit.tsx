@@ -1,5 +1,6 @@
+import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
@@ -28,10 +29,11 @@ const Deposit = () => {
     const stores = useStores();
     const [inputValue, setInputValue] = useState(0.0);
     const contractSsv: ContractSsv = stores.ContractSsv;
-    
-    useEffect(() => {
-        contractSsv.getSsvContractBalance();
-    });
+
+    const depositSsv = async () => {
+        await contractSsv.deposit(inputValue.toString());
+        setInputValue(0.0);
+    };
 
     return (
       <div className={classes.DepositWrapper}>
@@ -49,38 +51,39 @@ const Deposit = () => {
                           <Grid item container xs={12}>
                             <Grid item xs={6}>
                               <IntegerInput
+                                type="number"
                                 onChange={(e) => { // @ts-ignore
-                                    setInputValue(e.target.value); }}
+                                                setInputValue(e.target.value); }}
                                 value={inputValue}
                                 className={classes.Balance}
-                              />
+                                        />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                              <Grid item onClick={() => { contractSsv.deposit(inputValue); }}>
+                              <Grid item onClick={() => { setInputValue(contractSsv.ssvBalance); }}>
                                 <img className={classes.MaxButtonImage} src={getImage('max-button.svg')} />
                               </Grid>
                               <Grid item className={classes.MaxButtonText}>SSV</Grid>
                             </Grid>
                           </Grid>
-                          <Grid item xs={12} className={classes.WalletBalance}>
+                          <Grid item xs={12} className={classes.WalletBalance} onClick={() => { setInputValue(contractSsv.ssvBalance); }}>
                             Wallet Balance: {contractSsv.ssvBalance} SSV
                           </Grid>
                         </Grid>
                       </Grid>
                     ),
-              (
-                <Grid item container>
-                  <Grid item xs={12}>
-                    <Title>Est. Remaining Days <Tooltip text={'need to implement'} /></Title>
-                  </Grid>
-                  <Grid item xs={12} className={classes.AmountOfDays}>1,795</Grid>
-                </Grid>
-              ),
+                    (
+                      <Grid item container>
+                        <Grid item xs={12}>
+                          <Title>Est. Remaining Days <Tooltip text={'need to implement'} /></Title>
+                        </Grid>
+                        <Grid item xs={12} className={classes.AmountOfDays}>1,795</Grid>
+                      </Grid>
+                    ),
           ]}
           bottom={(
             <Grid container className={classes.ButtonWrapper}>
               <Grid item xs>
-                <CTAButton text={'Deposit'} disable={false} onClick={() => { console.log('asd'); }} withAllowance />
+                <CTAButton text={'Deposit'} disable={contractSsv.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
               </Grid>
             </Grid>
           )}
@@ -88,5 +91,4 @@ const Deposit = () => {
       </div>
     );
 };
-
-export default Deposit;
+export default observer(Deposit);

@@ -12,6 +12,7 @@ class ContractSsv extends BaseStore {
 
     // Calculation props
     @observable networkFee: number = 0;
+    @observable accountBurnRate: number = 0;
     @observable liquidationCollateral: number = 0;
 
     // Allowance
@@ -35,12 +36,6 @@ class ContractSsv extends BaseStore {
         return <Contract> this.ssvContractInstance;
     }
 
-    @action.bound
-    getFeeForYear = (fee: number): number => {
-        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        return roundNumber(perYear, 8);
-    };
-
     /**
      * Check if userAllowance has been approved and return boolean corresponding value.
      */
@@ -55,6 +50,12 @@ class ContractSsv extends BaseStore {
     get accountAddress(): String {
         return this.getStore('Wallet').accountAddress;
     }
+
+    @action.bound
+    getFeeForYear = (fee: number): number => {
+        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        return roundNumber(perYear, 8);
+    };
 
     /**
      * Gets the contract address regarding the testnet/mainnet flag in url search params.
@@ -230,6 +231,27 @@ class ContractSsv extends BaseStore {
                     const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
                     this.networkContractBalance = ssvBalance;
                     resolve(ssvBalance);
+                })
+                .catch((error: any) => {
+                    reject(error);
+                });
+        });
+    }
+
+    /**
+     * Get account burn rate
+     */
+    @action.bound
+    async getAccountBurnRate(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            walletStore.getContract()
+                .methods
+                .burnRate(this.accountAddress)
+                .call()
+                .then((burnRate: any) => {
+                    console.log(burnRate);
+                    resolve(burnRate);
                 })
                 .catch((error: any) => {
                     reject(error);

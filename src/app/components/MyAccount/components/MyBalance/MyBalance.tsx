@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+// import { formatNumberToUi } from '~lib/utils/numbers';
 import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 import { useStyles } from './MyBalance.styles';
 

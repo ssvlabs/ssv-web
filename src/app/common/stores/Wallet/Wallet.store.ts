@@ -139,6 +139,7 @@ class WalletStore extends BaseStore implements Wallet {
   async getBalances() {
     await this.initUserInfo();
     const ssvContract: ContractSsvStore = this.getStore('ContractSsv');
+    await ssvContract.getAccountBurnRate();
     await ssvContract.getSsvContractBalance();
     await ssvContract.getNetworkContractBalance();
   }

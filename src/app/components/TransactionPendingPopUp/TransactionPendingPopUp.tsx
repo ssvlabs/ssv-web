@@ -26,7 +26,7 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
     };
 
     return (
-      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.transactionPandingPopUp}>
+      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.transactionPendingPopUp}>
         <Grid className={classes.gridWrapper} wrap={'wrap'} container alignItems={'center'} spacing={1}>
           <Grid className={classes.gridContainer} item>
             <Header title={'Sending transaction'} subtitle={''} />

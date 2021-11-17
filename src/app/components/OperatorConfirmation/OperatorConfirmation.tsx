@@ -6,6 +6,7 @@ import { isMobile } from 'react-device-detect';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import Screen from '~app/common/components/Screen/Screen';
 import DataSection from '~app/common/components/DataSection';
@@ -38,10 +39,10 @@ const OperatorConfirmation = () => {
   const onRegisterClick = async () => {
       setActionButtonText('Waiting for confirmation...');
       contractOperator.addNewOperator(false, handlePendingTransaction).then(() => {
-        applicationStore.showTransactionPandingPopUp(false);
+        applicationStore.showTransactionPendingPopUp(false);
         history.push(config.routes.OPERATOR.SUCCESS_PAGE);
       }).catch(() => {
-        applicationStore.showTransactionPandingPopUp(false);
+        applicationStore.showTransactionPendingPopUp(false);
         setActionButtonText('Register Operator');
       });
   };
@@ -49,14 +50,14 @@ const OperatorConfirmation = () => {
   const handlePendingTransaction = (transactionHash: string) => {
     setActionButtonText('Sending transaction…');
     setTxHash(transactionHash);
-    applicationStore.showTransactionPandingPopUp(true);
+    applicationStore.showTransactionPendingPopUp(true);
   };
 
   const data = [
     [
         { key: 'Operator', header: true, value: '' },
         { key: 'Name', value: contractOperator.newOperatorKeys.name },
-        { key: 'Fee', value: <Grid container><Grid item xs={12}>{contractSsv.getFeeForYear(contractOperator.newOperatorKeys.fee)} SSV</Grid> <Grid item xs={12} className={classes.YearText}>/year</Grid></Grid> },
+        { key: 'Fee', value: <Grid container><Grid item xs={12}>{formatNumberToUi(contractSsv.getFeeForYear(contractOperator.newOperatorKeys.fee))} SSV</Grid> <Grid item xs={12} className={classes.YearText}>/year</Grid></Grid> },
         { key: <Grid className={classes.UnderLine} />, value: <Grid className={classes.UnderLine} /> },
     ],
     [

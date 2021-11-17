@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/common/components/CheckBox';
@@ -35,7 +36,14 @@ const CTAButton = ({
     const walletStore: WalletStore = stores.Wallet;
     const contractSsv: ContractSsv = stores.ContractSsv;
     const [userAllowance, setUserAllowance] = useState(false);
+    const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
+
+    useEffect(() => {
+        if (!contractSsv.approvedAllowance && withAllowance && !isApprovalProcess) {
+            setApprovalProcess(true);
+        }
+    }, [contractSsv.approvedAllowance, withAllowance, isApprovalProcess]);
 
     const checkWalletConnected = async (onClickCallBack: any) => {
         if (!walletStore.connected) await walletStore.connect();
@@ -75,8 +83,8 @@ const CTAButton = ({
 
     const userNeedApproval = () => {
         return (
-          <Grid item container justify={'space-between'}>
-            <Grid item xs={5}>
+          <Grid item container justify={'space-between'} spacing={1}>
+            <Grid item xs>
               <Button
                 data-testid={testId}
                 style={{ backgroundColor }}
@@ -89,7 +97,7 @@ const CTAButton = ({
                 {approveButtonText}
               </Button>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs>
               <Button
                 data-testid={testId}
                 style={{ backgroundColor }}
@@ -102,13 +110,15 @@ const CTAButton = ({
                 {walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
               </Button>
             </Grid>
-            <Grid container item className={classes.ProgressStepsWrapper}>
-              <Grid item className={`${classes.Step} ${classes.Checked} ${userAllowance ? classes.Finish : ''}`}>
-                1
-              </Grid>
-              <Grid item xs className={`${classes.Line} ${userAllowance ? classes.Finish : ''}`} />
-              <Grid item className={`${classes.Step} ${userAllowance ? classes.Checked : ''}`}>
-                2
+            <Grid container item xs={12}>
+              <Grid item container className={classes.ProgressStepsWrapper}>
+                <Grid item className={`${classes.Step} ${classes.Checked} ${userAllowance ? classes.Finish : ''}`}>
+                  {!userAllowance && <Typography className={classes.StepText}>1</Typography>}
+                </Grid>
+                <Grid item xs className={`${classes.Line} ${userAllowance ? classes.Finish : ''}`} />
+                <Grid item className={`${classes.Step} ${userAllowance ? classes.Checked : ''}`}>
+                  <Typography className={classes.StepText}>2</Typography>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -124,7 +134,7 @@ const CTAButton = ({
                 text={checkboxText} /></Grid>
             );
         })}
-        {(contractSsv.approvedAllowance || !withAllowance) ? regulerButton() : userNeedApproval()}
+        {isApprovalProcess ? userNeedApproval() : regulerButton()}
       </Grid>
     );
 };

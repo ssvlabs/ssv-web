@@ -3,14 +3,13 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import React, { useEffect, useState } from 'react';
-import { roundNumber } from '~lib/utils/numbers';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import DataSection from '~app/common/components/DataSection';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-// import { formatNumberToUi } from '~lib/utils/numbers';
+import { roundNumber, formatNumberToUi } from '~lib/utils/numbers';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -53,16 +52,16 @@ const ImportValidatorConfirmation = () => {
 
   const handlePendingTransaction = (transactionHash: string) => {
     setTxHash(transactionHash);
-    applicationStore.showTransactionPandingPopUp(true);
+    applicationStore.showTransactionPendingPopUp(true);
   };
 
   const onRegisterValidatorClick = async () => {
       setActionButtonText('Waiting for confirmation...');
       return contractValidator.addNewValidator(false, handlePendingTransaction).then(() => {
-        applicationStore.showTransactionPandingPopUp(false);
+        applicationStore.showTransactionPendingPopUp(false);
         history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
       }).catch(() => {
-        applicationStore.showTransactionPandingPopUp(false);
+        applicationStore.showTransactionPendingPopUp(false);
         setActionButtonText('Run validator');
       });
   };
@@ -73,7 +72,7 @@ const ImportValidatorConfirmation = () => {
         ],
         [
             { key: 'TRANSACTION SUMMARY', header: true, value: '' },
-            { key: <NameAndAddress name={'Operators yearly fee'} />, value: '', strong: `${totalOperatorsYearlyFee} SSV` },
+            { key: <NameAndAddress name={'Operators yearly fee'} />, value: '', strong: `${formatNumberToUi(totalOperatorsYearlyFee)} SSV` },
             { key: <NameAndAddress name={'Network yearly fee'} />, value: '', strong: `${contractSsv.getFeeForYear(contractSsv.networkFee)} SSV` },
             { key: <NameAndAddress name={'Liquidation collateral'} />, value: '', strong: `${roundNumber(0.000006, 8)} SSV` },
             {

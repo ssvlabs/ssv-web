@@ -11,7 +11,7 @@ class ApplicationStore extends BaseStore {
   @observable isShowingLoading: boolean = false;
   @observable walletPopUp: boolean = false;
   @observable walletConnectivity: boolean = false;
-  @observable transactionPandingPopUp: boolean = false;
+  @observable transactionPendingPopUp: boolean = false;
   
   @observable toolBarMenu: boolean = false;
   
@@ -26,8 +26,8 @@ class ApplicationStore extends BaseStore {
   }
   
   @action.bound
-  showTransactionPandingPopUp(status: boolean) {
-    this.transactionPandingPopUp = status;
+  showTransactionPendingPopUp(status: boolean) {
+    this.transactionPendingPopUp = status;
   }
 
   @action.bound

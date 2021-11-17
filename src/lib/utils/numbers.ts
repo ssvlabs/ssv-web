@@ -51,15 +51,20 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
 
 export const formatNumberToUi = (num: number) => {
   if (!num) return;
+  const splitNumber = num.toString().split('.');
   if (num < 1) {
-    const splitNumber = num.toString().split('.');
     const number = splitNumber[0];
     let decimal = splitNumber[1];
     let deleteFromIndex = 0;
     let shouldContinue = true;
+    // let showDecimal = true;
     let indexLoop = 0;
     // @ts-ignore
     while (deleteFromIndex === 0 || shouldContinue) {
+      // if (indexLoop === 0 && decimal[indexLoop] === '0') {
+      //   showDecimal = false;
+      //   shouldContinue = false;
+      // }
       if (decimal[indexLoop] !== '0') {
         deleteFromIndex = indexLoop;
         shouldContinue = false;
@@ -67,10 +72,15 @@ export const formatNumberToUi = (num: number) => {
         indexLoop += 1;
       }
     }
+    // if (!showDecimal) {
+    //   return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+    // }
     decimal = decimal.slice(0, deleteFromIndex + 2);
-    return `${number}.${decimal}`;
-  }
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}.${decimal}`;
+  } if (!splitNumber[1]) {
+    return `${splitNumber[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+  } 
+    return `${num.toFixed(2).replace(/0+$/, '').toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
 };
 
 export const roundCryptoValueString = (desiredNumber: number, decimalPlaces: number = 18) => {

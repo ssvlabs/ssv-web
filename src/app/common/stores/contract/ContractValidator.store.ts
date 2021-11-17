@@ -10,6 +10,8 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
+// import { roundNumber } from '~lib/utils/numbers';
 
 class ContractValidator extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
@@ -146,7 +148,8 @@ class ContractValidator extends BaseStore {
               .registerValidator(...payload)
               .send({ from: ownerAddress })
               .on('receipt', (receipt: any) => {
-                const event: boolean = 'ValidatorAdded' in receipt.events;
+                // eslint-disable-next-line no-prototype-builtins
+                const event: boolean = receipt.hasOwnProperty('events');
                 if (event) {
                   console.debug('Contract Receipt', receipt);
                   this.newValidatorReceipt = receipt;
@@ -180,8 +183,14 @@ class ContractValidator extends BaseStore {
     if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorStore: ContractOperator = this.getStore('contract/ContractOperator');
+    const ssvStore: ContractSsv = this.getStore('contract/ContractSsv');
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
+    const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
+    const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
+    const totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
+    console.log(totalAmountOfSsv);
+
     return new Promise((resolve) => {
       // Get list of selected operator's public keys
       const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
@@ -204,7 +213,7 @@ class ContractValidator extends BaseStore {
         operatorPublicKeys,
         sharePublicKeys,
         encryptedKeys,
-        walletStore.web3.utils.toWei('182.5'),
+        walletStore.web3.utils.toWei(totalAmountOfSsv.toString()),
       ];
       this.createValidatorPayLoad = payLoad;
       resolve(payLoad);

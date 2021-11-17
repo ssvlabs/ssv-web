@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
-import config, { translations } from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import Typography from '@material-ui/core/Typography';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import config, { translations } from '~app/common/config';
 import Tooltip from '~app/common/components/Tooltip/Tooltip';
 import IntegerInput from '~app/common/components/IntegerInput';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -51,7 +52,7 @@ const Withdraw = () => {
                           <Title>Current Balance</Title>
                         </Grid>
                         <Grid item xs={12} className={classes.currentBalance}>
-                          {contractSsvStore.networkContractBalance} SSV
+                          {formatNumberToUi(contractSsvStore.networkContractBalance)} SSV
                         </Grid>
                         <Grid item xs={12} className={classes.currentBalanceDollar}>
                           ~$2,449.53

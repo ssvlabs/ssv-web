@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/common/components/Tooltip/Tooltip';
@@ -56,7 +57,7 @@ const Deposit = () => {
                                                 setInputValue(e.target.value); }}
                                 value={inputValue}
                                 className={classes.Balance}
-                                        />
+                              />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
                               <Grid item onClick={() => { setInputValue(contractSsv.ssvBalance); }}>
@@ -66,7 +67,7 @@ const Deposit = () => {
                             </Grid>
                           </Grid>
                           <Grid item xs={12} className={classes.WalletBalance} onClick={() => { setInputValue(contractSsv.ssvBalance); }}>
-                            Wallet Balance: {contractSsv.ssvBalance} SSV
+                            Wallet Balance: {formatNumberToUi(contractSsv.ssvBalance)} SSV
                           </Grid>
                         </Grid>
                       </Grid>

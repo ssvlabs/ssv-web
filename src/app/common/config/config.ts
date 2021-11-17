@@ -452,6 +452,25 @@ const config = {
           'inputs': [
             {
               'indexed': false,
+              'internalType': 'uint256',
+              'name': 'oldFee',
+              'type': 'uint256',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint256',
+              'name': 'newFee',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'NetworkFeeUpdated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
               'internalType': 'address',
               'name': 'ownerAddress',
               'type': 'address',
@@ -620,6 +639,19 @@ const config = {
           'type': 'function',
         },
         {
+          'inputs': [],
+          'name': 'getNetworkTreasury',
+          'outputs': [
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
           'inputs': [
             {
               'internalType': 'bytes',
@@ -653,6 +685,11 @@ const config = {
             {
               'internalType': 'uint256',
               'name': 'minimumBlocksBeforeLiquidation',
+              'type': 'uint256',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'operatorMaxFeeIncrease',
               'type': 'uint256',
             },
           ],
@@ -720,6 +757,19 @@ const config = {
           'type': 'function',
         },
         {
+          'inputs': [],
+          'name': 'networkFee',
+          'outputs': [
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
           'inputs': [
             {
               'internalType': 'bytes',
@@ -727,7 +777,20 @@ const config = {
               'type': 'bytes',
             },
           ],
-          'name': 'operatorBalanceOf',
+          'name': 'operatorEarningsOf',
+          'outputs': [
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [],
+          'name': 'operatorMaxFeeIncrease',
           'outputs': [
             {
               'internalType': 'uint256',
@@ -900,6 +963,25 @@ const config = {
           'inputs': [
             {
               'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+          ],
+          'name': 'totalEarningsOf',
+          'outputs': [
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'address',
               'name': 'newOwner',
               'type': 'address',
             },
@@ -931,88 +1013,6 @@ const config = {
             },
           ],
           'name': 'updateNetworkFee',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'fee',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'updateOperatorFee',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'score',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'updateOperatorScore',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-            {
-              'internalType': 'bytes[]',
-              'name': 'operatorPublicKeys',
-              'type': 'bytes[]',
-            },
-            {
-              'internalType': 'bytes[]',
-              'name': 'sharesPublicKeys',
-              'type': 'bytes[]',
-            },
-            {
-              'internalType': 'bytes[]',
-              'name': 'encryptedKeys',
-              'type': 'bytes[]',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'tokenAmount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'updateValidator',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'uint256',
-              'name': 'tokenAmount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'withdraw',
           'outputs': [],
           'stateMutability': 'nonpayable',
           'type': 'function',

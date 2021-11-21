@@ -15,6 +15,7 @@ export const useStyles = makeStyles(() => ({
         justifyContent: 'right',
     },
     MaxButtonImage: {
+        fontFamily: 'Encode Sans',
         cursor: 'pointer',
     },
     Balance: {

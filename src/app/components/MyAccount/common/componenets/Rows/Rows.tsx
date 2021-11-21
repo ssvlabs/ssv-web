@@ -1,6 +1,11 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
+import { sha256 } from 'js-sha256';
+import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import { useStyles } from './Rows.styles';
 // import styled from 'styled-components';
 // import { Grid } from '@material-ui/core';
@@ -27,7 +32,9 @@ type Props = {
 };
 
 const Rows = (props: Props) => {
+    const stores = useStores();
     const classes = useStyles();
+    const walletStore: WalletStore = stores.Wallet;
     const { items, shouldDisplayStatus, shouldDisplayValidators } = props;
 
     const displayPublicKeyAndName = (publicKey: string, name: string | undefined, status: string) => {
@@ -36,7 +43,7 @@ const Rows = (props: Props) => {
           <Grid container item>
             {isOperator && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
             <Grid container item>
-              <Grid className={isOperator ? classes.PublicKey : classes.PublicKeyBold}>{longStringShorten(publicKey, 4)}</Grid>
+              <Grid className={isOperator ? classes.PublicKey : classes.PublicKeyBold}>{`0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
               <Grid className={classes.copyImage} />
               {!shouldDisplayStatus && displayStatus(status)}
             </Grid>
@@ -53,10 +60,10 @@ const Rows = (props: Props) => {
         );
     };
 
-    const displayBalance = (amount: string | undefined) => {
+    const displayBalanceOrRevenue = (isValidator: boolean, amount: string | undefined) => {
         return (
           <Grid container item>
-            <Grid item xs={12} className={classes.Balance}>{amount} SSV</Grid>
+            <Grid item xs={12} className={classes.Balance}>{amount} {isValidator ? 'ETH' : 'SSV'}</Grid>
             <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid>
           </Grid>
         );
@@ -69,11 +76,15 @@ const Rows = (props: Props) => {
           </Grid>
         );
     };
-    const displayAdditionalButtons = (isValidator: boolean) => {
+    const displayAdditionalButtons = (isValidator: boolean, publicKey: string) => {
+        let linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${publicKey}`;
+        if (!isValidator) {
+            linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(publicKey))}`;
+        }
         return (
           <Grid container item>
-            {isValidator && <Grid className={classes.ExplorerImage} />}
-            <Grid className={classes.ChartImage} />
+            {isValidator && <Grid className={classes.ExplorerImage} onClick={() => { window.open(`${getBaseBeaconchaUrl()}/validator/${publicKey}`); }} />}
+            <Grid className={classes.ChartImage} onClick={() => { window.open(linkToExplorer); }} />
             <Grid className={classes.SettingsImage} />
           </Grid>
         );
@@ -89,13 +100,13 @@ const Rows = (props: Props) => {
         if (shouldDisplayStatus) {
             response.push(displayStatus(status));
         }
-        response.push(displayBalance(balance ?? revenue));
+        response.push(displayBalanceOrRevenue(validators === undefined, balance ?? revenue));
 
         if (shouldDisplayValidators) {
             response.push(displayValidatorOrApr(validators ?? `${apr}%`));
         }
         if (response.length > 2) {
-            response.push(displayAdditionalButtons(validators !== undefined));
+            response.push(displayAdditionalButtons(validators === undefined, publicKey));
         }
 
         return response;

@@ -6,12 +6,12 @@ import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
+import SsvStore from '~app/common/stores/SSV.store';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { OperatorName, OperatorKey } from './components/Operator';
-import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
+import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 // import LinearProgress from '@material-ui/core/LinearProgress';
 import { useStyles } from './OperatorSelector.styles';
+import { OperatorName, OperatorKey } from './components/Operator';
 
 type OperatorSelectorProps = {
   dataTestid: string,
@@ -24,16 +24,16 @@ type OperatorSelectorProps = {
 const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, index, dataTestid }: OperatorSelectorProps) => {
   const classes = useStyles();
   const stores = useStores();
-  const contractOperator: ContractOperator = stores.ContractOperator;
-  const contractSsv: ContractSsv = stores.ContractSsv;
+  const contractSsv: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
+  const operatorStore: OperatorStore = stores.Operator;
   const [selectedOperator, selectOperator] = useState('');
   const [batchIndex, setBatchIndex] = useState(20);
   // const [loadingBatch, setLoadingBatch] = useState(false);
   // const [progressPercentage, setProgressPercentage] = useState(0);
 
   useEffect(() => {
-    if (contractOperator.isOperatorSelected(indexedOperator.pubkey) && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
+    if (operatorStore.isOperatorSelected(indexedOperator.pubkey) && indexedOperator.autoSelected && indexedOperator.pubkey !== selectedOperator) {
       selectOperatorMethod(indexedOperator);
     }
   });
@@ -42,7 +42,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
     const element = e.target;
 
     if (element.scrollTop + element.offsetHeight > element.scrollHeight - 200) {
-      if (contractOperator.operators.length > batchIndex) {
+      if (operatorStore.operators.length > batchIndex) {
         // setLoadingBatch(true);
         // await progressBar(10);
         // setTimeout(() => {
@@ -56,9 +56,9 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
 
   const selectOperatorMethod = (operator: any) => {
     if (selectedOperator) {
-      contractOperator.unselectOperator(index);
+      operatorStore.unselectOperator(index);
     }
-    contractOperator.selectOperator(operator, index);
+    operatorStore.selectOperator(operator, index);
     selectOperator(operator);
   };
 
@@ -95,7 +95,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
   // };
 
   const renderOperator = ({ operator, menu, key }: { operator: any, menu?: boolean, key?: number }) => {
-    const operatorSelected = contractOperator.isOperatorSelected(operator.pubkey);
+    const operatorSelected = operatorStore.isOperatorSelected(operator.pubkey);
     return (
       <Grid key={key} container className={`${menu && classes.menuItem} ${menu && operatorSelected && classes.disable}`} onClick={() => { !operatorSelected && onSelectOperator(operator); }}>
         <Grid item container xs={7} onClick={() => { !operatorSelected && onSelectOperator(operator); }}>
@@ -163,7 +163,7 @@ const OperatorSelector = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, 
           <Grid item xs={6}>OPERATOR NAME</Grid>
           <Grid item xs className={classes.YearlyFeeHeader}>YEARLY FEE</Grid>
         </Grid>
-        {contractOperator.operators.slice(0, batchIndex).map((operator: IOperator, operatorIndex) => {
+        {operatorStore.operators.slice(0, batchIndex).map((operator: IOperator, operatorIndex) => {
           return (
               renderOperator({ operator, menu: true, key: operatorIndex })
           );

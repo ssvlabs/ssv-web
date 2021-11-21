@@ -27,12 +27,13 @@ export const useStyles = makeStyles(() => ({
         color: '#5b6c84',
     },
     copyImage: {
+        marginTop: '2px',
         backgroundImage: 'url(/images/copy-white.svg)',
         // backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
         width: '18px',
-        height: '18px',
+        marginLeft: '6px',
     },
     Status: {
         width: '45px',

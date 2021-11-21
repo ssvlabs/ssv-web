@@ -46,7 +46,7 @@ interface SelectedOperators {
     [index: string]: IOperator;
 }
 
-class ContractOperator extends BaseStore {
+class OperatorStore extends BaseStore {
     public static OPERATORS_SELECTION_GAP = 66.66;
 
     @observable operators: IOperator[] = [];
@@ -355,6 +355,7 @@ class ContractOperator extends BaseStore {
         //         // }));
         //         return adaptedOperators;
         //     });
+        return this.operators;
     }
 
     async operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
@@ -371,4 +372,4 @@ class ContractOperator extends BaseStore {
     }
 }
 
-export default ContractOperator;
+export default OperatorStore;

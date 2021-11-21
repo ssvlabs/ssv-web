@@ -6,11 +6,11 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
+import OperatorStore from '~app/common/stores/Operator.store';
+import ValidatorStore from '~app/common/stores/Validator.store';
 import ConditionalLink from '~app/common/components/ConditionalLink';
 import LinkButton from '~app/common/components/LinkButton/LinkButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 
 const SuccessScreen = () => {
   const stores = useStores();
@@ -21,19 +21,19 @@ const SuccessScreen = () => {
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
 
-  const contractOperator: ContractOperator = stores.ContractOperator;
-  const contractValidator: ContractValidator = stores.ContractValidator;
+  const operatorStore: OperatorStore = stores.Operator;
+  const validatorStore: ValidatorStore = stores.Validator;
   let subTitle: any = '';
   let monitorHeader: string = '';
   let monitorText: string = '';
   let icon: string = '';
 
-  if (contractOperator.newOperatorRegisterSuccessfully) {
+  if (operatorStore.newOperatorRegisterSuccessfully) {
     icon = 'success_operator_icon';
     subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
     monitorHeader = 'Monitor Operator';
-    monitorText = 'View your operator\'s prefomance and manage it in the account dashboard';
-  } else if (contractValidator.newValidatorReceipt) {
+    monitorText = 'validatorStore your operator\'s prefomance and manage it in the account dashboard';
+  } else if (validatorStore.newValidatorReceipt) {
     icon = 'success_validator_icon';
     subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
     monitorHeader = 'Monitor Validator';

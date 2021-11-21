@@ -10,8 +10,8 @@ import config from '~app/common/config';
 import { useStyles } from './AppBar.styles';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
+import OperatorStore from '~app/common/stores/Operator.store';
 import ApplicationStore from '~app/common/stores/Application.store';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
 
 type Button = {
@@ -34,8 +34,8 @@ window.onmessage = (event: MessageEvent) => {
 const AppBarComponent = () => {
   const classes = useStyles();
   const stores = useStores();
-  const operatorStore: ContractOperator = stores.ContractOperator;
   const { history } = useUserFlow();
+  const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
 
   const bannerMenuButtons: Button[] = [

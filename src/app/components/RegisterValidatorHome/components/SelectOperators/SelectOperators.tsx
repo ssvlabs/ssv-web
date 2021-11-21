@@ -8,15 +8,15 @@ import WarningIcon from '@material-ui/icons/Warning';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
+import SsvStore from '~app/common/stores/SSV.store';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
+import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
 import OperatorSelector from './components/OperatorSelector';
-import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 
 const WarningMessage = styled.div`
   margin-bottom: 20px;
@@ -52,9 +52,9 @@ const WarningTextHeader = styled.p`
 
 const SelectOperators = () => {
   const stores = useStores();
-  const contractSsv: ContractSsv = stores.ContractSsv;
+  const ssvStore: SsvStore = stores.SSV;
   const applicationStore: ApplicationStore = stores.Application;
-  const contractOperator: ContractOperator = stores.ContractOperator;
+  const operatorStore: OperatorStore = stores.Operator;
   const classes = useStyles();
   const wrapperRef = useRef(null);
   const [buttonEnabled, setButtonEnabled] = useState(false);
@@ -85,20 +85,20 @@ const SelectOperators = () => {
 
   useEffect(() => {
     if (redirectUrl) return;
-    setButtonEnabled(contractOperator.selectedEnoughOperators);
+    setButtonEnabled(operatorStore.selectedEnoughOperators);
 
     // If no required information for this step - return to first screen
-    if (!contractOperator.operators.length && !contractOperator.operatorsLoaded && !contractOperator.loadingOperator) {
+    if (!operatorStore.operators.length && !operatorStore.operatorsLoaded && !operatorStore.loadingOperator) {
       applicationStore.setIsLoading(true);
-      contractOperator.loadOperators().then(() => {
+      operatorStore.loadOperators().then(() => {
         applicationStore.setIsLoading(false);
       });
     }
-  }, [redirectUrl, contractOperator.operators, contractOperator.selectedEnoughOperators, contractOperator.loadingOperator]);
+  }, [redirectUrl, operatorStore.operators, operatorStore.selectedEnoughOperators, operatorStore.loadingOperator]);
 
   useEffect(() => {
     let allOperatorsAreVerified = true;
-    Object.values(contractOperator.selectedOperators).forEach((operator: IOperator) => {
+    Object.values(operatorStore.selectedOperators).forEach((operator: IOperator) => {
       if (!operator.verified && !operator.dappNode) allOperatorsAreVerified = false;
     });
     if (allOperatorsVerified !== allOperatorsAreVerified) {
@@ -107,14 +107,14 @@ const SelectOperators = () => {
     if (!allOperatorsAreVerified) {
       setActionButtonMargin('100px');
     }
-  }, [JSON.stringify(contractOperator.selectedOperators)]);
+  }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   const onSelectOperatorsClick = async () => {
     history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
 
   const unselectAllOperators = () => {
-    contractOperator.unselectAllOperators();
+    operatorStore.unselectAllOperators();
   };
 
   return (
@@ -130,18 +130,18 @@ const SelectOperators = () => {
           <Grid item xs zeroMinWidth className={classes.gridContainer}>
             {config.FEATURE.OPERATORS.AUTO_SELECT ? (
               <Button
-                disabled={!contractOperator.operators.length}
+                disabled={!operatorStore.operators.length}
                 variant="contained"
                 color="primary"
                 style={{ width: '100%' }}
-                onClick={contractOperator.autoSelectOperators}
+                onClick={operatorStore.autoSelectOperators}
                       >
                 <AutorenewIcon />
                         &nbsp;Auto-select
               </Button>
             ) : ''}
 
-            {contractOperator.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, index: number) => (
+            {operatorStore.operators.slice(0, config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS).map((operator: IOperator, index: number) => (
               <OperatorSelector
                 key={index}
                 shouldOpenMenu={openMenu === index}
@@ -173,7 +173,7 @@ const SelectOperators = () => {
               Total Operators Yearly Fee
             </Grid>
             <Grid item>
-              <SsvAndSubTitle ssv={contractSsv.getFeeForYear(contractOperator.getSelectedOperatorsFee)} subText={'/year'} subTextCenter={false} />
+              <SsvAndSubTitle ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)} subText={'/year'} subTextCenter={false} />
             </Grid>
           </Grid>
           <CTAButton

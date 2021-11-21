@@ -2,18 +2,19 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import EthereumKeyStore from 'eth2-keystore-js';
 import config from '~app/common/config';
+import SsvStore from '~app/common/stores/SSV.store';
 import BaseStore from '~app/common/stores/BaseStore';
+import { roundCryptoValueString } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
-import ContractOperator, { IOperator } from '~app/common/stores/contract/ContractOperator.store';
-import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
+import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 // import { roundNumber } from '~lib/utils/numbers';
 
-class ContractValidator extends BaseStore {
+class ValidatorStore extends BaseStore {
   public static OPERATORS_SELECTION_GAP = 66.66;
   private keyStore: EthereumKeyStore | undefined;
 
@@ -181,9 +182,9 @@ class ContractValidator extends BaseStore {
   @action.bound
   async createPayLoad(): Promise<(string | string[])[]> {
     if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
+    const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
-    const operatorStore: ContractOperator = this.getStore('contract/ContractOperator');
-    const ssvStore: ContractSsv = this.getStore('contract/ContractSsv');
+    const operatorStore: OperatorStore = this.getStore('Operator');
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
     const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
@@ -213,7 +214,7 @@ class ContractValidator extends BaseStore {
         operatorPublicKeys,
         sharePublicKeys,
         encryptedKeys,
-        walletStore.web3.utils.toWei(totalAmountOfSsv.toString()),
+        walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)),
       ];
       this.createValidatorPayLoad = payLoad;
       resolve(payLoad);
@@ -240,4 +241,4 @@ class ContractValidator extends BaseStore {
   }
 }
 
-export default ContractValidator;
+export default ValidatorStore;

@@ -10,8 +10,8 @@ import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
+import ValidatorStore from '~app/common/stores/Validator.store';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const DropZoneContainer = styled.div`
@@ -54,7 +54,7 @@ const ImportValidator = () => {
   const classes = useStyles();
   const history = useHistory();
   const stores = useStores();
-  const validatorStore: ContractValidator = stores.ContractValidator;
+  const validatorStore: ValidatorStore = stores.Validator;
   const { getUserFlow } = useUserFlow();
   
   useEffect(() => {
@@ -108,7 +108,7 @@ const ImportValidator = () => {
           testId={'confirm-button'}
           disable
           text={'Next'}
-          />
+        />
       )}
     />
   );

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/common/components/CheckBox';
+import SsvStore from '~app/common/stores/SSV.store';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
 import { useStyles } from '~app/common/components/CTAButton/CTAButton.styles';
 
 type ButtonParams = {
@@ -33,17 +33,17 @@ const CTAButton = ({
                    }: ButtonParams) => {
     const stores = useStores();
     const classes = useStyles();
+    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const contractSsv: ContractSsv = stores.ContractSsv;
     const [userAllowance, setUserAllowance] = useState(false);
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
 
     useEffect(() => {
-        if (!contractSsv.approvedAllowance && withAllowance && !isApprovalProcess) {
+        if (!ssvStore.approvedAllowance && withAllowance && !isApprovalProcess) {
             setApprovalProcess(true);
         }
-    }, [contractSsv.approvedAllowance, withAllowance, isApprovalProcess]);
+    }, [ssvStore.approvedAllowance, withAllowance, isApprovalProcess]);
 
     const checkWalletConnected = async (onClickCallBack: any) => {
         if (!walletStore.connected) await walletStore.connect();
@@ -58,8 +58,8 @@ const CTAButton = ({
 
     const allowNetworkContract = () => {
         setApproveButtonText('Waiting...');
-        contractSsv.approveAllowance(false, handlePendingTransaction).then((response: any) => {
-            contractSsv.setApprovedAllowance(response?.ssvValue);
+        ssvStore.approveAllowance(false, handlePendingTransaction).then((response: any) => {
+            ssvStore.setApprovedAllowance(response?.ssvValue);
             setApproveButtonText('Approved');
             setUserAllowance(true);
         });

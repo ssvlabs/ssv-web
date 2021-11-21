@@ -4,16 +4,11 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import ContractSsvStore from '~app/common/stores/contract/ContractSsv.store';
+import SsvStore from '~app/common/stores/SSV.store';
 import { wallets } from '~app/common/stores/Wallet/wallets';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
-
-export const Networks = {
-  MAINNET: 1,
-  GOERLI: 5,
-};
 
 class WalletStore extends BaseStore implements Wallet {
   @observable networkId: number | null = null;
@@ -119,13 +114,6 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   @action.bound
-  async initUserInfo() {
-    const contractSsvStore: ContractSsvStore = this.getStore('ContractSsv');
-    await contractSsvStore.getNetworkFees();
-    await contractSsvStore.checkAllowance();
-  }
-
-  @action.bound
   setAccountAddress(address: string) {
     this.accountAddress = address;
   }
@@ -136,12 +124,15 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   @action.bound
-  async getBalances() {
-    await this.initUserInfo();
-    const ssvContract: ContractSsvStore = this.getStore('ContractSsv');
-    await ssvContract.getAccountBurnRate();
-    await ssvContract.getSsvContractBalance();
-    await ssvContract.getNetworkContractBalance();
+  async initializeUserInfo() {
+    const ssvStore: SsvStore = this.getStore('SSV');
+    await ssvStore.checkAllowance();
+    await ssvStore.getNetworkFees();
+    await ssvStore.getAccountBurnRate();
+    await ssvStore.getSsvContractBalance();
+    await ssvStore.fetchAccountOperators();
+    await ssvStore.fetchAccountValidators();
+    await ssvStore.getNetworkContractBalance();
   }
 
   /**
@@ -164,7 +155,7 @@ class WalletStore extends BaseStore implements Wallet {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
         network: this.onNetworkChange,
-        balance: this.getBalances,
+        balance: this.initializeUserInfo,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);

@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
 import { isMobile } from 'react-device-detect';
+import Checkbox from '@material-ui/core/Checkbox';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
 // import ApplicationStore from '~app/common/stores/Application.store';
+import ValidatorStore from '~app/common/stores/Validator.store';
+import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const actionButtonMargin = isMobile ? '76px' : '136px';
@@ -20,10 +20,10 @@ const actionButtonMargin = isMobile ? '76px' : '136px';
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
-  const validatorStore: ContractValidator = stores.ContractValidator;
-  const [userAgreed, setUserAgreed] = useState(false);
-  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
-  const { redirectUrl, history } = useUserFlow();
+    const { redirectUrl, history } = useUserFlow();
+    const validatorStore: ValidatorStore = stores.Validator;
+    const [userAgreed, setUserAgreed] = useState(false);
+    const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
 
   useEffect(() => {
     redirectUrl && history.push(redirectUrl);

@@ -5,7 +5,7 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import { roundNumber } from '~lib/utils/numbers';
 
-class ContractSsv extends BaseStore {
+class SsvStore extends BaseStore {
     // Amount
     @observable ssvBalance: number = 0;
     @observable networkContractBalance: number = 0;
@@ -13,7 +13,15 @@ class ContractSsv extends BaseStore {
     // Calculation props
     @observable networkFee: number = 0;
     @observable accountBurnRate: number = 0;
+    @observable dataLoaded: boolean = false;
     @observable liquidationCollateral: number = 0;
+
+    // User state
+    @observable userState: string = 'operator';
+
+    // User Validators and Operators
+    @observable userOperators: any[] = [];
+    @observable userValidators: any[] = [];
 
     // Allowance
     @observable userAllowance: boolean = false;
@@ -45,8 +53,17 @@ class ContractSsv extends BaseStore {
     }
 
     /**
+     * Check user state
+     */
+    @computed
+    get isValidatorState() {
+        return this.userState === 'validator';
+    }
+
+    /**
      * Get user account address from wallet.
      */
+    @computed
     get accountAddress(): String {
         return this.getStore('Wallet').accountAddress;
     }
@@ -56,6 +73,32 @@ class ContractSsv extends BaseStore {
         const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         return roundNumber(perYear, 8);
     };
+
+    /**
+     * Returns days remaining before liquidation
+     */
+    @computed
+    get getRemainingDays(): number {
+        const blocksPerDay = config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+        const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        const burnRatePerDay = this.accountBurnRate * blocksPerDay;
+        const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
+        return this.networkContractBalance / burnRatePerDay - liquidationCollateral ?? 0;
+    }
+
+    /**
+     Gets new remaining days for account after deposit or withdraw
+     * @param newBalance
+     */
+    @action.bound
+    getNewRemainingDays(newBalance: number | undefined): number {
+        if (!newBalance) return 0;
+        const blocksPerDay = config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+        const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        const burnRatePerDay = this.accountBurnRate * blocksPerDay;
+        const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
+        return newBalance / burnRatePerDay - liquidationCollateral ?? 0;
+    }
 
     /**
      * Gets the contract address regarding the testnet/mainnet flag in url search params.
@@ -68,16 +111,6 @@ class ContractSsv extends BaseStore {
         const contractType = String(contract).toUpperCase();
         // @ts-ignore
         return config.CONTRACTS[contractType].ADDRESS;
-    }
-
-    @action.bound
-    async getNetworkFees() {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const networkContract = walletStore.getContract();
-        await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
-            this.networkFee = 0.00001755593086049;
-            this.liquidationCollateral = response;
-        });
     }
 
     /**
@@ -95,6 +128,43 @@ class ContractSsv extends BaseStore {
                     this.getSsvContractBalance().then(() => {
                         resolve(true);
                     });
+                }).catch(() => {
+                resolve(false);
+            });
+        });
+    }
+
+    /**
+     * Fetch operators
+     */
+    @action.bound
+    async fetchAccountOperators() {
+        return new Promise<boolean>((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            walletStore.getContract().methods
+                .getOperatorsByOwnerAddress(this.accountAddress).call()
+                .then((operators: any) => {
+                    this.userOperators = operators;
+                    resolve(true);
+                }).catch(() => {
+                resolve(false);
+            });
+        });
+    }
+
+    /**
+     * Fetch validators
+     */
+    @action.bound
+    async fetchAccountValidators() {
+        return new Promise<boolean>((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            walletStore.getContract().methods
+                .getValidatorsByOwnerAddress(this.accountAddress).call()
+                .then((validators: any) => {
+                    this.userState = 'validator';
+                    this.userValidators = validators;
+                    resolve(true);
                 }).catch(() => {
                 resolve(false);
             });
@@ -153,7 +223,9 @@ class ContractSsv extends BaseStore {
                 // DEV: stub to show first allowance button
                 // this.setApprovedAllowance(0);
                 return this.userAllowance;
-            }).catch((e: any) => { console.log(e); });
+            }).catch((e: any) => {
+                console.log(e);
+            });
     }
 
     /**
@@ -231,10 +303,39 @@ class ContractSsv extends BaseStore {
                     const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
                     this.networkContractBalance = ssvBalance;
                     resolve(ssvBalance);
+                    this.dataLoaded = true;
                 })
                 .catch((error: any) => {
                     reject(error);
                 });
+        });
+    }
+
+    /**
+     * Get network fee
+     */
+    @action.bound
+    async getNetworkFees() {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const networkContract = walletStore.getContract();
+        await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
+            // hardcoded should be replace
+            this.networkFee = 0.00001755593086049;
+            this.liquidationCollateral = response;
+        });
+    }
+
+    /**
+     * Get operator revenue
+     */
+    @action.bound
+    async getOperatorRevenue(): Promise<any> {
+        return new Promise((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const networkContract = walletStore.getContract();
+            networkContract.methods.totalEarningsOf(this.accountAddress).call().then((response: any) => {
+                resolve(walletStore.web3.utils.fromWei(response.toString()));
+            });
         });
     }
 
@@ -250,7 +351,7 @@ class ContractSsv extends BaseStore {
                 .burnRate(this.accountAddress)
                 .call()
                 .then((burnRate: any) => {
-                    console.log(burnRate);
+                    this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
                     resolve(burnRate);
                 })
                 .catch((error: any) => {
@@ -295,4 +396,4 @@ class ContractSsv extends BaseStore {
     // }
 }
 
-export default ContractSsv;
+export default SsvStore;

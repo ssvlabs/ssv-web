@@ -7,10 +7,10 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
+import ValidatorStore from '~app/common/stores/Validator.store';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ConditionalLink from '~app/common/components/ConditionalLink';
 import LinkButton from '~app/common/components/LinkButton/LinkButton';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const RegisterValidatorHome = () => {
@@ -18,9 +18,9 @@ const RegisterValidatorHome = () => {
   const stores = useStores();
   const history = useHistory();
   const { setUserFlow } = useUserFlow();
-  const validatorStore: ContractValidator = stores.ContractValidator;
   const walletStore: WalletStore = stores.Wallet;
-  
+  const validatorStore: ValidatorStore = stores.Validator;
+
   useEffect(() => {
       validatorStore.clearValidatorData();
   });

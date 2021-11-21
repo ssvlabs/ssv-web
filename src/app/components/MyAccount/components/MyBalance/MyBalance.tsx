@@ -5,9 +5,11 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-// import { formatNumberToUi } from '~lib/utils/numbers';
-import ContractSsv from '~app/common/stores/contract/ContractSsv.store';
+import SsvStore from '~app/common/stores/SSV.store';
+import { formatDaysToUi, formatNumberToUi } from '~lib/utils/numbers';
+import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import { useStyles } from './MyBalance.styles';
+import ErrorText from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText';
 
 // type HeaderProps = {
 //     title: string,
@@ -34,7 +36,66 @@ const MyBalance = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const contractSsv: ContractSsv = stores.ContractSsv;
+    const ssvStore: SsvStore = stores.SSV;
+    const remainingDays = formatDaysToUi(ssvStore.getRemainingDays);
+    const liquidated = remainingDays <= 0;
+
+    const renderBalance = () => {
+        if (liquidated) {
+            return (
+              <Grid item xs={12} className={classes.CurrentBalanceLiquidated}>
+                0.0 SSV
+              </Grid>
+            );
+        }
+        return (
+          <Grid item xs={12} className={classes.CurrentBalance}>
+            {formatNumberToUi(ssvStore.networkContractBalance)} SSV
+          </Grid>
+        );
+    };
+
+    const renderCtaActions = () => {
+        if (liquidated) {
+            return (
+              <Grid container item xs={12} className={classes.ActionButtonWrapper}>
+                <Grid item xs={12}>
+                  <ActionButton deposit className={classes.ActionButtonLiquidated} onClick={() => {
+                            history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+                        }}><ActionButtonText deposit>Reactivate Account</ActionButtonText></ActionButton>
+                </Grid>
+              </Grid>
+            );
+        }
+        // if (!ssvStore.isValidatorState) {
+        //     return (
+        //       <Grid container item xs={12} className={classes.ActionButtonWrapper}>
+        //         <Grid item xs={12}>
+        //           <ActionButton deposit className={classes.ActionButtonLiquidated} onClick={() => {
+        //                     history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+        //                 }}><ActionButtonText deposit>Withdraw</ActionButtonText></ActionButton>
+        //         </Grid>
+        //       </Grid>
+        //     );
+        // }
+
+        return (
+          <Grid container item className={classes.ActionButtonWrapper}>
+            {ssvStore.isValidatorState && (
+            <Grid item xs={6}>
+              <ActionButton deposit className={classes.ActionButton} onClick={() => {
+                            history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+                        }}><ActionButtonText deposit>Deposit</ActionButtonText></ActionButton>
+            </Grid>
+            )}
+            <Grid item xs={6}>
+              <ActionButton className={`${classes.ActionButton} ${!ssvStore.isValidatorState ? classes.ActionButtonLarge : ''}`} onClick={() => {
+                        history.push(config.routes.MY_ACCOUNT.WITHDRAW);
+                    }}><ActionButtonText>Withdraw</ActionButtonText></ActionButton>
+            </Grid>
+          </Grid>
+        );
+    };
 
     return (
       <Grid container className={classes.MyBalanceWrapper}>
@@ -46,32 +107,24 @@ const MyBalance = () => {
           <Grid item xs={12} className={classes.CurrentBalanceHeader}>
             Current Balance
           </Grid>
-          <Grid item xs={12} className={classes.CurrentBalance}>
-            {contractSsv.networkContractBalance} SSV
-          </Grid>
+          {renderBalance()}
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
             ~$449.52
           </Grid>
         </Grid>
+        {(!liquidated && ssvStore.isValidatorState) && <Grid item className={classes.SeparationLine} xs={12} />}
+        {(!liquidated && ssvStore.isValidatorState) && <RemainingDays wrapperClass={classes.CurrentBalanceHeader} />}
+        {!liquidated && remainingDays < 30 && <Grid className={classes.ErrorMessageWrapper}><ErrorText errorType={0} /></Grid>}
+        {liquidated && (
+          <Grid className={classes.ErrorMessageWrapper}>
+            <ErrorText
+              marginTop={'16px'}
+              errorType={2}
+            />
+          </Grid>
+          )}
         <Grid item className={classes.SeparationLine} xs={12} />
-        <Grid container item>
-          <Grid item xs={12} className={classes.CurrentBalanceHeader}>
-            Est. Remaining Days
-          </Grid>
-          <Grid item xs={12} className={classes.RemainingDaysNumber}>
-            <span>295</span>
-            <span className={classes.RemainingDays}>days</span>
-          </Grid>
-        </Grid>
-        <Grid item className={classes.SeparationLine} xs={12} />
-        <Grid container item className={classes.ActionButtonWrapper}>
-          <Grid item xs={6}>
-            <ActionButton deposit className={classes.ActionButton} onClick={() => { history.push(config.routes.MY_ACCOUNT.DEPOSIT); }}><ActionButtonText deposit>Deposit</ActionButtonText></ActionButton>
-          </Grid>
-          <Grid item xs={6}>
-            <ActionButton className={classes.ActionButton} onClick={() => { history.push(config.routes.MY_ACCOUNT.WITHDRAW); }}><ActionButtonText>Withdraw</ActionButtonText></ActionButton>
-          </Grid>
-        </Grid>
+        {renderCtaActions()}
       </Grid>
     );
 };

@@ -32,11 +32,14 @@ export const useStyles = makeStyles(() => ({
         border: 'solid 1px #dce0e8',
     },
     CurrentBalanceHeader: {
-        margin: '14.5px 35px 20px 16px',
+        margin: '14.5px 16px 20px 16px',
         fontSize: '14px',
         fontWeight: 'bold',
         lineHeight: '1.29',
         color: '#a1acbe',
+    },
+    ErrorMessageWrapper: {
+        margin: '0px 16px 15.5px 16px',
     },
     CurrentBalance: {
         margin: '0px 3px 10px 16px',
@@ -45,6 +48,14 @@ export const useStyles = makeStyles(() => ({
         lineHeight: '0.82',
         letterSpacing: 'normal',
         color: '#2a323e',
+    },
+    CurrentBalanceLiquidated: {
+        margin: '0px 3px 10px 16px',
+        fontSize: '28px',
+        fontWeight: 'bold',
+        lineHeight: '0.82',
+        letterSpacing: 'normal',
+        color: '#ec1c26',
     },
     CurrentBalanceDollars: {
         margin: '0px 47px 15.5px 16px',
@@ -87,5 +98,15 @@ export const useStyles = makeStyles(() => ({
             display: 'block',
             maxWidth: '425px',
         },
+    },
+    ActionButtonLarge: {
+        backgroundColor: 'red',
+        maxWidth: '304px',
+    },
+    ActionButtonLiquidated: {
+        maxWidth: '304px',
+        height: '48px',
+        borderRadius: '6px',
+        cursor: 'pointer',
     },
 }));

@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { isMobile } from 'react-device-detect';
 import ClearIcon from '@material-ui/icons/Clear';
+import React, { useEffect, useState } from 'react';
 import { getImage } from '~lib/utils/filePath';
+import ApiRequest from '~lib/utils/ApiRequest';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import ValidatorStore from '~app/common/stores/Validator.store';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import ApplicationStore from '~app/common/stores/Application.store';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-import ApiRequest from '~lib/utils/ApiRequest';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 
 const actionButtonMargin = isMobile ? '159px' : '189px';
 
@@ -23,7 +23,7 @@ const EnterValidatorPrivateKey = () => {
   const { redirectUrl, history } = useUserFlow();
   const classes = useStyles();
   const stores = useStores();
-  const validatorStore: ContractValidator = stores.ContractValidator;
+  const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [inProgress, setInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');

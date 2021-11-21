@@ -14,8 +14,8 @@ import InputLabel from '~app/common/components/InputLabel';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import ApplicationStore from '~app/common/stores/Application.store';
+import OperatorStore, { INewOperatorTransaction } from '~app/common/stores/Operator.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-import ContractOperator, { INewOperatorTransaction } from '~app/common/stores/contract/ContractOperator.store';
 import {
   validatePublicKeyInput,
   validateDisplayNameInput,
@@ -29,9 +29,9 @@ const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const stores = useStores();
   const history = useHistory();
-  const contractOperator: ContractOperator = stores.ContractOperator;
-  const applicationStore: ApplicationStore = stores.Application;
   const walletStore: WalletStore = stores.Wallet;
+  const operatorStore: OperatorStore = stores.Operator;
+  const applicationStore: ApplicationStore = stores.Application;
   let initialOperatorKey = '';
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
      initialOperatorKey = getRandomOperatorKey(false);
@@ -83,11 +83,11 @@ const GenerateOperatorKeys = () => {
       fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
     };
     applicationStore.setIsLoading(true);
-    contractOperator.setOperatorKeys(operatorKeys);
-    await contractOperator.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
+    operatorStore.setOperatorKeys(operatorKeys);
+    await operatorStore.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
       setOperatorExist(isExists);
       if (!isExists) {
-        contractOperator.addNewOperator(true).then(() => {
+        operatorStore.addNewOperator(true).then(() => {
           applicationStore.setIsLoading(false);
           history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
         });
@@ -169,7 +169,6 @@ const GenerateOperatorKeys = () => {
             </InputLabel>
 
             <br />
-            {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
           </Grid>
         </Grid>
       )}

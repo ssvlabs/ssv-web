@@ -5,8 +5,7 @@ const config = {
       DASHBOARD: '/dashboard',
       DEPOSIT: '/dashboard/deposit',
       WITHDRAW: '/dashboard/withdraw',
-      HEALTHY: '/dashboard/healthy',
-      LIQUIDATED: '/dashboard/liquidated',
+      ENABLE_ACCOUNT: '/dashboard/enable_account',
     },
     OPERATOR: {
       HOME: '/operator',

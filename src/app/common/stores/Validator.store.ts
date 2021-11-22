@@ -190,7 +190,6 @@ class ValidatorStore extends BaseStore {
     const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
     const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
     const totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
-    console.log(totalAmountOfSsv);
 
     return new Promise((resolve) => {
       // Get list of selected operator's public keys

@@ -17,3 +17,13 @@ export const getBaseBeaconchaUrl = (networkId?: number) => {
       return 'https://beaconcha.in';
   }
 };
+
+export const getEtherScanUrl = (networkId?: number) => {
+  const finalNetworkId = networkId ?? process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID;
+  switch (parseInt(String(finalNetworkId), 10)) {
+    case NETWORKS.GOERLI:
+      return 'https://goerli.etherscan.io/tx';
+    case NETWORKS.MAINNET:
+      return 'https://etherscan.io/tx';
+  }
+};

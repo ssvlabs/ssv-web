@@ -5,6 +5,7 @@ import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import { getImage } from '~lib/utils/filePath';
 import Typography from '@material-ui/core/Typography';
+import useUserFlow from '~app/hooks/useUserFlow';
 import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
@@ -30,9 +31,15 @@ const Withdraw = () => {
     const classes = useStyles();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
+    const { redirectUrl, history } = useUserFlow();
     const [inputValue, setInputValue] = useState(0.0);
     const [userAgree, setUserAgreement] = useState(false);
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
+
+    useEffect(() => {
+        console.log(redirectUrl);
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
     useEffect(() => {
         if (inputValue === ssvStore.networkContractBalance) {
@@ -43,7 +50,7 @@ const Withdraw = () => {
     }, [inputValue]);
 
     const withdrawSsv = async () => {
-        await ssvStore.withdrawSsv(inputValue.toString());
+        await ssvStore.withdrawSsv(inputValue.toString(), ssvStore.setTransactionInProgress);
         setInputValue(0.0);
     };
 

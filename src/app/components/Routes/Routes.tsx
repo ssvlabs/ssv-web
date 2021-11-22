@@ -12,6 +12,7 @@ import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
+import EnableAccount from '~app/components/MyAccount/components/EnableAccount';
 import OperatorTransactionConfirmation from '~app/components/OperatorConfirmation';
 import ValidatorTransactionConfirmation from '~app/components/ImportValidatorConfirmation';
 import ImportValidator from '~app/components/RegisterValidatorHome/components/ImportValidator';
@@ -39,6 +40,9 @@ const Routes = () => {
                 </Route>
                 <Route exact path={config.routes.MY_ACCOUNT.WITHDRAW}>
                   <Withdraw />
+                </Route>
+                <Route exact path={config.routes.MY_ACCOUNT.ENABLE_ACCOUNT}>
+                  <EnableAccount />
                 </Route>
               </Switch>
             </Route>

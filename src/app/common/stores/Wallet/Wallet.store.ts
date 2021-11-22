@@ -6,6 +6,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import SsvStore from '~app/common/stores/SSV.store';
 import { wallets } from '~app/common/stores/Wallet/wallets';
+import OperatorStore from '~app/common/stores/Operator.store';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
@@ -126,13 +127,16 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     const ssvStore: SsvStore = this.getStore('SSV');
+    const operatorStore: OperatorStore = this.getStore('Operator');
+    await ssvStore.fetchAccountOperators();
+    await ssvStore.fetchAccountValidators();
     await ssvStore.checkAllowance();
     await ssvStore.getNetworkFees();
     await ssvStore.getAccountBurnRate();
+    await operatorStore.loadOperators();
     await ssvStore.getSsvContractBalance();
-    await ssvStore.fetchAccountOperators();
-    await ssvStore.fetchAccountValidators();
     await ssvStore.getNetworkContractBalance();
+    ssvStore.dataLoaded = true;
   }
 
   /**

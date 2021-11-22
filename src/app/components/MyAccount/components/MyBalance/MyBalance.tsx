@@ -61,23 +61,12 @@ const MyBalance = () => {
               <Grid container item xs={12} className={classes.ActionButtonWrapper}>
                 <Grid item xs={12}>
                   <ActionButton deposit className={classes.ActionButtonLiquidated} onClick={() => {
-                            history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+                            history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
                         }}><ActionButtonText deposit>Reactivate Account</ActionButtonText></ActionButton>
                 </Grid>
               </Grid>
             );
         }
-        // if (!ssvStore.isValidatorState) {
-        //     return (
-        //       <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-        //         <Grid item xs={12}>
-        //           <ActionButton deposit className={classes.ActionButtonLiquidated} onClick={() => {
-        //                     history.push(config.routes.MY_ACCOUNT.DEPOSIT);
-        //                 }}><ActionButtonText deposit>Withdraw</ActionButtonText></ActionButton>
-        //         </Grid>
-        //       </Grid>
-        //     );
-        // }
 
         return (
           <Grid container item className={classes.ActionButtonWrapper}>

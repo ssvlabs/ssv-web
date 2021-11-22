@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import ApiRequest from '~lib/utils/ApiRequest';
+import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import DataTable from '~app/common/components/DataTable';
@@ -21,8 +21,8 @@ const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', '']
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
-    const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
+    const { redirectUrl, history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
     const [operators, setOperators] = useState([]);
     const [validators, setValidators] = useState([]);
@@ -50,6 +50,10 @@ const MyAccount = () => {
     const [dropDownMenu, displayDropDownMenu] = useState(false);
     const remainingDays = formatDaysToUi(ssvStore.getRemainingDays);
     const liquidated = remainingDays <= 0;
+
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
     // Add event listener on screen size change
     useEffect(() => {

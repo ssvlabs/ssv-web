@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import CTAButton from '~app/common/components/CTAButton';
@@ -28,10 +29,15 @@ const Deposit = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
+    const { redirectUrl, history } = useUserFlow();
     const [inputValue, setInputValue] = useState(0.0);
 
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
+
     const depositSsv = async () => {
-        await ssvStore.deposit(inputValue.toString());
+        await ssvStore.deposit(inputValue.toString(), ssvStore.setTransactionInProgress);
         setInputValue(0.0);
     };
 

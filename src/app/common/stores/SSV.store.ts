@@ -29,6 +29,11 @@ class SsvStore extends BaseStore {
     // Contracts
     @observable ssvContractInstance: Contract | null = null;
 
+    // Transaction
+    @observable transactionInProgress: boolean = false;
+    @observable transactionStatus: string = '';
+    @observable transactionTx: string = '';
+
     /**
      * Returns instance of SSV contract
      */
@@ -68,12 +73,6 @@ class SsvStore extends BaseStore {
         return this.getStore('Wallet').accountAddress;
     }
 
-    @action.bound
-    getFeeForYear = (fee: number): number => {
-        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        return roundNumber(perYear, 8);
-    };
-
     /**
      * Returns days remaining before liquidation
      */
@@ -85,6 +84,22 @@ class SsvStore extends BaseStore {
         const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
         return this.networkContractBalance / burnRatePerDay - liquidationCollateral ?? 0;
     }
+
+    @action.bound
+    getFeeForYear = (fee: number): number => {
+        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        return roundNumber(perYear, 8);
+    };
+
+    /**
+     * Change Transaction Status
+     */
+    @action.bound
+    setTransactionInProgress = (inProgress: boolean, status: string, txHash?: string): void => {
+        this.transactionStatus = status;
+        this.transactionInProgress = inProgress;
+        this.transactionTx = txHash ?? this.transactionTx;
+    };
 
     /**
      Gets new remaining days for account after deposit or withdraw
@@ -116,23 +131,35 @@ class SsvStore extends BaseStore {
     /**
      * Deposit ssv
      * @param amount
+     * @param callBack
      */
     @action.bound
-    async deposit(amount: string) {
+    // eslint-disable-next-line no-unused-vars
+    async deposit(amount: string, callBack?: (inProgress: boolean, status: string, txHash?: string) => void) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.web3.utils.toWei(amount);
             walletStore.getContract().methods
                 .deposit(ssvAmount).send({ from: this.accountAddress })
-                .then(() => {
-                    this.getSsvContractBalance().then(() => {
-                        resolve(true);
-                    });
-                }).catch(() => {
-                resolve(false);
+                .on('receipt', async () => {
+                    callBack && callBack(true, 'done');
+                    resolve(true);
+                })
+                .on('transactionHash', (txHash: string) => {
+                    callBack && callBack(true, 'pending', txHash);
+                })
+                .on('error', () => {
+                    callBack && callBack(true, 'error');
+                    resolve(false);
+                });
+                // .then(() => {
+                //     this.getSsvContractBalance().then(() => {
+                //         resolve(true);
+                //     });
+                // }).catch(() => {
+                // resolve(false);
             });
-        });
-    }
+        }
 
     /**
      * Fetch operators
@@ -172,22 +199,35 @@ class SsvStore extends BaseStore {
     }
 
     /**
-     * Deposit ssv
+     * Withdraw ssv
      * @param amount
+     * @param callBack
      */
     @action.bound
-    async withdrawSsv(amount: string) {
+    // eslint-disable-next-line no-unused-vars
+    async withdrawSsv(amount: string, callBack?: (inProgress: boolean, status: string, txHash?: string) => void) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.web3.utils.toWei(amount);
             walletStore.getContract().methods.withdraw(ssvAmount).send({ from: this.accountAddress })
-                .then(() => {
-                    this.getNetworkContractBalance().then((balance: any) => {
-                        this.networkContractBalance = balance;
-                    });
-                }).catch(() => {
-                resolve(false);
-            });
+                .on('receipt', async () => {
+                    callBack && callBack(true, 'done');
+                    resolve(true);
+                })
+                .on('transactionHash', (txHash: string) => {
+                    callBack && callBack(true, 'pending', txHash);
+                })
+                .on('error', () => {
+                    callBack && callBack(true, 'error');
+                    resolve(false);
+                });
+            //     .then(() => {
+            //         this.getNetworkContractBalance().then((balance: any) => {
+            //             this.networkContractBalance = balance;
+            //         });
+            //     }).catch(() => {
+            //     resolve(false);
+            // });
         });
     }
 
@@ -303,7 +343,6 @@ class SsvStore extends BaseStore {
                     const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
                     this.networkContractBalance = ssvBalance;
                     resolve(ssvBalance);
-                    this.dataLoaded = true;
                 })
                 .catch((error: any) => {
                     reject(error);

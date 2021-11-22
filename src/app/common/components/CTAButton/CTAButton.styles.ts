@@ -53,6 +53,7 @@ export const useStyles = makeStyles(() => ({
         color: 'rgb(161, 172, 190)',
     },
     Finish: {
+        backgroundImage: 'url(/images/step-done.svg)',
         backgroundColor: '#20eec8',
         border: 'none',
     },

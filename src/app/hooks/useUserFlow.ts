@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import SsvStore from '~app/common/stores/SSV.store';
 import OperatorStore from '~app/common/stores/Operator.store';
 import ValidatorStore from '~app/common/stores/Validator.store';
 
@@ -135,18 +136,60 @@ const successScreen: IUserFlow = {
   ],
 };
 
+const myAccountScreen: IUserFlow = {
+  name: 'My Account',
+  route: routes.MY_ACCOUNT.DASHBOARD,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
+};
+
+const DepositScreen: IUserFlow = {
+  name: 'Deposit',
+  route: routes.MY_ACCOUNT.DEPOSIT,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
+};
+
+const WithdrawScreen: IUserFlow = {
+  name: 'Withdraw',
+  route: routes.MY_ACCOUNT.WITHDRAW,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
+};
+
 const userFlows: IUserFlow[] = [
   welcomeFlow,
+  successScreen,
+  DepositScreen,
+  WithdrawScreen,
+  myAccountScreen,
   operatorsHomeFlow,
-  operatorConfirmation,
   validatorsHomeFlow,
   importValidatorFlow,
+  slashingWarningFlow,
   createValidatorFlow,
+  operatorConfirmation,
+  validatorConfirmationFlow,
   importValidatorDecryptFlow,
   validatorSelectOperatorsFlow,
-  slashingWarningFlow,
-  validatorConfirmationFlow,
-  successScreen,
 ];
 
 const dispatchUserFlow = (

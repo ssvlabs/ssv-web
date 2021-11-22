@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import Link from '@material-ui/core/Link';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { useStyles } from './ValidatorKeyInput.styles';
 import { getImage } from '~lib/utils/filePath';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import { useStyles } from './ValidatorKeyInput.styles';
 
 type ValidatorPrivateKeyInputProps = {
   validatorKey: string,

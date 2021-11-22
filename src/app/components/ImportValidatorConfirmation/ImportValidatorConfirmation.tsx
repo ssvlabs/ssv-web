@@ -27,7 +27,6 @@ interface dataSection {
     value: any,
     header?: true,
     strong?: string
-    selectedPosition?: number
 }
 
 const ImportValidatorConfirmation = () => {

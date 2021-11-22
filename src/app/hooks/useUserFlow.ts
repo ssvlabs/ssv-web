@@ -175,6 +175,19 @@ const WithdrawScreen: IUserFlow = {
   },
 };
 
+const EnableAccountScreen: IUserFlow = {
+  name: 'Enable Account',
+  route: routes.MY_ACCOUNT.ENABLE_ACCOUNT,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return ssvStore.getRemainingDays <= 0 && !!ssvStore.userValidators.length;
+  },
+};
+
 const userFlows: IUserFlow[] = [
   welcomeFlow,
   successScreen,
@@ -183,6 +196,7 @@ const userFlows: IUserFlow[] = [
   myAccountScreen,
   operatorsHomeFlow,
   validatorsHomeFlow,
+  EnableAccountScreen,
   importValidatorFlow,
   slashingWarningFlow,
   createValidatorFlow,

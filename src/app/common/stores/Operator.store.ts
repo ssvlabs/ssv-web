@@ -20,7 +20,6 @@ interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
 }
 
 export interface IOperator {
-    selectedPosition: number;
     name: string,
     pubkey: string,
     ownerAddress: string,
@@ -46,11 +45,16 @@ interface SelectedOperators {
     [index: string]: IOperator;
 }
 
+interface HashedOperators {
+    [pubkey: string]: IOperator;
+}
+
 class OperatorStore extends BaseStore {
     public static OPERATORS_SELECTION_GAP = 66.66;
 
     @observable operators: IOperator[] = [];
     @observable operatorsFees: OperatorsFees = {};
+    @observable hashedOperators: HashedOperators = {};
     @observable selectedOperators: SelectedOperators = {};
     @observable operatorsLoaded: boolean = false;
 
@@ -335,7 +339,8 @@ class OperatorStore extends BaseStore {
         //     data: { query },
         // };
         this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
-            const operatorsAdapted = this.operatorAdapter(operator);
+            const operatorsAdapted = await this.operatorAdapter(operator);
+            this.hashedOperators[operator.public_key] = operatorsAdapted;
             return operatorsAdapted;
         }));
 

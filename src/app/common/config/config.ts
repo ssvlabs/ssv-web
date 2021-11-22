@@ -948,6 +948,25 @@ const config = {
         {
           'inputs': [
             {
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+          ],
+          'name': 'getOperatorsByValidator',
+          'outputs': [
+            {
+              'internalType': 'bytes[]',
+              'name': '',
+              'type': 'bytes[]',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
               'internalType': 'address',
               'name': 'ownerAddress',
               'type': 'address',

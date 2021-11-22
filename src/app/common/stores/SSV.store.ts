@@ -1,9 +1,9 @@
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
+import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { roundNumber } from '~lib/utils/numbers';
 
 class SsvStore extends BaseStore {
     // Amount
@@ -89,6 +89,20 @@ class SsvStore extends BaseStore {
     getFeeForYear = (fee: number): number => {
         const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         return roundNumber(perYear, 8);
+    };
+
+    /**
+     * Get operators per validator
+     */
+    @action.bound
+    getValidatorOperators = (publicKey: string): Promise<any> => {
+        return new Promise<boolean>((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            // const operatorStore: OperatorStore = this.getStore('Operator');
+            walletStore.getContract().methods.getOperatorsByValidator(publicKey).call().then((operators: any) => {
+                resolve(operators);
+            });
+        });
     };
 
     /**

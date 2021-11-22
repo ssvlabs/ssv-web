@@ -39,6 +39,8 @@ const App = () => {
         } else if (ssvStore.dataLoaded) {
             history.push('/');
             setConnection(true);
+        } else if (!ssvStore.dataLoaded && connectionChecked) {
+            setConnection(false);
         }
     }, [walletStore.walletConnected, ssvStore.dataLoaded]);
 

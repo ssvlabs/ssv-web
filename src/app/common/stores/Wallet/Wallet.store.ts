@@ -127,14 +127,15 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     const ssvStore: SsvStore = this.getStore('SSV');
+    // ssvStore.dataLoaded = false;
     const operatorStore: OperatorStore = this.getStore('Operator');
-    await ssvStore.fetchAccountOperators();
-    await ssvStore.fetchAccountValidators();
     await ssvStore.checkAllowance();
     await ssvStore.getNetworkFees();
     await ssvStore.getAccountBurnRate();
     await operatorStore.loadOperators();
+    await ssvStore.fetchAccountOperators();
     await ssvStore.getSsvContractBalance();
+    await ssvStore.fetchAccountValidators();
     await ssvStore.getNetworkContractBalance();
     ssvStore.dataLoaded = true;
   }

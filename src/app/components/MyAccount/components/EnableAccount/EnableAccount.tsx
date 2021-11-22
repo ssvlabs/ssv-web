@@ -1,14 +1,17 @@
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import useUserFlow from '~app/hooks/useUserFlow';
+import { useStores } from '~app/hooks/useStores';
+import SsvStore from '~app/common/stores/SSV.store';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
 import { useStyles } from './EnableAccount.styles';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 const Title = styled.div`
   height: 18px;
@@ -23,17 +26,18 @@ const Title = styled.div`
 `;
 
 const EnableAccount = () => {
+    const stores = useStores();
     const classes = useStyles();
+    const ssvStore: SsvStore = stores.SSV;
     const { redirectUrl, history } = useUserFlow();
-    const validators = [
-        { name: 'Validator1', pubkey: '0xb510...42b7' },
-        { name: 'Validator2', pubkey: '0xb510...42b7' },
-        { name: 'Validator3', pubkey: '0xb510...42b7' },
-    ];
+    const [allOperatorsFee, setTotalFee] = useState(0);
+    const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
+    const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
+    const totalFee = formatNumberToUi(allOperatorsFee + networkYearlyFees + liquidationCollateral);
     const summaryFields = [
-        { name: 'Operators yearly fee', value: '884' },
-        { name: 'Network yearly fee', value: '30' },
-        { name: 'Liquidation collateral', value: '23' },
+        { name: 'Operators yearly fee', value: allOperatorsFee },
+        { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees) },
+        { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];
 
     useEffect(() => {
@@ -64,9 +68,9 @@ const EnableAccount = () => {
                             <Title>OPERATORS FEES DETAILS</Title>
                           </Grid>
                           <Grid item container>
-                            {validators.map((validator: any, index: number) => {
+                            {ssvStore.userValidators.map((publicKey: any, index: number) => {
                                         return (
-                                          <ValidatorDropDownMenu key={index} validator={validator} />
+                                          <ValidatorDropDownMenu allOperatorsFee={allOperatorsFee} setTotalFee={setTotalFee} key={index} index={index} validatorPublicKey={publicKey} />
                                         );
                                     })}
                           </Grid>
@@ -93,7 +97,7 @@ const EnableAccount = () => {
                                 styleNameClass={classes.GreenColor} />
                             </Grid>
                             <Grid item className={classes.AlignRight}>
-                              <NameAndAddress styleWrapperClass={classes.TotalWrapper} name={`${540} SSV`}
+                              <NameAndAddress styleWrapperClass={classes.TotalWrapper} name={`${totalFee} SSV`}
                                 styleNameClass={classes.GreenColor} address={'~$490'} />
                             </Grid>
                           </Grid>

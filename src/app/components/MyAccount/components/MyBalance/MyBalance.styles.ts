@@ -100,6 +100,7 @@ export const useStyles = makeStyles(() => ({
         },
     },
     ActionButtonLarge: {
+        margin: '10px auto 0px !important',
         backgroundColor: 'red',
         maxWidth: '304px',
     },

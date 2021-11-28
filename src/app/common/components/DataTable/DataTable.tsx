@@ -1,11 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { Grid, TableCell, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import Table from '@material-ui/core/Table';
-import { TableCell } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
+// import Tooltip from '~app/common/components/Tooltip';
 import TableContainer from '@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
 import StyledRow from '~app/common/components/Table/StyledRow';
@@ -13,6 +14,7 @@ import StyledCell from '~app/common/components/Table/StyledCell';
 import PaginationActions from '~app/common/components/DataTable/components/PaginationActions';
 import { useStyles } from './Styles';
 import styled from 'styled-components';
+import { getImage } from '~lib/utils/filePath';
 
 type HeaderPosition = 'inherit' | 'left' | 'center' | 'right' | 'justify';
 
@@ -44,6 +46,9 @@ const DataTable = (props: DataTableProps) => {
   const { headers, data, totalCount, page, isLoading,
     onChangePage, headersPositions, title, noDataMessage, hidePagination } = props;
   const classes = useStyles();
+  const statusToolTipText = title === 'Operators' ?
+      'Monitoring indication whether the operator is performing his network duties for the majority of his validators (per the last 2 epochs).' :
+      'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).';
 
   const dataRows = () => {
     if (isLoading) {
@@ -95,6 +100,11 @@ const DataTable = (props: DataTableProps) => {
                   align={headersPositions?.length ? headersPositions[headerIndex] : undefined}
                 >
                   {header}
+                  { header === 'STATUS' && (
+                  <Grid className={classes.ToolTipWrapper}>
+                    <Tooltip className={classes.ToolTip} title={statusToolTipText}><img src={getImage('information-notice.png')} /></Tooltip>
+                  </Grid>
+                    )}
                 </TableCell>
                 ))}
             </TableRow>

@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
-import { useStores } from '~app/hooks/useStores';
-import { getImage } from '~lib/utils/filePath';
+import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
+import { getImage } from '~lib/utils/filePath';
 import useUserFlow from '~app/hooks/useUserFlow';
+import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
@@ -37,12 +37,11 @@ const Withdraw = () => {
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
     useEffect(() => {
-        console.log(redirectUrl);
         redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     useEffect(() => {
-        if (inputValue === ssvStore.networkContractBalance) {
+        if (inputValue === ssvStore.networkContractBalance && ssvStore.isValidatorState) {
             setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
         } else if (buttonColor.default === '#ec1c2640') {
             setButtonColor({ userAgree: '', default: '' });
@@ -50,7 +49,7 @@ const Withdraw = () => {
     }, [inputValue]);
 
     const withdrawSsv = async () => {
-        await ssvStore.withdrawSsv(inputValue.toString(), ssvStore.setTransactionInProgress);
+        await ssvStore.withdrawSsv(inputValue.toString());
         setInputValue(0.0);
     };
 
@@ -61,6 +60,40 @@ const Withdraw = () => {
             setInputValue(value);
         }
     };
+
+    const secondBorderScreen = [(
+      <Grid item container>
+        <Grid item xs={12}>
+          <Title>Amount</Title>
+        </Grid>
+        <Grid container item xs={12} className={classes.BalanceWrapper}>
+          <Grid item container xs={12}>
+            <Grid item xs={6}>
+              <IntegerInput
+                type="number"
+                onChange={(e) => { // @ts-ignore
+                                inputHandler(e.target.value); }}
+                value={inputValue}
+                className={classes.Balance}
+              />
+            </Grid>
+            <Grid item container xs={6} className={classes.MaxButtonWrapper}>
+              <Grid item onClick={() => { setInputValue(ssvStore.networkContractBalance); }}>
+                <img className={classes.MaxButtonImage} src={getImage('max-button.svg')} />
+              </Grid>
+              <Grid item className={classes.MaxButtonText}>SSV</Grid>
+            </Grid>
+            <Grid item xs={12} className={classes.BalanceInputDollar}>
+              ~$9485.67
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    )];
+
+    if (ssvStore.isValidatorState) {
+     secondBorderScreen.push((<RemainingDays fromPage={'withdraw'} inputValue={inputValue} />));
+    }
 
     return (
       <div className={classes.DepositWrapper}>
@@ -87,42 +120,7 @@ const Withdraw = () => {
         <BorderScreen
           withConversion
           header={'Withdraw'}
-          body={[
-                  (
-                    <Grid item container>
-                      <Grid item xs={12}>
-                        <Title>Amount</Title>
-                      </Grid>
-                      <Grid container item xs={12} className={classes.BalanceWrapper}>
-                        <Grid item container xs={12}>
-                          <Grid item xs={6}>
-                            <IntegerInput
-                              type="number"
-                              onChange={(e) => { // @ts-ignore
-                                  inputHandler(e.target.value); }}
-                              value={inputValue}
-                              className={classes.Balance}
-                            />
-                          </Grid>
-                          <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                            <Grid item onClick={() => { setInputValue(ssvStore.networkContractBalance); }}>
-                              <img className={classes.MaxButtonImage} src={getImage('max-button.svg')} />
-                            </Grid>
-                            <Grid item className={classes.MaxButtonText}>SSV</Grid>
-                          </Grid>
-                          <Grid item xs={12} className={classes.BalanceInputDollar}>
-                            ~$9485.67
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  ),
-                  (
-                    <>
-                      <RemainingDays fromPage={'withdraw'} inputValue={inputValue} />
-                    </>
-                  ),
-              ]}
+          body={secondBorderScreen}
           bottom={(
             <Grid item xs={12} className={classes.CTAWrapper}>
               <FormControlLabel
@@ -141,7 +139,7 @@ const Withdraw = () => {
                 />
               <CTAButton
                 text={'Withdraw'}
-                disable={!userAgree}
+                disable={!userAgree || inputValue <= 0}
                 onClick={withdrawSsv}
                 withAllowance
                 backgroundColor={userAgree ? buttonColor.userAgree : buttonColor.default}

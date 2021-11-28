@@ -111,8 +111,8 @@ const EnableAccount = () => {
                 <CTAButton text={'Enable Account'} disable={false} onClick={() => { console.log('s'); }} withAllowance />
               </Grid>
             </Grid>
-                )}
-            />
+          )}
+        />
       </div>
     );
 };

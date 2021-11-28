@@ -7,13 +7,6 @@ import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import { useStyles } from './Rows.styles';
-// import styled from 'styled-components';
-// import { Grid } from '@material-ui/core';
-// import config, { translations } from '~app/common/config';
-// import Tooltip from '~app/common/components/Tooltip/Tooltip';
-// import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-// import { useStyles } from './Deposit.styles';
-// import { getImage } from '~lib/utils/filePath';
 
 type ItemProps = {
     publicKey: string,

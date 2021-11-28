@@ -10,7 +10,7 @@ import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
 import SsvStore from '~app/common/stores/SSV.store';
 import BarMessage from '~app/common/components/BarMessage';
-import PopupMessage from '~app/common/components/PopupMessage';
+// import PopupMessage from '~app/common/components/PopupMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 declare global {
@@ -26,40 +26,35 @@ const App = () => {
     const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const [connectionChecked, setConnection] = useState(false);
+    const [triggerLoader, shouldTriggerLoader] = useState(true);
 
     useEffect(() => {
         walletStore.checkConnection();
     }, []);
 
     useEffect(() => {
-        if (walletStore.walletConnected && ssvStore.dataLoaded && (!!ssvStore.userOperators.length || !!ssvStore.userValidators.length)) {
+        if (!triggerLoader) shouldTriggerLoader(true);
+        if (walletStore.walletConnected && ssvStore.accountLoaded && (!!ssvStore.userOperators.length || !!ssvStore.userValidators.length)) {
             history.push('/dashboard');
-            setConnection(true);
-        } else if (ssvStore.dataLoaded) {
+            shouldTriggerLoader(false);
+        } else if (ssvStore.accountLoaded) {
             history.push('/');
-            setConnection(true);
-        } else if (!ssvStore.dataLoaded && connectionChecked) {
-            setConnection(false);
+            shouldTriggerLoader(false);
         }
-    }, [walletStore.walletConnected, ssvStore.dataLoaded]);
-
-    if (connectionChecked) {
-        return (
-          <>
-            {ssvStore.transactionInProgress && <PopupMessage />}
-            <BarMessage />
-            <AppBar />
-            <Routes />
-            <CssBaseline />
-          </>
-        );
-    }
+    }, [walletStore.walletConnected, ssvStore.accountLoaded]);
 
     return (
-      <Grid container>
-        <img className={classes.LoaderWrapper} src={getImage('ssv-loader.svg')} />
-      </Grid>
+      <>
+        {triggerLoader && (
+        <Grid container className={classes.LoaderWrapper}>
+          <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+        </Grid>
+        )}
+        <BarMessage />
+        <AppBar />
+        <Routes />
+        <CssBaseline />
+      </>
     );
 };
 

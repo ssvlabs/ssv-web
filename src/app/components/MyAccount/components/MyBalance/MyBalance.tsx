@@ -8,14 +8,8 @@ import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import { formatDaysToUi, formatNumberToUi } from '~lib/utils/numbers';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
-import { useStyles } from './MyBalance.styles';
 import ErrorText from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText';
-
-// type HeaderProps = {
-//     title: string,
-//     subtitle: string,
-//     centralize?: boolean
-// };
+import { useStyles } from './MyBalance.styles';
 
 const ActionButton = styled.div<{ deposit?: boolean }>`
   margin: ${props => props.deposit ? '15.5px 2px 0 16px' : '15.5px 16px 0 6px'};
@@ -38,7 +32,7 @@ const MyBalance = () => {
     const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
     const remainingDays = formatDaysToUi(ssvStore.getRemainingDays);
-    const liquidated = remainingDays <= 0;
+    const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
 
     const renderBalance = () => {
         if (liquidated) {
@@ -77,7 +71,7 @@ const MyBalance = () => {
                         }}><ActionButtonText deposit>Deposit</ActionButtonText></ActionButton>
             </Grid>
             )}
-            <Grid item xs={6}>
+            <Grid item xs>
               <ActionButton className={`${classes.ActionButton} ${!ssvStore.isValidatorState ? classes.ActionButtonLarge : ''}`} onClick={() => {
                         history.push(config.routes.MY_ACCOUNT.WITHDRAW);
                     }}><ActionButtonText>Withdraw</ActionButtonText></ActionButton>

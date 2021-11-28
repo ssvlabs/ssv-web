@@ -37,7 +37,7 @@ const Deposit = () => {
     }, [redirectUrl]);
 
     const depositSsv = async () => {
-        await ssvStore.deposit(inputValue.toString(), ssvStore.setTransactionInProgress);
+        await ssvStore.deposit(inputValue.toString());
         setInputValue(0.0);
     };
 

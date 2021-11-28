@@ -92,6 +92,11 @@ export const useStyles = makeStyles(() => ({
         color: '#5b6c84',
         // borderRadius: '20px 20px 0px 0px',
     },
+    Disable: {
+        cursor: 'not-allowed',
+        backgroundColor: 'rgba(220, 224, 232, 0.25)',
+        color: 'rgba(161, 172, 190, 0.5)',
+    },
     TablesWrapper: {
         width: '728px',
     },

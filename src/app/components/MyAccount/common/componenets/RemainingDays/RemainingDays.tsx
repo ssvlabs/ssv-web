@@ -28,7 +28,11 @@ type Props = {
 };
 
 const RemainingDays = (props: Props) => {
-    const { fromPage, inputValue, wrapperClass } = props;
+    const { fromPage, wrapperClass } = props;
+    let { inputValue } = props;
+    if (inputValue) {
+        inputValue = parseFloat(inputValue.toString().replace('-', ''));
+    }
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -9,10 +9,10 @@ import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import DataTable from '~app/common/components/DataTable';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import Rows from '~app/components/MyAccount/common/componenets/Rows';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
-import { formatDaysToUi, formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
+import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
+import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 import { useStyles } from './MyAccount.styles';
 
 const validatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'BALANCE', 'EST. APR', ''];
@@ -21,12 +21,15 @@ const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', '']
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
+    const wrapperRef = useRef(null);
     const ssvStore: SsvStore = stores.SSV;
     const { redirectUrl, history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
     const [operators, setOperators] = useState([]);
     const [validators, setValidators] = useState([]);
     const [width, setWidth] = React.useState(window.innerWidth);
+    const [loadingOperators, setLoadingOperators] = useState(true);
+    const [loadingValidators, setLoadingValidators] = useState(true);
     const [displayStatus, setDisplayStatus] = useState(true);
     const [displayValidators, setDisplayValidators] = useState(true);
     const [operatorsPage, setOperatorsPage] = useState(0);
@@ -48,8 +51,25 @@ const MyAccount = () => {
     const [validatorsHeader, setValidatorHeader] = useState(validatorHeaderInit);
     const [operatorsHeader, setOperatorHeader] = useState(operatorHeaderInit);
     const [dropDownMenu, displayDropDownMenu] = useState(false);
-    const remainingDays = formatDaysToUi(ssvStore.getRemainingDays);
-    const liquidated = remainingDays <= 0;
+    const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+
+    useEffect(() => {
+        /**
+         * Close menu drop down when click outside
+         */
+        const handleClickOutside = (e: any) => {
+            // @ts-ignore
+            if (dropDownMenu && wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                displayDropDownMenu(false);
+            }
+        };
+        // Bind the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            // Unbind the event listener on clean up
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [wrapperRef, dropDownMenu]);
 
     useEffect(() => {
         redirectUrl && history.push(redirectUrl);
@@ -80,31 +100,36 @@ const MyAccount = () => {
     }, [width]);
 
     useEffect(() => {
-        if (validators.length === 0) {
-                const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${ssvStore.userValidators.join(',')}`;
-                new ApiRequest({ url, method: 'GET' }).sendRequest().then(async (response: any) => {
-                    const beaconchaData = response.data;
-                    const validatorsData: any[] = [];
-                    if (Array.isArray(beaconchaData)) {
-                        // eslint-disable-next-line no-restricted-syntax
-                        for (const data of response.data) {
-                            // eslint-disable-next-line no-await-in-loop
-                            const payload = await buildValidatorStructure(data);
-                            validatorsData.push(payload);
-                        }
-                    } else {
-                        const payload = await buildValidatorStructure(beaconchaData);
+        if (ssvStore.userValidators.length) {
+            setLoadingValidators(true);
+            const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${ssvStore.userValidators.join(',')}`;
+            new ApiRequest({ url, method: 'GET' }).sendRequest().then(async (response: any) => {
+                const beaconchaData = response.data;
+                const validatorsData: any[] = [];
+                if (Array.isArray(beaconchaData)) {
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const data of response.data) {
+                        // eslint-disable-next-line no-await-in-loop
+                        const payload = await buildValidatorStructure(data);
                         validatorsData.push(payload);
                     }
-                    // @ts-ignore
-                    setValidators(validatorsData);
-                });
+                } else {
+                    const payload = await buildValidatorStructure(beaconchaData);
+                    validatorsData.push(payload);
+                }
+                // @ts-ignore
+                setValidators(validatorsData);
+                setLoadingValidators(false);
+            });
+        } else if (validators.length) {
+            setValidators([]);
         }
     }, [ssvStore.userValidators]);
 
     useEffect(() => {
-        if (operators.length === 0) {
+        if (ssvStore.userOperators.length) {
             const operatorsData: any[] = [];
+            setLoadingOperators(true);
             operatorStore.loadOperators().then((loadedOperators: IOperator[]) => {
                 loadedOperators.forEach(async (operator: IOperator) => {
                     if (ssvStore.userOperators.indexOf(operator.pubkey) > -1) {
@@ -121,7 +146,10 @@ const MyAccount = () => {
 
                 // @ts-ignore
                 setOperators(operatorsData);
+                setLoadingOperators(false);
             });
+        } else if (operators.length) {
+            setOperators([]);
         }
     }, [ssvStore.userOperators]);
 
@@ -137,8 +165,16 @@ const MyAccount = () => {
         return { publicKey, status, balance, apr };
     };
 
-    const validatorsRows = Rows({ items: validators, shouldDisplayStatus: displayStatus, shouldDisplayValidators: displayValidators });
-    const operatorsRows = Rows({ items: operators, shouldDisplayStatus: displayStatus, shouldDisplayValidators: displayValidators });
+    const validatorsRows = Rows({
+        items: validators,
+        shouldDisplayStatus: displayStatus,
+        shouldDisplayValidators: displayValidators,
+    });
+    const operatorsRows = Rows({
+        items: operators,
+        shouldDisplayStatus: displayStatus,
+        shouldDisplayValidators: displayValidators,
+    });
 
     return (
       <Grid container className={classes.Wrapper}>
@@ -150,24 +186,18 @@ const MyAccount = () => {
               </span>
             </Grid>
             {liquidated && (
-              <Grid item className={classes.Liquidated}>
-                Liquidated
-              </Grid>
-              )}
+            <Grid item className={classes.Liquidated}>
+              Liquidated
+            </Grid>
+            )}
           </Grid>
           <Grid item xs={6}>
-            <Grid className={classes.AddButton} onClick={() => {
-                        displayDropDownMenu(!dropDownMenu);
-                    }}>
+            <Grid ref={wrapperRef} className={classes.AddButton} onClick={() => { displayDropDownMenu(!dropDownMenu); }}>
               <Typography className={classes.AddButtonText}>+ Add</Typography>
               {dropDownMenu && (
                 <Grid container className={classes.AddButtonDropDown}>
-                  <Grid item xs={12} className={classes.AddButtonDropDownItem} onClick={() => {
-                                    history.push(config.routes.VALIDATOR.HOME);
-                                }}>Run Validator</Grid>
-                  <Grid item xs={12} className={classes.AddButtonDropDownItem} onClick={() => {
-                                    history.push(config.routes.OPERATOR.HOME);
-                                }}>Register Operator</Grid>
+                  <Grid item xs={12} className={`${classes.AddButtonDropDownItem} ${liquidated ? classes.Disable : ''}`} onClick={() => { !liquidated && history.push(config.routes.VALIDATOR.HOME); }}>Run Validator</Grid>
+                  <Grid item xs={12} className={classes.AddButtonDropDownItem} onClick={() => { history.push(config.routes.OPERATOR.HOME); }}>Register Operator</Grid>
                 </Grid>
               )}
             </Grid>
@@ -179,33 +209,33 @@ const MyAccount = () => {
           </Grid>
           <Grid container item direction={'column'} className={classes.TablesWrapper}>
             {ssvStore.userOperators.length > 0 && (
-              <Grid item className={classes.Table}>
-                <DataTable
-                  title={'Operators'}
-                  headers={operatorsHeader}
-                  headersPositions={['left', 'left', 'left', 'left']}
-                  data={operatorsRows}
-                  totalCount={operators.length}
-                  page={operatorsPage}
-                  onChangePage={setOperatorsPage}
-                  isLoading={operators.length === 0}
-                />
-              </Grid>
-              )}
+            <Grid item className={classes.Table}>
+              <DataTable
+                title={'Operators'}
+                headers={operatorsHeader}
+                headersPositions={['left', 'left', 'left', 'left']}
+                data={operatorsRows}
+                totalCount={operators.length}
+                page={operatorsPage}
+                onChangePage={setOperatorsPage}
+                isLoading={loadingOperators}
+              />
+            </Grid>
+            )}
             {ssvStore.userValidators.length > 0 && (
-              <Grid className={classes.Table}>
-                <DataTable
-                  title={'Validators'}
-                  headers={validatorsHeader}
-                  headersPositions={['left', 'left', 'left', 'left']}
-                  data={validatorsRows}
-                  totalCount={validators.length}
-                  page={validatorsPage}
-                  onChangePage={setValidatorsPage}
-                  isLoading={validators.length === 0}
-                />
-              </Grid>
-              )}
+            <Grid className={classes.Table}>
+              <DataTable
+                title={'Validators'}
+                headers={validatorsHeader}
+                headersPositions={['left', 'left', 'left', 'left']}
+                data={validatorsRows}
+                totalCount={validators.length}
+                page={validatorsPage}
+                onChangePage={setValidatorsPage}
+                isLoading={loadingValidators}
+              />
+            </Grid>
+            )}
           </Grid>
         </Grid>
       </Grid>

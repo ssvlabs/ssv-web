@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import Notify from 'bnc-notify';
 import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
@@ -12,14 +13,16 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
 class WalletStore extends BaseStore implements Wallet {
-  @observable networkId: number | null = null;
   @observable web3: any = null;
-  @observable walletConnected: boolean = false;
   @observable wallet: any = null;
+  @observable notifySdk: any = null;
   @observable onboardSdk: any = null;
-  @observable accountAddress: string = '';
   @observable addressVerification: any;
+  @observable accountAddress: string = '';
   @observable wrongNetwork: boolean = false;
+  @observable networkId: number | null = null;
+  @observable walletConnected: boolean = false;
+
   private contract: Contract | undefined;
 
   @computed
@@ -116,7 +119,13 @@ class WalletStore extends BaseStore implements Wallet {
 
   @action.bound
   setAccountAddress(address: string) {
-    this.accountAddress = address;
+    if (address === undefined) {
+      const ssvStore: SsvStore = this.getStore('SSV');
+      ssvStore.initSettings();
+    } else {
+      this.accountAddress = address;
+      this.initializeUserInfo();
+    }
   }
 
   @action.bound
@@ -124,20 +133,34 @@ class WalletStore extends BaseStore implements Wallet {
     this.networkId = networkId;
   }
 
+  /**
+   * Initialize Account data from contract
+   */
   @action.bound
   async initializeUserInfo() {
     const ssvStore: SsvStore = this.getStore('SSV');
-    // ssvStore.dataLoaded = false;
     const operatorStore: OperatorStore = this.getStore('Operator');
-    await ssvStore.checkAllowance();
-    await ssvStore.getNetworkFees();
+    ssvStore.setAccountLoaded(false);
+    await ssvStore.checkIfLiquidated();
+    await ssvStore.getSsvContractBalance();
+    await ssvStore.getNetworkContractBalance();
     await ssvStore.getAccountBurnRate();
     await operatorStore.loadOperators();
     await ssvStore.fetchAccountOperators();
-    await ssvStore.getSsvContractBalance();
     await ssvStore.fetchAccountValidators();
+    await ssvStore.getNetworkFees();
+    await ssvStore.checkAllowance();
+    ssvStore.setAccountLoaded(true);
+  }
+
+  @action.bound
+  async syncBalance() {
+    const ssvStore: SsvStore = this.getStore('SSV');
+    await ssvStore.getSsvContractBalance();
     await ssvStore.getNetworkContractBalance();
-    ssvStore.dataLoaded = true;
+    await ssvStore.checkIfLiquidated();
+    await ssvStore.getNetworkFees();
+    await ssvStore.getAccountBurnRate();
   }
 
   /**
@@ -160,11 +183,28 @@ class WalletStore extends BaseStore implements Wallet {
         wallet: this.onWalletConnected,
         address: this.setAccountAddress,
         network: this.onNetworkChange,
-        balance: this.initializeUserInfo,
+        balance: this.syncBalance,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
     this.onboardSdk = Onboard(connectionConfig);
+    const notifyOptions = {
+      dappId: config.ONBOARD.API_KEY,
+      networkId: this.networkId || Number(config.ONBOARD.NETWORK_ID),
+      // system: String
+      // onerror: Function
+      // darkMode: Boolean, // (default: false)
+      // mobilePosition: String, // 'top', 'bottom' (default: 'top')
+      desktopPosition: 'topRight',
+      // txApproveReminderTimeout: Number, // (default: 20000)
+      // txStallPendingTimeout: Number, // (default: 20000)
+      // txStallConfirmedTimeout: Number // (default: 90000)
+      // transactionHandler: Function,
+      // clientLocale: String, // (default: 'en')
+      // notifyMessages: Object
+    };
+    // @ts-ignore
+    this.notifySdk = Notify(notifyOptions);
     this.onboardSdk.walletReset();
   }
 
@@ -174,6 +214,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async onWalletConnected(wallet: any) {
+    console.log(wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     this.addressVerification = this.web3.utils.isAddress;
@@ -204,6 +245,9 @@ class WalletStore extends BaseStore implements Wallet {
     if (selectedWallet) {
       await this.init();
       await this.onboardSdk.walletSelect(selectedWallet);
+    } else {
+      const ssvStore: SsvStore = this.getStore('SSV');
+      ssvStore.setAccountLoaded(true);
     }
   }
 

@@ -234,6 +234,20 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  ToolTipWrapper: {
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    textAlign: 'center',
+    alignContent: 'center',
+    // paddingTop: '1px',
+    marginLeft: 8,
+  },
+  ToolTip: {
+    width: 16,
+    height: 16,
+    marginTop: 4,
+
+  },
 }));
 
 const size = {

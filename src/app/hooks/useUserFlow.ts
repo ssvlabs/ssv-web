@@ -184,7 +184,7 @@ const EnableAccountScreen: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    return ssvStore.getRemainingDays <= 0 && !!ssvStore.userValidators.length;
+    return !ssvStore.userLiquidated && !!ssvStore.userValidators.length;
   },
 };
 

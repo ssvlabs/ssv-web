@@ -1,20 +1,19 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid, TableCell, Tooltip } from '@material-ui/core';
+import styled from 'styled-components';
+import { TableCell } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
-// import Tooltip from '~app/common/components/Tooltip';
 import TableContainer from '@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
+import NewToolTip from '~app/common/components/NewToolTip';
 import StyledRow from '~app/common/components/Table/StyledRow';
 import StyledCell from '~app/common/components/Table/StyledCell';
 import PaginationActions from '~app/common/components/DataTable/components/PaginationActions';
 import { useStyles } from './Styles';
-import styled from 'styled-components';
-import { getImage } from '~lib/utils/filePath';
 
 type HeaderPosition = 'inherit' | 'left' | 'center' | 'right' | 'justify';
 
@@ -37,6 +36,7 @@ type DataTableProps = {
   onChangePage?: (page: number) => void,
   // eslint-disable-next-line no-unused-vars
   noDataMessage?: string,
+  perPage: number,
   hidePagination?: boolean,
 };
 
@@ -44,7 +44,7 @@ const skeletons = [0, 1, 2, 3, 4];
 
 const DataTable = (props: DataTableProps) => {
   const { headers, data, totalCount, page, isLoading,
-    onChangePage, headersPositions, title, noDataMessage, hidePagination } = props;
+    onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage } = props;
   const classes = useStyles();
   const statusToolTipText = title === 'Operators' ?
       'Monitoring indication whether the operator is performing his network duties for the majority of his validators (per the last 2 epochs).' :
@@ -100,11 +100,7 @@ const DataTable = (props: DataTableProps) => {
                   align={headersPositions?.length ? headersPositions[headerIndex] : undefined}
                 >
                   {header}
-                  { header === 'STATUS' && (
-                  <Grid className={classes.ToolTipWrapper}>
-                    <Tooltip className={classes.ToolTip} title={statusToolTipText}><img src={getImage('information-notice.png')} /></Tooltip>
-                  </Grid>
-                    )}
+                  { header === 'STATUS' && <NewToolTip text={statusToolTipText} />}
                 </TableCell>
                 ))}
             </TableRow>
@@ -121,7 +117,7 @@ const DataTable = (props: DataTableProps) => {
               colSpan={headers.length}
               component="div"
               count={totalCount}
-              rowsPerPage={5}
+              rowsPerPage={perPage}
               page={page}
               labelRowsPerPage={false}
               onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage + 1) : null}

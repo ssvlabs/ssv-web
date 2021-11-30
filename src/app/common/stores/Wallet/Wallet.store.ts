@@ -214,7 +214,6 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async onWalletConnected(wallet: any) {
-    console.log(wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     this.addressVerification = this.web3.utils.isAddress;

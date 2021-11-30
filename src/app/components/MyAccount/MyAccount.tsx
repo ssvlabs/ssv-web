@@ -28,12 +28,12 @@ const MyAccount = () => {
     const [operators, setOperators] = useState([]);
     const [validators, setValidators] = useState([]);
     const [width, setWidth] = React.useState(window.innerWidth);
-    const [loadingOperators, setLoadingOperators] = useState(true);
-    const [loadingValidators, setLoadingValidators] = useState(true);
-    const [displayStatus, setDisplayStatus] = useState(true);
-    const [displayValidators, setDisplayValidators] = useState(true);
     const [operatorsPage, setOperatorsPage] = useState(0);
     const [validatorsPage, setValidatorsPage] = useState(0);
+    const [displayStatus, setDisplayStatus] = useState(true);
+    const [loadingOperators, setLoadingOperators] = useState(true);
+    const [displayValidators, setDisplayValidators] = useState(true);
+    const [loadingValidators, setLoadingValidators] = useState(true);
     const breakPoints = [
         {
             width: 768,
@@ -121,8 +121,6 @@ const MyAccount = () => {
                 setValidators(validatorsData);
                 setLoadingValidators(false);
             });
-        } else if (validators.length) {
-            setValidators([]);
         }
     }, [ssvStore.userValidators]);
 
@@ -148,8 +146,6 @@ const MyAccount = () => {
                 setOperators(operatorsData);
                 setLoadingOperators(false);
             });
-        } else if (operators.length) {
-            setOperators([]);
         }
     }, [ssvStore.userOperators]);
 
@@ -215,10 +211,11 @@ const MyAccount = () => {
                 headers={operatorsHeader}
                 headersPositions={['left', 'left', 'left', 'left']}
                 data={operatorsRows}
-                totalCount={operators.length}
+                totalCount={3}
                 page={operatorsPage}
+                perPage={validators.length && operators.length ? 5 : 10}
                 onChangePage={setOperatorsPage}
-                isLoading={loadingOperators}
+                isLoading={loadingOperators || operators.length === 0}
               />
             </Grid>
             )}
@@ -231,8 +228,9 @@ const MyAccount = () => {
                 data={validatorsRows}
                 totalCount={validators.length}
                 page={validatorsPage}
+                perPage={validators.length && operators.length ? 5 : 10}
                 onChangePage={setValidatorsPage}
-                isLoading={loadingValidators}
+                isLoading={loadingValidators || validators.length === 0}
               />
             </Grid>
             )}

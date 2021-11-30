@@ -98,14 +98,14 @@ const MyBalance = () => {
         {(!liquidated && ssvStore.isValidatorState) && <Grid item className={classes.SeparationLine} xs={12} />}
         {(!liquidated && ssvStore.isValidatorState) && <RemainingDays wrapperClass={classes.CurrentBalanceHeader} />}
         {!liquidated && remainingDays < 30 && <Grid className={classes.ErrorMessageWrapper}><ErrorText errorType={0} /></Grid>}
-        {liquidated && (
-          <Grid className={classes.ErrorMessageWrapper}>
-            <ErrorText
-              marginTop={'16px'}
-              errorType={2}
-            />
-          </Grid>
-          )}
+        {/* {liquidated && ( */}
+        {/*  <Grid className={classes.ErrorMessageWrapper}> */}
+        {/*    <ErrorText */}
+        {/*      marginTop={'16px'} */}
+        {/*      errorType={2} */}
+        {/*    /> */}
+        {/*  </Grid> */}
+        {/*  )} */}
         <Grid item className={classes.SeparationLine} xs={12} />
         {renderCtaActions()}
       </Grid>

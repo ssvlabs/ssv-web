@@ -49,10 +49,11 @@ const Withdraw = () => {
     }, [inputValue]);
 
     const withdrawSsv = async () => {
-        await ssvStore.withdrawSsv(inputValue.toString());
-        setInputValue(0.0);
+        ssvStore.withdrawSsv(inputValue.toString()).then((success: boolean) => {
+            if (success) setInputValue(0.0);
+        });
     };
-
+    
     const inputHandler = (value: number) => {
         if (value > ssvStore.networkContractBalance) {
             setInputValue(ssvStore.networkContractBalance);

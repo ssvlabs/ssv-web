@@ -33,7 +33,7 @@ const EnableAccount = () => {
     const [allOperatorsFee, setTotalFee] = useState(0);
     const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
     const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
-    const totalFee = formatNumberToUi(allOperatorsFee + networkYearlyFees + liquidationCollateral);
+    const totalFee = allOperatorsFee + networkYearlyFees + liquidationCollateral;
     const summaryFields = [
         { name: 'Operators yearly fee', value: allOperatorsFee },
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees) },
@@ -43,6 +43,10 @@ const EnableAccount = () => {
     useEffect(() => {
         redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
+
+    const unableAccount = (fee: any) => {
+        ssvStore.activateValidator(fee);
+    };
 
     return (
       <div>
@@ -97,7 +101,7 @@ const EnableAccount = () => {
                                 styleNameClass={classes.GreenColor} />
                             </Grid>
                             <Grid item className={classes.AlignRight}>
-                              <NameAndAddress styleWrapperClass={classes.TotalWrapper} name={`${totalFee} SSV`}
+                              <NameAndAddress styleWrapperClass={classes.TotalWrapper} name={`${formatNumberToUi(totalFee)} SSV`}
                                 styleNameClass={classes.GreenColor} address={'~$490'} />
                             </Grid>
                           </Grid>
@@ -108,7 +112,7 @@ const EnableAccount = () => {
           bottom={(
             <Grid container className={classes.ButtonWrapper}>
               <Grid item xs>
-                <CTAButton text={'Enable Account'} disable={false} onClick={() => { console.log('s'); }} withAllowance />
+                <CTAButton text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance />
               </Grid>
             </Grid>
           )}

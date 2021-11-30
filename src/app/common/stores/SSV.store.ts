@@ -147,10 +147,8 @@ class SsvStore extends BaseStore {
     /**
      * Deposit ssv
      * @param amount
-     * @param callBack
      */
     @action.bound
-    // eslint-disable-next-line no-unused-vars
     async deposit(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
@@ -252,15 +250,35 @@ class SsvStore extends BaseStore {
     /**
      * Withdraw ssv
      * @param amount
-     * @param callBack
      */
     @action.bound
-    // eslint-disable-next-line no-unused-vars
     async withdrawSsv(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.web3.utils.toWei(amount);
             walletStore.getContract().methods.withdraw(ssvAmount).send({ from: this.accountAddress })
+                .on('receipt', async () => {
+                    resolve(true);
+                })
+                .on('transactionHash', (txHash: string) => {
+                    walletStore.notifySdk.hash(txHash);
+                })
+                .on('error', () => {
+                    resolve(false);
+                });
+        });
+    }
+
+    /**
+     * Withdraw ssv
+     * @param amount
+     */
+    @action.bound
+    async activateValidator(amount: string) {
+        return new Promise<boolean>((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const ssvAmount = walletStore.web3.utils.toWei(amount.toString());
+            walletStore.getContract().methods.activateValidator(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
+import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import SsvStore from '~app/common/stores/SSV.store';
 import BarMessage from '~app/common/components/BarMessage';
 // import PopupMessage from '~app/common/components/PopupMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import ApplicationStore from '~app/common/stores/Application.store';
 
 declare global {
     interface Window {
@@ -26,6 +27,7 @@ const App = () => {
     const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const applicationStore: ApplicationStore = stores.Application;
     const [triggerLoader, shouldTriggerLoader] = useState(true);
 
     useEffect(() => {
@@ -44,17 +46,17 @@ const App = () => {
     }, [walletStore.walletConnected, ssvStore.accountLoaded]);
 
     return (
-      <>
+      <MuiThemeProvider theme={applicationStore.muiTheme}>
         {triggerLoader && (
-        <Grid container className={classes.LoaderWrapper}>
-          <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
-        </Grid>
+          <Grid container className={classes.LoaderWrapper}>
+            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+          </Grid>
         )}
         <BarMessage />
         <AppBar />
         <Routes />
         <CssBaseline />
-      </>
+      </MuiThemeProvider>
     );
 };
 

@@ -36,10 +36,10 @@ const AppBar = () => {
           <RouteLink to={'/dashboard'} className={classes.LinkButton}>
             <Grid item>My Account</Grid>
           </RouteLink>
-          <RouteLink onClick={openExplorer} className={classes.LinkButton}>
+          <RouteLink to={'/dashboard'} onClick={openExplorer} className={classes.LinkButton}>
             <Grid item>Explorer</Grid>
           </RouteLink>
-          <RouteLink onClick={openExplorer} className={classes.LinkButton}>
+          <RouteLink to={'/dashboard'} onClick={openExplorer} className={classes.LinkButton}>
             <Grid item>Docs</Grid>
           </RouteLink>
         </Grid>

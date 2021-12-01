@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import screenSizes from '~lib/utils/screenSizes';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     MyBalanceWrapper: {
         width: '336px',
         '@media (max-width: 1079px)': {
@@ -14,6 +14,9 @@ export const useStyles = makeStyles(() => ({
         border: 'solid 1px #5b6c84',
         backgroundColor: '#fff',
         marginBottom: '20px',
+    },
+    SectionWrapper: {
+        padding: theme.spacing(8),
     },
     Header: {
         width: '79px',

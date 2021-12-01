@@ -17,8 +17,6 @@ import { useStyles } from './Styles';
 
 type HeaderPosition = 'inherit' | 'left' | 'center' | 'right' | 'justify';
 
-const overviewTableHeadersStyle: any = { padding: '6px 0px 7px 16px', borderTop: 'solid 1px #dce0e8', textTransform: 'uppercase', fontSize: 12, fontWeight: 'bold' };
-
 const TableContainerWrapper = styled.div`
   & .MuiInputBase-root {
     display: none;
@@ -95,7 +93,7 @@ const DataTable = (props: DataTableProps) => {
             <TableRow className={classes.TableRow}>
               {headers.map((header: string, headerIndex: number) => (
                 <TableCell
-                  style={overviewTableHeadersStyle}
+                  className={classes.TableCell}
                   key={header}
                   align={headersPositions?.length ? headersPositions[headerIndex] : undefined}
                 >

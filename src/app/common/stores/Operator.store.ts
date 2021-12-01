@@ -2,8 +2,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import operators from '~lib/utils/testOperators.json';
-// import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import { roundCryptoValueString } from '~lib/utils/numbers';
@@ -316,60 +315,59 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     async loadOperators() {
-        if (this.operators.length !== 0) return this.operators;
+        if (this.operators.length) {
+            return this.operators;
+        }
         this.loadingOperator = true;
-    //     const query = `
-    // {
-    //   operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
-    //     id
-    //     name
-    //     pubkey
-    //     ownerAddress
-    //   }
-    // }`;
-        // const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}?randomize=true`;
+        const query = `
+    {
+      operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
+        id
+        name
+        pubkey
+        ownerAddress
+      }
+    }`;
+        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}?randomize=true`;
 
-        // const requestInfo: RequestData = {
-        //     url: operatorsEndpointUrl,
-        //     method: 'GET',
-        //     headers: [
-        //         { name: 'content-type', value: 'application/json' },
-        //         { name: 'accept', value: 'application/json' },
-        //     ],
-        //     data: { query },
-        // };
-        this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
-            const operatorsAdapted = await this.operatorAdapter(operator);
-            this.hashedOperators[operator.public_key] = operatorsAdapted;
-            return operatorsAdapted;
-        }));
+        const requestInfo: RequestData = {
+            url: operatorsEndpointUrl,
+            method: 'GET',
+            headers: [
+                { name: 'content-type', value: 'application/json' },
+                { name: 'accept', value: 'application/json' },
+            ],
+            data: { query },
+        };
+        // this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
+        //     const operatorsAdapted = await this.operatorAdapter(operator);
+        //     this.hashedOperators[operator.public_key] = operatorsAdapted;
+        //     return operatorsAdapted;
+        // }));
 
-        // @ts-ignore
-        // this.operators = await new ApiRequest(requestInfo)
-        //     .sendRequest()
-        //     .then(async (response: any) => {
-        //         this.loadingOperator = false;
-        //         this.operatorsLoaded = true;
-        //         this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
-        //             const operatorsAdapted = this.operatorAdapter(operator);
-        //             return operatorsAdapted;
-        //         }));
-        //         // const adaptedOperators = await Promise.all(response.operators.map(async (operator: any): Promise<any> => {
-        //         //     const operatorsAdapted = this.operatorAdapter(operator);
-        //         //     return operatorsAdapted;
-        //         // }));
-        //         return adaptedOperators;
-        //     });
+        await new ApiRequest(requestInfo)
+            .sendRequest()
+            .then(async (response: any) => {
+                this.loadingOperator = false;
+                this.operatorsLoaded = true;
+                this.operators = await Promise.all(response.operators.map(async (operator: any): Promise<any> => {
+                    const operatorsAdapted = await this.operatorAdapter(operator);
+                    this.hashedOperators[operator.public_key] = operatorsAdapted;
+                    return operatorsAdapted;
+                }));
+            });
+
         return this.operators;
     }
 
     async operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
-        // const walletStore: WalletStore = this.getStore('Wallet');
-        const operatorFee = await this.setOperatorFee(_object.public_key);
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const decodePublicKey = walletStore.encodeKey(_object.public_key);
+        const operatorFee = await this.setOperatorFee(decodePublicKey);
         return {
             name: _object.name,
             ownerAddress: _object.owner_address,
-            pubkey: _object.public_key,
+            pubkey: decodePublicKey,
             fee: operatorFee,
             verified: _object.type === 'verified_operator',
             dappNode: _object.type === 'dapp_node',

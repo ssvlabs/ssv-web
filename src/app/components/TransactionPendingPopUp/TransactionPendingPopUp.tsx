@@ -43,7 +43,7 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
               <div className={classes.validatorText}>TRANSACTION HASH</div>
             </Grid>
             <Grid item xs={12}>
-              <ValidatorKeyInput link={'#'} imageCallBack={copyToClipboard} newTab={false} image={getImage('copy.svg')} validatorKey={txHash} />
+              <ValidatorKeyInput link={'#'} imageCallBack={copyToClipboard} newTab={false} image={getImage('copy/gray.svg')} validatorKey={txHash} />
             </Grid>
           </Grid>
           <Grid className={classes.linkHref} item>

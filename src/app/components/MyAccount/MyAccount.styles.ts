@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import screenSizes from '~lib/utils/screenSizes';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     Wrapper: {
         marginTop: '40px',
     },
@@ -9,13 +9,13 @@ export const useStyles = makeStyles(() => ({
         marginBottom: '20px',
     },
     HeaderText: {
-        fontSize: '28px',
-        fontWeight: 900,
-        fontStretch: 'normal',
+        fontSize: 28,
+        fontWeight: 800,
+        color: theme.colors.black,
+        lineHeight: 1.24,
         fontStyle: 'normal',
-        lineHeight: 1.21,
-        letterSpacing: 'normal',
-        color: '#20eec8',
+        fontStretch: 'normal',
+        letterSpacing: -0.5,
     },
     Liquidated: {
         height: '32px',
@@ -28,32 +28,28 @@ export const useStyles = makeStyles(() => ({
         color: '#ec1c26',
     },
     AddButton: {
-        width: '84px',
+        width: 100,
+        height: 36,
+        borderRadius: 8,
+        padding: theme.spacing(2, 8.75),
+        backgroundColor: theme.colors.primaryBlueTint90,
         cursor: 'pointer',
         textAlign: 'center',
         textDecoration: 'none',
         border: 'none',
-        height: '32px',
-        borderRadius: '6px',
         float: 'right',
-        color: '#ffffff',
-        backgroundColor: '#5b6c84',
     },
     MyBalanceWrapper: {
         [screenSizes.xl]: {
-            marginRight: '16px',
+            marginRight: theme.spacing(6),
         },
     },
     AddButtonText: {
-        height: '15px',
-        marginTop: '8px',
-        display: 'inline-block',
-        fontSize: '12px',
+        fontSize: 16,
         fontWeight: 600,
-        fontStretch: 'normal',
-        fontStyle: 'normal',
-        lineHeight: 'normal',
-        color: '#fff',
+        lineHeight: 1.25,
+        textAlign: 'center',
+        color: theme.colors.primaryBlue,
     },
     AddButtonDropDown: {
         zIndex: 100,
@@ -98,12 +94,13 @@ export const useStyles = makeStyles(() => ({
         color: 'rgba(161, 172, 190, 0.5)',
     },
     TablesWrapper: {
-        width: '728px',
+        width: 728,
     },
     Table: {
-        maxWidth: '728px',
-        border: 'solid 1px #5b6c84',
-        marginBottom: '20px',
-        borderRadius: '8px',
+        maxWidth: 728,
+        float: 'right',
+        borderRadius: 8,
+        marginBottom: 20,
+        backgroundColor: theme.colors.white,
     },
 }));

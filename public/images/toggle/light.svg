@@ -1,0 +1,17 @@
+<svg width="62" height="36" viewBox="0 0 62 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <mask id="a" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="62" height="36">
+        <rect width="62" height="36" rx="18" fill="#fff"/>
+    </mask>
+    <g mask="url(#a)">
+        <rect width="62" height="36" rx="18" fill="#8DD1FB"/>
+        <circle cx="44" cy="18" r="12" fill="#FDFEFE"/>
+        <path d="m53.9 8.1.706-.707" stroke="#BBE4FD" stroke-width="2" stroke-linecap="square"/>
+        <path d="m33.394 27.192.707-.707 1.414 1.414-.707.707-1.414-1.414zm-.708 3.536a1 1 0 1 1-1.414-1.414l1.414 1.414zm2.122-2.122-2.122 2.122-1.414-1.414 2.122-2.122 1.414 1.415z" fill="#BBE4FD"/>
+        <path d="M58 18h1" stroke="#BBE4FD" stroke-width="2" stroke-linecap="square"/>
+        <path d="M30 17h1v2h-1v-2zm-5 2a1 1 0 1 1 0-2v2zm5 0h-5v-2h5v2z" fill="#BBE4FD"/>
+        <path d="m53.9 27.9.706.707" stroke="#BBE4FD" stroke-width="2" stroke-linecap="square"/>
+        <path d="m34.808 7.393.707.708L34.1 9.515l-.707-.707 1.414-1.415zm-3.536-.707a1 1 0 1 1 1.414-1.414l-1.414 1.414zm2.122 2.122-2.122-2.122 1.414-1.414 2.122 2.121-1.414 1.415z" fill="#BBE4FD"/>
+        <path d="M44 4V3M44 32v1" stroke="#BBE4FD" stroke-width="2" stroke-linecap="square"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M22.903 6.292a2.857 2.857 0 0 1-.19 5.707H19.33a3.379 3.379 0 0 1-.09 0h-3.954a2.286 2.286 0 1 1 .04-4.57 4 4 0 0 1 7.577-1.137zM1.019 20.799a4.61 4.61 0 0 0 .398 9.21h5.356a5.929 5.929 0 0 0 .169 0h6.37a3.688 3.688 0 1 0-.066-7.375A6.456 6.456 0 0 0 1.02 20.799z" fill="#A4DAFC"/>
+    </g>
+</svg>

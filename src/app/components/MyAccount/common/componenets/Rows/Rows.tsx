@@ -36,7 +36,7 @@ const Rows = (props: Props) => {
           <Grid container item>
             {isOperator && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
             <Grid container item>
-              <Grid className={isOperator ? classes.PublicKey : classes.PublicKeyBold}>{`0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
+              <Grid className={classes.Name}>{`0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
               <Grid className={classes.copyImage} />
               {!shouldDisplayStatus && displayStatus(status)}
             </Grid>
@@ -76,8 +76,8 @@ const Rows = (props: Props) => {
         }
         return (
           <Grid container item>
-            {isValidator && <Grid className={classes.ExplorerImage} onClick={() => { window.open(`${getBaseBeaconchaUrl()}/validator/${publicKey}`); }} />}
-            <Grid className={classes.ChartImage} onClick={() => { window.open(linkToExplorer); }} />
+            {isValidator && <Grid className={classes.BeaconImage} onClick={() => { window.open(`${getBaseBeaconchaUrl()}/validator/${publicKey}`); }} />}
+            <Grid className={classes.ExplorerImage} onClick={() => { window.open(linkToExplorer); }} />
             <Grid className={classes.SettingsImage} />
           </Grid>
         );

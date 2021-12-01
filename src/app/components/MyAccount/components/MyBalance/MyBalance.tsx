@@ -54,9 +54,9 @@ const MyBalance = () => {
             return (
               <Grid container item xs={12} className={classes.ActionButtonWrapper}>
                 <Grid item xs={12}>
-                  <ActionButton deposit className={classes.ActionButtonLiquidated} onClick={() => {
-                            history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
-                        }}><ActionButtonText deposit>Reactivate Account</ActionButtonText></ActionButton>
+                  <ActionButton deposit className={classes.ActionButtonLiquidated} onClick={() => { history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT); }}>
+                    <ActionButtonText deposit>Reactivate Account</ActionButtonText>
+                  </ActionButton>
                 </Grid>
               </Grid>
             );
@@ -65,16 +65,12 @@ const MyBalance = () => {
         return (
           <Grid container item className={classes.ActionButtonWrapper}>
             {ssvStore.isValidatorState && (
-            <Grid item xs={6}>
-              <ActionButton deposit className={classes.ActionButton} onClick={() => {
-                            history.push(config.routes.MY_ACCOUNT.DEPOSIT);
-                        }}><ActionButtonText deposit>Deposit</ActionButtonText></ActionButton>
+            <Grid item className={classes.ActionButton} onClick={() => { history.push(config.routes.MY_ACCOUNT.DEPOSIT); }}>
+              Deposit
             </Grid>
             )}
-            <Grid item xs>
-              <ActionButton className={`${classes.ActionButton} ${!ssvStore.isValidatorState ? classes.ActionButtonLarge : ''}`} onClick={() => {
-                        history.push(config.routes.MY_ACCOUNT.WITHDRAW);
-                    }}><ActionButtonText>Withdraw</ActionButtonText></ActionButton>
+            <Grid item className={`${classes.ActionButton} ${!ssvStore.isValidatorState ? classes.ActionButtonLarge : ''}`} onClick={() => { history.push(config.routes.MY_ACCOUNT.WITHDRAW); }}>
+              Withdraw
             </Grid>
           </Grid>
         );
@@ -82,30 +78,30 @@ const MyBalance = () => {
 
     return (
       <Grid container className={classes.MyBalanceWrapper}>
-        <Grid item className={classes.Header} xs={12}>
-          <span>Balance</span>
-        </Grid>
-        <Grid item className={classes.SeparationLine} xs={12} />
-        <Grid container item>
-          <Grid item xs={12} className={classes.CurrentBalanceHeader}>
-            Current Balance
+        <Grid container item className={classes.SectionWrapper}>
+          <Grid item className={classes.Header} xs={12}>
+            <span>Balance</span>
           </Grid>
-          {renderBalance()}
-          <Grid item xs={12} className={classes.CurrentBalanceDollars}>
-            ~$449.52
+          <Grid container item>
+            {renderBalance()}
+            <Grid item xs={12} className={classes.CurrentBalanceDollars}>
+              ~$449.52
+            </Grid>
           </Grid>
         </Grid>
         {(!liquidated && ssvStore.isValidatorState) && <Grid item className={classes.SeparationLine} xs={12} />}
-        {(!liquidated && ssvStore.isValidatorState) && <RemainingDays wrapperClass={classes.CurrentBalanceHeader} />}
-        {!liquidated && remainingDays < 30 && <Grid className={classes.ErrorMessageWrapper}><ErrorText errorType={0} /></Grid>}
-        {/* {liquidated && ( */}
-        {/*  <Grid className={classes.ErrorMessageWrapper}> */}
-        {/*    <ErrorText */}
-        {/*      marginTop={'16px'} */}
-        {/*      errorType={2} */}
-        {/*    /> */}
-        {/*  </Grid> */}
-        {/*  )} */}
+        <Grid container item className={classes.SectionWrapper}>
+          {(!liquidated && ssvStore.isValidatorState) && <RemainingDays wrapperClass={classes.CurrentBalanceHeader} />}
+          {!liquidated && remainingDays < 30 && <Grid className={classes.ErrorMessageWrapper}><ErrorText errorType={0} /></Grid>}
+          {liquidated && (
+            <Grid className={classes.ErrorMessageWrapper}>
+              <ErrorText
+                marginTop={'16px'}
+                errorType={2}
+            />
+            </Grid>
+          )}
+        </Grid>
         <Grid item className={classes.SeparationLine} xs={12} />
         {renderCtaActions()}
       </Grid>

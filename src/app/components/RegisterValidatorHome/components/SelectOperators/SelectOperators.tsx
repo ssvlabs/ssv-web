@@ -74,7 +74,6 @@ const SelectOperators = () => {
     operatorStore.unselectAllOperators();
   };
 
-  if (true) {
     return (
       <BorderScreen
         link={{ to: config.routes.VALIDATOR.IMPORT, text: 'Back' }}
@@ -120,7 +119,6 @@ const SelectOperators = () => {
         ]}
       />
     );
-  }
 };
 
 export default observer(SelectOperators);

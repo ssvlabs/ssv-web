@@ -11,10 +11,12 @@ export const useStyles = makeStyles((theme) => ({
     AppBarIcon: {
         height: 48,
         width: 160.2,
+        cursor: 'pointer',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundImage: `url(/images/logo/${theme.darkMode ? 'light' : 'dark'}.svg)`,
+
     },
     Linkbuttons: {
         width: 391,
@@ -29,13 +31,24 @@ export const useStyles = makeStyles((theme) => ({
             width: 144,
             marginRight: theme.spacing(5),
             color: theme.colors.primaryBlue,
+            '&:hover': {
+                color: theme.colors.primaryBlue,
+            },
         },
         '&:nth-of-type(2)': {
             width: 116,
+            color: theme.colors.black,
             marginRight: theme.spacing(5),
+            '&:hover': {
+                color: theme.colors.black,
+            },
         },
         '&:nth-of-type(3)': {
             width: 91,
+            color: theme.colors.black,
+            '&:hover': {
+                color: theme.colors.black,
+            },
         },
     },
     // root: {

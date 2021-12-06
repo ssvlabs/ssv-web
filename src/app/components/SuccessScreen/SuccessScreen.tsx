@@ -9,7 +9,7 @@ import Screen from '~app/common/components/Screen/Screen';
 import OperatorStore from '~app/common/stores/Operator.store';
 import ValidatorStore from '~app/common/stores/Validator.store';
 import ConditionalLink from '~app/common/components/ConditionalLink';
-import LinkButton from '~app/common/components/LinkButton/LinkButton';
+// import LinkButton from '~app/common/components/LinkButton/LinkButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 
 const SuccessScreen = () => {
@@ -29,16 +29,18 @@ const SuccessScreen = () => {
   let icon: string = '';
 
   if (operatorStore.newOperatorRegisterSuccessfully) {
-    icon = 'success_operator_icon';
+    icon = 'successImages/success_operator_icon';
     subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
     monitorHeader = 'Monitor Operator';
     monitorText = 'validatorStore your operator\'s prefomance and manage it in the account dashboard';
   } else if (validatorStore.newValidatorReceipt) {
-    icon = 'success_validator_icon';
+    icon = 'successImages/success_validator_icon';
     subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
     monitorHeader = 'Monitor Validator';
     monitorText = 'View your validator performance in our explorer';
   }
+  monitorHeader;
+  monitorText;
 
   const redirectTo = () => {
     history.push(config.routes.MY_ACCOUNT.DASHBOARD);
@@ -56,7 +58,7 @@ const SuccessScreen = () => {
           </Grid>
           <Grid item xs={12} className={classes.linkWrapper}>
             <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={redirectTo}>
-              <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} />
+              {/* <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} /> */}
             </ConditionalLink>
           </Grid>
         </Grid>

@@ -20,11 +20,9 @@ const CheckBox = (props: Props) => {
     return (
       <Grid container className={classes.CheckBoxWrapper} onClick={checkAction}>
         <Grid item>
-          <Grid className={classes.BoxWrapper}>
-            <Grid className={checked ? classes.Checkbox : ''} />
-          </Grid>
+          <Grid className={`${classes.BoxWrapper} ${checked ? classes.Checked : ''}`} />
         </Grid>
-        <Grid item>
+        <Grid item className={classes.Text}>
           <Grid>{text}</Grid>
         </Grid>
       </Grid>

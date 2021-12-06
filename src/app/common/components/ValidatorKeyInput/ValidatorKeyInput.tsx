@@ -1,45 +1,45 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Link from '@material-ui/core/Link';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { getImage } from '~lib/utils/filePath';
+import Grid from '@material-ui/core/Grid';
+import { useStores } from '~app/hooks/useStores';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 import { useStyles } from './ValidatorKeyInput.styles';
 
 type ValidatorPrivateKeyInputProps = {
-  validatorKey: string,
-  link?: string,
-  newTab?: boolean,
-  image?: string, 
-  imageCallBack?: any,
+    withCopy?: boolean,
+    validatorKey: string,
+    withBeaconcha?: boolean,
 };
 
 const ValidatorKeyInput = (props: ValidatorPrivateKeyInputProps) => {
-  const classes = useStyles();
-  const { validatorKey, link, newTab = true, image, imageCallBack } = props;
-  const beaconchaBaseUrl = getBaseBeaconchaUrl();
-  const href: string = link || `${beaconchaBaseUrl}/validator/${validatorKey}`;
-  const shouldBlank: string = newTab ? '_blank' : '';
-  const img: string = image ?? getImage('external_link.svg');
-  return (
-    <OutlinedInput
-      className={classes.wideWidthInput}
-      data-testid="validator-private-key-slashing-input"
-      type="text"
-      inputProps={{ className: classes.input }}
-      value={validatorKey}
-      endAdornment={(
-        <Link href={href} target={shouldBlank} onClick={() => { imageCallBack && imageCallBack(); }}>
-          <InputAdornment position="end" className={classes.inputAddonContainer}>
-            <img src={img} alt="Beaconcha.in" className={classes.inputAddonImage} />
-          </InputAdornment>
-        </Link>
-      )}
-      labelWidth={0}
-      readOnly
-    />
-  );
+    const stores = useStores();
+    const classes = useStyles();
+    const { validatorKey, withBeaconcha, withCopy } = props;
+    const beaconchaBaseUrl = getBaseBeaconchaUrl();
+    const href: string = `${beaconchaBaseUrl}/validator/${validatorKey}`;
+    const notificationsStore: NotificationsStore = stores.Notifications;
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(validatorKey);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
+
+    const openExplorer = () => {
+        window.open(href);
+    };
+
+    return (
+      <Grid
+        container
+        className={classes.Wrapper}
+        data-testid="validator-private-key-slashing-input"
+        >
+        <Grid item xs className={classes.PublicKey}>{validatorKey}</Grid>
+        {withCopy && <Grid item className={classes.CopyImage} onClick={copyToClipboard} />}
+        {withBeaconcha && <Grid item className={classes.ExplorerImage} onClick={openExplorer} />}
+      </Grid>
+    );
 };
 
 export default observer(ValidatorKeyInput);

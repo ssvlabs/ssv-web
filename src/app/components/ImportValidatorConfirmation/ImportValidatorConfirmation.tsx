@@ -1,7 +1,6 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import React, { useEffect, useState } from 'react';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
@@ -9,8 +8,6 @@ import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
-import DataSection from '~app/common/components/DataSection';
 import ValidatorStore from '~app/common/stores/Validator.store';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import CTAButton from '~app/common/components/CTAButton/CTAButton';
@@ -19,15 +16,9 @@ import ApplicationStore from '~app/common/stores/Application.store';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import { useStyles } from './ImportValidatorConfirmation.styles';
-
-interface dataSection {
-    key: any,
-    value: any,
-    header?: true,
-    strong?: string
-}
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
@@ -65,92 +56,93 @@ const ImportValidatorConfirmation = () => {
         });
     };
 
-    const data: dataSection[][] = [
-        [
-            { key: 'SELECTED OPERATORS', header: true, value: '', strong: '' },
-        ],
-        [
-            { key: 'TRANSACTION SUMMARY', header: true, value: '' },
-            {
-                key: <NameAndAddress name={'Operators yearly fee'} />,
-                value: '',
-                strong: `${formatNumberToUi(totalOperatorsYearlyFee)} SSV`,
-            },
-            {
-                key: <NameAndAddress name={'Network yearly fee'} />,
-                value: '',
-                strong: `${ssvStore.getFeeForYear(ssvStore.networkFee)} SSV`,
-            },
-            {
-                key: <NameAndAddress name={'Liquidation collateral'} />,
-                value: '',
-                strong: `${formatNumberToUi(liquidationCollateral)} SSV`,
-            },
-            {
-                key: <NameAndAddress styleWrapperClass={classes.TotalWrapper} name={'Total'}
-                  styleNameClass={classes.GreenColor} />,
-                value: <NameAndAddress styleWrapperClass={classes.TotalWrapper} name={`${totalAmountOfSsv} SSV`}
-                  styleNameClass={classes.GreenColor} address={'~$490'} />,
-            },
-        ],
+    const fields = [
+        { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
+        { key: 'Network yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
+        { key: 'Liquidation collateral', value: formatNumberToUi(totalOperatorsYearlyFee) },
     ];
-    Object.values(operatorStore.selectedOperators).forEach((operator: IOperator) => {
-        if (operator.fee) {
-            data[0].push({
-                key: <NameAndAddress styleWrapperClass={classes.NameAndAddressWrapper} name={operator.name}
-                  address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`} />,
-                value: <SsvAndSubTitle ssv={formatNumberToUi(ssvStore.getFeeForYear(operator.fee))} subText={'/year'} />,
-            });
-        }
-    });
-    data[0].push({
-        key: <Grid style={{ borderBottom: 'solid 1px rgb(225, 229, 236)' }} />,
-        value: <Grid style={{ borderBottom: 'solid 1px rgb(225, 229, 236)' }} />,
-    });
 
     return (
-      <Screen
-        navigationText={translations.VALIDATOR.SLASHING_WARNING.TITLE}
-        navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
-        title={translations.VALIDATOR.CONFIRMATION.TITLE}
-        subTitle={translations.VALIDATOR.CONFIRMATION.DESCRIPTION}
-        body={(
-          <Grid container spacing={3}>
-            <Grid item xs className={classes.validatorTextWrapper}>
-              <div className={classes.validatorText}>VALIDATOR</div>
-              <ValidatorKeyInput validatorKey={validatorStore.validatorPublicKey} />
-            </Grid>
+      <BorderScreen
+        sectionClass={classes.Section}
+        withConversion
+        header={translations.VALIDATOR.CONFIRMATION.TITLE}
+        link={{ to: config.routes.VALIDATOR.SLASHING_WARNING, text: 'Back' }}
+        body={[
+          <Grid container>
             <TransactionPendingPopUp txHash={txHash} />
-            <DataSection data={data} />
-            <Grid container>
-              {(operatorStore.getSelectedOperatorsFee + 0) * 2 > ssvStore.ssvBalance ? (
-                <Grid xs={12} className={classes.InsufficientBalanceWrapper}>
-                  Insufficient SSV balance. There is not enough SSV in your wallet. <Link
-                    className={classes.ReadMore} href="https://discord.gg/5DZ7Sm9D4W" target="_blank">Need
-                    SSV?</Link>
-                </Grid>
-                        ) : (
-                          <Grid xs={12} className={classes.SufficientBalanceWrapper}>
-                            Presented prices are just an estimation and may vary. <Link className={classes.ReadMore}
-                              href="https://discord.gg/5DZ7Sm9D4W"
-                              target="_blank">Read
-                              more </Link>
-                          </Grid>
-                        )}
+            <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+            <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
+            <Grid container item xs={12} className={classes.RowWrapper}>
+              <Grid item className={classes.SubHeader}>Selected Public Key</Grid>
+              {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+                            return (
+                              <Grid container item xs={12} className={classes.Row}>
+                                <Grid item>
+                                  <NameAndAddress
+                                    name={operator.name}
+                                    address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`}
+                                  />
+                                </Grid>
+                                <Grid item xs>
+                                  <SsvAndSubTitle
+                                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operator.fee ?? 0))}
+                                    subText={'/year'}
+                                  />
+                                </Grid>
+                              </Grid>
+                            );
+              })}
             </Grid>
-          </Grid>
-        )}
-        actionButton={(
-          <CTAButton
-            checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
-            checkBoxesCallBack={[selectCheckBox]}
-            withAllowance
-            testId={'confirm-button'}
-            disable={!checked}
-            onClick={onRegisterValidatorClick}
-            text={actionButtonText}
-          />
-        )}
+          </Grid>,
+          <Grid container>
+            <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
+            {fields.map((field) => {
+                        return (
+                          <Grid item container className={classes.Row}>
+                            <Grid item>
+                              <NameAndAddress name={field.key} />
+                            </Grid>
+                            <Grid item xs>
+                              <SsvAndSubTitle ssv={field.value} />
+                            </Grid>
+                          </Grid>
+                        );
+            })}
+          </Grid>,
+          <Grid container>
+            <Grid item xs>
+              <NameAndAddress name={'Total'} />
+            </Grid>
+            <Grid item>
+              <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
+            </Grid>
+            {<Grid container item className={classes.InsufficientBalanceWrapper}>
+              <Grid item xs>
+                Insufficient SSV balance. There is not enough SSV in your wallet.
+              </Grid>
+              <Grid item>
+                <a
+                  href="https://discord.gg/5DZ7Sm9D4W"
+                  target="_blank"
+                      >
+                  Need SSV?
+                </a>
+              </Grid>
+            </Grid>}
+            <Grid container>
+              <CTAButton
+                checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
+                checkBoxesCallBack={[selectCheckBox]}
+                withAllowance
+                testId={'confirm-button'}
+                disable={!checked}
+                onClick={onRegisterValidatorClick}
+                text={actionButtonText}
+              />
+            </Grid>
+          </Grid>,
+        ]}
       />
     );
 };

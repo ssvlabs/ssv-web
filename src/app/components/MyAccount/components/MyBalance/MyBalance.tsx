@@ -68,7 +68,7 @@ const MyBalance = () => {
             <Grid item className={classes.ActionButton} onClick={() => { history.push(config.routes.MY_ACCOUNT.DEPOSIT); }}>
               Deposit
             </Grid>
-                )}
+            )}
             <Grid item className={`${classes.ActionButton} ${!ssvStore.isValidatorState ? classes.ActionButtonLarge : ''}`} onClick={() => { history.push(config.routes.MY_ACCOUNT.WITHDRAW); }}>
               Withdraw
             </Grid>
@@ -100,7 +100,7 @@ const MyBalance = () => {
                 errorType={2}
               />
             </Grid>
-                )}
+          )}
         </Grid>
         <Grid item className={classes.SeparationLine} xs={12} />
         {renderCtaActions()}

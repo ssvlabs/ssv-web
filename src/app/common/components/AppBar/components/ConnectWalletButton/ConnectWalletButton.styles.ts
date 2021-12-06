@@ -1,29 +1,30 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
-    wrapper: {
-        backgroundColor: '#5B6C84',
-        borderRadius: '4px',
-        background: 'none',
-        color: 'inherit',
-        border: 'none',
-        padding: 0,
-        font: 'inherit',
+export const useStyles = makeStyles((theme) => ({
+    ConnectWalletWrapper: {
+        gap: 10,
+        height: 48,
+        fontSize: 16,
+        color: '#fff',
+        borderRadius: 8,
+        fontWeight: 600,
+        lineHeight: 1.25,
         cursor: 'pointer',
-        outline: 'inherit',
+        textAlign: 'center',
+        alignItems: 'center',
+        fontFamily: 'Manrope',
+        justifyContent: 'center',
+        padding: theme.spacing(3, 4, 3, 4),
+        width: (props: any) => props.walletConnected ? 189 : 171,
+        backgroundColor: (props: any) => props.walletConnected ? theme.colors.white : theme.colors.primaryBlue,
     },
-    dataWrapper: {
-      width: '97px',
-      height: '24px',
-      textAlign: 'center',
+    WalletImage: {
+        width: 24,
+        height: 24,
+        marginRight: theme.spacing(4),
     },
-    connectText: {
-        padding: '0px',
-        margin: '0px',
-        fontFamily: 'Encode Sans',
-        fontStyle: 'normal',
-        fontWeight: 500,
-        fontSize: '9px',
-        lineHeight: '150%',
+    WalletAddress: {
+        margin: 'auto -2px',
+        color: (props: any) => props.walletConnected ? theme.colors.gray90 : theme.colors.white,
     },
 }));

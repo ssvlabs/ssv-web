@@ -74,7 +74,7 @@ const ValidatorDropDownMenu = (props: Props) => {
                         );
           })}
         </Grid>
-            )}
+        )}
       </Grid>
     );
 };

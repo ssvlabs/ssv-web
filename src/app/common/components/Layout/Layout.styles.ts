@@ -3,9 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
   root: {
-    fontFamily: 'Encode Sans',
     '& *': {
-      fontFamily: 'Encode Sans',
     },
     '& input': {
       outline: 0,
@@ -14,7 +12,7 @@ export const useStyles = makeStyles(() => ({
       },
     },
     flexGrow: 1,
-    maxWidth: '540px',
+    // maxWidth: '540px',
     margin: 'auto',
     // maxWidth: '100%',
     // width: '30%',
@@ -30,9 +28,7 @@ export const useStyles = makeStyles(() => ({
     // },
   },
   dashboardRoot: {
-    fontFamily: 'Encode Sans',
     '& *': {
-      fontFamily: 'Encode Sans',
     },
     '& input': {
       outline: 0,
@@ -46,6 +42,6 @@ export const useStyles = makeStyles(() => ({
     [screenSizes.lg]: {
       width: '728px',
     },
-    maxWidth: '1080px',
+    maxWidth: '1200px',
   },
 }));

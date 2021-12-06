@@ -5,27 +5,36 @@ import { useStyles } from './DataSection.styles';
 
 const DataSection = ({ data }: any) => {
     const classes = useStyles();
+    classes;
     return (
-      <>
+      // <Grid container item>
+      //   {data.map((section: any, index: number) => (
+      //     <Grid container item key={index}>
+      //       {section.map((d: any, sectionIndex: number) => (
+      //         <Grid item className={classes.Section} key={sectionIndex}>
+      //           {d.key}
+      //           {d.value}
+      //         </Grid>
+      //       ))}
+      //     </Grid>
+      //   ))}
+      // </Grid>
+      <Grid container item>
         {data.map((section: any, index: number) => (
-          <Grid xs={12} item key={index}>
-            <Grid container spacing={0}>
-              {section.map((d: any, sectionIndex: number) => (
-                <Grid item className={classes.section} xs={12} key={sectionIndex}>
-                  <Grid container>
-                    <Grid item xs={6} className={`${d.header ? classes.header : classes.subHeader}`}>
-                      {d.key}
-                    </Grid>
-                    <Grid item xs={6} className={`${classes.dataValue}`}>
-                      {d.value}{d.strong && <strong>&nbsp;{d.strong}</strong>}
-                    </Grid>
-                  </Grid>
+          <Grid container item key={index} xs={12}>
+            {section.map((d: any, sectionIndex: number) => (
+              <Grid item xs={12} className={classes.Section} key={sectionIndex}>
+                <Grid item xs={6}>
+                  sd
                 </Grid>
-              ))}
-            </Grid>
+                <Grid item xs={6}>
+                  sda
+                </Grid>
+              </Grid>
+            ))}
           </Grid>
         ))}
-      </>
+      </Grid>
     );
 };
 export default observer(DataSection);

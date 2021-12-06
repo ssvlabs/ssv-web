@@ -1,26 +1,28 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
-    LoaderWrapper: {
-        width: '100%',
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        display: 'flex',
-        backgroundColor: 'rgba(255, 255, 255, 1)',
-        zIndex: 9999,
-        flexGrow: 1,
-        flexDirection: 'column',
-        alignContent: 'center',
-        alignItems: 'center',
-    },
-    Loader: {
-        position: 'absolute',
-        width: '200px',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-    },
-}));
+export const useStyles = makeStyles((theme) => {
+    return {
+        LoaderWrapper: {
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            flexGrow: 1,
+            zIndex: 9999,
+            width: '100%',
+            display: 'flex',
+            position: 'fixed',
+            alignItems: 'center',
+            alignContent: 'center',
+            flexDirection: 'column',
+            backgroundColor: theme.darkMode ? 'rgba(0, 0, 0, 1)' : 'rgba(255, 255, 255, 1)',
+        },
+        Loader: {
+            position: 'absolute',
+            width: '200px',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+        },
+    };
+});

@@ -14,12 +14,12 @@ class ApplicationStore extends BaseStore {
   @observable walletPopUp: boolean = false;
   @observable walletConnectivity: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
-  
-  @observable toolBarMenu: boolean = false;
 
   // @ts-ignore
   @observable theme: Theme;
   @observable darkMode: boolean = false;
+
+  @observable toolBarMenu: boolean = false;
 
   constructor() {
     super();
@@ -31,24 +31,10 @@ class ApplicationStore extends BaseStore {
       this.switchDarkMode(false);
     }
   }
-
-  @computed
-  get localStorage() {
-    try {
-      return localStorage;
-    } catch (e) {
-      return {
-        getItem(key: string): string | null {
-          return key;
-        },
-        setItem(key: string, value: string) {
-          return {
-            key,
-            value,
-          };
-        },
-      };
-    }
+  
+  @action.bound
+  setIsLoading(status: boolean) {
+    this.isShowingLoading = status;
   }
 
   @action.bound
@@ -56,20 +42,6 @@ class ApplicationStore extends BaseStore {
     this.darkMode = isDarkMode ?? !this.darkMode;
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
-  }
-
-  @computed
-  get isDarkMode() {
-    return this.darkMode;
-  }
-
-  get muiTheme(): Theme {
-    return this.theme;
-  }
-  
-  @action.bound
-  setIsLoading(status: boolean) {
-    this.isShowingLoading = status;
   }
 
   @action.bound
@@ -93,8 +65,37 @@ class ApplicationStore extends BaseStore {
   }
 
   @computed
+  get localStorage() {
+    try {
+      return localStorage;
+    } catch (e) {
+      return {
+        getItem(key: string): string | null {
+          return key;
+        },
+        setItem(key: string, value: string) {
+          return {
+            key,
+            value,
+          };
+        },
+      };
+    }
+  }
+
+  @computed
   get isLoading() {
     return this.isShowingLoading;
+  }
+
+  @computed
+  get muiTheme(): Theme {
+    return this.theme;
+  }
+
+  @computed
+  get isDarkMode() {
+    return this.darkMode;
   }
 
   @computed

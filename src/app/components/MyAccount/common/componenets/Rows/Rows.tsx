@@ -35,8 +35,8 @@ const Rows = (props: Props) => {
         return (
           <Grid container item>
             {isOperator && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
-            <Grid container item>
-              <Grid className={classes.Name}>{`0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
+            <Grid container item className={classes.Name}>
+              <Grid>{`0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
               <Grid className={classes.copyImage} />
               {!shouldDisplayStatus && displayStatus(status)}
             </Grid>

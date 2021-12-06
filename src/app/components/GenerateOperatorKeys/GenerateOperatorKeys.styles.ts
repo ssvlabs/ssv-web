@@ -1,33 +1,53 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    mainContainer: {
-        height: '100%',
-        width: 500,
-        maxWidth: '100%',
-        minHeight: 600,
-        padding: theme.spacing(4),
+    LinkButtonWrapper: {
+        width: 280,
+        display: 'flex',
+        cursor: 'pointer',
+        textAlign: 'center',
         alignItems: 'center',
-        alignContent: 'center',
+        '&:nth-of-type(1)': {
+            marginRight: '20px',
+        },
+    },
+    UnderButtonText: {
+        fontSize: 14,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        textAlign: 'center',
+        color: theme.colors.gray40,
+        marginTop: theme.spacing(2),
+    },
+
+    // NEED TO DELETE
+
+    mainContainer: {
+        width: 500,
+        height: '100%',
+        minHeight: 600,
         margin: 'auto',
+        maxWidth: '100%',
+        alignItems: 'center',
         flexDirection: 'row',
+        alignContent: 'center',
+        padding: theme.spacing(4),
     },
     TotalFees: {
         marginBottom: '32px',
         justifyContent: 'space-between',
     },
     TotalFeesHeader: {
-        textTransform: 'uppercase',
-        fontSize: '12px',
-        fontWeight: 'bold',
         lineHeight: 1.5,
+        fontSize: '12px',
         color: '#a1acbe',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
     checkboxText: {
         fontSize: '14px',
         fontWeight: 500,
         color: '#5B6C84',
-        fontFamily: 'Encode Sans',
     },
     passwordInput: {
         textSecurity: 'disc',
@@ -46,7 +66,11 @@ export const useStyles = makeStyles((theme) => ({
     },
     errorText: {},
     gridItem: {
-        marginBottom: '18px',
+        height: 74,
+        marginBottom: theme.spacing(5),
+        '&:last-of-type': {
+            marginBottom: 39,
+        },
     },
     inputWithHint: {
         backgroundColor: 'red',
@@ -169,13 +193,11 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     guideStepText: {
-        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 900,
         fontSize: 18,
     },
     guideStepSubText: {
-        fontFamily: 'Encode Sans',
     },
     arrowIcon: {
         float: 'right',

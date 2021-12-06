@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
-import styled from 'styled-components';
+// import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
-import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import SsvStore from '~app/common/stores/SSV.store';
@@ -13,17 +12,6 @@ import IntegerInput from '~app/common/components/IntegerInput';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import { useStyles } from './Deposit.styles';
-
-const Title = styled.div`
-  height: 18px;
-  font-size: 14px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: #a1acbe;
-`;
 
 const Deposit = () => {
     const stores = useStores();
@@ -42,7 +30,7 @@ const Deposit = () => {
     };
 
     return (
-      <div className={classes.DepositWrapper}>
+      <div>
         <BorderScreen
           withConversion
           header={'Deposit'}
@@ -50,9 +38,6 @@ const Deposit = () => {
           body={[
                     (
                       <Grid item container>
-                        <Grid item xs={12}>
-                          <Title>Amount</Title>
-                        </Grid>
                         <Grid container item xs={12} className={classes.BalanceWrapper}>
                           <Grid item container xs={12}>
                             <Grid item xs={6}>
@@ -65,8 +50,8 @@ const Deposit = () => {
                               />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                              <Grid item onClick={() => { setInputValue(ssvStore.ssvBalance); }}>
-                                <img className={classes.MaxButtonImage} src={getImage('max-button.svg')} />
+                              <Grid item onClick={() => { setInputValue(ssvStore.ssvBalance); }} className={classes.MaxButton}>
+                                MAX
                               </Grid>
                               <Grid item className={classes.MaxButtonText}>SSV</Grid>
                             </Grid>
@@ -84,11 +69,7 @@ const Deposit = () => {
                     ),
           ]}
           bottom={(
-            <Grid container className={classes.ButtonWrapper}>
-              <Grid item xs>
-                <CTAButton text={'Deposit'} disable={ssvStore.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
-              </Grid>
-            </Grid>
+            <CTAButton text={'Deposit'} disable={ssvStore.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
           )}
         />
       </div>

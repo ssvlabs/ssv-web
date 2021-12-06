@@ -18,7 +18,6 @@ import ValidatorTransactionConfirmation from '~app/components/ImportValidatorCon
 import ImportValidator from '~app/components/RegisterValidatorHome/components/ImportValidator';
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/RegisterValidatorHome/components/SlashingWarning';
-import FileApproval from '~app/components/RegisterValidatorHome/components/FileApproval/FileApproval';
 import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 import AccountBalanceAndFee from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee';
@@ -76,26 +75,23 @@ const Routes = () => {
                 <Route exact path={config.routes.VALIDATOR.HOME}>
                   <RegisterValidatorHome />
                 </Route>
+                <Route exact path={config.routes.VALIDATOR.CREATE}>
+                  <CreateValidator />
+                </Route>
                 <Route exact path={config.routes.VALIDATOR.IMPORT}>
                   <ImportValidator />
+                </Route>
+                <Route exact path={config.routes.VALIDATOR.SELECT_OPERATORS}>
+                  <SelectOperators />
+                </Route>
+                <Route exact path={config.routes.VALIDATOR.DEPOSIT_VALIDATOR}>
+                  <DepositViaLaunchpad />
                 </Route>
                 <Route exact path={config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE}>
                   <AccountBalanceAndFee />
                 </Route>
                 <Route exact path={config.routes.VALIDATOR.SLASHING_WARNING}>
                   <SlashingWarning />
-                </Route>
-                <Route exact path={config.routes.VALIDATOR.CREATE}>
-                  <CreateValidator />
-                </Route>
-                <Route exact path={config.routes.VALIDATOR.DEPOSIT_VALIDATOR}>
-                  <DepositViaLaunchpad />
-                </Route>
-                <Route exact path={config.routes.VALIDATOR.DECRYPT}>
-                  <FileApproval />
-                </Route>
-                <Route exact path={config.routes.VALIDATOR.SELECT_OPERATORS}>
-                  <SelectOperators />
                 </Route>
                 <Route exact path={config.routes.VALIDATOR.CONFIRMATION_PAGE}>
                   <ValidatorTransactionConfirmation />

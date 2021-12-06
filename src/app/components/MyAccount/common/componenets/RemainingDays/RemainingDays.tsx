@@ -1,25 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import styled from 'styled-components';
 import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import Tooltip from '~app/common/components/Tooltip/Tooltip';
+import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import ProgressBar from '~app/components/MyAccount/common/componenets/ProgressBar';
-import { useStyles } from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays.styles';
 import ErrorText from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText';
-
-const Title = styled.div`
-  height: 18px;
-  font-size: 14px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: #a1acbe;
-`;
+import { useStyles } from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays.styles';
 
 type Props = {
     fromPage?: string,
@@ -61,7 +49,7 @@ const RemainingDays = (props: Props) => {
     return (
       <Grid item container className={wrapperClass}>
         <Grid item xs={12}>
-          <Title>Est. Remaining Days <Tooltip text={'need to implement'} /></Title>
+          <Grid className={classes.AmountOfDaysText}>Est. Remaining Days <Tooltip text={'need to implement'} /></Grid>
         </Grid>
         <Grid item className={`${classes.AmountOfDays} ${liquidationError ? classes.Red : ''}`}>{formatNumberToUi(currentRemainingDays, true)}</Grid>
         <Grid item className={`${classes.Days} ${liquidationError ? classes.Red : ''}`}>

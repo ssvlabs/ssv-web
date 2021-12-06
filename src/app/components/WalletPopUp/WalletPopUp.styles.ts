@@ -14,7 +14,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     header: {
         color: '#20EEC8',
-        fontFamily: 'Encode Sans',
         fontWeight: 800,
         fontSize: '20px',
     },
@@ -24,7 +23,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     connectButton: {
         cursor: 'pointer',
-        fontFamily: 'Encode Sans',
         backgroundColor: 'inherit',
         padding: '10px',
         border: '1px solid #5B6C84',

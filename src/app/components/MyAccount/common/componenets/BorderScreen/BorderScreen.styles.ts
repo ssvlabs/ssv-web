@@ -1,49 +1,56 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     BorderScreenWrapper: {
-        maxWidth: '560px',
+        width: 648,
         margin: '20px auto',
     },
     LinkWrapper: {
-        marginBottom: '20px',
+        marginBottom: theme.spacing(2),
     },
     ScreenWrapper: {
-        border: 'solid 1px #5b6c84',
-        // height: '416px',
-        borderRadius: '8px',
-        backgroundColor: '#fff',
+        borderRadius: 16,
+        backgroundColor: theme.colors.squareScreenBackground,
     },
     Section: {
-        padding: '16px',
         height: 'fit-content',
-        borderBottom: 'solid 1px #dce0e8',
+        padding: theme.spacing(8),
+        borderBottom: `solid 1px ${theme.colors.gray20}`,
+        '&:nth-child(2)': {
+            padding: theme.spacing(5, 8, 8, 8),
+        },
+    },
+    HeaderSection: {
+        padding: theme.spacing(8, 8, 0, 8),
+        height: 'fit-content',
     },
     Header: {
-        fontSize: '20px',
-        fontWeight: 900,
+        fontSize: 20,
+        fontWeight: 'bold',
         lineHeight: 1.4,
-        color: '#5b6c84',
+        color: theme.colors.gray40,
     },
     Conversion: {
-        width: '69px',
+        width: 88,
+        height: 28,
+        padding: 2,
         float: 'right',
-        height: '28px',
-        margin: '0 16px 16px 54px',
-        borderRadius: '1px',
-        border: 'solid 1px #5b6c84',
-        backgroundColor: '#fff',
+        borderRadius: 8,
+        border: `solid 1px ${theme.colors.gray20}`,
+        backgroundColor: theme.colors.gray10,
     },
     Currency: {
-        backgroundColor: '#fafafa',
-        color: '#5b6c84',
-        padding: '6px',
-        fontSize: '10px',
-        fontWeight: 600,
+        width: 40,
+        height: 22,
+        fontSize: 12,
+        borderRadius: 5,
+        fontWeight: 500,
         cursor: 'pointer',
+        padding: '2px 8px 1px 9px',
+        color: theme.colors.gray40,
     },
     SelectedCurrency: {
-        backgroundColor: '#5b6c84',
-        color: '#fff',
+        backgroundColor: theme.colors.gray60,
+        color: theme.colors.gray10,
     },
 }));

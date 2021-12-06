@@ -1,28 +1,29 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     CheckBoxWrapper: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
         cursor: 'pointer',
         alignItems: 'center',
-        textAlign: 'center',
-        marginBottom: '12px',
-        fontSize: '14px',
-        fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#5b6c84',
+        color: theme.colors.gray80,
+        marginBottom: theme.spacing(5),
     },
     BoxWrapper: {
+        width: 24,
+        height: 24,
+        borderRadius: 8,
         border: '1px solid #5b6c84',
-        width: '16px',
-        height: '16px',
-        padding: '2px',
-        marginLeft: '11px',
-        marginRight: '11px',
+        marginRight: theme.spacing(4),
     },
-    Checkbox: {
-        backgroundColor: '#5b6c84',
-        margin: 'auto',
-        width: '10px',
-        height: '10px',
+    Checked: {
+        width: 24,
+        height: 24,
+        border: 'none',
+        backgroundImage: `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
+    Text: {
+        maxWidth: 543,
     },
 }));

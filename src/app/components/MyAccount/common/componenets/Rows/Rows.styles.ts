@@ -2,12 +2,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     Name: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.62,
-        color: theme.colors.black,
-        marginBottom: theme.spacing(1),
+        '&:nth-of-type(1)': {
+            fontSize: 16,
+            fontWeight: 500,
+            lineHeight: 1.62,
+            color: theme.colors.black,
+            marginBottom: theme.spacing(1),
+        },
         '&:nth-of-type(2)': {
+            fontSize: 14,
+            fontWeight: 500,
+            lineHeight: 1.62,
             color: theme.colors.gray40,
             marginBottom: theme.spacing(0),
         },
@@ -25,7 +30,7 @@ export const useStyles = makeStyles((theme) => ({
         marginLeft: '6px',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/copy-${theme.darkMode ? 'white' : 'gray'}.svg)`,
+        backgroundImage: `url(/images/copy/${theme.darkMode ? 'white' : 'gray'}.svg)`,
     },
     Status: {
         width: '45px',
@@ -38,13 +43,13 @@ export const useStyles = makeStyles((theme) => ({
         textTransform: 'capitalize',
     },
     Active: {
-        backgroundColor: theme.colors.primarySuccessRegular,
+        backgroundColor: theme.colors.primarySuccessRegularOpacity,
         color: theme.colors.primarySuccessDark,
     },
     Inactive: {
         width: '52px',
         color: '#ec1c26',
-        backgroundColor: theme.colors.primaryErrorRegular,
+        backgroundColor: theme.colors.primaryErrorRegularOpacity,
     },
     Balance: {
         fontSize: '14px',
@@ -79,7 +84,7 @@ export const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
     },
     ExplorerImage: {
-        backgroundImage: `url(/images/chart/${theme.darkMode ? 'white' : 'gray'}.svg)`,
+        backgroundImage: `url(/images/chart/${theme.darkMode ? 'dark' : 'light'}.svg)`,
         // backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',

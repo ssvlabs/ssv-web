@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import CheckBox from '~app/common/components/CheckBox';
 import SsvStore from '~app/common/stores/SSV.store';
+import CheckBox from '~app/common/components/CheckBox';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import { useStyles } from '~app/common/components/CTAButton/CTAButton.styles';
 
 type ButtonParams = {
@@ -16,21 +16,11 @@ type ButtonParams = {
     onClick?: any,
     testId?: string,
     withAllowance?: boolean,
-    backgroundColor?: string,
     checkboxesText?: any[],
     checkBoxesCallBack?: any[],
 };
 
-const CTAButton = ({
-                       testId,
-                       withAllowance,
-                       disable,
-                       onClick,
-                       text,
-                       backgroundColor,
-                       checkboxesText,
-                       checkBoxesCallBack,
-                   }: ButtonParams) => {
+const CTAButton = (props: ButtonParams) => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
@@ -38,6 +28,7 @@ const CTAButton = ({
     const [userAllowance, setUserAllowance] = useState(false);
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
+    const { testId, withAllowance, disable, onClick, text, checkboxesText, checkBoxesCallBack } = props;
 
     useEffect(() => {
         if (!ssvStore.approvedAllowance && withAllowance && !isApprovalProcess) {
@@ -67,56 +58,40 @@ const CTAButton = ({
 
     const regulerButton = () => {
         return (
-          <Button
-            data-testid={testId}
-            style={{ backgroundColor }}
-            disabled={disable}
-            variant="contained"
-            color={'primary'}
-            className={classes.button}
+          <PrimaryButton
+            disable={disable}
+            dataTestId={testId}
             onClick={() => { checkWalletConnected(onClick); }}
-          >
-            {walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
-          </Button>
+            text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
+          />
         );
     };
 
     const userNeedApproval = () => {
         return (
-          <Grid item container justify={'space-between'} spacing={1}>
-            <Grid item xs>
-              <Button
-                data-testid={testId}
-                style={{ backgroundColor }}
-                disabled={userAllowance}
-                variant="contained"
-                color={'primary'}
-                className={classes.button}
+          <Grid item container>
+            <Grid item xs className={classes.ButtonWrapper}>
+              <PrimaryButton
+                dataTestId={testId}
+                text={approveButtonText}
+                disable={userAllowance || disable}
                 onClick={() => { checkWalletConnected(allowNetworkContract); }}
-              >
-                {approveButtonText}
-              </Button>
+              />
             </Grid>
             <Grid item xs>
-              <Button
-                data-testid={testId}
-                style={{ backgroundColor }}
-                disabled={!userAllowance || disable}
-                variant="contained"
-                color={'primary'}
-                className={classes.button}
-                onClick={() => { checkWalletConnected(onClick); }}
-              >
-                {walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
-              </Button>
+              <PrimaryButton
+                disable={!userAllowance || disable}
+                dataTestId={testId} onClick={() => { checkWalletConnected(onClick); }}
+                text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
+              />
             </Grid>
             <Grid container item xs={12}>
               <Grid item container className={classes.ProgressStepsWrapper}>
-                <Grid item className={`${classes.Step} ${classes.Checked} ${userAllowance ? classes.Finish : ''}`}>
+                <Grid item className={`${classes.Step} ${classes.Current} ${userAllowance ? classes.Finish : ''}`}>
                   {!userAllowance && <Typography className={classes.StepText}>1</Typography>}
                 </Grid>
                 <Grid item xs className={`${classes.Line} ${userAllowance ? classes.Finish : ''}`} />
-                <Grid item className={`${classes.Step} ${userAllowance ? classes.Checked : ''}`}>
+                <Grid item className={`${classes.Step} ${userAllowance ? classes.Current : ''}`}>
                   <Typography className={classes.StepText}>2</Typography>
                 </Grid>
               </Grid>

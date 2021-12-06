@@ -141,7 +141,6 @@ const MyAccount = () => {
                         });
                     }
                 });
-
                 // @ts-ignore
                 setOperators(operatorsData);
                 setLoadingOperators(false);
@@ -189,7 +188,7 @@ const MyAccount = () => {
           </Grid>
           <Grid item xs={6}>
             <Grid ref={wrapperRef} className={classes.AddButton} onClick={() => { displayDropDownMenu(!dropDownMenu); }}>
-              <Typography className={classes.AddButtonText}>+ Add</Typography>
+              <Typography className={classes.AddButtonText}>Add</Typography>
               {dropDownMenu && (
                 <Grid container className={classes.AddButtonDropDown}>
                   <Grid item xs={12} className={`${classes.AddButtonDropDownItem} ${liquidated ? classes.Disable : ''}`} onClick={() => { !liquidated && history.push(config.routes.VALIDATOR.HOME); }}>Run Validator</Grid>
@@ -215,7 +214,7 @@ const MyAccount = () => {
                 page={operatorsPage}
                 perPage={validators.length && operators.length ? 5 : 10}
                 onChangePage={setOperatorsPage}
-                isLoading={loadingOperators || operators.length === 0}
+                isLoading={loadingOperators}
               />
             </Grid>
             )}
@@ -230,7 +229,7 @@ const MyAccount = () => {
                 page={validatorsPage}
                 perPage={validators.length && operators.length ? 5 : 10}
                 onChangePage={setValidatorsPage}
-                isLoading={loadingValidators || validators.length === 0}
+                isLoading={loadingValidators}
               />
             </Grid>
             )}

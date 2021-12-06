@@ -1,59 +1,40 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
-    validatorTextWrapper: {
-        marginBottom: '20px',
+export const useStyles = makeStyles((theme) => ({
+    SubHeader: {
+        fontSize: 14,
+        fontWeight: 600,
+        lineHeight: 1.14,
+        color: theme.colors.gray40,
+        marginBottom: theme.spacing(2),
+    },
+    RowWrapper: {
+        marginTop: theme.spacing(5),
+    },
+    Row: {
+        marginBottom: theme.spacing(2),
+        '&:last-child': {
+            marginBottom: theme.spacing(0),
+        },
+    },
+    AlignRight: {
+        textAlign: 'right',
+    },
+    Section: {
+        height: 'fit-content',
+        padding: theme.spacing(4, 8, 4, 8),
+        borderBottom: `solid 1px ${theme.colors.gray20}`,
     },
     InsufficientBalanceWrapper: {
-        padding: '10px 18px 10px 16px',
-        borderRadius: '1px',
-        fontSize: '14px',
+        fontSize: 14,
         fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#ec1c26',
-        background: 'rgb(236, 28, 38, 0.08)',
-        marginTop: '10px',
-    },
-    SufficientBalanceWrapper: {
-        padding: '10px 18px 10px 16px',
-        borderRadius: '1px',
-        fontSize: '14px',
-        fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#5b6c84',
-        background: 'rgb(236, 168, 28, 0.12)',
-        marginTop: '10px',
-    },
-    validatorText: {
-        marginBottom: '6px',
-        fontFamily: 'Encode Sans',
-        fontStyle: 'normal',
-        color: '#A1ACBE',
-        fontSize: '12px',
-        fontWeight: 'bold',
-    },
-    etherLink: {
-        fontFamily: 'Encode Sans',
-        fontStyle: 'normal',
-        fontWeight: 500,
-        fontSize: '14px',
-        textDecoration: 'underline',
-        color: '#2B47E3',
-    },
-    ReadMore: {
-        float: 'right',
-        textDecoration: 'underline',
-    },
-    NameAndAddressWrapper: {
-        marginBottom: '10px',
-    },
-    GreenColor: {
-        fontSize: '18px',
-        fontWeight: 900,
-        lineHeight: 1.28,
-        color: 'rgb(32, 238, 200)',
-    },
-    TotalWrapper: {
-        marginTop: '10px',
+        borderRadius: 2,
+        lineHeight: 1.62,
+        color: theme.colors.gray90,
+        marginTop: theme.spacing(5),
+        padding: theme.spacing(3, 4),
+        marginBottom: theme.spacing(5),
+        border: `solid 1px ${theme.colors.primaryError}`,
+        backgroundColor: theme.colors.primaryErrorRegular,
     },
 }));

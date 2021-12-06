@@ -1,11 +1,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     Name: {
-        fontSize: '14px',
+        fontSize: 16,
         fontWeight: 500,
-        lineHeight: 1.43,
-        color: 'rgb(91, 108, 132)',
+        lineHeight: 1.62,
+        color: theme.colors.gray90,
     },
     Address: {
         fontSize: '12px',

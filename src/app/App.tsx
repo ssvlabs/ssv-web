@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react';
-import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { createGlobalStyle } from 'styled-components';
+import { Grid, MuiThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Routes from '~app/components/Routes';
 import { useStyles } from '~app/App.styles';
@@ -10,7 +11,6 @@ import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
 import SsvStore from '~app/common/stores/SSV.store';
 import BarMessage from '~app/common/components/BarMessage';
-// import PopupMessage from '~app/common/components/PopupMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
 
@@ -45,8 +45,15 @@ const App = () => {
         }
     }, [walletStore.walletConnected, ssvStore.accountLoaded]);
 
+    const GlobalStyle = createGlobalStyle`
+      body {
+        background-color: ${applicationStore.isDarkMode ? '#011627' : '#f4f7fa'};
+        font-family: 'Manrope', sans-serif;
+      }`;
+
     return (
       <MuiThemeProvider theme={applicationStore.muiTheme}>
+        <GlobalStyle />
         {triggerLoader && (
           <Grid container className={classes.LoaderWrapper}>
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />

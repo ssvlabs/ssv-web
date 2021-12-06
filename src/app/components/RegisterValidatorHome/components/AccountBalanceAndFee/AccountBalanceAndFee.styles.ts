@@ -1,20 +1,25 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
+    bodyTextWrapper: {
+        marginBottom: theme.spacing(5),
+    },
     bodyText: {
-        fontSize: '14px',
-        color: '#5B6C84',
-        fontStyle: 'normal',
-        fontFamily: 'Encode Sans',
+        fontSize: 16,
         fontWeight: 500,
-        marginBottom: '20px',
-        lineHeight: 1.43,
+        lineHeight: 1.62,
+        color: theme.colors.gray80,
+        marginBottom: theme.spacing(3),
     },
     ErrorTextWrapper: {
-        // height: '84px',
-        padding: '10px 16px 14px',
-        borderRadius: '1px',
+        height: 93,
+        borderRadius: 2,
+        padding: theme.spacing(3, 4),
+        marginBottom: theme.spacing(5),
         background: 'rgb(236, 28, 38, 0.08);',
+        border: `solid 1px ${theme.colors.primaryError}`,
+        backgroundColor: theme.colors.primaryErrorRegular,
+
     },
     ErrorText: {
         // height: '60px',

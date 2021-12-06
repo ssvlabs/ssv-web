@@ -1,9 +1,7 @@
 import { observer } from 'mobx-react';
-import styled from 'styled-components';
 import { Grid } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { getImage } from '~lib/utils/filePath';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
@@ -15,17 +13,6 @@ import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays';
 import { useStyles } from './Withdrew.styles';
-
-const Title = styled.div`
-  height: 18px;
-  font-size: 14px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: #a1acbe;
-`;
 
 const Withdraw = () => {
     const classes = useStyles();
@@ -53,7 +40,7 @@ const Withdraw = () => {
             if (success) setInputValue(0.0);
         });
     };
-    
+
     const inputHandler = (value: number) => {
         if (value > ssvStore.networkContractBalance) {
             setInputValue(ssvStore.networkContractBalance);
@@ -64,9 +51,6 @@ const Withdraw = () => {
 
     const secondBorderScreen = [(
       <Grid item container>
-        <Grid item xs={12}>
-          <Title>Amount</Title>
-        </Grid>
         <Grid container item xs={12} className={classes.BalanceWrapper}>
           <Grid item container xs={12}>
             <Grid item xs={6}>
@@ -79,8 +63,8 @@ const Withdraw = () => {
               />
             </Grid>
             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-              <Grid item onClick={() => { setInputValue(ssvStore.networkContractBalance); }}>
-                <img className={classes.MaxButtonImage} src={getImage('max-button.svg')} />
+              <Grid item onClick={() => { setInputValue(ssvStore.networkContractBalance); }} className={classes.MaxButton}>
+                MAX
               </Grid>
               <Grid item className={classes.MaxButtonText}>SSV</Grid>
             </Grid>
@@ -97,17 +81,13 @@ const Withdraw = () => {
     }
 
     return (
-      <div className={classes.DepositWrapper}>
+      <div>
         <BorderScreen
-          withConversion={false}
           header={'Available Balance'}
           link={{ to: config.routes.MY_ACCOUNT.DASHBOARD, text: translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT }}
           body={[
                     (
                       <Grid item container>
-                        <Grid item xs={12}>
-                          <Title>Current Balance</Title>
-                        </Grid>
                         <Grid item xs={12} className={classes.currentBalance}>
                           {formatNumberToUi(ssvStore.networkContractBalance)} SSV
                         </Grid>
@@ -123,7 +103,7 @@ const Withdraw = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={(
-            <Grid item xs={12} className={classes.CTAWrapper}>
+            <Grid item xs={12}>
               <FormControlLabel
                 onClick={() => { setUserAgreement(!userAgree); }}
                 style={{ marginBottom: '10px' }}
@@ -137,13 +117,12 @@ const Withdraw = () => {
                     I understand that withdrawing this amount will liquidate my account
                   </Typography>
                 )}
-                />
+              />
               <CTAButton
                 text={'Withdraw'}
-                disable={!userAgree || inputValue <= 0}
+                disable={!userAgree || inputValue !== 0}
                 onClick={withdrawSsv}
                 withAllowance
-                backgroundColor={userAgree ? buttonColor.userAgree : buttonColor.default}
               />
             </Grid>
           )}

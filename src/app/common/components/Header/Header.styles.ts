@@ -6,7 +6,6 @@ export const useStyles = makeStyles(() => ({
   },
   header: {
     letterSpacing: '0px',
-    fontFamily: 'Encode Sans',
     fontStyle: 'normal',
     fontWeight: 900,
     fontSize: '28px',
@@ -16,7 +15,6 @@ export const useStyles = makeStyles(() => ({
     },
   },
   subHeader: {
-    fontFamily: 'Encode Sans',
     fontStyle: 'normal',
     fontWeight: 500,
     fontSize: '14px',

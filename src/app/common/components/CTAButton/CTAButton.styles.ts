@@ -1,6 +1,10 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
+    ButtonWrapper: {
+        marginRight: theme.spacing(6),
+    },
+
     button: {
         color: '#FFFFFF',
         cursor: 'pointer',
@@ -13,48 +17,67 @@ export const useStyles = makeStyles(() => ({
             background: '#2a323e',
         },
     },
-    ProgressStepsWrapper: {
-        padding: '12px 23% 0px 23%',
-        alignItems: 'center',
-    },
-    Step: {
-        borderRadius: '50px',
+    ApprovalButton: {
+        width: 280,
+        height: 60,
+        borderRadius: 8,
+        lineHeight: 1.25,
+        cursor: 'pointer',
         textAlign: 'center',
-        border: 'solid 1px #5b6c84',
-        width: '24px',
-        height: '24px',
+        color: theme.colors.white,
+        padding: '20px 92px 20px 90px',
+        backgroundColor: theme.colors.primaryBlue,
+        '&:nth-child(1)': {
+            marginRight: theme.spacing(6),
+        },
+    },
+    ProgressStepsWrapper: {
+        alignItems: 'center',
+        padding: theme.spacing(4, 30, 0, 30),
     },
     StepText: {
-        margin: 'auto',
-        width: '9px',
-        paddingTop: '2px',
-        height: '100%',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        lineHeight: 1.5,
+        width: 10,
+        height: 22,
+        fontSize: 16,
+        fontWeight: 600,
         textAlign: 'center',
-        color: '#a1acbe',
-    },
-    FinishText: {
-
+        color: theme.colors.gray60,
+        // margin: 'auto',
+        // width: '9px',
+        // paddingTop: '2px',
+        // height: '100%',
+        // fontSize: '12px',
+        // fontWeight: 'bold',
+        // lineHeight: 1.5,
+        // textAlign: 'center',
+        // color: '#a1acbe',
     },
     Line: {
-        height: '2px',
-        verticalAlign: 'middle',
-        backgroundColor: 'rgb(91, 108, 132)',
+        height: 1,
+        width: 272,
+        margin: '15.5px 0',
+        backgroundColor: theme.colors.gray40,
     },
-    Checked: {
-        width: '24px',
-        height: '24px',
-        backgroundColor: 'rgb(91, 108, 132)',
-        borderRadius: '50px',
-        fontWeight: 'bold',
-        lineHeight: '1.5',
-        color: 'rgb(161, 172, 190)',
+    Step: {
+        width: 32,
+        height: 32,
+        borderRadius: 50,
+        textAlign: 'center',
+        padding: '3px 10px',
+        backgroundColor: theme.colors.gray10,
+        border: `solid 1px ${theme.colors.gray30}`,
+    },
+    Current: {
+        color: theme.colors.black,
+        backgroundColor: theme.colors.primarySuccessRegularOpacity,
+        border: `solid 1px ${theme.colors.primarySuccessDark}`,
     },
     Finish: {
-        backgroundImage: 'url(/images/step-done.svg)',
-        backgroundColor: '#20eec8',
         border: 'none',
+        backgroundSize: 'contain',
+        backgroundColor: '#20eec8',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'url(/images/step-done.svg)',
     },
 }));

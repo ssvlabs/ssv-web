@@ -9,7 +9,8 @@ export const useStyles = makeStyles((theme) => ({
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         margin: theme.spacing(0, 6, 0, 6),
-        transition: 'background-image 0.1s ease-in-out',
+        // transition: 'background-image 0.1s ease-in-out',
         backgroundImage: (props: any) => `url(/images/toggle/${props.isDarkMode ? 'dark' : 'light'}.svg)`,
+
     },
 }));

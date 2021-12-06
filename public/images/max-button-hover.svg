@@ -1,8 +1,0 @@
-<svg width="56" height="26" viewBox="0 0 56 26" xmlns="http://www.w3.org/2000/svg">
-    <g fill="none" fill-rule="evenodd">
-        <rect stroke="#fff" stroke-width="1.5" fill-opacity=".5" fill="#21D7B5" x=".75" y=".75" width="54.5" height="24.5" rx="12.25"/>
-        <text font-family="EncodeSans-SemiBold, Encode Sans" font-size="14" font-weight="500" fill="#fff">
-                            <tspan x="11.828" y="16.536">MAX</tspan>
-                        </text>
-    </g>
-</svg>

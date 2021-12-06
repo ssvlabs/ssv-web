@@ -4,7 +4,6 @@ export const useStyles = makeStyles(() => ({
     DropDownWrapper: {
         cursor: 'pointer',
         paddingLeft: '8px',
-        marginBottom: '10px',
     },
     ArrowDown: {
         height: '25px',

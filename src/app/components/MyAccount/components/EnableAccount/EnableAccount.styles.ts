@@ -1,42 +1,42 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
+    Section: {
+        padding: theme.spacing(4, 8, 4, 8),
+        height: 'fit-content',
+        borderBottom: `solid 1px ${theme.colors.gray20}`,
+        '&:nth-child(2)': {
+            padding: theme.spacing(5, 8, 4, 8),
+        },
+    },
     WarningWrapper: {
-        height: '120px',
-        padding: '10px 16px',
-        borderRadius: '1px',
-        background: 'rgb(236, 168, 28, 0.12)',
-        fontSize: '14px',
+        fontSize: 14,
         fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#5b6c84',
-        marginBottom: '32px',
+        borderRadius: 2,
+        lineHeight: 1.62,
+        color: theme.colors.black,
+        padding: theme.spacing(3, 4),
+        marginBottom: theme.spacing(5),
+        backgroundColor: 'rgba(255, 210, 10, 0.2)',
+        border: `solid 1px ${theme.colors.primaryWarningRegular}`,
     },
-    ButtonWrapper: {
-        margin: '16px',
+    SummaryTitle: {
+        fontSize: 14,
+        fontWeight: 600,
+        lineHeight: 1.14,
+        color: theme.colors.gray40,
+        marginBottom: theme.spacing(4),
     },
-    SummarySectionWrapper: {
-        borderTop: 'solid 1px #e1e5ec',
-        paddingTop: '16px',
+    OperatorsTitle: {
+        fontSize: 14,
+        fontWeight: 600,
+        lineHeight: 1.14,
+        color: theme.colors.gray40,
+        marginBottom: theme.spacing(2),
     },
     SummaryField: {
-        marginBottom: '10px',
+        marginBottom: theme.spacing(2),
         justifyContent: 'space-between',
-    },
-    BoldField: {
-        fontSize: '14px',
-        fontWeight: 'bold',
-        lineHeight: 1.43,
-        color: '#5b6c84',
-    },
-    GreenColor: {
-        fontSize: '18px',
-        fontWeight: 900,
-        lineHeight: 1.28,
-        color: 'rgb(32, 238, 200)',
-    },
-    TotalWrapper: {
-        marginTop: '10px',
     },
     AlignRight: {
         textAlign: 'right',

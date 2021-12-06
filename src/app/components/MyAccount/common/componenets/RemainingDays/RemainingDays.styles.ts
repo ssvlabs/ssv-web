@@ -1,22 +1,27 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     AmountOfDays: {
-        marginTop: '16px',
-        fontSize: '24px',
+        fontSize: 24,
         fontWeight: 500,
-        lineHeight: 1,
+        lineHeight: 1.24,
+        color: theme.colors.black,
         textAlign: 'left',
-        color: '#2a323e',
+    },
+    AmountOfDaysText: {
+        fontSize: 16,
+        lineHeight: 1.62,
+        fontWeight: 'bold',
+        color: theme.colors.gray40,
+        marginBottom: theme.spacing(2),
     },
     Days: {
-        width: '34px',
-        marginTop: '22px',
-        marginLeft: '6px',
-        fontSize: '14px',
+        fontSize: 16,
         fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#5b6c84',
+        lineHeight: 1.62,
+        color: theme.colors.gray40,
+        marginTop: theme.spacing(1.5),
+        marginLeft: theme.spacing(1),
     },
     NewDaysEstimation: {
         marginTop: '18px',

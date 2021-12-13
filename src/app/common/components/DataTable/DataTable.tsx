@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
-import TablePagination from '@material-ui/core/TablePagination';
+// import TablePagination from '@material-ui/core/TablePagination';
 import NewToolTip from '~app/common/components/ToolTip';
 import StyledRow from '~app/common/components/Table/StyledRow';
 import StyledCell from '~app/common/components/Table/StyledCell';
@@ -41,11 +41,13 @@ type DataTableProps = {
 };
 
 const skeletons = [0, 1, 2, 3, 4];
-const defaultPerPageOptions = [5, 10, 25, 50, 100];
+// const defaultPerPageOptions = [5, 10, 25, 50, 100];
 
 const DataTable = (props: DataTableProps) => {
   const { headers, data, totalCount, page, isLoading,
     onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage, onChangeRowsPerPage } = props;
+  hidePagination;
+  onChangeRowsPerPage;
   const classes = useStyles();
 
   const statusToolTipText = title === 'Operators' ?
@@ -112,21 +114,21 @@ const DataTable = (props: DataTableProps) => {
           </TableBody>
         </Table>
 
-        {!hidePagination && false && data?.length ? (
-          <TableContainerWrapper>
-            <TablePagination
-              page={page}
-              component="div"
-              count={totalCount}
-              rowsPerPage={perPage}
-              colSpan={headers.length}
-              ActionsComponent={PaginationActions}
-              rowsPerPageOptions={defaultPerPageOptions}
-              onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
-              onChangeRowsPerPage={(event: any) => onChangeRowsPerPage ? onChangeRowsPerPage(event.target.value) : null}
-            />
-          </TableContainerWrapper>
-        ) : ''}
+        {/* {!hidePagination && false && data?.length ? ( */}
+        {/*  <TableContainerWrapper> */}
+        {/*    <TablePagination */}
+        {/*      page={page} */}
+        {/*      component="div" */}
+        {/*      count={totalCount} */}
+        {/*      rowsPerPage={perPage} */}
+        {/*      colSpan={headers.length} */}
+        {/*      ActionsComponent={PaginationActions} */}
+        {/*      rowsPerPageOptions={defaultPerPageOptions} */}
+        {/*      onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null} */}
+        {/*      onChangeRowsPerPage={(event: any) => onChangeRowsPerPage ? onChangeRowsPerPage(event.target.value) : null} */}
+        {/*    /> */}
+        {/*  </TableContainerWrapper> */}
+        {/* ) : ''} */}
         <TableContainerWrapper>
           <PaginationActions
             page={page}

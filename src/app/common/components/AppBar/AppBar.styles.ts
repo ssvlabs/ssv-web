@@ -1,6 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
-
-// const toolBarColor = '#A1ACBE';
+import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme) => ({
     AppBarWrapper: {
@@ -18,14 +17,92 @@ export const useStyles = makeStyles((theme) => ({
         backgroundImage: `url(/images/logo/${theme.darkMode ? 'light' : 'dark'}.svg)`,
 
     },
+    SmallLogo: {
+        height: 40,
+        width: 28.5,
+        backgroundImage: `url(/images/logo/${theme.darkMode ? 'small_light' : 'small_light'}.svg)`,
+    },
     Linkbuttons: {
         width: 391,
-        margin: 'auto',
+        marginLeft: 'auto',
+    },
+    Wrapper: {
+        marginLeft: 'auto',
+    },
+    Hamburger: {
+        width: 24,
+        height: 24,
+        cursor: 'pointer',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        margin: theme.spacing(0, 6, 0, 6),
+        backgroundImage: `url(/images/hamburger/${theme.darkMode ? 'light' : 'light'}.svg)`,
+    },
+    MobileMenuBar: {
+        top: 80,
+        right: 0,
+        width: 272,
+        height: 305,
+        borderRadius: 16,
+        position: 'absolute',
+        marginRight: theme.spacing(4),
+        zIndex: theme.opacity.highPriority,
+        backgroundColor: theme.colors.white,
+        border: `solid 1px ${theme.colors.gray10}`,
+        boxShadow: '0 12px 40px 0 rgba(1, 22, 39, 0.12)',
+        [screenSizes.xs]: {
+            width: '100%',
+            marginRight: 0,
+            borderRadius: 0,
+        },
+    },
+    MenuButton: {
+        gap: 10,
+        width: 240,
+        height: 56,
+        fontSize: 16,
+        borderRadius: 8,
+        fontWeight: 600,
+        lineHeight: 1.25,
+        cursor: 'pointer',
+        alignItems: 'center',
+        color: theme.colors.gray90,
+        padding: theme.spacing(4, 6),
+        marginLeft: theme.spacing(4),
+        marginRight: theme.spacing(4),
+        justifyContent: 'flex-start',
+        '-webkit-tap-highlight-color': 'transparent',
+        '&:nth-of-type(1)': {
+            color: theme.colors.primaryBlue,
+            '&:hover': {
+                color: theme.colors.primaryBlue,
+            },
+        },
+        '&:first-child': {
+            margin: theme.spacing(4, 4, 0),
+        },
+        '&:last-child': {
+            margin: theme.spacing(0, 4, 4, 4),
+        },
+    },
+    RemoveBlue: {
+        color: `${theme.colors.gray90} !important`,
+    },
+    UnderLine: {
+        height: 1,
+        width: '100%',
+        margin: theme.spacing(4, 0, 4),
+        border: `solid 1px ${theme.colors.gray20}`,
+    },
+    Slider: {
+        padding: theme.spacing(4, 4),
     },
     LinkButton: {
         fontSize: 16,
         fontWeight: 600,
         lineHeight: 1.25,
+        cursor: 'pointer',
         color: theme.colors.black,
         '&:nth-of-type(1)': {
             width: 144,
@@ -51,78 +128,4 @@ export const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    // root: {
-    //   backgroundColor: toolBarColor,
-    //   flexGrow: 1,
-    //   alignItems: 'center',
-    // },
-    // bloxColor: {
-    //   backgroundColor: toolBarColor,
-    // },
-    // toolbar: {
-    //   height: '60px',
-    // },
-    // button: {
-    //   textDecoration: 'none',
-    //   color: 'white',
-    //   cursor: 'pointer',
-    //   fontFamily: 'Encode Sans',
-    //   fontWeight: 'bold',
-    //   userSelect: 'none',
-    //   fontStyle: 'normal',
-    //   fontSize: '12px',
-    //   lineHeight: '150%',
-    //   textTransform: 'uppercase',
-    //   [theme.breakpoints.down('md')]: {
-    //     display: 'none',
-    //   },
-    // },
-    // mainButton: {
-    //   textDecoration: 'none',
-    //   color: 'white',
-    //   cursor: 'pointer',
-    //   userSelect: 'none',
-    //   fontFamily: 'Fira Code',
-    //   fontStyle: 'normal',
-    //   fontWeight: 500,
-    //   fontSize: '14px',
-    //   display: 'inline-block',
-    // },
-    // menuIcon: {
-    //   cursor: 'pointer',
-    //   fontSize: '40px',
-    //   marginTop: '5px',
-    // },
-    // menu: {
-    //   verticalAlign: 'center',
-    //   [theme.breakpoints.up('lg')]: {
-    //     display: 'none',
-    //   },
-    // },
-    // fullScreen: {
-    //   color: 'white',
-    //   position: 'absolute',
-    //   backgroundColor: toolBarColor,
-    //   height: '187px',
-    //   width: '100%',
-    //   textAlign: 'center',
-    //   // paddingTop: '32px',
-    //   zIndex: 1000,
-    // },
-    // menuButton: {
-    //   fontWeight: 'bold',
-    //   width: '100%',
-    //   margin: 'auto',
-    //   color: 'white',
-    //   cursor: 'pointer',
-    //   fontFamily: 'Encode Sans',
-    //   userSelect: 'none',
-    //   fontStyle: 'normal',
-    //   fontSize: '12px',
-    //   lineHeight: '150%',
-    //   textTransform: 'uppercase',
-    // },
-    // menuButtonWrapper: {
-    //   marginTop: '32px',
-    // },
 }));

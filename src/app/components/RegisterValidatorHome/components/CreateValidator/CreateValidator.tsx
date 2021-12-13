@@ -15,7 +15,7 @@ const CreateValidator = () => {
 
       return (
         <BorderScreen
-          link={{ to: config.routes.MY_ACCOUNT.DASHBOARD, text: 'Back' }}
+          link={{ to: config.routes.VALIDATOR.HOME, text: 'Back' }}
           header={'Visit Ethereum Launchpad'}
           body={[
             <Grid container>

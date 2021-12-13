@@ -48,8 +48,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     Inactive: {
         width: '52px',
-        color: '#ec1c26',
-        backgroundColor: theme.colors.primaryErrorRegularOpacity,
+        color: theme.colors.primaryError,
+        backgroundColor: theme.colors.primaryErrorRegular,
     },
     Balance: {
         fontSize: '14px',

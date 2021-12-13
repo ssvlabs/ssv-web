@@ -33,27 +33,36 @@ const Welcome = () => {
             <HeaderSubHeader title={'Join the SSV Network'}
               subtitle={'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators'}
             />
-            <Grid container item justify={'space-evenly'}>
+            <Grid container item className={classes.LinkButtonsWrapper}>
               <Grid item className={classes.LinkButtonWrapper}>
-                <SecondaryButton text={'Run Validator'} onClick={() => { history.push(config.routes.VALIDATOR.HOME); }} />
+                <SecondaryButton
+                  withVerifyConnection
+                  text={'Run Validator'}
+                  onClick={() => { walletStore.connected && history.push(config.routes.VALIDATOR.HOME); }}
+                />
               </Grid>
               <Grid item className={classes.LinkButtonWrapper}>
-                <SecondaryButton text={'Join as Operator'} onClick={() => { history.push(config.routes.OPERATOR.HOME); }} />
+                <SecondaryButton
+                  withVerifyConnection
+                  text={'Join as Operator'}
+                  onClick={() => { walletStore.connected && history.push(config.routes.OPERATOR.HOME); }}
+                />
               </Grid>
             </Grid>
             {!walletStore.connected && (
               <Grid container item className={classes.OrLineWrapper}>
-                <Grid item className={classes.Line} />
+                <Grid item className={classes.Line} xs />
                 <Grid item className={classes.Or}>OR</Grid>
-                <Grid item className={classes.Line} />
+                <Grid item className={classes.Line} xs />
               </Grid>
               )}
             {!walletStore.connected && (
-              <PrimaryButton
-                text={'Connect Wallet'}
-                onClick={connectToWallet}
-                dataTestId={'connect-to-wallet-button'}
-              />
+            <PrimaryButton
+              withVerifyConnection
+              text={'Connect Wallet'}
+              onClick={connectToWallet}
+              dataTestId={'connect-to-wallet-button'}
+            />
               )}
           </Grid>,
             ]}

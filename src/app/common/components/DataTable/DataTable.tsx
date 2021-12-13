@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import { TableCell } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import Table from '@material-ui/core/Table';
+import { TableCell } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -33,17 +33,21 @@ type DataTableProps = {
   // eslint-disable-next-line no-unused-vars
   onChangePage?: (page: number) => void,
   // eslint-disable-next-line no-unused-vars
+  onChangeRowsPerPage?: (perPage: any) => void,
+  // eslint-disable-next-line no-unused-vars
   noDataMessage?: string,
   perPage: number,
   hidePagination?: boolean,
 };
 
 const skeletons = [0, 1, 2, 3, 4];
+const defaultPerPageOptions = [5, 10, 25, 50, 100];
 
 const DataTable = (props: DataTableProps) => {
   const { headers, data, totalCount, page, isLoading,
-    onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage } = props;
+    onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage, onChangeRowsPerPage } = props;
   const classes = useStyles();
+
   const statusToolTipText = title === 'Operators' ?
       'Monitoring indication whether the operator is performing his network duties for the majority of his validators (per the last 2 epochs).' :
       'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).';
@@ -108,20 +112,29 @@ const DataTable = (props: DataTableProps) => {
           </TableBody>
         </Table>
 
-        {!hidePagination && data?.length ? (
+        {!hidePagination && false && data?.length ? (
           <TableContainerWrapper>
             <TablePagination
-              ActionsComponent={PaginationActions}
-              colSpan={headers.length}
+              page={page}
               component="div"
               count={totalCount}
               rowsPerPage={perPage}
-              page={page}
-              labelRowsPerPage={false}
-              onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage + 1) : null}
+              colSpan={headers.length}
+              ActionsComponent={PaginationActions}
+              rowsPerPageOptions={defaultPerPageOptions}
+              onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
+              onChangeRowsPerPage={(event: any) => onChangeRowsPerPage ? onChangeRowsPerPage(event.target.value) : null}
             />
           </TableContainerWrapper>
         ) : ''}
+        <TableContainerWrapper>
+          <PaginationActions
+            page={page}
+            onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
+            count={totalCount}
+            rowsPerPage={perPage}
+          />
+        </TableContainerWrapper>
       </TableContainer>
     </div>
   );

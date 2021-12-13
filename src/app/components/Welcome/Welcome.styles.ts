@@ -1,3 +1,4 @@
+import screenSizes from '~lib/utils/screenSizes';
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
@@ -15,22 +16,39 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray80,
         marginBottom: theme.spacing(10),
     },
+    LinkButtonsWrapper: {
+        justify: 'space-evenly',
+        width: '100%',
+        [screenSizes.xs]: {
+            flexDirection: 'column',
+        },
+    },
     LinkButtonWrapper: {
-        width: 280,
         height: 60,
+        width: 280,
         display: 'flex',
         cursor: 'pointer',
         alignItems: 'center',
         '&:nth-of-type(1)': {
             marginRight: '20px',
         },
+        [screenSizes.xs]: {
+            width: '100%',
+            '&:nth-of-type(1)': {
+                marginBottom: '20px',
+            },
+        },
+        [screenSizes.md]: {
+            width: 182,
+        },
     },
     OrLineWrapper: {
         marginTop: 21,
         alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: theme.spacing(5),
     },
     Line: {
-        width: 260,
         height: 1,
         border: `solid 1px ${theme.colors.gray20}`,
     },

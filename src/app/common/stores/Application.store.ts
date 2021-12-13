@@ -2,6 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import BaseStore from '~app/common/stores/BaseStore';
 import { AppTheme } from '~root/Theme';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
 /**
@@ -14,6 +15,8 @@ class ApplicationStore extends BaseStore {
   @observable walletPopUp: boolean = false;
   @observable walletConnectivity: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
+
+  private walletStore: WalletStore = this.getStore('Wallet');
 
   // @ts-ignore
   @observable theme: Theme;
@@ -40,6 +43,7 @@ class ApplicationStore extends BaseStore {
   @action.bound
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
+    this.walletStore.onboardSdk.config({ darkMode: isDarkMode });
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }

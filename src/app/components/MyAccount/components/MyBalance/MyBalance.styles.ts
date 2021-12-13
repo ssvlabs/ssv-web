@@ -113,9 +113,11 @@ export const useStyles = makeStyles((theme) => ({
         // },
     },
     ActionButtonLarge: {
-        margin: '10px auto 0px !important',
-        backgroundColor: 'red',
-        maxWidth: '304px',
+        height: 60,
+        maxWidth: 360,
+        borderRadius: 8,
+        color: theme.colors.primaryBlue,
+        backgroundColor: theme.colors.tint90,
     },
     ActionButtonLiquidated: {
         maxWidth: '304px',

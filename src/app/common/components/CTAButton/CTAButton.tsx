@@ -39,7 +39,7 @@ const CTAButton = (props: ButtonParams) => {
     const checkWalletConnected = async (onClickCallBack: any) => {
         if (!walletStore.connected) await walletStore.connect();
         if (walletStore.isWrongNetwork) {
-            walletStore.alertNetworkError();
+           await walletStore.networkHandler(10);
         } else if (onClickCallBack) onClickCallBack();
     };
 

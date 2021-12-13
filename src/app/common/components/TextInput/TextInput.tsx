@@ -33,7 +33,7 @@ const TextInput = ({ value, onBlur, onChange, withLock, disable, showError, data
             disabled={disable}
             data-testid={dataTestId}
             className={classes.Input}
-            type={password ? 'text' : 'password'}
+            type={(!withLock || password) ? 'text' : 'password'}
           />
         </Grid>
         {withSideText && (

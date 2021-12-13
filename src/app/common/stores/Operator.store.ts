@@ -112,19 +112,23 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     async setOperatorFee(publicKey: string) {
-        if (this.operatorsFees[publicKey]) {
-            return this.operatorsFees[publicKey];
-        }
-        const walletStore: WalletStore = this.getStore('Wallet');
-        if (!walletStore.web3.utils || !publicKey) return;
-        const contract: Contract = walletStore.getContract();
-        return contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {
-            const ssv = walletStore.web3.utils.fromWei(response);
-            this.operatorsFees[publicKey] = { ssv, dollar: 0 };
-            return ssv;
-        }).catch(() => {
-            this.operatorsFees[publicKey] = { ssv: 0, dollar: 0 };
-            return 0;
+        return new Promise((resolve) => {
+            if (this.operatorsFees[publicKey]) {
+                return this.operatorsFees[publicKey];
+            }
+            const walletStore: WalletStore = this.getStore('Wallet');
+            if (!walletStore.web3.utils || !publicKey) return;
+            const contract: Contract = walletStore.getContract();
+            try {
+                contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {
+                    const ssv = walletStore.web3.utils.fromWei(response);
+                    this.operatorsFees[publicKey] = { ssv, dollar: 0 };
+                    resolve(ssv);
+                });
+            } catch {
+                this.operatorsFees[publicKey] = { ssv: 0, dollar: 0 };
+                resolve(0);
+            }
         });
     }
 
@@ -314,8 +318,8 @@ class OperatorStore extends BaseStore {
      * Load operators from external source
      */
     @action.bound
-    async loadOperators() {
-        if (this.operators.length) {
+    async loadOperators(forceLoad?: boolean) {
+        if (this.operators.length && !forceLoad) {
             return this.operators;
         }
         this.loadingOperator = true;
@@ -345,30 +349,29 @@ class OperatorStore extends BaseStore {
         //     return operatorsAdapted;
         // }));
 
-        await new ApiRequest(requestInfo)
+       return new ApiRequest(requestInfo)
             .sendRequest()
             .then(async (response: any) => {
                 this.loadingOperator = false;
                 this.operatorsLoaded = true;
-                this.operators = await Promise.all(response.operators.map(async (operator: any): Promise<any> => {
-                    const operatorsAdapted = await this.operatorAdapter(operator);
-                    this.hashedOperators[operator.public_key] = operatorsAdapted;
-                    return operatorsAdapted;
-                }));
+                this.operators = response.operators.map((operator: any) => {
+                    const adaptedOperator = this.operatorAdapter(operator);
+                    this.hashedOperators[operator.public_key] = adaptedOperator;
+                    return adaptedOperator;
+                });
+                return this.operators;
             });
 
-        return this.operators;
+        // return this.operators;
     }
 
-    async operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
+     operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
         const walletStore: WalletStore = this.getStore('Wallet');
         const decodePublicKey = walletStore.encodeKey(_object.public_key);
-        const operatorFee = await this.setOperatorFee(decodePublicKey);
         return {
             name: _object.name,
             ownerAddress: _object.owner_address,
             pubkey: decodePublicKey,
-            fee: operatorFee,
             verified: _object.type === 'verified_operator',
             dappNode: _object.type === 'dapp_node',
         };

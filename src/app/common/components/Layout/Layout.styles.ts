@@ -3,29 +3,24 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
   root: {
-    '& *': {
-    },
+    width: 648,
+    flexGrow: 1,
     '& input': {
       outline: 0,
       '&:focus': {
         border: '1px solid #A1ACBE',
       },
     },
-    flexGrow: 1,
-    // maxWidth: '540px',
     margin: 'auto',
-    // maxWidth: '100%',
-    // width: '30%',
-    // margin: 'auto',
-    '@media (max-width: 767px)': {
-      width: '90%',
+    [screenSizes.xs]: {
+      width: '100%',
     },
-    // '@media (max-width: 768px)': {
-    //   width: '50%',
-    // },
-    // '@media (max-width: 480px)': {
-    //   width: '90%',
-    // },
+    [screenSizes.md]: {
+      width: 452,
+    },
+    [screenSizes.lg]: {
+      width: 648,
+    },
   },
   dashboardRoot: {
     '& *': {

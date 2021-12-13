@@ -237,14 +237,15 @@ class SsvStore extends BaseStore {
     @action.bound
     initSettings() {
         this.ssvBalance = 0;
-        this.networkContractBalance = 0;
         this.networkFee = 0;
-        this.accountBurnRate = 0;
-        this.liquidationCollateral = 0;
-        this.userLiquidated = false;
         this.userOperators = [];
         this.userValidators = [];
+        this.accountBurnRate = 0;
         this.userAllowance = false;
+        this.userLiquidated = false;
+        // this.isAccountLoaded = false;
+        this.liquidationCollateral = 0;
+        this.networkContractBalance = 0;
     }
 
     /**

@@ -20,8 +20,8 @@ type ItemProps = {
 
 type Props = {
     items: ItemProps[],
-    shouldDisplayStatus: boolean,
-    shouldDisplayValidators: boolean
+    shouldDisplayStatus?: boolean,
+    shouldDisplayValidators?: boolean
 };
 
 const Rows = (props: Props) => {

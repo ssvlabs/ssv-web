@@ -1,41 +1,106 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import UnStyledLink from '~app/common/components/UnStyledLink';
+import { useHistory } from 'react-router-dom';
+import { useStores } from '~app/hooks/useStores';
+import SsvStore from '~app/common/stores/SSV.store';
+import ApplicationStore from '~app/common/stores/Application.store';
 import DarkModeSwitcher from '~app/common/components/AppBar/components/DarkModeSwitcher';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
 import { useStyles } from './AppBar.styles';
 
 const AppBar = () => {
+    const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const RouteLink = UnStyledLink(RouterLink);
+    const ssvStore: SsvStore = stores.SSV;
+    const wrapperRef = useRef(null);
+    const buttonsRef = useRef(null);
+    const [width, setWidth] = useState(window.innerWidth);
+    const [menuBar, openMenuBar] = useState(false);
+    const [showMobileBar, setMobileBar] = useState(false);
+    const applicationStore: ApplicationStore = stores.Application;
+    const hasAccounts = !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+
+    // Add event listener on screen size change
+    useEffect(() => {
+        window.addEventListener('resize', () => setWidth(window.innerWidth));
+    }, []);
+
+    useEffect(() => {
+        if (width < 1200 && !showMobileBar) {
+            setMobileBar(true);
+        } else if (width >= 1200 && showMobileBar) {
+            openMenuBar(false);
+            setMobileBar(false);
+        }
+    }, [width]);
+
+    useEffect(() => {
+        /**
+         * Close menu drop down when click outside
+         */
+        const handleClickOutside = (e: any) => {
+            // @ts-ignore
+            if (menuBar && wrapperRef.current && (!wrapperRef.current.contains(e.target) && !buttonsRef.current.contains(e.target))) {
+                openMenuBar(false);
+            }
+        };
+        // Bind the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            // Unbind the event listener on clean up
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [wrapperRef, buttonsRef, menuBar]);
 
     function openExplorer() {
         window.open('https://play.google.com/store/apps/details?id=com.drishya');
     }
 
+    const moveToDashboard = () => {
+        if (hasAccounts) {
+            history.push('/dashboard');
+        }
+    };
+
     return (
       <Grid container className={classes.AppBarWrapper}>
-        <Grid item className={classes.AppBarIcon} onClick={() => { history.push('/'); }} />
-        <Grid item container className={classes.Linkbuttons}>
-          <RouteLink to={'/dashboard'} className={classes.LinkButton}>
-            <Grid item>My Account</Grid>
-          </RouteLink>
-          <RouteLink to={'/dashboard'} onClick={openExplorer} className={classes.LinkButton}>
-            <Grid item>Explorer</Grid>
-          </RouteLink>
-          <RouteLink to={'/dashboard'} onClick={openExplorer} className={classes.LinkButton}>
-            <Grid item>Docs</Grid>
-          </RouteLink>
-        </Grid>
-        <Grid item>
+        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push('/'); }} />
+        {!showMobileBar && (
+          <Grid item container className={classes.Linkbuttons}>
+            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
+            <Grid item className={classes.LinkButton} onClick={openExplorer}>Docs</Grid>
+          </Grid>
+        )}
+        <Grid item className={classes.Wrapper}>
           <ConnectWalletButton />
         </Grid>
-        <Grid item>
-          <DarkModeSwitcher />
-        </Grid>
+        {!showMobileBar && (
+          <Grid item>
+            <DarkModeSwitcher margin />
+          </Grid>
+        )}
+        {showMobileBar && (
+          <Grid item ref={wrapperRef}>
+            <Grid className={classes.Hamburger} onClick={() => { openMenuBar(!menuBar); }} />
+          </Grid>
+        )}
+        {menuBar && (
+          <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
+            <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
+            <Grid item className={classes.MenuButton} onClick={openExplorer}>Docs</Grid>
+            <Grid item className={classes.UnderLine} />
+            <Grid item container className={`${classes.MenuButton} ${classes.Slider}`}>
+              <Grid item xs>{applicationStore.darkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
+              <Grid item>
+                <DarkModeSwitcher margin={false} />
+              </Grid>
+            </Grid>
+          </Grid>
+        )}
       </Grid>
     );
 };

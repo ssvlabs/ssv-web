@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { createGlobalStyle } from 'styled-components';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Routes from '~app/components/Routes';
 import { useStyles } from '~app/App.styles';
+import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
@@ -45,11 +45,7 @@ const App = () => {
         }
     }, [walletStore.walletConnected, ssvStore.accountLoaded]);
 
-    const GlobalStyle = createGlobalStyle`
-      body {
-        background-color: ${applicationStore.isDarkMode ? '#011627' : '#f4f7fa'};
-        font-family: 'Manrope', sans-serif;
-      }`;
+    const GlobalStyle = globalStyle();
 
     return (
       <MuiThemeProvider theme={applicationStore.muiTheme}>

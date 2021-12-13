@@ -1,70 +1,64 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
 import OperatorStore from '~app/common/stores/Operator.store';
 import ValidatorStore from '~app/common/stores/Validator.store';
-import ConditionalLink from '~app/common/components/ConditionalLink';
-// import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 
 const SuccessScreen = () => {
-  const stores = useStores();
-  const classes = useStyles();
-  const { redirectUrl, history } = useUserFlow();
+    const stores = useStores();
+    const classes = useStyles();
+    const walletStore: WalletStore = stores.Wallet;
+    const { redirectUrl, history } = useUserFlow();
+    const operatorStore: OperatorStore = stores.Operator;
+    const validatorStore: ValidatorStore = stores.Validator;
 
-  useEffect(() => {
-    redirectUrl && history.push(redirectUrl);
-  }, [redirectUrl]);
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
-  const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
-  let subTitle: any = '';
-  let monitorHeader: string = '';
-  let monitorText: string = '';
-  let icon: string = '';
+    let icon: string = '';
+    let subTitle: any = '';
+    let buttonText: string = '';
+    let monitorText: string = '';
 
-  if (operatorStore.newOperatorRegisterSuccessfully) {
-    icon = 'successImages/success_operator_icon';
-    subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
-    monitorHeader = 'Monitor Operator';
-    monitorText = 'validatorStore your operator\'s prefomance and manage it in the account dashboard';
-  } else if (validatorStore.newValidatorReceipt) {
-    icon = 'successImages/success_validator_icon';
-    subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
-    monitorHeader = 'Monitor Validator';
-    monitorText = 'View your validator performance in our explorer';
-  }
-  monitorHeader;
-  monitorText;
+    if (operatorStore.newOperatorRegisterSuccessfully) {
+        icon = 'operator';
+        buttonText = 'Monitor Operator';
+        subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
+        monitorText = 'View your operator\'s prefomance and manage it in the account dashboard';
+    } else if (validatorStore.newValidatorReceipt) {
+        icon = 'validator';
+        buttonText = 'Manage Validator';
+        subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
+        monitorText = 'View and mange your balance and validators in your account dashboard';
+    }
 
-  const redirectTo = () => {
-    history.push(config.routes.MY_ACCOUNT.DASHBOARD);
-  };
+    const redirectTo = async () => {
+        await operatorStore.loadOperators(true);
+        await walletStore.initializeUserInfo();
+        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+    };
 
-  return (
-    <Screen
-      // align
-      title={translations.SUCCESS.TITLE}
-      subTitle={subTitle}
-      body={(
-        <Grid className={classes.gridContainer} container spacing={0}>
-          <Grid item xs={12} className={classes.successImage}>
-            <img src={getImage(`${icon}.svg`)} className={classes.icon} />
-          </Grid>
-          <Grid item xs={12} className={classes.linkWrapper}>
-            <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={redirectTo}>
-              {/* <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} /> */}
-            </ConditionalLink>
-          </Grid>
-        </Grid>
-      )}
-    />
-  );
+    return (
+      <BorderScreen
+        header={translations.SUCCESS.TITLE}
+        body={[
+          <Grid item container>
+            <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>
+            <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />
+            <Grid item className={`${classes.Text} ${classes.SubImageText}`}>{monitorText}</Grid>
+            <PrimaryButton text={buttonText} onClick={redirectTo} />
+          </Grid>,
+        ]}
+        />
+    );
 };
 
 export default observer(SuccessScreen);

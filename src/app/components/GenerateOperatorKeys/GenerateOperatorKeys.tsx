@@ -107,10 +107,11 @@ const GenerateOperatorKeys = () => {
               subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
             <Grid container direction={'column'}>
               <Grid item className={classes.gridItem}>
-                <InputLabel title="Owner Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
+                <InputLabel title="Owner Address" withHint
+                  toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
                 <TextInput
-                  data-testid="new-operator-address"
                   disable
+                  data-testid="new-operator-address"
                   value={walletStore.accountAddress}
                   onBlur={(event: any) => { validateAddressInput(event.target.value, setAddressError); }}
                 />

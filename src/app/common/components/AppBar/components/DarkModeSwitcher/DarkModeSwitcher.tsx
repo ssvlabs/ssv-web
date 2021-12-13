@@ -5,10 +5,15 @@ import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from './DarkModeSwitcher.styles';
 
-const DarkModeSwitcher = () => {
+type Props = {
+    margin?: boolean,
+};
+
+const DarkModeSwitcher = (props: Props) => {
     const stores = useStores();
+    const { margin } = props;
     const applicationStore: ApplicationStore = stores.Application;
-    const classes = useStyles({ isDarkMode: applicationStore.darkMode });
+    const classes = useStyles({ isDarkMode: applicationStore.darkMode, margin });
 
     return (
       <Grid container onClick={() => { applicationStore.switchDarkMode(!applicationStore.darkMode); }}>

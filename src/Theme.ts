@@ -1,6 +1,7 @@
 declare module '@material-ui/core/styles/createMuiTheme' {
     interface Theme {
         colors?: any
+        opacity?: any,
         darkMode?: any
         appSpacing?: any
         applicationBackgroundColor?: any
@@ -8,6 +9,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
 
     interface ThemeOptions {
         colors?: any
+        opacity?: any,
         darkMode?: any
         appSpacing?: any
         applicationBackgroundColor?: any
@@ -54,6 +56,11 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             primarySuccess: '#ec1c26',
             primaryErrorRegular: isDarkMode ? 'rgba(236, 28, 38, 0.32)' : 'rgba(236, 28, 38, 0.12)',
             primarySuccessRegularOpacity: isDarkMode ? 'rgba(8, 200, 88, 0.32)' : 'rgba(8, 200, 88, 0.16)',
+        },
+        opacity: {
+            lowPriority: 1,
+            mediumPriority: 2,
+            highPriority: 3,
         },
     };
 };

@@ -112,6 +112,7 @@ const DataTable = (props: DataTableProps) => {
           </TableBody>
         </Table>
 
+        {/* eslint-disable-next-line no-constant-condition */}
         {!hidePagination && false && data?.length ? (
           <TableContainerWrapper>
             <TablePagination

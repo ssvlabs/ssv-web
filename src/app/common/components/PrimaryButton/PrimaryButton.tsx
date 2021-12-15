@@ -49,7 +49,7 @@ const PrimaryButton = (props: Props) => {
         <Button
           className={classes.PrimaryButton}
           data-testid={dataTestId}
-          disabled={disable}
+          disabled={disable || inProgress}
           onClick={submit}
         >
           {text}

@@ -22,6 +22,11 @@ export const useStyles = makeStyles((theme) => ({
         width: 28.5,
         backgroundImage: `url(/images/logo/${theme.darkMode ? 'small_light' : 'small_light'}.svg)`,
     },
+    SmallLogo: {
+        height: 40,
+        width: 28.5,
+        backgroundImage: `url(/images/logo/${theme.darkMode ? 'small_light' : 'small_light'}.svg)`,
+    },
     Linkbuttons: {
         width: 391,
         marginLeft: 'auto',

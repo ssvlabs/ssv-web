@@ -138,42 +138,43 @@ const MyAccount = () => {
             const validatorsIndexHigh = validatorsIndexLow + perPage;
             const pageValidators = ssvStore.userValidators.slice(validatorsIndexLow, validatorsIndexHigh);
             const balanceUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${pageValidators.join(',')}`;
-            await new ApiRequest({ url: balanceUrl, method: 'GET' }).sendRequest().then((beaconchaResponse: any) => {
+            await new ApiRequest({ url: balanceUrl, method: 'GET' }).sendRequest().then(async (beaconchaResponse: any) => {
                 const response = beaconchaResponse;
                 if (!Array.isArray(response.data)) {
                     response.data = [response.data];
                 }
-                pageValidators.forEach(async (validator, index: number) => {
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const validator of pageValidators) {
+                    const index: number = pageValidators.indexOf(validator);
                     const validatorBalance: any = response.data.filter((balance: any) => balance.pubkey === validator);
-                    buildValidatorStructure(validator, validatorBalance[0]).then((payload: any) => {
-                        console.log(payload);
-                        validatorsData.push(payload);
-                        if (index === pageValidators.length - 1) {
-                            console.log('now');
-                            // @ts-ignore
-                            setValidators(validatorsData);
-                            setLoadingValidators(false);
-                        }
-                    });
-                });
+                    // eslint-disable-next-line no-await-in-loop
+                    const payload: any = await buildValidatorStructure(validator, validatorBalance[0]);
+                    console.log(payload);
+                    validatorsData.push(payload);
+                    if (index === pageValidators.length - 1) {
+                        console.log('now');
+                        // @ts-ignore
+                        setValidators(validatorsData);
+                        setLoadingValidators(false);
+                    }
+                }
             });
         }
     };
 
     const buildValidatorStructure = async (validator: string, data: any) => {
-        return new Promise((resolve => {
-            if (!data) resolve({ publicKey: validator, status: 'inactive', balance: '0', apr: '0' });
-            const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${data.pubkey}/performance`;
-            new ApiRequest({ url, method: 'GET' }).sendRequest().then((performance: any) => {
-                const balance = formatNumberFromBeaconcha(data.balance);
-                const performance7days = performance.data ? formatNumberFromBeaconcha(performance.data.performance7d) : 0;
-                // @ts-ignore
-                const apr = formatNumberToUi(((performance7days / 32) * 100) * config.GLOBAL_VARIABLE.NUMBERS_OF_WEEKS_IN_YEAR);
-                const status = data.status === 'active_online' ? 'active' : 'inactive';
-                const publicKey = data.pubkey;
-                resolve({ publicKey, status, balance, apr });
-            });
-        }));
+        if (!data) return { publicKey: validator, status: 'inactive', balance: '0', apr: '0' };
+        const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${data.pubkey}/performance`;
+        return new ApiRequest({ url, method: 'GET' }).sendRequest().then((performance: any) => {
+            const balance = formatNumberFromBeaconcha(data.balance);
+            const performance7days = performance.data ? formatNumberFromBeaconcha(performance.data.performance7d) : 0;
+            // @ts-ignore
+            const apr = formatNumberToUi(((performance7days / 32) * 100) * config.GLOBAL_VARIABLE.NUMBERS_OF_WEEKS_IN_YEAR);
+            const status = data.status === 'active_online' ? 'active' : 'inactive';
+            const publicKey = data.pubkey;
+            return { publicKey, status, balance, apr };
+        });
     };
 
     const validatorsRows = Rows({

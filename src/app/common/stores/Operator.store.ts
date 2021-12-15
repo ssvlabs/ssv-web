@@ -81,27 +81,14 @@ class OperatorStore extends BaseStore {
         this.newOperatorRegisterSuccessfully = false;
     }
 
-    /**
-     * Set operator keys
-     * @param publicKey
-     */
-    @action.bound
-    getOperatorFee(publicKey: string): number {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        if (publicKey.startsWith('0x', 0)) {
-            // eslint-disable-next-line no-param-reassign
-            publicKey = walletStore.decodeKey(publicKey);
-        }
-        return this.operatorsFees[publicKey].ssv;
-    }
-
     @computed
     get getSelectedOperatorsFee(): number {
         let sum: number = 0;
         // @ts-ignore
         Object.keys(this.selectedOperators).forEach((index: number) => {
+            const fee = this.operatorsFees[this.selectedOperators[index].pubkey].ssv;
             // @ts-ignore
-            sum += parseFloat(this.selectedOperators[index].fee);
+            sum += parseFloat(fee);
         });
         return sum;
     }
@@ -111,13 +98,12 @@ class OperatorStore extends BaseStore {
      * @param publicKey
      */
     @action.bound
-    async setOperatorFee(publicKey: string) {
+    async getOperatorFee(publicKey: string): Promise<any> {
         return new Promise((resolve) => {
             if (this.operatorsFees[publicKey]) {
-                return this.operatorsFees[publicKey];
+                resolve(this.operatorsFees[publicKey].ssv);
             }
             const walletStore: WalletStore = this.getStore('Wallet');
-            if (!walletStore.web3.utils || !publicKey) return;
             const contract: Contract = walletStore.getContract();
             try {
                 contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {

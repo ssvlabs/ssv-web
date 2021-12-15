@@ -423,7 +423,7 @@ class SsvStore extends BaseStore {
         await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
             // hardcoded should be replace
             this.networkFee = 0.00001755593086049;
-            this.liquidationCollateral = response;
+            this.liquidationCollateral = Number(response);
         });
     }
 

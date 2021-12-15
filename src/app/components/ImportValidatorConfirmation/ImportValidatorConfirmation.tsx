@@ -33,8 +33,9 @@ const ImportValidatorConfirmation = () => {
     const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
     const totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
+    const yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
     const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
-    const totalAmountOfSsv = formatNumberToUi(liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + totalOperatorsYearlyFee);
+    const totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
 
     useEffect(() => {
         redirectUrl && history.push(redirectUrl);
@@ -58,8 +59,8 @@ const ImportValidatorConfirmation = () => {
 
     const fields = [
         { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
-        { key: 'Network yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
-        { key: 'Liquidation collateral', value: formatNumberToUi(totalOperatorsYearlyFee) },
+        { key: 'Network yearly fee', value: formatNumberToUi(yearlyNetworkFee) },
+        { key: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];
 
     return (
@@ -86,7 +87,7 @@ const ImportValidatorConfirmation = () => {
                                 </Grid>
                                 <Grid item xs>
                                   <SsvAndSubTitle
-                                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operator.fee ?? 0))}
+                                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
                                     subText={'/year'}
                                   />
                                 </Grid>
@@ -125,7 +126,7 @@ const ImportValidatorConfirmation = () => {
                 <a
                   href="https://discord.gg/5DZ7Sm9D4W"
                   target="_blank"
-                      >
+                >
                   Need SSV?
                 </a>
               </Grid>

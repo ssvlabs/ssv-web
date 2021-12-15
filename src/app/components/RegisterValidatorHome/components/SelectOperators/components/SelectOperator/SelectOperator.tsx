@@ -4,14 +4,14 @@ import Grid from '@material-ui/core/Grid';
 import { debounce } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
+import Fee from '~app/common/components/Fee';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import NameAndAddress from '~app/common/components/NameAndAddress';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 // import LinearProgress from '@material-ui/core/LinearProgress';
 import { useStyles } from './SelectOperator.styles';
-import NameAndAddress from '~app/common/components/NameAndAddress';
 
 type OperatorSelectorProps = {
   dataTestid: string,
@@ -22,9 +22,8 @@ type OperatorSelectorProps = {
 };
 
 const SelectOperator = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, index, dataTestid }: OperatorSelectorProps) => {
-  const classes = useStyles();
   const stores = useStores();
-  const contractSsv: SsvStore = stores.SSV;
+  const classes = useStyles();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const [selectedOperator, selectOperator] = useState('');
@@ -106,7 +105,7 @@ const SelectOperator = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, in
               </Grid>
               <Grid item onClick={() => { !operatorSelected && onSelectOperator(operator); }}>
                 {operator.verified || operator.dappNode ? (
-                  <Grid container className={operator.verified ? classes.verifiedText : classes.dappNode}>
+                  <Grid container className={operator.verified ? classes.verifiedText : classes.DappNode}>
                     <Grid item>
                       {operator.verified ? 'Verified' : 'DAppNode'}
                     </Grid>
@@ -120,10 +119,8 @@ const SelectOperator = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, in
             </Grid>
           </Grid>
         </Grid>
-        <Grid container xs>
-          <Grid item xs={12} className={classes.Fee}>
-            {contractSsv.getFeeForYear(operator.fee)} SSV
-          </Grid>
+        <Grid item container xs>
+          <Fee className={classes.Fee} publicKey={operator.pubkey} />
           <Grid className={classes.FeeDollar}>
             ~$757.5
           </Grid>

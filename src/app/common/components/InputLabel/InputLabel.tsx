@@ -55,6 +55,7 @@ type InputLabelProps = {
 
 const InputLabel = ({ children, title, subTitle, withHint, toolTipText, toolTipLink }: InputLabelProps) => {
   const classes = useStyles();
+  // eslint-disable-next-line no-constant-condition
   if (true) {
     return (
       <Grid container className={classes.Wrapper}>

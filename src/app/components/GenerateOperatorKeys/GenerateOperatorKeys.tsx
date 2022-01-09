@@ -48,8 +48,7 @@ const GenerateOperatorKeys = () => {
     // Inputs validation
     useEffect(() => {
         const isRegisterButtonEnabled = !inputsData.name
-            || !inputsData.publicKey
-            || !inputsData.fee
+            || !inputsData.publicKey || (!inputsData.fee && process.env.NEW_STAGE)
             || !walletStore.accountAddress
             || displayNameError.shouldDisplay
             || publicKeyError.shouldDisplay
@@ -83,6 +82,7 @@ const GenerateOperatorKeys = () => {
             address: walletStore.accountAddress,
             fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
         };
+
         applicationStore.setIsLoading(true);
         operatorStore.setOperatorKeys(operatorKeys);
         await operatorStore.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
@@ -147,24 +147,26 @@ const GenerateOperatorKeys = () => {
                 <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
                 {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
               </Grid>
-              <Grid item className={classes.gridItem}>
-                <InputLabel
-                  title="yearly fee per validator"
-                  withHint
-                  toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                  toolTipLink={config.links.TOOL_TIP_KEY_LINK}
-                />
-                <TextInput
-                  withSideText
-                  value={inputsData.fee}
-                  dataTestId={'new-operator-fee'}
-                  showError={feeError.shouldDisplay}
-                  onChange={(event: any) => { onInputChange('fee', event.target.value); }}
-                  onBlur={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
-                />
-                {feeError.shouldDisplay &&
-                <Typography className={classes.textError}>{feeError.errorMessage}</Typography>}
-              </Grid>
+              {process.env.NEW_STAGE && (
+                <Grid item className={classes.gridItem}>
+                  <InputLabel
+                    title="yearly fee per validator"
+                    withHint
+                    toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+                    toolTipLink={config.links.TOOL_TIP_KEY_LINK}
+                  />
+                  <TextInput
+                    withSideText
+                    value={inputsData.fee}
+                    dataTestId={'new-operator-fee'}
+                    showError={feeError.shouldDisplay}
+                    onChange={(event: any) => { onInputChange('fee', event.target.value); }}
+                    onBlur={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
+                  />
+                  {feeError.shouldDisplay &&
+                  <Typography className={classes.textError}>{feeError.errorMessage}</Typography>}
+                </Grid>
+              )}
             </Grid>
             <Checkbox onClickCallBack={setUserAgreement}
               text={'I understand that running my validator simultaneously in ffmultiple setups will cause slashing to my validator'} />

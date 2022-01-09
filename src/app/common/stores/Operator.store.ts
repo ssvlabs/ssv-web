@@ -172,9 +172,11 @@ class OperatorStore extends BaseStore {
             const payload = [
                 transaction.name,
                 transaction.pubKey,
-                // @ts-ignore
-                walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
             ];
+            if (process.env.NEW_STAGE) {
+                payload.push(walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)));
+            }
+
             console.debug('Register Operator Transaction Data:', payload);
             if (getGasEstimation) {
                 contract.methods.registerOperator(...payload)

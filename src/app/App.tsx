@@ -34,6 +34,10 @@ const App = () => {
         walletStore.checkConnection();
     }, []);
 
+    if (!process.env.REACT_APP_NEW_STAGE) {
+        console.log('<<<<<<<<<<<here>>>>>>>>>>>');
+    }
+
     useEffect(() => {
         if (!triggerLoader) shouldTriggerLoader(true);
         if (walletStore.walletConnected && ssvStore.accountLoaded && (!!ssvStore.userOperators.length || !!ssvStore.userValidators.length)) {

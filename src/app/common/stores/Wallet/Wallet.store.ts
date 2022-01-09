@@ -180,15 +180,17 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     this.ssvStore.setAccountLoaded(false);
-    await this.ssvStore.checkIfLiquidated();
-    await this.ssvStore.getSsvContractBalance();
-    await this.ssvStore.getNetworkContractBalance();
-    await this.ssvStore.getAccountBurnRate();
-    await this.operatorStore.loadOperators();
-    await this.ssvStore.fetchAccountOperators();
-    await this.ssvStore.fetchAccountValidators();
-    await this.ssvStore.getNetworkFees();
-    await this.ssvStore.checkAllowance();
+    if (process.env.NEW_STAGE) {
+      await this.ssvStore.checkIfLiquidated();
+      await this.ssvStore.getSsvContractBalance();
+      await this.ssvStore.getNetworkContractBalance();
+      await this.ssvStore.getAccountBurnRate();
+      await this.operatorStore.loadOperators();
+      await this.ssvStore.fetchAccountOperators();
+      await this.ssvStore.fetchAccountValidators();
+      await this.ssvStore.getNetworkFees();
+      await this.ssvStore.checkAllowance();
+    }
     this.ssvStore.setAccountLoaded(true);
   }
 
@@ -197,6 +199,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async syncBalance() {
+    if (!process.env.NEW_STAGE) return;
     if (!this.accountAddress) return;
     await this.ssvStore.getSsvContractBalance();
     await this.ssvStore.getNetworkContractBalance();

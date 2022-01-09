@@ -179,7 +179,7 @@ class OperatorStore extends BaseStore {
 
             console.debug('Register Operator Transaction Data:', payload);
             if (getGasEstimation) {
-                contract.methods.registerOperator(...payload)
+                this.conditionalContractFunction(contract, payload)
                     .estimateGas({ from: walletStore.accountAddress })
                     .then((gasAmount: any) => {
                         this.estimationGas = gasAmount * 0.000000001;
@@ -198,7 +198,8 @@ class OperatorStore extends BaseStore {
                     console.log(e);
                 });
             } else {
-                contract.methods.registerOperator(...payload)
+                // @ts-ignore
+                this.conditionalContractFunction(contract, payload)
                     .send({ from: address })
                     .on('receipt', async (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
@@ -363,6 +364,11 @@ class OperatorStore extends BaseStore {
             verified: _object.type === 'verified_operator',
             dappNode: _object.type === 'dapp_node',
         };
+    }
+
+    conditionalContractFunction(contract: any, payload: any[]) {
+        if (process.env.NEW_STAGE) return contract.methods.registerOperator(...payload);
+        return contract.methods.addOperator(...payload);
     }
 }
 

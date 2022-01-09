@@ -143,7 +143,11 @@ class OperatorStore extends BaseStore {
         try {
             const contractInstance = contract ?? walletStore.getContract();
             const encodeOperatorKey = await walletStore.encodeKey(publicKey);
-            this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey, fee: this.newOperatorKeys.fee });
+            this.setOperatorKeys({
+                name: this.newOperatorKeys.name,
+                pubKey: encodeOperatorKey,
+                fee: this.newOperatorKeys.fee,
+            });
             const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
@@ -169,12 +173,19 @@ class OperatorStore extends BaseStore {
             this.newOperatorReceipt = null;
 
             // Send add operator transaction
-            const payload = [
-                transaction.name,
-                transaction.pubKey,
-            ];
+            const payload = [];
             if (process.env.NEW_STAGE) {
-                payload.push(walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)));
+                payload.push(
+                    transaction.name,
+                    transaction.pubKey,
+                    walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
+                );
+            } else {
+                payload.push(
+                    transaction.name,
+                    transaction.address,
+                    transaction.pubKey,
+                );
             }
 
             console.debug('Register Operator Transaction Data:', payload);
@@ -279,7 +290,7 @@ class OperatorStore extends BaseStore {
 
     @action.bound
     unselectAllOperators() {
-      this.selectedOperators = {};
+        this.selectedOperators = {};
     }
 
     /**
@@ -338,7 +349,7 @@ class OperatorStore extends BaseStore {
         //     return operatorsAdapted;
         // }));
 
-       return new ApiRequest(requestInfo)
+        return new ApiRequest(requestInfo)
             .sendRequest()
             .then(async (response: any) => {
                 this.loadingOperator = false;
@@ -354,7 +365,7 @@ class OperatorStore extends BaseStore {
         // return this.operators;
     }
 
-     operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
+    operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
         const walletStore: WalletStore = this.getStore('Wallet');
         const decodePublicKey = walletStore.encodeKey(_object.public_key);
         return {

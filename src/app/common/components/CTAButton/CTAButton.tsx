@@ -109,7 +109,7 @@ const CTAButton = (props: ButtonParams) => {
                 text={checkboxText} /></Grid>
             );
         })}
-        {isApprovalProcess ? userNeedApproval() : regulerButton()}
+        {isApprovalProcess && process.env.NEW_STAGE ? userNeedApproval() : regulerButton()}
       </Grid>
     );
 };

@@ -119,8 +119,7 @@ class ValidatorStore extends BaseStore {
 
         if (getGasEstimation) {
           // Send add operator transaction
-          contract.methods
-              .registerValidator(...payload)
+          this.conditionalContractFunction(contract, payload)
               .estimateGas({ from: ownerAddress })
               .then((gasAmount: any) => {
                 this.addingNewValidator = true;
@@ -145,8 +144,7 @@ class ValidatorStore extends BaseStore {
               });
         } else {
           // Send add operator transaction
-          contract.methods
-              .registerValidator(...payload)
+          this.conditionalContractFunction(contract, payload)
               .send({ from: ownerAddress })
               .on('receipt', (receipt: any) => {
                 // eslint-disable-next-line no-prototype-builtins
@@ -187,9 +185,12 @@ class ValidatorStore extends BaseStore {
     const operatorStore: OperatorStore = this.getStore('Operator');
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
-    const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
-    const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
-    const totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
+    let totalAmountOfSsv = 0;
+    if (process.env.NEW_STAGE) {
+      const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
+      const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
+       totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
+    }
 
     return new Promise((resolve) => {
       // Get list of selected operator's public keys
@@ -213,8 +214,10 @@ class ValidatorStore extends BaseStore {
         operatorPublicKeys,
         sharePublicKeys,
         encryptedKeys,
-        walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)),
       ];
+      if (process.env.NEW_STAGE) {
+        payLoad.push(walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)));
+      }
       this.createValidatorPayLoad = payLoad;
       resolve(payLoad);
     });
@@ -237,6 +240,11 @@ class ValidatorStore extends BaseStore {
   setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
     this.validatorPrivateKeyFile = validatorPrivateKeyFile;
     this.validatorPrivateKey = '';
+  }
+
+  conditionalContractFunction(contract: any, payload: any[]) {
+    if (process.env.NEW_STAGE) return contract.methods.registerValidator(...payload);
+    return contract.methods.addValidator(...payload);
   }
 }
 

@@ -119,13 +119,15 @@ const SelectOperator = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, in
             </Grid>
           </Grid>
         </Grid>
+        {process.env.NEW_STAGE && (
         <Grid item container xs>
           <Fee className={classes.Fee} publicKey={operator.pubkey} />
           <Grid className={classes.FeeDollar}>
             ~$757.5
           </Grid>
         </Grid>
-        <Grid item xs>
+        )}
+        <Grid item xs style={{ alignSelf: process.env.NEW_STAGE ? '' : 'center' }}>
           <Grid container className={classes.verifiedWrapper} justify={'flex-end'}>
             <Grid item onClick={() => {
                 redirectTo(operator.pubkey);
@@ -161,7 +163,7 @@ const SelectOperator = ({ indexedOperator, shouldOpenMenu, openMenuWithIndex, in
       <div className={classes.menuWrapper} onScroll={lazyLoad}>
         <Grid container className={classes.DropDownMenuHeader}>
           <Grid item xs={6}>Operators Name</Grid>
-          <Grid item className={classes.YearlyFeeHeader}>Yearly Fee</Grid>
+          {process.env.NEW_STAGE && <Grid item className={classes.YearlyFeeHeader}>Yearly Fee</Grid>}
         </Grid>
         {operatorStore.operators.slice(0, batchIndex).map((operator: IOperator, operatorIndex) => {
           return (

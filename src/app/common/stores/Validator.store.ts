@@ -186,7 +186,7 @@ class ValidatorStore extends BaseStore {
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
     let totalAmountOfSsv = 0;
-    if (process.env.NEW_STAGE) {
+    if (process.env.REACT_APP_NEW_STAGE) {
       const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
       const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
        totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
@@ -215,8 +215,10 @@ class ValidatorStore extends BaseStore {
         sharePublicKeys,
         encryptedKeys,
       ];
-      if (process.env.NEW_STAGE) {
+      if (process.env.REACT_APP_NEW_STAGE) {
         payLoad.push(walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)));
+      } else {
+        payLoad.unshift(walletStore.accountAddress);
       }
       this.createValidatorPayLoad = payLoad;
       resolve(payLoad);
@@ -243,7 +245,7 @@ class ValidatorStore extends BaseStore {
   }
 
   conditionalContractFunction(contract: any, payload: any[]) {
-    if (process.env.NEW_STAGE) return contract.methods.registerValidator(...payload);
+    if (process.env.REACT_APP_NEW_STAGE) return contract.methods.registerValidator(...payload);
     return contract.methods.addValidator(...payload);
   }
 }

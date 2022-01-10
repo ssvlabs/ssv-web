@@ -67,7 +67,7 @@ const SelectOperators = () => {
   }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   const onSelectOperatorsClick = async () => {
-    if (process.env.NEW_STAGE) {
+    if (process.env.REACT_APP_NEW_STAGE) {
       history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
     } else {
       history.push(config.routes.VALIDATOR.SLASHING_WARNING);
@@ -110,7 +110,7 @@ const SelectOperators = () => {
               </Grid>
             </Grid>
             )}
-            {process.env.NEW_STAGE && (
+            {process.env.REACT_APP_NEW_STAGE && (
             <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
               <Grid item className={classes.TotalFeesHeader}>
                 Total Operators Yearly Fee

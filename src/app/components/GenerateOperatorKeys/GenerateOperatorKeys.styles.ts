@@ -106,6 +106,7 @@ export const useStyles = makeStyles((theme) => ({
         border: '1px solid #DCE0E8 !important',
     },
     textError: {
+        zIndex: 9123123,
         fontSize: '0.8rem',
         color: 'red',
     },

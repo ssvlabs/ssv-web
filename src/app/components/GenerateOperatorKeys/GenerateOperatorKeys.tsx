@@ -48,7 +48,7 @@ const GenerateOperatorKeys = () => {
     // Inputs validation
     useEffect(() => {
         const isRegisterButtonEnabled = !inputsData.name
-            || !inputsData.publicKey || (!inputsData.fee && process.env.NEW_STAGE)
+            || !inputsData.publicKey || (!inputsData.fee && process.env.REACT_APP_NEW_STAGE)
             || !walletStore.accountAddress
             || displayNameError.shouldDisplay
             || publicKeyError.shouldDisplay
@@ -147,7 +147,7 @@ const GenerateOperatorKeys = () => {
                 <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
                 {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
               </Grid>
-              {process.env.NEW_STAGE && (
+              {process.env.REACT_APP_NEW_STAGE && (
                 <Grid item className={classes.gridItem}>
                   <InputLabel
                     title="yearly fee per validator"

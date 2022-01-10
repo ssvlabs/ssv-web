@@ -174,7 +174,7 @@ class OperatorStore extends BaseStore {
 
             // Send add operator transaction
             const payload = [];
-            if (process.env.NEW_STAGE) {
+            if (process.env.REACT_APP_NEW_STAGE) {
                 payload.push(
                     transaction.name,
                     transaction.pubKey,
@@ -378,7 +378,7 @@ class OperatorStore extends BaseStore {
     }
 
     conditionalContractFunction(contract: any, payload: any[]) {
-        if (process.env.NEW_STAGE) return contract.methods.registerOperator(...payload);
+        if (process.env.REACT_APP_NEW_STAGE) return contract.methods.registerOperator(...payload);
         return contract.methods.addOperator(...payload);
     }
 }

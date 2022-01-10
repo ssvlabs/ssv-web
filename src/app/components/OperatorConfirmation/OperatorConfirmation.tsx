@@ -67,7 +67,7 @@ const OperatorConfirmation = () => {
                 <NameAndAddress name={operatorStore.newOperatorKeys.name} />
               </Grid>
             </Grid>
-            {process.env.NEW_STAGE && (
+            {process.env.REACT_APP_NEW_STAGE && (
               <Grid container item xs={12}>
                 <Grid item xs={6}>
                   <NameAndAddress name={'Fee'} />

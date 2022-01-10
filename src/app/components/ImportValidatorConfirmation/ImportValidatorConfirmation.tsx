@@ -36,7 +36,7 @@ const ImportValidatorConfirmation = () => {
     let yearlyNetworkFee = 0;
     let liquidationCollateral = 0;
     let totalAmountOfSsv;
-    if (process.env.NEW_STAGE) {
+    if (process.env.REACT_APP_NEW_STAGE) {
          totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
          yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
          liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
@@ -85,7 +85,7 @@ const ImportValidatorConfirmation = () => {
                             address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`}
                                 />
                         </Grid>
-                        {process.env.NEW_STAGE && (
+                        {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
                             ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
@@ -99,7 +99,7 @@ const ImportValidatorConfirmation = () => {
         </Grid>
       </Grid>,
     ];
-    if (process.env.NEW_STAGE) {
+    if (process.env.REACT_APP_NEW_STAGE) {
         components.push(
           <Grid container>
             <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
@@ -120,17 +120,17 @@ const ImportValidatorConfirmation = () => {
     }
     components.push(
       <Grid container>
-        {process.env.NEW_STAGE && (
+        {process.env.REACT_APP_NEW_STAGE && (
         <Grid item xs>
           <NameAndAddress name={'Total'} />
         </Grid>
             )}
-        {process.env.NEW_STAGE && (
+        {process.env.REACT_APP_NEW_STAGE && (
         <Grid item>
           <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
         </Grid>
             )}
-        {process.env.NEW_STAGE && (
+        {process.env.REACT_APP_NEW_STAGE && (
         <Grid container item className={classes.InsufficientBalanceWrapper}>
           <Grid item xs>
             Insufficient SSV balance. There is not enough SSV in your wallet.

@@ -76,9 +76,9 @@ const ImportValidatorConfirmation = () => {
         <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
           <Grid item className={classes.SubHeader}>Selected Public Key</Grid>
-          {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+          {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
                     return (
-                      <Grid container item xs={12} className={classes.Row}>
+                      <Grid key={index} container item xs={12} className={classes.Row}>
                         <Grid item>
                           <NameAndAddress
                             name={operator.name}

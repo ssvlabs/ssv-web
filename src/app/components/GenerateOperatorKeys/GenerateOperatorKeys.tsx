@@ -145,8 +145,8 @@ const GenerateOperatorKeys = () => {
                 />
                 {publicKeyError.shouldDisplay &&
                 <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
-                {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
               </Grid>
+              {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
               {process.env.REACT_APP_NEW_STAGE && (
                 <Grid item className={classes.gridItem}>
                   <InputLabel

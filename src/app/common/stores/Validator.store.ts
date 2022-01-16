@@ -197,6 +197,7 @@ class ValidatorStore extends BaseStore {
       const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
         return operator.pubkey;
       });
+
       // Collect all public keys from shares
       const sharePublicKeys: string[] = thresholdResult.shares.map((share: IShares) => {
         return share.publicKey;

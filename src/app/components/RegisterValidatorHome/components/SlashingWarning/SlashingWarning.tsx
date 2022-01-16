@@ -1,112 +1,58 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import { isMobile } from 'react-device-detect';
-import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import ApplicationStore from '~app/common/stores/Application.store';
+import Checkbox from '~app/common/components/CheckBox/CheckBox';
+import ValidatorStore from '~app/common/stores/Validator.store';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
-import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-
-const actionButtonMargin = isMobile ? '76px' : '136px';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import { useStyles } from '~app/components/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
-  const validatorStore: ContractValidator = stores.ContractValidator;
-  const applicationStore: ApplicationStore = stores.Application;
-  const [userAgreed, setUserAgreed] = useState(false);
-  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
-  const { redirectUrl, history } = useUserFlow();
+    const { redirectUrl, history } = useUserFlow();
+    const validatorStore: ValidatorStore = stores.Validator;
+    const [userAgreed, setUserAgreed] = useState(false);
 
   useEffect(() => {
     redirectUrl && history.push(redirectUrl);
   }, [redirectUrl]);
 
-  useEffect(() => {
-    const buttonEnabled = validatorStore.validatorPrivateKey
-      && validatorStore.validatorPrivateKeyFile
-      && userAgreed;
-
-    setNextButtonEnabled(!!buttonEnabled);
-    return () => {
-      setNextButtonEnabled(false);
-    };
-  }, [validatorStore.validatorPrivateKey, validatorStore.validatorPrivateKeyFile, userAgreed]);
-
   const goToConfirmation = () => {
-    validatorStore.addNewValidator(true).then(() => {
-      applicationStore.setIsLoading(false);
       history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
-    }).catch(() => {
-      applicationStore.setIsLoading(false);
-      history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
-    });
   };
-
-  return (
-    <Screen
-      navigationText={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
-      navigationLink={config.routes.VALIDATOR.SELECT_OPERATORS}
-      title={translations.VALIDATOR.SLASHING_WARNING.TITLE}
-      styleOptions={{ actionButtonMarginTop: actionButtonMargin, bodyMarginTop: '12px' }}
-      subTitle={translations.VALIDATOR.SLASHING_WARNING.DESCRIPTION}
-      body={(
-        <Grid container wrap="nowrap" spacing={4} className={classes.gridContainer}>
-          <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <ValidatorKeyInput validatorKey={validatorStore.validatorPublicKey} />
-          </Grid>
-          <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <Typography variant="subtitle1" className={classes.checkboxText}>
+    return (
+      <BorderScreen
+        link={{ to: config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, text: 'Back' }}
+        header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
+        body={[
+          <Grid container>
+            <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon
+              chain:</Grid>
+            <Grid item xs={12} className={classes.PublicKey}>
+              <ValidatorKeyInput withBeaconcha withCopy validatorKey={validatorStore.validatorPublicKey} />
+            </Grid>
+            <Grid item xs={12} className={classes.Text}>
               Running a validator simultaneously to the SSV network will cause slashing to your validator.
-            </Typography>
-          </Grid>
-          <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <Typography variant="subtitle1" className={classes.checkboxText}>
-              To avoid slashing, <b>shut down your existing validator setup</b> before importing your validator to
+            </Grid>
+            <Grid item xs={12} className={classes.Text}>
+              To avoid slashing, shut down your existing validator setup before importing your validator to
               run with our network.
-            </Typography>
-          </Grid>
-        </Grid>
-      )}
-      actionButton={(
-        <Grid item xs zeroMinWidth className={classes.gridContainer}>
-          <FormControlLabel
-            style={{ marginBottom: '10px' }}
-            control={(
-              <Checkbox
-                data-testid="slashing-data-warning-checkbox"
-                checked={userAgreed}
-                onChange={(event) => { setUserAgreed(event.target.checked); }}
-                color="primary"
-              />
-            )}
-            label={(
-              <Typography className={classes.checkboxText}>
-                I understand that running my validator simultaneously in multiple setups will cause slashing
-                to my validator.
-              </Typography>
-            )}
-          />
-          <br />
-          <br />
-          <CTAButton
-            testId={'register-validator'}
-            disable={!nextButtonEnabled}
-            onClick={goToConfirmation}
-            text={'Next'}
-          />
-        </Grid>
-      )}
-    />
-  );
+            </Grid>
+            <Checkbox
+              text={'I understand that running my validator simultaneously in ffmultiple setups will cause slashing to my validator'}
+              onClickCallBack={setUserAgreed}
+                    />
+            <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
+              onClick={goToConfirmation} />
+          </Grid>,
+        ]}
+      />
+    );
 };
 
 export default observer(SlashingWarning);

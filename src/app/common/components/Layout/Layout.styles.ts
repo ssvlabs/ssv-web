@@ -1,10 +1,29 @@
+import screenSizes from '~lib/utils/screenSizes';
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
   root: {
-    fontFamily: 'Encode Sans',
+    width: 648,
+    flexGrow: 1,
+    '& input': {
+      outline: 0,
+      '&:focus': {
+        border: '1px solid #A1ACBE',
+      },
+    },
+    margin: 'auto',
+    [screenSizes.xs]: {
+      width: '100%',
+    },
+    [screenSizes.md]: {
+      width: 452,
+    },
+    [screenSizes.lg]: {
+      width: 648,
+    },
+  },
+  dashboardRoot: {
     '& *': {
-      fontFamily: 'Encode Sans',
     },
     '& input': {
       outline: 0,
@@ -13,17 +32,11 @@ export const useStyles = makeStyles(() => ({
       },
     },
     flexGrow: 1,
-    maxWidth: '100%',
-    width: '30%',
+    width: '95%',
     margin: 'auto',
-    '@media (max-width: 1024px)': {
-      width: '45%',
+    [screenSizes.lg]: {
+      width: '728px',
     },
-    '@media (max-width: 768px)': {
-      width: '50%',
-    },
-    '@media (max-width: 480px)': {
-      width: '90%',
-    },
+    maxWidth: '1200px',
   },
 }));

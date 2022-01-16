@@ -41,7 +41,7 @@ const WalletPopUp = () => {
           </Grid>
           <Grid item xs={12}>
             <Grid container>
-              <ValidatorKeyInput link={`https://goerli.etherscan.io/address/${walletStore.accountAddress}`} validatorKey={walletStore.accountAddress} />
+              <ValidatorKeyInput validatorKey={walletStore.accountAddress} />
             </Grid>
           </Grid>
         </Grid>

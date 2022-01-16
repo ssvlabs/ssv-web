@@ -1,89 +1,110 @@
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { isMobile } from 'react-device-detect';
+import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
+import SsvStore from '~app/common/stores/SSV.store';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
-import DataSection from '~app/common/components/DataSection';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import OperatorStore from '~app/common/stores/Operator.store';
+import Checkbox from '~app/common/components/CheckBox/CheckBox';
+import NameAndAddress from '~app/common/components/NameAndAddress';
+import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
-import { longStringShorten, normalizeNumber } from '~lib/utils/strings';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
-
-const actionButtonMargin = isMobile ? '160px' : '195px';
+import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirmation.styles';
 
 const OperatorConfirmation = () => {
-  const stores = useStores();
-  const operatorStore: ContractOperator = stores.ContractOperator;
-  const applicationStore: ApplicationStore = stores.Application;
-  const walletStore: WalletStore = stores.Wallet;
-  const { redirectUrl, history } = useUserFlow();
-  const [actionButtonText, setActionButtonText] = useState('Register Operator');
-  const [txHash, setTxHash] = useState('Register Operator');
+    const stores = useStores();
+    const classes = useStyles();
+    const ssvStore: SsvStore = stores.SSV;
+    const { redirectUrl, history } = useUserFlow();
+    const operatorStore: OperatorStore = stores.Operator;
+    const [checked, setCheckBox] = useState(false);
+    const applicationStore: ApplicationStore = stores.Application;
+    const [txHash, setTxHash] = useState('Register Operator');
+    const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
-  useEffect(() => {
-    redirectUrl && history.push(redirectUrl);
-  }, [redirectUrl]);
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
-  const onRegisterClick = async () => {
-      setActionButtonText('Waiting for confirmation...');
-      operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
-        applicationStore.showTransactionPandingPopUp(false);
-        history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-      }).catch(() => {
-        applicationStore.showTransactionPandingPopUp(false);
-        setActionButtonText('Register Operator');
-      });
-  };
+    const onRegisterClick = async () => {
+        setActionButtonText('Waiting for confirmation...');
+        operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
+            applicationStore.showTransactionPendingPopUp(false);
+            history.push(config.routes.OPERATOR.SUCCESS_PAGE);
+        }).catch(() => {
+            applicationStore.showTransactionPendingPopUp(false);
+            setActionButtonText('Register Operator');
+        });
+    };
 
-  const handlePendingTransaction = (transactionHash: string) => {
-    setActionButtonText('Sending transaction…');
-    setTxHash(transactionHash);
-    applicationStore.showTransactionPandingPopUp(true);
-  };
+    const handlePendingTransaction = (transactionHash: string) => {
+        setActionButtonText('Sending transaction…');
+        setTxHash(transactionHash);
+        applicationStore.showTransactionPendingPopUp(true);
+    };
 
-  const data = [
-    [
-        { key: 'Operator', header: true, value: '' },
-        { key: 'Name', value: operatorStore.newOperatorKeys.name },
-        { key: 'Key', value: longStringShorten(sha256(walletStore.decodeOperatorKey(operatorStore.newOperatorKeys.pubKey)), 4) },
-        { key: 'Owner Address', value: `0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}` },
-    ],
-    [
-      { key: 'Est. Transaction Cost', header: true, value: '' },
-      { key: 'Transaction fee', value: `${normalizeNumber(operatorStore.estimationGas, 5)} ETH `, strong: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
-      { key: 'Total', value: `$${normalizeNumber(operatorStore.dollarEstimationGas)}` },
-    ],
-  ];
-
-  return (
-    <Screen
-      navigationText={'Register Operator'}
-      navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
-      title={translations.OPERATOR.CONFIRMATION.TITLE}
-      subTitle={translations.OPERATOR.CONFIRMATION.DESCRIPTION}
-      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
-      body={(
-        <Grid container spacing={4}>
-          <TransactionPendingPopUp txHash={txHash} />
-          <DataSection data={data} />
-        </Grid>
-      )}
-      actionButton={(
-        <CTAButton
-          testId={'submit-operator'}
-          disable={false}
-          onClick={onRegisterClick}
-          text={actionButtonText}
+    return (
+      <BorderScreen
+        withConversion
+        sectionClass={classes.Section}
+        header={translations.OPERATOR.CONFIRMATION.TITLE}
+        link={{ text: 'Back', to: config.routes.OPERATOR.GENERATE_KEYS }}
+        body={[
+          <Grid container>
+            <TransactionPendingPopUp txHash={txHash} />
+            <Grid item xs={12} className={classes.SubHeader}>Operator</Grid>
+            <Grid container item xs={12} className={classes.RowWrapper}>
+              <Grid item xs={6}>
+                <NameAndAddress name={'Name'} />
+              </Grid>
+              <Grid item xs={6} className={classes.AlignRight}>
+                <NameAndAddress name={operatorStore.newOperatorKeys.name} />
+              </Grid>
+            </Grid>
+            {process.env.REACT_APP_NEW_STAGE && (
+              <Grid container item xs={12}>
+                <Grid item xs={6}>
+                  <NameAndAddress name={'Fee'} />
+                </Grid>
+                <Grid item xs={6} className={classes.AlignRight}>
+                  <SsvAndSubTitle
+                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.newOperatorKeys.fee))}
+                    subText={'/year'} />
+                </Grid>
+              </Grid>
+            )}
+          </Grid>,
+          <Grid container>
+            <Grid container item xs={12} className={classes.RowWrapper}>
+              <Grid item xs={6}>
+                <NameAndAddress name={'Key'} />
+              </Grid>
+              <Grid item xs={6} className={classes.AlignRight}>
+                <NameAndAddress name={operatorStore.newOperatorKeys.name} />
+              </Grid>
+            </Grid>
+            <Grid container item xs={12} className={classes.MarginButton}>
+              <Grid item xs={6}>
+                <NameAndAddress name={'Owner Address'} />
+              </Grid>
+              <Grid item xs={6} className={classes.AlignRight}>
+                <NameAndAddress
+                  name={`0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`} />
+              </Grid>
+            </Grid>
+            <Checkbox onClickCallBack={setCheckBox}
+              text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} />
+            <PrimaryButton disable={!checked} text={actionButtonText} onClick={onRegisterClick} />
+          </Grid>,
+            ]}
         />
-      )}
-    />
-  );
+    );
 };
 
 export default observer(OperatorConfirmation);

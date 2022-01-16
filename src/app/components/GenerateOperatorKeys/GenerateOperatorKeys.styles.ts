@@ -1,22 +1,53 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    mainContainer: {
-        height: '100%',
-        width: 500,
-        maxWidth: '100%',
-        minHeight: 600,
-        padding: theme.spacing(4),
+    LinkButtonWrapper: {
+        width: 280,
+        display: 'flex',
+        cursor: 'pointer',
+        textAlign: 'center',
         alignItems: 'center',
-        alignContent: 'center',
+        '&:nth-of-type(1)': {
+            marginRight: '20px',
+        },
+    },
+    UnderButtonText: {
+        fontSize: 14,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        textAlign: 'center',
+        color: theme.colors.gray40,
+        marginTop: theme.spacing(2),
+    },
+
+    // NEED TO DELETE
+
+    mainContainer: {
+        width: 500,
+        height: '100%',
+        minHeight: 600,
         margin: 'auto',
+        maxWidth: '100%',
+        alignItems: 'center',
         flexDirection: 'row',
+        alignContent: 'center',
+        padding: theme.spacing(4),
+    },
+    TotalFees: {
+        marginBottom: '32px',
+        justifyContent: 'space-between',
+    },
+    TotalFeesHeader: {
+        lineHeight: 1.5,
+        fontSize: '12px',
+        color: '#a1acbe',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
     checkboxText: {
         fontSize: '14px',
         fontWeight: 500,
         color: '#5B6C84',
-        fontFamily: 'Encode Sans',
     },
     passwordInput: {
         textSecurity: 'disc',
@@ -33,10 +64,13 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: '50px',
         backgroundColor: '#FDE6E5',
     },
-    errorText: {
-    },
+    errorText: {},
     gridItem: {
-      marginBottom: '18px',
+        height: 74,
+        marginBottom: theme.spacing(5),
+        '&:last-of-type': {
+            marginBottom: 39,
+        },
     },
     inputWithHint: {
         backgroundColor: 'red',
@@ -45,11 +79,34 @@ export const useStyles = makeStyles((theme) => ({
     inputError: {
         border: '1px solid red !important',
     },
+    feeInputWrapper: {
+        verticalAlign: 'middle',
+        fontSize: '15px',
+        width: '100%',
+        height: '48px',
+        background: '#FFFFFF',
+        border: '1px solid #5B6C84',
+        boxSizing: 'border-box',
+        borderRadius: '6px',
+        paddingLeft: '10px',
+        marginTop: '8px',
+    },
+    feeInput: {
+        '&::after': {
+            content: '"akjsdbajksnbdjkasndjklasndjkansjdknasjkdnasjkdnjkasndjkansjkdn"',
+        },
+        margin: 'auto auto auto 0px',
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.43,
+        color: '#a1acbe',
+    },
     disable: {
-       background: '#DCE0E8 !important',
-       border: '1px solid #DCE0E8 !important',
+        background: '#DCE0E8 !important',
+        border: '1px solid #DCE0E8 !important',
     },
     textError: {
+        zIndex: 9123123,
         fontSize: '0.8rem',
         color: 'red',
     },
@@ -72,7 +129,7 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'left',
     },
     removeIconWrapper: {
-      display: 'flex',
+        display: 'flex',
     },
     clearIcon: {
         cursor: 'pointer',
@@ -137,13 +194,11 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     guideStepText: {
-        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         fontWeight: 900,
         fontSize: 18,
     },
     guideStepSubText: {
-        fontFamily: 'Encode Sans',
     },
     arrowIcon: {
         float: 'right',
@@ -152,5 +207,17 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(1),
         alignSelf: 'center',
         marginTop: theme.spacing(1),
+    },
+    Fee: {
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.43,
+        color: '#5b6c84',
+    },
+    FeeDollar: {
+        fontSize: '12px',
+        fontWeight: 500,
+        lineHeight: 1.5,
+        color: '#a1acbe',
     },
 }));

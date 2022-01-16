@@ -1,128 +1,80 @@
+import screenSizes from '~lib/utils/screenSizes';
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    mainContainer: {
-        height: '100%',
-        width: 500,
-        maxWidth: '100%',
-        minHeight: 600,
-        padding: theme.spacing(4),
-        alignItems: 'center',
-        alignContent: 'center',
-        margin: 'auto',
-        flexDirection: 'row',
+    Header: {
+        fontSize: 20,
+        lineHeight: 1.4,
+        fontWeight: 'bold',
+        color: theme.colors.gray90,
+        marginBottom: theme.spacing(3),
     },
-    passwordInput: {
-        textSecurity: 'disc',
+    SubHeader: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        color: theme.colors.gray80,
+        marginBottom: theme.spacing(10),
     },
-    errorDiv: {
-        paddingLeft: '10px',
+    LinkButtonsWrapper: {
+        justify: 'space-evenly',
         width: '100%',
-        color: 'red',
-        minHeight: '50px',
-        lineHeight: '50px',
-        backgroundColor: '#FDE6E5',
+        [screenSizes.xs]: {
+            flexDirection: 'column',
+        },
     },
-    errorText: {
-    },
-    paddingTop: {
-        marginTop: '100px',
-    },
-    inputWithHint: {
-        backgroundColor: 'red',
+    LinkButtonWrapper: {
+        height: 60,
+        width: 280,
         display: 'flex',
-    },
-    inputError: {
-        border: '1px solid red',
-    },
-    textError: {
-        fontSize: '0.8rem',
-        color: 'red',
-    },
-    privateKeyTextInput: {
-        marginBottom: '10px',
-    },
-    doneIcon: {
-        color: 'green',
-        float: 'left',
-    },
-    badFormat: {
-        color: 'red',
-        float: 'left',
-    },
-    fileNameText: {
-        textAlign: 'left',
-    },
-    clearIcon: {
-        float: 'right',
-    },
-    fileContainer: {
-        display: 'flex',
-        padding: '10px',
-        textAlign: 'center',
-        alignItems: 'center',
-        width: '100%',
-        alignContent: 'center',
-        height: '50px',
-        border: 'dashed thin gray',
-    },
-    guideStepsContainerPaper: {
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid black',
-        borderRadius: '0px',
-        textAlign: 'center',
         cursor: 'pointer',
-        width: '100%',
-        height: '150px',
-        margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),
-        '&:hover': {
-            backgroundColor: 'aliceblue',
-        },
-        flexDirection: 'row',
-    },
-    bigSquareButton: {
-        minHeight: 150,
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        alignContent: 'center',
         alignItems: 'center',
-    },
-    bigSquareButtonGrid: {
-        margin: 'auto',
-        textAlign: 'center',
-    },
-    bigSquareButtonIcon: {
-        width: 30,
-        height: 30,
-        maxWidth: 30,
-        maxHeight: 30,
-        margin: 'auto',
-    },
-    gridContainer: {
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
-    bodyText: {
-        marginBottom: '20px',
-        '&:last-of-type': {
-            marginBottom: '0px',
+        '&:nth-of-type(1)': {
+            marginRight: '20px',
+        },
+        [screenSizes.xs]: {
+            width: '100%',
+            '&:nth-of-type(1)': {
+                marginBottom: '20px',
+            },
+        },
+        [screenSizes.md]: {
+            width: 182,
         },
     },
-    rowGridContainer: {
-        flexGrow: 1,
-        flexDirection: 'row',
+    OrLineWrapper: {
+        marginTop: 21,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: theme.spacing(5),
     },
-    guideStep: {
-        marginBottom: theme.spacing(1),
+    Line: {
+        height: 1,
+        border: `solid 1px ${theme.colors.gray20}`,
     },
-    guideStepText: {
+    Or: {
+        width: 64,
         fontSize: 14,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        textAlign: 'center',
+        color: theme.colors.gray40,
     },
-    arrowIcon: {
-        width: '30%',
-        margin: 'auto',
+    ConnectButton: {
+        height: 60,
+        width: '100%',
+        marginTop: 30,
+        color: theme.colors.white,
+        backgroundColor: theme.colors.primaryBlue,
+        '&:hover': {
+            backgroundColor: theme.colors.shade20,
+        },
+        '&:focus': {
+            backgroundColor: theme.colors.shade40,
+        },
+        '&:disable': {
+            color: theme.colors.gray40,
+            backgroundColor: theme.colors.gray20,
+        },
     },
 }));

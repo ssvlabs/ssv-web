@@ -77,7 +77,6 @@ export const useStyles = makeStyles(() => ({
     },
     validatorText: {
         marginBottom: '6px',
-        fontFamily: 'Encode Sans',
         fontStyle: 'normal',
         color: '#A1ACBE',
         fontSize: '12px',
@@ -88,7 +87,6 @@ export const useStyles = makeStyles(() => ({
         cursor: 'pointer',
     },
     linkHref: {
-        fontFamily: 'Encode Sans',
         marginTop: '20px',
     },
     connectButton: {

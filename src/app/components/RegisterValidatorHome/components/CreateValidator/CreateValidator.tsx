@@ -1,12 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { getImage } from '~lib/utils/filePath';
-import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
-import ConditionalLink from '~app/common/components/ConditionalLink';
-import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import config from '~app/common/config';
+import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 
 const CreateValidator = () => {
@@ -16,38 +13,28 @@ const CreateValidator = () => {
     window.open(config.links.LAUNCHPAD_LINK);
   };
 
-  return (
-    <Screen
-      navigationText={translations.VALIDATOR.CREATE.NAVIGATION_TEXT}
-      navigationLink={config.routes.VALIDATOR.HOME}
-      title={translations.VALIDATOR.CREATE.TITLE}
-      subTitle={'You must have an active validator before running it on the SSV network.'}
-      body={(
-        <Grid container wrap="nowrap" spacing={4} className={classes.gridContainer}>
-          <Grid item xs className={classes.gridContainer}>
-            <Grid container spacing={2}>
-              {translations.VALIDATOR.CREATE.BODY_TEXT.map((text: string) => {
-                    return (
-                      <Grid key={text} item>
-                        <Typography className={classes.bodyText} variant="subtitle1">
-                          {text}
-                        </Typography>
-                      </Grid>
-                    );
-                  })}
-            </Grid>
-          </Grid>
-          <Grid item xs className={classes.gridContainer}>
-            <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition={false} onClick={redirectToLaunchpad}>
-              <LinkButton primaryLabel={'Visit Ethereum launchpad'} secondaryLabel={''} />
-            </ConditionalLink>
-          </Grid>
-          <Grid item xs className={classes.gridContainer}>
-            <img className={classes.rhinoImage} src={getImage('rhino.png')} />
-          </Grid>
-        </Grid>
-      )}
-    />
-  );
+      return (
+        <BorderScreen
+          link={{ to: config.routes.VALIDATOR.HOME, text: 'Back' }}
+          header={'Visit Ethereum Launchpad'}
+          body={[
+            <Grid container>
+              <Grid item className={classes.Text} xs={12}>
+                You must have an active validator before running it on the SSV network.
+              </Grid>
+              <Grid item className={classes.Text} xs={12}>
+                Follow Ethereum’s launchpad instructions to generate new keys and deposit your validator to the deposit contract.
+              </Grid>
+              <Grid item className={classes.Text} xs={12}>
+                Please note to backup your newly created validator files, you will need them for our setup.
+              </Grid>
+              <Grid item container xs={12}>
+                <Grid item className={classes.rhinoImage} />
+              </Grid>
+              <PrimaryButton text={'Visit Ethereum Launchpad'} onClick={redirectToLaunchpad} />
+            </Grid>,
+          ]}
+        />
+      );
 };
 export default observer(CreateValidator);

@@ -45,6 +45,21 @@ jobs:
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
 
+      - name: Run stageV2 build
+        if: github.ref == 'refs/heads/stageV2'
+        run: >
+          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
+        env:
+          NEW_STAGE: TRUE
+          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
+          NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
+          OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
+          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          EXPLORER_URL: "https://explorer.stage.ssv.network"
+
 
       - name: Run prod build
         if: github.ref == 'refs/heads/main'
@@ -66,6 +81,18 @@ jobs:
           args: --acl public-read --follow-symlinks --delete
         env:
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: 'build/'
+
+      - name: Deploy stagingV2
+        if: github.ref == 'refs/heads/stageV2'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.STAGE_V2_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-west-2'

@@ -1,159 +1,108 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import MenuIcon from '@material-ui/icons/Menu';
-import Tooltip from '@material-ui/core/Tooltip';
-import Toolbar from '@material-ui/core/Toolbar';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
-import config from '~app/common/config';
-import { useStyles } from './AppBar.styles';
-import useUserFlow from '~app/hooks/useUserFlow';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import { isUpgradePage } from '~lib/utils/navigation';
+import SsvStore from '~app/common/stores/SSV.store';
 import ApplicationStore from '~app/common/stores/Application.store';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
+import DarkModeSwitcher from '~app/common/components/AppBar/components/DarkModeSwitcher';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
+import { useStyles } from './AppBar.styles';
 
-type Button = {
-  text: string,
-  link: string,
-  newPage?: boolean
-  active?: boolean
-};
+const AppBar = () => {
+    const stores = useStores();
+    const classes = useStyles();
+    const history = useHistory();
+    const ssvStore: SsvStore = stores.SSV;
+    const wrapperRef = useRef(null);
+    const buttonsRef = useRef(null);
+    const [width, setWidth] = useState(window.innerWidth);
+    const [menuBar, openMenuBar] = useState(false);
+    const [showMobileBar, setMobileBar] = useState(false);
+    const applicationStore: ApplicationStore = stores.Application;
+    const hasAccounts = !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
 
-// Subscribe to messages coming from secured frame.
-window.onmessage = (event: MessageEvent) => {
-  const { message, data } = event.data;
-  switch (message) {
-    case 'window.location.href':
-      window.location.href = data;
-      break;
-  }
-};
+    // Add event listener on screen size change
+    useEffect(() => {
+        window.addEventListener('resize', () => setWidth(window.innerWidth));
+    }, []);
 
-const AppBarComponent = () => {
-  const classes = useStyles();
-  const stores = useStores();
-  const operatorStore: ContractOperator = stores.ContractOperator;
-  const { history } = useUserFlow();
-  const applicationStore: ApplicationStore = stores.Application;
+    useEffect(() => {
+        if (width < 1200 && !showMobileBar) {
+            setMobileBar(true);
+        } else if (width >= 1200 && showMobileBar) {
+            openMenuBar(false);
+            setMobileBar(false);
+        }
+    }, [width]);
 
-  const buttons: Button[] = [
-    { text: 'join', link: config.routes.HOME, active: true },
-    { text: 'my account', link: config.routes.HOME, active: false },
-    { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: true },
-    { text: 'docs', link: 'https://docs.ssv.network/', newPage: true, active: true },
-  ];
-  const menuButtons: Button[] = [
-    { text: 'Join the Network', link: config.routes.HOME, active: true },
-    { text: 'Documentation', link: 'https://docs.ssv.network/', newPage: true, active: true },
-    { text: 'explorer', link: config.links.LINK_EXPLORER, newPage: true, active: true },
-  ];
+    useEffect(() => {
+        /**
+         * Close menu drop down when click outside
+         */
+        const handleClickOutside = (e: any) => {
+            // @ts-ignore
+            if (menuBar && wrapperRef.current && (!wrapperRef.current.contains(e.target) && !buttonsRef.current.contains(e.target))) {
+                openMenuBar(false);
+            }
+        };
+        // Bind the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            // Unbind the event listener on clean up
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [wrapperRef, buttonsRef, menuBar]);
 
-  const renderMenu = () => {
+    function openExplorer() {
+        window.open('https://play.google.com/store/apps/details?id=com.drishya');
+    }
+
+    const moveToDashboard = () => {
+        if (hasAccounts) {
+            history.push('/dashboard');
+        }
+    };
+
     return (
-      <div className={classes.fullScreen}>
-        <Grid container justify="center">
-          {menuButtons.map((button: Button, index: number) => {
-            return (
-              <Grid key={index} item xs={12} className={classes.menuButtonWrapper}>
-                <Typography
-                  onClick={() => {
-                    if (button.active) {
-                      switchPage(button.link, button.newPage);
-                    }
-                  }}
-                  className={classes.menuButton}>
-                  {button.text}
-                </Typography>
-              </Grid>
-            );
-          })}
+      <Grid container className={classes.AppBarWrapper}>
+        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push('/'); }} />
+        {!showMobileBar && (
+          <Grid item container className={classes.Linkbuttons}>
+            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
+            <Grid item className={classes.LinkButton} onClick={openExplorer}>Docs</Grid>
+          </Grid>
+        )}
+        <Grid item className={classes.Wrapper}>
+          <ConnectWalletButton />
         </Grid>
-      </div>
-    );
-  };
-
-  const switchPage = (link: string, newPage: boolean = false) => {
-    if (isUpgradePage()) {
-      window.top.postMessage({
-        message: 'window.location.href',
-        data: 'https://ssv.network',
-      }, '*');
-      return;
-    }
-    if (newPage) {
-      window.open(link, '_blank');
-    } else {
-      operatorStore.clearOperatorData();
-      history.push(link);
-    }
-    applicationStore.displayToolBarMenu(false);
-  };
-
-  const handleClick = (status: boolean) => {
-    applicationStore.displayToolBarMenu(status);
-  };
-
-  return (
-    <div className={classes.root}>
-      <AppBar className={classes.bloxColor} position="static">
-        <Toolbar className={classes.toolbar}>
-          <Grid container justify={'space-between'} alignItems={'center'}>
-            <Grid item xs={4} md={4}>
-              <Typography onClick={() => {
-                switchPage(config.routes.HOME);
-              }}
-                variant={'subtitle1'}
-                className={classes.mainButton}>
-                ssv.network
-              </Typography>
-            </Grid>
-            <Grid item zeroMinWidth md={3}>
-              {!isUpgradePage() ? (
-                <Grid container justify={'space-around'}>
-                  {buttons.map((button: Button, index: number) => {
-                    return (
-                      <Grid item key={index}>
-                        <Tooltip disableHoverListener={button.active} key={index} disableFocusListener
-                          disableTouchListener title="Comming soon...">
-                          <Typography onClick={() => {
-                            if (button.active) switchPage(button.link, button.newPage);
-                          }}
-                            variant={'subtitle1'}
-                            className={classes.button}>
-                            {button.text}
-                          </Typography>
-                        </Tooltip>
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              ) : ''}
-            </Grid>
-            <Grid item xs={8} md={4}>
-              <Grid container spacing={1} alignItems={'center'} justify={'flex-end'}>
-                <Grid item>
-                  <ConnectWalletButton />
-                </Grid>
-                {!isUpgradePage() ? (
-                  <Grid item className={classes.menu} onClick={() => {
-                    handleClick(!applicationStore.shouldDisplayToolBar);
-                  }}>
-                    {applicationStore.shouldDisplayToolBar ? <CloseIcon className={classes.menuIcon} /> :
-                    <MenuIcon className={classes.menuIcon} />}
-                  </Grid>
-                ) : ''}
+        {!showMobileBar && (
+          <Grid item>
+            <DarkModeSwitcher margin />
+          </Grid>
+        )}
+        {showMobileBar && (
+          <Grid item ref={wrapperRef}>
+            <Grid className={classes.Hamburger} onClick={() => { openMenuBar(!menuBar); }} />
+          </Grid>
+        )}
+        {menuBar && (
+          <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
+            <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
+            <Grid item className={classes.MenuButton} onClick={openExplorer}>Docs</Grid>
+            <Grid item className={classes.UnderLine} />
+            <Grid item container className={`${classes.MenuButton} ${classes.Slider}`}>
+              <Grid item xs>{applicationStore.darkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
+              <Grid item>
+                <DarkModeSwitcher margin={false} />
               </Grid>
             </Grid>
           </Grid>
-        </Toolbar>
-      </AppBar>
-      {applicationStore.shouldDisplayToolBar && renderMenu()}
-    </div>
-  );
+        )}
+      </Grid>
+    );
 };
 
-export default observer(AppBarComponent);
+export default observer(AppBar);

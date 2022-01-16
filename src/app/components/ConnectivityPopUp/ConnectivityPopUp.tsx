@@ -45,7 +45,9 @@ const ConnectivityPopUp = () => {
               color="default"
               style={registerButtonStyle}
               onClick={connectToWallet}
-             >Connect to a wallet</Button>
+             >
+              Connect Wallet
+            </Button>
           </Grid>
         </Grid>
       </Dialog>

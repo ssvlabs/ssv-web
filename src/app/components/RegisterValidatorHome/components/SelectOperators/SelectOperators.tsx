@@ -67,7 +67,11 @@ const SelectOperators = () => {
   }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   const onSelectOperatorsClick = async () => {
-    history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+    if (process.env.REACT_APP_NEW_STAGE) {
+      history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+    } else {
+      history.push(config.routes.VALIDATOR.SLASHING_WARNING);
+    }
   };
 
   const unselectAllOperators = () => {
@@ -106,14 +110,17 @@ const SelectOperators = () => {
               </Grid>
             </Grid>
             )}
+            {process.env.REACT_APP_NEW_STAGE && (
             <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
               <Grid item className={classes.TotalFeesHeader}>
                 Total Operators Yearly Fee
               </Grid>
               <Grid item>
-                <SsvAndSubTitle bold ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)} subText={'~$757.5'} subTextCenter={false} />
+                <SsvAndSubTitle bold ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)}
+                  subText={'~$757.5'} subTextCenter={false} />
               </Grid>
             </Grid>
+            )}
             <PrimaryButton dataTestId={'operators-selected-button'} disable={!operatorStore.selectedEnoughOperators} text={'Next'} onClick={onSelectOperatorsClick} />
           </Grid>,
         ]}

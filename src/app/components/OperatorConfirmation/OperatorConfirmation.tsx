@@ -67,16 +67,18 @@ const OperatorConfirmation = () => {
                 <NameAndAddress name={operatorStore.newOperatorKeys.name} />
               </Grid>
             </Grid>
-            <Grid container item xs={12}>
-              <Grid item xs={6}>
-                <NameAndAddress name={'Fee'} />
+            {process.env.REACT_APP_NEW_STAGE && (
+              <Grid container item xs={12}>
+                <Grid item xs={6}>
+                  <NameAndAddress name={'Fee'} />
+                </Grid>
+                <Grid item xs={6} className={classes.AlignRight}>
+                  <SsvAndSubTitle
+                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.newOperatorKeys.fee))}
+                    subText={'/year'} />
+                </Grid>
               </Grid>
-              <Grid item xs={6} className={classes.AlignRight}>
-                <SsvAndSubTitle
-                  ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.newOperatorKeys.fee))}
-                  subText={'/year'} />
-              </Grid>
-            </Grid>
+            )}
           </Grid>,
           <Grid container>
             <Grid container item xs={12} className={classes.RowWrapper}>

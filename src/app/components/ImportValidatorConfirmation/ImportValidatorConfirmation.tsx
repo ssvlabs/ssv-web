@@ -32,10 +32,16 @@ const ImportValidatorConfirmation = () => {
     const [txHash, setTxHash] = useState('');
     const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
-    const totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
-    const yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
-    const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
-    const totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
+    let totalOperatorsYearlyFee = 0;
+    let yearlyNetworkFee = 0;
+    let liquidationCollateral = 0;
+    let totalAmountOfSsv;
+    if (process.env.REACT_APP_NEW_STAGE) {
+         totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
+         yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
+         liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
+         totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
+    }
 
     useEffect(() => {
         redirectUrl && history.push(redirectUrl);
@@ -63,87 +69,103 @@ const ImportValidatorConfirmation = () => {
         { key: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];
 
+    const components = [
+      <Grid container>
+        <TransactionPendingPopUp txHash={txHash} />
+        <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+        <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
+        <Grid container item xs={12} className={classes.RowWrapper}>
+          <Grid item className={classes.SubHeader}>Selected Public Key</Grid>
+          {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
+                    return (
+                      <Grid key={index} container item xs={12} className={classes.Row}>
+                        <Grid item>
+                          <NameAndAddress
+                            name={operator.name}
+                            address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`}
+                                />
+                        </Grid>
+                        {process.env.REACT_APP_NEW_STAGE && (
+                        <Grid item xs>
+                          <SsvAndSubTitle
+                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
+                            subText={'/year'}
+                                    />
+                        </Grid>
+                            )}
+                      </Grid>
+                    );
+                })}
+        </Grid>
+      </Grid>,
+    ];
+    if (process.env.REACT_APP_NEW_STAGE) {
+        components.push(
+          <Grid container>
+            <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
+            {fields.map((field) => {
+                    return (
+                      <Grid item container className={classes.Row}>
+                        <Grid item>
+                          <NameAndAddress name={field.key} />
+                        </Grid>
+                        <Grid item xs>
+                          <SsvAndSubTitle ssv={field.value} />
+                        </Grid>
+                      </Grid>
+                    );
+                })}
+          </Grid>,
+        );
+    }
+    components.push(
+      <Grid container>
+        {process.env.REACT_APP_NEW_STAGE && (
+        <Grid item xs>
+          <NameAndAddress name={'Total'} />
+        </Grid>
+            )}
+        {process.env.REACT_APP_NEW_STAGE && (
+        <Grid item>
+          <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
+        </Grid>
+            )}
+        {process.env.REACT_APP_NEW_STAGE && (
+        <Grid container item className={classes.InsufficientBalanceWrapper}>
+          <Grid item xs>
+            Insufficient SSV balance. There is not enough SSV in your wallet.
+          </Grid>
+          <Grid item>
+            <a
+              href="https://discord.gg/5DZ7Sm9D4W"
+              target="_blank"
+                        >
+              Need SSV?
+            </a>
+          </Grid>
+        </Grid>
+            )}
+        <Grid container>
+          <CTAButton
+            checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
+            checkBoxesCallBack={[selectCheckBox]}
+            withAllowance
+            testId={'confirm-button'}
+            disable={!checked}
+            onClick={onRegisterValidatorClick}
+            text={actionButtonText}
+          />
+        </Grid>
+      </Grid>,
+    );
+
     return (
       <BorderScreen
         sectionClass={classes.Section}
         withConversion
         header={translations.VALIDATOR.CONFIRMATION.TITLE}
         link={{ to: config.routes.VALIDATOR.SLASHING_WARNING, text: 'Back' }}
-        body={[
-          <Grid container>
-            <TransactionPendingPopUp txHash={txHash} />
-            <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-            <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
-            <Grid container item xs={12} className={classes.RowWrapper}>
-              <Grid item className={classes.SubHeader}>Selected Public Key</Grid>
-              {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-                            return (
-                              <Grid container item xs={12} className={classes.Row}>
-                                <Grid item>
-                                  <NameAndAddress
-                                    name={operator.name}
-                                    address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`}
-                                  />
-                                </Grid>
-                                <Grid item xs>
-                                  <SsvAndSubTitle
-                                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
-                                    subText={'/year'}
-                                  />
-                                </Grid>
-                              </Grid>
-                            );
-              })}
-            </Grid>
-          </Grid>,
-          <Grid container>
-            <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
-            {fields.map((field) => {
-                        return (
-                          <Grid item container className={classes.Row}>
-                            <Grid item>
-                              <NameAndAddress name={field.key} />
-                            </Grid>
-                            <Grid item xs>
-                              <SsvAndSubTitle ssv={field.value} />
-                            </Grid>
-                          </Grid>
-                        );
-            })}
-          </Grid>,
-          <Grid container>
-            <Grid item xs>
-              <NameAndAddress name={'Total'} />
-            </Grid>
-            <Grid item>
-              <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
-            </Grid>
-            {<Grid container item className={classes.InsufficientBalanceWrapper}>
-              <Grid item xs>
-                Insufficient SSV balance. There is not enough SSV in your wallet.
-              </Grid>
-              <Grid item>
-                <a
-                  href="https://discord.gg/5DZ7Sm9D4W"
-                  target="_blank"
-                >
-                  Need SSV?
-                </a>
-              </Grid>
-            </Grid>}
-            <Grid container>
-              <CTAButton
-                checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
-                checkBoxesCallBack={[selectCheckBox]}
-                withAllowance
-                testId={'confirm-button'}
-                disable={!checked}
-                onClick={onRegisterValidatorClick}
-                text={actionButtonText}
-              />
-            </Grid>
-          </Grid>,
-        ]}
+        body={components}
       />
     );
 };

@@ -49,7 +49,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   getContract(address?: string): Contract {
     if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
+      const abi: any = process.env.REACT_APP_NEW_STAGE ? config.CONTRACTS.SSV_NETWORK.ABI : config.CONTRACTS.SSV_NETWORK.OLD_ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, address ?? contractAddress);
     }
@@ -180,15 +180,17 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     this.ssvStore.setAccountLoaded(false);
-    await this.ssvStore.checkIfLiquidated();
-    await this.ssvStore.getSsvContractBalance();
-    await this.ssvStore.getNetworkContractBalance();
-    await this.ssvStore.getAccountBurnRate();
-    await this.operatorStore.loadOperators();
-    await this.ssvStore.fetchAccountOperators();
-    await this.ssvStore.fetchAccountValidators();
-    await this.ssvStore.getNetworkFees();
-    await this.ssvStore.checkAllowance();
+    if (process.env.REACT_APP_NEW_STAGE) {
+      await this.ssvStore.checkIfLiquidated();
+      await this.ssvStore.getSsvContractBalance();
+      await this.ssvStore.getNetworkContractBalance();
+      await this.ssvStore.getAccountBurnRate();
+      await this.operatorStore.loadOperators();
+      await this.ssvStore.fetchAccountOperators();
+      await this.ssvStore.fetchAccountValidators();
+      await this.ssvStore.getNetworkFees();
+      await this.ssvStore.checkAllowance();
+    }
     this.ssvStore.setAccountLoaded(true);
   }
 
@@ -197,6 +199,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async syncBalance() {
+    if (!process.env.REACT_APP_NEW_STAGE) return;
     if (!this.accountAddress) return;
     await this.ssvStore.getSsvContractBalance();
     await this.ssvStore.getNetworkContractBalance();

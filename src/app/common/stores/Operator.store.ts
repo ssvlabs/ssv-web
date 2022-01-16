@@ -143,7 +143,11 @@ class OperatorStore extends BaseStore {
         try {
             const contractInstance = contract ?? walletStore.getContract();
             const encodeOperatorKey = await walletStore.encodeKey(publicKey);
-            this.setOperatorKeys({ name: this.newOperatorKeys.name, pubKey: encodeOperatorKey, fee: this.newOperatorKeys.fee });
+            this.setOperatorKeys({
+                name: this.newOperatorKeys.name,
+                pubKey: encodeOperatorKey,
+                fee: this.newOperatorKeys.fee,
+            });
             const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
@@ -169,15 +173,24 @@ class OperatorStore extends BaseStore {
             this.newOperatorReceipt = null;
 
             // Send add operator transaction
-            const payload = [
-                transaction.name,
-                transaction.pubKey,
-                // @ts-ignore
-                walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
-            ];
+            const payload = [];
+            if (process.env.REACT_APP_NEW_STAGE) {
+                payload.push(
+                    transaction.name,
+                    transaction.pubKey,
+                    walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
+                );
+            } else {
+                payload.push(
+                    transaction.name,
+                    transaction.address,
+                    transaction.pubKey,
+                );
+            }
+
             console.debug('Register Operator Transaction Data:', payload);
             if (getGasEstimation) {
-                contract.methods.registerOperator(...payload)
+                this.conditionalContractFunction(contract, payload)
                     .estimateGas({ from: walletStore.accountAddress })
                     .then((gasAmount: any) => {
                         this.estimationGas = gasAmount * 0.000000001;
@@ -196,7 +209,8 @@ class OperatorStore extends BaseStore {
                     console.log(e);
                 });
             } else {
-                contract.methods.registerOperator(...payload)
+                // @ts-ignore
+                this.conditionalContractFunction(contract, payload)
                     .send({ from: address })
                     .on('receipt', async (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
@@ -276,7 +290,7 @@ class OperatorStore extends BaseStore {
 
     @action.bound
     unselectAllOperators() {
-      this.selectedOperators = {};
+        this.selectedOperators = {};
     }
 
     /**
@@ -335,7 +349,7 @@ class OperatorStore extends BaseStore {
         //     return operatorsAdapted;
         // }));
 
-       return new ApiRequest(requestInfo)
+        return new ApiRequest(requestInfo)
             .sendRequest()
             .then(async (response: any) => {
                 this.loadingOperator = false;
@@ -351,7 +365,7 @@ class OperatorStore extends BaseStore {
         // return this.operators;
     }
 
-     operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
+    operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
         const walletStore: WalletStore = this.getStore('Wallet');
         const decodePublicKey = walletStore.encodeKey(_object.public_key);
         return {
@@ -361,6 +375,11 @@ class OperatorStore extends BaseStore {
             verified: _object.type === 'verified_operator',
             dappNode: _object.type === 'dapp_node',
         };
+    }
+
+    conditionalContractFunction(contract: any, payload: any[]) {
+        if (process.env.REACT_APP_NEW_STAGE) return contract.methods.registerOperator(...payload);
+        return contract.methods.addOperator(...payload);
     }
 }
 

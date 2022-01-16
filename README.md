@@ -31,6 +31,9 @@ All you need to do is to run the operator node using <a herf="https://github.com
 ### Cli
 Another option we support is a CLI, all you need to do is to run the following command with the relevant arguments, and you receive a full translation data
 ```
+yarn install
+```
+```
 yarn link
 ```
 ```

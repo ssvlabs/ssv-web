@@ -81,8 +81,9 @@ const Withdraw = () => {
     }
 
     return (
-      <div>
+      <>
         <BorderScreen
+          wrapperClass={classes.FirstSquare}
           header={'Available Balance'}
           link={{ to: config.routes.MY_ACCOUNT.DASHBOARD, text: translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT }}
           body={[
@@ -127,7 +128,7 @@ const Withdraw = () => {
             </Grid>
           )}
           />
-      </div>
+      </>
     );
 };
 

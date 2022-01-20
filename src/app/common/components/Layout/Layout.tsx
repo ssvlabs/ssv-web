@@ -7,7 +7,7 @@ import WalletPopUp from '~app/components/WalletPopUp';
 import ApplicationStore from '~app/common/stores/Application.store';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
 
-const Layout = ({ children, layoutClassName }: any) => {
+const Layout = ({ children }: any) => {
     const classes = useStyles();
     const stores = useStores();
     const applicationStore: ApplicationStore = stores.Application;
@@ -20,7 +20,7 @@ const Layout = ({ children, layoutClassName }: any) => {
     };
 
     return (
-      <Grid container className={layoutClassName ?? classes.root} spacing={0} justify="center">
+      <Grid container className={classes.root} spacing={0} justify="center">
         <Grid item xs={12}>
           { children }
         </Grid>

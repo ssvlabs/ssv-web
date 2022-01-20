@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -55,7 +56,11 @@ const AppBar = () => {
     }, [wrapperRef, buttonsRef, menuBar]);
 
     function openExplorer() {
-        window.open('https://play.google.com/store/apps/details?id=com.drishya');
+        window.open(config.links.LINK_EXPLORER);
+    }
+
+    function openDocs() {
+
     }
 
     const moveToDashboard = () => {
@@ -71,7 +76,7 @@ const AppBar = () => {
           <Grid item container className={classes.Linkbuttons}>
             <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
             <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
-            <Grid item className={classes.LinkButton} onClick={openExplorer}>Docs</Grid>
+            <Grid item className={classes.LinkButton} onClick={openDocs}>Docs</Grid>
           </Grid>
         )}
         <Grid item className={classes.Wrapper}>
@@ -91,7 +96,7 @@ const AppBar = () => {
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
             <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
             <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
-            <Grid item className={classes.MenuButton} onClick={openExplorer}>Docs</Grid>
+            <Grid item className={classes.MenuButton} onClick={openDocs}>Docs</Grid>
             <Grid item className={classes.UnderLine} />
             <Grid item container className={`${classes.MenuButton} ${classes.Slider}`}>
               <Grid item xs>{applicationStore.darkMode ? 'Dark Mode' : 'Light Mode'}</Grid>

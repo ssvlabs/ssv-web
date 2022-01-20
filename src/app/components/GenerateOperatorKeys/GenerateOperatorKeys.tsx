@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
-import Checkbox from '~app/common/components/CheckBox';
+// import Checkbox from '~app/common/components/CheckBox';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
@@ -37,7 +37,7 @@ const GenerateOperatorKeys = () => {
         initialOperatorKey = getRandomOperatorKey(false);
     }
     const [operatorExist, setOperatorExist] = useState(false);
-    const [userAgreement, setUserAgreement] = useState(false);
+    // const [userAgreement, setUserAgreement] = useState(false);
     const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
     const [feeError, setFeeError] = useState({ shouldDisplay: false, errorMessage: '' });
     const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
@@ -133,7 +133,11 @@ const GenerateOperatorKeys = () => {
                 <InputLabel
                   title="operator public key"
                   withHint
-                  toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+                  toolTipText={(
+                    <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+                      <a target={'_blank'} href={'https://docs.ssv.network/operators/install-instructions'}>documentation</a>
+                    </div>
+                  )}
                   toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                 />
                 <TextInput
@@ -168,9 +172,8 @@ const GenerateOperatorKeys = () => {
                 </Grid>
               )}
             </Grid>
-            <Checkbox onClickCallBack={setUserAgreement}
-              text={'I understand that running my validator simultaneously in ffmultiple setups will cause slashing to my validator'} />
-            <PrimaryButton disable={!registerButtonEnabled || !userAgreement} text={'Next'} onClick={onRegisterClick} />
+            {/* <Checkbox onClickCallBack={setUserAgreement} text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'} /> */}
+            <PrimaryButton disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
           </Grid>,
         ]}
       />

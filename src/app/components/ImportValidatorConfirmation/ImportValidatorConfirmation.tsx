@@ -75,7 +75,7 @@ const ImportValidatorConfirmation = () => {
         <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
         <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
-          <Grid item className={classes.SubHeader}>Selected Public Key</Grid>
+          <Grid item className={classes.SubHeader}>Selected Operators</Grid>
           {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
                     return (
                       <Grid key={index} container item xs={12} className={classes.Row}>
@@ -90,9 +90,9 @@ const ImportValidatorConfirmation = () => {
                           <SsvAndSubTitle
                             ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
                             subText={'/year'}
-                                    />
+                          />
                         </Grid>
-                            )}
+                        )}
                       </Grid>
                     );
                 })}
@@ -105,7 +105,7 @@ const ImportValidatorConfirmation = () => {
             <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
             {fields.map((field) => {
                     return (
-                      <Grid item container className={classes.Row}>
+                      <Grid item container className={classes.Row} key={field.key}>
                         <Grid item>
                           <NameAndAddress name={field.key} />
                         </Grid>
@@ -144,7 +144,7 @@ const ImportValidatorConfirmation = () => {
             </a>
           </Grid>
         </Grid>
-            )}
+        )}
         <Grid container>
           <CTAButton
             checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}

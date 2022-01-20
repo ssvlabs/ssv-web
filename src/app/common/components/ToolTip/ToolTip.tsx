@@ -14,7 +14,7 @@ const ToolTip = ({ text, link }: ToolTipProps) => {
     const classes = useStyles();
     link;
     return (
-      <Grid className={classes.ToolTipWrapper}
+      <Grid container item className={classes.ToolTipWrapper}
         onMouseEnter={() => setIsShown(true)}
         onMouseLeave={() => setIsShown(false)}
       >

@@ -10,6 +10,6 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 600,
         lineHeight: 1.14,
         color: theme.colors.gray40,
-        marginRight: theme.spacing(2),
+        // marginRight: theme.spacing(2),
     },
 }));

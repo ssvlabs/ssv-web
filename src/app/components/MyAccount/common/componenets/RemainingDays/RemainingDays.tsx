@@ -48,8 +48,11 @@ const RemainingDays = (props: Props) => {
 
     return (
       <Grid item container className={wrapperClass}>
-        <Grid item xs={12}>
-          <Grid className={classes.AmountOfDaysText}>Est. Remaining Days <Tooltip text={'need to implement'} /></Grid>
+        <Grid item container xs={12}>
+          <Grid className={classes.AmountOfDaysText} item>Est. Remaining Days</Grid>
+          <Grid item className={classes.Hint}>
+            <Tooltip text={'need to implement'} />
+          </Grid>
         </Grid>
         <Grid item className={`${classes.AmountOfDays} ${liquidationError ? classes.Red : ''}`}>{formatNumberToUi(currentRemainingDays, true)}</Grid>
         <Grid item className={`${classes.Days} ${liquidationError ? classes.Red : ''}`}>

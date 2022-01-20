@@ -49,7 +49,7 @@ type InputLabelProps = {
   title?: string,
   subTitle?: string,
   withHint?: boolean,
-  toolTipText?: string,
+  toolTipText?: any,
   toolTipLink?: string
 };
 

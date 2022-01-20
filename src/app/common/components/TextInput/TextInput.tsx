@@ -6,14 +6,16 @@ type InputProps = {
     value?: any,
     onBlur?: any,
     onChange?: any,
+    sideIcon?: any,
     disable?: boolean,
     withLock?: boolean,
     showError?: boolean,
     dataTestId?: string,
+    placeHolder?: string,
     withSideText?: boolean,
 };
 
-const TextInput = ({ value, onBlur, onChange, withLock, disable, showError, dataTestId, withSideText }: InputProps) => {
+const TextInput = ({ value, placeHolder, onBlur, onChange, withLock, disable, showError, dataTestId, withSideText, sideIcon }: InputProps) => {
     const classes = useStyles();
     const [password, showPassword] = useState(true);
     useEffect(() => {
@@ -23,6 +25,7 @@ const TextInput = ({ value, onBlur, onChange, withLock, disable, showError, data
     }, [disable]);
     return (
       <Grid container
+        justify={'space-between'}
         className={`${classes.Wrapper} ${disable ? classes.disable : ''} ${showError ? classes.Error : ''}`}>
         {withLock && <Grid item className={`${classes.Lock} ${disable ? classes.LockDisable : ''}`} onClick={() => { !disable && showPassword(!password); }} />}
         <Grid item className={classes.InputWrapper}>
@@ -30,6 +33,7 @@ const TextInput = ({ value, onBlur, onChange, withLock, disable, showError, data
             value={value}
             onBlur={onBlur}
             onChange={onChange}
+            placeholder={placeHolder ?? ''}
             disabled={disable}
             data-testid={dataTestId}
             className={classes.Input}
@@ -38,7 +42,7 @@ const TextInput = ({ value, onBlur, onChange, withLock, disable, showError, data
         </Grid>
         {withSideText && (
         <Grid item className={classes.Text}>
-          SSV
+            {sideIcon ?? 'SSV'}
         </Grid>
         )}
       </Grid>

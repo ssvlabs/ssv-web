@@ -74,7 +74,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   decodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3.eth.abi.decodeParameter('string', operatorKey);
+    return this.web3?.eth.abi.decodeParameter('string', operatorKey);
   }
 
   /**

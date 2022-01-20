@@ -1,3 +1,4 @@
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState } from 'react';
@@ -9,6 +10,7 @@ import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import OperatorStore from '~app/common/stores/Operator.store';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
+import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -23,13 +25,14 @@ const OperatorConfirmation = () => {
     const ssvStore: SsvStore = stores.SSV;
     const { redirectUrl, history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
+    const walletStore: WalletStore = stores.Wallet;
     const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     const [txHash, setTxHash] = useState('Register Operator');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
     useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
+        // redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     const onRegisterClick = async () => {
@@ -86,7 +89,7 @@ const OperatorConfirmation = () => {
                 <NameAndAddress name={'Key'} />
               </Grid>
               <Grid item xs={6} className={classes.AlignRight}>
-                <NameAndAddress name={operatorStore.newOperatorKeys.name} />
+                <NameAndAddress name={`0x${longStringShorten(sha256(walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey)), 4)}`} />
               </Grid>
             </Grid>
             <Grid container item xs={12} className={classes.MarginButton}>

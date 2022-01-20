@@ -5,10 +5,8 @@ const toolTipTextColor = '#637386';
 
 export const useStyles = makeStyles(() => ({
     ToolTipWrapper: {
-        display: 'inline-block',
-        marginLeft: 8,
+        marginLeft: 4,
         verticalAlign: 'middle',
-        // backgroundColor: 'red',
     },
     ToolTip: {
         width: 16,

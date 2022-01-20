@@ -3,6 +3,12 @@ import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme) => ({
     Wrapper: {
+        width: '95%',
+        margin: 'auto',
+        [screenSizes.lg]: {
+            width: 728,
+        },
+        maxWidth: 1200,
         marginTop: '40px',
         padding: theme.spacing(3, 3, 3, 3),
     },

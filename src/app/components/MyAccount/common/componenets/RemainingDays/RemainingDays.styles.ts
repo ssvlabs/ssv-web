@@ -15,6 +15,10 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray40,
         marginBottom: theme.spacing(2),
     },
+    Hint: {
+        alignSelf: 'center',
+        marginBottom: 8,
+    },
     Days: {
         fontSize: 16,
         fontWeight: 500,

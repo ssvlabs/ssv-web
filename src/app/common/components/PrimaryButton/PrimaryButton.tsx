@@ -25,7 +25,7 @@ const PrimaryButton = (props: Props) => {
         const listener = async (event: any) => {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 // event.preventDefault();
-                if (!inProgress) {
+                if (!disable && !inProgress) {
                     setInProgress(true);
                     await onClick();
                 }
@@ -35,7 +35,7 @@ const PrimaryButton = (props: Props) => {
         return () => {
             document.removeEventListener('keydown', listener);
         };
-    }, [inProgress]);
+    }, [inProgress, disable]);
 
     const submit = async () => {
         if (withVerifyConnection && !walletStore.connected) {

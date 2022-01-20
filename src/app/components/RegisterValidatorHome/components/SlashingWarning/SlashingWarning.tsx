@@ -25,9 +25,10 @@ const SlashingWarning = () => {
   const goToConfirmation = () => {
       history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
   };
+  const linkTo = process.env.REACT_APP_NEW_STAGE ? config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE : config.routes.VALIDATOR.SELECT_OPERATORS;
     return (
       <BorderScreen
-        link={{ to: config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, text: 'Back' }}
+        link={{ to: linkTo, text: 'Back' }}
         header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
         body={[
           <Grid container>
@@ -44,9 +45,9 @@ const SlashingWarning = () => {
               run with our network.
             </Grid>
             <Checkbox
-              text={'I understand that running my validator simultaneously in ffmultiple setups will cause slashing to my validator'}
+              text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
               onClickCallBack={setUserAgreed}
-                    />
+            />
             <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
               onClick={goToConfirmation} />
           </Grid>,

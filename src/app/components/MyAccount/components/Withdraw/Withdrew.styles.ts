@@ -1,6 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
+    FirstSquare: {
+      marginBottom: theme.spacing(8),
+    },
     currentBalance: {
         fontSize: 28,
         fontWeight: 800,
@@ -17,11 +20,11 @@ export const useStyles = makeStyles((theme) => ({
     },
     BalanceWrapper: {
         height: 93,
-        margin: '8px 0 0',
         borderRadius: 8,
+        margin: '8px 0 0',
         padding: theme.spacing(4, 5, 4, 5),
-        border: `solid 1px ${theme.colors.gray20}`,
         backgroundColor: theme.colors.gray0,
+        border: `solid 1px ${theme.colors.gray20}`,
     },
     MaxButtonWrapper: {
         justifyContent: 'right',

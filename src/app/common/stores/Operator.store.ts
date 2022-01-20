@@ -19,16 +19,18 @@ interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
 }
 
 export interface IOperator {
-    name: string,
-    pubkey: string,
-    ownerAddress: string,
-    paymentAddress?: string,
-    score?: number,
-    selected?: boolean
-    autoSelected?: boolean
-    verified?: boolean
-    dappNode?: boolean
     fee?: number,
+    name: string,
+    logo?: string,
+    type?: string,
+    pubkey: string,
+    score?: number,
+    selected?: boolean,
+    verified?: boolean,
+    dappNode?: boolean,
+    ownerAddress: string,
+    autoSelected?: boolean
+    paymentAddress?: string,
 }
 
 interface OperatorFee {
@@ -243,13 +245,33 @@ class OperatorStore extends BaseStore {
     }
 
     /**
+     * Unselect operator by pubkey
+     * @param index
+     */
+    @action.bound
+    unselectOperatorByPublicKey(pubkey: string) {
+        Object.keys(this.selectedOperators).forEach((index) => {
+            if (this.selectedOperators[index].pubkey === pubkey) {
+                delete this.selectedOperators[index];
+            }
+        });
+    }
+
+    /**
      * Select operator
      * @param operator
      * @param selectedIndex
      */
     @action.bound
     selectOperator(operator: IOperator, selectedIndex: number) {
-        this.selectedOperators[selectedIndex] = operator;
+        let operatorExist = false;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const index of [1, 2, 3, 4]) {
+            if (this.selectedOperators[index]?.pubkey === operator.pubkey) {
+                operatorExist = true;
+            }
+        }
+        if (!operatorExist) this.selectedOperators[selectedIndex] = operator;
     }
 
     /**
@@ -332,7 +354,7 @@ class OperatorStore extends BaseStore {
         ownerAddress
       }
     }`;
-        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}?randomize=true`;
+        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/api/operators/graph?randomize=true`;
 
         const requestInfo: RequestData = {
             url: operatorsEndpointUrl,
@@ -343,35 +365,43 @@ class OperatorStore extends BaseStore {
             ],
             data: { query },
         };
-        // this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
-        //     const operatorsAdapted = await this.operatorAdapter(operator);
-        //     this.hashedOperators[operator.public_key] = operatorsAdapted;
-        //     return operatorsAdapted;
-        // }));
 
         return new ApiRequest(requestInfo)
             .sendRequest()
             .then(async (response: any) => {
                 this.loadingOperator = false;
                 this.operatorsLoaded = true;
-                this.operators = response.operators.map((operator: any) => {
-                    const adaptedOperator = this.operatorAdapter(operator);
-                    this.hashedOperators[operator.public_key] = adaptedOperator;
-                    return adaptedOperator;
-                });
+                if (process.env.REACT_APP_NEW_STAGE) {
+                    this.operators = await Promise.all(response.operators.map(async (operator: any): Promise<any> => {
+                        const operatorStore: OperatorStore = this.getStore('Operator');
+                        const operatorsAdapted = this.operatorAdapter(operator);
+                        operatorsAdapted.fee = await operatorStore.getOperatorFee(operatorsAdapted.pubkey);
+                        this.hashedOperators[operator.public_key] = operatorsAdapted;
+                        return operatorsAdapted;
+                    }));
+                } else {
+                    this.operators = response.operators.map((operator: any) => {
+                        const adaptedOperator = this.operatorAdapter(operator);
+                        this.hashedOperators[operator.public_key] = adaptedOperator;
+                        return adaptedOperator;
+                    });   
+                }
                 return this.operators;
             });
 
         // return this.operators;
     }
 
-    operatorAdapter(_object: { name: any; owner_address: any; public_key: any; type: any; }) {
+     operatorAdapter(_object: any) {
         const walletStore: WalletStore = this.getStore('Wallet');
-        const decodePublicKey = walletStore.encodeKey(_object.public_key);
+        const encodePublicKey = walletStore.encodeKey(_object.public_key);
         return {
             name: _object.name,
             ownerAddress: _object.owner_address,
-            pubkey: decodePublicKey,
+            pubkey: encodePublicKey,
+            logo: _object.logo,
+            fee: 0,
+            type: _object.type,
             verified: _object.type === 'verified_operator',
             dappNode: _object.type === 'dapp_node',
         };

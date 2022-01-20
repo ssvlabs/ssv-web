@@ -3,7 +3,17 @@ import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme) => ({
     BorderScreenWrapper: {
-       width: '100%',
+        width: 648,
+        margin: 'auto',
+        [screenSizes.xs]: {
+            width: '100%',
+        },
+        [screenSizes.md]: {
+            width: 452,
+        },
+        [screenSizes.lg]: {
+            width: 648,
+        },
     },
     LinkWrapper: {
         marginBottom: theme.spacing(2),

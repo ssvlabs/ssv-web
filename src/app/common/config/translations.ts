@@ -59,7 +59,7 @@ const translations = {
       DESCRIPTION: 'Your validator is currently active on beacon chain:',
     },
     SELECT_OPERATORS: {
-      TITLE: 'Select Operators',
+      TITLE: 'Pick the team of network operators to run you validator',
       DESCRIPTION: 'Pick the team of network operators to run your validator.',
     },
     SUCCESS: {
@@ -87,7 +87,7 @@ const translations = {
   OPERATOR: {
     OPERATOR_EXIST: 'Operator key has already been registered.',
     REGISTER: {
-      TOOL_TIP_KEY: 'The public key that is generated as part of the SSV node setup - see our ',
+      TOOL_TIP_KEY: 'Generated as part of the SSV node setup - see our. ',
       TOOL_TIP_ADDRESS: 'The operator’s admin address for management purposes.',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',

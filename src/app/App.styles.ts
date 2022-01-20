@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme) => {
             alignItems: 'center',
             alignContent: 'center',
             flexDirection: 'column',
-            zIndex: 99999,
+            zIndex: 999999,
             backgroundColor: theme.darkMode ? 'rgba(0, 0, 0, 1)' : 'rgba(255, 255, 255, 1)',
         },
         Loader: {

@@ -18,11 +18,11 @@ import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import Filters from '~app/components/RegisterValidatorHome/components/NewSelectOperators/components/FirstSquare/components/Filters';
-import StyledRow from '~app/components/RegisterValidatorHome/components/NewSelectOperators/components/FirstSquare/components/StyledRow';
-import StyledCell from '~app/components/RegisterValidatorHome/components/NewSelectOperators/components/FirstSquare/components/StyledCell';
-import { useStyles } from '~app/components/RegisterValidatorHome/components/NewSelectOperators/components/FirstSquare/FirstSquare.styles';
-import OperatorDetails from '~app/components/RegisterValidatorHome/components/NewSelectOperators/components/FirstSquare/components/OperatorDetails';
+import Filters from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
+import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledRow';
+import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
+import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
+import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const FirstSquare = () => {
     let searchTimeout: any;

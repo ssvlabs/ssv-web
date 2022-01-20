@@ -10,7 +10,7 @@ import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import OperatorDetails from '~app/components/RegisterValidatorHome/components/NewSelectOperators/components/FirstSquare/components/OperatorDetails';
+import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 
 const SecondSquare = () => {

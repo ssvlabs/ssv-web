@@ -18,8 +18,7 @@ import ImportValidator from '~app/components/RegisterValidatorHome/components/Im
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/RegisterValidatorHome/components/SlashingWarning';
 import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
-// import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
-import SelectOperators from '~app/components/RegisterValidatorHome/components/NewSelectOperators/SelectOperators';
+import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators/SelectOperators';
 import AccountBalanceAndFee from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee';
 
 const Routes = () => {
@@ -76,9 +75,6 @@ const Routes = () => {
               <Route exact path={config.routes.VALIDATOR.SELECT_OPERATORS}>
                 <SelectOperators />
               </Route>
-              {/* <Route exact path={config.routes.VALIDATOR.SELECT_OPERATORS}> */}
-              {/*  <SelectOperators /> */}
-              {/* </Route> */}
               <Route exact path={config.routes.VALIDATOR.DEPOSIT_VALIDATOR}>
                 <DepositViaLaunchpad />
               </Route>

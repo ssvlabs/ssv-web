@@ -20,10 +20,11 @@ const DepositViaLaunchpad = () => {
         body={[
           <Grid container>
             <Grid item className={classes.Text} xs={12}>
-              You must have an active validator before running it on the SSV network.
+              You must deposit your validator before running it on the SSV network.
             </Grid>
             <Grid item className={classes.Text} xs={12}>
-              Follow Ethereum’s launchpad instructions to generate new keys and deposit your validator to the deposit contract.
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              Follow Ethereum's launchpad instructions to deposit your validator to the deposit contract.
             </Grid>
             <Grid item className={classes.Text} xs={12}>
               There is no need to wait until your validator is active on the beacon chain,

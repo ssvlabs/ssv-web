@@ -11,6 +11,7 @@ type Props = {
     onClick: any,
     disable?: boolean,
     dataTestId?: string,
+    wrapperClass?: string,
     withVerifyConnection?: boolean
 };
 
@@ -18,7 +19,7 @@ const PrimaryButton = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
-    const { text, onClick, disable, dataTestId, withVerifyConnection } = props;
+    const { text, onClick, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
     const [inProgress, setInProgress] = useState(false);
 
     useEffect(() => {
@@ -28,6 +29,7 @@ const PrimaryButton = (props: Props) => {
                 if (!disable && !inProgress) {
                     setInProgress(true);
                     await onClick();
+                    setInProgress(false);
                 }
             }
         };
@@ -45,9 +47,9 @@ const PrimaryButton = (props: Props) => {
     };
 
     return (
-      <Grid container item className={classes.Wrapper}>
+      <Grid container item>
         <Button
-          className={classes.PrimaryButton}
+          className={`${classes.PrimaryButton} ${wrapperClass}`}
           data-testid={dataTestId}
           disabled={disable || inProgress}
           onClick={submit}

@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { IOperator } from '~app/common/stores/Operator.store';
 import { useStyles } from './Filters.styles';
 
 type Props = {
-    data: any[];
-    setResultFiltered: any;
+    setFilterBy: any;
 };
 
 const Filters = (props: Props) => {
@@ -17,16 +15,11 @@ const Filters = (props: Props) => {
     const [dappNodeSelected, selectDappNode] = useState(false);
 
     useEffect(() => {
-        let newDataSorted = props.data.slice(0);
-        if (dappNodeSelected) {
-            newDataSorted = newDataSorted.sort((operator: IOperator) => operator.type === 'dapp_node' ? -1 : 1);
-        }
-        if (verifySelected) {
-            newDataSorted = newDataSorted.sort((operator: IOperator) => operator.type === 'verified_operator' ? -1 : 1);
-        }
-
-        props.setResultFiltered(newDataSorted);
-    }, [JSON.stringify(props.data), verifySelected, dappNodeSelected]);
+        const filters = [];
+        if (verifySelected) filters.push('verified_operator');
+        if (dappNodeSelected) filters.push('dapp_node');
+        props.setFilterBy(filters);
+    }, [verifySelected, dappNodeSelected]);
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {

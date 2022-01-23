@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     Wrapper: {
+        alignItems: 'center',
         maxWidth: 269,
     },
     OperatorLogo: {
@@ -27,7 +28,7 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray90,
     },
     OperatorType: {
-      marginTop: 4,
+      marginTop: 5,
     },
     Address: {
         fontSize: '12px',

@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray80,
         marginBottom: theme.spacing(3),
         '&:nth-of-type(4)': {
-            marginBottom: theme.spacing(10) - 1,
+            marginBottom: theme.spacing(10),
         },
     },
 

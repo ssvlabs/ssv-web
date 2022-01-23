@@ -9,7 +9,7 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import OperatorStore from '~app/common/stores/Operator.store';
-import Checkbox from '~app/common/components/CheckBox/CheckBox';
+// import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
@@ -26,7 +26,7 @@ const OperatorConfirmation = () => {
     const { redirectUrl, history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
     const walletStore: WalletStore = stores.Wallet;
-    const [checked, setCheckBox] = useState(false);
+    // const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     const [txHash, setTxHash] = useState('Register Operator');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
@@ -54,6 +54,7 @@ const OperatorConfirmation = () => {
 
     return (
       <BorderScreen
+        blackHeader
         withConversion
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
@@ -101,9 +102,9 @@ const OperatorConfirmation = () => {
                   name={`0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`} />
               </Grid>
             </Grid>
-            <Checkbox onClickCallBack={setCheckBox}
-              text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} />
-            <PrimaryButton disable={!checked} text={actionButtonText} onClick={onRegisterClick} />
+            {/* <Checkbox onClickCallBack={setCheckBox} */}
+            {/*  text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} /> */}
+            <PrimaryButton disable={false} text={actionButtonText} onClick={onRegisterClick} />
           </Grid>,
             ]}
         />

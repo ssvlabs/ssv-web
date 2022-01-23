@@ -1,16 +1,18 @@
 import React from 'react';
-import { Alert } from '@material-ui/lab';
 import { observer } from 'mobx-react';
+import { Grid } from '@material-ui/core';
+import { useStyles } from './ErrorMessage.styles';
 
 type MessageDivProps ={
     text: string
 };
 
 const MessageDiv = ({ text }: MessageDivProps) => {
+    const classes = useStyles();
     return (
-      <Alert icon={false} severity="error">
+      <Grid className={classes.Wrapper}>
         {text}
-      </Alert>
+      </Grid>
     );
 };
 

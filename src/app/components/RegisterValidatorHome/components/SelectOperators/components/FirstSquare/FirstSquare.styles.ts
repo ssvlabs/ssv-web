@@ -4,6 +4,9 @@ export const useStyles = makeStyles((theme) => ({
     ScreenWrapper: {
         width: '100%',
     },
+    Loading: {
+        color: theme.colors.tint20,
+    },
     SearchIcon: {
         width: 24,
         height: 24,
@@ -24,12 +27,12 @@ export const useStyles = makeStyles((theme) => ({
         border: `solid 1px ${theme.colors.gray20}`,
     },
     HeaderWrapper: {
+        cursor: 'pointer',
         alignItems: 'center',
     },
     SortArrow: {
         width: 16,
         height: 16,
-        cursor: 'pointer',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -83,9 +86,10 @@ export const useStyles = makeStyles((theme) => ({
     Checkbox: {
         width: 24,
         height: 24,
+        marginLeft: 20,
+        marginRight: 20,
         borderRadius: 8,
         cursor: 'pointer',
-        marginLeft: 20,
         backgroundColor: theme.colors.gray10,
         border: `1px solid ${theme.colors.gray40}`,
     },

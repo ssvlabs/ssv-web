@@ -27,9 +27,12 @@ class ApplicationStore extends BaseStore {
   constructor() {
     super();
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
+    const isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
     if (darkModeSaved) {
       this.darkMode = darkModeSaved === '1';
       this.switchDarkMode(this.darkMode);
+    } else if (isDark) {
+      this.switchDarkMode(true);
     } else {
       this.switchDarkMode(false);
     }

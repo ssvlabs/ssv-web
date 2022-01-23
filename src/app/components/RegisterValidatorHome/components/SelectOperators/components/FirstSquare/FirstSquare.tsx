@@ -5,10 +5,10 @@ import Table from '@material-ui/core/Table';
 import { Skeleton } from '@material-ui/lab';
 import TableRow from '@material-ui/core/TableRow';
 import React, { useEffect, useState } from 'react';
-import { debounce, Grid } from '@material-ui/core';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
+import { CircularProgress, debounce, Grid } from '@material-ui/core';
 import Operators from '~lib/api/Operators';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
@@ -30,53 +30,46 @@ const FirstSquare = () => {
     const classes = useStyles();
     const SEARCH_TIMEOUT_DELAY = 700;
     const ssvStore: SsvStore = stores.SSV;
-    // const [loading, setLoading] = useState(false);
     const walletStore: WalletStore = stores.Wallet;
-    const operatorStore: OperatorStore = stores.Operator;
-    const [batchIndex, setBatchIndex] = useState(20);
     const [sortBy, setSortBy] = useState('');
+    const operatorStore: OperatorStore = stores.Operator;
+    const [loading, setLoading] = useState(false);
+    const [filterBy, setFilterBy] = useState([]);
+    const [batchIndex, setBatchIndex] = useState(20);
     const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
-    const [shellOperatorsData, setShellOperatorsData]: [any[], any] = useState([]);
 
     let headers = [
         { type: '', displayName: '' },
         { type: 'name', displayName: 'Name' },
+        { type: 'validatorsCount', displayName: 'Validators' },
         { type: '', displayName: '' },
     ];
-    let skeletons = [0, 1, 2, 3, 4];
+    let skeletons = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    
     if (process.env.REACT_APP_NEW_STAGE) {
         headers = [
             { type: '', displayName: '' },
             { type: 'name', displayName: 'Name' },
+            { type: 'validatorsCount', displayName: 'Validators' },
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];
         skeletons = [0, 1, 2, 3, 4, 5, 6];
     }
 
-    const assignData = (data: IOperator[]) => {
-        setOperatorsData(data);
-        setShellOperatorsData(data);
-    };
+    useEffect(() => {
+        operatorStore.unselectAllOperators();
+        operatorStore.loadOperators().then(() => {
+            setOperatorsData(operatorStore.operators);
+        });
+    }, []);
 
-    const sort = (type: string) => {
-        if (type === sortBy) {
-            setSortBy('');
-            setOperatorsData(shellOperatorsData);
-            return;
-        }
-            const sortedArray = operatorsData.sort((a, b) => {
-                if (a[type] < b[type]) { return -1; }
-                if (a[type] > b[type]) { return 1; }
-                return 0;
-            });
-            setOperatorsData(sortedArray);
-            setSortBy(type);
-    };
+    useEffect(() => {
+    }, [sortBy, filterBy, JSON.stringify(operatorsData), JSON.stringify(operatorStore.selectedOperators)]);
 
     const fetch = React.useMemo(
         () => throttle((request: { input: string }, callback: any) => {
-            // setLoading(true);
+            setLoading(true);
             Operators.getInstance().search(request.input).then((results: any) => {
                 const operators: any = [];
                 (results?.operators || []).forEach((operator: any) => {
@@ -90,16 +83,6 @@ const FirstSquare = () => {
         }, 200),
         [],
     );
-
-    useEffect(() => {
-        operatorStore.unselectAllOperators();
-        operatorStore.loadOperators().then(() => {
-            assignData(operatorStore.operators);
-        });
-    }, []);
-
-    useEffect(() => {
-    }, [JSON.stringify(operatorsData), JSON.stringify(operatorStore.selectedOperators)]);
 
     const selectOperator = (operator: IOperator) => {
         if (operatorStore.isOperatorSelected(operator.pubkey)) {
@@ -122,11 +105,19 @@ const FirstSquare = () => {
         window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(pubKey))}`);
     };
 
+    const sortHandler = (sortType: string) => {
+        if (sortBy === sortType) {
+            setSortBy('');
+        } else {
+            setSortBy(sortType);
+        }
+    };
+
     const inputSearch = (e: any) => {
         const userInput = e.target.value.trim();
         if (userInput === '') {
             setBatchIndex(20);
-            assignData(operatorStore.operators);
+            setOperatorsData(operatorStore.operators);
         }
         if (userInput.length < 3) {
             return;
@@ -135,8 +126,8 @@ const FirstSquare = () => {
         searchTimeout && clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             fetch({ input: userInput }, (results: any) => {
-                assignData(results);
-                // setLoading(false);
+                setOperatorsData(results);
+                setLoading(false);
             });
         }, SEARCH_TIMEOUT_DELAY);
     };
@@ -161,8 +152,8 @@ const FirstSquare = () => {
         if (operatorStore.loadingOperator) {
             return skeletons.map((rowIndex: number) => (
               <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
-                {[0, 1, 2, 3, 4].map((index: number) => (
-                  <StyledCell key={`cell-${index}`}>
+                {[0, 1, 2, 3].map((index: number) => (
+                  <StyledCell style={{ padding: '10px 2px 10px 2px' }} key={`cell-${index}`}>
                     <Skeleton />
                   </StyledCell>
                 ))}
@@ -170,7 +161,35 @@ const FirstSquare = () => {
             ));
         }
 
-        if (operatorsData.length === 0) {
+        let operatorsDataShell = operatorsData.slice(0);
+
+        if (sortBy) {
+            operatorsDataShell = operatorsDataShell.sort((a, b) => {
+                if (sortBy === 'name') {
+                    if (a[sortBy] < b[sortBy]) { return -1; }
+                    if (a[sortBy] > b[sortBy]) { return 1; }
+                } else {
+                    if (a[sortBy] > b[sortBy]) { return -1; }
+                    if (a[sortBy] < b[sortBy]) { return 1; }
+                }
+                return 0;
+            });
+        }
+
+        if (filterBy.length > 0) {
+            operatorsDataShell = operatorsDataShell.filter((operator: IOperator) => {
+                let typeExist = false;
+                // eslint-disable-next-line no-restricted-syntax
+                for (const filter of filterBy) {
+                    if (operator.type === filter) {
+                        typeExist = true;
+                    }
+                }
+                return typeExist;
+            });
+        }
+
+        if (operatorsDataShell.length === 0) {
             return (
               <TableRow hover>
                 <StyledCell className={classes.NoRecordsWrapper}>
@@ -184,16 +203,19 @@ const FirstSquare = () => {
             );
         }
 
-        return operatorsData.slice(0, batchIndex).map((operator) => {
+        return operatorsDataShell.slice(0, batchIndex).map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.pubkey);
             if (!process.env.REACT_APP_NEW_STAGE) {
                 return (
                   <TableRow key={operator.pubkey} className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''}`} onClick={() => { selectOperator(operator); }}>
-                    <StyledCell>
+                    <StyledCell style={{ width: 60 }}>
                       <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
                     </StyledCell>
                     <StyledCell>
                       <OperatorDetails operator={operator} />
+                    </StyledCell>
+                    <StyledCell>
+                      {operator.validatorsCount}
                     </StyledCell>
                     <StyledCell>
                       <Grid className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
@@ -218,6 +240,8 @@ const FirstSquare = () => {
         });
     };
 
+    const rows: any = dataRows();
+
     return (
       <BorderScreen
         wrapperClass={classes.ScreenWrapper}
@@ -230,19 +254,19 @@ const FirstSquare = () => {
                 <TextInput
                   withSideText
                   onChange={inputSearch}
-                  sideIcon={<div className={classes.SearchIcon} />}
+                  sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> : <div className={classes.SearchIcon} />}
                   placeHolder={'Search...'}
                 />
               </Grid>
-              <Filters data={shellOperatorsData} setResultFiltered={setOperatorsData} />
+              <Filters setFilterBy={setFilterBy} />
             </Grid>
             <TableContainer className={classes.OperatorsTable} onScroll={lazyLoad}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    {operatorsData.length > 0 && headers.map((header: any, index: number) => (
+                    {rows.length > 0 && headers.map((header: any, index: number) => (
                       <StyledCell key={index} className={classes.HeaderWrapper}>
-                        <Grid container onClick={() => sort(header.type)}>
+                        <Grid container onClick={() => sortHandler(header.type)}>
                           <Grid item>{header.displayName}</Grid>
                           {header.displayName !== '' && (
                             <Grid
@@ -256,7 +280,7 @@ const FirstSquare = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataRows()}
+                  {rows}
                 </TableBody>
               </Table>
             </TableContainer>

@@ -23,11 +23,14 @@ export const useStyles = makeStyles((theme) => ({
         backgroundImage: `url(/images/logo/${theme.darkMode ? 'small_light' : 'small_light'}.svg)`,
     },
     Linkbuttons: {
-        width: 391,
-        marginLeft: 'auto',
+        margin: 'auto',
+        width: 'fit-content',
     },
     Wrapper: {
-        marginLeft: 'auto',
+        '@media (max-width: 1200px)': {
+            marginLeft: 'auto',
+        },
+
     },
     Hamburger: {
         width: 24,
@@ -43,7 +46,6 @@ export const useStyles = makeStyles((theme) => ({
         top: 80,
         right: 0,
         width: 272,
-        height: 305,
         borderRadius: 16,
         position: 'absolute',
         marginRight: theme.spacing(4),
@@ -75,7 +77,21 @@ export const useStyles = makeStyles((theme) => ({
         '-webkit-tap-highlight-color': 'transparent',
         '&:nth-of-type(1)': {
             color: theme.colors.primaryBlue,
+        },
+        '&:nth-of-type(2)': {
+            position: !theme.newStage ? 'relative' : '',
             '&:hover': {
+                '&::after': !theme.newStage ? {
+                    left: 20,
+                    width: 150,
+                    padding: 10,
+                    borderRadius: 8,
+                    display: 'block',
+                    position: 'absolute',
+                    color: theme.colors.white,
+                    content: '"comming soon..."',
+                    backgroundColor: theme.colors.primaryBlue,
+                } : {},
                 color: theme.colors.primaryBlue,
             },
         },
@@ -99,32 +115,38 @@ export const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(4, 4),
     },
     LinkButton: {
+        width: 144,
+        height: 48,
         fontSize: 16,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         fontWeight: 600,
         lineHeight: 1.25,
         cursor: 'pointer',
+        textAlign: 'center',
+        marginLeft: theme.spacing(10),
         color: theme.colors.black,
         '&:nth-of-type(1)': {
-            width: 144,
-            marginRight: theme.spacing(5),
             color: theme.colors.primaryBlue,
-            '&:hover': {
-                color: theme.colors.primaryBlue,
-            },
         },
         '&:nth-of-type(2)': {
-            width: 116,
-            color: theme.colors.black,
-            marginRight: theme.spacing(5),
+            // width: 144,
+            // marginRight: theme.spacing(5),
+            position: !theme.newStage ? 'relative' : '',
             '&:hover': {
-                color: theme.colors.black,
-            },
-        },
-        '&:nth-of-type(3)': {
-            width: 91,
-            color: theme.colors.black,
-            '&:hover': {
-                color: theme.colors.black,
+                color: theme.colors.primaryBlue,
+                '&::after': !theme.newStage ? {
+                    left: 20,
+                    width: 150,
+                    padding: 10,
+                    borderRadius: 8,
+                    display: 'block',
+                    position: 'absolute',
+                    color: theme.colors.white,
+                    content: '"comming soon..."',
+                    backgroundColor: theme.colors.primaryBlue,
+                } : {},
             },
         },
     },

@@ -83,11 +83,12 @@ const translations = {
     TITLE: 'Welcome to the SSV Network!',
     OPERATOR_DESCRIPTION: 'Your operator has been successfully registered! With every new operator, our network grows stronger',
     VALIDATOR_DESCRIPTION: 'Your validator is now running on the robust and secure infrastructure of our network',
+    FEEDBACK_HEADER: 'We would welcome your feedback',
   },
   OPERATOR: {
     OPERATOR_EXIST: 'Operator key has already been registered.',
     REGISTER: {
-      TOOL_TIP_KEY: 'Generated as part of the SSV node setup - see our. ',
+      TOOL_TIP_KEY: 'Generated as part of the SSV node setup - see our ',
       TOOL_TIP_ADDRESS: 'The operator’s admin address for management purposes.',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',

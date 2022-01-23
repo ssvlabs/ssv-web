@@ -30,7 +30,7 @@ const ImportValidatorConfirmation = () => {
     const applicationStore: ApplicationStore = stores.Application;
     const { redirectUrl, history } = useUserFlow();
     const [txHash, setTxHash] = useState('');
-    const [checked, selectCheckBox] = useState(false);
+    // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
     let totalOperatorsYearlyFee = 0;
     let yearlyNetworkFee = 0;
@@ -147,11 +147,11 @@ const ImportValidatorConfirmation = () => {
         )}
         <Grid container>
           <CTAButton
-            checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
-            checkBoxesCallBack={[selectCheckBox]}
+            // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
+            // checkBoxesCallBack={[selectCheckBox]}
             withAllowance
             testId={'confirm-button'}
-            disable={!checked}
+            disable={false}
             onClick={onRegisterValidatorClick}
             text={actionButtonText}
           />
@@ -161,11 +161,12 @@ const ImportValidatorConfirmation = () => {
 
     return (
       <BorderScreen
-        sectionClass={classes.Section}
+        blackHeader
         withConversion
+        body={components}
+        sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}
         link={{ to: config.routes.VALIDATOR.SLASHING_WARNING, text: 'Back' }}
-        body={components}
       />
     );
 };

@@ -28,6 +28,7 @@ const SlashingWarning = () => {
   const linkTo = process.env.REACT_APP_NEW_STAGE ? config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE : config.routes.VALIDATOR.SELECT_OPERATORS;
     return (
       <BorderScreen
+        blackHeader
         link={{ to: linkTo, text: 'Back' }}
         header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
         body={[

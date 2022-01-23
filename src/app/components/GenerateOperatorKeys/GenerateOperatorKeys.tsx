@@ -135,7 +135,7 @@ const GenerateOperatorKeys = () => {
                   withHint
                   toolTipText={(
                     <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                      <a target={'_blank'} href={'https://docs.ssv.network/operators/install-instructions'}>documentation</a>
+                      <a target={'_blank'} href={'https://docs.ssv.network/operators/install-instructions'}>documentation.</a>
                     </div>
                   )}
                   toolTipLink={config.links.TOOL_TIP_KEY_LINK}

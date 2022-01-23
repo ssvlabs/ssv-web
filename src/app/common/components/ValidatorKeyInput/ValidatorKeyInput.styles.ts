@@ -4,8 +4,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     Wrapper: {
         height: 50,
         borderRadius: 8,
-        backgroundColor: theme.colors.white,
-        border: `solid 1px ${theme.colors.gray30}`,
+        backgroundColor: theme.colors.gray10,
+        border: `solid 1px ${theme.colors.gray20}`,
         padding: theme.spacing(3, 4, 3, 5),
     },
     PublicKey: {
@@ -15,7 +15,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        color: theme.colors.gray90,
+        color: theme.colors.gray60,
     },
     CopyImage: {
         width: 24,

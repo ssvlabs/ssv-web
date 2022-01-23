@@ -1,9 +1,8 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
 import ApiRequest from '~lib/utils/ApiRequest';
-// import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
@@ -12,6 +11,7 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ValidatorStore from '~app/common/stores/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Application.store';
+import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
@@ -19,20 +19,14 @@ const ImportValidator = () => {
   const stores = useStores();
   const classes = useStyles();
   const history = useHistory();
-  // const { getUserFlow } = useUserFlow();
   const inputRef = useRef(null);
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     validatorStore.setPassword('');
   }, []);
-
-  useEffect(() => {
-    if (validatorStore.validatorPrivateKeyFile) {
-      // history.push(config.routes.VALIDATOR.DECRYPT);
-    }
-  }, [validatorStore.validatorPrivateKeyFile]);
 
   const handleClick = () => {
     // @ts-ignore
@@ -65,8 +59,12 @@ const ImportValidator = () => {
     }
   };
 
+  const inputHandler = (e: any) => {
+    setErrorMessage('');
+    validatorStore.setPassword(e.target.value);
+  };
+
   const submitHandler = () => {
-    // hideMessage();
     const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
@@ -83,9 +81,9 @@ const ImportValidator = () => {
       console.log(error);
       applicationStore.setIsLoading(false);
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
-        // showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
+        setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
       } else {
-        // showMessage(error, true);
+        setErrorMessage(error);
       }
     });
   };
@@ -133,6 +131,7 @@ const ImportValidator = () => {
 
     return (
       <BorderScreen
+        blackHeader
         header={translations.VALIDATOR.IMPORT.TITLE}
         link={{ to: config.routes.VALIDATOR.HOME, text: 'Back' }}
         body={[
@@ -145,10 +144,13 @@ const ImportValidator = () => {
             </Grid>
             <Grid container item xs={12}>
               <InputLabel title="Keystore Password" />
-              <Grid item xs={12} className={classes.TextInput}>
-                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={(event: any) => { validatorStore.setPassword(event.target.value); }} />
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={inputHandler} />
               </Grid>
-              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password} />
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <MessageDiv text={translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD} />}
+              </Grid>
+              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password || !!errorMessage} />
             </Grid>
           </Grid>,
         ]}

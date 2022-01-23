@@ -1,15 +1,15 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    Wrapper: {
-
-    },
     PrimaryButton: {
         height: 60,
         width: '100%',
         fontWeight: 600,
+        borderRadius: 8,
+        marginBottom: 16,
         color: theme.colors.white,
         textTransform: 'capitalize',
+        fontFamily: 'Manrope !important',
         backgroundColor: theme.colors.primaryBlue,
         '&:hover': {
             backgroundColor: theme.colors.shade20,

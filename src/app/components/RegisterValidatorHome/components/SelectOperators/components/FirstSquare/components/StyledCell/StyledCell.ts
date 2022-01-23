@@ -11,15 +11,16 @@ const StyledCell = withStyles((theme) => createStyles({
         lineHeight: 1.62,
         color: theme.colors.gray40,
         backgroundColor: theme.colors.white,
+        borderBottom: `1px solid ${theme.colors.gray20}`,
     },
     body: {
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,
         cursor: 'pointer',
-        // borderBottom: `solid 1px ${theme.colors.gray40}`,
         padding: '12px 0 12px',
         color: theme.colors.gray90,
+        borderBottom: `1px solid ${theme.colors.gray20}`,
     },
 }))(TableCell);
 

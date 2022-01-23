@@ -102,8 +102,10 @@ class ValidatorStore extends BaseStore {
   @action.bound
   // eslint-disable-next-line no-unused-vars
   async addNewValidator(getGasEstimation?: boolean, callBack?: (txHash: string) => void) {
+    callBack;
     const walletStore: WalletStore = this.getStore('Wallet');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    notificationsStore;
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
@@ -146,12 +148,12 @@ class ValidatorStore extends BaseStore {
           // Send add operator transaction
           this.conditionalContractFunction(contract, payload)
               .send({ from: ownerAddress })
-              .on('receipt', (receipt: any) => {
+          .on('receipt', (receipt: any) => {
                 // eslint-disable-next-line no-prototype-builtins
                 const event: boolean = receipt.hasOwnProperty('events');
                 if (event) {
                   console.debug('Contract Receipt', receipt);
-                  this.newValidatorReceipt = receipt;
+                  this.newValidatorReceipt = payload[0];
                   this.clearValidatorData();
                   resolve(event);
                 }

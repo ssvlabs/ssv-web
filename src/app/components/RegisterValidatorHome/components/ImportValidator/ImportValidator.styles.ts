@@ -6,6 +6,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         color: theme.colors.gray80,
+        marginBottom: theme.spacing(5),
     },
     DropZone: {
         height: 254,
@@ -24,8 +25,8 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         marginTop: theme.spacing(20),
+        marginBottom: theme.spacing(-4),
         backgroundRepeat: 'no-repeat',
-        marginBottom: theme.spacing(0),
         backgroundImage: 'url(/images/file/white.svg)',
     },
     Fail: {
@@ -55,7 +56,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         cursor: 'pointer',
-        marginTop: theme.spacing(2),
+        // marginTop: theme.spacing(2),
         textDecoration: 'underline',
         color: theme.colors.primaryBlue,
         zIndex: theme.opacity.highPriority,
@@ -66,7 +67,10 @@ export const useStyles = makeStyles((theme) => ({
     SuccessText: {
         color: theme.colors.primarySuccessDark,
     },
-    TextInput: {
+    ItemWrapper: {
         marginBottom: theme.spacing(10),
+    },
+    ErrorWrapper: {
+        marginBottom: theme.spacing(1),
     },
 }));

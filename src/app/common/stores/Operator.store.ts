@@ -1,3 +1,4 @@
+import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
@@ -30,7 +31,7 @@ export interface IOperator {
     dappNode?: boolean,
     ownerAddress: string,
     autoSelected?: boolean
-    paymentAddress?: string,
+    validatorsCount?: number,
 }
 
 interface OperatorFee {
@@ -62,7 +63,7 @@ class OperatorStore extends BaseStore {
     @observable newOperatorReceipt: any = null;
 
     @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '', fee: 0 };
-    @observable newOperatorRegisterSuccessfully: boolean = false;
+    @observable newOperatorRegisterSuccessfully: string = '';
 
     @observable estimationGas: number = 0;
     @observable dollarEstimationGas: number = 0;
@@ -80,7 +81,7 @@ class OperatorStore extends BaseStore {
             address: '',
             fee: 0,
         };
-        this.newOperatorRegisterSuccessfully = false;
+        this.newOperatorRegisterSuccessfully = '';
     }
 
     @computed
@@ -158,6 +159,15 @@ class OperatorStore extends BaseStore {
         }
     }
 
+/*    /!**
+     * Check if operator pass his limit
+     * @param publicKey
+     *!/
+    @action.bound
+    async getValidatorsPerOperator(publicKey: string): Promise<boolean> {
+        contract.methods;
+    } */
+
     /**
      * Add new operator
      * @param getGasEstimation
@@ -175,7 +185,7 @@ class OperatorStore extends BaseStore {
             this.newOperatorReceipt = null;
 
             // Send add operator transaction
-            const payload = [];
+            const payload: any[] = [];
             if (process.env.REACT_APP_NEW_STAGE) {
                 payload.push(
                     transaction.name,
@@ -220,7 +230,7 @@ class OperatorStore extends BaseStore {
                         if (event) {
                             console.debug('Contract Receipt', receipt);
                             this.newOperatorReceipt = receipt;
-                            this.newOperatorRegisterSuccessfully = true;
+                            this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                             resolve(event);
                         }
                     })
@@ -396,14 +406,15 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const encodePublicKey = walletStore.encodeKey(_object.public_key);
         return {
-            name: _object.name,
-            ownerAddress: _object.owner_address,
-            pubkey: encodePublicKey,
-            logo: _object.logo,
             fee: 0,
+            name: _object.name,
+            logo: _object.logo,
             type: _object.type,
-            verified: _object.type === 'verified_operator',
+            pubkey: encodePublicKey,
+            ownerAddress: _object.owner_address,
             dappNode: _object.type === 'dapp_node',
+            validatorsCount: _object.validatorsCount,
+            verified: _object.type === 'verified_operator',
         };
     }
 

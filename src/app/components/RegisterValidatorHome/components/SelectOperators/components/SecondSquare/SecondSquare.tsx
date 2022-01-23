@@ -72,7 +72,7 @@ const SecondSquare = () => {
             {!allSelectedOperatorsVerified && (
               <Grid container item xs={12} className={classes.WarningMessage}>
                 <Grid item xs={12} className={classes.WarningHeader}>
-                  You have selected one or more operator that are <span className={classes.NotVerifiedText}>not verified.</span>
+                  You have selected one or more operators that are <span className={classes.NotVerifiedText}>not verified.</span>
                 </Grid>
                 <Grid item xs={12}>
                   Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to your validators’ performance.

@@ -4,6 +4,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
         opacity?: any,
         darkMode?: any
         appSpacing?: any
+        newStage?: boolean,
         applicationBackgroundColor?: any
     }
 
@@ -12,6 +13,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
         opacity?: any,
         darkMode?: any
         appSpacing?: any
+        newStage?: boolean,
         applicationBackgroundColor?: any
     }
 }
@@ -23,6 +25,7 @@ type ThemeParams = {
 export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
     return {
         spacing: 4,
+        newStage: process.env.REACT_APP_NEW_STAGE,
         darkMode: isDarkMode,
         applicationBackgroundColor: isDarkMode ? '#011627' : '#f4f7fa',
         colors: {

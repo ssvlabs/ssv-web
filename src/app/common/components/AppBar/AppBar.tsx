@@ -60,12 +60,15 @@ const AppBar = () => {
     }
 
     function openDocs() {
-
+        window.open(config.links.LINK_SSV_DEV_DOCS);
     }
 
     const moveToDashboard = () => {
         if (hasAccounts) {
             history.push('/dashboard');
+        }
+        if (!process.env.REACT_APP_NEW_STAGE) {
+            history.push('/');
         }
     };
 
@@ -74,7 +77,10 @@ const AppBar = () => {
         <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push('/'); }} />
         {!showMobileBar && (
           <Grid item container className={classes.Linkbuttons}>
-            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={classes.LinkButton} onClick={moveToDashboard}>Join</Grid>
+            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>
+              My Account
+            </Grid>
             <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
             <Grid item className={classes.LinkButton} onClick={openDocs}>Docs</Grid>
           </Grid>
@@ -94,6 +100,7 @@ const AppBar = () => {
         )}
         {menuBar && (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
+            <Grid item className={`${classes.MenuButton}`} onClick={moveToDashboard}>Join</Grid>
             <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
             <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
             <Grid item className={classes.MenuButton} onClick={openDocs}>Docs</Grid>

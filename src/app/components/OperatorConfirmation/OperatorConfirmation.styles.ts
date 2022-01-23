@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
         height: 'fit-content',
         borderBottom: `solid 1px ${theme.colors.gray20}`,
         '&:nth-child(2)': {
-            padding: theme.spacing(8, 8, 4, 8),
+            padding: theme.spacing(5, 8, 4, 8),
         },
     },
     RowWrapper: {

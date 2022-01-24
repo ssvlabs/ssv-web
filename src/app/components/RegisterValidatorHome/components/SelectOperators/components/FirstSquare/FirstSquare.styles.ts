@@ -21,7 +21,7 @@ export const useStyles = makeStyles((theme) => ({
     },
 
     OperatorsTable: {
-        maxHeight: 530,
+        height: 530,
         borderRadius: 16,
         marginTop: theme.spacing(5),
         border: `solid 1px ${theme.colors.gray20}`,

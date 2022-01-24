@@ -110,6 +110,7 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     isOperatorRegistrable(validatorsRegisteredCount: number) {
+        // eslint-disable-next-line radix
         return this.operatorValidatorsLimit > validatorsRegisteredCount;
     }
 
@@ -122,7 +123,7 @@ class OperatorStore extends BaseStore {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contract: Contract = walletStore.getContract();
             contract.methods.validatorsPerOperatorLimit().call().then((response: any) => {
-                this.operatorValidatorsLimit = response;
+                this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
             });
         });

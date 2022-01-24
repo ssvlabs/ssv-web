@@ -219,7 +219,7 @@ const FirstSquare = () => {
 
         return operatorsDataShell.slice(0, batchIndex).map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.pubkey);
-            const disabled = operatorStore.isOperatorRegistrable(operator.validatorsCount);
+            const disabled = !operatorStore.isOperatorRegistrable(operator.validatorsCount);
 
             if (!process.env.REACT_APP_NEW_STAGE) {
                 return (

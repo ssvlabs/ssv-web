@@ -444,7 +444,7 @@ class OperatorStore extends BaseStore {
             pubkey: encodePublicKey,
             ownerAddress: _object.owner_address,
             dappNode: _object.type === 'dapp_node',
-            validatorsCount: _object.validatorsCount,
+            validatorsCount: _object.validators_count,
             verified: _object.type === 'verified_operator',
         };
     }

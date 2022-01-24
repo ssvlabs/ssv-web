@@ -37,7 +37,7 @@ const BorderScreen = (props: Props) => {
         <Grid item container className={classes.ScreenWrapper}>
           {(header || withConversion) && (
             <Grid container item className={classes.HeaderSection}>
-              <Grid item xs={7} className={`${classes.Header} ${blackHeader ? classes.BlackHeader : ''}`}>
+              <Grid item className={`${classes.Header} ${blackHeader ? classes.BlackHeader : ''}`}>
                 {header}
               </Grid>
               {withConversion && process.env.REACT_APP_NEW_STAGE && (

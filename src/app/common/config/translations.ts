@@ -83,7 +83,7 @@ const translations = {
     TITLE: 'Welcome to the SSV Network!',
     OPERATOR_DESCRIPTION: 'Your operator has been successfully registered! With every new operator, our network grows stronger',
     VALIDATOR_DESCRIPTION: 'Your validator is now running on the robust and secure infrastructure of our network',
-    FEEDBACK_HEADER: 'We would welcome your feedback',
+    FEEDBACK_HEADER: 'Lets hear your feedback!',
   },
   OPERATOR: {
     OPERATOR_EXIST: 'Operator key has already been registered.',

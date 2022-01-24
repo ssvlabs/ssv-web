@@ -23,6 +23,7 @@ import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOp
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ToolTip from '~app/common/components/ToolTip';
 
 const FirstSquare = () => {
     let searchTimeout: any;
@@ -34,6 +35,7 @@ const FirstSquare = () => {
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
     const [loading, setLoading] = useState(false);
+    const [sortOrder, setSortOrder] = useState('');
     const [filterBy, setFilterBy] = useState([]);
     const [batchIndex, setBatchIndex] = useState(20);
     const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
@@ -106,10 +108,14 @@ const FirstSquare = () => {
     };
 
     const sortHandler = (sortType: string) => {
-        if (sortBy === sortType) {
+        if (sortBy === sortType && sortOrder === 'ascending') {
+            setSortOrder('descending');
+        } else if (sortBy === sortType && sortOrder === 'descending') {
             setSortBy('');
+            setSortOrder('ascending');
         } else {
             setSortBy(sortType);
+            setSortOrder('ascending');
         }
     };
 
@@ -149,7 +155,7 @@ const FirstSquare = () => {
     }, 100);
 
     const dataRows = () => {
-        if (operatorStore.loadingOperator) {
+        if (operatorStore.loadingOperators) {
             return skeletons.map((rowIndex: number) => (
               <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
                 {[0, 1, 2, 3].map((index: number) => (
@@ -166,12 +172,20 @@ const FirstSquare = () => {
         if (sortBy) {
             operatorsDataShell = operatorsDataShell.sort((a, b) => {
                 if (sortBy === 'name') {
-                    if (a[sortBy] < b[sortBy]) { return -1; }
-                    if (a[sortBy] > b[sortBy]) { return 1; }
-                } else {
-                    if (a[sortBy] > b[sortBy]) { return -1; }
-                    if (a[sortBy] < b[sortBy]) { return 1; }
-                }
+                    if (sortOrder === 'ascending') {
+                        if (a[sortBy] < b[sortBy]) { return -1; }
+                        if (a[sortBy] > b[sortBy]) { return 1; }
+                    } else {
+                        if (a[sortBy] > b[sortBy]) { return -1; }
+                        if (a[sortBy] < b[sortBy]) { return 1; }
+                    }
+                } else if (sortOrder === 'ascending') {
+                        if (a[sortBy] > b[sortBy]) { return -1; }
+                        if (a[sortBy] > b[sortBy]) { return 1; }
+                    } else {
+                        if (a[sortBy] < b[sortBy]) { return -1; }
+                        if (a[sortBy] > b[sortBy]) { return 1; }
+                    }
                 return 0;
             });
         }
@@ -205,9 +219,15 @@ const FirstSquare = () => {
 
         return operatorsDataShell.slice(0, batchIndex).map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.pubkey);
+            const disabled = operatorStore.isOperatorRegistrable(operator.validatorsCount);
+
             if (!process.env.REACT_APP_NEW_STAGE) {
                 return (
-                  <TableRow key={operator.pubkey} className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''}`} onClick={() => { selectOperator(operator); }}>
+                  <TableRow
+                    key={operator.pubkey}
+                    className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
+                    onClick={() => { !disabled && selectOperator(operator); }}
+                  >
                     <StyledCell style={{ width: 60 }}>
                       <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
                     </StyledCell>
@@ -215,7 +235,14 @@ const FirstSquare = () => {
                       <OperatorDetails operator={operator} />
                     </StyledCell>
                     <StyledCell>
-                      {operator.validatorsCount}
+                      <Grid container>
+                        <Grid item>{operator.validatorsCount}</Grid>
+                        {disabled && (
+                        <Grid item style={{ alignSelf: 'center' }}>
+                          <ToolTip text={'Operator reached  maximum amount of validators'} />
+                        </Grid>
+                        )}
+                      </Grid>
                     </StyledCell>
                     <StyledCell>
                       <Grid className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
@@ -264,19 +291,30 @@ const FirstSquare = () => {
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    {rows.length > 0 && headers.map((header: any, index: number) => (
-                      <StyledCell key={index} className={classes.HeaderWrapper}>
-                        <Grid container onClick={() => sortHandler(header.type)}>
-                          <Grid item>{header.displayName}</Grid>
-                          {header.displayName !== '' && (
-                            <Grid
-                              item
-                              className={`${classes.SortArrow} ${sortBy === header.type ? classes.SelectedSort : ''}`}
-                            />
-                          )}
-                        </Grid>
-                      </StyledCell>
-                    ))}
+                    {rows.length > 0 && headers.map((header: any, index: number) => {
+                        const sortByType = sortBy === header.type;
+                        const ascending = sortOrder === 'ascending';
+                        const descending = sortOrder === 'descending';
+                        let headerClasses = classes.SortArrow;
+                        if (sortByType) {
+                            if (descending) headerClasses += ` ${classes.ArrowUp}`;
+                            if (ascending) headerClasses += ` ${classes.ArrowDown}`;
+                        }
+
+                          return (
+                            <StyledCell key={index} className={classes.HeaderWrapper}>
+                              <Grid container onClick={() => sortHandler(header.type)}>
+                                <Grid item>{header.displayName}</Grid>
+                                {header.displayName !== '' && (
+                                  <Grid
+                                    item
+                                    className={headerClasses}
+                                  />
+                                )}
+                              </Grid>
+                            </StyledCell>
+                          );
+                    })}
                   </TableRow>
                 </TableHead>
                 <TableBody>

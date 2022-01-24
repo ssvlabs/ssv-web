@@ -68,7 +68,79 @@ class OperatorStore extends BaseStore {
     @observable estimationGas: number = 0;
     @observable dollarEstimationGas: number = 0;
 
-    @observable loadingOperator: boolean = false;
+    @observable loadingOperators: boolean = false;
+
+    @observable operatorValidatorsLimit: number = 0;
+
+    @computed
+    get getSelectedOperatorsFee(): number {
+        let sum: number = 0;
+        // @ts-ignore
+        Object.keys(this.selectedOperators).forEach((index: number) => {
+            const fee = this.operatorsFees[this.selectedOperators[index].pubkey].ssv;
+            // @ts-ignore
+            sum += parseFloat(fee);
+        });
+        return sum;
+    }
+
+    /**
+     * Check if selected necessary minimum of operators
+     */
+    @computed
+    get selectedEnoughOperators(): boolean {
+        return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
+    }
+
+    /**
+     * Get selection stats
+     */
+    @computed
+    get stats(): { total: number, selected: number, selectedPercents: number } {
+        const selected = Object.values(this.selectedOperators).length;
+        return {
+            total: this.operators.length,
+            selected,
+            selectedPercents: ((selected / this.operators.length) * 100.0),
+        };
+    }
+
+    /**
+     * Check if operator registrable
+     */
+    @action.bound
+    isOperatorRegistrable(validatorsRegisteredCount: number) {
+        return this.operatorValidatorsLimit > validatorsRegisteredCount;
+    }
+
+    /**
+     * get validators per operator limit
+     */
+    @action.bound
+    async validatorsPerOperatorLimit(): Promise<any> {
+        return new Promise((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contract: Contract = walletStore.getContract();
+            contract.methods.validatorsPerOperatorLimit().call().then((response: any) => {
+                this.operatorValidatorsLimit = response;
+                resolve(true);
+            });
+        });
+    }
+
+    /**
+     * get validators of operator
+     */
+    @action.bound
+    async getOperatorValidatorsCount(publicKey: string): Promise<any> {
+        return new Promise((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contract: Contract = walletStore.getContract();
+            contract.methods.validatorsPerOperatorCount(publicKey).call().then((response: any) => {
+                resolve(response);
+            });
+        });
+    }
 
     /**
      * clear operator store
@@ -82,18 +154,6 @@ class OperatorStore extends BaseStore {
             fee: 0,
         };
         this.newOperatorRegisterSuccessfully = '';
-    }
-
-    @computed
-    get getSelectedOperatorsFee(): number {
-        let sum: number = 0;
-        // @ts-ignore
-        Object.keys(this.selectedOperators).forEach((index: number) => {
-            const fee = this.operatorsFees[this.selectedOperators[index].pubkey].ssv;
-            // @ts-ignore
-            sum += parseFloat(fee);
-        });
-        return sum;
     }
 
     /**
@@ -158,15 +218,6 @@ class OperatorStore extends BaseStore {
             return true;
         }
     }
-
-/*    /!**
-     * Check if operator pass his limit
-     * @param publicKey
-     *!/
-    @action.bound
-    async getValidatorsPerOperator(publicKey: string): Promise<boolean> {
-        contract.methods;
-    } */
 
     /**
      * Add new operator
@@ -326,35 +377,15 @@ class OperatorStore extends BaseStore {
     }
 
     /**
-     * Get selection stats
-     */
-    @computed
-    get stats(): { total: number, selected: number, selectedPercents: number } {
-        const selected = Object.values(this.selectedOperators).length;
-        return {
-            total: this.operators.length,
-            selected,
-            selectedPercents: ((selected / this.operators.length) * 100.0),
-        };
-    }
-
-    /**
-     * Check if selected necessary minimum of operators
-     */
-    @computed
-    get selectedEnoughOperators(): boolean {
-        return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
-    }
-
-    /**
      * Load operators from external source
      */
     @action.bound
     async loadOperators(forceLoad?: boolean) {
-        if (this.operators.length && !forceLoad) {
+        if ((this.operators.length || this.loadingOperators) && !forceLoad) {
             return this.operators;
         }
-        this.loadingOperator = true;
+
+        this.loadingOperators = true;
         const query = `
     {
       operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
@@ -379,7 +410,7 @@ class OperatorStore extends BaseStore {
         return new ApiRequest(requestInfo)
             .sendRequest()
             .then(async (response: any) => {
-                this.loadingOperator = false;
+                this.loadingOperators = false;
                 this.operatorsLoaded = true;
                 if (process.env.REACT_APP_NEW_STAGE) {
                     this.operators = await Promise.all(response.operators.map(async (operator: any): Promise<any> => {

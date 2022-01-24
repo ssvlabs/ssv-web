@@ -110,8 +110,8 @@ const SuccessScreen = () => {
             body={[
               <Grid item container>
                 <Grid container item className={classes.Feedback}>
-                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>To help us improve, please answer a few questions about your recent interactions with us.</Grid>
-                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>Your answers will help us make ssv.network even more.</Grid>
+                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review .</Grid>
+                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>Every small suggetion counts!</Grid>
                   <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} onClick={takeSurvey} />
                 </Grid>
               </Grid>,

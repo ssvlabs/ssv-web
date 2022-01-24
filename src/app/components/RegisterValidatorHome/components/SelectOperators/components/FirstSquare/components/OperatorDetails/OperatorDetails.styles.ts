@@ -22,7 +22,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     Name: {
         fontSize: 16,
-        marginRight: 8,
         fontWeight: 500,
         lineHeight: 1.62,
         color: theme.colors.gray90,

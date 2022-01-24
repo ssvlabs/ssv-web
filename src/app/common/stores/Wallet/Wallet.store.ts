@@ -180,6 +180,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     this.ssvStore.setAccountLoaded(false);
+    await this.operatorStore.validatorsPerOperatorLimit();
     if (process.env.REACT_APP_NEW_STAGE) {
       await this.ssvStore.checkIfLiquidated();
       await this.ssvStore.getSsvContractBalance();

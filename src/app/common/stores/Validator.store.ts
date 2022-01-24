@@ -102,10 +102,8 @@ class ValidatorStore extends BaseStore {
   @action.bound
   // eslint-disable-next-line no-unused-vars
   async addNewValidator(getGasEstimation?: boolean, callBack?: (txHash: string) => void) {
-    callBack;
     const walletStore: WalletStore = this.getStore('Wallet');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    notificationsStore;
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = walletStore.getContract();
     const ownerAddress: string = walletStore.accountAddress;
@@ -153,7 +151,7 @@ class ValidatorStore extends BaseStore {
                 const event: boolean = receipt.hasOwnProperty('events');
                 if (event) {
                   console.debug('Contract Receipt', receipt);
-                  this.newValidatorReceipt = payload[0];
+                  this.newValidatorReceipt = payload[1];
                   this.clearValidatorData();
                   resolve(event);
                 }

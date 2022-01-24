@@ -15,8 +15,9 @@ const DepositViaLaunchpad = () => {
 
     return (
       <BorderScreen
+        blackHeader
         link={{ to: config.routes.VALIDATOR.IMPORT, text: 'Back' }}
-        header={'Visit Ethereum Launchpad'}
+        header={'Deposit Validator via Ethereum Launchpad'}
         body={[
           <Grid container>
             <Grid item className={classes.Text} xs={12}>

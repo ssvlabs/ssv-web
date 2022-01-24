@@ -63,10 +63,10 @@ const Welcome = () => {
               onClick={connectToWallet}
               dataTestId={'connect-to-wallet-button'}
             />
-              )}
+            )}
           </Grid>,
-            ]}
-        />
+        ]}
+      />
     );
 };
 

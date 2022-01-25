@@ -66,6 +66,7 @@ const ImportValidatorConfirmation = () => {
         }
 
         return validatorStore.addNewValidator(false, handlePendingTransaction).then(() => {
+            operatorStore.unselectAllOperators();
             applicationStore.showTransactionPendingPopUp(false);
             history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
         }).catch(() => {
@@ -175,7 +176,7 @@ const ImportValidatorConfirmation = () => {
         body={components}
         sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}
-        link={{ to: config.routes.VALIDATOR.SLASHING_WARNING, text: 'Back' }}
+        navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
       />
     );
 };

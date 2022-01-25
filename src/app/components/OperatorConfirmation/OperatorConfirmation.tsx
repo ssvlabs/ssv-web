@@ -58,7 +58,7 @@ const OperatorConfirmation = () => {
         withConversion
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
-        link={{ text: 'Back', to: config.routes.OPERATOR.GENERATE_KEYS }}
+        navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
         body={[
           <Grid container>
             <TransactionPendingPopUp txHash={txHash} />

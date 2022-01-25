@@ -8,6 +8,7 @@ import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import OperatorStore from '~app/common/stores/Operator.store';
 import ValidatorStore from '~app/common/stores/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -20,6 +21,7 @@ const ImportValidator = () => {
   const classes = useStyles();
   const history = useHistory();
   const inputRef = useRef(null);
+  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
@@ -71,6 +73,7 @@ const ImportValidator = () => {
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
         const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
         if (response.data !== null && conditionalDataExtraction?.valid_signature) {
+          operatorStore.unselectAllOperators();
           validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
@@ -133,7 +136,7 @@ const ImportValidator = () => {
       <BorderScreen
         blackHeader
         header={translations.VALIDATOR.IMPORT.TITLE}
-        link={{ to: config.routes.VALIDATOR.HOME, text: 'Back' }}
+        navigationLink={config.routes.VALIDATOR.HOME}
         body={[
           <Grid item container>
             <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>

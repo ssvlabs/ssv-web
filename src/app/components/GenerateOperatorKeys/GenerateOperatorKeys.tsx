@@ -100,7 +100,7 @@ const GenerateOperatorKeys = () => {
 
     return (
       <BorderScreen
-        link={{ text: 'Back', to: config.routes.OPERATOR.HOME }}
+        navigationLink={config.routes.OPERATOR.HOME}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}

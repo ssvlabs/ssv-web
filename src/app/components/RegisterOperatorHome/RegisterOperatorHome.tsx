@@ -14,7 +14,7 @@ const RegisterOperatorHome = () => {
 
   return (
     <BorderScreen
-      link={{ text: 'Back', to: config.routes.HOME }}
+      navigationLink={config.routes.HOME}
       body={[
         <Grid container>
           <HeaderSubHeader title={'Join the SSV Network Operators'}

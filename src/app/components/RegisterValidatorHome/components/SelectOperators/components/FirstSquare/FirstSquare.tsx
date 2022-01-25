@@ -4,7 +4,7 @@ import throttle from 'lodash/throttle';
 import Table from '@material-ui/core/Table';
 import { Skeleton } from '@material-ui/lab';
 import TableRow from '@material-ui/core/TableRow';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -31,6 +31,7 @@ const FirstSquare = () => {
     const classes = useStyles();
     const SEARCH_TIMEOUT_DELAY = 700;
     const ssvStore: SsvStore = stores.SSV;
+    const wrapperRef = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
@@ -60,7 +61,6 @@ const FirstSquare = () => {
     }
 
     useEffect(() => {
-        operatorStore.unselectAllOperators();
         operatorStore.loadOperators().then(() => {
             setOperatorsData(operatorStore.operators);
         });
@@ -86,7 +86,10 @@ const FirstSquare = () => {
         [],
     );
 
-    const selectOperator = (operator: IOperator) => {
+    const selectOperator = (e: any, operator: IOperator) => {
+        // @ts-ignore
+        if (wrapperRef.current.isEqualNode(e.target)) return;
+
         if (operatorStore.isOperatorSelected(operator.pubkey)) {
             operatorStore.unselectOperatorByPublicKey(operator.pubkey);
           return;
@@ -98,6 +101,7 @@ const FirstSquare = () => {
                 availableIndex = index;
             }
         });
+
         if (availableIndex) {
             operatorStore.selectOperator(operator, availableIndex);
         }
@@ -228,7 +232,7 @@ const FirstSquare = () => {
                   <TableRow
                     key={operator.pubkey}
                     className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
-                    onClick={() => { !disabled && selectOperator(operator); }}
+                    onClick={(e) => { !disabled && selectOperator(e, operator); }}
                   >
                     <StyledCell style={{ width: 60 }}>
                       <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
@@ -247,13 +251,13 @@ const FirstSquare = () => {
                       </Grid>
                     </StyledCell>
                     <StyledCell>
-                      <Grid className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
+                      <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
                     </StyledCell>
                   </TableRow>
                 );
             }
                 return (
-                  <TableRow key={operator.pubkey} className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''}`} onClick={() => { !isSelected && selectOperator(operator); }}>
+                  <TableRow key={operator.pubkey} className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''}`} onClick={(e) => { !isSelected && selectOperator(e, operator); }}>
                     <StyledCell>
                       <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
                     </StyledCell>
@@ -274,7 +278,7 @@ const FirstSquare = () => {
     return (
       <BorderScreen
         wrapperClass={classes.ScreenWrapper}
-        link={{ to: config.routes.VALIDATOR.IMPORT, text: 'Back' }}
+        navigationLink={config.routes.VALIDATOR.IMPORT}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} />

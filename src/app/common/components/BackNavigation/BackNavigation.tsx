@@ -29,14 +29,13 @@ const BackNavigationWrapper = styled.div`
 `;
 
 type BackNavigationProps = {
-  to: any,
+  to: string,
   text?: string,
   color?: string
   onClick?: () => void
 };
 
 const BackNavigation = ({ to, text, color, onClick }: BackNavigationProps) => {
-  const backText = text || 'Back';
   const defaultColor = '#A1ACBE';
   const history = useHistory();
   const usedColor = color || defaultColor;
@@ -51,7 +50,7 @@ const BackNavigation = ({ to, text, color, onClick }: BackNavigationProps) => {
     <BackNavigationWrapper onClick={onNavigationClicked}>
       <BackIcon iconcolor={usedColor} />
       <BackNavigationLink color={usedColor}>
-        {backText}
+        {text || 'Back'}
       </BackNavigationLink>
     </BackNavigationWrapper>
   );

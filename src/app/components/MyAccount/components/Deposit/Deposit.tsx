@@ -34,7 +34,8 @@ const Deposit = () => {
         <BorderScreen
           withConversion
           header={'Deposit'}
-          link={{ to: config.routes.MY_ACCOUNT.DASHBOARD, text: translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT }}
+          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
+          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           body={[
                     (
                       <Grid item container>

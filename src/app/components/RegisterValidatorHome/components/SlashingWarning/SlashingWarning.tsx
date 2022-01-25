@@ -29,7 +29,7 @@ const SlashingWarning = () => {
     return (
       <BorderScreen
         blackHeader
-        link={{ to: linkTo, text: 'Back' }}
+        navigationLink={linkTo}
         header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
         body={[
           <Grid container>

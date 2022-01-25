@@ -17,7 +17,7 @@ const CreateValidator = () => {
         <BorderScreen
           blackHeader
           header={'Visit Ethereum Launchpad'}
-          link={{ to: config.routes.VALIDATOR.HOME, text: 'Back' }}
+          navigationLink={config.routes.VALIDATOR.HOME}
           body={[
             <Grid container>
               <Grid item className={classes.Text} xs={12}>

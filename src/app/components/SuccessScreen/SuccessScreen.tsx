@@ -72,7 +72,7 @@ const SuccessScreen = () => {
         } else {
             let linkToExplorer: string = '';
             if (validatorStore.newValidatorReceipt) {
-                linkToExplorer = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt}`;
+                linkToExplorer = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
             }
             if (operatorStore.newOperatorRegisterSuccessfully) {
                 linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${operatorStore.newOperatorRegisterSuccessfully}`;

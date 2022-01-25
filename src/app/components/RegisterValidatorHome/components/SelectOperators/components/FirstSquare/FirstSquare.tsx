@@ -172,12 +172,14 @@ const FirstSquare = () => {
         if (sortBy) {
             operatorsDataShell = operatorsDataShell.sort((a, b) => {
                 if (sortBy === 'name') {
+                    const aName = a[sortBy].toLowerCase();
+                    const bName = b[sortBy].toLowerCase();
                     if (sortOrder === 'ascending') {
-                        if (a[sortBy] < b[sortBy]) { return -1; }
-                        if (a[sortBy] > b[sortBy]) { return 1; }
+                        if (aName < bName) { return -1; }
+                        if (aName > bName) { return 1; }
                     } else {
-                        if (a[sortBy] > b[sortBy]) { return -1; }
-                        if (a[sortBy] < b[sortBy]) { return 1; }
+                        if (aName > bName) { return -1; }
+                        if (aName < bName) { return 1; }
                     }
                 } else if (sortOrder === 'ascending') {
                         if (a[sortBy] > b[sortBy]) { return -1; }

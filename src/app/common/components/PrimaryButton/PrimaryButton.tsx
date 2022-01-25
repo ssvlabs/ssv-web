@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 import { useStyles } from './PrimaryButton.styles';
 
 type Props = {
@@ -19,6 +20,7 @@ const PrimaryButton = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
+    const notificationsStore: NotificationsStore = stores.Notifications;
     const { text, onClick, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
     const [inProgress, setInProgress] = useState(false);
 
@@ -40,6 +42,7 @@ const PrimaryButton = (props: Props) => {
     }, [inProgress, disable]);
 
     const submit = async () => {
+        if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
         if (withVerifyConnection && !walletStore.connected) {
             await walletStore.connect();
         }

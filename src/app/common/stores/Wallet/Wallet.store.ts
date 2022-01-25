@@ -221,6 +221,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {
       this.wrongNetwork = false;
+      await this.initializeUserInfo();
     }
   }
 }

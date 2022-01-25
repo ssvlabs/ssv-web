@@ -125,7 +125,7 @@ class OperatorStore extends BaseStore {
             contract.methods.validatorsPerOperatorLimit().call().then((response: any) => {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
-            });
+            }).catch(() => resolve(true));
         });
     }
 

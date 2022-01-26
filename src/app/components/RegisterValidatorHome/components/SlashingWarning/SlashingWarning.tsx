@@ -7,7 +7,7 @@ import config, { translations } from '~app/common/config';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import ValidatorStore from '~app/common/stores/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
-import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
+import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 
@@ -36,7 +36,7 @@ const SlashingWarning = () => {
             <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon
               chain:</Grid>
             <Grid item xs={12} className={classes.PublicKey}>
-              <ValidatorKeyInput withBeaconcha withCopy validatorKey={validatorStore.validatorPublicKey} />
+              <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.validatorPublicKey} />
             </Grid>
             <Grid item xs={12} className={classes.Text}>
               Running a validator simultaneously to the SSV network will cause slashing to your validator.

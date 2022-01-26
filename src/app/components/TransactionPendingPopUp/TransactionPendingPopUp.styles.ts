@@ -1,23 +1,24 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
     gridWrapper: {
-        margin: 'auto',
-        padding: '20px',
-        textAlign: 'center',
-        marginBottom: '20px',
-        flexGrow: 1,
+        width: 424,
+        padding: 32,
+        borderRadius: 16,
+        alignItems: 'center',
         flexDirection: 'column',
-        width: '550px',
-        '@media (max-width: 1024px)': {
-            width: '450px',
+        backgroundColor: theme.colors.white,
+    },
+    DialogWrapper: {
+        '& > div > div': {
+            borderRadius: 16,
+            backgroundColor: theme.colors.white,
         },
-        '@media (max-width: 450px)': {
-            width: '350px',
-        },
-        '@media (max-width: 380px)': {
-            width: '300px',
-        },
+    },
+    Loader: {
+        width: 100,
+        marginTop: 20,
+        marginBottom: 40,
     },
     gridContainer: {
         margin: 'auto',
@@ -35,8 +36,8 @@ export const useStyles = makeStyles(() => ({
         '&::-webkit-scrollbar': {
             display: 'none',
         },
-      overflow: 'scroll',
-      textOverflow: 'clip',
+        overflow: 'scroll',
+        textOverflow: 'clip',
     },
     title: {
         fontWeight: 'bold',
@@ -58,7 +59,7 @@ export const useStyles = makeStyles(() => ({
         backgroundColor: '#454545',
         animation: '$scaling 2.5s ease-in-out infinite',
         '&:nth-child(1)': {
-          animationDelay: '0s',
+            animationDelay: '0s',
         },
         '&:nth-child(2)': {
             animationDelay: '0.2s',
@@ -76,26 +77,27 @@ export const useStyles = makeStyles(() => ({
         },
     },
     validatorText: {
-        marginBottom: '6px',
-        fontStyle: 'normal',
-        color: '#A1ACBE',
-        fontSize: '12px',
-        fontWeight: 'bold',
+        fontSize: 14,
+        fontWeight: 600,
+        lineHeight: 1.14,
+        textAlign: 'left',
+        color: theme.colors.gray40,
+        marginBottom: theme.spacing(2),
     },
     copyImage: {
         verticalAlign: 'middle',
         cursor: 'pointer',
     },
     linkHref: {
-        marginTop: '20px',
+        marginTop: 20,
     },
     connectButton: {
-        cursor: 'pointer',
-        marginLeft: '5px',
-        backgroundColor: 'inherit',
         padding: '10px',
+        marginLeft: '5px',
+        cursor: 'pointer',
         borderRadius: '10px',
         border: '1px solid black',
+        backgroundColor: 'inherit',
     },
     gridContainerAddress: {
         borderRadius: '10px',

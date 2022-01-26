@@ -8,6 +8,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
         border: `solid 1px ${theme.colors.gray20}`,
         padding: theme.spacing(3, 4, 3, 5),
     },
+    WhiteBackGround: {
+      backgroundColor: theme.colors.white,
+    },
     PublicKey: {
         fontSize: 16,
         fontWeight: 500,
@@ -15,7 +18,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        color: theme.colors.gray60,
+        color: theme.colors.gray90,
     },
     CopyImage: {
         width: 24,
@@ -25,48 +28,25 @@ export const useStyles = makeStyles((theme: Theme) => ({
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         marginRight: theme.spacing(2),
-        marginLeft: theme.spacing(10),
+        marginLeft: theme.spacing(2),
         backgroundImage: `url(/images/copy/${theme.darkMode ? 'light' : 'dark'}.svg)`,
     },
-    ExplorerImage: {
+    BeaconImage: {
         width: 24,
         height: 24,
         cursor: 'pointer',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/explorer/${theme.darkMode ? 'white' : 'gray'}.svg)`,
+        backgroundImage: `url(/images/beacon/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
-    inputAddonContainer: {
-        borderLeft: '1px solid gainsboro',
-        width: 40,
-        minHeight: '48px',
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        fontSize: '14px',
-        display: 'flex',
-        alignItems: 'center',
-        alignContent: 'center',
+    EtherScanImage: {
+        width: 24,
+        height: 24,
         cursor: 'pointer',
-    },
-    inputAddonImage: {
-        width: 23,
-        height: 23,
-        margin: 'auto',
-    },
-    wideWidthInput: {
-        width: '100%',
-        padding: 0,
-        height: '48px',
-        borderRadius: '6px',
-    },
-    input: {
-        width: 'calc(86% - 3px)',
-        fontSize: '14px',
-        paddingLeft: '10px',
-        [theme.breakpoints.down('lg')]: {
-            width: 'calc(86% - 13px)',
-        },
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: `url(/images/ether_scan/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
 }));

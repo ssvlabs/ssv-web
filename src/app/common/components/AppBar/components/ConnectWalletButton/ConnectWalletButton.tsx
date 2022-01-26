@@ -31,13 +31,13 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     let icon;
     if (walletStore.wallet?.name) {
         switch (walletStore.wallet.name) {
-            case 'MetaMask':
-                icon = getImage('wallets/metamask.svg');
-                break;
             case 'Ledger':
                 icon = getImage('wallets/metamask.svg');
                 break;
             case 'Trezor':
+                icon = getImage('wallets/metamask.svg');
+                break;
+            default:
                 icon = getImage('wallets/metamask.svg');
                 break;
         }

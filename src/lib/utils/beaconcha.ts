@@ -22,8 +22,8 @@ export const getEtherScanUrl = (networkId?: number) => {
   const finalNetworkId = networkId ?? process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID;
   switch (parseInt(String(finalNetworkId), 10)) {
     case NETWORKS.GOERLI:
-      return 'https://goerli.etherscan.io/tx';
+      return 'https://goerli.etherscan.io';
     case NETWORKS.MAINNET:
-      return 'https://etherscan.io/tx';
+      return 'https://etherscan.io';
   }
 };

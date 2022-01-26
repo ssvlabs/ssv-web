@@ -7,17 +7,18 @@ import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
 import ValidatorStore from '~app/common/stores/Validator.store';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
+// import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
-import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
+import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
@@ -52,6 +53,7 @@ const ImportValidatorConfirmation = () => {
     };
 
     const onRegisterValidatorClick = async () => {
+        applicationStore.setIsLoading(true);
         setErrorMessage('');
         setActionButtonText('Waiting for confirmation...');
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
@@ -61,15 +63,18 @@ const ImportValidatorConfirmation = () => {
             if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
                 setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
                 setActionButtonText('Run validator');
+                applicationStore.setIsLoading(false);
                 return;
             }
         }
 
         return validatorStore.addNewValidator(false, handlePendingTransaction).then(() => {
+            applicationStore.setIsLoading(false);
             operatorStore.unselectAllOperators();
             applicationStore.showTransactionPendingPopUp(false);
             history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
         }).catch(() => {
+            applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             setActionButtonText('Run validator');
         });
@@ -85,7 +90,7 @@ const ImportValidatorConfirmation = () => {
       <Grid container>
         <TransactionPendingPopUp txHash={txHash} />
         <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-        <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
+        <ValidatorKeyInput withBeaconcha address={validatorStore.validatorPublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
           <Grid item className={classes.SubHeader}>Selected Operators</Grid>
           {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
@@ -156,15 +161,21 @@ const ImportValidatorConfirmation = () => {
         )}
         {errorMessage && <MessageDiv text={errorMessage} />}
         <Grid container>
-          <CTAButton
-            // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
-            // checkBoxesCallBack={[selectCheckBox]}
-            withAllowance
-            testId={'confirm-button'}
+          <PrimaryButton
             disable={false}
-            onClick={onRegisterValidatorClick}
+            dataTestId={'confirm-button'}
             text={actionButtonText}
+            onClick={onRegisterValidatorClick}
           />
+          {/* <CTAButton */}
+          {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}
+          {/*  // checkBoxesCallBack={[selectCheckBox]} */}
+          {/*  withAllowance */}
+          {/*  testId={'confirm-button'} */}
+          {/*  disable={false} */}
+          {/*  onClick={onRegisterValidatorClick} */}
+          {/*  text={actionButtonText} */}
+          {/* /> */}
         </Grid>
       </Grid>,
     );

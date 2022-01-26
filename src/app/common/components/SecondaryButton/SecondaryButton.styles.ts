@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.colors.tint80,
         },
-        '&:focus': {
+        '&:active': {
             backgroundColor: theme.colors.tint70,
         },
         '&:disable': {

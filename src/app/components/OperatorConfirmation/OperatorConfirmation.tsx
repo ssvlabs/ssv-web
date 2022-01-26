@@ -28,7 +28,7 @@ const OperatorConfirmation = () => {
     const walletStore: WalletStore = stores.Wallet;
     // const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
-    const [txHash, setTxHash] = useState('Register Operator');
+    const [txHash, setTxHash] = useState('');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
     useEffect(() => {
@@ -36,11 +36,14 @@ const OperatorConfirmation = () => {
     }, [redirectUrl]);
 
     const onRegisterClick = async () => {
+        applicationStore.setIsLoading(true);
         setActionButtonText('Waiting for confirmation...');
         operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
+            applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
         }).catch(() => {
+            applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             setActionButtonText('Register Operator');
         });

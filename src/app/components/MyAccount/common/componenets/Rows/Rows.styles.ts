@@ -74,7 +74,7 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.black,
     },
     BeaconImage: {
-        backgroundImage: `url(/images/explorer/${theme.darkMode ? 'white' : 'gray'}.svg)`,
+        backgroundImage: `url(/images/beacon/${theme.darkMode ? 'dark' : 'light'}.svg)`,
         // backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',

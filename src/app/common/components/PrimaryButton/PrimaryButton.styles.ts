@@ -14,12 +14,33 @@ export const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.colors.shade20,
         },
-        '&:focus': {
+        '&:active': {
             backgroundColor: theme.colors.shade40,
         },
         '&:disabled': {
             color: theme.colors.gray40,
             backgroundColor: theme.colors.gray20,
+        },
+    },
+    Loading: {
+        height: 60,
+        width: '100%',
+        fontWeight: 600,
+        borderRadius: 8,
+        marginBottom: 16,
+        textTransform: 'capitalize',
+        fontFamily: 'Manrope !important',
+        color: theme.colors.tint20,
+        backgroundColor: theme.colors.tint80,
+        '&:hover': {
+            backgroundColor: theme.colors.tint80,
+        },
+        '&:focus': {
+            backgroundColor: theme.colors.tint80,
+        },
+        '&:disabled': {
+            color: theme.colors.tint20,
+            backgroundColor: theme.colors.tint80,
         },
     },
     CheckBoxWrapper: {

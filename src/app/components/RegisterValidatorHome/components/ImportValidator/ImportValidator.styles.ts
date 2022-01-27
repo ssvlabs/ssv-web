@@ -11,6 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     DropZone: {
         height: 254,
         borderRadius: 8,
+        cursor: 'pointer',
         marginBottom: theme.spacing(5),
         backgroundColor: theme.colors.gray0,
         border: `solid 1px ${theme.colors.gray20}`,

@@ -109,8 +109,8 @@ const OperatorConfirmation = () => {
             {/*  text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} /> */}
             <PrimaryButton disable={false} text={actionButtonText} onClick={onRegisterClick} />
           </Grid>,
-            ]}
-        />
+        ]}
+      />
     );
 };
 

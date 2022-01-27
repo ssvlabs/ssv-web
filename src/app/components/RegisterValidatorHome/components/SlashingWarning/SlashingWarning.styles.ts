@@ -5,7 +5,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,
-        color: theme.colors.gray70,
+        color: theme.colors.gray90,
         marginBottom: theme.spacing(3),
     },
     PublicKey: {

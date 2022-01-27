@@ -21,7 +21,7 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
     return (
       <Dialog className={classes.DialogWrapper} aria-labelledby="simple-dialog-title" open={applicationStore.transactionPendingPopUp}>
         <Grid className={classes.gridWrapper} container>
-          <HeaderSubHeader title={'Sending transaction'} subtitle={'Your transaction is pending on the blockchain - please wait while it`s being confirmed'} />
+          <HeaderSubHeader title={'Sending Transaction'} subtitle={'Your transaction is pending on the blockchain - please wait while it\'s being confirmed'} />
           <Grid item>
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
@@ -32,7 +32,7 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
             <AddressKeyInput whiteBackgroundColor withCopy address={txHash} />
           </Grid>
           <Grid className={classes.linkHref} item>
-            <a href={`https://goerli.etherscan.io/tx/${txHash}`} target={'_blank'}>view on etherscan</a>
+            <a href={`https://goerli.etherscan.io/tx/${txHash}`} target={'_blank'}>View on Etherscan</a>
           </Grid>
         </Grid>
       </Dialog>

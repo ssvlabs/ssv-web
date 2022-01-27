@@ -110,7 +110,7 @@ const ImportValidator = () => {
     if (!validatorStore.validatorPrivateKeyFile) {
       return (
         <Grid item xs={12} className={classes.FileText}>
-          Drag and drop files or <Grid className={classes.Browse} onClick={handleClick}>browse</Grid>
+          Drag and drop files or <Grid className={classes.Browse}>browse</Grid>
         </Grid>
       );
     }
@@ -140,7 +140,7 @@ const ImportValidator = () => {
         body={[
           <Grid item container>
             <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>
-            <Grid container item xs={12} className={classes.DropZone} onDrop={handleDrop} onDragOver={handleDrag}>
+            <Grid container item xs={12} className={classes.DropZone} onDrop={handleDrop} onDragOver={handleDrag} onClick={handleClick}>
               <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop} />
               {renderFileImage()}
               {renderFileText()}

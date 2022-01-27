@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        color: theme.colors.gray90,
+        color: theme.colors.gray60,
     },
     CopyImage: {
         width: 24,

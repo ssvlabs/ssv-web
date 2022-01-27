@@ -5,10 +5,10 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     DeleteOperator: {
-        width: 20,
-        height: 20,
         top: -10,
+        width: 22,
         right: -10,
+        height: 22,
         borderRadius: 100,
         cursor: 'pointer',
         position: 'absolute',
@@ -17,8 +17,9 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         padding: '3.3px 3.3px 3.3px 3.3px',
         backgroundColor: theme.colors.gray40,
-        backgroundImage: 'url(/images/small_line/light.svg)',
+        backgroundImage: `url(/images/small_line/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
+
     SelectedOperatorBox: {
         width: 360,
         height: 97,
@@ -29,10 +30,11 @@ export const useStyles = makeStyles((theme) => ({
         position: 'relative',
         color: theme.colors.gray30,
         marginBottom: theme.spacing(5),
-        padding: '24px 20px',
-        border: `solid 1px ${theme.colors.gray20}`,
+        padding: '28px 20px 29px 20px',
         backgroundColor: theme.colors.white,
+        border: `solid 1px ${theme.colors.gray20}`,
     },
+
     BoxPlaceHolder: {
         width: 360,
         height: 97,
@@ -47,6 +49,7 @@ export const useStyles = makeStyles((theme) => ({
         border: `dashed 1px ${theme.colors.gray30}`,
     },
     WarningMessage: {
+        gap: 8,
         fontSize: 14,
         borderRadius: 2,
         fontWeight: 500,
@@ -61,6 +64,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
     },
     NotVerifiedText: {
+        cursor: 'pointer',
         fontWeight: 'bold',
         textDecoration: 'underline',
         color: theme.colors.primaryBlue,

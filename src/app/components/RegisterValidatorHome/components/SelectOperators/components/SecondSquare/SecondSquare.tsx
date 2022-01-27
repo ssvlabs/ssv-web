@@ -34,6 +34,10 @@ const SecondSquare = () => {
         }
     };
 
+    const linkToNotVerified = () => {
+        window.open('https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH');
+    };
+
     useEffect(() => {
         let allOperatorsAreVerified = true;
         Object.values(operatorStore.selectedOperators).forEach((operator: IOperator) => {
@@ -56,9 +60,7 @@ const SecondSquare = () => {
                           const operator = operatorStore.selectedOperators[index];
                           return (
                             <Grid key={index} container className={classes.SelectedOperatorBox}>
-                              <Grid className={classes.DeleteOperator} onClick={() => {
-                                      removeOperator(index);
-                                  }} />
+                              <Grid className={classes.DeleteOperator} onClick={() => { removeOperator(index); }} />
                               <OperatorDetails operator={operator} />
                             </Grid>
                           );
@@ -72,7 +74,7 @@ const SecondSquare = () => {
             {!allSelectedOperatorsVerified && (
               <Grid container item xs={12} className={classes.WarningMessage}>
                 <Grid item xs={12} className={classes.WarningHeader}>
-                  You have selected one or more operators that are <span className={classes.NotVerifiedText}>not verified.</span>
+                  You have selected one or more operators that are <Grid className={classes.NotVerifiedText} onClick={linkToNotVerified}>not verified.</Grid>
                 </Grid>
                 <Grid item xs={12}>
                   Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to your validators’ performance.

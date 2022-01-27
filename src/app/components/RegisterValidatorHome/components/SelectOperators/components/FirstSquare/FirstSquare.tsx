@@ -216,7 +216,7 @@ const FirstSquare = () => {
                   <Grid container>
                     <Grid item xs={12} className={classes.NoRecordImage} />
                     <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
-                    <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword/filter</Grid>
+                    <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
                   </Grid>
                 </StyledCell>
               </TableRow>

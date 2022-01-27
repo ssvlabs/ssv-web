@@ -30,7 +30,7 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: 5,
     },
     Address: {
-        fontSize: '12px',
+        fontSize: 12,
         fontWeight: 500,
         lineHeight: 1.5,
         color: 'rgb(161, 172, 190)',

@@ -15,6 +15,9 @@ export const useStyles = makeStyles((theme) => ({
         '&:nth-child(2)': {
             padding: theme.spacing(5, 8, 4, 8),
         },
+        '&:nth-child(3)': {
+            borderBottom: 'none',
+        },
     },
     RowWrapper: {
         marginBottom: theme.spacing(2),

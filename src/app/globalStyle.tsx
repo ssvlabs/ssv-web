@@ -29,7 +29,7 @@ export const globalStyle = () => {
             height: 11.6px;
             width: 11.6px;
             g {
-              fill: black;
+              fill: ${applicationStore.muiTheme.colors.black};
             }
           }
         }

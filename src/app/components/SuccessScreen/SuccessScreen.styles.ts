@@ -12,7 +12,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     Header: {},
     SubHeader: {
-        marginBottom: theme.spacing(6),
+        marginBottom: theme.spacing(3),
     },
     CtaWrapper: {
       marginBottom: 0,

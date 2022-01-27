@@ -1,31 +1,31 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+// import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 const BackNavigationLink = styled.div<Record<string, any>>`
+  color: #A1ACBE;
   cursor: pointer;
+  font-size: 16px;
   font-weight: bold;
   font-style: normal;
-  color: #A1ACBE;
-  font-size: 12px;
   text-decoration: none;
 `;
 
-const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`
-  cursor: pointer;
-  font-weight: bold;
-  font-style: normal;
-  color: #A1ACBE;
-  font-size: 12px;
-  text-decoration: none;
-`;
+// const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`
+//   cursor: pointer;
+//   font-weight: bold;
+//   font-style: normal;
+//   color: #A1ACBE;
+//   font-size: 12px;
+//   text-decoration: none;
+// `;
 
 const BackNavigationWrapper = styled.div`
   display: flex;
   flex-grow: 1;
-  align-content: center;
   align-items: center;
+  align-content: center;
 `;
 
 type BackNavigationProps = {
@@ -48,9 +48,9 @@ const BackNavigation = ({ to, text, color, onClick }: BackNavigationProps) => {
 
   return (
     <BackNavigationWrapper onClick={onNavigationClicked}>
-      <BackIcon iconcolor={usedColor} />
+      {/* <BackIcon iconcolor={usedColor} /> */}
       <BackNavigationLink color={usedColor}>
-        {text || 'Back'}
+        {text || '< Back'}
       </BackNavigationLink>
     </BackNavigationWrapper>
   );

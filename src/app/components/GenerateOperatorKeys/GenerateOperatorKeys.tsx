@@ -131,7 +131,7 @@ const GenerateOperatorKeys = () => {
               </Grid>
               <Grid item className={classes.gridItem}>
                 <InputLabel
-                  title="operator public key"
+                  title="Operator Public Key"
                   withHint
                   toolTipText={(
                     <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}

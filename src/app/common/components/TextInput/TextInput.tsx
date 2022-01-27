@@ -21,7 +21,6 @@ const TextInput = ({ value, placeHolder, onBlur, onChange, withLock, disable, sh
 
     return (
       <Grid container
-        justify={'space-between'}
         className={`${classes.Wrapper} ${disable ? classes.disable : ''} ${showError ? classes.Error : ''}`}>
         {withLock && <Grid item className={`${classes.Lock} ${disable ? classes.LockDisable : ''}`} onClick={() => { !disable && showPassword(!password); }} />}
         <Grid item className={classes.InputWrapper}>

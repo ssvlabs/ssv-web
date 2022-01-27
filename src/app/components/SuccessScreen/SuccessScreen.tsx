@@ -36,7 +36,6 @@ const SuccessScreen = () => {
           <Grid container>
             <Grid item>Your operator has been successfully registered!</Grid>
             <Grid item>With every new operator, our network grows stronger.</Grid>
-
           </Grid>
         );
         if (process.env.REACT_APP_NEW_STAGE) {
@@ -104,13 +103,14 @@ const SuccessScreen = () => {
         {!localStorage.getItem('firstCreation') && (
           <BorderScreen
             blackHeader
+            withoutNavigation
             wrapperClass={classes.FeedbackWrapper}
             sectionClass={classes.FeedbackSection}
             header={translations.SUCCESS.FEEDBACK_HEADER}
             body={[
               <Grid item container>
                 <Grid container item className={classes.Feedback}>
-                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review .</Grid>
+                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review.</Grid>
                   <Grid item className={`${classes.Text} ${classes.SubHeader}`}>Every small suggetion counts!</Grid>
                   <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} onClick={takeSurvey} />
                 </Grid>

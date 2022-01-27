@@ -29,10 +29,9 @@ const config = {
     FEATURE: {
         DOLLAR_CALCULATION: process.env.REACT_APP_SHOULD_CALCULATE_DOLLAR,
         OPERATORS: {
-            AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
-            SELECT_MINIMUM_OPERATORS: 4,
-            REQUEST_MINIMUM_OPERATORS: 1000,
             VALID_KEY_LENGTH: 612,
+            SELECT_MINIMUM_OPERATORS: 4,
+            AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
         },
         TESTING: {
             GENERATE_RANDOM_OPERATOR_KEY: process.env.REACT_APP_DEBUG,
@@ -40,20 +39,21 @@ const config = {
     },
     links: {
         COMPLIANCE_URL: process.env.REACT_APP_COMPLIANCE_URL,
-        LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
-        LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
         ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
-        TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
+        LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
         LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
-        LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+        LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
         EXPLORER_CENTER: String(process.env.REACT_APP_OPERATORS_ENDPOINT),
+        TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
         GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
+        LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
     },
     GLOBAL_VARIABLE: {
         BLOCKS_PER_DAY: 6570,
+        OPERATORS_PER_PAGE: 100,
         BLOCKS_PER_YEAR: 2398050,
-        NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
         VALIDATORS_PER_OPERATOR_LIMIT: 1,
+        NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
     },
     ONBOARD: {
         API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

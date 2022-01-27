@@ -1,6 +1,7 @@
 import config from '~app/common/config';
 // import ApiParams from '~lib/api/ApiParams';
-import ApiRequest from '~lib/utils/ApiRequest';
+import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import { shuffle, group } from '~lib/utils/arrays';
 
 // export enum IncentivizedType {
 //     // eslint-disable-next-line no-unused-vars
@@ -9,19 +10,19 @@ import ApiRequest from '~lib/utils/ApiRequest';
 //     validator = 'validator',
 // }
 
-class Operators {
+class Operator {
+    private static instance: Operator;
     private readonly baseUrl: string = '';
-    private static instance: Operators;
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
     }
 
-    static getInstance(): Operators {
-        if (!Operators.instance) {
-            Operators.instance = new Operators(config.links.EXPLORER_CENTER);
+    static getInstance(): Operator {
+        if (!Operator.instance) {
+            Operator.instance = new Operator(config.links.EXPLORER_CENTER);
         }
-        return Operators.instance;
+        return Operator.instance;
     }
 
     static get NETWORK() {
@@ -36,13 +37,47 @@ class Operators {
         let params: any = {
             query,
             search_for: 'operators',
-            network: Operators.NETWORK,
+            network: Operator.NETWORK,
         };
         params = new URLSearchParams(params);
         return new ApiRequest({
             url: `${this.baseUrl}/api/search/?${params.toString()}`,
             method: 'GET',
         }).sendRequest();
+    }
+
+    /**
+     * Get operators
+     */
+    async getOperators() {
+        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/api/operators/graph?perPage=${config.GLOBAL_VARIABLE.OPERATORS_PER_PAGE}`;
+        const requestInfo: RequestData = {
+            url: operatorsEndpointUrl,
+            method: 'GET',
+            headers: [
+                { name: 'content-type', value: 'application/json' },
+                { name: 'accept', value: 'application/json' },
+            ],
+        };
+        const response: any = await new ApiRequest(requestInfo).sendRequest();
+        const operators = [...response.operators];
+        const pages = response?.pagination?.pages;
+        // eslint-disable-next-line no-plusplus
+        for (let page = 0; page < pages - 1; page++) {
+            requestInfo.url += `&page=${page + 2}`;
+            // eslint-disable-next-line no-await-in-loop
+            const res: any = await new ApiRequest(requestInfo).sendRequest();
+            operators.push(...res.operators);
+        }
+
+        const shuffledOperators: any[] = [];
+        const groupedOperators = group(operators);
+
+        shuffledOperators.push(...shuffle(groupedOperators.verified_operator));
+        shuffledOperators.push(...shuffle(groupedOperators.dapp_node));
+        shuffledOperators.push(...shuffle(groupedOperators.operator));
+
+        return shuffledOperators;
     }
 
     // async fetchOperators(page: number = 1, perPage: number = ApiParams.PER_PAGE) {
@@ -176,4 +211,4 @@ class Operators {
 // }
 }
 
-export default Operators;
+export default Operator;

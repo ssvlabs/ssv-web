@@ -9,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import { CircularProgress, debounce, Grid } from '@material-ui/core';
-import Operators from '~lib/api/Operators';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import TextInput from '~app/common/components/TextInput';
@@ -72,7 +72,7 @@ const FirstSquare = () => {
     const fetch = React.useMemo(
         () => throttle((request: { input: string }, callback: any) => {
             setLoading(true);
-            Operators.getInstance().search(request.input).then((results: any) => {
+            Operator.getInstance().search(request.input).then((results: any) => {
                 const operators: any = [];
                 (results?.operators || []).forEach((operator: any) => {
                     const hashedOperator = operatorStore.hashedOperators[operator.public_key];
@@ -226,7 +226,6 @@ const FirstSquare = () => {
         return operatorsDataShell.slice(0, batchIndex).map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.pubkey);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validatorsCount);
-
             if (!process.env.REACT_APP_NEW_STAGE) {
                 return (
                   <TableRow

@@ -55,13 +55,13 @@ const SuccessScreen = () => {
             );
         }
 
-        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeTPm6imiND4kja5mmnnjZ6iRcuocebGrIMhvm1rVtM7ZtrCA/viewform';
+        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeOcsFJ20f1VFhqZ8rbqGdEsyvS8xdqpBC2aTc7VTVhqFfWQw/viewform';
     } else if (validatorStore.newValidatorReceipt) {
         icon = 'validator';
         buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
         subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
         monitorText = 'View and mange your balance and validators in your account dashboard';
-        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeOcsFJ20f1VFhqZ8rbqGdEsyvS8xdqpBC2aTc7VTVhqFfWQw/viewform';
+        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeTPm6imiND4kja5mmnnjZ6iRcuocebGrIMhvm1rVtM7ZtrCA/viewform';
     }
 
     const redirectTo = async () => {

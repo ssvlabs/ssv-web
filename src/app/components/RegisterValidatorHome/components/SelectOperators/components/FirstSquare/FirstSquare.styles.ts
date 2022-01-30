@@ -21,7 +21,7 @@ export const useStyles = makeStyles((theme) => ({
     },
 
     OperatorsTable: {
-        height: 475,
+        height: 458,
         borderRadius: 16,
         marginTop: theme.spacing(5),
         border: `solid 1px ${theme.colors.gray20}`,
@@ -102,7 +102,7 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: 20,
         borderRadius: 8,
         cursor: 'pointer',
-        backgroundColor: theme.colors.gray10,
+        backgroundColor: theme.colors.white,
         border: `1px solid ${theme.colors.gray40}`,
     },
     Hint: {
@@ -127,5 +127,4 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         backgroundImage: 'url(/images/chart/gray.svg)',
     },
-
 }));

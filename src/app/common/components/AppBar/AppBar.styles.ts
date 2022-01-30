@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         margin: theme.spacing(0, 6, 0, 6),
-        backgroundImage: `url(/images/hamburger/${theme.darkMode ? 'light' : 'light'}.svg)`,
+        backgroundImage: `url(/images/hamburger/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     MobileMenuBar: {
         top: 80,
@@ -61,9 +61,9 @@ export const useStyles = makeStyles((theme) => ({
     },
     MenuButton: {
         gap: 10,
-        width: 240,
         height: 56,
         fontSize: 16,
+        minWidth: 240,
         borderRadius: 8,
         fontWeight: 600,
         lineHeight: 1.25,

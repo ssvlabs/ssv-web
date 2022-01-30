@@ -13,9 +13,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.colors.white,
         border: `solid 1px ${theme.colors.gray30}`,
     },
-    InputWrapper: {
-        width: '90%',
-    },
     Input: {
         fontSize: 16,
         width: '100%',

@@ -28,8 +28,7 @@ const WalletPopUp = () => {
           <Grid item className={classes.Exit} onClick={closePopUp} />
           <HeaderSubHeader title={'Wallet Address'} />
           <Grid container className={classes.TextWrapper}>
-            <Grid item xs={6} className={classes.SubHeader}>Connect to {walletStore?.wallet?.name}</Grid>
-            <Grid item xs={6} className={classes.Change} onClick={changeWallet}>Change</Grid>
+            <Grid item xs={12} className={classes.Change} onClick={changeWallet}>Change</Grid>
           </Grid>
           <AddressKeyInput whiteBackgroundColor withEtherScan withCopy address={walletStore.accountAddress} />
         </Dialog>

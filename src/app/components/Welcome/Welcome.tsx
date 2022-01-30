@@ -49,14 +49,14 @@ const Welcome = () => {
                 />
               </Grid>
             </Grid>
-            {!walletStore.connected && (
+            {!walletStore.connected && false && (
               <Grid container item className={classes.OrLineWrapper}>
                 <Grid item className={classes.Line} xs />
                 <Grid item className={classes.Or}>OR</Grid>
                 <Grid item className={classes.Line} xs />
               </Grid>
               )}
-            {!walletStore.connected && (
+            {!walletStore.connected && false && (
             <PrimaryButton
               withVerifyConnection
               text={'Connect Wallet'}

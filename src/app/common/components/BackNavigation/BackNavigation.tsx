@@ -7,9 +7,13 @@ const BackNavigationLink = styled.div<Record<string, any>>`
   color: #A1ACBE;
   cursor: pointer;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.25;
   font-style: normal;
+  font-stretch: normal;
   text-decoration: none;
+  letter-spacing: normal;
 `;
 
 // const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`

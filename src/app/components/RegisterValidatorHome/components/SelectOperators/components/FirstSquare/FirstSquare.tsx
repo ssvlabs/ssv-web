@@ -88,7 +88,7 @@ const FirstSquare = () => {
 
     const selectOperator = (e: any, operator: IOperator) => {
         // @ts-ignore
-        if (wrapperRef.current.isEqualNode(e.target)) return;
+        if (wrapperRef.current?.isEqualNode(e.target)) return;
 
         if (operatorStore.isOperatorSelected(operator.pubkey)) {
             operatorStore.unselectOperatorByPublicKey(operator.pubkey);
@@ -136,8 +136,9 @@ const FirstSquare = () => {
         searchTimeout && clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             fetch({ input: userInput }, (results: any) => {
-                setOperatorsData(results);
                 setLoading(false);
+                if (e.target.value.trim() === '') return;
+                setOperatorsData(results);
             });
         }, SEARCH_TIMEOUT_DELAY);
     };

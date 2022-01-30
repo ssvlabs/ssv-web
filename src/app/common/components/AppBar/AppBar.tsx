@@ -78,7 +78,7 @@ const AppBar = () => {
         {!showMobileBar && (
           <Grid item container className={classes.Linkbuttons}>
             <Grid item className={classes.LinkButton} onClick={moveToDashboard}>Join</Grid>
-            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>
+            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`}>
               My Account
             </Grid>
             <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
@@ -101,7 +101,7 @@ const AppBar = () => {
         {menuBar && (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
             <Grid item className={`${classes.MenuButton}`} onClick={moveToDashboard}>Join</Grid>
-            <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`}>My Account</Grid>
             <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
             <Grid item className={classes.MenuButton} onClick={openDocs}>Docs</Grid>
             <Grid item className={classes.UnderLine} />

@@ -22,9 +22,10 @@ export const useStyles = makeStyles((theme) => ({
     },
     Section: {
         height: 'fit-content',
-        padding: theme.spacing(5, 8, 4, 8),
+        padding: theme.spacing(5, 8, 8, 8),
         borderBottom: `solid 1px ${theme.colors.gray20}`,
         '&:nth-child(3)': {
+            padding: theme.spacing(5, 8, 8, 8),
             borderBottom: 'none',
         },
     },

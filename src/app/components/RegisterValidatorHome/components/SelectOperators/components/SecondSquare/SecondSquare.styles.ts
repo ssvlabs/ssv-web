@@ -11,13 +11,16 @@ export const useStyles = makeStyles((theme) => ({
         height: 22,
         borderRadius: 100,
         cursor: 'pointer',
+        alignItems: 'center',
         position: 'absolute',
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        padding: '3.3px 3.3px 3.3px 3.3px',
         backgroundColor: theme.colors.gray40,
-        backgroundImage: `url(/images/small_line/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
+    whiteLine: {
+        width: 10,
+        height: 1.6,
+        marginTop: 10,
+        margin: 'auto',
+        backgroundColor: theme.colors.white,
     },
 
     SelectedOperatorBox: {

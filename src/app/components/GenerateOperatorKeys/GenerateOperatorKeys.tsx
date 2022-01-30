@@ -23,6 +23,7 @@ import {
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import PrimaryButton from '~app/common/components/PrimaryButton';
+import LinkText from '~app/common/components/LinkText';
 // import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
 
 const GenerateOperatorKeys = () => {
@@ -135,7 +136,7 @@ const GenerateOperatorKeys = () => {
                   withHint
                   toolTipText={(
                     <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                      <a target={'_blank'} href={'https://docs.ssv.network/operators/install-instructions'}>documentation.</a>
+                      <LinkText text={'documentation.'} link={'https://docs.ssv.network/operators/install-instructions'} />
                     </div>
                   )}
                   toolTipLink={config.links.TOOL_TIP_KEY_LINK}

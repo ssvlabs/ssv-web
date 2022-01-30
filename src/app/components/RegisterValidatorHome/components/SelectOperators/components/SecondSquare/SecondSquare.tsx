@@ -60,7 +60,7 @@ const SecondSquare = () => {
                           const operator = operatorStore.selectedOperators[index];
                           return (
                             <Grid key={index} container className={classes.SelectedOperatorBox}>
-                              <Grid className={classes.DeleteOperator} onClick={() => { removeOperator(index); }} />
+                              <Grid className={classes.DeleteOperator} onClick={() => { removeOperator(index); }}><Grid className={classes.whiteLine} /></Grid>
                               <OperatorDetails operator={operator} />
                             </Grid>
                           );

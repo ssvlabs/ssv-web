@@ -12,7 +12,7 @@ export const useStyles = makeStyles((theme) => ({
         // backgroundColor: 'blue',
     },
     toolTipText: {
-        top: 20,
+        top: 15,
         left: -170,
         padding: 10,
         fontSize: 14,

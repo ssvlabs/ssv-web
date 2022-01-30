@@ -22,10 +22,10 @@ const TextInput = ({ value, placeHolder, onBlur, onChange, withLock, disable, sh
     return (
       <Grid container
           // @ts-ignore
-        justify={withLock ? '' : 'space-between'}
+        justify={withLock && 'space-between'}
         className={`${classes.Wrapper} ${disable ? classes.disable : ''} ${showError ? classes.Error : ''}`}>
         {withLock && <Grid item className={`${classes.Lock} ${disable ? classes.LockDisable : ''}`} onClick={() => { !disable && showPassword(!password); }} />}
-        <Grid item className={classes.InputWrapper}>
+        <Grid item xs>
           <input
             value={value}
             onBlur={onBlur}

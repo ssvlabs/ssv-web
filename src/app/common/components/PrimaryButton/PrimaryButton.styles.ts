@@ -3,10 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) => ({
     PrimaryButton: {
         height: 60,
+        fontSize: 16,
         width: '100%',
         fontWeight: 600,
         borderRadius: 8,
-        marginBottom: 16,
         color: theme.colors.white,
         textTransform: 'capitalize',
         fontFamily: 'Manrope !important',

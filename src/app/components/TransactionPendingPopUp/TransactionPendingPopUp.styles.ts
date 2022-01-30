@@ -88,9 +88,6 @@ export const useStyles = makeStyles((theme) => ({
         verticalAlign: 'middle',
         cursor: 'pointer',
     },
-    linkHref: {
-        marginTop: 20,
-    },
     connectButton: {
         padding: '10px',
         marginLeft: '5px',

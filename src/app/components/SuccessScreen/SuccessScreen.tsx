@@ -10,6 +10,7 @@ import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import LinkText from '~app/common/components/LinkText';
 
 const SuccessScreen = () => {
     const stores = useStores();
@@ -29,7 +30,7 @@ const SuccessScreen = () => {
     let surveyLink: string = '';
     let monitorText: any = '';
 
-    if (operatorStore.newOperatorRegisterSuccessfully) {
+    if (operatorStore.newOperatorRegisterSuccessfully || true) {
         icon = 'operator';
         buttonText = process.env.REACT_APP_NEW_STAGE ? 'Monitor Operator' : 'View Operator';
         subTitle = (
@@ -45,7 +46,7 @@ const SuccessScreen = () => {
               <Grid container spacing={3}>
                 <Grid item>
                   Jump into our documentation to learn more
-                  about <a href={'https://docs.ssv.network/operators/installation-operator-1/operators-grafana-dashboard '} target={'_blank'}>monitoring</a> and <a target={'_blank'} href={'https://docs.ssv.network/operators/installation-operator-1/node-troubleshooting-faq'}>troubleshooting</a> your node.
+                  about <LinkText text={'monitoring'} link={'https://docs.ssv.network/operators/installation-operator-1/operators-grafana-dashboard '} /> and <LinkText text={'troubleshooting'} link={'https://docs.ssv.network/operators/installation-operator-1/node-troubleshooting-faq'} /> your node.
                 </Grid>
                 <Grid item>
                   View your operators prefomance the ssv network explorer.
@@ -111,7 +112,6 @@ const SuccessScreen = () => {
               <Grid item container>
                 <Grid container item className={classes.Feedback}>
                   <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review.</Grid>
-                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>Every small suggetion counts!</Grid>
                   <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} onClick={takeSurvey} />
                 </Grid>
               </Grid>,

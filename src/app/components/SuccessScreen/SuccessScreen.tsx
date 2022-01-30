@@ -30,7 +30,7 @@ const SuccessScreen = () => {
     let surveyLink: string = '';
     let monitorText: any = '';
 
-    if (operatorStore.newOperatorRegisterSuccessfully || true) {
+    if (operatorStore.newOperatorRegisterSuccessfully) {
         icon = 'operator';
         buttonText = process.env.REACT_APP_NEW_STAGE ? 'Monitor Operator' : 'View Operator';
         subTitle = (

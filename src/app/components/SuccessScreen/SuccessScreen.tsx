@@ -60,7 +60,11 @@ const SuccessScreen = () => {
         icon = 'validator';
         buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
         subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
-        monitorText = 'View and mange your balance and validators in your account dashboard';
+        if (process.env.REACT_APP_NEW_STAGE) {
+            monitorText = 'View and mange your balance and validators in your account dashboard.';
+        } else {
+            monitorText = 'View your validators performance in the ssv network explorer.';
+        }
         surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeTPm6imiND4kja5mmnnjZ6iRcuocebGrIMhvm1rVtM7ZtrCA/viewform';
     }
 

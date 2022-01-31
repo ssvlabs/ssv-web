@@ -55,7 +55,7 @@ export const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         padding: theme.spacing(4),
         backgroundColor: theme.colors.white,
-        border: `solid 1px ${theme.colors.gray10}`,
+        border: `solid 1px ${theme.colors.gray20}`,
         boxShadow: '0 12px 40px 0 rgba(1, 22, 39, 0.12)',
     },
     Item: {

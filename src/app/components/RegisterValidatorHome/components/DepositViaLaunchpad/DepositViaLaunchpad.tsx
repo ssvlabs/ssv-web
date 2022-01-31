@@ -1,53 +1,45 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { getImage } from '~lib/utils/filePath';
-import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
-import ConditionalLink from '~app/common/components/ConditionalLink';
-import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import config from '~app/common/config';
+import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 
 const DepositViaLaunchpad = () => {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  const redirectToLaunchpad = async () => {
-    window.open(config.links.LAUNCHPAD_LINK);
-  };
+    const redirectToLaunchpad = async () => {
+        window.open(config.links.LAUNCHPAD_LINK);
+    };
 
-  return (
-    <Screen
-      navigationText={translations.VALIDATOR.DEPOSIT.NAVIGATION_TEXT}
-      navigationLink={config.routes.VALIDATOR.IMPORT}
-      title={translations.VALIDATOR.DEPOSIT.TITLE}
-      subTitle={translations.VALIDATOR.DEPOSIT.SUB_TITLE}
-      body={(
-        <Grid container wrap="nowrap" spacing={4} className={classes.gridContainer}>
-          <Grid item xs className={classes.gridContainer}>
-            <Grid container spacing={2}>
-              {translations.VALIDATOR.DEPOSIT.BODY_TEXT.map((text: string) => {
-                    return (
-                      <Grid key={text} item>
-                        <Typography className={classes.bodyText} variant="subtitle1">
-                          {text}
-                        </Typography>
-                      </Grid>
-                    );
-                  })}
+    return (
+      <BorderScreen
+        blackHeader
+        navigationLink={config.routes.VALIDATOR.IMPORT}
+        header={'Deposit Validator via Ethereum Launchpad'}
+        body={[
+          <Grid container>
+            <Grid item className={classes.Text} xs={12}>
+              You must deposit your validator before running it on the SSV network.
             </Grid>
-          </Grid>
-          <Grid item xs className={classes.gridContainer}>
-            <ConditionalLink to={config.routes.VALIDATOR.CREATE} condition={false} onClick={redirectToLaunchpad}>
-              <LinkButton primaryLabel={'Visit Ethereum launchpad'} secondaryLabel={''} />
-            </ConditionalLink>
-          </Grid>
-          <Grid item xs className={classes.gridContainer}>
-            <img className={classes.rhinoImage} src={getImage('rhino.png')} />
-          </Grid>
-        </Grid>
-      )}
-    />
-  );
+            <Grid item className={classes.Text} xs={12}>
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              Follow Ethereum's launchpad instructions to deposit your validator to the deposit contract.
+            </Grid>
+            <Grid item className={classes.Text} xs={12}>
+              There is no need to wait until your validator is active on the beacon chain,
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              you can return to register your validator to our network while it's pending on the staking queue,
+              once it gets activated, your selected operators will operate it immediately.
+            </Grid>
+            <Grid item container xs={12}>
+              <Grid item className={classes.rhinoImage} />
+            </Grid>
+            <PrimaryButton text={'Visit Ethereum Launchpad'} onClick={redirectToLaunchpad} />
+          </Grid>,
+            ]}
+        />
+    );
 };
 export default observer(DepositViaLaunchpad);

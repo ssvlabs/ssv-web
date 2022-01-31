@@ -1,81 +1,45 @@
 import { makeStyles, Theme } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
-    gridWrapper: {
-        [theme.breakpoints.down('xs')]: {
-          width: '350px',
-            padding: '30px',
-        },
+    Dialog: {
+        width: 424,
+        padding: 32,
+        borderRadius: 16,
+        position: 'relative',
+        backgroundColor: theme.colors.white,
     },
-    gridContainer: {
-        alignItems: 'center',
-        flexGrow: 1,
-        flexDirection: 'row',
-    },
-    header: {
-        color: '#20EEC8',
-        fontFamily: 'Encode Sans',
-        fontWeight: 800,
-        fontSize: '20px',
-    },
-    gridContainerAddress: {
-        borderRadius: '6px',
-        border: '1px solid black',
-    },
-    connectButton: {
+    Exit: {
+        top: 32,
+        right: 32,
+        width: 24,
+        height: 24,
         cursor: 'pointer',
-        fontFamily: 'Encode Sans',
-        backgroundColor: 'inherit',
-        padding: '10px',
-        border: '1px solid #5B6C84',
-        borderRadius: '6px',
-        '&:hover': {
-          backgroundColor: 'rgba(220, 224, 232, 0.5)',
-        },
-    },
-    gridItem: {
-        padding: '5px',
-        flexGrow: 1,
-        flexDirection: 'column',
-    },
-    dialog: {
-        flex: '0 0 auto',
-        margin: '0px',
-        padding: '40px',
-        '@media (max-width: 480px)': {
-            padding: '10px',
-        },
-    },
-    accountAddress: {
-        '&::-webkit-scrollbar': {
-            display: 'none',
-        },
-        overflow: 'scroll',
-        paddingLeft: '5px',
-    },
-    lunchIconWrapper: {
-        textAlign: 'center',
-        borderLeft: '1px solid black',
-        borderRadius: '0px 6px 6px 0px',
-        minHeight: '35px',
-        backgroundColor: '#F2F2F2',
-        display: 'block',
-        margin: 'auto',
-        cursor: 'pointer',
-    },
-    launchIcon: {
-      display: 'block',
-      height: '35px',
-      width: '25px',
-      margin: 'auto',
-    },
-    exitIcon: {
         position: 'absolute',
-        right: '20px',
-        top: '20px',
-        width: '25px',
-        height: '25px',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: `url(/images/exit/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
+    TextWrapper: {
+        textAlign: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
+        marginBottom: theme.spacing(1),
+    },
+    SubHeader: {
+        fontSize: 14,
+        fontWeight: 600,
+        textAlign: 'left',
+        lineHeight: 1.14,
+        color: theme.colors.gray40,
+    },
+    Change: {
+        fontSize: 14,
+        fontWeight: 500,
+        lineHeight: 1.62,
         cursor: 'pointer',
-        float: 'right',
+        textAlign: 'right',
+        textDecoration: 'underline',
+        color: theme.colors.primaryBlue,
     },
 }));

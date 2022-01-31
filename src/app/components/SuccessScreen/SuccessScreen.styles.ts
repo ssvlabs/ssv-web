@@ -1,60 +1,52 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    mainContainer: {
-        height: '100%',
-        width: 500,
-        maxWidth: '100%',
-        padding: theme.spacing(2),
-        alignItems: 'center',
-        alignContent: 'center',
-        margin: 'auto',
-        flexDirection: 'row',
+    SectionWrapper: {
+      padding: theme.spacing(3, 8, 8, 8),
     },
-    successIcon: {
-        width: '80px',
+    Text: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        color: theme.colors.gray80,
     },
-    title: {
-        fontWeight: 'bold',
+    Header: {},
+    SubHeader: {
+        marginBottom: theme.spacing(3),
     },
-    congratsImage: {
-        width: '100px',
+    CtaWrapper: {
+      marginBottom: 0,
     },
-    subTitle: {
-        width: '90%',
-        textAlign: 'center',
-        margin: 'auto',
+    SubImageText: {
+        marginBottom: theme.spacing(10),
     },
-    guideStepText: {
-        fontSize: 14,
-    },
-    guideStepsContainerPaper: {
-        cursor: 'pointer',
-        margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),
-        '&:hover': {
-            backgroundColor: 'aliceblue',
+    FeedbackWrapper: {
+        marginTop: theme.spacing(6),
+        marginBottom: theme.spacing(6),
+        '& div': {
+            borderRadius: 16,
+            backgroundColor: theme.colors.tint80,
         },
-        maxWidth: '100%',
     },
-    gridContainer: {
-        flexGrow: 1,
-        flexDirection: 'row',
+    FeedbackSection: {
+        marginTop: 0,
+        padding: theme.spacing(4, 8, 8, 8),
     },
-    successImage: {
-      marginTop: '10px',
+    Feedback: {
+        borderRadius: 8,
     },
-    linkWrapper: {
-      marginTop: '40px',
+    SuccessLogo: {
+        height: 320,
+        width: '100%',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        marginBottom: theme.spacing(5),
     },
-    icon: {
-      width: '100%',
+    Operator: {
+        backgroundImage: 'url(/images/success_screen/operator/light.svg)',
     },
-    arrowIcon: {
-        float: 'right',
-        marginLeft: 'auto',
-        marginRight: theme.spacing(1),
-        alignSelf: 'center',
-        marginTop: theme.spacing(1),
+    Validator: {
+        backgroundImage: 'url(/images/success_screen/validator/light.svg)',
     },
 }));

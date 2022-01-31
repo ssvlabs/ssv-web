@@ -2,8 +2,9 @@ import _ from 'underscore';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
+import SsvStore from '~app/common/stores/SSV.store';
+import OperatorStore from '~app/common/stores/Operator.store';
+import ValidatorStore from '~app/common/stores/Validator.store';
 
 export type IUserFlow = {
   name: string,
@@ -27,14 +28,14 @@ const operatorsHomeFlow: IUserFlow = {
 const operatorConfirmation: IUserFlow = {
   name: 'Operator Confirmation',
   route: routes.OPERATOR.CONFIRMATION_PAGE,
-  condition: () => {
-    const stores = useStores();
-    const contractOperator: ContractOperator = stores.ContractOperator;
-    return !!contractOperator.newOperatorKeys.pubKey && !!contractOperator.newOperatorKeys.name;
-  },
   depends: [
     operatorsHomeFlow,
   ],
+  condition: () => {
+    const stores = useStores();
+    const operatorStore: OperatorStore = stores.Operator;
+    return !!operatorStore.newOperatorKeys.pubKey && !!operatorStore.newOperatorKeys.name;
+  },
 };
 
 const validatorsHomeFlow: IUserFlow = {
@@ -50,8 +51,8 @@ const importValidatorFlow: IUserFlow = {
   ],
   condition: () => {
     const stores = useStores();
-    const contractValidator: ContractValidator = stores.ContractValidator;
-    return !!contractValidator.validatorPrivateKeyFile;
+    const validatorStore: ValidatorStore = stores.Validator;
+    return !!validatorStore.validatorPrivateKeyFile;
   },
 };
 
@@ -63,8 +64,8 @@ const importValidatorDecryptFlow: IUserFlow = {
   ],
   condition: () => {
     const stores = useStores();
-    const contractValidator: ContractValidator = stores.ContractValidator;
-    return !!contractValidator.validatorPrivateKey;
+    const validatorStore: ValidatorStore = stores.Validator;
+    return !!validatorStore.validatorPrivateKey;
   },
 };
 
@@ -81,8 +82,8 @@ const validatorSelectOperatorsFlow: IUserFlow = {
   route: routes.VALIDATOR.SELECT_OPERATORS,
   condition: () => {
     const stores = useStores();
-    const contractValidator: ContractValidator = stores.ContractValidator;
-    return !!(contractValidator.validatorPrivateKey && contractValidator.validatorPrivateKeyFile);
+    const validatorStore: ValidatorStore = stores.Validator;
+    return !!(validatorStore.validatorPrivateKey && validatorStore.validatorPrivateKeyFile);
   },
   depends: [
     validatorsHomeFlow,
@@ -97,8 +98,8 @@ const slashingWarningFlow: IUserFlow = {
   ],
   condition: () => {
     const stores = useStores();
-    const contractOperator: ContractOperator = stores.ContractOperator;
-    return !!contractOperator.operators?.length;
+    const operatorStore: OperatorStore = stores.Operator;
+    return !!operatorStore.operators?.length;
   },
 };
 
@@ -110,8 +111,8 @@ const validatorConfirmationFlow: IUserFlow = {
   ],
   condition: () => {
     const stores = useStores();
-    const contractValidator: ContractValidator = stores.ContractValidator;
-    if (!contractValidator.validatorPrivateKey) {
+    const validatorStore: ValidatorStore = stores.Validator;
+    if (!validatorStore.validatorPrivateKey) {
       return false;
     }
     return slashingWarningFlow.condition ? slashingWarningFlow.condition() : true;
@@ -126,27 +127,83 @@ const successScreen: IUserFlow = {
   ],
   condition: () => {
     const stores = useStores();
-    const contractValidator: ContractValidator = stores.ContractValidator;
-    const contractOperator: ContractOperator = stores.ContractOperator;
-    return contractOperator.newOperatorRegisterSuccessfully || contractValidator.newValidatorReceipt;
+    const validatorStore: ValidatorStore = stores.Validator;
+    const operatorStore: OperatorStore = stores.Operator;
+    return operatorStore.newOperatorRegisterSuccessfully || validatorStore.newValidatorReceipt;
   },
   depends: [
     welcomeFlow,
   ],
 };
 
+const myAccountScreen: IUserFlow = {
+  name: 'My Account',
+  route: routes.MY_ACCOUNT.DASHBOARD,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
+};
+
+const DepositScreen: IUserFlow = {
+  name: 'Deposit',
+  route: routes.MY_ACCOUNT.DEPOSIT,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
+};
+
+const WithdrawScreen: IUserFlow = {
+  name: 'Withdraw',
+  route: routes.MY_ACCOUNT.WITHDRAW,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
+};
+
+const EnableAccountScreen: IUserFlow = {
+  name: 'Enable Account',
+  route: routes.MY_ACCOUNT.ENABLE_ACCOUNT,
+  depends: [
+    welcomeFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !ssvStore.userLiquidated && !!ssvStore.userValidators.length;
+  },
+};
+
 const userFlows: IUserFlow[] = [
   welcomeFlow,
+  successScreen,
+  DepositScreen,
+  WithdrawScreen,
+  myAccountScreen,
   operatorsHomeFlow,
-  operatorConfirmation,
   validatorsHomeFlow,
+  EnableAccountScreen,
   importValidatorFlow,
+  slashingWarningFlow,
   createValidatorFlow,
+  operatorConfirmation,
+  validatorConfirmationFlow,
   importValidatorDecryptFlow,
   validatorSelectOperatorsFlow,
-  slashingWarningFlow,
-  validatorConfirmationFlow,
-  successScreen,
 ];
 
 const dispatchUserFlow = (

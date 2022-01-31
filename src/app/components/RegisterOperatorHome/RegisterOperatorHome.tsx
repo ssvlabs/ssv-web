@@ -2,52 +2,44 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
-import { Link as MaterialLink } from '@material-ui/core';
-import { useStores } from '~app/hooks/useStores';
-import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
-import LinkButton from '~app/common/components/LinkButton';
-import UnStyledLink from '~app/common/components/UnStyledLink';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ConditionalLink from '~app/common/components/ConditionalLink';
+import config from '~app/common/config';
+import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-
-const OrganicLink = UnStyledLink(MaterialLink);
 
 const RegisterOperatorHome = () => {
   const classes = useStyles();
   const history = useHistory();
-  const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
-
-  const redirectToGenerateKeys = async () => {
-     await walletStore.connect();
-     if (walletStore.connected) {
-      history.push(config.routes.OPERATOR.GENERATE_KEYS);
-    }
-  };
 
   return (
-    <Screen 
-      navigationText={translations.HOME.TITLE}
+    <BorderScreen
       navigationLink={config.routes.HOME}
-      title={translations.OPERATOR.HOME.TITLE}
-      subTitle={translations.OPERATOR.HOME.DESCRIPTION}
-      body={(
-        <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
-          <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <OrganicLink href={config.links.LINK_SSV_DEV_DOCS} target="_blank">
-              <LinkButton primaryLabel={'Run SSV node'} secondaryLabel={'See our developer documentation'} />
-            </OrganicLink>
+      body={[
+        <Grid container>
+          <HeaderSubHeader title={'Join the SSV Network Operators'}
+            subtitle={'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.'}
+          />
+          <Grid container item justify={'space-evenly'}>
+            <Grid container item className={classes.LinkButtonWrapper}>
+              <Grid item xs={12}>
+                <SecondaryButton text={'Run SSV Node'} onClick={() => { window.open(config.links.LINK_SSV_DEV_DOCS); }} />
+              </Grid>
+              <Grid item xs={12} className={classes.UnderButtonText}>
+                See our developer documentation
+              </Grid>
+            </Grid>
+            <Grid container item className={classes.LinkButtonWrapper}>
+              <Grid item xs={12}>
+                <SecondaryButton text={'Register Operator'} onClick={() => { history.push(config.routes.OPERATOR.GENERATE_KEYS); }} />
+              </Grid>
+              <Grid item xs={12} className={classes.UnderButtonText}>
+                Sign up as one of the network operators
+              </Grid>
+            </Grid>
           </Grid>
-
-          <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={walletStore.connected} onClick={redirectToGenerateKeys}>
-              <LinkButton primaryLabel={'Register operator'} secondaryLabel={'Sign up as one of the network operators'} />
-            </ConditionalLink>
-          </Grid>
-        </Grid>
-      )}
+        </Grid>,
+      ]}
     />
   );
 };

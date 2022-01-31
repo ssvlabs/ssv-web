@@ -26,7 +26,7 @@ const renderApp = () => {
 
 const shouldRenderIframe = () => {
   // @ts-ignore
-  return window.location.hash !== '#protected' && !window.Cypress;
+  return window.location.hash !== '#protected' && !window.Cypress && process.env.NODE_ENV !== 'development';
 };
 
 const createIframe = () => {
@@ -45,7 +45,7 @@ const createIframe = () => {
  */
 const shouldRenderApp = () => {
   // @ts-ignore
-  return window.location.hash === '#protected' || window.Cypress;
+  return window.location.hash === '#protected' || window.Cypress || process.env.NODE_ENV === 'development';
 };
 
 if (shouldRenderIframe()) {

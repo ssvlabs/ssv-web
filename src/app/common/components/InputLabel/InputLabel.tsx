@@ -1,20 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
-import Tooltip from '~app/common/components/Tooltip/Tooltip';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '~app/common/components/ToolTip/ToolTip';
+import { useStyles } from './InputLable.styles';
 
 const InputLabelWrapper = styled.div`
-  font-size: 14px;
 `;
 
 const InputHeader = styled.div`
-  display: flex;
-  align-items: center;
   width: 100%;
+  height: 16px;
+  display: flex;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.14;
   margin-bottom: 5px;
+  font-style: normal;
+  align-items: center;
+  font-stretch: normal;
+  color: var(--gray-40);
+  letter-spacing: normal;
 `;
 
 const Header = styled.p`
-  font-family: Encode Sans;
   font-style: normal;
   font-weight: bold;
   white-space: nowrap;
@@ -26,7 +35,6 @@ const Header = styled.p`
 `;
 const SubHeader = styled.p`
   margin: 0 0 0 5px;
-  font-family: Encode Sans;
   font-style: normal;
   font-weight: 500;
   white-space: nowrap;
@@ -37,15 +45,31 @@ const SubHeader = styled.p`
 `;
 
 type InputLabelProps = {
-  children: any,
+  children?: any,
   title?: string,
   subTitle?: string,
   withHint?: boolean,
-  toolTipText?: string,
+  toolTipText?: any,
   toolTipLink?: string
 };
 
 const InputLabel = ({ children, title, subTitle, withHint, toolTipText, toolTipLink }: InputLabelProps) => {
+  const classes = useStyles();
+  // eslint-disable-next-line no-constant-condition
+  if (true) {
+    return (
+      <Grid container className={classes.Wrapper}>
+        <Grid item className={classes.Text}>
+          {title}
+        </Grid>
+        {withHint && (
+        <Grid item>
+          <Tooltip text={toolTipText} link={toolTipLink} />
+        </Grid>
+        )}
+      </Grid>
+    );
+  }
   return (
     <InputLabelWrapper>
       <InputHeader>

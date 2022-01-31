@@ -33,11 +33,7 @@
     name="viewport"
   />
 
-  <link href="https://fonts.googleapis.com/css?family=Fira%20Code"
-        rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Manrope' rel='stylesheet'>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <link href="%PUBLIC_URL%/favicon.ico" rel="icon"/>
   <meta content="#000000" name="theme-color"/>
@@ -53,6 +49,8 @@
                         https://extreme-ip-lookup.com
                         http://ip-api.com
                         http://geolocation-db.com
+                        https://explorer.stage.ssv.network/
+                        http://localhost:8000
                         https://rest.coinapi.io
                         https://www.google-analytics.com
                         https://registry.walletconnect.org/data/wallets.json
@@ -61,12 +59,12 @@
                         wss://bridge.walletconnect.org
                         https://prater.beaconcha.in
                         https://beaconcha.in/
-                        https://ec.stage.ssv.network/api/operators/graph/
+                        https://ec.stage.ssv.network/
                         https://ec.ssv.network/api/operators/graph/
                         wss://api.blocknative.com;
-                     img-src 'self' data: https://registry.walletconnect.org/ https://www.google-analytics.com/ http://www.google-analytics.com/collect;
+                     img-src 'self' data: https://registry.walletconnect.org/ https://media.stage.ssv.network https://media.ssv.network https://www.google-analytics.com/ http://www.google-analytics.com/collect;
                      manifest-src 'self';
-                     script-src-elem 'self' http://www.googletagmanager.com http://www.google-analytics.com/analytics.js;
+                     script-src-elem 'self' 'unsafe-inline' http://www.googletagmanager.com http://www.google-analytics.com/analytics.js;
                      script-src 'self' 'unsafe-eval' data: https://ssl.google-analytics.com https://www.google-analytics.com;
                      font-src *.gstatic.com;
                      style-src-elem 'unsafe-inline' https://fonts.googleapis.com/;

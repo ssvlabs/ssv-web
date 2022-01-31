@@ -1,74 +1,129 @@
 import React, { useEffect } from 'react';
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
+import OperatorStore from '~app/common/stores/Operator.store';
+import ValidatorStore from '~app/common/stores/Validator.store';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ConditionalLink from '~app/common/components/ConditionalLink';
-import LinkButton from '~app/common/components/LinkButton/LinkButton';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
-import ContractOperator from '~app/common/stores/contract/ContractOperator.store';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import LinkText from '~app/common/components/LinkText';
 
 const SuccessScreen = () => {
-  const stores = useStores();
-  const classes = useStyles();
-  const { redirectUrl, history } = useUserFlow();
+    const stores = useStores();
+    const classes = useStyles();
+    const walletStore: WalletStore = stores.Wallet;
+    const { redirectUrl, history } = useUserFlow();
+    const operatorStore: OperatorStore = stores.Operator;
+    const validatorStore: ValidatorStore = stores.Validator;
 
-  useEffect(() => {
-    redirectUrl && history.push(redirectUrl);
-  }, [redirectUrl]);
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
-  const contractOperator: ContractOperator = stores.ContractOperator;
-  const walletStore: WalletStore = stores.Wallet;
-  const contractValidator: ContractValidator = stores.ContractValidator;
-  let subTitle: any = '';
-  let monitorHeader: string = '';
-  let monitorText: string = '';
-  let icon: string = '';
-  let explorerLink: string = '';
+    let icon: string = '';
+    let subTitle: any = '';
+    let buttonText: string = '';
+    let surveyLink: string = '';
+    let monitorText: any = '';
 
-  if (contractOperator.newOperatorRegisterSuccessfully) {
-    icon = 'success_operator_icon';
-    subTitle = translations.SUCCESS.OPERATOR_DESCRIPTION;
-    monitorHeader = 'Monitor Node';
-    monitorText = 'View your operator performance in our explorer';
-    explorerLink = `${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeOperatorKey(contractOperator.newOperatorKeys.pubKey))}`;
-  } else if (contractValidator.newValidatorReceipt) {
-    icon = 'success_validator_icon';
-    subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
-    monitorHeader = 'Monitor Validator';
-    monitorText = 'View your validator performance in our explorer';
-    explorerLink = `${config.links.LINK_EXPLORER}/validators/${contractValidator.validatorPublicKey}`;
-  }
-
-  const redirectTo = () => {
-    window.open(explorerLink);
-  };
-
-  return (
-    <Screen
-      align
-      title={translations.SUCCESS.TITLE}
-      subTitle={subTitle}
-      body={(
-        <Grid className={classes.gridContainer} container spacing={0}>
-          <Grid item xs={12} className={classes.successImage}>
-            <img src={getImage(`${icon}.svg`)} className={classes.icon} />
+    if (operatorStore.newOperatorRegisterSuccessfully) {
+        icon = 'operator';
+        buttonText = process.env.REACT_APP_NEW_STAGE ? 'Monitor Operator' : 'View Operator';
+        subTitle = (
+          <Grid container>
+            <Grid item>Your operator has been successfully registered!</Grid>
+            <Grid item>With every new operator, our network grows stronger.</Grid>
           </Grid>
-          <Grid item xs={12} className={classes.linkWrapper}>
-            <ConditionalLink to={config.routes.OPERATOR.GENERATE_KEYS} condition={false} onClick={redirectTo}>
-              <LinkButton primaryLabel={monitorHeader} secondaryLabel={monitorText} />
-            </ConditionalLink>
-          </Grid>
-        </Grid>
-      )}
-    />
-  );
+        );
+        if (process.env.REACT_APP_NEW_STAGE) {
+            monitorText = 'View your operator\'s prefomance and manage it in the account dashboard';
+        } else {
+            monitorText = (
+              <Grid container spacing={3}>
+                <Grid item>
+                  Jump into our documentation to learn more
+                  about <LinkText text={'monitoring'} link={'https://docs.ssv.network/operators/installation-operator-1/operators-grafana-dashboard '} /> and <LinkText text={'troubleshooting'} link={'https://docs.ssv.network/operators/installation-operator-1/node-troubleshooting-faq'} /> your node.
+                </Grid>
+                <Grid item>
+                  View your operators prefomance the ssv network explorer.
+                </Grid>
+              </Grid>
+            );
+        }
+
+        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeOcsFJ20f1VFhqZ8rbqGdEsyvS8xdqpBC2aTc7VTVhqFfWQw/viewform';
+    } else if (validatorStore.newValidatorReceipt) {
+        icon = 'validator';
+        buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
+        subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
+        if (process.env.REACT_APP_NEW_STAGE) {
+            monitorText = 'View and mange your balance and validators in your account dashboard.';
+        } else {
+            monitorText = 'View your validators performance in the ssv network explorer.';
+        }
+        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeTPm6imiND4kja5mmnnjZ6iRcuocebGrIMhvm1rVtM7ZtrCA/viewform';
+    }
+
+    const redirectTo = async () => {
+        if (process.env.REACT_APP_NEW_STAGE) {
+            await operatorStore.loadOperators(true);
+            await walletStore.initializeUserInfo();
+            history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        } else {
+            let linkToExplorer: string = '';
+            if (validatorStore.newValidatorReceipt) {
+                linkToExplorer = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
+            }
+            if (operatorStore.newOperatorRegisterSuccessfully) {
+                linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${operatorStore.newOperatorRegisterSuccessfully}`;
+            }
+            window.open(linkToExplorer);
+        }
+    };
+
+    const takeSurvey = () => {
+        window.open(surveyLink);
+        localStorage.setItem('firstCreation', 'true');
+    };
+
+    return (
+      <>
+        <BorderScreen
+          blackHeader
+          sectionClass={classes.SectionWrapper}
+          header={translations.SUCCESS.TITLE}
+          body={[
+            <Grid item container>
+              <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>
+              <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />
+              <Grid item className={`${classes.Text} ${classes.SubImageText}`}>{monitorText}</Grid>
+              <PrimaryButton text={buttonText} onClick={redirectTo} />
+            </Grid>,
+          ]}
+        />
+        {!localStorage.getItem('firstCreation') && (
+          <BorderScreen
+            blackHeader
+            withoutNavigation
+            wrapperClass={classes.FeedbackWrapper}
+            sectionClass={classes.FeedbackSection}
+            header={translations.SUCCESS.FEEDBACK_HEADER}
+            body={[
+              <Grid item container>
+                <Grid container item className={classes.Feedback}>
+                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review.</Grid>
+                  <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} onClick={takeSurvey} />
+                </Grid>
+              </Grid>,
+            ]}
+          />
+        )}
+      </>
+    );
 };
 
 export default observer(SuccessScreen);

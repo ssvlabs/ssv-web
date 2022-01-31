@@ -1,117 +1,164 @@
 import { observer } from 'mobx-react';
-import styled from 'styled-components';
-import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { isMobile } from 'react-device-detect';
 import { useHistory } from 'react-router-dom';
-import { DropzoneArea } from 'material-ui-dropzone';
-import useUserFlow from '~app/hooks/useUserFlow';
+import React, { useEffect, useRef, useState } from 'react';
+import ApiRequest from '~lib/utils/ApiRequest';
 import { useStores } from '~app/hooks/useStores';
+import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
-import Screen from '~app/common/components/Screen/Screen';
 import InputLabel from '~app/common/components/InputLabel';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import ContractValidator from '~app/common/stores/contract/ContractValidator.store';
-import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-
-const DropZoneContainer = styled.div`
-  & .MuiDropzoneArea-root {
-    background-image: url('/images/drop_zone_icon.svg'), url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='4' ry='4' stroke='rgba(91, 108, 132, 1)' stroke-width='3' stroke-dasharray='10%2c 10' stroke-dashoffset='30' stroke-linecap='square'/%3e%3c/svg%3e");
-    background-repeat: no-repeat, repeat;
-    animation: none;
-    background-color: #FAFAFA;
-    animation: none !important;
-    background-position: center !important;
-    border: none;
-    background-size: auto !important;
-    border-radius: 4px;
-  }
-  & .MuiDropzoneArea-active {
-    background-color: red !important;
-  }
-  & .MuiDropzoneArea-text {
-    padding-top: 30px;
-    color: rgba(215, 215, 215, 1);
-    font-size: 18px;
-  }
-  & .MuiDropzoneArea-icon {
-    display: none;
-    color: rgba(215, 215, 215, 1);
-  }
-  & .MuiDropzonePreviewList-imageContainer {
-    margin: auto;
-  }
-  & .MuiDropzonePreviewList-image {
-    margin-top: 20px;
-    width: 30px;
-    height: 30px;
-  }
-`;
-
-const actionButtonMargin = isMobile ? '90px' : '120px';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import OperatorStore from '~app/common/stores/Operator.store';
+import ValidatorStore from '~app/common/stores/Validator.store';
+import PrimaryButton from '~app/common/components/PrimaryButton';
+import ApplicationStore from '~app/common/stores/Application.store';
+import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
 const ImportValidator = () => {
+  const stores = useStores();
   const classes = useStyles();
   const history = useHistory();
-  const stores = useStores();
-  const validatorStore: ContractValidator = stores.ContractValidator;
-  const { getUserFlow } = useUserFlow();
-  
+  const inputRef = useRef(null);
+  const operatorStore: OperatorStore = stores.Operator;
+  const validatorStore: ValidatorStore = stores.Validator;
+  const applicationStore: ApplicationStore = stores.Application;
+  const [errorMessage, setErrorMessage] = useState('');
+
   useEffect(() => {
-    if (validatorStore.validatorPrivateKeyFile) {
-      history.push(config.routes.VALIDATOR.DECRYPT);
-    }
-  }, [validatorStore.validatorPrivateKeyFile]);
+    validatorStore.setPassword('');
+  }, []);
 
-  const onFileChange = (file: any[]) => {
-    if (file.length !== 0) {
-      validatorStore.setValidatorPrivateKeyFile(file[0]);
+  const handleClick = () => {
+    // @ts-ignore
+    inputRef.current.click();
+  };
+
+  const handleDrag = (e: any) => {
+    e.preventDefault();
+  };
+  
+  const handleDrop = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const event = e as Event;
+    // @ts-ignore
+    if (event.target.files) {
+      // @ts-ignore
+      fileHandler(event.target.files);
+    } else {
+      // @ts-ignore
+      const files = event.dataTransfer.files;
+      fileHandler(files);
     }
   };
 
-  const getBackNavigationTitle = (): string => {
-    const userFlow = getUserFlow();
-    if (config.routes.VALIDATOR.CREATE === userFlow) {
-      return 'Create Validator';
+  const fileHandler = (files: any) => {
+    if (files.length === 1) {
+      const uploadedFile = files[0];
+      validatorStore.setValidatorPrivateKeyFile(uploadedFile);
     }
-    return 'Run Validator with the SSV Network';
   };
 
-  return (
-    <Screen
-      navigationText={getBackNavigationTitle()}
-      navigationLink={config.routes.VALIDATOR.HOME}
-      title={translations.VALIDATOR.IMPORT.TITLE}
-      subTitle={translations.VALIDATOR.IMPORT.DESCRIPTION}
-      styleOptions={{ actionButtonMarginTop: actionButtonMargin }}
-      body={(
-        <Grid container wrap="nowrap" spacing={0} className={classes.gridContainer}>
-          <Grid item xs zeroMinWidth className={classes.gridContainer}>
-            <DropZoneContainer>
-              <InputLabel
-                title="Keystore File"
-                subTitle="generated from CLI">
-                <DropzoneArea
-                  dropzoneText={''}
-                  showPreviews={false}
-                  onChange={onFileChange}
-                  filesLimit={1}
-                  maxFileSize={5000000}
-                />
-              </InputLabel>
-            </DropZoneContainer>
-          </Grid>
-        </Grid>  
-      )}
-      actionButton={(
-        <CTAButton
-          testId={'confirm-button'}
-          disable
-          text={'Next'}
-          />
-      )}
-    />
-  );
+  const inputHandler = (e: any) => {
+    setErrorMessage('');
+    validatorStore.setPassword(e.target.value);
+  };
+
+  const submitHandler = () => {
+    const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+    validatorStore.extractPrivateKey().then(() => {
+      const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
+      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
+        const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
+        if (response.data !== null && conditionalDataExtraction?.valid_signature) {
+          operatorStore.unselectAllOperators();
+          validatorSelectionPage();
+        } else {
+          history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+        }
+        applicationStore.setIsLoading(false);
+      });
+    }).catch((error: string) => {
+      console.log(error);
+      applicationStore.setIsLoading(false);
+      if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
+        setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
+      } else {
+        setErrorMessage(error);
+      }
+    });
+  };
+
+  const removeFile = () => {
+    validatorStore.setValidatorPrivateKeyFile(null);
+  };
+
+  const renderFileImage = () => {
+    let fileClass: any = classes.FileImage;
+    if (validatorStore.isJsonFile()) {
+      fileClass += ` ${classes.Success}`;
+    }
+    if (!validatorStore.isJsonFile() && validatorStore.validatorPrivateKeyFile) {
+      fileClass += ` ${classes.Fail}`;
+    }
+    return <Grid item className={fileClass} />;
+  };
+
+  const renderFileText = () => {
+    if (!validatorStore.validatorPrivateKeyFile) {
+      return (
+        <Grid item xs={12} className={classes.FileText}>
+          Drag and drop files or <Grid className={classes.Browse}>browse</Grid>
+        </Grid>
+      );
+    }
+    if (validatorStore.isJsonFile()) {
+      return (
+        <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
+          {validatorStore.validatorPrivateKeyFile.name}
+          <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
+        </Grid>
+      );
+    }
+    if (!validatorStore.isJsonFile()) {
+      return (
+        <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+          Invalid file format - only .json files are supported
+          <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
+        </Grid>
+      );
+    }
+  };
+
+    return (
+      <BorderScreen
+        blackHeader
+        header={translations.VALIDATOR.IMPORT.TITLE}
+        navigationLink={config.routes.VALIDATOR.HOME}
+        body={[
+          <Grid item container>
+            <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>
+            <Grid container item xs={12} className={classes.DropZone} onDrop={handleDrop} onDragOver={handleDrag} onClick={handleClick}>
+              <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop} />
+              {renderFileImage()}
+              {renderFileText()}
+            </Grid>
+            <Grid container item xs={12}>
+              <InputLabel title="Keystore Password" />
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={inputHandler} />
+              </Grid>
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <MessageDiv text={translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD} />}
+              </Grid>
+              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password || !!errorMessage} />
+            </Grid>
+          </Grid>,
+        ]}
+      />
+    );
 };
 
 export default observer(ImportValidator);

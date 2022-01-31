@@ -1,29 +1,36 @@
 import Web3 from 'web3';
+import Notify from 'bnc-notify';
 import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import SsvStore from '~app/common/stores/SSV.store';
 import { wallets } from '~app/common/stores/Wallet/wallets';
+import OperatorStore from '~app/common/stores/Operator.store';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
-import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
-export const Networks = {
-  MAINNET: 1,
-  GOERLI: 5,
-};
-
 class WalletStore extends BaseStore implements Wallet {
-  @observable networkId: number | null = null;
   @observable web3: any = null;
-  @observable ready: boolean = false;
   @observable wallet: any = null;
+  @observable notifySdk: any = null;
   @observable onboardSdk: any = null;
-  @observable accountAddress: string = '';
   @observable addressVerification: any;
+  @observable accountAddress: string = '';
   @observable wrongNetwork: boolean = false;
+  @observable networkId: number | null = null;
+  @observable walletConnected: boolean = false;
+
   private contract: Contract | undefined;
+  private ssvStore: SsvStore = this.getStore('SSV');
+  private operatorStore: OperatorStore = this.getStore('Operator');
+  private notificationsStore: NotificationsStore = this.getStore('Notifications');
+
+  constructor() {
+    super();
+    this.init();
+  }
 
   @computed
   get connected() {
@@ -37,91 +44,37 @@ class WalletStore extends BaseStore implements Wallet {
 
   /**
    * Get smart contract instance
-   * @param address
+   * @param address: string
    */
   @action.bound
-  async getContract(address?: string): Promise<Contract> {
-    if (!this.contract && this.connected) {
-      const contractAddress: string = config.CONTRACT.ADDRESS;
-      this.contract = this.buildContract(address ?? contractAddress);
+  getContract(address?: string): Contract {
+    if (!this.contract) {
+      const abi: any = process.env.REACT_APP_NEW_STAGE ? config.CONTRACTS.SSV_NETWORK.ABI : config.CONTRACTS.SSV_NETWORK.OLD_ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
+      this.contract = new this.web3.eth.Contract(abi, address ?? contractAddress);
     }
     // @ts-ignore
     return this.contract;
   }
 
+  /**
+   * User address handler
+   * @param operatorKey: string
+   */
   @action.bound
-  buildContract(address: string) {
-    const abi: any = config.CONTRACT.ABI;
-    return new this.web3.eth.Contract(abi, address);
-  }
-
-  @action.bound
-  encodeOperatorKey(operatorKey?: string) {
+  encodeKey(operatorKey?: string) {
+    if (!operatorKey) return '';
     return this.web3.eth.abi.encodeParameter('string', operatorKey);
   }
 
-  decodeOperatorKey(operatorKey?: string) {
-    return this.web3.eth.abi.decodeParameter('string', operatorKey);
-  }
-
-  @action.bound
-  clean() {
-    this.accountAddress = '';
-  }
-
-  @action.bound
-  async disconnect() {
-    if (this.connected) {
-      await this.onboardSdk.walletReset();
-      this.clean();
-    }
-  }
-
-  @action.bound
-  async connect() {
-    try {
-      console.debug('Connecting wallet..');
-      await this.selectWalletAndCheckIfReady();
-    } catch (error: any) {
-      const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      notificationsStore.showMessage(message, 'error');
-      console.error('Connecting to wallet error:', message);
-      return false;
-    }
-  }
-
   /**
-   * Check wallet is ready to transact
+   * User address handler
+   * @param operatorKey: string
    */
   @action.bound
-  async selectWalletAndCheckIfReady() {
-    if (this.connected) {
-      return;
-    }
-    await this.init();
-    if (!this.connected) {
-      const applicationStore: ApplicationStore = this.getStore('Application');
-      await this.onboardSdk.walletSelect();
-      await this.onboardSdk.walletCheck()
-        .then((ready: boolean) => {
-          console.debug(`Wallet is ${ready} for transaction:`);
-        })
-        .catch((error: any) => {
-          applicationStore.setIsLoading(false);
-          console.error('Wallet check errorMessage', error);
-        });
-    }
-  }
-
-  @action.bound
-  setAccountAddress(address: string) {
-    this.accountAddress = address;
-  }
-
-  @action.bound
-  setNetworkId(networkId: number) {
-    this.networkId = networkId;
+  decodeKey(operatorKey?: string) {
+    if (!operatorKey) return '';
+    return this.web3?.eth.abi.decodeParameter('string', operatorKey);
   }
 
   /**
@@ -129,7 +82,7 @@ class WalletStore extends BaseStore implements Wallet {
    * @url https://docs.blocknative.com/onboard#initialization
    */
   @action.bound
-  async init() {
+  init() {
     if (this.onboardSdk) {
       return;
     }
@@ -141,22 +94,79 @@ class WalletStore extends BaseStore implements Wallet {
         wallets,
       },
       subscriptions: {
-        wallet: this.onWalletConnected,
-        address: this.setAccountAddress,
-        network: this.onNetworkChange,
+        wallet: this.walletHandler,
+        address: this.addressHandler,
+        network: this.networkHandler,
+        balance: this.syncBalance,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
     this.onboardSdk = Onboard(connectionConfig);
-    this.onboardSdk.walletReset();
+    const notifyOptions = {
+      dappId: config.ONBOARD.API_KEY,
+      networkId: this.networkId || Number(config.ONBOARD.NETWORK_ID),
+      desktopPosition: 'topRight',
+    };
+    // @ts-ignore
+    this.notifySdk = Notify(notifyOptions);
+  }
+
+  /**
+   * Check wallet cache and connect
+   */
+  @action.bound
+  async checkConnection() {
+    const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
+    if (selectedWallet) {
+      await this.onboardSdk.walletSelect(selectedWallet);
+      await this.onboardSdk.walletCheck();
+    } else {
+      this.ssvStore.setAccountLoaded(true);
+    }
+  }
+
+  /**
+   * Connect wallet
+   */
+  @action.bound
+  async connect() {
+    try {
+      console.debug('Connecting wallet..');
+      await this.onboardSdk.walletSelect();
+      await this.onboardSdk.walletCheck();
+    } catch (error: any) {
+      const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
+      this.notificationsStore.showMessage(message, 'error');
+      console.error('Connecting to wallet error:', message);
+      return false;
+    }
+  }
+
+  /**
+   * User address handler
+   * @param address: string
+   */
+  @action.bound
+ async addressHandler(address: string) {
+    if (address === undefined) {
+      this.accountAddress = address;
+      this.walletConnected = true;
+      this.ssvStore.initSettings();
+      window.localStorage.removeItem('selectedWallet');
+    } else {
+      this.accountAddress = address;
+      this.walletConnected = true;
+      await this.initializeUserInfo();
+    }
   }
 
   /**
    * Callback for connected wallet
-   * @param wallet
+   * @param wallet: any
    */
   @action.bound
-  async onWalletConnected(wallet: any) {
+  async walletHandler(wallet: any) {
+    console.log('wallet: ', wallet);
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     this.addressVerification = this.web3.utils.isAddress;
@@ -164,53 +174,55 @@ class WalletStore extends BaseStore implements Wallet {
     window.localStorage.setItem('selectedWallet', wallet.name);
   }
 
+  /**
+   * Initialize Account data from contract
+   */
   @action.bound
-  async onNetworkChange(networkId: any) {
-    if (networkId !== 5) {
-      this.alertNetworkError();
-    } else {
-      this.wrongNetwork = false;
+  async initializeUserInfo() {
+    this.ssvStore.setAccountLoaded(false);
+    await this.operatorStore.validatorsPerOperatorLimit();
+    if (process.env.REACT_APP_NEW_STAGE) {
+      await this.ssvStore.checkIfLiquidated();
+      await this.ssvStore.getSsvContractBalance();
+      await this.ssvStore.getNetworkContractBalance();
+      await this.ssvStore.getAccountBurnRate();
+      await this.operatorStore.loadOperators();
+      await this.ssvStore.fetchAccountOperators();
+      await this.ssvStore.fetchAccountValidators();
+      await this.ssvStore.getNetworkFees();
+      await this.ssvStore.checkAllowance();
     }
-  }
-
-  @action.bound
-  alertNetworkError() {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    this.wrongNetwork = true;
-    notificationsStore.showMessage('Please change network to Goerli', 'error');
-  }
-
-  @action.bound
-  async checkConnection() {
-    const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
-    if (selectedWallet) {
-      await this.init();
-      await this.onboardSdk.walletSelect(selectedWallet);
-    }
-  }
-
-  @action.bound
-  async onWalletDisconnect() {
-    this.onboardSdk.walletReset();
-    this.wallet = null;
-    this.web3 = null;
-    this.ready = false;
-    this.onboardSdk = null;
-    this.accountAddress = '';
-    window.localStorage.removeItem('selectedWallet');
+    this.ssvStore.setAccountLoaded(true);
   }
 
   /**
-   * Returns true if wallet is ready
-   * Otherwise returns false
+   * Fetch user balances and fees
    */
-  checkIfWalletReady() {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    if (!this.connected) {
-      notificationsStore.showMessage('Please connect your wallet', 'error');
-      return false;
+  @action.bound
+  async syncBalance() {
+    if (!process.env.REACT_APP_NEW_STAGE) return;
+    if (!this.accountAddress) return;
+    await this.ssvStore.getSsvContractBalance();
+    await this.ssvStore.getNetworkContractBalance();
+    await this.ssvStore.checkIfLiquidated();
+    await this.ssvStore.getNetworkFees();
+    await this.ssvStore.getAccountBurnRate();
+  }
+
+  /**
+   * User Network handler
+   * @param networkId: any
+   */
+  @action.bound
+  async networkHandler(networkId: any) {
+    console.log('networkId: ', networkId);
+    if (networkId !== 5 && networkId !== undefined) {
+      this.wrongNetwork = true;
+      this.notificationsStore.showMessage('Please change network to Goerli', 'error');
+    } else {
+      this.wrongNetwork = false;
+      await this.initializeUserInfo();
     }
-    return true;
   }
 }
 

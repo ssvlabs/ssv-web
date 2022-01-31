@@ -51,3 +51,20 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
     }
     callback(response);
 };
+
+export const validateFeeInput = (value: string, callback: React.Dispatch<ErrorObject>) :void => {
+    // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
+    const response = { shouldDisplay: false, errorMessage: '' };
+    // eslint-disable-next-line radix
+    if (10 ** (-14) > (Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please set a greater fee amount.';
+    } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please use numbers only.';
+    } else {
+        response.shouldDisplay = false;
+    }
+
+    callback(response);
+};

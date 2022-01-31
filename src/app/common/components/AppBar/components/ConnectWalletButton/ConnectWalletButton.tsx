@@ -1,63 +1,65 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import Grid from '@material-ui/core/Grid';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import Button from '~app/common/components/AppBar/components/Button';
 import ApplicationStore from '~app/common/stores/Application.store';
+import { useStyles } from './ConnectWalletButton.styles';
 
 type ConnectWalletButtonProps = {
-  buttonComponent?: any;
-  buttonText?: string;
+    buttonComponent?: any;
+    buttonText?: string;
 };
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
-  const { buttonComponent, buttonText } = props;
-  const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
-  const applicationStore: ApplicationStore = stores.Application;
-  const walletImageStyle = { width: 24, height: 24, marginRight: 5, marginLeft: 0 };
+    const { buttonComponent, buttonText } = props;
+    buttonComponent;
+    buttonText;
+    const stores = useStores();
+    const walletStore: WalletStore = stores.Wallet;
+    const classes = useStyles({ walletConnected: walletStore.connected });
+    const applicationStore: ApplicationStore = stores.Application;
 
-  const onClick = () => {
-    if (walletStore.connected) {
-      return applicationStore.showWalletPopUp(true);
+    const onClick = () => {
+      if (walletStore.connected) {
+        return applicationStore.showWalletPopUp(true);
+      }
+      return walletStore.connect();
+    };
+
+    let icon;
+    if (walletStore.wallet?.name) {
+        switch (walletStore.wallet.name) {
+            case 'Ledger':
+                icon = getImage('wallets/metamask.svg');
+                break;
+            case 'Trezor':
+                icon = getImage('wallets/metamask.svg');
+                break;
+            default:
+                icon = getImage('wallets/metamask.svg');
+                break;
+        }
     }
-    return walletStore.connect();
-  };
 
-  let icon;
-  if (walletStore.wallet?.name) {
-    switch (walletStore.wallet.name) {
-      case 'MetaMask':
-        icon = getImage('metamask.svg');
-        break;
-      case 'Ledger':
-        icon = getImage('metamask.svg');
-        break;
-      case 'Trezor':
-        icon = getImage('metamask.svg');
-        break;
-    }
-  }
+    const walletDisplayName = (address: string) => {
+      if (!address) {
+        return '';
+      }
+      return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
+    };
 
-  const walletDisplayName = (address: string) => {
-    if (!address) {
-      return '';
-    }
-    return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
-  };
-
-  const ConnectButton = buttonComponent ?? Button;
-
-  return (
-    <ConnectButton color="inherit" onClick={onClick}>
-      {walletStore.connected ? (
-        <>
-          {icon && <img src={icon} style={walletImageStyle} alt={`Connected to ${walletStore.wallet.name}`} />}
-          {walletDisplayName(walletStore.accountAddress)}
-        </>
-      ) : buttonText ?? 'Connect Wallet'}
-    </ConnectButton>
-  );
+    return (
+      <Grid container className={classes.ConnectWalletWrapper} onClick={onClick}>
+        {!walletStore.connected && <Grid item>Connect Wallet</Grid>}
+        {walletStore.connected && (
+        <Grid item container>
+          <Grid item><img className={classes.WalletImage} src={icon} alt={`Connected to ${walletStore.wallet.name}`} /></Grid>
+          <Grid item className={classes.WalletAddress}>{walletDisplayName(walletStore.accountAddress)}</Grid>
+        </Grid>
+        )}
+      </Grid>
+    );
 };
 export default observer(ConnectWalletButton);

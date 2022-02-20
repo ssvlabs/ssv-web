@@ -115,7 +115,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   @action.bound
-  async checkConnection() {
+  async connectWalletFromCache() {
     const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
     if (selectedWallet) {
       await this.onboardSdk.walletSelect(selectedWallet);
@@ -180,6 +180,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     this.ssvStore.setAccountLoaded(false);
+    await this.operatorStore.validatorsPerOperatorLimit();
     if (process.env.REACT_APP_NEW_STAGE) {
       await this.ssvStore.checkIfLiquidated();
       await this.ssvStore.getSsvContractBalance();
@@ -200,7 +201,6 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async syncBalance() {
     if (!process.env.REACT_APP_NEW_STAGE) return;
-    if (!this.accountAddress) return;
     await this.ssvStore.getSsvContractBalance();
     await this.ssvStore.getNetworkContractBalance();
     await this.ssvStore.checkIfLiquidated();
@@ -215,11 +215,12 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async networkHandler(networkId: any) {
     console.log('networkId: ', networkId);
-    if (networkId !== 5) {
+    if (networkId !== 5 && networkId !== undefined) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {
       this.wrongNetwork = false;
+      // await this.initializeUserInfo();
     }
   }
 }

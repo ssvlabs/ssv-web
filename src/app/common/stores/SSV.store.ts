@@ -41,8 +41,8 @@ class SsvStore extends BaseStore {
         if (!this.ssvContractInstance) {
             const walletStore: WalletStore = this.getStore('Wallet');
             this.ssvContractInstance = new walletStore.web3.eth.Contract(
-                config.CONTRACTS.SSV.ABI,
-                this.getContractAddress('ssv'),
+                config.CONTRACTS.SSV_TOKEN.ABI,
+                this.getContractAddress('ssv_token'),
             );
         }
         return <Contract> this.ssvContractInstance;

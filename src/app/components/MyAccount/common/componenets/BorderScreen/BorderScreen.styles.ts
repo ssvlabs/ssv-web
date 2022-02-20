@@ -16,6 +16,8 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     LinkWrapper: {
+        height: 20,
+        minWidth: 17,
         marginBottom: theme.spacing(2),
     },
     ScreenWrapper: {
@@ -39,9 +41,12 @@ export const useStyles = makeStyles((theme) => ({
     },
     Header: {
         fontSize: 20,
-        fontWeight: 'bold',
         lineHeight: 1.4,
+        fontWeight: 'bold',
         color: theme.colors.gray40,
+    },
+    BlackHeader: {
+        color: theme.colors.gray90,
     },
     Conversion: {
         width: 88,

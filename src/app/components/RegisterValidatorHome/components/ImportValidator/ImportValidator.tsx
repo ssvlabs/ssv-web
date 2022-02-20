@@ -1,38 +1,34 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
 import ApiRequest from '~lib/utils/ApiRequest';
-// import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import OperatorStore from '~app/common/stores/Operator.store';
 import ValidatorStore from '~app/common/stores/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Application.store';
+import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
 const ImportValidator = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
-  // const { getUserFlow } = useUserFlow();
+  const { history } = useUserFlow();
   const inputRef = useRef(null);
+  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     validatorStore.setPassword('');
   }, []);
-
-  useEffect(() => {
-    if (validatorStore.validatorPrivateKeyFile) {
-      // history.push(config.routes.VALIDATOR.DECRYPT);
-    }
-  }, [validatorStore.validatorPrivateKeyFile]);
 
   const handleClick = () => {
     // @ts-ignore
@@ -65,14 +61,19 @@ const ImportValidator = () => {
     }
   };
 
+  const inputHandler = (e: any) => {
+    setErrorMessage('');
+    validatorStore.setPassword(e.target.value);
+  };
+
   const submitHandler = () => {
-    // hideMessage();
     const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
         const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
         if (response.data !== null && conditionalDataExtraction?.valid_signature) {
+          operatorStore.unselectAllOperators();
           validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
@@ -83,9 +84,9 @@ const ImportValidator = () => {
       console.log(error);
       applicationStore.setIsLoading(false);
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
-        // showMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE, true);
+        setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
       } else {
-        // showMessage(error, true);
+        setErrorMessage(error);
       }
     });
   };
@@ -109,7 +110,7 @@ const ImportValidator = () => {
     if (!validatorStore.validatorPrivateKeyFile) {
       return (
         <Grid item xs={12} className={classes.FileText}>
-          Drag and drop files or <Grid className={classes.Browse} onClick={handleClick}>browse</Grid>
+          Drag and drop files or <Grid className={classes.Browse}>browse</Grid>
         </Grid>
       );
     }
@@ -133,22 +134,26 @@ const ImportValidator = () => {
 
     return (
       <BorderScreen
+        blackHeader
         header={translations.VALIDATOR.IMPORT.TITLE}
-        link={{ to: config.routes.VALIDATOR.HOME, text: 'Back' }}
+        navigationLink={config.routes.VALIDATOR.HOME}
         body={[
           <Grid item container>
             <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>
-            <Grid container item xs={12} className={classes.DropZone} onDrop={handleDrop} onDragOver={handleDrag}>
+            <Grid container item xs={12} className={classes.DropZone} onDrop={handleDrop} onDragOver={handleDrag} onClick={handleClick}>
               <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop} />
               {renderFileImage()}
               {renderFileText()}
             </Grid>
             <Grid container item xs={12}>
               <InputLabel title="Keystore Password" />
-              <Grid item xs={12} className={classes.TextInput}>
-                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={(event: any) => { validatorStore.setPassword(event.target.value); }} />
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={inputHandler} />
               </Grid>
-              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password} />
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <MessageDiv text={translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD} />}
+              </Grid>
+              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password || !!errorMessage} />
             </Grid>
           </Grid>,
         ]}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { useStyles } from './TextInput.styles';
 
@@ -17,18 +17,15 @@ type InputProps = {
 
 const TextInput = ({ value, placeHolder, onBlur, onChange, withLock, disable, showError, dataTestId, withSideText, sideIcon }: InputProps) => {
     const classes = useStyles();
-    const [password, showPassword] = useState(true);
-    useEffect(() => {
-        if (disable && password) {
-            showPassword(false);
-        }
-    }, [disable]);
+    const [password, showPassword] = useState(false);
+
     return (
       <Grid container
-        justify={'space-between'}
+          // @ts-ignore
+        justify={withLock && 'space-between'}
         className={`${classes.Wrapper} ${disable ? classes.disable : ''} ${showError ? classes.Error : ''}`}>
         {withLock && <Grid item className={`${classes.Lock} ${disable ? classes.LockDisable : ''}`} onClick={() => { !disable && showPassword(!password); }} />}
-        <Grid item className={classes.InputWrapper}>
+        <Grid item xs>
           <input
             value={value}
             onBlur={onBlur}

@@ -2,13 +2,12 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
+import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import { useStyles } from '~app/components/WalletPopUp/WalletPopUp.styles';
-import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput/ValidatorKeyInput';
+import AddressKeyInput from '~app/common/components/AddressKeyInput/AddressKeyInput';
 
 const WalletPopUp = () => {
     const stores = useStores();
@@ -24,29 +23,16 @@ const WalletPopUp = () => {
     const closePopUp = () => {
         applicationStore.showWalletPopUp(false);
     };
-
-    return (
-      <Dialog PaperProps={{ className: classes.dialog }} aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
-        <CloseIcon viewBox={'5 5 15 15'} fontSize={'large'} onClick={closePopUp} className={classes.exitIcon} />
-        <Grid container className={classes.gridWrapper} spacing={4}>
-          <Grid item xs={12}>
-            <Grid container spacing={1} className={classes.gridContainer}>
-              <Grid item>
-                <Typography className={classes.header}>Wallet Addresss</Typography>
-              </Grid>
-              <Grid item>
-                <button className={classes.connectButton} onClick={changeWallet}>Change</button>
-              </Grid>
-            </Grid>
+      return (
+        <Dialog PaperProps={{ className: classes.Dialog }} aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
+          <Grid item className={classes.Exit} onClick={closePopUp} />
+          <HeaderSubHeader title={'Wallet Address'} />
+          <Grid container className={classes.TextWrapper}>
+            <Grid item xs={12} className={classes.Change} onClick={changeWallet}>Change</Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Grid container>
-              <ValidatorKeyInput validatorKey={walletStore.accountAddress} />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Dialog>
-    );
+          <AddressKeyInput whiteBackgroundColor withEtherScan withCopy address={walletStore.accountAddress} />
+        </Dialog>
+      );
 };
 
 export default observer(WalletPopUp);

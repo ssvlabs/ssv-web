@@ -1,4 +1,3 @@
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState } from 'react';
@@ -6,31 +5,32 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import ValidatorStore from '~app/common/stores/Validator.store';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
+// import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import ApplicationStore from '~app/common/stores/Application.store';
-import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput';
+import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
+import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
+import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
-    const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
     const { redirectUrl, history } = useUserFlow();
     const [txHash, setTxHash] = useState('');
-    const [checked, selectCheckBox] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
     let totalOperatorsYearlyFee = 0;
     let yearlyNetworkFee = 0;
@@ -53,11 +53,28 @@ const ImportValidatorConfirmation = () => {
     };
 
     const onRegisterValidatorClick = async () => {
+        applicationStore.setIsLoading(true);
+        setErrorMessage('');
         setActionButtonText('Waiting for confirmation...');
+        const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
+        /* eslint-disable no-await-in-loop */
+        for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
+            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].pubkey);
+            if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
+                setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
+                setActionButtonText('Run validator');
+                applicationStore.setIsLoading(false);
+                return;
+            }
+        }
+
         return validatorStore.addNewValidator(false, handlePendingTransaction).then(() => {
+            applicationStore.setIsLoading(false);
+            operatorStore.unselectAllOperators();
             applicationStore.showTransactionPendingPopUp(false);
             history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
         }).catch(() => {
+            applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             setActionButtonText('Run validator');
         });
@@ -73,17 +90,14 @@ const ImportValidatorConfirmation = () => {
       <Grid container>
         <TransactionPendingPopUp txHash={txHash} />
         <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-        <ValidatorKeyInput withBeaconcha validatorKey={validatorStore.validatorPublicKey} />
+        <ValidatorKeyInput withBeaconcha address={validatorStore.validatorPublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
           <Grid item className={classes.SubHeader}>Selected Operators</Grid>
           {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
                     return (
                       <Grid key={index} container item xs={12} className={classes.Row}>
                         <Grid item>
-                          <NameAndAddress
-                            name={operator.name}
-                            address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`}
-                                />
+                          <OperatorDetails operator={operator} />
                         </Grid>
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
@@ -145,27 +159,35 @@ const ImportValidatorConfirmation = () => {
           </Grid>
         </Grid>
         )}
+        {errorMessage && <MessageDiv text={errorMessage} />}
         <Grid container>
-          <CTAButton
-            checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]}
-            checkBoxesCallBack={[selectCheckBox]}
-            withAllowance
-            testId={'confirm-button'}
-            disable={!checked}
-            onClick={onRegisterValidatorClick}
+          <PrimaryButton
+            disable={false}
+            dataTestId={'confirm-button'}
             text={actionButtonText}
+            onClick={onRegisterValidatorClick}
           />
+          {/* <CTAButton */}
+          {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}
+          {/*  // checkBoxesCallBack={[selectCheckBox]} */}
+          {/*  withAllowance */}
+          {/*  testId={'confirm-button'} */}
+          {/*  disable={false} */}
+          {/*  onClick={onRegisterValidatorClick} */}
+          {/*  text={actionButtonText} */}
+          {/* /> */}
         </Grid>
       </Grid>,
     );
 
     return (
       <BorderScreen
-        sectionClass={classes.Section}
+        blackHeader
         withConversion
-        header={translations.VALIDATOR.CONFIRMATION.TITLE}
-        link={{ to: config.routes.VALIDATOR.SLASHING_WARNING, text: 'Back' }}
         body={components}
+        sectionClass={classes.Section}
+        header={translations.VALIDATOR.CONFIRMATION.TITLE}
+        navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
       />
     );
 };

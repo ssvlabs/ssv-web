@@ -1,11 +1,12 @@
+import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
 import BaseStore from '~app/common/stores/BaseStore';
-import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import { roundCryptoValueString } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
-import { roundCryptoValueString } from '~lib/utils/numbers';
 
 export interface INewOperatorTransaction {
     name: string,
@@ -30,7 +31,7 @@ export interface IOperator {
     dappNode?: boolean,
     ownerAddress: string,
     autoSelected?: boolean
-    paymentAddress?: string,
+    validatorsCount?: number,
 }
 
 interface OperatorFee {
@@ -62,12 +63,85 @@ class OperatorStore extends BaseStore {
     @observable newOperatorReceipt: any = null;
 
     @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '', fee: 0 };
-    @observable newOperatorRegisterSuccessfully: boolean = false;
+    @observable newOperatorRegisterSuccessfully: string = '';
 
     @observable estimationGas: number = 0;
     @observable dollarEstimationGas: number = 0;
 
-    @observable loadingOperator: boolean = false;
+    @observable loadingOperators: boolean = false;
+
+    @observable operatorValidatorsLimit: number = 0;
+
+    @computed
+    get getSelectedOperatorsFee(): number {
+        let sum: number = 0;
+        // @ts-ignore
+        Object.keys(this.selectedOperators).forEach((index: number) => {
+            const fee = this.operatorsFees[this.selectedOperators[index].pubkey].ssv;
+            // @ts-ignore
+            sum += parseFloat(fee);
+        });
+        return sum;
+    }
+
+    /**
+     * Check if selected necessary minimum of operators
+     */
+    @computed
+    get selectedEnoughOperators(): boolean {
+        return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
+    }
+
+    /**
+     * Get selection stats
+     */
+    @computed
+    get stats(): { total: number, selected: number, selectedPercents: number } {
+        const selected = Object.values(this.selectedOperators).length;
+        return {
+            total: this.operators.length,
+            selected,
+            selectedPercents: ((selected / this.operators.length) * 100.0),
+        };
+    }
+
+    /**
+     * Check if operator registrable
+     */
+    @action.bound
+    isOperatorRegistrable(validatorsRegisteredCount: number) {
+        // eslint-disable-next-line radix
+        return this.operatorValidatorsLimit > validatorsRegisteredCount;
+    }
+
+    /**
+     * get validators per operator limit
+     */
+    @action.bound
+    async validatorsPerOperatorLimit(): Promise<any> {
+        return new Promise((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contract: Contract = walletStore.getContract();
+            contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
+                this.operatorValidatorsLimit = parseInt(response, 10);
+                resolve(true);
+            }).catch(() => resolve(true));
+        });
+    }
+
+    /**
+     * get validators of operator
+     */
+    @action.bound
+    async getOperatorValidatorsCount(publicKey: string): Promise<any> {
+        return new Promise((resolve) => {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contract: Contract = walletStore.getContract();
+            contract.methods.validatorsPerOperatorCount(publicKey).call().then((response: any) => {
+                resolve(response);
+            });
+        });
+    }
 
     /**
      * clear operator store
@@ -80,19 +154,7 @@ class OperatorStore extends BaseStore {
             address: '',
             fee: 0,
         };
-        this.newOperatorRegisterSuccessfully = false;
-    }
-
-    @computed
-    get getSelectedOperatorsFee(): number {
-        let sum: number = 0;
-        // @ts-ignore
-        Object.keys(this.selectedOperators).forEach((index: number) => {
-            const fee = this.operatorsFees[this.selectedOperators[index].pubkey].ssv;
-            // @ts-ignore
-            sum += parseFloat(fee);
-        });
-        return sum;
+        this.newOperatorRegisterSuccessfully = '';
     }
 
     /**
@@ -175,7 +237,7 @@ class OperatorStore extends BaseStore {
             this.newOperatorReceipt = null;
 
             // Send add operator transaction
-            const payload = [];
+            const payload: any[] = [];
             if (process.env.REACT_APP_NEW_STAGE) {
                 payload.push(
                     transaction.name,
@@ -220,7 +282,7 @@ class OperatorStore extends BaseStore {
                         if (event) {
                             console.debug('Contract Receipt', receipt);
                             this.newOperatorReceipt = receipt;
-                            this.newOperatorRegisterSuccessfully = true;
+                            this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                             resolve(event);
                         }
                     })
@@ -316,94 +378,49 @@ class OperatorStore extends BaseStore {
     }
 
     /**
-     * Get selection stats
-     */
-    @computed
-    get stats(): { total: number, selected: number, selectedPercents: number } {
-        const selected = Object.values(this.selectedOperators).length;
-        return {
-            total: this.operators.length,
-            selected,
-            selectedPercents: ((selected / this.operators.length) * 100.0),
-        };
-    }
-
-    /**
-     * Check if selected necessary minimum of operators
-     */
-    @computed
-    get selectedEnoughOperators(): boolean {
-        return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
-    }
-
-    /**
      * Load operators from external source
      */
     @action.bound
     async loadOperators(forceLoad?: boolean) {
-        if (this.operators.length && !forceLoad) {
+        if ((this.operators.length || this.loadingOperators) && !forceLoad) {
             return this.operators;
         }
-        this.loadingOperator = true;
-        const query = `
-    {
-      operators(first: ${config.FEATURE.OPERATORS.REQUEST_MINIMUM_OPERATORS}) {
-        id
-        name
-        pubkey
-        ownerAddress
-      }
-    }`;
-        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/api/operators/graph?randomize=true`;
 
-        const requestInfo: RequestData = {
-            url: operatorsEndpointUrl,
-            method: 'GET',
-            headers: [
-                { name: 'content-type', value: 'application/json' },
-                { name: 'accept', value: 'application/json' },
-            ],
-            data: { query },
-        };
-
-        return new ApiRequest(requestInfo)
-            .sendRequest()
-            .then(async (response: any) => {
-                this.loadingOperator = false;
-                this.operatorsLoaded = true;
-                if (process.env.REACT_APP_NEW_STAGE) {
-                    this.operators = await Promise.all(response.operators.map(async (operator: any): Promise<any> => {
-                        const operatorStore: OperatorStore = this.getStore('Operator');
-                        const operatorsAdapted = this.operatorAdapter(operator);
-                        operatorsAdapted.fee = await operatorStore.getOperatorFee(operatorsAdapted.pubkey);
-                        this.hashedOperators[operator.public_key] = operatorsAdapted;
-                        return operatorsAdapted;
-                    }));
-                } else {
-                    this.operators = response.operators.map((operator: any) => {
-                        const adaptedOperator = this.operatorAdapter(operator);
-                        this.hashedOperators[operator.public_key] = adaptedOperator;
-                        return adaptedOperator;
-                    });   
-                }
-                return this.operators;
+        this.loadingOperators = true;
+        const operators = await Operator.getInstance().getOperators();
+        this.loadingOperators = false;
+        this.operatorsLoaded = true;
+        if (process.env.REACT_APP_NEW_STAGE) {
+            this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
+                const operatorStore: OperatorStore = this.getStore('Operator');
+                const operatorsAdapted = this.operatorAdapter(operator);
+                operatorsAdapted.fee = await operatorStore.getOperatorFee(operatorsAdapted.pubkey);
+                this.hashedOperators[operator.public_key] = operatorsAdapted;
+                return operatorsAdapted;
+            }));
+        } else {
+            this.operators = operators.map((operator: any) => {
+                const adaptedOperator = this.operatorAdapter(operator);
+                this.hashedOperators[operator.public_key] = adaptedOperator;
+                return adaptedOperator;
             });
-
-        // return this.operators;
+        }
+        return this.operators;
     }
 
      operatorAdapter(_object: any) {
         const walletStore: WalletStore = this.getStore('Wallet');
         const encodePublicKey = walletStore.encodeKey(_object.public_key);
         return {
-            name: _object.name,
-            ownerAddress: _object.owner_address,
-            pubkey: encodePublicKey,
-            logo: _object.logo,
             fee: 0,
+            name: _object.name,
+            logo: _object.logo,
             type: _object.type,
-            verified: _object.type === 'verified_operator',
+            pubkey: encodePublicKey,
+            ownerAddress: _object.owner_address,
             dappNode: _object.type === 'dapp_node',
+            validatorsCount: _object.validators_count,
+            verified: _object.type === 'verified_operator',
         };
     }
 

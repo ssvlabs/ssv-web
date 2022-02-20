@@ -5,7 +5,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,
-        color: theme.colors.gray70,
+        color: theme.colors.gray90,
         marginBottom: theme.spacing(3),
     },
     PublicKey: {
@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray80,
         marginBottom: theme.spacing(3),
         '&:nth-of-type(4)': {
-            marginBottom: theme.spacing(10) - 1,
+            marginBottom: theme.spacing(10),
         },
     },
 

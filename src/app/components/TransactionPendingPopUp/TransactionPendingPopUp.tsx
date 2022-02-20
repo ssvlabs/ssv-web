@@ -2,11 +2,13 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import Header from '~app/common/components/Header';
+import LinkText from '~app/common/components/LinkText';
 import ApplicationStore from '~app/common/stores/Application.store';
-import ValidatorKeyInput from '~app/common/components/ValidatorKeyInput/ValidatorKeyInput';
+import AddressKeyInput from '~app/common/components/AddressKeyInput/AddressKeyInput';
 import { useStyles } from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp.styles';
+import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 
 type TransactionPendingPopUpParams = {
     txHash: string
@@ -18,29 +20,19 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
     const applicationStore: ApplicationStore = stores.Application;
 
     return (
-      <Dialog aria-labelledby="simple-dialog-title" open={applicationStore.transactionPendingPopUp}>
-        <Grid className={classes.gridWrapper} wrap={'wrap'} container alignItems={'center'} spacing={1}>
-          <Grid className={classes.gridContainer} item>
-            <Header title={'Sending transaction'} subtitle={''} />
-            <Header title={''} subtitle={'Your transaction is pending on the blockchain - please wait'} />
-            <Header title={''} subtitle={'while it`s being confirmed'} />
+      <Dialog className={classes.DialogWrapper} aria-labelledby="simple-dialog-title" open={applicationStore.transactionPendingPopUp}>
+        <Grid className={classes.gridWrapper} container>
+          <HeaderSubHeader title={'Sending Transaction'} subtitle={'Your transaction is pending on the blockchain - please wait while it\'s being confirmed'} />
+          <Grid item>
+            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
-          <Grid item container className={classes.loaderWrapper} spacing={1}>
-            <div className={classes.loader} />
-            <div className={classes.loader} />
-            <div className={classes.loader} />
-          </Grid>
-          <Grid container>
-            <Grid item xs={12}>
-              <div className={classes.validatorText}>TRANSACTION HASH</div>
+          <Grid item container style={{ marginBottom: 20 }}>
+            <Grid item xs>
+              <div className={classes.validatorText}>Transaction Hash</div>
             </Grid>
-            <Grid item xs={12}>
-              <ValidatorKeyInput validatorKey={txHash} />
-            </Grid>
+            <AddressKeyInput whiteBackgroundColor withCopy address={txHash} />
           </Grid>
-          <Grid className={classes.linkHref} item>
-            <a href={`https://goerli.etherscan.io/tx/${txHash}`} target={'_blank'}>view on etherscan</a>
-          </Grid>
+          <LinkText text={'View on Etherscan'} link={`https://goerli.etherscan.io/tx/${txHash}`} />
         </Grid>
       </Dialog>
     );

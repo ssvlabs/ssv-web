@@ -56,6 +56,19 @@ const importValidatorFlow: IUserFlow = {
   },
 };
 
+const selectOperatorsValidatorFlow: IUserFlow = {
+  name: 'Select Operators For Validators',
+  route: routes.VALIDATOR.SELECT_OPERATORS,
+  depends: [
+    importValidatorFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const validatorStore: ValidatorStore = stores.Validator;
+    return !!validatorStore.validatorPrivateKeyFile;
+  },
+};
+
 const importValidatorDecryptFlow: IUserFlow = {
   name: 'Decrypt Keystore File',
   route: routes.VALIDATOR.DECRYPT,
@@ -204,6 +217,7 @@ const userFlows: IUserFlow[] = [
   validatorConfirmationFlow,
   importValidatorDecryptFlow,
   validatorSelectOperatorsFlow,
+  selectOperatorsValidatorFlow,
 ];
 
 const dispatchUserFlow = (

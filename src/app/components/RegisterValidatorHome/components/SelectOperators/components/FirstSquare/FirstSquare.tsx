@@ -4,14 +4,14 @@ import throttle from 'lodash/throttle';
 import Table from '@material-ui/core/Table';
 import { Skeleton } from '@material-ui/lab';
 import TableRow from '@material-ui/core/TableRow';
-import React, { useEffect, useState } from 'react';
-import { debounce, Grid } from '@material-ui/core';
+import React, { useEffect, useRef, useState } from 'react';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
-import Operators from '~lib/api/Operators';
+import { CircularProgress, debounce, Grid } from '@material-ui/core';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
+// import SsvStore from '~app/common/stores/SSV.store';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
@@ -23,61 +23,57 @@ import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOp
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ToolTip from '~app/common/components/ToolTip';
 
 const FirstSquare = () => {
+    console.log('<<<<<<<<<<<<<<<<render>>>>>>>>>>>>>>>>');
     let searchTimeout: any;
     const stores = useStores();
     const classes = useStyles();
     const SEARCH_TIMEOUT_DELAY = 700;
-    const ssvStore: SsvStore = stores.SSV;
-    // const [loading, setLoading] = useState(false);
+    // const ssvStore: SsvStore = stores.SSV;
+    const wrapperRef = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
-    const operatorStore: OperatorStore = stores.Operator;
-    const [batchIndex, setBatchIndex] = useState(20);
     const [sortBy, setSortBy] = useState('');
+    const operatorStore: OperatorStore = stores.Operator;
+    const [loading, setLoading] = useState(false);
+    const [sortOrder, setSortOrder] = useState('');
+    const [filterBy, setFilterBy] = useState([]);
+    const [batchIndex, setBatchIndex] = useState(20);
     const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
-    const [shellOperatorsData, setShellOperatorsData]: [any[], any] = useState([]);
 
     let headers = [
         { type: '', displayName: '' },
         { type: 'name', displayName: 'Name' },
+        { type: 'validatorsCount', displayName: 'Validators' },
         { type: '', displayName: '' },
     ];
-    let skeletons = [0, 1, 2, 3, 4];
+    let skeletons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    
     if (process.env.REACT_APP_NEW_STAGE) {
         headers = [
             { type: '', displayName: '' },
             { type: 'name', displayName: 'Name' },
+            { type: 'validatorsCount', displayName: 'Validators' },
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];
         skeletons = [0, 1, 2, 3, 4, 5, 6];
     }
 
-    const assignData = (data: IOperator[]) => {
-        setOperatorsData(data);
-        setShellOperatorsData(data);
-    };
+    useEffect(() => {
+        operatorStore.loadOperators().then(() => {
+            setOperatorsData(operatorStore.operators);
+        });
+    }, []);
 
-    const sort = (type: string) => {
-        if (type === sortBy) {
-            setSortBy('');
-            setOperatorsData(shellOperatorsData);
-            return;
-        }
-            const sortedArray = operatorsData.sort((a, b) => {
-                if (a[type] < b[type]) { return -1; }
-                if (a[type] > b[type]) { return 1; }
-                return 0;
-            });
-            setOperatorsData(sortedArray);
-            setSortBy(type);
-    };
+    useEffect(() => {
+    }, [sortBy, filterBy, JSON.stringify(operatorsData), JSON.stringify(operatorStore.selectedOperators)]);
 
     const fetch = React.useMemo(
         () => throttle((request: { input: string }, callback: any) => {
-            // setLoading(true);
-            Operators.getInstance().search(request.input).then((results: any) => {
+            setLoading(true);
+            Operator.getInstance().search(request.input).then((results: any) => {
                 const operators: any = [];
                 (results?.operators || []).forEach((operator: any) => {
                     const hashedOperator = operatorStore.hashedOperators[operator.public_key];
@@ -91,17 +87,10 @@ const FirstSquare = () => {
         [],
     );
 
-    useEffect(() => {
-        operatorStore.unselectAllOperators();
-        operatorStore.loadOperators().then(() => {
-            assignData(operatorStore.operators);
-        });
-    }, []);
+    const selectOperator = (e: any, operator: IOperator) => {
+        // @ts-ignore
+        if (wrapperRef.current?.isEqualNode(e.target)) return;
 
-    useEffect(() => {
-    }, [JSON.stringify(operatorsData), JSON.stringify(operatorStore.selectedOperators)]);
-
-    const selectOperator = (operator: IOperator) => {
         if (operatorStore.isOperatorSelected(operator.pubkey)) {
             operatorStore.unselectOperatorByPublicKey(operator.pubkey);
           return;
@@ -113,6 +102,7 @@ const FirstSquare = () => {
                 availableIndex = index;
             }
         });
+
         if (availableIndex) {
             operatorStore.selectOperator(operator, availableIndex);
         }
@@ -122,11 +112,23 @@ const FirstSquare = () => {
         window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(pubKey))}`);
     };
 
+    const sortHandler = (sortType: string) => {
+        if (sortBy === sortType && sortOrder === 'ascending') {
+            setSortOrder('descending');
+        } else if (sortBy === sortType && sortOrder === 'descending') {
+            setSortBy('');
+            setSortOrder('ascending');
+        } else {
+            setSortBy(sortType);
+            setSortOrder('ascending');
+        }
+    };
+
     const inputSearch = (e: any) => {
         const userInput = e.target.value.trim();
         if (userInput === '') {
             setBatchIndex(20);
-            assignData(operatorStore.operators);
+            setOperatorsData(operatorStore.operators);
         }
         if (userInput.length < 3) {
             return;
@@ -135,8 +137,9 @@ const FirstSquare = () => {
         searchTimeout && clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             fetch({ input: userInput }, (results: any) => {
-                assignData(results);
-                // setLoading(false);
+                setLoading(false);
+                if (e.target.value.trim() === '') return;
+                setOperatorsData(results);
             });
         }, SEARCH_TIMEOUT_DELAY);
     };
@@ -158,11 +161,11 @@ const FirstSquare = () => {
     }, 100);
 
     const dataRows = () => {
-        if (operatorStore.loadingOperator) {
+        if (operatorStore.loadingOperators) {
             return skeletons.map((rowIndex: number) => (
               <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
-                {[0, 1, 2, 3, 4].map((index: number) => (
-                  <StyledCell key={`cell-${index}`}>
+                {[0, 1, 2, 3].map((index: number) => (
+                  <StyledCell style={{ padding: '10px 2px 10px 2px' }} key={`cell-${index}`}>
                     <Skeleton />
                   </StyledCell>
                 ))}
@@ -170,58 +173,109 @@ const FirstSquare = () => {
             ));
         }
 
-        if (operatorsData.length === 0) {
+        let operatorsDataShell = operatorsData.slice(0);
+
+        if (sortBy) {
+            operatorsDataShell = operatorsDataShell.sort((a, b) => {
+                if (sortBy === 'name') {
+                    const aName = a[sortBy].toLowerCase();
+                    const bName = b[sortBy].toLowerCase();
+                    if (sortOrder === 'ascending') {
+                        if (aName < bName) { return -1; }
+                        if (aName > bName) { return 1; }
+                    } else {
+                        if (aName > bName) { return -1; }
+                        if (aName < bName) { return 1; }
+                    }
+                } else if (sortOrder === 'ascending') {
+                        if (a[sortBy] > b[sortBy]) { return -1; }
+                        if (a[sortBy] > b[sortBy]) { return 1; }
+                    } else {
+                        if (a[sortBy] < b[sortBy]) { return -1; }
+                        if (a[sortBy] > b[sortBy]) { return 1; }
+                    }
+                return 0;
+            });
+        }
+
+        if (filterBy.length > 0) {
+            operatorsDataShell = operatorsDataShell.filter((operator: IOperator) => {
+                let typeExist = false;
+                // eslint-disable-next-line no-restricted-syntax
+                for (const filter of filterBy) {
+                    if (operator.type === filter) {
+                        typeExist = true;
+                    }
+                }
+                return typeExist;
+            });
+        }
+
+        if (operatorsDataShell.length === 0) {
             return (
               <TableRow hover>
                 <StyledCell className={classes.NoRecordsWrapper}>
                   <Grid container>
                     <Grid item xs={12} className={classes.NoRecordImage} />
                     <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
-                    <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword/filter</Grid>
+                    <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
                   </Grid>
                 </StyledCell>
               </TableRow>
             );
         }
 
-        return operatorsData.slice(0, batchIndex).map((operator) => {
+        return operatorsDataShell.slice(0, batchIndex).map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.pubkey);
-            if (!process.env.REACT_APP_NEW_STAGE) {
-                return (
-                  <TableRow key={operator.pubkey} className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''}`} onClick={() => { selectOperator(operator); }}>
-                    <StyledCell>
-                      <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
-                    </StyledCell>
-                    <StyledCell>
-                      <OperatorDetails operator={operator} />
-                    </StyledCell>
-                    <StyledCell>
-                      <Grid className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
-                    </StyledCell>
-                  </TableRow>
-                );
-            }
-                return (
-                  <TableRow key={operator.pubkey} className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''}`} onClick={() => { !isSelected && selectOperator(operator); }}>
-                    <StyledCell>
-                      <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
-                    </StyledCell>
-                    <StyledCell>
-                      <OperatorDetails operator={operator} />
-                    </StyledCell>
-                    <StyledCell>{ssvStore.getFeeForYear(operator.fee)}</StyledCell>
-                    <StyledCell>
-                      <Grid className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
-                    </StyledCell>
-                  </TableRow>
-                );
+            const disabled = !operatorStore.isOperatorRegistrable(operator.validatorsCount);
+            return (
+              <TableRow
+                key={operator.pubkey}
+                className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
+                onClick={(e) => {
+                        !disabled && selectOperator(e, operator);
+                    }}
+                >
+                <StyledCell style={{ width: 60 }}>
+                  <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
+                </StyledCell>
+                <StyledCell>
+                  <OperatorDetails operator={operator} />
+                </StyledCell>
+                <StyledCell>
+                  <Grid container>
+                    <Grid item>{operator.validatorsCount}</Grid>
+                    {disabled && (
+                    <Grid item style={{ alignSelf: 'center' }}>
+                      <ToolTip text={'Operator reached  maximum amount of validators'} />
+                    </Grid>
+                    )}
+                  </Grid>
+                </StyledCell>
+                <StyledCell>
+                  <Grid container>
+                    <Grid item>{operator.fee}</Grid>
+                    {disabled && (
+                      <Grid item style={{ alignSelf: 'center' }}>
+                        <ToolTip text={'Operator reached  maximum amount of validators'} />
+                      </Grid>
+                          )}
+                  </Grid>
+                </StyledCell>
+                <StyledCell>
+                  <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
+                </StyledCell>
+              </TableRow>
+            );
         });
     };
+
+    const rows: any = dataRows();
 
     return (
       <BorderScreen
         wrapperClass={classes.ScreenWrapper}
-        link={{ to: config.routes.VALIDATOR.IMPORT, text: 'Back' }}
+        navigationLink={config.routes.VALIDATOR.IMPORT}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} />
@@ -230,33 +284,44 @@ const FirstSquare = () => {
                 <TextInput
                   withSideText
                   onChange={inputSearch}
-                  sideIcon={<div className={classes.SearchIcon} />}
+                  sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> : <div className={classes.SearchIcon} />}
                   placeHolder={'Search...'}
                 />
               </Grid>
-              <Filters data={shellOperatorsData} setResultFiltered={setOperatorsData} />
+              <Filters setFilterBy={setFilterBy} />
             </Grid>
             <TableContainer className={classes.OperatorsTable} onScroll={lazyLoad}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    {operatorsData.length > 0 && headers.map((header: any, index: number) => (
-                      <StyledCell key={index} className={classes.HeaderWrapper}>
-                        <Grid container onClick={() => sort(header.type)}>
-                          <Grid item>{header.displayName}</Grid>
-                          {header.displayName !== '' && (
-                            <Grid
-                              item
-                              className={`${classes.SortArrow} ${sortBy === header.type ? classes.SelectedSort : ''}`}
-                            />
-                          )}
-                        </Grid>
-                      </StyledCell>
-                    ))}
+                    {rows.length > 0 && headers.map((header: any, index: number) => {
+                        const sortByType = sortBy === header.type;
+                        const ascending = sortOrder === 'ascending';
+                        const descending = sortOrder === 'descending';
+                        let headerClasses = classes.SortArrow;
+                        if (sortByType) {
+                            if (descending) headerClasses += ` ${classes.ArrowUp}`;
+                            if (ascending) headerClasses += ` ${classes.ArrowDown}`;
+                        }
+
+                          return (
+                            <StyledCell key={index} className={classes.HeaderWrapper}>
+                              <Grid container onClick={() => sortHandler(header.type)}>
+                                <Grid item>{header.displayName}</Grid>
+                                {header.displayName !== '' && (
+                                  <Grid
+                                    item
+                                    className={headerClasses}
+                                  />
+                                )}
+                              </Grid>
+                            </StyledCell>
+                          );
+                    })}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataRows()}
+                  {rows}
                 </TableBody>
               </Table>
             </TableContainer>

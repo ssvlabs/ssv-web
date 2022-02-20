@@ -4,6 +4,9 @@ export const useStyles = makeStyles((theme) => ({
     ScreenWrapper: {
         width: '100%',
     },
+    Loading: {
+        color: theme.colors.tint20,
+    },
     SearchIcon: {
         width: 24,
         height: 24,
@@ -18,24 +21,27 @@ export const useStyles = makeStyles((theme) => ({
     },
 
     OperatorsTable: {
-        maxHeight: 530,
+        height: 458,
         borderRadius: 16,
         marginTop: theme.spacing(5),
         border: `solid 1px ${theme.colors.gray20}`,
     },
     HeaderWrapper: {
+        cursor: 'pointer',
         alignItems: 'center',
     },
     SortArrow: {
         width: 16,
         height: 16,
-        cursor: 'pointer',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/sort_arrow/not_clicked.svg)',
+        backgroundImage: 'url(/images/sort_arrow/arrows.svg)',
     },
-    SelectedSort: {
+    ArrowUp: {
+        backgroundImage: 'url(/images/sort_arrow/ascending.svg)',
+    },
+    ArrowDown: {
         backgroundImage: 'url(/images/sort_arrow/descending.svg)',
     },
     NoRecordsWrapper: {
@@ -80,14 +86,28 @@ export const useStyles = makeStyles((theme) => ({
         },
         backgroundColor: theme.colors.tint90,
     },
+    RowDisabled: {
+        '& *': {
+            color: theme.colors.gray60,
+        },
+        backgroundColor: theme.colors.gray10,
+        '&:hover': {
+            backgroundColor: theme.colors.gray10,
+        },
+    },
     Checkbox: {
         width: 24,
         height: 24,
+        marginLeft: 20,
+        marginRight: 20,
         borderRadius: 8,
         cursor: 'pointer',
-        marginLeft: 20,
-        backgroundColor: theme.colors.gray10,
+        backgroundColor: theme.colors.white,
         border: `1px solid ${theme.colors.gray40}`,
+    },
+    Hint: {
+      width: 10,
+      height: 10,
     },
     Checked: {
         width: 24,
@@ -107,5 +127,4 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         backgroundImage: 'url(/images/chart/gray.svg)',
     },
-
 }));

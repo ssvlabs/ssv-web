@@ -9,7 +9,7 @@ export const infoIconStyle = {
   color: grayBackgroundColor,
 };
 
-export const defaultFont = '"Encode Sans", "Roboto", "Helvetica", "Arial", sans-serif';
+export const defaultFont = '"Manrope"';
 
 export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
   return {

@@ -17,7 +17,7 @@ const AccountBalanceAndFee = () => {
       return (
         <BorderScreen
           header={translations.VALIDATOR.BALANCE_AND_FEE.TITLE}
-          link={{ to: config.routes.VALIDATOR.SELECT_OPERATORS, text: 'Back' }}
+          navigationLink={config.routes.VALIDATOR.SELECT_OPERATORS}
           body={[
             <Grid container>
               <Grid item container className={classes.bodyTextWrapper}>

@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import NotificationsStore from '~app/common/stores/Notifications.store';
 import { useStyles } from './PrimaryButton.styles';
+import Spinner from '~app/common/components/Spinner';
+import ApplicationStore from '~app/common/stores/Application.store';
 
 type Props = {
     text: string,
     onClick: any,
     disable?: boolean,
     dataTestId?: string,
+    wrapperClass?: string,
     withVerifyConnection?: boolean
 };
 
@@ -18,16 +22,16 @@ const PrimaryButton = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
-    const { text, onClick, disable, dataTestId, withVerifyConnection } = props;
-    const [inProgress, setInProgress] = useState(false);
+    const applicationStore: ApplicationStore = stores.Application;
+    const notificationsStore: NotificationsStore = stores.Notifications;
+    const { text, onClick, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
 
     useEffect(() => {
         const listener = async (event: any) => {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 // event.preventDefault();
-                if (!disable && !inProgress) {
-                    setInProgress(true);
-                    await onClick();
+                if (!disable && !applicationStore.isLoading) {
+                    await submit();
                 }
             }
         };
@@ -35,23 +39,25 @@ const PrimaryButton = (props: Props) => {
         return () => {
             document.removeEventListener('keydown', listener);
         };
-    }, [inProgress, disable]);
+    }, [applicationStore.isLoading, disable]);
 
     const submit = async () => {
+        if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
         if (withVerifyConnection && !walletStore.connected) {
             await walletStore.connect();
         }
-        onClick();
+        await onClick();
     };
 
     return (
-      <Grid container item className={classes.Wrapper}>
+      <Grid container item>
         <Button
-          className={classes.PrimaryButton}
+          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
           data-testid={dataTestId}
-          disabled={disable || inProgress}
+          disabled={disable || applicationStore.isLoading}
           onClick={submit}
         >
+          {applicationStore.isLoading && <Spinner />}
           {text}
         </Button>
       </Grid>

@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-import { Grid, MuiThemeProvider } from '@material-ui/core';
+import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { Grid, MuiThemeProvider } from '@material-ui/core';
+import { MobileView, BrowserView } from 'react-device-detect';
 import Routes from '~app/components/Routes';
 import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
@@ -13,6 +14,7 @@ import SsvStore from '~app/common/stores/SSV.store';
 import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
+import MobileNotSupported from '~app/components/MobileNotSupported';
 
 declare global {
     interface Window {
@@ -25,39 +27,39 @@ const App = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
+    const GlobalStyle = globalStyle();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
-    const [triggerLoader, shouldTriggerLoader] = useState(true);
 
     useEffect(() => {
-        walletStore.checkConnection();
+        walletStore.connectWalletFromCache();
     }, []);
 
     useEffect(() => {
-        if (!triggerLoader) shouldTriggerLoader(true);
-        if (walletStore.walletConnected && ssvStore.accountLoaded && (!!ssvStore.userOperators.length || !!ssvStore.userValidators.length)) {
+        if (walletStore.walletConnected && ssvStore.accountLoaded) {
             history.push('/dashboard');
-            shouldTriggerLoader(false);
         } else if (ssvStore.accountLoaded) {
-            history.push('/');
-            shouldTriggerLoader(false);
+            history.push(window.location);
         }
     }, [walletStore.walletConnected, ssvStore.accountLoaded]);
-
-    const GlobalStyle = globalStyle();
 
     return (
       <MuiThemeProvider theme={applicationStore.muiTheme}>
         <GlobalStyle />
-        {triggerLoader && (
+        {!ssvStore.accountLoaded && (
           <Grid container className={classes.LoaderWrapper}>
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
         )}
         <BarMessage />
         <AppBar />
-        <Routes />
+        <BrowserView>
+          <Routes />
+        </BrowserView>
+        <MobileView>
+          <MobileNotSupported />
+        </MobileView>
         <CssBaseline />
       </MuiThemeProvider>
     );

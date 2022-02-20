@@ -9,7 +9,7 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import OperatorStore from '~app/common/stores/Operator.store';
-import Checkbox from '~app/common/components/CheckBox/CheckBox';
+// import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
@@ -26,21 +26,24 @@ const OperatorConfirmation = () => {
     const { redirectUrl, history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
     const walletStore: WalletStore = stores.Wallet;
-    const [checked, setCheckBox] = useState(false);
+    // const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
-    const [txHash, setTxHash] = useState('Register Operator');
+    const [txHash, setTxHash] = useState('');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
     useEffect(() => {
-        // redirectUrl && history.push(redirectUrl);
+        redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     const onRegisterClick = async () => {
+        applicationStore.setIsLoading(true);
         setActionButtonText('Waiting for confirmation...');
         operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
+            applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
         }).catch(() => {
+            applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             setActionButtonText('Register Operator');
         });
@@ -54,10 +57,11 @@ const OperatorConfirmation = () => {
 
     return (
       <BorderScreen
+        blackHeader
         withConversion
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
-        link={{ text: 'Back', to: config.routes.OPERATOR.GENERATE_KEYS }}
+        navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
         body={[
           <Grid container>
             <TransactionPendingPopUp txHash={txHash} />
@@ -101,12 +105,12 @@ const OperatorConfirmation = () => {
                   name={`0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`} />
               </Grid>
             </Grid>
-            <Checkbox onClickCallBack={setCheckBox}
-              text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} />
-            <PrimaryButton disable={!checked} text={actionButtonText} onClick={onRegisterClick} />
+            {/* <Checkbox onClickCallBack={setCheckBox} */}
+            {/*  text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} /> */}
+            <PrimaryButton disable={false} text={actionButtonText} onClick={onRegisterClick} />
           </Grid>,
-            ]}
-        />
+        ]}
+      />
     );
 };
 

@@ -6,15 +6,17 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%',
         fontSize: 16,
         fontWeight: 600,
+        borderRadius: 8,
         lineHeight: 1.25,
         transition: 'none',
         textTransform: 'capitalize',
         color: theme.colors.primaryBlue,
+        fontFamily: 'Manrope !important',
         backgroundColor: theme.colors.tint90,
         '&:hover': {
             backgroundColor: theme.colors.tint80,
         },
-        '&:focus': {
+        '&:active': {
             backgroundColor: theme.colors.tint70,
         },
         '&:disable': {

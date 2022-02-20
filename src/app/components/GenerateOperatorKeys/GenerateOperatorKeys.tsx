@@ -23,6 +23,7 @@ import {
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import PrimaryButton from '~app/common/components/PrimaryButton';
+import LinkText from '~app/common/components/LinkText';
 // import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
 
 const GenerateOperatorKeys = () => {
@@ -100,7 +101,7 @@ const GenerateOperatorKeys = () => {
 
     return (
       <BorderScreen
-        link={{ text: 'Back', to: config.routes.OPERATOR.HOME }}
+        navigationLink={config.routes.OPERATOR.HOME}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
@@ -131,11 +132,11 @@ const GenerateOperatorKeys = () => {
               </Grid>
               <Grid item className={classes.gridItem}>
                 <InputLabel
-                  title="operator public key"
+                  title="Operator Public Key"
                   withHint
                   toolTipText={(
                     <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                      <a target={'_blank'} href={'https://docs.ssv.network/operators/install-instructions'}>documentation</a>
+                      <LinkText text={'documentation.'} link={'https://docs.ssv.network/operators/install-instructions'} />
                     </div>
                   )}
                   toolTipLink={config.links.TOOL_TIP_KEY_LINK}

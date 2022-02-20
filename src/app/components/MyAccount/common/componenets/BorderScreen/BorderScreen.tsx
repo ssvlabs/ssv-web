@@ -3,24 +3,22 @@ import { Grid } from '@material-ui/core';
 import BackNavigation from '~app/common/components/BackNavigation';
 import { useStyles } from './BorderScreen.styles';
 
-type Navigation = {
-    to: string,
-    text: string,
-};
-
 type Props = {
     body: any,
     bottom?: any,
     header?: string,
-    link?: Navigation,
     wrapperClass?: any,
     sectionClass?: any,
+    blackHeader?: boolean,
+    navigationLink?: string,
+    navigationText?: string,
     withConversion?: boolean,
+    withoutNavigation?: boolean,
 };
 
 const BorderScreen = (props: Props) => {
     const classes = useStyles();
-    const { wrapperClass, link, header, withConversion, body, sectionClass, bottom } = props;
+    const { wrapperClass, navigationLink, withoutNavigation, navigationText, blackHeader, header, withConversion, body, sectionClass, bottom } = props;
     const [currency, setCurrency] = useState('SSV');
     const [coins] = useState(['SSV', 'USD']);
 
@@ -30,17 +28,19 @@ const BorderScreen = (props: Props) => {
 
     return (
       <Grid container className={`${classes.BorderScreenWrapper} ${wrapperClass || ''}`}>
-        <Grid item className={classes.LinkWrapper}>
-          {link && <BackNavigation to={link.to} text={link.text} />}
-        </Grid>
+        {!withoutNavigation && (
+          <Grid item className={classes.LinkWrapper}>
+            {navigationLink && <BackNavigation to={navigationLink} text={navigationText} />}
+          </Grid>
+          )}
         <Grid item container className={classes.ScreenWrapper}>
           {(header || withConversion) && (
             <Grid container item className={classes.HeaderSection}>
-              <Grid item xs={6} className={classes.Header}>
+              <Grid item className={`${classes.Header} ${blackHeader ? classes.BlackHeader : ''}`}>
                 {header}
               </Grid>
               {withConversion && process.env.REACT_APP_NEW_STAGE && (
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <Grid container item className={classes.Conversion}>
                   {coins.map((coin: string, index: number) => {
                         return (

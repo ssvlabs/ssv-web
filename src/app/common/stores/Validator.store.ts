@@ -146,12 +146,12 @@ class ValidatorStore extends BaseStore {
           // Send add operator transaction
           this.conditionalContractFunction(contract, payload)
               .send({ from: ownerAddress })
-              .on('receipt', (receipt: any) => {
+          .on('receipt', (receipt: any) => {
                 // eslint-disable-next-line no-prototype-builtins
                 const event: boolean = receipt.hasOwnProperty('events');
                 if (event) {
                   console.debug('Contract Receipt', receipt);
-                  this.newValidatorReceipt = receipt;
+                  this.newValidatorReceipt = payload[1];
                   this.clearValidatorData();
                   resolve(event);
                 }

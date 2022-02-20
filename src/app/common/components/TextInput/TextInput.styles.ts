@@ -13,9 +13,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.colors.white,
         border: `solid 1px ${theme.colors.gray30}`,
     },
-    InputWrapper: {
-        width: '90%',
-    },
     Input: {
         fontSize: 16,
         width: '100%',
@@ -44,11 +41,11 @@ export const useStyles = makeStyles((theme) => ({
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         marginRight: theme.spacing(3),
-        backgroundImage: 'url(/images/lock/active.svg)',
+        backgroundImage: `url(/images/lock/active_${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     LockDisable: {
         cursor: 'not-allowed',
-        backgroundImage: 'url(/images/lock/disable.svg)',
+        backgroundImage: `url(/images/lock/disable_${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     Text: {
         fontSize: 16,

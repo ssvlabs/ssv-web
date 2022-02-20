@@ -112,6 +112,7 @@ const MyAccount = () => {
             await operatorStore.loadOperators().then(() => {
                 userOperators.forEach(async (publicKey: string, index: number) => {
                     const operator: IOperator = operatorStore.hashedOperators[walletStore.decodeKey(publicKey)];
+                    if (!operator) return;
                     const revenue = await ssvStore.getOperatorRevenue();
                     operatorsData.push({
                         validators: 0,
@@ -150,10 +151,8 @@ const MyAccount = () => {
                     const validatorBalance: any = response.data.filter((balance: any) => balance.pubkey === validator);
                     // eslint-disable-next-line no-await-in-loop
                     const payload: any = await buildValidatorStructure(validator, validatorBalance[0]);
-                    console.log(payload);
                     validatorsData.push(payload);
                     if (index === pageValidators.length - 1) {
-                        console.log('now');
                         // @ts-ignore
                         setValidators(validatorsData);
                         setLoadingValidators(false);

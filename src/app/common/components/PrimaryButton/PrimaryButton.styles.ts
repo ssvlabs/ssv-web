@@ -1,25 +1,46 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    Wrapper: {
-
-    },
     PrimaryButton: {
         height: 60,
+        fontSize: 16,
         width: '100%',
         fontWeight: 600,
+        borderRadius: 8,
         color: theme.colors.white,
         textTransform: 'capitalize',
+        fontFamily: 'Manrope !important',
         backgroundColor: theme.colors.primaryBlue,
         '&:hover': {
             backgroundColor: theme.colors.shade20,
         },
-        '&:focus': {
+        '&:active': {
             backgroundColor: theme.colors.shade40,
         },
         '&:disabled': {
             color: theme.colors.gray40,
             backgroundColor: theme.colors.gray20,
+        },
+    },
+    Loading: {
+        height: 60,
+        width: '100%',
+        fontWeight: 600,
+        borderRadius: 8,
+        marginBottom: 16,
+        textTransform: 'capitalize',
+        fontFamily: 'Manrope !important',
+        color: theme.colors.tint20,
+        backgroundColor: theme.colors.tint80,
+        '&:hover': {
+            backgroundColor: theme.colors.tint80,
+        },
+        '&:focus': {
+            backgroundColor: theme.colors.tint80,
+        },
+        '&:disabled': {
+            color: theme.colors.tint20,
+            backgroundColor: theme.colors.tint80,
         },
     },
     CheckBoxWrapper: {

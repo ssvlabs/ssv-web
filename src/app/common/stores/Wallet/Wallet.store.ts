@@ -10,6 +10,7 @@ import { wallets } from '~app/common/stores/Wallet/wallets';
 import OperatorStore from '~app/common/stores/Operator.store';
 import Wallet from '~app/common/stores/Wallet/abstractWallet';
 import NotificationsStore from '~app/common/stores/Notifications.store';
+import DistributionStore from '~app/common/stores/Distribution.store';
 
 class WalletStore extends BaseStore implements Wallet {
   @observable web3: any = null;
@@ -25,6 +26,7 @@ class WalletStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
+  private distributionStore: DistributionStore = this.getStore('Distribution');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
   constructor() {
@@ -180,18 +182,19 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async initializeUserInfo() {
     this.ssvStore.setAccountLoaded(false);
-    await this.operatorStore.validatorsPerOperatorLimit();
-    if (process.env.REACT_APP_NEW_STAGE) {
-      await this.ssvStore.checkIfLiquidated();
-      await this.ssvStore.getSsvContractBalance();
-      await this.ssvStore.getNetworkContractBalance();
-      await this.ssvStore.getAccountBurnRate();
-      await this.operatorStore.loadOperators();
-      await this.ssvStore.fetchAccountOperators();
-      await this.ssvStore.fetchAccountValidators();
-      await this.ssvStore.getNetworkFees();
-      await this.ssvStore.checkAllowance();
-    }
+    await this.distributionStore.eligibleForReward();
+    // await this.operatorStore.validatorsPerOperatorLimit();
+    // if (process.env.REACT_APP_NEW_STAGE) {
+    //   await this.ssvStore.checkIfLiquidated();
+    //   await this.ssvStore.getSsvContractBalance();
+    //   await this.ssvStore.getNetworkContractBalance();
+    //   await this.ssvStore.getAccountBurnRate();
+    //   await this.operatorStore.loadOperators();
+    //   await this.ssvStore.fetchAccountOperators();
+    //   await this.ssvStore.fetchAccountValidators();
+    //   await this.ssvStore.getNetworkFees();
+    //   await this.ssvStore.checkAllowance();
+    // }
     this.ssvStore.setAccountLoaded(true);
   }
 

@@ -27,10 +27,7 @@ export const useStyles = makeStyles((theme) => ({
         width: 'fit-content',
     },
     Wrapper: {
-        '@media (max-width: 1200px)': {
-            marginLeft: 'auto',
-        },
-
+        marginLeft: 'auto',
     },
     Hamburger: {
         width: 24,

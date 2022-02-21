@@ -1,6 +1,10 @@
 const config = {
     routes: {
         HOME: '/',
+        DISTRIBUTION: {
+            CLAIM: '/claim',
+            SUCCESS: '/claim/success',
+        },
         MY_ACCOUNT: {
             DASHBOARD: '/dashboard',
             DEPOSIT: '/dashboard/deposit',
@@ -2226,6 +2230,163 @@ const config = {
                             'internalType': 'uint256',
                             'name': '',
                             'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+            ],
+        },
+        SSV_DISTRIBUTION: {
+            ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),
+            ABI: [
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'address',
+                            'name': 'token_',
+                            'type': 'address',
+                        },
+                        {
+                            'internalType': 'bytes32',
+                            'name': 'merkleRoot_',
+                            'type': 'bytes32',
+                        },
+                        {
+                            'internalType': 'address',
+                            'name': 'treasury_',
+                            'type': 'address',
+                        },
+                    ],
+                    'stateMutability': 'nonpayable',
+                    'type': 'constructor',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'index',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'address',
+                            'name': 'account',
+                            'type': 'address',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'amount',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'Claimed',
+                    'type': 'event',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': 'index',
+                            'type': 'uint256',
+                        },
+                        {
+                            'internalType': 'address',
+                            'name': 'account',
+                            'type': 'address',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': 'amount',
+                            'type': 'uint256',
+                        },
+                        {
+                            'internalType': 'bytes32[]',
+                            'name': 'merkleProof',
+                            'type': 'bytes32[]',
+                        },
+                    ],
+                    'name': 'claim',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'endAirdrop',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': 'index',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'isClaimed',
+                    'outputs': [
+                        {
+                            'internalType': 'bool',
+                            'name': '',
+                            'type': 'bool',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'merkleRoot',
+                    'outputs': [
+                        {
+                            'internalType': 'bytes32',
+                            'name': '',
+                            'type': 'bytes32',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'timeout',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'token',
+                    'outputs': [
+                        {
+                            'internalType': 'address',
+                            'name': '',
+                            'type': 'address',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'treasury',
+                    'outputs': [
+                        {
+                            'internalType': 'address',
+                            'name': '',
+                            'type': 'address',
                         },
                     ],
                     'stateMutability': 'view',

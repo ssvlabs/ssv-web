@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
@@ -26,7 +25,6 @@ declare global {
 const App = () => {
     const stores = useStores();
     const classes = useStyles();
-    const history = useHistory();
     const GlobalStyle = globalStyle();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
@@ -35,14 +33,6 @@ const App = () => {
     useEffect(() => {
         walletStore.connectWalletFromCache();
     }, []);
-
-    useEffect(() => {
-        if (walletStore.walletConnected && ssvStore.accountLoaded) {
-            history.push('/dashboard');
-        } else if (ssvStore.accountLoaded) {
-            history.push(window.location);
-        }
-    }, [walletStore.walletConnected, ssvStore.accountLoaded]);
 
     return (
       <MuiThemeProvider theme={applicationStore.muiTheme}>

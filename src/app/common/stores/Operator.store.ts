@@ -8,15 +8,11 @@ import { roundCryptoValueString } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 
-export interface INewOperatorTransaction {
+export interface NewOperator {
     name: string,
     fee: number,
     pubKey: string,
     address: string,
-}
-
-interface NewOperatorKeys extends Omit<INewOperatorTransaction, 'address'> {
-    address?: string
 }
 
 export interface IOperator {
@@ -65,7 +61,7 @@ class OperatorStore extends BaseStore {
 
     @observable newOperatorReceipt: any = null;
 
-    @observable newOperatorKeys: INewOperatorTransaction = { name: '', pubKey: '', address: '', fee: 0 };
+    @observable newOperatorKeys: NewOperator = { name: '', pubKey: '', address: '', fee: 0 };
     @observable newOperatorRegisterSuccessfully: string = '';
 
     @observable estimationGas: number = 0;
@@ -188,13 +184,8 @@ class OperatorStore extends BaseStore {
      * @param transaction
      */
     @action.bound
-    setOperatorKeys(transaction: NewOperatorKeys) {
-        this.newOperatorKeys = {
-            pubKey: transaction.pubKey,
-            name: transaction.name,
-            address: transaction.address || this.newOperatorKeys.address,
-            fee: transaction.fee || this.newOperatorKeys.fee,
-        };
+    setOperatorKeys(transaction: NewOperator) {
+        this.newOperatorKeys = transaction;
     }
 
     /**
@@ -203,17 +194,11 @@ class OperatorStore extends BaseStore {
      * @param contract
      */
     @action.bound
-    async checkIfOperatorExists(publicKey: string, contract?: Contract): Promise<boolean> {
+    async checkIfOperatorExists(publicKey: string): Promise<boolean> {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
-            const contractInstance = contract ?? walletStore.getContract;
-            const encodeOperatorKey = await walletStore.encodeKey(publicKey);
-            this.setOperatorKeys({
-                name: this.newOperatorKeys.name,
-                pubKey: encodeOperatorKey,
-                fee: this.newOperatorKeys.fee,
-            });
-            const result = await contractInstance.methods.operators(encodeOperatorKey).call({ from: this.newOperatorKeys.address });
+            const contractInstance = walletStore.getContract;
+            const result = await contractInstance.methods.operators(publicKey).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);
@@ -229,72 +214,70 @@ class OperatorStore extends BaseStore {
     @action.bound
     // eslint-disable-next-line no-unused-vars
     async addNewOperator(getGasEstimation: boolean = false, callBack?: (txHash: string) => void) {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const gasEstimation: PriceEstimation = new PriceEstimation();
-        const contract: Contract = walletStore.getContract;
-        const address: string = this.newOperatorKeys.address;
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            try {
+                const payload: any[] = [];
+                const walletStore: WalletStore = this.getStore('Wallet');
+                const contract: Contract = walletStore.getContract;
+                const address: string = this.newOperatorKeys.address;
+                const transaction: NewOperator = this.newOperatorKeys;
+                const gasEstimation: PriceEstimation = new PriceEstimation();
+                this.newOperatorReceipt = null;
 
-        return new Promise((resolve, reject) => {
-            const transaction: INewOperatorTransaction = this.newOperatorKeys;
-            this.newOperatorReceipt = null;
+                // Send add operator transaction
+                if (process.env.REACT_APP_NEW_STAGE) {
+                    payload.push(
+                        transaction.name,
+                        transaction.pubKey,
+                        walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
+                    );
+                } else {
+                    payload.push(
+                        transaction.name,
+                        transaction.address,
+                        transaction.pubKey,
+                    );
+                }
 
-            // Send add operator transaction
-            const payload: any[] = [];
-            if (process.env.REACT_APP_NEW_STAGE) {
-                payload.push(
-                    transaction.name,
-                    transaction.pubKey,
-                    walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
-                );
-            } else {
-                payload.push(
-                    transaction.name,
-                    transaction.address,
-                    transaction.pubKey,
-                );
-            }
-
-            console.debug('Register Operator Transaction Data:', payload);
-            if (getGasEstimation) {
-                this.conditionalContractFunction(contract, payload)
-                    .estimateGas({ from: walletStore.accountAddress })
-                    .then((gasAmount: any) => {
-                        this.estimationGas = gasAmount * 0.000000001;
-                        if (config.FEATURE.DOLLAR_CALCULATION) {
-                            gasEstimation
-                                .estimateGasInUSD(this.estimationGas)
-                                .then((rate: number) => {
-                                    this.dollarEstimationGas = this.estimationGas * rate * 0;
-                                    resolve(true);
-                                });
-                        } else {
-                            this.dollarEstimationGas = 0;
-                            resolve(true);
-                        }
-                    }).catch((e: any) => {
-                    console.log(e);
-                });
-            } else {
-                // @ts-ignore
-                this.conditionalContractFunction(contract, payload)
-                    .send({ from: address })
-                    .on('receipt', async (receipt: any) => {
-                        // eslint-disable-next-line no-prototype-builtins
-                        const event: boolean = receipt.hasOwnProperty('events');
-                        if (event) {
-                            console.debug('Contract Receipt', receipt);
-                            this.newOperatorReceipt = receipt;
-                            this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
-                            resolve(event);
-                        }
-                    })
-                    .on('transactionHash', (txHash: string) => {
-                        callBack && callBack(txHash);
-                    })
-                    .on('error', (error: any) => {
-                        console.debug('Contract Error', error);
-                        reject(error);
-                    });
+                console.debug('Register Operator Transaction Data:', payload);
+                if (getGasEstimation) {
+                    const gasAmount = await this.conditionalContractFunction(contract, payload).estimateGas({ from: walletStore.accountAddress });
+                    this.estimationGas = gasAmount * 0.000000001;
+                    if (config.FEATURE.DOLLAR_CALCULATION) {
+                        const rate = await gasEstimation.estimateGasInUSD(this.estimationGas);
+                        this.dollarEstimationGas = this.estimationGas * rate * 0;
+                        resolve(true);
+                    } else {
+                        this.dollarEstimationGas = 0;
+                        resolve(true);
+                    }
+                } else {
+                    // @ts-ignore
+                    this.conditionalContractFunction(contract, payload)
+                        .send({ from: address })
+                        .on('receipt', async (receipt: any) => {
+                            // eslint-disable-next-line no-prototype-builtins
+                            const event: boolean = receipt.hasOwnProperty('events');
+                            if (event) {
+                                console.debug('Contract Receipt', receipt);
+                                this.newOperatorReceipt = receipt;
+                                this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
+                                resolve(true);
+                            }
+                        })
+                        .on('transactionHash', (txHash: string) => {
+                            callBack && callBack(txHash);
+                        })
+                        .on('error', (error: any) => {
+                            console.debug('Contract Error', error);
+                            // eslint-disable-next-line prefer-promise-reject-errors
+                            reject(false);
+                        });
+                }
+            } catch {
+                // eslint-disable-next-line prefer-promise-reject-errors
+                reject(false);
             }
         });
     }

@@ -16,8 +16,8 @@ const Welcome = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
+    const applicationStore: ApplicationStore = stores.Application;
 
     const connectToWallet = () => {
         if (walletStore.connected) {

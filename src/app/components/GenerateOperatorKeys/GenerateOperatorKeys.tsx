@@ -4,15 +4,19 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
+import LinkText from '~app/common/components/LinkText';
 // import Checkbox from '~app/common/components/CheckBox';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import ApplicationStore from '~app/common/stores/Application.store';
-import OperatorStore, { INewOperatorTransaction } from '~app/common/stores/Operator.store';
+import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import OperatorStore, { NewOperator } from '~app/common/stores/Operator.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import {
     validatePublicKeyInput,
@@ -20,11 +24,6 @@ import {
     validateAddressInput,
     validateFeeInput,
 } from '~lib/utils/validatesInputs';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import LinkText from '~app/common/components/LinkText';
-// import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
 
 const GenerateOperatorKeys = () => {
     const stores = useStores();
@@ -77,26 +76,21 @@ const GenerateOperatorKeys = () => {
 
     const onRegisterClick = async () => {
         setOperatorExist(false);
-        const operatorKeys: INewOperatorTransaction = {
-            pubKey: inputsData.publicKey,
+        applicationStore.setIsLoading(true);
+        const operatorKeys: NewOperator = {
             name: inputsData.name,
             address: walletStore.accountAddress,
+            pubKey: walletStore.encodeKey(inputsData.publicKey),
             fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
         };
-
-        applicationStore.setIsLoading(true);
         operatorStore.setOperatorKeys(operatorKeys);
-        await operatorStore.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
-            setOperatorExist(isExists);
-            if (!isExists) {
-                operatorStore.addNewOperator(true).then(() => {
-                    applicationStore.setIsLoading(false);
-                    history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
-                });
-            } else {
-                applicationStore.setIsLoading(false);
-            }
-        });
+        const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
+        setOperatorExist(isExists);
+        if (!isExists) {
+            const isEligible = await operatorStore.addNewOperator(true);
+            if (isEligible) history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+        }
+        applicationStore.setIsLoading(false);
     };
 
     return (

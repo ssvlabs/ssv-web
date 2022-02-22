@@ -34,6 +34,10 @@ export interface IOperator {
     validatorsCount?: number,
 }
 
+export interface Operators {
+    [page: number]: OperatorFee;
+}
+
 interface OperatorFee {
     ssv: number,
     dollar: number,
@@ -58,7 +62,6 @@ class OperatorStore extends BaseStore {
     @observable operatorsFees: OperatorsFees = {};
     @observable hashedOperators: HashedOperators = {};
     @observable selectedOperators: SelectedOperators = {};
-    @observable operatorsLoaded: boolean = false;
 
     @observable newOperatorReceipt: any = null;
 
@@ -121,7 +124,7 @@ class OperatorStore extends BaseStore {
     async validatorsPerOperatorLimit(): Promise<any> {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const contract: Contract = walletStore.getContract();
+            const contract: Contract = walletStore.getContract;
             contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
@@ -136,7 +139,7 @@ class OperatorStore extends BaseStore {
     async getOperatorValidatorsCount(publicKey: string): Promise<any> {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const contract: Contract = walletStore.getContract();
+            const contract: Contract = walletStore.getContract;
             contract.methods.validatorsPerOperatorCount(publicKey).call().then((response: any) => {
                 resolve(response);
             });
@@ -163,13 +166,11 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     async getOperatorFee(publicKey: string): Promise<any> {
-        return new Promise((resolve) => {
-            if (this.operatorsFees[publicKey]) {
-                resolve(this.operatorsFees[publicKey].ssv);
-            }
-            const walletStore: WalletStore = this.getStore('Wallet');
-            const contract: Contract = walletStore.getContract();
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve) => {
             try {
+                const walletStore: WalletStore = this.getStore('Wallet');
+                const contract: Contract = walletStore.getContract;
                 contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {
                     const ssv = walletStore.web3.utils.fromWei(response);
                     this.operatorsFees[publicKey] = { ssv, dollar: 0 };
@@ -205,7 +206,7 @@ class OperatorStore extends BaseStore {
     async checkIfOperatorExists(publicKey: string, contract?: Contract): Promise<boolean> {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
-            const contractInstance = contract ?? walletStore.getContract();
+            const contractInstance = contract ?? walletStore.getContract;
             const encodeOperatorKey = await walletStore.encodeKey(publicKey);
             this.setOperatorKeys({
                 name: this.newOperatorKeys.name,
@@ -223,13 +224,14 @@ class OperatorStore extends BaseStore {
     /**
      * Add new operator
      * @param getGasEstimation
+     * @param callBack
      */
     @action.bound
     // eslint-disable-next-line no-unused-vars
     async addNewOperator(getGasEstimation: boolean = false, callBack?: (txHash: string) => void) {
         const walletStore: WalletStore = this.getStore('Wallet');
         const gasEstimation: PriceEstimation = new PriceEstimation();
-        const contract: Contract = walletStore.getContract();
+        const contract: Contract = walletStore.getContract;
         const address: string = this.newOperatorKeys.address;
 
         return new Promise((resolve, reject) => {
@@ -351,27 +353,6 @@ class OperatorStore extends BaseStore {
         return exist;
     }
 
-    /**
-     * Automatically select necessary number of operators to reach gap requirements
-     */
-    @action.bound
-    autoSelectOperators() {
-        if (!this.operators.length) {
-            return;
-        }
-        // Deselect already selected once
-        this.unselectAllOperators();
-
-        // Select as many as necessary so the gap would be reached
-        let selectedIndex = 0;
-        while (!this.selectedEnoughOperators) {
-            this.operators[selectedIndex].selected = true;
-            this.operators[selectedIndex].autoSelected = true;
-            selectedIndex += 1;
-        }
-        this.operators = Array.from(this.operators);
-    }
-
     @action.bound
     unselectAllOperators() {
         this.selectedOperators = {};
@@ -381,20 +362,16 @@ class OperatorStore extends BaseStore {
      * Load operators from external source
      */
     @action.bound
-    async loadOperators(forceLoad?: boolean) {
-        if ((this.operators.length || this.loadingOperators) && !forceLoad) {
-            return this.operators;
-        }
-
+    async loadOperators(page: number = 1) {
         this.loadingOperators = true;
-        const operators = await Operator.getInstance().getOperators();
+        const operators = await Operator.getInstance().getOperators(page);
         this.loadingOperators = false;
-        this.operatorsLoaded = true;
         if (process.env.REACT_APP_NEW_STAGE) {
             this.operators = await Promise.all(operators.map(async (operator: any): Promise<any> => {
                 const operatorStore: OperatorStore = this.getStore('Operator');
                 const operatorsAdapted = this.operatorAdapter(operator);
                 operatorsAdapted.fee = await operatorStore.getOperatorFee(operatorsAdapted.pubkey);
+                console.log('2');
                 this.hashedOperators[operator.public_key] = operatorsAdapted;
                 return operatorsAdapted;
             }));
@@ -405,6 +382,7 @@ class OperatorStore extends BaseStore {
                 return adaptedOperator;
             });
         }
+
         return this.operators;
     }
 

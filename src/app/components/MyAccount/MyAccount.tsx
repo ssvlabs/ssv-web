@@ -8,6 +8,7 @@ import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/SSV.store';
 import DataTable from '~app/common/components/DataTable';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+// import NewDataTable from '~app/common/components/NewDataTable';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import Rows from '~app/components/MyAccount/common/componenets/Rows';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
@@ -15,8 +16,8 @@ import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 import { useStyles } from './MyAccount.styles';
 
-const validatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'BALANCE', 'EST. APR', ''];
-const operatorHeaderInit = ['PUBLIC KEY', 'STATUS', 'REVENUE', 'VALIDATORS', ''];
+const validatorHeaderInit = ['Public Key', 'Status', 'Balance', 'Est. APR', ''];
+const operatorHeaderInit = ['Public Key', 'Status', 'Revenue', 'Validators', ''];
 
 const MyAccount = () => {
     const classes = useStyles();
@@ -43,8 +44,8 @@ const MyAccount = () => {
         {
             minWidth: 499,
             maxWidth: 768,
-            operatorHeader: ['PUBLIC KEY', 'REVENUE', 'VALIDATORS', ''],
-            validatorHeaders: ['PUBLIC KEY', 'BALANCE', 'EST. APR', ''],
+            operatorHeader: ['Public Key', 'Revenue', 'Validators', ''],
+            validatorHeaders: ['Public Key', 'Balance', 'Est. APR', ''],
             callBack: () => {
                 setDisplayStatus(false);
                 setDisplayValidators(true);
@@ -53,8 +54,8 @@ const MyAccount = () => {
         {
             minWidth: 0,
             maxWidth: 499,
-            operatorHeader: ['PUBLIC KEY', 'REVENUE'],
-            validatorHeaders: ['PUBLIC KEY', 'BALANCE'],
+            operatorHeader: ['Public Key', 'Revenue'],
+            validatorHeaders: ['Public Key', 'Balance'],
             callBack: () => {
                 setDisplayValidators(false);
             },
@@ -225,20 +226,24 @@ const MyAccount = () => {
           <Grid item className={classes.MyBalanceWrapper}>
             <MyBalance />
           </Grid>
+          {/* <NewDataTable */}
+          {/*  header={'Validators'} */}
+          {/*  columnsHeaders={[<Grid>s</Grid>, 'bla']} */}
+          {/* /> */}
           <Grid container item direction={'column'} className={classes.TablesWrapper}>
             {ssvStore.userOperators.length > 0 && (
             <Grid item className={classes.Table}>
               <DataTable
                 perPage={perPage}
                 title={'Operators'}
-                data={operatorsRows}
-                page={operatorsPage}
+                items={operatorsRows}
                 headers={operatorsHeader}
+                currentPage={operatorsPage}
                 isLoading={loadingOperators}
                 onChangePage={setOperatorsPage}
                 onChangeRowsPerPage={setPerPage}
-                totalCount={ssvStore.userOperators.length}
-                headersPositions={['left', 'left', 'left', 'left']}
+                totalAmountOfItems={ssvStore.userOperators.length}
+                // headersPositions={['left', 'left', 'left', 'left']}
               />
             </Grid>
             )}
@@ -247,14 +252,14 @@ const MyAccount = () => {
               <DataTable
                 perPage={perPage}
                 title={'Validators'}
-                data={validatorsRows}
-                page={validatorsPage}
+                items={validatorsRows}
                 headers={validatorsHeader}
+                currentPage={validatorsPage}
                 isLoading={loadingValidators}
                 onChangePage={setValidatorsPage}
                 onChangeRowsPerPage={setPerPage}
-                totalCount={ssvStore.userValidators.length}
-                headersPositions={['left', 'left', 'left', 'left']}
+                totalAmountOfItems={ssvStore.userValidators.length}
+                // headersPositions={['left', 'left', 'left', 'left']}
               />
             </Grid>
             )}

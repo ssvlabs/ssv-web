@@ -1,5 +1,4 @@
 import { makeStyles } from '@material-ui/core/styles';
-import { defaultFont } from './theme';
 
 export const useStyles = makeStyles((theme) => ({
     mainContainer: {
@@ -120,36 +119,56 @@ export const useStyles = makeStyles((theme) => ({
             padding: 15,
         },
     },
-    tableWithBorder: {
+    TableWithBorder: {
         borderRadius: 6,
         fontSize: 18,
         backgroundColor: theme.colors.squareScreenBackground,
-        '& h3': {
-            fontSize: 20,
-            lineHeight: 1.4,
-            fontWeight: 'bold',
-            paddingLeft: '15px',
-            fontFamily: defaultFont,
-            color: theme.colors.gray40,
-        },
+        // '& h3': {
+        //     fontSize: 20,
+        //     lineHeight: 1.4,
+        //     fontWeight: 'bold',
+        //     paddingLeft: '15px',
+        //     fontFamily: defaultFont,
+        //     color: theme.colors.gray40,
+        // },
         '& > .MuiTableContainer-root': {
             borderRadius: 6,
         },
         '& .MuiTableCell-head': {
-            fontWeight: 'bold',
+            height: 36,
             fontSize: 12,
-            textTransform: 'uppercase',
-            color: '#A1ACBE',
+            fontWeight: 500,
+            lineHeight: 1.62,
+            textAlign: 'left',
+            fontFamily: 'Manrope',
+            color: theme.colors.gray40,
+            textTransform: 'capitalize',
+            padding: '9px 0px 8px 32px',
+            backgroundColor: theme.colors.white,
+        },
+        '& .MuiTableCell-body': {
+            height: 'fit-content',
+            padding: '12px 0 16px 32px',
         },
     },
-    TableCell: {
+    TableHeader: {
+        height: 28,
         fontSize: 20,
-        borderBottom: 'none',
-        textTransform: 'capitalize',
-        lineHeight: '1.62 !important',
-        backgroundColor: 'transparent',
-        fontWeight: '500 !important' as any,
-        color: `${theme.colors.gray40} !important`,
+        lineHeight: 1.4,
+        textAlign: 'left',
+        marginBottom: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Manrope',
+        margin: '32px 32px 0',
+        color: theme.colors.gray40,
+    },
+    TableCell: {
+        // borderBottom: 'none',
+        // textTransform: 'capitalize',
+        // lineHeight: '1.62 !important',
+        // backgroundColor: 'transparent',
+        // fontWeight: '500 !important' as any,
+        // color: `${theme.colors.gray40} !important`,
     },
     Link: {
         display: 'inline-flex',
@@ -159,85 +178,6 @@ export const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         color: `${theme.palette.text.primary}!important`,
         borderColor: `${theme.palette.text.primary}!important`,
-    },
-    overviewSearch: {
-        // '-webkit-box-shadow': 'none!important',
-        // boxShadow: 'none!important',
-        // outlineColor: 'red!important',
-        // border: 'none !important',
-        // outline: 'none !important',
-        // '&.Mui-focused, &:focus-visible': {
-        //   '& > .MuiFormControl-root': {
-        //     borderImageWidth: 0,
-        //     '-webkit-box-shadow': 'none!important',
-        //     boxShadow: 'none!important',
-        //     outlineColor: 'red!important',
-        //     border: 'none !important',
-        //     outline: 'none !important',
-        //     '& > .MuiInputBase-root': {
-        //       '-webkit-box-shadow': 'none!important',
-        //       boxShadow: 'none!important',
-        //       outlineColor: 'red!important',
-        //       borderImageWidth: 0,
-        //       border: 'none !important',
-        //       outline: 'none !important',
-        //     },
-        //   },
-        // },
-        '& > .MuiFormControl-root': {
-            // borderImageWidth: 0,
-            // '& > .MuiInputBase-root.Mui-focused': {
-            //   // border: '1px solid #5B6C84',
-            //   borderImageWidth: 0,
-            //   '-webkit-box-shadow': 'none!important',
-            //   boxShadow: 'none!important',
-            //   outlineColor: 'red!important',
-            //   border: 'none !important',
-            //   outline: 'none !important',
-            // },
-            '& > .MuiInputBase-root': {
-                // '-webkit-box-shadow': 'none!important',
-                // boxShadow: 'none!important',
-                // outlineColor: 'red!important',
-                // outline: 'none!important',
-                border: '1px solid #5B6C84',
-                '-webkit-appearance': 'none',
-                borderRadius: 6,
-                backgroundColor: 'white',
-                color: '#5B6C84',
-                '& > .MuiInputAdornment-root > .MuiButtonBase-root': {
-                    backgroundColor: '#5B6C84',
-                    height: 38,
-                    width: 38,
-                    marginRight: -13,
-                    borderBottomRightRadius: 5,
-                    borderTopRightRadius: 5,
-                },
-                '& > .MuiInputAdornment-root > .MuiButtonBase-root > .MuiIconButton-label': {
-                    color: 'white',
-                },
-            },
-        },
-    },
-    appBarSearch: {
-        display: 'inline-flex',
-        '& > .MuiFormControl-root': {
-            '& > .MuiInputBase-root': {
-                border: '1px solid #5B6C84',
-                color: '#5B6C84',
-                width: 340,
-                display: 'inline-flex',
-                margin: 'auto',
-                marginRight: 10,
-                '& > .MuiInputAdornment-root > .MuiButtonBase-root > .MuiIconButton-label': {
-                    color: 'white',
-                },
-                '& > .MuiInputAdornment-root > .MuiButtonBase-root': {
-                    borderColor: 'white',
-                },
-                '& > .MuiInputBase-input': {},
-            },
-        },
     },
 }));
 

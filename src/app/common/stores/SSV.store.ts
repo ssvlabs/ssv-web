@@ -6,8 +6,6 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 
 class SsvStore extends BaseStore {
-    @observable isAccountLoaded: boolean = false;
-
     // Amount
     @observable ssvBalance: number = 0;
     @observable networkContractBalance: number = 0;
@@ -49,14 +47,6 @@ class SsvStore extends BaseStore {
     }
 
     /**
-     * Check if account data is loading
-     */
-    @computed
-    get accountLoaded() {
-        return this.isAccountLoaded;
-    }
-
-    /**
      * Check if userAllowance has been approved and return boolean corresponding value.
      */
     @computed
@@ -92,10 +82,20 @@ class SsvStore extends BaseStore {
         return this.networkContractBalance / burnRatePerDay - liquidationCollateral ?? 0;
     }
 
+    /**
+     * Init User
+     */
     @action.bound
-    setAccountLoaded = (status: boolean): void => {
-        this.isAccountLoaded = status;
-    };
+    async initUser() {
+        await this.checkAllowance();
+        await this.getNetworkFees();
+        await this.checkIfLiquidated();
+        await this.getAccountBurnRate();
+        await this.getSsvContractBalance();
+        // await this.fetchAccountOperators();
+        // await this.fetchAccountValidators();
+        await this.getNetworkContractBalance();
+    }
 
     @action.bound
     getFeeForYear = (fee: number): number => {
@@ -111,7 +111,7 @@ class SsvStore extends BaseStore {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             // const operatorStore: OperatorStore = this.getStore('Operator');
-            walletStore.getContract().methods.getOperatorsByValidator(publicKey).call().then((operators: any) => {
+            walletStore.getContract.methods.getOperatorsByValidator(publicKey).call().then((operators: any) => {
                 resolve(operators);
             });
         });
@@ -153,7 +153,7 @@ class SsvStore extends BaseStore {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.web3.utils.toWei(amount);
-            walletStore.getContract().methods
+            walletStore.getContract.methods
                 .deposit(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
@@ -174,7 +174,7 @@ class SsvStore extends BaseStore {
     async checkIfLiquidated() {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract().methods
+            walletStore.getContract.methods
                 .liquidatable(this.accountAddress).call()
                 .then((isLiquidated: any) => {
                     this.userLiquidated = isLiquidated;
@@ -192,7 +192,7 @@ class SsvStore extends BaseStore {
     async fetchAccountOperators() {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract().methods
+            walletStore.getContract.methods
                 .getOperatorsByOwnerAddress(this.accountAddress).call()
                 .then((operators: any) => {
                     if (operators.length) {
@@ -215,7 +215,7 @@ class SsvStore extends BaseStore {
     async fetchAccountValidators() {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract().methods
+            walletStore.getContract.methods
                 .getValidatorsByOwnerAddress(this.accountAddress).call()
                 .then((validators: any) => {
                     if (validators.length) {
@@ -243,7 +243,6 @@ class SsvStore extends BaseStore {
         this.accountBurnRate = 0;
         this.userAllowance = false;
         this.userLiquidated = false;
-        // this.isAccountLoaded = false;
         this.liquidationCollateral = 0;
         this.networkContractBalance = 0;
     }
@@ -257,7 +256,7 @@ class SsvStore extends BaseStore {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.web3.utils.toWei(amount);
-            walletStore.getContract().methods.withdraw(ssvAmount).send({ from: this.accountAddress })
+            walletStore.getContract.methods.withdraw(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })
@@ -279,7 +278,7 @@ class SsvStore extends BaseStore {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.web3.utils.toWei(amount.toString());
-            walletStore.getContract().methods.activateValidator(ssvAmount).send({ from: this.accountAddress })
+            walletStore.getContract.methods.activateValidator(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })
@@ -398,7 +397,7 @@ class SsvStore extends BaseStore {
     async getNetworkContractBalance(): Promise<any> {
         return new Promise((resolve, reject) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract()
+            walletStore.getContract
                 .methods
                 .totalBalanceOf(this.accountAddress)
                 .call()
@@ -419,7 +418,7 @@ class SsvStore extends BaseStore {
     @action.bound
     async getNetworkFees() {
         const walletStore: WalletStore = this.getStore('Wallet');
-        const networkContract = walletStore.getContract();
+        const networkContract = walletStore.getContract;
         await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
             // hardcoded should be replace
             this.networkFee = 0.00001755593086049;
@@ -434,7 +433,7 @@ class SsvStore extends BaseStore {
     async getOperatorRevenue(): Promise<any> {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const networkContract = walletStore.getContract();
+            const networkContract = walletStore.getContract;
             networkContract.methods.totalEarningsOf(this.accountAddress).call().then((response: any) => {
                 resolve(walletStore.web3.utils.fromWei(response.toString()));
             });
@@ -448,7 +447,7 @@ class SsvStore extends BaseStore {
     async getAccountBurnRate(): Promise<any> {
         return new Promise((resolve, reject) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract()
+            walletStore.getContract
                 .methods
                 .burnRate(this.accountAddress)
                 .call()

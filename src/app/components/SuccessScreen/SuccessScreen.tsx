@@ -70,7 +70,6 @@ const SuccessScreen = () => {
 
     const redirectTo = async () => {
         if (process.env.REACT_APP_NEW_STAGE) {
-            await operatorStore.loadOperators(true);
             await walletStore.initializeUserInfo();
             history.push(config.routes.MY_ACCOUNT.DASHBOARD);
         } else {

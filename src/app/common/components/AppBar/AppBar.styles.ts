@@ -27,7 +27,10 @@ export const useStyles = makeStyles((theme) => ({
         width: 'fit-content',
     },
     Wrapper: {
-        marginLeft: 'auto',
+        '@media (max-width: 1200px)': {
+            marginLeft: 'auto',
+        },
+        // marginLeft: 'auto',
     },
     Hamburger: {
         width: 24,
@@ -72,10 +75,10 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(4),
         justifyContent: 'flex-start',
         '-webkit-tap-highlight-color': 'transparent',
-        '&:nth-of-type(1)': {
+        '&:nth-of-type(2)': {
             color: theme.colors.primaryBlue,
         },
-        '&:nth-of-type(2)': {
+        '&:nth-of-type(1)': {
             position: !theme.newStage ? 'relative' : '',
             '&:hover': {
                 '&::after': !theme.newStage ? {
@@ -124,10 +127,10 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         marginLeft: theme.spacing(10),
         color: theme.colors.black,
-        '&:nth-of-type(1)': {
+        '&:nth-of-type(2)': {
             color: theme.colors.primaryBlue,
         },
-        '&:nth-of-type(2)': {
+        '&:nth-of-type(1)': {
             // width: 144,
             // marginRight: theme.spacing(5),
             position: !theme.newStage ? 'relative' : '',

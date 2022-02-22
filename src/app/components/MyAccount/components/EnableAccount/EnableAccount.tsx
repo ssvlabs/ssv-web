@@ -39,7 +39,6 @@ const EnableAccount = () => {
     return (
       <div>
         <BorderScreen
-          withConversion
           header={'Enable Account'}
           navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
           navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}

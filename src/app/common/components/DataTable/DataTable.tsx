@@ -7,6 +7,7 @@ import { TableCell } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
+import Typography from '@material-ui/core/Typography';
 import ToolTip from '~app/common/components/ToolTip';
 import TableContainer from '@material-ui/core/TableContainer';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -23,28 +24,27 @@ const TableContainerWrapper = styled.div`
   }`;
 
 type DataTableProps = {
+  items: any[],
+  currentPage: number,
   title?: string,
+  perPage: number,
   headers: string[],
-  headersPositions?: HeaderPosition[],
-  data: any[],
-  totalCount: number,
-  page: number,
   isLoading?: boolean,
+  noDataMessage?: string,
+  hidePagination?: boolean,
+  totalAmountOfItems: number,
+  headersPositions?: HeaderPosition[],
   // eslint-disable-next-line no-unused-vars
   onChangePage?: (page: number) => void,
   // eslint-disable-next-line no-unused-vars
   onChangeRowsPerPage?: (perPage: any) => void,
-  // eslint-disable-next-line no-unused-vars
-  noDataMessage?: string,
-  perPage: number,
-  hidePagination?: boolean,
 };
 
 const skeletons = [0, 1, 2, 3, 4];
 const defaultPerPageOptions = [5, 10, 25, 50, 100];
 
 const DataTable = (props: DataTableProps) => {
-  const { headers, data, totalCount, page, isLoading,
+  const { headers, items, totalAmountOfItems, currentPage, isLoading,
     onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage, onChangeRowsPerPage } = props;
   const classes = useStyles();
 
@@ -64,7 +64,7 @@ const DataTable = (props: DataTableProps) => {
         </StyledRow>
       ));
     }
-    if (!data?.length) {
+    if (!items?.length) {
       return (
         <StyledRow hover role="checkbox" tabIndex={-1}>
           <StyledCell align="center" colSpan={headers?.length || 1}>
@@ -73,7 +73,7 @@ const DataTable = (props: DataTableProps) => {
         </StyledRow>
       );
     }
-    return data.map((row: any[], rowIndex: number) => (
+    return items.map((row: any[], rowIndex: number) => (
       <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
         {row.map((cell: any, cellIndex: number) => (
           <StyledCell
@@ -88,9 +88,9 @@ const DataTable = (props: DataTableProps) => {
   };
 
   return (
-    <div className={classes.tableWithBorder}>
+    <div className={classes.TableWithBorder}>
       <TableContainer>
-        {title ? <h3>{title}</h3> : ''}
+        {title ? <Typography className={classes.TableHeader}>{title}</Typography> : ''}
 
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -102,7 +102,7 @@ const DataTable = (props: DataTableProps) => {
                   align={headersPositions?.length ? headersPositions[headerIndex] : undefined}
                 >
                   {header}
-                  { header === 'STATUS' && <ToolTip text={statusToolTipText} />}
+                  { header === 'Status' && <ToolTip text={statusToolTipText} />}
                 </TableCell>
                 ))}
             </TableRow>
@@ -113,14 +113,14 @@ const DataTable = (props: DataTableProps) => {
         </Table>
 
         {/* eslint-disable-next-line no-constant-condition */}
-        {!hidePagination && false && data?.length ? (
+        {!hidePagination && false && items?.length ? (
           <TableContainerWrapper>
             <TablePagination
-              page={page}
+              page={currentPage}
               component="div"
-              count={totalCount}
               rowsPerPage={perPage}
               colSpan={headers.length}
+              count={totalAmountOfItems}
               ActionsComponent={PaginationActions}
               rowsPerPageOptions={defaultPerPageOptions}
               onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
@@ -130,10 +130,10 @@ const DataTable = (props: DataTableProps) => {
         ) : ''}
         <TableContainerWrapper>
           <PaginationActions
-            page={page}
-            onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
-            count={totalCount}
+            page={currentPage}
             rowsPerPage={perPage}
+            count={totalAmountOfItems}
+            onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
           />
         </TableContainerWrapper>
       </TableContainer>

@@ -12,23 +12,19 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
-// import { roundNumber } from '~lib/utils/numbers';
 
 class ValidatorStore extends BaseStore {
-  public static OPERATORS_SELECTION_GAP = 66.66;
-  private keyStore: EthereumKeyStore | undefined;
-
+  @observable estimationGas: number = 0;
+  @observable newValidatorReceipt: any = null;
+  @observable dollarEstimationGas: number = 0;
   @observable validatorPrivateKey: string = '';
+  @observable addingNewValidator: boolean = false;
   @observable validatorPrivateKeyFile: File | null = null;
   @observable validatorKeyStorePassword: Buffer = Buffer.alloc(0);
-
-  @observable addingNewValidator: boolean = false;
-  @observable newValidatorReceipt: any = null;
-
-  @observable estimationGas: number = 0;
-  @observable dollarEstimationGas: number = 0;
-
   @observable createValidatorPayLoad: (string | string[])[] | undefined = undefined;
+
+  public static OPERATORS_SELECTION_GAP = 66.66;
+  private keyStore: EthereumKeyStore | undefined;
 
   @action.bound
   cleanPrivateData() {
@@ -43,11 +39,6 @@ class ValidatorStore extends BaseStore {
     return this.validatorPrivateKeyFile?.type === 'application/json';
   }
 
-  @computed
-  get password() {
-    return this.validatorKeyStorePassword.toString().trim();
-  }
-
   @action.bound
   setPassword(value: string) {
     this.validatorKeyStorePassword = Buffer.from(value);
@@ -59,17 +50,6 @@ class ValidatorStore extends BaseStore {
     this.validatorPrivateKeyFile = null;
     this.createValidatorPayLoad = undefined;
     this.cleanPrivateData();
-  }
-
-  /**
-   * Return validator public key
-   */
-  @computed
-  get validatorPublicKey() {
-    if (!this.keyStore) {
-      return false;
-    }
-    return this.keyStore.getPublicKey();
   }
 
   /**
@@ -105,7 +85,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
-    const contract: Contract = walletStore.getContract();
+    const contract: Contract = walletStore.getContract;
     const ownerAddress: string = walletStore.accountAddress;
 
     this.newValidatorReceipt = null;
@@ -243,6 +223,22 @@ class ValidatorStore extends BaseStore {
   setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
     this.validatorPrivateKeyFile = validatorPrivateKeyFile;
     this.validatorPrivateKey = '';
+  }
+
+  @computed
+  get password() {
+    return this.validatorKeyStorePassword.toString().trim();
+  }
+
+  /**
+   * Return validator public key
+   */
+  @computed
+  get validatorPublicKey() {
+    if (!this.keyStore) {
+      return false;
+    }
+    return this.keyStore.getPublicKey();
   }
 
   conditionalContractFunction(contract: any, payload: any[]) {

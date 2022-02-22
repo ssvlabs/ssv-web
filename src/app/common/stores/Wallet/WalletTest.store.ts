@@ -19,11 +19,11 @@ class WalletTestStore extends BaseStore implements Wallet {
      * Get smart contract instance
      * @param address
      */
-    @action.bound
-     getContract(address?: string): Contract {
+    @computed
+    get getContract(): Contract {
         if (!this.contract && this.connected) {
             const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
-            this.contract = this.buildContract(address ?? contractAddress);
+            this.contract = this.buildContract(contractAddress);
         }
         // @ts-ignore
         return this.contract;

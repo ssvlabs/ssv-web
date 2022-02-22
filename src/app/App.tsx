@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
+// import { useHistory } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
-import { MobileView, BrowserView } from 'react-device-detect';
+import { BrowserView, MobileView } from 'react-device-detect';
 import Routes from '~app/components/Routes';
 import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
-import SsvStore from '~app/common/stores/SSV.store';
+// import { States } from '~app/common/stores/enums/State';
 import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -25,8 +26,8 @@ declare global {
 const App = () => {
     const stores = useStores();
     const classes = useStyles();
+    // const history = useHistory();
     const GlobalStyle = globalStyle();
-    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
 
@@ -34,10 +35,16 @@ const App = () => {
         walletStore.connectWalletFromCache();
     }, []);
 
+    useEffect(() => {
+        if (walletStore.walletConnected && walletStore.accountLoaded) {
+            // history.push(applicationStore.isStrategyState(States.distribution) ? '/claim' : '/dashboard');
+        }
+    }, [walletStore.walletConnected, walletStore.accountLoaded]);
+
     return (
       <MuiThemeProvider theme={applicationStore.muiTheme}>
         <GlobalStyle />
-        {!ssvStore.accountLoaded && (
+        {!walletStore.accountLoaded && (
           <Grid container className={classes.LoaderWrapper}>
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>

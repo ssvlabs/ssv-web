@@ -101,7 +101,6 @@ const Withdraw = () => {
                 ]}
         />
         <BorderScreen
-          withConversion
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={(

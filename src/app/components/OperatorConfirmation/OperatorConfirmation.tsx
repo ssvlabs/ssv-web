@@ -58,7 +58,6 @@ const OperatorConfirmation = () => {
     return (
       <BorderScreen
         blackHeader
-        withConversion
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
         navigationLink={config.routes.OPERATOR.GENERATE_KEYS}

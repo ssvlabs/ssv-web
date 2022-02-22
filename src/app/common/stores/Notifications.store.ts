@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx';
+import BaseStore from '~app/common/stores/BaseStore';
 
-class NotificationsStore {
+class NotificationsStore extends BaseStore {
   @observable autoHideDuration: number = 0;
   @observable message: string = '';
   @observable showSnackBar = false;

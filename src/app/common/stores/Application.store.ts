@@ -1,7 +1,8 @@
 import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
-import BaseStore from '~app/common/stores/BaseStore';
 import { AppTheme } from '~root/Theme';
+import BaseStore from '~app/common/stores/BaseStore';
+import { States } from '~app/common/stores/enums/State';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 
@@ -11,18 +12,15 @@ import NotificationsStore from '~app/common/stores/Notifications.store';
  */
 
 class ApplicationStore extends BaseStore {
-  @observable isShowingLoading: boolean = false;
-  @observable walletPopUp: boolean = false;
-  @observable walletConnectivity: boolean = false;
-  @observable transactionPendingPopUp: boolean = false;
-
-  private walletStore: WalletStore = this.getStore('Wallet');
-
   // @ts-ignore
   @observable theme: Theme;
   @observable darkMode: boolean = false;
-
   @observable toolBarMenu: boolean = false;
+  @observable walletPopUp: boolean = false;
+  @observable isShowingLoading: boolean = false;
+  @observable walletConnectivity: boolean = false;
+  @observable strategyState: States = States.ssvWeb;
+  @observable transactionPendingPopUp: boolean = false;
 
   constructor() {
     super();
@@ -36,8 +34,20 @@ class ApplicationStore extends BaseStore {
     } else {
       this.switchDarkMode(false);
     }
+    this.initApplicationState();
   }
   
+  @action.bound
+  initApplicationState() {
+    switch (window.location.pathname) {
+      case '/claim':
+        this.strategyState = States.distribution;
+        break;
+      default:
+        break;
+    }
+  }
+
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
@@ -46,7 +56,8 @@ class ApplicationStore extends BaseStore {
   @action.bound
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
-    this.walletStore.onboardSdk.config({ darkMode: isDarkMode });
+    const walletStore: WalletStore = this.getStore('Wallet');
+    walletStore.onboardSdk.config({ darkMode: isDarkMode });
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
@@ -69,6 +80,11 @@ class ApplicationStore extends BaseStore {
   @action.bound
   setWalletConnectivity(show: boolean) {
     this.walletConnectivity = show;
+  }
+
+  @action.bound
+  isStrategyState(state: States) {
+    return this.strategyState === state;
   }
 
   @computed

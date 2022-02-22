@@ -183,7 +183,6 @@ const ImportValidatorConfirmation = () => {
     return (
       <BorderScreen
         blackHeader
-        withConversion
         body={components}
         sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}

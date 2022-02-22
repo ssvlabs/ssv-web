@@ -32,7 +32,6 @@ const Deposit = () => {
     return (
       <div>
         <BorderScreen
-          withConversion
           header={'Deposit'}
           navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
           navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}

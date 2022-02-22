@@ -87,8 +87,12 @@ const GenerateOperatorKeys = () => {
         const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
         setOperatorExist(isExists);
         if (!isExists) {
-            const isEligible = await operatorStore.addNewOperator(true);
-            if (isEligible) history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+            try {
+                await operatorStore.addNewOperator(true);
+                history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+            } catch {
+                console.log('error!!!!!');
+            }
         }
         applicationStore.setIsLoading(false);
     };

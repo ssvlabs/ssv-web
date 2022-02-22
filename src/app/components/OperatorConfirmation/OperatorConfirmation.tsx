@@ -36,22 +36,21 @@ const OperatorConfirmation = () => {
     }, [redirectUrl]);
 
     const onRegisterClick = async () => {
-        applicationStore.setIsLoading(true);
-        setActionButtonText('Waiting for confirmation...');
-        operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
+        try {
+            applicationStore.setIsLoading(true);
+            setActionButtonText('Waiting for confirmation...');
+            await operatorStore.addNewOperator(false, handlePendingTransaction);
             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-        }).catch(() => {
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
+        } catch {
             setActionButtonText('Register Operator');
-        });
+        }
+        applicationStore.setIsLoading(false);
+        applicationStore.showTransactionPendingPopUp(false);
     };
 
     const handlePendingTransaction = (transactionHash: string) => {
-        setActionButtonText('Sending transaction…');
         setTxHash(transactionHash);
+        setActionButtonText('Sending transaction…');
         applicationStore.showTransactionPendingPopUp(true);
     };
 

@@ -26,7 +26,6 @@ import OperatorDetails from '~app/components/RegisterValidatorHome/components/Se
 import ToolTip from '~app/common/components/ToolTip';
 
 const FirstSquare = () => {
-    console.log('<<<<<<<<<<<<<<<<render>>>>>>>>>>>>>>>>');
     let searchTimeout: any;
     const stores = useStores();
     const classes = useStyles();

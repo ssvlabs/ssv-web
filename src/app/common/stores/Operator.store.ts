@@ -253,7 +253,6 @@ class OperatorStore extends BaseStore {
                         resolve(true);
                     }
                 } else {
-                    // @ts-ignore
                     this.conditionalContractFunction(contract, payload)
                         .send({ from: address })
                         .on('receipt', async (receipt: any) => {

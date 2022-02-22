@@ -22,6 +22,7 @@ const Claim = () => {
     const distributionStore: DistributionStore = stores.Distribution;
 
     const claimRewards = async () => {
+        if (distributionStore.userAddress) return;
         const succeed = await distributionStore.claimRewards();
         if (succeed) history.push(config.routes.DISTRIBUTION.SUCCESS);
     };
@@ -57,6 +58,7 @@ const Claim = () => {
               </Grid>
             )}
             <PrimaryButton
+              disable={!distributionStore.userAddress}
               wrapperClass={classes.CtaButton}
               text={distributionStore.userAddress ? 'Claim SSV Reward' : 'Connect a Different Wallet'}
               onClick={claimRewards}

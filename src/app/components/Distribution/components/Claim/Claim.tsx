@@ -22,7 +22,7 @@ const Claim = () => {
     const distributionStore: DistributionStore = stores.Distribution;
 
     const claimRewards = async () => {
-        if (distributionStore.userAddress) return;
+        if (!distributionStore.userAddress) return;
         const succeed = await distributionStore.claimRewards();
         if (succeed) history.push(config.routes.DISTRIBUTION.SUCCESS);
     };

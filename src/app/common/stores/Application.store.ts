@@ -39,12 +39,8 @@ class ApplicationStore extends BaseStore {
   
   @action.bound
   initApplicationState() {
-    switch (window.location.pathname) {
-      case '/claim':
-        this.strategyState = States.distribution;
-        break;
-      default:
-        break;
+    if (window.location.pathname.includes('claim')) {
+      this.strategyState = States.distribution;
     }
   }
 

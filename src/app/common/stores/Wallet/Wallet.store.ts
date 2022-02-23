@@ -127,6 +127,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.setAccountLoaded(false);
       if (applicationStore.isStrategyState(States.distribution)) {
         await this.distributionStore.eligibleForReward();
+        await this.distributionStore.checkIfClaimed();
       } else {
         await this.initializeUserInfo();
       }

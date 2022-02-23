@@ -36,7 +36,7 @@ class ApplicationStore extends BaseStore {
     }
     this.initApplicationState();
   }
-  
+
   @action.bound
   initApplicationState() {
     if (window.location.pathname.includes('claim')) {
@@ -62,7 +62,7 @@ class ApplicationStore extends BaseStore {
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
   }
-  
+
   @action.bound
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
@@ -115,11 +115,6 @@ class ApplicationStore extends BaseStore {
   @computed
   get isDarkMode() {
     return this.darkMode;
-  }
-
-  @computed
-  get shouldDisplayToolBar() {
-    return this.toolBarMenu;
   }
 
   /**

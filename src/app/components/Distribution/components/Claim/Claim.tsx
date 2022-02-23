@@ -22,7 +22,10 @@ const Claim = () => {
     const distributionStore: DistributionStore = stores.Distribution;
 
     const claimRewards = async () => {
-        if (!distributionStore.userAddress) return;
+        if (!distributionStore.userAddress || distributionStore.claimed) {
+            await walletStore.connect();
+            return;
+        }
         const succeed = await distributionStore.claimRewards();
         if (succeed) history.push(config.routes.DISTRIBUTION.SUCCESS);
     };
@@ -42,12 +45,12 @@ const Claim = () => {
               data-testid="new-operator-address"
               value={walletStore.accountAddress}
             />
-            {!distributionStore.userAddress && (
+            {(!distributionStore.userAddress || distributionStore.claimed) && (
             <Grid container item className={classes.ErrorMessage}>
-              Address is not eligible for any rewards
+                {distributionStore.claimed ? 'Rewards already claimed for this address' : 'Address is not eligible for any rewards'}
             </Grid>
             )}
-            {distributionStore.userAddress && (
+            {distributionStore.userAddress && !distributionStore.claimed && (
               <Grid container item className={classes.EligibleWrapper}>
                 <InputLabel title="Eligible Reward" />
                 <Grid container className={classes.Eligible}>
@@ -58,9 +61,8 @@ const Claim = () => {
               </Grid>
             )}
             <PrimaryButton
-              disable={!distributionStore.userAddress}
               wrapperClass={classes.CtaButton}
-              text={distributionStore.userAddress ? 'Claim SSV Reward' : 'Connect a Different Wallet'}
+              text={!distributionStore.claimed && distributionStore.userAddress ? 'Claim SSV Reward' : 'Connect a Different Wallet'}
               onClick={claimRewards}
               dataTestId={'connect-to-wallet-button'}
             />

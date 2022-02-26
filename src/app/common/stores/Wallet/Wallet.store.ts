@@ -7,9 +7,10 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import SsvStore from '~app/common/stores/SSV.store';
 import { States } from '~app/common/stores/enums/State';
-import { wallets } from '~app/common/stores/Wallet/wallets';
+import { wallets } from '~app/common/stores/utilis/wallets';
 import OperatorStore from '~app/common/stores/Operator.store';
-import Wallet from '~app/common/stores/Wallet/abstractWallet';
+// import Wallet from '~app/common/stores/Wallet/abstractWallet';
+import Wallet from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Application.store';
 import DistributionStore from '~app/common/stores/Distribution.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
@@ -127,6 +128,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.setAccountLoaded(false);
       if (applicationStore.isStrategyState(States.distribution)) {
         await this.distributionStore.eligibleForReward();
+        await this.distributionStore.checkIfClaimed();
       } else {
         await this.initializeUserInfo();
       }

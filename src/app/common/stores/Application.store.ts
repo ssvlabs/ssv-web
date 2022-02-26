@@ -4,7 +4,6 @@ import { AppTheme } from '~root/Theme';
 import BaseStore from '~app/common/stores/BaseStore';
 import { States } from '~app/common/stores/enums/State';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import NotificationsStore from '~app/common/stores/Notifications.store';
 
 /**
  * Base store provides singe source of true
@@ -36,15 +35,11 @@ class ApplicationStore extends BaseStore {
     }
     this.initApplicationState();
   }
-  
+
   @action.bound
   initApplicationState() {
-    switch (window.location.pathname) {
-      case '/claim':
-        this.strategyState = States.distribution;
-        break;
-      default:
-        break;
+    if (window.location.pathname.includes('claim')) {
+      this.strategyState = States.distribution;
     }
   }
 
@@ -66,7 +61,7 @@ class ApplicationStore extends BaseStore {
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
   }
-  
+
   @action.bound
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
@@ -119,25 +114,6 @@ class ApplicationStore extends BaseStore {
   @computed
   get isDarkMode() {
     return this.darkMode;
-  }
-
-  @computed
-  get shouldDisplayToolBar() {
-    return this.toolBarMenu;
-  }
-
-  /**
-   * Handle error appeared in any of the stores
-   * @param error
-   * @param args
-   */
-  displayUserError(error: any, ...args: any) {
-    if (error?.message) {
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      notificationsStore.showMessage(error?.message, 'error');
-      console.debug('Error Occurred:', { error, ...args });
-      this.setIsLoading(false);
-    }
   }
 }
 

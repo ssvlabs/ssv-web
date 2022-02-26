@@ -155,11 +155,11 @@ const myAccountScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  condition: () => {
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  },
+  // condition: () => {
+  //   const stores = useStores();
+  //   const ssvStore: SsvStore = stores.SSV;
+  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  // },
 };
 
 const DepositScreen: IUserFlow = {
@@ -168,11 +168,11 @@ const DepositScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  condition: () => {
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  },
+  // condition: () => {
+  //   const stores = useStores();
+  //   const ssvStore: SsvStore = stores.SSV;
+  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  // },
 };
 
 const WithdrawScreen: IUserFlow = {
@@ -181,11 +181,11 @@ const WithdrawScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  condition: () => {
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  },
+  // condition: () => {
+  //   const stores = useStores();
+  //   const ssvStore: SsvStore = stores.SSV;
+  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  // },
 };
 
 const EnableAccountScreen: IUserFlow = {

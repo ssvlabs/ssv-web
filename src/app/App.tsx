@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
-// import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { BrowserView, MobileView } from 'react-device-detect';
@@ -10,7 +10,7 @@ import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
-// import { States } from '~app/common/stores/enums/State';
+import { States } from '~app/common/stores/enums/State';
 import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/Application.store';
@@ -26,7 +26,7 @@ declare global {
 const App = () => {
     const stores = useStores();
     const classes = useStyles();
-    // const history = useHistory();
+    const history = useHistory();
     const GlobalStyle = globalStyle();
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
@@ -37,7 +37,7 @@ const App = () => {
 
     useEffect(() => {
         if (walletStore.walletConnected && walletStore.accountLoaded) {
-            // history.push(applicationStore.isStrategyState(States.distribution) ? '/claim' : '/dashboard');
+            history.push(applicationStore.isStrategyState(States.distribution) ? '/claim' : '/dashboard');
         }
     }, [walletStore.walletConnected, walletStore.accountLoaded]);
 

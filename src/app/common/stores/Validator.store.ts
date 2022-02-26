@@ -7,7 +7,6 @@ import BaseStore from '~app/common/stores/BaseStore';
 import { roundCryptoValueString } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
-import ApplicationStore from '~app/common/stores/Application.store';
 import NotificationsStore from '~app/common/stores/Notifications.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
@@ -58,8 +57,6 @@ class ValidatorStore extends BaseStore {
   @action.bound
   async extractPrivateKey(): Promise<string> {
     return new Promise((resolve, reject) => {
-      const applicationStore: ApplicationStore = this.getStore('Application');
-      applicationStore.setIsLoading(true);
       this.validatorPrivateKeyFile?.text().then(async (string) => {
         try {
           this.keyStore = new EthereumKeyStore(string);

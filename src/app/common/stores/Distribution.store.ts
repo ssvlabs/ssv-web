@@ -14,32 +14,12 @@ import merkleTree from '~app/components/Distribution/assets/merkleTree.json';
 class DistributionStore extends BaseStore {
     @observable txHash: string = '';
     @observable rewardIndex: number = 0;
+    @observable claimed: boolean = false;
     @observable userAddress: string = '';
     @observable rewardAmount: number = 0;
     @observable rewardMerkleProof: string[] = [];
     @observable userWithdrawRewards: boolean = false;
     @observable distributionContractInstance: Contract | null = null;
-
-    /**
-     * Returns instance of Distribution contract
-     */
-    @computed
-    get distributionContract(): Contract {
-        if (!this.distributionContractInstance) {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            this.distributionContractInstance = new walletStore.web3.eth.Contract(
-                config.CONTRACTS.SSV_DISTRIBUTION.ABI,
-                config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
-            );
-        }
-        return <Contract> this.distributionContractInstance;
-    }
-
-    @computed
-    get userRewardAmount() {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        return walletStore.web3.utils.fromWei(String(this.rewardAmount));
-    }
 
     @action.bound
     async claimRewards() {
@@ -79,11 +59,25 @@ class DistributionStore extends BaseStore {
 
     @action.bound
     async cleanState() {
+        this.claimed = false;
         this.rewardIndex = 0;
         this.rewardAmount = 0;
         this.userAddress = '';
         this.rewardMerkleProof = [];
         this.userWithdrawRewards = false;
+    }
+
+    @action.bound
+    async checkIfClaimed() {
+        const contract = this.distributionContract;
+        const merkleTreeAddresses = Object.keys(merkleTree.claims);
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const ownerAddress = merkleTreeAddresses.filter(address => address.toLowerCase() === walletStore.accountAddress.toLowerCase());
+        if (!ownerAddress.length) return;
+        // @ts-ignore
+        const user = merkleTree.claims[ownerAddress[0]];
+        if (!user) return;
+        this.claimed = await contract.methods.isClaimed(user.index).call();
     }
 
     @action.bound
@@ -136,6 +130,27 @@ class DistributionStore extends BaseStore {
             this.getStore('Notifications')
                 .showMessage(`Can not add SSV to wallet: ${error.message}`, 'error');
         });
+    }
+    
+    /**
+     * Returns instance of Distribution contract
+     */
+    @computed
+    get distributionContract(): Contract {
+        if (!this.distributionContractInstance) {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            this.distributionContractInstance = new walletStore.web3.eth.Contract(
+                config.CONTRACTS.SSV_DISTRIBUTION.ABI,
+                config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
+            );
+        }
+        return <Contract> this.distributionContractInstance;
+    }
+
+    @computed
+    get userRewardAmount() {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        return walletStore.web3.utils.fromWei(String(this.rewardAmount));
     }
 }
 

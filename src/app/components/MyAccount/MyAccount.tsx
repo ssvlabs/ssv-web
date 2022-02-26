@@ -25,7 +25,7 @@ const MyAccount = () => {
     const ssvStore: SsvStore = stores.SSV;
     const wrapperRef = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
-    const { redirectUrl, history } = useUserFlow();
+    const { history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
     const [operators, setOperators] = useState([]);
     const [validators, setValidators] = useState([]);
@@ -64,9 +64,9 @@ const MyAccount = () => {
 
     const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
 
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
+    // useEffect(() => {
+    //     redirectUrl && history.push(redirectUrl);
+    // }, [redirectUrl]);
 
     useEffect(() => {
         loadOperators();

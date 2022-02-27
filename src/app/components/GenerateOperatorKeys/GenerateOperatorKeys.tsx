@@ -11,11 +11,11 @@ import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
 import PrimaryButton from '~app/common/components/PrimaryButton';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import OperatorStore, { NewOperator } from '~app/common/stores/Operator.store';
+import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import {
@@ -105,7 +105,7 @@ const GenerateOperatorKeys = () => {
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
               subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
             <Grid container direction={'column'}>
-              <Grid item className={classes.gridItem}>
+              <Grid item className={classes.GridItem}>
                 <InputLabel title="Owner Address" withHint
                   toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
                 <TextInput
@@ -115,9 +115,9 @@ const GenerateOperatorKeys = () => {
                   onBlur={(event: any) => { validateAddressInput(event.target.value, setAddressError); }}
                 />
                 {addressError.shouldDisplay &&
-                <Typography className={classes.textError}>{addressError.errorMessage}</Typography>}
+                <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
               </Grid>
-              <Grid item className={classes.gridItem}>
+              <Grid item className={classes.GridItem}>
                 <InputLabel title="Display Name" />
                 <TextInput
                   data-testid="new-operator-name"
@@ -126,9 +126,9 @@ const GenerateOperatorKeys = () => {
                   onBlur={(event: any) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
                 />
                 {displayNameError.shouldDisplay &&
-                <Typography className={classes.textError}>{displayNameError.errorMessage}</Typography>}
+                <Typography className={classes.TextError}>{displayNameError.errorMessage}</Typography>}
               </Grid>
-              <Grid item className={classes.gridItem}>
+              <Grid item className={classes.GridItem}>
                 <InputLabel
                   title="Operator Public Key"
                   withHint
@@ -147,11 +147,11 @@ const GenerateOperatorKeys = () => {
                   onBlur={(event: any) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
                 />
                 {publicKeyError.shouldDisplay &&
-                <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
+                <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
               </Grid>
               {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
               {process.env.REACT_APP_NEW_STAGE && (
-                <Grid item className={classes.gridItem}>
+                <Grid item className={classes.GridItem}>
                   <InputLabel
                     title="yearly fee per validator"
                     withHint
@@ -167,7 +167,7 @@ const GenerateOperatorKeys = () => {
                     onBlur={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
                   />
                   {feeError.shouldDisplay &&
-                  <Typography className={classes.textError}>{feeError.errorMessage}</Typography>}
+                  <Typography className={classes.TextError}>{feeError.errorMessage}</Typography>}
                 </Grid>
               )}
             </Grid>

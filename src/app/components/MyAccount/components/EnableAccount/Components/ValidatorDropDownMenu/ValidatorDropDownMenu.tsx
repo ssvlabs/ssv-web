@@ -5,11 +5,11 @@ import React, { useEffect, useState } from 'react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from './ValidatorDropDownMenu.styles';
-import OperatorStore from '~app/common/stores/Operator.store';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 

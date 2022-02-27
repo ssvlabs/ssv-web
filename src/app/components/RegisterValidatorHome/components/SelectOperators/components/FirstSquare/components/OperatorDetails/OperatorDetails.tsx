@@ -6,8 +6,8 @@ import OperatorType from '~app/common/components/OperatorType/OperatorType';
 import { useStyles } from './OperatorDetails.styles';
 import { longStringShorten } from '~lib/utils/strings';
 import { sha256 } from 'js-sha256';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { IOperator } from '~app/common/stores/Operator.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 type Props = {
     operator: IOperator

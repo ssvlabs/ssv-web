@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ApplicationStore from '~app/common/stores/Application.store';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import { useStyles } from '~app/components/WalletPopUp/WalletPopUp.styles';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import AddressKeyInput from '~app/common/components/AddressKeyInput/AddressKeyInput';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 const WalletPopUp = () => {
     const stores = useStores();

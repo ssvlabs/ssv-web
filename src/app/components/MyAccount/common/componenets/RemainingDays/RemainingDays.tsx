@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import ProgressBar from '~app/components/MyAccount/common/componenets/ProgressBar';

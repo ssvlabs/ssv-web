@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import NotificationsStore from '~app/common/stores/Notifications.store';
-import { useStyles } from './PrimaryButton.styles';
 import Spinner from '~app/common/components/Spinner';
-import ApplicationStore from '~app/common/stores/Application.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { useStyles } from './PrimaryButton.styles';
 
 type Props = {
     text: string,

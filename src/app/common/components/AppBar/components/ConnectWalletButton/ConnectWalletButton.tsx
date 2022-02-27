@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ApplicationStore from '~app/common/stores/Application.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './ConnectWalletButton.styles';
 
 type ConnectWalletButtonProps = {
@@ -18,7 +18,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     buttonText;
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const classes = useStyles({ walletConnected: walletStore.connected });
+    const classes = useStyles({ walletConnected: true });
     const applicationStore: ApplicationStore = stores.Application;
 
     const onClick = () => {

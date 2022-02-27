@@ -8,12 +8,12 @@ import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
-import ApplicationStore from '~app/common/stores/Application.store';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
 const ImportValidator = () => {

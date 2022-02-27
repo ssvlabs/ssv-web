@@ -2,9 +2,9 @@ import _ from 'underscore';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 export type IUserFlow = {
   name: string,

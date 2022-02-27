@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatDaysToUi, formatNumberToUi } from '~lib/utils/numbers';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import ErrorText from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText';

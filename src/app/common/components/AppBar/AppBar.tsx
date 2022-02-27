@@ -4,8 +4,7 @@ import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { States } from '~app/common/stores/enums/State';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import DarkModeSwitcher from '~app/common/components/AppBar/components/DarkModeSwitcher';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
 import { useStyles } from './AppBar.styles';
@@ -20,9 +19,7 @@ const AppBar = () => {
     const applicationStore: ApplicationStore = stores.Application;
     const [showMobileBar, setMobileBar] = useState(false);
 
-    const isDistribution = applicationStore.isStrategyState(States.distribution);
-
-    const classes = useStyles({ isDistribution });
+    const classes = useStyles({ isDistribution: false });
 
     // Add event listener on screen size change
     useEffect(() => {
@@ -72,8 +69,8 @@ const AppBar = () => {
 
     return (
       <Grid container className={classes.AppBarWrapper}>
-        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { !isDistribution && history.push('/'); }} />
-        {!isDistribution && !showMobileBar && (
+        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push('/'); }} />
+        {!showMobileBar && (
           <Grid item container className={classes.Linkbuttons}>
             <Grid item className={classes.LinkButton}>Join</Grid>
             <Grid item className={classes.LinkButton} onClick={moveToDashboard}>
@@ -91,12 +88,12 @@ const AppBar = () => {
             <DarkModeSwitcher margin />
           </Grid>
         )}
-        {!isDistribution && showMobileBar && (
+        {showMobileBar && (
           <Grid item ref={wrapperRef}>
             <Grid className={classes.Hamburger} onClick={() => { openMenuBar(!menuBar); }} />
           </Grid>
           )}
-        {!isDistribution && menuBar && (
+        {menuBar && (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
             <Grid item className={`${classes.MenuButton}`}>Join</Grid>
             <Grid item className={classes.MenuButton} onClick={moveToDashboard}>My Account</Grid>

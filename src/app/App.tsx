@@ -4,16 +4,15 @@ import { useHistory } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { BrowserView, MobileView } from 'react-device-detect';
-import Routes from '~app/components/Routes';
 import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
-import { States } from '~app/common/stores/enums/State';
-import BarMessage from '~app/common/components/BarMessage';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ApplicationStore from '~app/common/stores/Application.store';
+import Routes from '~app/components/Routes/Routes';
+// import BarMessage from '~app/common/components/BarMessage';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/MobileNotSupported';
 
 declare global {
@@ -36,20 +35,20 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if (walletStore.walletConnected && walletStore.accountLoaded) {
-            history.push(applicationStore.isStrategyState(States.distribution) ? '/claim' : '/dashboard');
+        if (walletStore.accountDataLoaded) {
+            history.push(applicationStore.strategyRedirect);
         }
-    }, [walletStore.walletConnected, walletStore.accountLoaded]);
+    }, [walletStore.accountDataLoaded]);
 
     return (
-      <MuiThemeProvider theme={applicationStore.muiTheme}>
+      <MuiThemeProvider theme={applicationStore.theme}>
         <GlobalStyle />
-        {!walletStore.accountLoaded && (
+        {!walletStore.accountDataLoaded && (
           <Grid container className={classes.LoaderWrapper}>
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
         )}
-        <BarMessage />
+        {/* <BarMessage /> */}
         <AppBar />
         <BrowserView>
           <Routes />

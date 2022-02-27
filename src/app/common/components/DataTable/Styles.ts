@@ -120,9 +120,9 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     TableWithBorder: {
-        borderRadius: 6,
         fontSize: 18,
-        backgroundColor: theme.colors.squareScreenBackground,
+        borderRadius: 16,
+        backgroundColor: theme.colors.white,
         // '& h3': {
         //     fontSize: 20,
         //     lineHeight: 1.4,
@@ -132,7 +132,7 @@ export const useStyles = makeStyles((theme) => ({
         //     color: theme.colors.gray40,
         // },
         '& > .MuiTableContainer-root': {
-            borderRadius: 6,
+            // borderRadius: 16,
         },
         '& .MuiTableCell-head': {
             height: 36,

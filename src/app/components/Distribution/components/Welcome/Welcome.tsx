@@ -2,9 +2,9 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -16,7 +16,6 @@ const Welcome = () => {
     const walletStore: WalletStore = stores.Wallet;
 
     const connectToWallet = () => {
-        console.log('<<<<here>>>>');
         if (walletStore.connected) {
             return applicationStore.showWalletPopUp(true);
         }

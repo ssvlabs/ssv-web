@@ -10,7 +10,7 @@ import TableBody from '@material-ui/core/TableBody';
 import Typography from '@material-ui/core/Typography';
 import ToolTip from '~app/common/components/ToolTip';
 import TableContainer from '@material-ui/core/TableContainer';
-import TablePagination from '@material-ui/core/TablePagination';
+// import TablePagination from '@material-ui/core/TablePagination';
 import StyledRow from '~app/common/components/Table/StyledRow';
 import StyledCell from '~app/common/components/Table/StyledCell';
 import PaginationActions from '~app/common/components/DataTable/components/PaginationActions';
@@ -25,29 +25,31 @@ const TableContainerWrapper = styled.div`
 
 type DataTableProps = {
   items: any[],
-  currentPage: number,
+  type: string,
   title?: string,
   perPage: number,
   headers: string[],
+  totalPages: number,
   isLoading?: boolean,
+  currentPage: number,
   noDataMessage?: string,
   hidePagination?: boolean,
   totalAmountOfItems: number,
   headersPositions?: HeaderPosition[],
   // eslint-disable-next-line no-unused-vars
-  onChangePage?: (page: number) => void,
+  onChangePage?: (type: string, page: number) => void,
   // eslint-disable-next-line no-unused-vars
-  onChangeRowsPerPage?: (perPage: any) => void,
+  onChangeRowsPerPage?: (type: string, perPage: any) => void,
 };
 
 const skeletons = [0, 1, 2, 3, 4];
-const defaultPerPageOptions = [5, 10, 25, 50, 100];
+// const defaultPerPageOptions = [5, 10, 25, 50, 100];
 
 const DataTable = (props: DataTableProps) => {
-  const { headers, items, totalAmountOfItems, currentPage, isLoading,
+  const { headers, type, items, totalAmountOfItems, currentPage, isLoading, totalPages,
     onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage, onChangeRowsPerPage } = props;
   const classes = useStyles();
-
+hidePagination;
   const statusToolTipText = title === 'Operators' ?
       'Monitoring indication whether the operator is performing his network duties for the majority of his validators (per the last 2 epochs).' :
       'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).';
@@ -112,28 +114,30 @@ const DataTable = (props: DataTableProps) => {
           </TableBody>
         </Table>
 
-        {/* eslint-disable-next-line no-constant-condition */}
-        {!hidePagination && false && items?.length ? (
-          <TableContainerWrapper>
-            <TablePagination
-              page={currentPage}
-              component="div"
-              rowsPerPage={perPage}
-              colSpan={headers.length}
-              count={totalAmountOfItems}
-              ActionsComponent={PaginationActions}
-              rowsPerPageOptions={defaultPerPageOptions}
-              onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
-              onChangeRowsPerPage={(event: any) => onChangeRowsPerPage ? onChangeRowsPerPage(event.target.value) : null}
-            />
-          </TableContainerWrapper>
-        ) : ''}
+        {/* /!* eslint-disable-next-line no-constant-condition *!/ */}
+        {/* {!hidePagination && false && items?.length ? ( */}
+        {/*  <TableContainerWrapper> */}
+        {/*    <TablePagination */}
+        {/*      page={currentPage} */}
+        {/*      component="div" */}
+        {/*      rowsPerPage={perPage} */}
+        {/*      colSpan={headers.length} */}
+        {/*      count={totalAmountOfItems} */}
+        {/*      ActionsComponent={PaginationActions} */}
+        {/*      rowsPerPageOptions={defaultPerPageOptions} */}
+        {/*      onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null} */}
+        {/*      onChangeRowsPerPage={(event: any) => onChangeRowsPerPage ? onChangeRowsPerPage(event.target.value) : null} */}
+        {/*    /> */}
+        {/*  </TableContainerWrapper> */}
+        {/* ) : ''} */}
         <TableContainerWrapper>
           <PaginationActions
             page={currentPage}
             rowsPerPage={perPage}
+            totalPages={totalPages}
             count={totalAmountOfItems}
-            onChangePage={(event: any, changedPage: number) => onChangePage ? onChangePage(changedPage) : null}
+            onChangePage={(changedPage: number) => onChangePage ? onChangePage(type, changedPage) : null}
+            onChangeRowsPerPage={(rowNumber: number) => onChangeRowsPerPage ? onChangeRowsPerPage(type, rowNumber) : null}
           />
         </TableContainerWrapper>
       </TableContainer>

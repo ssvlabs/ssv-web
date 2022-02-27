@@ -4,11 +4,11 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import config from '~app/common/config';
-import ValidatorStore from '~app/common/stores/Validator.store';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
-import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import { useStyles } from '~app/components/RegisterValidatorHome/RegisterValidatorHome.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();

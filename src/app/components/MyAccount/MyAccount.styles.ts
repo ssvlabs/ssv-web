@@ -93,14 +93,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: 'rgba(220, 224, 232, 0.25)',
     },
     TablesWrapper: {
-        float: 'right',
         width: 728,
-    },
-    Table: {
-        maxWidth: 728,
         float: 'right',
-        borderRadius: 8,
-        marginBottom: 20,
-        backgroundColor: theme.colors.white,
     },
 }));

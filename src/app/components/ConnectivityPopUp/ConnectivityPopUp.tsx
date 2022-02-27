@@ -8,7 +8,7 @@ import { useStores } from '~app/hooks/useStores';
 import ClearIcon from '@material-ui/icons/Clear';
 import Typography from '@material-ui/core/Typography';
 // import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/ConnectivityPopUp/ConnectivityPopUp.styles';
 
 const ConnectivityPopUp = () => {

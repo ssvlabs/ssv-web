@@ -36,8 +36,7 @@ const App = () => {
 
     useEffect(() => {
         if (walletStore.accountDataLoaded) {
-            history;
-            // history.push(applicationStore.strategyRedirect);
+            history.push(applicationStore.strategyRedirect);
         }
     }, [walletStore.accountDataLoaded]);
     

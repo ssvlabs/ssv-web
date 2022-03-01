@@ -115,7 +115,8 @@ class OperatorStore extends BaseStore {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contract: Contract = walletStore.getContract;
-            contract.methods.validatorsPerOperatorLimit().call().then((response: any) => {
+            const conditionalFunction = process.env.REACT_APP_NEW_STAGE ? contract.methods.getValidatorsPerOperatorLimit : contract.methods.validatorsPerOperatorLimit;
+            conditionalFunction().call().then((response: any) => {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
             }).catch(() => resolve(true));

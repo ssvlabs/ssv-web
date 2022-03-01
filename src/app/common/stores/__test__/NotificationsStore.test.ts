@@ -1,5 +1,5 @@
 import { rootStore } from '~root/stores';
-import NotificationsStore from '~app/common/stores/Notifications.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 describe('Check Notification Store', () => {
     it('Check error message', () => {

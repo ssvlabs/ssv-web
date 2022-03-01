@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import { useStores } from '~app/hooks/useStores';
-import NotificationsStore from '~app/common/stores/Notifications.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './BarMessage.styles';
 
 const Alert = (props: any) => {

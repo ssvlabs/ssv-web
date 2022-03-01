@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStyles } from './Filters.styles';
 
 type Props = {

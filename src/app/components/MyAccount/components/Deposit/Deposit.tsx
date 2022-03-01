@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import { useStyles } from './Deposit.styles';
@@ -32,7 +32,6 @@ const Deposit = () => {
     return (
       <div>
         <BorderScreen
-          withConversion
           header={'Deposit'}
           navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
           navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}

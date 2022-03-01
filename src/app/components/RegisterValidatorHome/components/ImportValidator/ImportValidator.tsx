@@ -1,25 +1,25 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import ApiRequest from '~lib/utils/ApiRequest';
 import { useStores } from '~app/hooks/useStores';
+import useUserFlow from '~app/hooks/useUserFlow';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
-import ApplicationStore from '~app/common/stores/Application.store';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
 const ImportValidator = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const { history } = useUserFlow();
   const inputRef = useRef(null);
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -67,6 +67,7 @@ const ImportValidator = () => {
   };
 
   const submitHandler = () => {
+    applicationStore.setIsLoading(true);
     const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;

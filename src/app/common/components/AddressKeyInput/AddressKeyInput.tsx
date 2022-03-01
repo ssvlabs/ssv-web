@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { getBaseBeaconchaUrl, getEtherScanUrl } from '~lib/utils/beaconcha';
-import NotificationsStore from '~app/common/stores/Notifications.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './AddressKeyInput.styles';
 
 type ValidatorPrivateKeyInputProps = {

@@ -1,13 +1,11 @@
 import React from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useStores } from '~app/hooks/useStores';
-import OperatorType from '~app/common/components/OperatorType/OperatorType';
-import { useStyles } from './OperatorDetails.styles';
 import { longStringShorten } from '~lib/utils/strings';
-import { sha256 } from 'js-sha256';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { IOperator } from '~app/common/stores/Operator.store';
+import OperatorType from '~app/common/components/OperatorType/OperatorType';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { useStyles } from './OperatorDetails.styles';
 
 type Props = {
     operator: IOperator
@@ -15,10 +13,8 @@ type Props = {
 
 const OperatorDetails = (props: Props) => {
     const { operator } = props;
-    const stores = useStores();
-    const walletStore: WalletStore = stores.Wallet;
     const classes = useStyles();
-    const shaPublicKey = `0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`;
+    const shaPublicKey = `0x${longStringShorten(sha256(operator.public_key), 4)}`;
 
     return (
       <Grid container className={classes.Wrapper}>

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import NameAndAddress from '~app/common/components/NameAndAddress';
@@ -39,7 +39,6 @@ const EnableAccount = () => {
     return (
       <div>
         <BorderScreen
-          withConversion
           header={'Enable Account'}
           navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
           navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}

@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { useStores } from '~app/hooks/useStores';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 export const globalStyle = () => {
     const stores = useStores();
@@ -8,9 +8,10 @@ export const globalStyle = () => {
 
     return createGlobalStyle`
       body {
-        background-color: ${applicationStore.isDarkMode ? '#011627' : '#f4f7fa'};
+        height: 100%;
+        background-color: ${applicationStore.isDarkMode ? '#011627' : '#f4f7fa'} !important;
       * {
-        font-family: 'Manrope', sans-serif;
+        font-family: 'Manrope', sans-serif !important;
       },
       .bn-onboard-custom {
         z-index: 999;
@@ -29,7 +30,7 @@ export const globalStyle = () => {
             height: 11.6px;
             width: 11.6px;
             g {
-              fill: ${applicationStore.muiTheme.colors.black};
+              fill: ${applicationStore.theme.colors.black};
             }
           }
         }
@@ -38,16 +39,16 @@ export const globalStyle = () => {
           font-size: 16px;
           font-weight: 500;
           line-height: 1.62;
-          color: ${applicationStore.muiTheme.colors.gray80};
+          color: ${applicationStore.theme.colors.gray80};
         }
 
         .bn-onboard-custom.bn-onboard-modal-select-wallets.svelte-q1527 {
           display: block;
              .bn-onboard-selected-wallet {
-               border: solid 1px ${applicationStore.muiTheme.colors.primaryBlue};
-               background-color: ${applicationStore.muiTheme.colors.tint90};
+               border: solid 1px ${applicationStore.theme.colors.primaryBlue};
+               background-color: ${applicationStore.theme.colors.tint90};
                :hover {
-                 border: solid 1px ${applicationStore.muiTheme.colors.primaryBlue};
+                 border: solid 1px ${applicationStore.theme.colors.primaryBlue};
                }
                .svelte-1799bj2 {
                  i {
@@ -57,7 +58,7 @@ export const globalStyle = () => {
                    font-style: normal;
                    text-decoration: none;
                    text-transform: capitalize;
-                   color: ${applicationStore.muiTheme.colors.gray40};
+                   color: ${applicationStore.theme.colors.gray40};
                  }
                }
              }
@@ -68,8 +69,8 @@ export const globalStyle = () => {
             min-width: 360px;
             margin-bottom: 8px;
             border-radius: 8px;
-            border: solid 1px ${applicationStore.muiTheme.colors.gray20};
-            background-color: ${applicationStore.muiTheme.colors.gray0};
+            border: solid 1px ${applicationStore.theme.colors.gray20};
+            background-color: ${applicationStore.theme.colors.gray0};
 
             :hover {
               border: none;

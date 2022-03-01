@@ -2,9 +2,9 @@ import _ from 'underscore';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 export type IUserFlow = {
   name: string,
@@ -56,6 +56,19 @@ const importValidatorFlow: IUserFlow = {
   },
 };
 
+const selectOperatorsValidatorFlow: IUserFlow = {
+  name: 'Select Operators For Validators',
+  route: routes.VALIDATOR.SELECT_OPERATORS,
+  depends: [
+    importValidatorFlow,
+  ],
+  condition: () => {
+    const stores = useStores();
+    const validatorStore: ValidatorStore = stores.Validator;
+    return !!validatorStore.validatorPrivateKeyFile;
+  },
+};
+
 const importValidatorDecryptFlow: IUserFlow = {
   name: 'Decrypt Keystore File',
   route: routes.VALIDATOR.DECRYPT,
@@ -99,7 +112,7 @@ const slashingWarningFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const operatorStore: OperatorStore = stores.Operator;
-    return !!operatorStore.operators?.length;
+    return !!operatorStore.selectedEnoughOperators;
   },
 };
 
@@ -142,11 +155,11 @@ const myAccountScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  condition: () => {
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  },
+  // condition: () => {
+  //   const stores = useStores();
+  //   const ssvStore: SsvStore = stores.SSV;
+  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  // },
 };
 
 const DepositScreen: IUserFlow = {
@@ -155,11 +168,11 @@ const DepositScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  condition: () => {
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  },
+  // condition: () => {
+  //   const stores = useStores();
+  //   const ssvStore: SsvStore = stores.SSV;
+  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  // },
 };
 
 const WithdrawScreen: IUserFlow = {
@@ -168,11 +181,11 @@ const WithdrawScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  condition: () => {
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  },
+  // condition: () => {
+  //   const stores = useStores();
+  //   const ssvStore: SsvStore = stores.SSV;
+  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  // },
 };
 
 const EnableAccountScreen: IUserFlow = {
@@ -204,6 +217,7 @@ const userFlows: IUserFlow[] = [
   validatorConfirmationFlow,
   importValidatorDecryptFlow,
   validatorSelectOperatorsFlow,
+  selectOperatorsValidatorFlow,
 ];
 
 const dispatchUserFlow = (

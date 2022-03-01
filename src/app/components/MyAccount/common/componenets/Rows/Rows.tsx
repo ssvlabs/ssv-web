@@ -2,20 +2,20 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 import { sha256 } from 'js-sha256';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
+// import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+// import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { useStyles } from './Rows.styles';
 
 type ItemProps = {
-    publicKey: string,
+    apr?: string
+    name?: string,
     status: string,
     revenue?: string,
-    name?: string,
     balance?: string,
-    validators?: string,
-    apr?: string
+    public_key: string,
+    validators_count?: string,
 };
 
 type Props = {
@@ -25,19 +25,22 @@ type Props = {
 };
 
 const Rows = (props: Props) => {
-    const stores = useStores();
+    // const stores = useStores();
     const classes = useStyles();
-    const walletStore: WalletStore = stores.Wallet;
+    // const walletStore: WalletStore = stores.Wallet;
     const { items, shouldDisplayStatus, shouldDisplayValidators } = props;
+    const copyToClipboard = (publicKey: string) => {
+        navigator.clipboard.writeText(publicKey);
+        // notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
 
     const displayPublicKeyAndName = (publicKey: string, name: string | undefined, status: string) => {
-        const isOperator = name;
         return (
           <Grid container item>
-            {isOperator && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
+            {name && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
             <Grid container item className={classes.Name}>
-              <Grid>{`0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
-              <Grid className={classes.copyImage} />
+              <Grid>{name ? longStringShorten(sha256(publicKey), 4) : `0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
+              <Grid className={classes.copyImage} onClick={() => { copyToClipboard(publicKey); }} />
               {!shouldDisplayStatus && displayStatus(status)}
             </Grid>
           </Grid>
@@ -72,7 +75,7 @@ const Rows = (props: Props) => {
     const displayAdditionalButtons = (isValidator: boolean, publicKey: string) => {
         let linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${publicKey}`;
         if (!isValidator) {
-            linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(publicKey))}`;
+            linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${sha256(publicKey)}`;
         }
         return (
           <Grid container item>
@@ -85,21 +88,21 @@ const Rows = (props: Props) => {
 
     return [
     ...items.map((data: ItemProps) => {
-        const { publicKey, name, status, balance, revenue, validators, apr } = data;
+        const { public_key, name, status, balance, revenue, validators_count, apr } = data;
         const response = [
-            displayPublicKeyAndName(publicKey, name, status),
+            displayPublicKeyAndName(public_key, name, status),
         ];
 
         if (shouldDisplayStatus) {
             response.push(displayStatus(status));
         }
-        response.push(displayBalanceOrRevenue(validators === undefined, balance ?? revenue));
+        response.push(displayBalanceOrRevenue(validators_count === undefined, balance ?? revenue));
 
         if (shouldDisplayValidators) {
-            response.push(displayValidatorOrApr(validators ?? `${apr}%`));
+            response.push(displayValidatorOrApr(validators_count ?? `${apr}%`));
         }
         if (response.length > 2) {
-            response.push(displayAdditionalButtons(validators === undefined, publicKey));
+            response.push(displayAdditionalButtons(validators_count === undefined, public_key));
         }
 
         return response;

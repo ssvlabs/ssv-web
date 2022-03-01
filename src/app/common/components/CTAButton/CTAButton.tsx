@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import CheckBox from '~app/common/components/CheckBox';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import { useStyles } from '~app/common/components/CTAButton/CTAButton.styles';
 

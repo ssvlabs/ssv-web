@@ -2,6 +2,7 @@
  * Base store provides singe source of true
  * for keeping all stores instances in one place
  */
+
 class BaseStore {
   protected static stores: Record<string, any> = {};
   protected static instance: BaseStore | null = null;
@@ -19,6 +20,13 @@ class BaseStore {
    */
   capitalize(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  applicationStrategy(): string {
+    if (window.location.pathname.includes('claim')) {
+      return 'Distribution';
+    }
+      return 'SsvWeb';
   }
 
   /**
@@ -40,15 +48,14 @@ class BaseStore {
     const storeNameParts = name.split('/');
     const storeName = storeNameParts[storeNameParts.length - 1];
     if (!BaseStore.stores[storeName]) {
-      let StoreClass: any;
-      if (storeName === 'Wallet') {
-         // @ts-ignore
+        // @ts-ignore
         const isTest: boolean = window?.Cypress;
-         StoreClass = require(`~app/common/stores/Wallet/${isTest ? 'WalletTest' : name}.store`).default;
-      } else {
-         StoreClass = require(`~app/common/stores/${name}.store`).default;
+        try {
+            const StoreClass = require(`~app/common/stores/applications/${this.applicationStrategy()}/${isTest ? 'WalletTest' : name}.store`).default;
+            BaseStore.stores[storeName] = new StoreClass();
+        } catch (e) {
+            // console.log(e);
       }
-      BaseStore.stores[storeName] = new StoreClass();
     }
     return BaseStore.stores[storeName];
   }

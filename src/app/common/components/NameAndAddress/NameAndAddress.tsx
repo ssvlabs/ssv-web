@@ -3,7 +3,7 @@ import { sha256 } from 'js-sha256';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { useStyles } from './NameAndAddress.styles';
 
 type Props = {

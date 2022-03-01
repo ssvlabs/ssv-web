@@ -5,7 +5,7 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
-import ValidatorStore from '~app/common/stores/Validator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';

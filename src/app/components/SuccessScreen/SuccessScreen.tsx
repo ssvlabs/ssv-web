@@ -4,13 +4,14 @@ import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import LinkText from '~app/common/components/LinkText';
+import PrimaryButton from '~app/common/components/PrimaryButton';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import Typography from '@material-ui/core/Typography';
 
 const SuccessScreen = () => {
     const stores = useStores();
@@ -70,7 +71,6 @@ const SuccessScreen = () => {
 
     const redirectTo = async () => {
         if (process.env.REACT_APP_NEW_STAGE) {
-            await operatorStore.loadOperators(true);
             await walletStore.initializeUserInfo();
             history.push(config.routes.MY_ACCOUNT.DASHBOARD);
         } else {
@@ -89,20 +89,55 @@ const SuccessScreen = () => {
         window.open(surveyLink);
         localStorage.setItem('firstCreation', 'true');
     };
+    const linkToExchange = (url: string) => {
+        window.open(url);
+    };
 
     return (
       <>
         <BorderScreen
           blackHeader
+          borderRadius={'16px 16px 0px 0px'}
           sectionClass={classes.SectionWrapper}
           header={translations.SUCCESS.TITLE}
           body={[
             <Grid item container>
               <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>
-              <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />
+              {icon !== 'validator' && <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />}
               <Grid item className={`${classes.Text} ${classes.SubImageText}`}>{monitorText}</Grid>
               <PrimaryButton text={buttonText} onClick={redirectTo} />
             </Grid>,
+          ]}
+        />
+        <BorderScreen
+          borderRadius={'0 0 16px 16px'}
+          wrapperClass={classes.Incentivized}
+          withoutNavigation
+          body={[
+            <Grid container item>
+              <Typography className={classes.IncentivizedTitle}>The &apos;Primus&apos; Incentivized Testnet is Live</Typography>
+              <Typography className={classes.IncentivizedSubTitle}>
+                All eligible validators will receive SSV rewards for participation
+                <LinkText link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmSbouw5SCUmKMQwW7s1bEwhfXJ9LQJHetsruU8MrUTwBE'} text={'(conditions)'} />
+              </Typography>
+              <Typography className={classes.IncentivizedSmallHeader}>Stakers Earn More</Typography>
+              <Typography className={classes.IncentivizedSubTitle}>
+                Validators who also <b>stake SSV</b> tokens are generating <b>over x5 more rewards</b> comparing to non staking validators.
+              </Typography>
+              <Typography className={classes.IncentivizedSmallHeader}>Get SSV tokens</Typography>
+              <Grid container item className={classes.IncentivizedLogos} justify={'space-between'}>
+                <Grid item onClick={() => { linkToExchange('https://coinmarketcap.com/currencies/ssv-network/'); }} />
+                <Grid item onClick={() => { linkToExchange('https://www.binance.com/en/trade/SSV_BTC'); }} />
+                <Grid item onClick={() => { linkToExchange('https://www.gate.io/trade/SSV_USDT'); }} />
+                <Grid item onClick={() => { linkToExchange('https://app.uniswap.org/'); }} />
+                <Grid item onClick={() => { linkToExchange('https://www.mexc.com/exchange/SSV_USDT'); }} />
+                <Grid item onClick={() => { linkToExchange('https://www.xt.com/trade/ssv_usdt/'); }} />
+              </Grid>
+              <Typography className={classes.IncentivizedSubTitle}>
+                To receive staking rewards you must hold SSV tokens with the same wallet address that you used to register your validator to the network.
+              </Typography>
+            </Grid>,
+
           ]}
         />
         {!localStorage.getItem('firstCreation') && (

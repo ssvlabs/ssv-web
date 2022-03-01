@@ -3,27 +3,29 @@ import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState } from 'react';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
-import ValidatorStore from '~app/common/stores/Validator.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import PrimaryButton from '~app/common/components/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import ApplicationStore from '~app/common/stores/Application.store';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
-import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
-import PrimaryButton from '~app/common/components/PrimaryButton';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -59,7 +61,7 @@ const ImportValidatorConfirmation = () => {
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
         /* eslint-disable no-await-in-loop */
         for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].pubkey);
+            const operatorValidators = await operatorStore.getOperatorValidatorsCount(walletStore.encodeKey(selectedOperatorsKeys[i].public_key));
             if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
                 setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
                 setActionButtonText('Run validator');
@@ -102,7 +104,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
+                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.public_key].ssv))}
                             subText={'/year'}
                           />
                         </Grid>
@@ -183,7 +185,6 @@ const ImportValidatorConfirmation = () => {
     return (
       <BorderScreen
         blackHeader
-        withConversion
         body={components}
         sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}

@@ -4,19 +4,19 @@ import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
-import OperatorStore from '~app/common/stores/Operator.store';
 // import Checkbox from '~app/common/components/CheckBox/CheckBox';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import ApplicationStore from '~app/common/stores/Application.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirmation.styles';
 
 const OperatorConfirmation = () => {
@@ -32,33 +32,31 @@ const OperatorConfirmation = () => {
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
     useEffect(() => {
-        // redirectUrl && history.push(redirectUrl);
+        redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     const onRegisterClick = async () => {
-        applicationStore.setIsLoading(true);
-        setActionButtonText('Waiting for confirmation...');
-        operatorStore.addNewOperator(false, handlePendingTransaction).then(() => {
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
+        try {
+            applicationStore.setIsLoading(true);
+            setActionButtonText('Waiting for confirmation...');
+            await operatorStore.addNewOperator(false, handlePendingTransaction);
             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
-        }).catch(() => {
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
+        } catch {
             setActionButtonText('Register Operator');
-        });
+        }
+        applicationStore.setIsLoading(false);
+        applicationStore.showTransactionPendingPopUp(false);
     };
 
     const handlePendingTransaction = (transactionHash: string) => {
-        setActionButtonText('Sending transaction…');
         setTxHash(transactionHash);
+        setActionButtonText('Sending transaction…');
         applicationStore.showTransactionPendingPopUp(true);
     };
 
     return (
       <BorderScreen
         blackHeader
-        withConversion
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
         navigationLink={config.routes.OPERATOR.GENERATE_KEYS}

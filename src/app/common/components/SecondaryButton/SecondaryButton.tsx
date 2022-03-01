@@ -2,8 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import NotificationsStore from '~app/common/stores/Notifications.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './SecondaryButton.styles';
 
 type Props = {

@@ -5,11 +5,11 @@ import React, { useEffect, useState } from 'react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/SSV.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from './ValidatorDropDownMenu.styles';
-import OperatorStore from '~app/common/stores/Operator.store';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+// import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 
@@ -27,7 +27,7 @@ const ValidatorDropDownMenu = (props: Props) => {
     const ssvStore: SsvStore = stores.SSV;
     const { redirectUrl, history } = useUserFlow();
     const walletStore: WalletStore = stores.Wallet;
-    const operatorStore: OperatorStore = stores.Operator;
+    // const operatorStore: OperatorStore = stores.Operator;
     const [dropMenu, setDropMenu] = useState(false);
     const [operators, setOperators]: any = useState([]);
     const [validatorTotalFee, setValidatorTotalFee]: any = useState(0);
@@ -39,13 +39,13 @@ const ValidatorDropDownMenu = (props: Props) => {
     useEffect(() => {
         ssvStore.getValidatorOperators(validatorPublicKey).then((operatorsPublicKeys) => {
             const validatorOperators: any = [];
-            let totalFee: number = 0;
+            const totalFee: number = 0;
             operatorsPublicKeys.forEach((publicKey: string) => {
-                const operator = operatorStore.hashedOperators[publicKey];
+                const operator = publicKey;
                 if (operator) {
-                    if (operator.fee != null) {
-                        totalFee += ssvStore.getFeeForYear(operator.fee);
-                    }
+                    // if (operator.fee != null) {
+                    //     totalFee += ssvStore.getFeeForYear(operator.fee);
+                    // }
                     validatorOperators.push(operator);   
                 }
             });

@@ -6,7 +6,7 @@ import config from '~app/common/config';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import { useStyles } from '~app/components/RegisterOperatorHome/RegisterOperatorHome.styles';
 
 const RegisterOperatorHome = () => {
   const classes = useStyles();

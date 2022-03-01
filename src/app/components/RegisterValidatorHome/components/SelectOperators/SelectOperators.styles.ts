@@ -11,5 +11,6 @@ export const useStyles = makeStyles(() => ({
     },
     SecondSquare: {
         width: 424,
+
     },
 }));

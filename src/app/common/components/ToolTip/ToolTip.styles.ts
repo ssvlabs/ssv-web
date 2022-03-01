@@ -4,12 +4,12 @@ export const useStyles = makeStyles((theme) => ({
     ToolTipWrapper: {
         marginLeft: 4,
         position: 'relative',
+        display: 'inline-block',
     },
     ToolTip: {
         width: 16,
         height: 16,
         verticalAlign: 'middle',
-        // backgroundColor: 'blue',
     },
     toolTipText: {
         top: 15,

@@ -1,12 +1,26 @@
 {
-    "merkleRoot": "0xf88d24dbec4038f353d1543768f62b326a7c30300f923dc8b4b7bff81aff6f1a",
-    "tokenTotal": "0xa688906bd8b00000",
+    "merkleRoot": "0x60c3a2e87ea235c1b8ec941e225ce7af2737004e43dc62a3cb419c5cf1369dac",
+    "tokenTotal": "0x01236efcbcbb340000",
     "claims": {
         "0x45E668aba4b7fc8761331EC3CE77584B7A99A51A": {
             "index": 0,
             "amount": "0x1bc16d674ec80000",
             "proof": [
-                "0x167079a0da9e41e630846cc4f2ec4795d281e288a2319c190bc7e9a0cb79cc16"
+                "0x479897b3d5683df5992af5e0a1eb1e8c1f446155e368ebaaf6fbc0c81e859910",
+                "0x05ca370a53d294e8eae4d3dc4df3ff083dfbf247d486a4b18673fb5571f950f5"
+            ],
+            "flags": {
+                "isSOCKS": false,
+                "isLP": false,
+                "isUser": false
+            }
+        },
+        "0x60119bEf8449A230F15d7C15f1d651bAaF397950": {
+            "index": 1,
+            "amount": "0x4563918244f40000",
+            "proof": [
+                "0x534551c0de59aa7b8a8b5977cf048374b7cf81dcf3b474e329c614d039907b5e",
+                "0xa58ea21a7fb18916a7865eb16111ec7e8ec83f120fdd6699f44389ac30ae0f1c"
             ],
             "flags": {
                 "isSOCKS": false,
@@ -15,10 +29,24 @@
             }
         },
         "0x67Ce5c69260bd819B4e0AD13f4b873074D479811": {
-            "index": 1,
+            "index": 2,
             "amount": "0x8ac7230489e80000",
             "proof": [
-                "0x3e11841bbeae3651b9fda64d6294831cc1fe0ffaf2d70b58a4a445d16c347ae9"
+                "0x9127a26fc3c0fd848ad67927ae52379a63ab48ff25fda5769c268c088bb4ffa5",
+                "0xa58ea21a7fb18916a7865eb16111ec7e8ec83f120fdd6699f44389ac30ae0f1c"
+            ],
+            "flags": {
+                "isSOCKS": false,
+                "isLP": false,
+                "isUser": false
+            }
+        },
+        "0x6c235cbb185A41adD03aFDE88BfF34eEa1D98452": {
+            "index": 3,
+            "amount": "0x3782dace9d900000",
+            "proof": [
+                "0x3e11841bbeae3651b9fda64d6294831cc1fe0ffaf2d70b58a4a445d16c347ae9",
+                "0x05ca370a53d294e8eae4d3dc4df3ff083dfbf247d486a4b18673fb5571f950f5"
             ],
             "flags": {
                 "isSOCKS": false,

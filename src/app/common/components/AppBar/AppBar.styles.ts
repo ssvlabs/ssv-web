@@ -1,6 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import screenSizes from '~lib/utils/screenSizes';
 
+// @ts-ignore
 export const useStyles = makeStyles((theme) => ({
     AppBarWrapper: {
         height: 80,
@@ -25,12 +26,13 @@ export const useStyles = makeStyles((theme) => ({
     Linkbuttons: {
         margin: 'auto',
         width: 'fit-content',
+        display: (props: any) => props.isDistribution ? 'none' : '',
     },
     Wrapper: {
+        marginLeft: (props: any) => props.isDistribution ? 'auto' : '',
         '@media (max-width: 1200px)': {
             marginLeft: 'auto',
         },
-
     },
     Hamburger: {
         width: 24,
@@ -92,7 +94,6 @@ export const useStyles = makeStyles((theme) => ({
                     content: '"Coming Soon..."',
                     backgroundColor: theme.colors.primaryBlue,
                 } : {},
-                color: theme.colors.primaryBlue,
             },
         },
         '&:first-child': {
@@ -101,9 +102,6 @@ export const useStyles = makeStyles((theme) => ({
         '&:last-child': {
             margin: theme.spacing(0, 4, 4, 4),
         },
-    },
-    RemoveBlue: {
-        color: `${theme.colors.gray90} !important`,
     },
     UnderLine: {
         height: 1,

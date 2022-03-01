@@ -1,27 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import DarkModeSwitcher from '~app/common/components/AppBar/components/DarkModeSwitcher';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
 import { useStyles } from './AppBar.styles';
 
 const AppBar = () => {
     const stores = useStores();
-    const classes = useStyles();
     const history = useHistory();
-    const ssvStore: SsvStore = stores.SSV;
     const wrapperRef = useRef(null);
     const buttonsRef = useRef(null);
     const [width, setWidth] = useState(window.innerWidth);
     const [menuBar, openMenuBar] = useState(false);
-    const [showMobileBar, setMobileBar] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
-    const hasAccounts = !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+    const [showMobileBar, setMobileBar] = useState(false);
+    const isDistribution = applicationStore.strategyName === 'distribution';
+
+    const classes = useStyles({ isNewStage: process.env.REACT_APP_NEW_STAGE, isDistribution });
 
     // Add event listener on screen size change
     useEffect(() => {
@@ -64,44 +63,39 @@ const AppBar = () => {
     }
 
     const moveToDashboard = () => {
-        if (hasAccounts) {
+        if (process.env.REACT_APP_NEW_STAGE) {
             history.push('/dashboard');
-        }
-        if (!process.env.REACT_APP_NEW_STAGE) {
-            history.push('/');
         }
     };
 
     return (
       <Grid container className={classes.AppBarWrapper}>
-        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push('/'); }} />
+        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push(applicationStore.strategyName === 'distribution' ? '/claim' : '/'); }} />
         {!showMobileBar && (
           <Grid item container className={classes.Linkbuttons}>
-            <Grid item className={classes.LinkButton} onClick={moveToDashboard}>Join</Grid>
-            <Grid item className={`${classes.LinkButton} ${!hasAccounts ? classes.RemoveBlue : ''}`}>
-              My Account
-            </Grid>
+              {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.LinkButton}>Join</Grid>}
+            <Grid item className={classes.LinkButton} onClick={moveToDashboard}>My Account</Grid>
             <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
             <Grid item className={classes.LinkButton} onClick={openDocs}>Docs</Grid>
           </Grid>
-        )}
+          )}
         <Grid item className={classes.Wrapper}>
           <ConnectWalletButton />
         </Grid>
-        {!showMobileBar && (
+        {(!showMobileBar || isDistribution) && (
           <Grid item>
             <DarkModeSwitcher margin />
           </Grid>
         )}
-        {showMobileBar && (
+        { !isDistribution && showMobileBar && (
           <Grid item ref={wrapperRef}>
             <Grid className={classes.Hamburger} onClick={() => { openMenuBar(!menuBar); }} />
           </Grid>
-        )}
-        {menuBar && (
+          )}
+        {!isDistribution && menuBar && (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
-            <Grid item className={`${classes.MenuButton}`} onClick={moveToDashboard}>Join</Grid>
-            <Grid item className={`${classes.MenuButton} ${!hasAccounts ? classes.RemoveBlue : ''}`}>My Account</Grid>
+            <Grid item className={`${classes.MenuButton}`}>Join</Grid>
+            <Grid item className={classes.MenuButton} onClick={moveToDashboard}>My Account</Grid>
             <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
             <Grid item className={classes.MenuButton} onClick={openDocs}>Docs</Grid>
             <Grid item className={classes.UnderLine} />
@@ -112,7 +106,7 @@ const AppBar = () => {
               </Grid>
             </Grid>
           </Grid>
-        )}
+          )}
       </Grid>
     );
 };

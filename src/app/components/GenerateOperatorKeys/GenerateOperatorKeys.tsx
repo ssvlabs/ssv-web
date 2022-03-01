@@ -4,15 +4,19 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
+import LinkText from '~app/common/components/LinkText';
 // import Checkbox from '~app/common/components/CheckBox';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import PrimaryButton from '~app/common/components/PrimaryButton';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
-import ApplicationStore from '~app/common/stores/Application.store';
-import OperatorStore, { INewOperatorTransaction } from '~app/common/stores/Operator.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import {
     validatePublicKeyInput,
@@ -20,11 +24,6 @@ import {
     validateAddressInput,
     validateFeeInput,
 } from '~lib/utils/validatesInputs';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import LinkText from '~app/common/components/LinkText';
-// import SecondaryButton from '~app/common/components/SecondaryButton/SecondaryButton';
 
 const GenerateOperatorKeys = () => {
     const stores = useStores();
@@ -77,26 +76,25 @@ const GenerateOperatorKeys = () => {
 
     const onRegisterClick = async () => {
         setOperatorExist(false);
-        const operatorKeys: INewOperatorTransaction = {
-            pubKey: inputsData.publicKey,
+        applicationStore.setIsLoading(true);
+        const operatorKeys: NewOperator = {
             name: inputsData.name,
             address: walletStore.accountAddress,
+            pubKey: walletStore.encodeKey(inputsData.publicKey),
             fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
         };
-
-        applicationStore.setIsLoading(true);
         operatorStore.setOperatorKeys(operatorKeys);
-        await operatorStore.checkIfOperatorExists(inputsData.publicKey).then((isExists: boolean) => {
-            setOperatorExist(isExists);
-            if (!isExists) {
-                operatorStore.addNewOperator(true).then(() => {
-                    applicationStore.setIsLoading(false);
-                    history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
-                });
-            } else {
-                applicationStore.setIsLoading(false);
+        const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
+        setOperatorExist(isExists);
+        if (!isExists) {
+            try {
+                await operatorStore.addNewOperator(true);
+                history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+            } catch {
+                console.log('error!!!!!');
             }
-        });
+        }
+        applicationStore.setIsLoading(false);
     };
 
     return (
@@ -107,7 +105,7 @@ const GenerateOperatorKeys = () => {
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
               subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
             <Grid container direction={'column'}>
-              <Grid item className={classes.gridItem}>
+              <Grid item className={classes.GridItem}>
                 <InputLabel title="Owner Address" withHint
                   toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
                 <TextInput
@@ -117,9 +115,9 @@ const GenerateOperatorKeys = () => {
                   onBlur={(event: any) => { validateAddressInput(event.target.value, setAddressError); }}
                 />
                 {addressError.shouldDisplay &&
-                <Typography className={classes.textError}>{addressError.errorMessage}</Typography>}
+                <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
               </Grid>
-              <Grid item className={classes.gridItem}>
+              <Grid item className={classes.GridItem}>
                 <InputLabel title="Display Name" />
                 <TextInput
                   data-testid="new-operator-name"
@@ -128,9 +126,9 @@ const GenerateOperatorKeys = () => {
                   onBlur={(event: any) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
                 />
                 {displayNameError.shouldDisplay &&
-                <Typography className={classes.textError}>{displayNameError.errorMessage}</Typography>}
+                <Typography className={classes.TextError}>{displayNameError.errorMessage}</Typography>}
               </Grid>
-              <Grid item className={classes.gridItem}>
+              <Grid item className={classes.GridItem}>
                 <InputLabel
                   title="Operator Public Key"
                   withHint
@@ -149,11 +147,11 @@ const GenerateOperatorKeys = () => {
                   onBlur={(event: any) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
                 />
                 {publicKeyError.shouldDisplay &&
-                <Typography className={classes.textError}>{publicKeyError.errorMessage}</Typography>}
+                <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
               </Grid>
               {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
               {process.env.REACT_APP_NEW_STAGE && (
-                <Grid item className={classes.gridItem}>
+                <Grid item className={classes.GridItem}>
                   <InputLabel
                     title="yearly fee per validator"
                     withHint
@@ -169,7 +167,7 @@ const GenerateOperatorKeys = () => {
                     onBlur={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
                   />
                   {feeError.shouldDisplay &&
-                  <Typography className={classes.textError}>{feeError.errorMessage}</Typography>}
+                  <Typography className={classes.TextError}>{feeError.errorMessage}</Typography>}
                 </Grid>
               )}
             </Grid>

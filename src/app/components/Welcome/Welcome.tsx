@@ -5,9 +5,9 @@ import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import PrimaryButton from '~app/common/components/PrimaryButton';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import SecondaryButton from '~app/common/components/SecondaryButton';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -16,8 +16,8 @@ const Welcome = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
+    const applicationStore: ApplicationStore = stores.Application;
 
     const connectToWallet = () => {
         if (walletStore.connected) {

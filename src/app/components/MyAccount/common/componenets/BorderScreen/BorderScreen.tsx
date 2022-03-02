@@ -9,6 +9,7 @@ type Props = {
     header?: string,
     wrapperClass?: any,
     sectionClass?: any,
+    borderRadius?: any,
     blackHeader?: boolean,
     navigationLink?: string,
     navigationText?: string,
@@ -18,7 +19,7 @@ type Props = {
 
 const BorderScreen = (props: Props) => {
     const classes = useStyles();
-    const { wrapperClass, navigationLink, withoutNavigation, navigationText, blackHeader, header, withConversion, body, sectionClass, bottom } = props;
+    const { wrapperClass, navigationLink, borderRadius, withoutNavigation, navigationText, blackHeader, header, withConversion, body, sectionClass, bottom } = props;
     const [currency, setCurrency] = useState('SSV');
     const [coins] = useState(['SSV', 'USD']);
 
@@ -33,7 +34,7 @@ const BorderScreen = (props: Props) => {
             {navigationLink && <BackNavigation to={navigationLink} text={navigationText} />}
           </Grid>
           )}
-        <Grid item container className={classes.ScreenWrapper}>
+        <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
           {(header || withConversion) && (
             <Grid container item className={classes.HeaderSection}>
               <Grid item className={`${classes.Header} ${blackHeader ? classes.BlackHeader : ''}`}>
@@ -62,9 +63,9 @@ const BorderScreen = (props: Props) => {
             );
           })}
           {bottom && (
-          <Grid item container className={classes.Section}>
-            {bottom}
-          </Grid>
+            <Grid item container className={classes.Section}>
+              {bottom}
+            </Grid>
           )}
         </Grid>
       </Grid>

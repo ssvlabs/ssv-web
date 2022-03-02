@@ -40,8 +40,7 @@ const App = () => {
             // history.push('/dashboard');
             shouldTriggerLoader(false);
         } else if (ssvStore.accountLoaded) {
-            // history.push('/');
-            history;
+            history.push('/');
             shouldTriggerLoader(false);
         }
     }, [walletStore.walletConnected, ssvStore.accountLoaded]);

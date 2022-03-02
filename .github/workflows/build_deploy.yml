@@ -33,7 +33,7 @@ jobs:
         run: yarn test
 
       - name: Run stage build
-        if: github.ref == 'refs/heads/stage'
+        if: github.ref == 'refs/heads/gm/BLOXSSV-000_version_with_new_success_page'
         run: >
           OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
@@ -75,7 +75,7 @@ jobs:
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
 
       - name: Deploy staging
-        if: github.ref == 'refs/heads/stage'
+        if: github.ref == 'refs/heads/gm/BLOXSSV-000_version_with_new_success_page'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete

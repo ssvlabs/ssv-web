@@ -50,7 +50,7 @@ class Operator {
      * Get operators
      */
     async getOperators() {
-        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/api/operators/graph?perPage=${config.GLOBAL_VARIABLE.OPERATORS_PER_PAGE}`;
+        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/api/v1/operators?validatorsCount=true&perPage=${config.GLOBAL_VARIABLE.OPERATORS_PER_PAGE}`;
         const requestInfo: RequestData = {
             url: operatorsEndpointUrl,
             method: 'GET',
@@ -64,7 +64,7 @@ class Operator {
         const pages = response?.pagination?.pages;
         // eslint-disable-next-line no-plusplus
         for (let page = 0; page < pages - 1; page++) {
-            requestInfo.url += `&page=${page + 2}`;
+            requestInfo.url = `${operatorsEndpointUrl}&page=${page + 2}`;
             // eslint-disable-next-line no-await-in-loop
             const res: any = await new ApiRequest(requestInfo).sendRequest();
             operators.push(...res.operators);

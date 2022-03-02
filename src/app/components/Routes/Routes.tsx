@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
 import Welcome from '~app/components/Welcome';
 import MyAccount from '~app/components/MyAccount';
@@ -39,6 +39,7 @@ const Routes = () => {
               <Route exact path={config.routes.MY_ACCOUNT.ENABLE_ACCOUNT}>
                 <EnableAccount />
               </Route>
+              <Redirect to="/" />
             </Switch>
           </Route>
           <Route exact path={config.routes.HOME}>
@@ -58,6 +59,7 @@ const Routes = () => {
               <Route exact path={config.routes.OPERATOR.SUCCESS_PAGE}>
                 <SuccessScreen />
               </Route>
+              <Redirect to="/" />
             </Switch>
           </Route>
 
@@ -90,6 +92,7 @@ const Routes = () => {
               <Route exact path={config.routes.VALIDATOR.SUCCESS_PAGE}>
                 <SuccessScreen />
               </Route>
+              <Redirect to="/" />
             </Switch>
           </Route>
         </Layout>

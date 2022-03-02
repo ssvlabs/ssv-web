@@ -37,10 +37,11 @@ const App = () => {
     useEffect(() => {
         if (!triggerLoader) shouldTriggerLoader(true);
         if (walletStore.walletConnected && ssvStore.accountLoaded && (!!ssvStore.userOperators.length || !!ssvStore.userValidators.length)) {
-            history.push('/dashboard');
+            // history.push('/dashboard');
             shouldTriggerLoader(false);
         } else if (ssvStore.accountLoaded) {
-            history.push('/');
+            // history.push('/');
+            history;
             shouldTriggerLoader(false);
         }
     }, [walletStore.walletConnected, ssvStore.accountLoaded]);

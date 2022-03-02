@@ -21,7 +21,7 @@ const SuccessScreen = () => {
     const validatorStore: ValidatorStore = stores.Validator;
 
     useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
+        // redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     let icon: string = '';

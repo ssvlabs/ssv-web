@@ -16,9 +16,8 @@ class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
   @observable newValidatorReceipt: any = null;
   @observable dollarEstimationGas: number = 0;
-  @observable validatorPrivateKey: string = '';
+  @observable keyStoreFile: File | null = null;
   @observable addingNewValidator: boolean = false;
-  @observable validatorPrivateKeyFile: File | null = null;
   @observable validatorKeyStorePassword: Buffer = Buffer.alloc(0);
   @observable createValidatorPayLoad: (string | string[])[] | undefined = undefined;
 
@@ -35,7 +34,7 @@ class ValidatorStore extends BaseStore {
 
   @action.bound
   isJsonFile(): boolean {
-    return this.validatorPrivateKeyFile?.type === 'application/json';
+    return this.keyStoreFile?.type === 'application/json';
   }
 
   @action.bound
@@ -45,30 +44,46 @@ class ValidatorStore extends BaseStore {
 
   @action.bound
   clearValidatorData() {
-    this.validatorPrivateKey = '';
-    this.validatorPrivateKeyFile = null;
+    this.keyStoreFile = null;
     this.createValidatorPayLoad = undefined;
     this.cleanPrivateData();
+  }
+
+  @action.bound
+  async extractKeyStoreData(): Promise<void> {
+    const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
+    const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
+    ethereumKeyStore;
   }
 
   /**
    * Extract validator private key from keystore file
    */
   @action.bound
-  async extractPrivateKey(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.validatorPrivateKeyFile?.text().then(async (string) => {
-        try {
-          this.keyStore = new EthereumKeyStore(string);
-          const privateKey = await this.keyStore.getPrivateKey(this.password);
-          this.setValidatorPrivateKey(privateKey);
-          resolve(privateKey);
-        } catch (error) {
-          this.setValidatorPrivateKey('');
-          reject(error.message);
-        }
-      });
-    });
+  async keyStorePrivateKey(): Promise<string> {
+    try {
+      const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
+      if (!fileTextPlain) return '';
+      const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
+      return await ethereumKeyStore.getPrivateKey(this.password);
+    } catch (e: any) {
+      return e.message;
+    }
+  }
+
+  /**
+   * Extract validator private key from keystore file
+   */
+  @action.bound
+  async extractPublicKey(): Promise<string> {
+    try {
+      const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
+      if (!fileTextPlain) return '';
+      const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
+      return ethereumKeyStore.getPublicKey();
+Z; } catch (e: any) {
+      return e.message;
+    }
   }
 
   /**
@@ -161,7 +176,8 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const threshold: Threshold = new Threshold();
-    const thresholdResult: ISharesKeyPairs = await threshold.create(this.validatorPrivateKey);
+    const privateKey = await this.keyStorePrivateKey();
+    const thresholdResult: ISharesKeyPairs = await threshold.create(privateKey);
     let totalAmountOfSsv = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
       const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
@@ -204,22 +220,12 @@ class ValidatorStore extends BaseStore {
   }
 
   /**
-   * Set validator private key
-   * @param validatorPrivateKey
-   */
-  @action.bound
-  setValidatorPrivateKey(validatorPrivateKey: string) {
-    this.validatorPrivateKey = validatorPrivateKey;
-  }
-
-  /**
    * Set keystore file
-   * @param validatorPrivateKeyFile
+   * @param keyStore
    */
   @action.bound
-  setValidatorPrivateKeyFile(validatorPrivateKeyFile: any) {
-    this.validatorPrivateKeyFile = validatorPrivateKeyFile;
-    this.validatorPrivateKey = '';
+  setKeyStore(keyStore: any) {
+    this.keyStoreFile = keyStore;
   }
 
   @computed

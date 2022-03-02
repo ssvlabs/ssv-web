@@ -2,7 +2,7 @@ import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
 import Table from '@material-ui/core/Table';
-import { Skeleton } from '@material-ui/lab';
+// import { Skeleton } from '@material-ui/lab';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,7 +21,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledRow';
+// import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledRow';
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
@@ -47,7 +47,7 @@ const FirstSquare = () => {
         { type: 'validators_count', displayName: 'Validators' },
         { type: '', displayName: '' },
     ];
-    let skeletons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    // const skeletons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     if (process.env.REACT_APP_NEW_STAGE) {
         headers = [
@@ -57,20 +57,21 @@ const FirstSquare = () => {
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];
-        skeletons = [0, 1, 2, 3, 4, 5, 6];
+        // skeletons = [0, 1, 2, 3, 4, 5, 6];
     }
 
     const getOperators = (page: number) => {
         if (page > operatorsPagination.pages) return;
-        setLoading(true);
+        const ordering: string = `type${sortBy || sortOrder ? `,${sortBy}:${sortOrder}` : ''}`;
         const payload = {
             page,
+            ordering,
             perPage: 10,
             type: filterBy,
             search: searchInput,
             validatorsCount: true,
-            ordering: sortBy || sortOrder ? `${sortBy}:${sortOrder}` : '',
         };
+        setLoading(true);
 
         Operator.getInstance().getOperators(payload).then((response: any) => {
             if (response.pagination.page > 1) {
@@ -80,7 +81,7 @@ const FirstSquare = () => {
             }
 
             setOperatorsPagination(response.pagination);
-            if (page === 1 && scrollRef.current) {
+            if (response.pagination.page === 1 && scrollRef.current) {
                 scrollRef.current.scrollTo(0, 0);
             }
             setLoading(false);
@@ -125,19 +126,20 @@ const FirstSquare = () => {
     };
 
     const dataRows = () => {
-        if (loading) {
-            return skeletons.map((rowIndex: number) => (
-              <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
-                {[0, 1, 2, 3].map((index: number) => (
-                  <StyledCell style={{ padding: '10px 2px 10px 2px' }} key={`cell-${index}`}>
-                    <Skeleton />
-                  </StyledCell>
-                ))}
-              </StyledRow>
-            ));
-        }
+        // if (loading) {
+        //     return skeletons.map((rowIndex: number) => (
+        //       <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
+        //         {[0, 1, 2, 3].map((index: number) => (
+        //           <StyledCell style={{ padding: '10px 2px 10px 2px' }} key={`cell-${index}`}>
+        //             <Skeleton />
+        //           </StyledCell>
+        //         ))}
+        //       </StyledRow>
+        //     ));
+        // }
+        // if (loading) return [];
 
-        if (operatorsData.length === 0) {
+        if (operatorsData.length === 0 && !loading) {
             return (
               <TableRow hover>
                 <StyledCell className={classes.NoRecordsWrapper}>
@@ -199,7 +201,7 @@ const FirstSquare = () => {
     const updateValue = _.debounce((e: any) => {
         const element = e.target;
         if (loading) return;
-        if (element.scrollTop + element.offsetHeight > element.scrollHeight - 100) {
+        if (element.scrollTop + element.offsetHeight > element.scrollHeight - 100 && operatorsPagination.page <= operatorsPagination.pages) {
             const newPagination = Object.create(operatorsPagination);
             newPagination.page += 1;
             console.log(newPagination);

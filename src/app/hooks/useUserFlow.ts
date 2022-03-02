@@ -52,7 +52,7 @@ const importValidatorFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const validatorStore: ValidatorStore = stores.Validator;
-    return !!validatorStore.validatorPrivateKeyFile;
+    return !!validatorStore.keyStoreFile;
   },
 };
 
@@ -65,7 +65,7 @@ const selectOperatorsValidatorFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const validatorStore: ValidatorStore = stores.Validator;
-    return !!validatorStore.validatorPrivateKeyFile;
+    return !!validatorStore.keyStoreFile;
   },
 };
 
@@ -96,7 +96,7 @@ const validatorSelectOperatorsFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const validatorStore: ValidatorStore = stores.Validator;
-    return !!(validatorStore.validatorPrivateKey && validatorStore.validatorPrivateKeyFile);
+    return !!(validatorStore.validatorPrivateKey && validatorStore.keyStoreFile);
   },
   depends: [
     validatorsHomeFlow,

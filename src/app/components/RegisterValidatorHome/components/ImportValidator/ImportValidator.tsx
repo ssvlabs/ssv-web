@@ -22,6 +22,7 @@ const ImportValidator = () => {
   const { history } = useUserFlow();
   const inputRef = useRef(null);
   const operatorStore: OperatorStore = stores.Operator;
+  const [password, setPassword] = useState('');
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
@@ -55,33 +56,32 @@ const ImportValidator = () => {
   };
 
   const fileHandler = (files: any) => {
-    if (files.length === 1) {
       const uploadedFile = files[0];
-      validatorStore.setValidatorPrivateKeyFile(uploadedFile);
-    }
+      validatorStore.setKeyStore(uploadedFile);
   };
 
-  const inputHandler = (e: any) => {
-    setErrorMessage('');
-    validatorStore.setPassword(e.target.value);
-  };
+  const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
 
-  const submitHandler = () => {
-    applicationStore.setIsLoading(true);
-    const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
-    validatorStore.extractPrivateKey().then(() => {
+  const submitHandler = async () => {
+    try {
+      applicationStore.setIsLoading(true);
+      await validatorStore.extractKeyStoreData(password);
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
-      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
-        const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
-        if (response.data !== null && conditionalDataExtraction?.valid_signature) {
-          operatorStore.unselectAllOperators();
-          validatorSelectionPage();
-        } else {
-          history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
-        }
-        applicationStore.setIsLoading(false);
-      });
-    }).catch((error: string) => {
+      const response: any = await new ApiRequest({
+        url: beaconChaValidatorUrl,
+        method: 'GET',
+        errorCallback: validatorSelectionPage,
+      }).sendRequest();
+      console.log(beaconChaValidatorUrl);
+      const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
+      if (response.data !== null && conditionalDataExtraction?.valid_signature) {
+        operatorStore.unselectAllOperators();
+        validatorSelectionPage();
+      } else {
+        history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+      }
+      applicationStore.setIsLoading(false);
+    } catch (error: any) {
       console.log(error);
       applicationStore.setIsLoading(false);
       if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
@@ -89,11 +89,11 @@ const ImportValidator = () => {
       } else {
         setErrorMessage(error);
       }
-    });
+    }
   };
 
   const removeFile = () => {
-    validatorStore.setValidatorPrivateKeyFile(null);
+    validatorStore.setKeyStore(null);
   };
 
   const renderFileImage = () => {
@@ -101,14 +101,14 @@ const ImportValidator = () => {
     if (validatorStore.isJsonFile()) {
       fileClass += ` ${classes.Success}`;
     }
-    if (!validatorStore.isJsonFile() && validatorStore.validatorPrivateKeyFile) {
+    if (!validatorStore.isJsonFile() && validatorStore.keyStoreFile) {
       fileClass += ` ${classes.Fail}`;
     }
     return <Grid item className={fileClass} />;
   };
 
   const renderFileText = () => {
-    if (!validatorStore.validatorPrivateKeyFile) {
+    if (!validatorStore.keyStoreFile) {
       return (
         <Grid item xs={12} className={classes.FileText}>
           Drag and drop files or <Grid className={classes.Browse}>browse</Grid>
@@ -118,7 +118,7 @@ const ImportValidator = () => {
     if (validatorStore.isJsonFile()) {
       return (
         <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
-          {validatorStore.validatorPrivateKeyFile.name}
+          {validatorStore.keyStoreFile.name}
           <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
         </Grid>
       );
@@ -149,12 +149,12 @@ const ImportValidator = () => {
             <Grid container item xs={12}>
               <InputLabel title="Keystore Password" />
               <Grid item xs={12} className={classes.ItemWrapper}>
-                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={inputHandler} />
+                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={(e: any) => setPassword(e.target.value.trim())} />
               </Grid>
               <Grid item xs={12} className={classes.ErrorWrapper}>
                 {errorMessage && <MessageDiv text={translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD} />}
               </Grid>
-              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password || !!errorMessage} />
+              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !password || !!errorMessage} />
             </Grid>
           </Grid>,
         ]}

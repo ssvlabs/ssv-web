@@ -17,36 +17,15 @@ class ValidatorStore extends BaseStore {
   @observable newValidatorReceipt: any = null;
   @observable dollarEstimationGas: number = 0;
   @observable keyStoreFile: File | null = null;
-  @observable addingNewValidator: boolean = false;
-  @observable validatorKeyStorePassword: Buffer = Buffer.alloc(0);
   @observable createValidatorPayLoad: (string | string[])[] | undefined = undefined;
 
   public static OPERATORS_SELECTION_GAP = 66.66;
   private keyStore: EthereumKeyStore | undefined;
 
   @action.bound
-  cleanPrivateData() {
-    for (let i = 0; i < this.validatorKeyStorePassword.length; i += 1) {
-      this.validatorKeyStorePassword[i] = parseInt(String(Math.ceil(Math.random() * 50)), 16);
-    }
-    this.validatorKeyStorePassword = Buffer.from('');
-  }
-
-  @action.bound
-  isJsonFile(): boolean {
-    return this.keyStoreFile?.type === 'application/json';
-  }
-
-  @action.bound
-  setPassword(value: string) {
-    this.validatorKeyStorePassword = Buffer.from(value);
-  }
-
-  @action.bound
   clearValidatorData() {
     this.keyStoreFile = null;
     this.createValidatorPayLoad = undefined;
-    this.cleanPrivateData();
   }
 
   @action.bound
@@ -65,7 +44,7 @@ class ValidatorStore extends BaseStore {
       const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
       if (!fileTextPlain) return '';
       const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
-      return await ethereumKeyStore.getPrivateKey(this.password);
+      return await ethereumKeyStore.getPrivateKey();
     } catch (e: any) {
       return e.message;
     }
@@ -81,7 +60,7 @@ class ValidatorStore extends BaseStore {
       if (!fileTextPlain) return '';
       const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
       return ethereumKeyStore.getPublicKey();
-Z; } catch (e: any) {
+    } catch (e: any) {
       return e.message;
     }
   }
@@ -101,7 +80,6 @@ Z; } catch (e: any) {
     const ownerAddress: string = walletStore.accountAddress;
 
     this.newValidatorReceipt = null;
-    this.addingNewValidator = true;
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
@@ -114,7 +92,6 @@ Z; } catch (e: any) {
           this.conditionalContractFunction(contract, payload)
               .estimateGas({ from: ownerAddress })
               .then((gasAmount: any) => {
-                this.addingNewValidator = true;
                 this.estimationGas = gasAmount * 0.000000001;
                 if (config.FEATURE.DOLLAR_CALCULATION) {
                   gasEstimation
@@ -152,12 +129,10 @@ Z; } catch (e: any) {
                 callBack && callBack(txHash);
               })
               .on('error', (error: any) => {
-                this.addingNewValidator = false;
                 console.debug('Contract Error', error);
                 reject(error);
               })
               .catch((error: any) => {
-                this.addingNewValidator = false;
                 if (error) {
                   notificationsStore.showMessage(error.message, 'error');
                   reject(error);
@@ -228,11 +203,6 @@ Z; } catch (e: any) {
     this.keyStoreFile = keyStore;
   }
 
-  @computed
-  get password() {
-    return this.validatorKeyStorePassword.toString().trim();
-  }
-
   /**
    * Return validator public key
    */
@@ -242,6 +212,11 @@ Z; } catch (e: any) {
       return false;
     }
     return this.keyStore.getPublicKey();
+  }
+
+  @computed
+  get isJsonFile(): boolean {
+    return this.keyStoreFile?.type === 'application/json';
   }
 
   conditionalContractFunction(contract: any, payload: any[]) {

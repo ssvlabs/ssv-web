@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ApiRequest from '~lib/utils/ApiRequest';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -26,10 +26,6 @@ const ImportValidator = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    validatorStore.setPassword('');
-  }, []);
 
   const handleClick = () => {
     // @ts-ignore
@@ -65,7 +61,7 @@ const ImportValidator = () => {
   const submitHandler = async () => {
     try {
       applicationStore.setIsLoading(true);
-      await validatorStore.extractKeyStoreData(password);
+      await validatorStore.extractKeyStoreData();
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       const response: any = await new ApiRequest({
         url: beaconChaValidatorUrl,
@@ -98,10 +94,10 @@ const ImportValidator = () => {
 
   const renderFileImage = () => {
     let fileClass: any = classes.FileImage;
-    if (validatorStore.isJsonFile()) {
+    if (validatorStore.isJsonFile) {
       fileClass += ` ${classes.Success}`;
     }
-    if (!validatorStore.isJsonFile() && validatorStore.keyStoreFile) {
+    if (!validatorStore.isJsonFile && validatorStore.keyStoreFile) {
       fileClass += ` ${classes.Fail}`;
     }
     return <Grid item className={fileClass} />;
@@ -115,7 +111,7 @@ const ImportValidator = () => {
         </Grid>
       );
     }
-    if (validatorStore.isJsonFile()) {
+    if (validatorStore.isJsonFile) {
       return (
         <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
           {validatorStore.keyStoreFile.name}
@@ -123,7 +119,7 @@ const ImportValidator = () => {
         </Grid>
       );
     }
-    if (!validatorStore.isJsonFile()) {
+    if (!validatorStore.isJsonFile) {
       return (
         <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
           Invalid file format - only .json files are supported
@@ -149,12 +145,12 @@ const ImportValidator = () => {
             <Grid container item xs={12}>
               <InputLabel title="Keystore Password" />
               <Grid item xs={12} className={classes.ItemWrapper}>
-                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={(e: any) => setPassword(e.target.value.trim())} />
+                <TextInput withLock disable={!validatorStore.isJsonFile} onChange={(e: any) => setPassword(e.target.value.trim())} />
               </Grid>
               <Grid item xs={12} className={classes.ErrorWrapper}>
                 {errorMessage && <MessageDiv text={translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD} />}
               </Grid>
-              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !password || !!errorMessage} />
+              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile || !password || !!errorMessage} />
             </Grid>
           </Grid>,
         ]}

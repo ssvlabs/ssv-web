@@ -78,7 +78,8 @@ const importValidatorDecryptFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const validatorStore: ValidatorStore = stores.Validator;
-    return !!validatorStore.validatorPrivateKey;
+    validatorStore;
+    return true; //! !validatorStore.validatorPrivateKey;
   },
 };
 
@@ -96,7 +97,8 @@ const validatorSelectOperatorsFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const validatorStore: ValidatorStore = stores.Validator;
-    return !!(validatorStore.validatorPrivateKey && validatorStore.keyStoreFile);
+    validatorStore;
+    return true; //! !(validatorStore.validatorPrivateKey && validatorStore.keyStoreFile);
   },
   depends: [
     validatorsHomeFlow,
@@ -125,9 +127,10 @@ const validatorConfirmationFlow: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const validatorStore: ValidatorStore = stores.Validator;
-    if (!validatorStore.validatorPrivateKey) {
-      return false;
-    }
+    validatorStore;
+    // if (!validatorStore.validatorPrivateKey) {
+    //   return false;
+    // }
     return slashingWarningFlow.condition ? slashingWarningFlow.condition() : true;
   },
 };

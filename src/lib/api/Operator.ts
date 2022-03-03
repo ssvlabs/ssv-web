@@ -41,7 +41,7 @@ class Operator {
         };
         params = new URLSearchParams(params);
         return new ApiRequest({
-            url: `${this.baseUrl}/api/search/?${params.toString()}`,
+            url: `${this.baseUrl}/api/v1/search/?${params.toString()}`,
             method: 'GET',
         }).sendRequest();
     }

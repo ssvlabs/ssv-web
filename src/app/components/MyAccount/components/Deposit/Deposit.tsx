@@ -21,7 +21,8 @@ const Deposit = () => {
     const [inputValue, setInputValue] = useState(0.0);
 
     useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
+        history;
+        // redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     const depositSsv = async () => {

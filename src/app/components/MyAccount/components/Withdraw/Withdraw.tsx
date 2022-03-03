@@ -24,7 +24,8 @@ const Withdraw = () => {
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
     useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
+        history;
+        // redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     useEffect(() => {

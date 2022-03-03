@@ -41,10 +41,10 @@ const MyAccount = () => {
               </span>
             </Grid>
             {liquidated && (
-            <Grid item className={classes.Liquidated}>
-              Liquidated
-            </Grid>
-                    )}
+              <Grid item className={classes.Liquidated}>
+                Liquidated
+              </Grid>
+            )}
           </Grid>
           <Grid item xs={6}>
             <Grid ref={wrapperRef} className={classes.AddButton} onClick={() => { displayDropDownMenu(!dropDownMenu); }}>

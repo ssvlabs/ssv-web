@@ -11,9 +11,9 @@ import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
 import Routes from '~app/components/Routes/Routes';
 // import BarMessage from '~app/common/components/BarMessage';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MobileNotSupported from '~app/components/MobileNotSupported';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 
 declare global {
     interface Window {

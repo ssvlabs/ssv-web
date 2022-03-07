@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 
@@ -95,7 +95,7 @@ const SecondSquare = () => {
                 </Grid>
               </Grid>
               )}
-            <PrimaryButton dataTestId={'operators-selected-button'} disable={!operatorStore.selectedEnoughOperators} text={'Next'} onClick={onSelectOperatorsClick} />
+            <PrimaryButton dataTestId={'operators-selected-button'} disable={!operatorStore.selectedEnoughOperators} text={'Next'} submitFunction={onSelectOperatorsClick} />
           </Grid>,
         ]}
       />

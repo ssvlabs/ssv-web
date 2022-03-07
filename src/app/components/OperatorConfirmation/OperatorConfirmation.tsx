@@ -7,15 +7,15 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
-import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirmation.styles';
 
@@ -105,7 +105,7 @@ const OperatorConfirmation = () => {
             </Grid>
             {/* <Checkbox onClickCallBack={setCheckBox} */}
             {/*  text={(<div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and conditions</a></div>)} /> */}
-            <PrimaryButton disable={false} text={actionButtonText} onClick={onRegisterClick} />
+            <PrimaryButton disable={false} text={actionButtonText} submitFunction={onRegisterClick} />
           </Grid>,
         ]}
       />

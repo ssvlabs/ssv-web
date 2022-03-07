@@ -9,6 +9,7 @@ import Wallet from '~app/common/stores/Abstracts/Wallet';
 class WalletTestStore extends BaseStore implements Wallet {
     private contract: Contract | undefined;
 
+    @observable notifySdk: any;
     @observable web3: any = null;
     @observable wallet: any = null;
     @observable onboardSdk: any = null;
@@ -16,9 +17,14 @@ class WalletTestStore extends BaseStore implements Wallet {
     @observable accountAddress: string = '';
     @observable wrongNetwork: boolean = false;
     @observable isAccountLoaded: boolean = false;
+    @observable accountDataLoaded: boolean = true;
 
     @action.bound
     initWalletHooks(): void {
+    }
+
+    @action.bound
+    initializeUserInfo(): void {
     }
 
     @action.bound

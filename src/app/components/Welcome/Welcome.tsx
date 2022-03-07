@@ -4,12 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import SecondaryButton from '~app/common/components/SecondaryButton';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import SecondaryButton from '~app/common/components/Buttons/SecondaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 
 const Welcome = () => {
@@ -60,7 +60,7 @@ const Welcome = () => {
             <PrimaryButton
               withVerifyConnection
               text={'Connect Wallet'}
-              onClick={connectToWallet}
+              submitFunction={connectToWallet}
               dataTestId={'connect-to-wallet-button'}
             />
             )}

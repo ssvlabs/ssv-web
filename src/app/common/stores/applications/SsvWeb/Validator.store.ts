@@ -2,25 +2,28 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import EthereumKeyStore from 'eth2-keystore-js';
 import config from '~app/common/config';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BaseStore from '~app/common/stores/BaseStore';
 import { roundCryptoValueString } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
-  @observable newValidatorReceipt: any = null;
   @observable dollarEstimationGas: number = 0;
+  @observable newValidatorReceipt: any = null;
   @observable keyStoreFile: File | null = null;
   @observable createValidatorPayLoad: (string | string[])[] | undefined = undefined;
 
+  // Key Stores keys
+  @observable keyStorePublicKey: string = '';
+  @observable keyStorePrivateKey: string = '';
+
   public static OPERATORS_SELECTION_GAP = 66.66;
-  private keyStore: EthereumKeyStore | undefined;
 
   @action.bound
   clearValidatorData() {
@@ -29,40 +32,11 @@ class ValidatorStore extends BaseStore {
   }
 
   @action.bound
-  async extractKeyStoreData(): Promise<void> {
+  async extractKeyStoreData(keyStorePassword: string): Promise<any> {
     const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
     const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
-    ethereumKeyStore;
-  }
-
-  /**
-   * Extract validator private key from keystore file
-   */
-  @action.bound
-  async keyStorePrivateKey(): Promise<string> {
-    try {
-      const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
-      if (!fileTextPlain) return '';
-      const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
-      return await ethereumKeyStore.getPrivateKey();
-    } catch (e: any) {
-      return e.message;
-    }
-  }
-
-  /**
-   * Extract validator private key from keystore file
-   */
-  @action.bound
-  async extractPublicKey(): Promise<string> {
-    try {
-      const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
-      if (!fileTextPlain) return '';
-      const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
-      return ethereumKeyStore.getPublicKey();
-    } catch (e: any) {
-      return e.message;
-    }
+    this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
+    this.keyStorePublicKey = await ethereumKeyStore.getPublicKey();
   }
 
   /**
@@ -151,8 +125,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const threshold: Threshold = new Threshold();
-    const privateKey = await this.keyStorePrivateKey();
-    const thresholdResult: ISharesKeyPairs = await threshold.create(privateKey);
+    const thresholdResult: ISharesKeyPairs = await threshold.create(this.keyStorePrivateKey);
     let totalAmountOfSsv = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
       const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
@@ -200,18 +173,9 @@ class ValidatorStore extends BaseStore {
    */
   @action.bound
   setKeyStore(keyStore: any) {
+    this.keyStorePublicKey = '';
+    this.keyStorePrivateKey = '';
     this.keyStoreFile = keyStore;
-  }
-
-  /**
-   * Return validator public key
-   */
-  @computed
-  get validatorPublicKey() {
-    if (!this.keyStore) {
-      return false;
-    }
-    return this.keyStore.getPublicKey();
   }
 
   @computed

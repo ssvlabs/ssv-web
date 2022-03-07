@@ -18,6 +18,8 @@ export default abstract class Application {
     // eslint-disable-next-line no-unused-vars
     public abstract setIsLoading(status: boolean): void;
     // eslint-disable-next-line no-unused-vars
+    public abstract showWalletPopUp(status: boolean): void;
+    // eslint-disable-next-line no-unused-vars
     public abstract showTransactionPendingPopUp(status: boolean): void;
     public abstract switchDarkMode(): void;
     public abstract applicationRoutes(): any;

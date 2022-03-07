@@ -3,7 +3,7 @@ import { sha256 } from 'js-sha256';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from './NameAndAddress.styles';
 
 type Props = {
@@ -18,7 +18,7 @@ const NameAndAddress = (props: Props) => {
     const classes = useStyles();
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const shaPublicKey = address ?? `0x${longStringShorten(sha256(walletStore.decodeKey(address)), 4)}`;
+    const shaPublicKey = address ?? `0x${longStringShorten(sha256(walletStore.decodeKey(address ?? '')), 4)}`;
 
     return (
       <Grid container item className={styleWrapperClass}>

@@ -60,7 +60,7 @@ const MyAccount = () => {
                     Register Operator
                   </Grid>
                 </Grid>
-                        )}
+              )}
             </Grid>
           </Grid>
         </Grid>

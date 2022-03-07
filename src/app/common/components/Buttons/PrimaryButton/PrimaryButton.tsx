@@ -4,15 +4,15 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/common/components/Spinner';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './PrimaryButton.styles';
 
 type Props = {
     text: string,
-    onClick: any,
     disable?: boolean,
+    submitFunction: any,
     dataTestId?: string,
     wrapperClass?: string,
     withVerifyConnection?: boolean
@@ -24,38 +24,39 @@ const PrimaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, onClick, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
-    
+    const { text, submitFunction, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
+
     useEffect(() => {
-        const listener = async (event: any) => {
+        const callback = (event: any) => {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-                // event.preventDefault();
                 if (!disable && !applicationStore.isLoading) {
-                    await submit();
+                    submitHandler();
                 }
             }
         };
-        document.addEventListener('keydown', listener);
-        return () => {
-            document.removeEventListener('keydown', listener);
-        };
-    }, [applicationStore.isLoading, disable]);
 
-    const submit = async () => {
+        document.addEventListener('keydown', callback);
+        return () => {
+            document.removeEventListener('keydown', callback);
+        };
+    }, [applicationStore.isLoading, disable, submitFunction]);
+
+    const submitHandler = async () => {
         if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
         if (withVerifyConnection && !walletStore.connected) {
             await walletStore.connect();
         }
-        await onClick();
+        await submitFunction();
     };
 
     return (
       <Grid container item>
         <Button
-          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+          type="submit"
+          onClick={submitHandler}
           data-testid={dataTestId}
           disabled={disable || applicationStore.isLoading}
-          onClick={submit}
+          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
         >
           {applicationStore.isLoading && <Spinner />}
           {text}

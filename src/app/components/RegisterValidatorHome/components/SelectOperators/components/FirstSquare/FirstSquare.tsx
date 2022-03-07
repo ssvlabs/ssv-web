@@ -16,8 +16,8 @@ import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/common/components/ToolTip';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
@@ -245,7 +245,7 @@ const FirstSquare = () => {
               <Grid item xs className={classes.SearchInputWrapper}>
                 <TextInput
                   withSideText
-                  onChange={inputHandler}
+                  onChangeCallback={inputHandler}
                   sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> : <div className={classes.SearchIcon} />}
                   placeHolder={'Search...'}
                 />

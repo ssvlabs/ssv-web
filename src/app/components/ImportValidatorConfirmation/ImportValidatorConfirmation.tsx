@@ -8,7 +8,7 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import PrimaryButton from '~app/common/components/PrimaryButton';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
@@ -92,7 +92,7 @@ const ImportValidatorConfirmation = () => {
       <Grid container>
         <TransactionPendingPopUp txHash={txHash} />
         <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-        <ValidatorKeyInput withBeaconcha address={validatorStore.validatorPublicKey} />
+        <ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
           <Grid item className={classes.SubHeader}>Selected Operators</Grid>
           {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
@@ -167,7 +167,7 @@ const ImportValidatorConfirmation = () => {
             disable={false}
             dataTestId={'confirm-button'}
             text={actionButtonText}
-            onClick={onRegisterValidatorClick}
+            submitFunction={onRegisterValidatorClick}
           />
           {/* <CTAButton */}
           {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}

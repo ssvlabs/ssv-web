@@ -184,11 +184,12 @@ const WithdrawScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  // condition: () => {
-  //   const stores = useStores();
-  //   const ssvStore: SsvStore = stores.SSV;
-  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  // },
+  condition: () => {
+    return true;
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
 };
 
 const EnableAccountScreen: IUserFlow = {

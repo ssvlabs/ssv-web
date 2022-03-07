@@ -10,14 +10,14 @@ import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import MessageDiv from '~app/common/components/MessageDiv';
 import InputLabel from '~app/common/components/InputLabel';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
     validatePublicKeyInput,
     validateDisplayNameInput,
@@ -112,7 +112,7 @@ const GenerateOperatorKeys = () => {
                   disable
                   data-testid="new-operator-address"
                   value={walletStore.accountAddress}
-                  onBlur={(event: any) => { validateAddressInput(event.target.value, setAddressError); }}
+                  onBlurCallBack={(event: any) => { validateAddressInput(event.target.value, setAddressError); }}
                 />
                 {addressError.shouldDisplay &&
                 <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
@@ -122,8 +122,8 @@ const GenerateOperatorKeys = () => {
                 <TextInput
                   data-testid="new-operator-name"
                   showError={displayNameError.shouldDisplay}
-                  onChange={(event: any) => { onInputChange('name', event.target.value); }}
-                  onBlur={(event: any) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
+                  onChangeCallback={(event: any) => { onInputChange('name', event.target.value); }}
+                  onBlurCallBack={(event: any) => { validateDisplayNameInput(event.target.value, setDisplayNameError); }}
                 />
                 {displayNameError.shouldDisplay &&
                 <Typography className={classes.TextError}>{displayNameError.errorMessage}</Typography>}
@@ -143,8 +143,8 @@ const GenerateOperatorKeys = () => {
                   value={inputsData.publicKey}
                   dataTestId={'new-operator-key'}
                   showError={publicKeyError.shouldDisplay}
-                  onChange={(event: any) => { onInputChange('publicKey', event.target.value); }}
-                  onBlur={(event: any) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
+                  onChangeCallback={(event: any) => { onInputChange('publicKey', event.target.value); }}
+                  onBlurCallBack={(event: any) => { validatePublicKeyInput(event.target.value, setPublicKeyError); }}
                 />
                 {publicKeyError.shouldDisplay &&
                 <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
@@ -163,8 +163,8 @@ const GenerateOperatorKeys = () => {
                     value={inputsData.fee}
                     dataTestId={'new-operator-fee'}
                     showError={feeError.shouldDisplay}
-                    onChange={(event: any) => { onInputChange('fee', event.target.value); }}
-                    onBlur={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
+                    onChangeCallback={(event: any) => { onInputChange('fee', event.target.value); }}
+                    onBlurCallBack={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
                   />
                   {feeError.shouldDisplay &&
                   <Typography className={classes.TextError}>{feeError.errorMessage}</Typography>}
@@ -172,7 +172,7 @@ const GenerateOperatorKeys = () => {
               )}
             </Grid>
             {/* <Checkbox onClickCallBack={setUserAgreement} text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'} /> */}
-            <PrimaryButton disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
+            <PrimaryButton disable={!registerButtonEnabled} text={'Next'} submitFunction={onRegisterClick} />
           </Grid>,
         ]}
       />

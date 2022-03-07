@@ -4,8 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
-import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
 
 const AccountBalanceAndFee = () => {
@@ -47,7 +47,7 @@ const AccountBalanceAndFee = () => {
               <PrimaryButton
                 disable={!firstCheckBox || !secondCheckBox}
                 text={'Next'}
-                onClick={() => { history.push(config.routes.VALIDATOR.SLASHING_WARNING); }}
+                submitFunction={() => { history.push(config.routes.VALIDATOR.SLASHING_WARNING); }}
               />
             </Grid>,
           ]}

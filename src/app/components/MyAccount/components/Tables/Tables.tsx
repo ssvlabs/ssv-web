@@ -5,9 +5,9 @@ import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import DataTable from '~app/common/components/DataTable/DataTable';
 import Rows from '~app/components/MyAccount/common/componenets/Rows';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { useStyles } from '~app/components/MyAccount/components/Tables/Tables.styles';
 
 const operatorHeaderInit = ['Public Key', 'Status', 'Revenue', 'Validators', ''];
@@ -35,7 +35,7 @@ const Tables = () => {
      * @param type
      * @param paginationPage
      */
-    const loadItems = (type: string, paginationPage?: number) => {
+    const loadItems = async (type: string, paginationPage?: number) => {
         if (paginationPage) {
             ApiParams.saveInStorage(type, 'page', paginationPage);
         }
@@ -45,18 +45,16 @@ const Tables = () => {
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress).then((result: any) => {
-                setOperators(result.operators);
-                setOperatorsPagination(result.pagination);
-                setLoadingOperators(false);
-            });
+            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            setOperators(result.operators);
+            setOperatorsPagination(result.pagination);
+            setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress).then((result: any) => {
-                setValidators(result.validators);
-                setValidatorsPagination(result.pagination);
-                setLoadingValidators(false);
-            });
+            const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            setValidators(result.validators);
+            setValidatorsPagination(result.pagination);
+            setLoadingValidators(false);
         }
     };
 

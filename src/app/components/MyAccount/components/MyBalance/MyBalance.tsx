@@ -80,6 +80,18 @@ const MyBalance = () => {
         );
     };
 
+    const renderConditionalLine = () => {
+        if (!liquidated && ssvStore.isValidatorState) {
+            return <Grid item className={classes.SeparationLine} xs={12} />;
+        }
+    };
+
+    const renderRemainingDays = () => {
+        if (!liquidated && ssvStore.isValidatorState) {
+         return <RemainingDays wrapperClass={classes.CurrentBalanceHeader} />;
+        }
+    };
+
     return (
       <Grid container className={classes.MyBalanceWrapper}>
         <Grid container item className={classes.SectionWrapper}>
@@ -93,9 +105,9 @@ const MyBalance = () => {
             </Grid>
           </Grid>
         </Grid>
-        {(!liquidated && ssvStore.isValidatorState) && <Grid item className={classes.SeparationLine} xs={12} />}
+        {renderConditionalLine()}
         <Grid container item className={classes.SectionWrapper}>
-          {(!liquidated && ssvStore.isValidatorState) && <RemainingDays wrapperClass={classes.CurrentBalanceHeader} />}
+          {renderRemainingDays()}
           {!liquidated && remainingDays < 30 && <Grid className={classes.ErrorMessageWrapper}><ErrorText errorType={0} /></Grid>}
           {liquidated && (
             <Grid className={classes.ErrorMessageWrapper}>

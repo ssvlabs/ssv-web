@@ -3,10 +3,10 @@ import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 class SsvStore extends BaseStore {
-    // Amount
+    // Balances
     @observable ssvBalance: number = 0;
     @observable networkContractBalance: number = 0;
 
@@ -23,7 +23,7 @@ class SsvStore extends BaseStore {
     @observable userValidators: any[] = [];
 
     // Allowance
-    @observable userAllowance: boolean = false;
+    @observable userGaveAllowance: boolean = false;
     
     // Liquidate status
     @observable userLiquidated: boolean = false;
@@ -44,14 +44,6 @@ class SsvStore extends BaseStore {
             );
         }
         return <Contract> this.ssvContractInstance;
-    }
-
-    /**
-     * Check if userAllowance has been approved and return boolean corresponding value.
-     */
-    @computed
-    get approvedAllowance() {
-        return this.userAllowance;
     }
 
     /**
@@ -92,8 +84,6 @@ class SsvStore extends BaseStore {
         await this.checkIfLiquidated();
         await this.getAccountBurnRate();
         await this.getSsvContractBalance();
-        await this.fetchAccountOperators();
-        await this.fetchAccountValidators();
         await this.getNetworkContractBalance();
     }
 
@@ -171,64 +161,9 @@ class SsvStore extends BaseStore {
      * Check Account status
      */
     @action.bound
-    async checkIfLiquidated() {
-        return new Promise<boolean>((resolve) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract.methods
-                .liquidatable(this.accountAddress).call()
-                .then((isLiquidated: any) => {
-                    this.userLiquidated = isLiquidated;
-                    resolve(true);
-                }).catch(() => {
-                resolve(false);
-            });
-        });
-    }
-
-    /**
-     * Fetch operators
-     */
-    @action.bound
-    async fetchAccountOperators() {
-        return new Promise<boolean>((resolve) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract.methods
-                .getOperatorsByOwnerAddress(this.accountAddress).call()
-                .then((operators: any) => {
-                    if (operators.length) {
-                        this.userState = 'operator';
-                        this.userOperators = operators;
-                    } else {
-                        this.userOperators = [];
-                    }
-                    resolve(true);
-                }).catch(() => {
-                resolve(false);
-            });
-        });
-    }
-
-    /**
-     * Fetch validators
-     */
-    @action.bound
-    async fetchAccountValidators() {
-        return new Promise<boolean>((resolve) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract.methods
-                .getValidatorsByOwnerAddress(this.accountAddress).call()
-                .then((validators: any) => {
-                    if (validators.length) {
-                        this.userState = 'validator';
-                        this.userValidators = validators;
-                    } else {
-                        this.userValidators = [];
-                    }
-                    resolve(true);
-                }).catch(() => {
-                resolve(false);
-            });
-        });
+    async checkIfLiquidated(): Promise<void> {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        this.userLiquidated = await walletStore.getContract.methods.liquidatable(this.accountAddress).call();
     }
 
     /**
@@ -241,8 +176,8 @@ class SsvStore extends BaseStore {
         this.userOperators = [];
         this.userValidators = [];
         this.accountBurnRate = 0;
-        this.userAllowance = false;
         this.userLiquidated = false;
+        this.userGaveAllowance = false;
         this.liquidationCollateral = 0;
         this.networkContractBalance = 0;
     }
@@ -292,40 +227,17 @@ class SsvStore extends BaseStore {
     }
 
     /**
-     * Set userAllowance value as boolean.
-     * @param approved
-     */
-    @action.bound
-    setApprovedAllowance(approved: number | string | null) {
-        if (approved) {
-            this.userAllowance = true;
-        } else {
-            this.userAllowance = false;
-        }
-    }
-
-    /**
      *  Call userAllowance function in order to know if it has been set or not for SSV contract by user account.
      */
     @action.bound
-    async checkAllowance(): Promise<number> {
-        return this.ssvContract
+    async checkAllowance(): Promise<void> {
+        const allowance = await this.ssvContract
             .methods
             .allowance(
                 this.accountAddress,
                 this.getContractAddress('ssv_network'),
-            )
-            .call()
-            .then((allowance: number) => {
-                // const allowanceValue = parseFloat(String(allowance));
-                // const weiValue = this.getStore('Wallet').web3.utils.toWei(String(allowanceValue), 'ether');
-                this.setApprovedAllowance(parseFloat(String(allowance)));
-                // DEV: stub to show first allowance button
-                // this.setApprovedAllowance(0);
-                return this.userAllowance;
-            }).catch((e: any) => {
-                console.log(e);
-            });
+            ).call();
+        this.userGaveAllowance = allowance !== '0';
     }
 
     /**
@@ -357,16 +269,16 @@ class SsvStore extends BaseStore {
         return methodCall
             .send({ from: this.accountAddress })
             .on('receipt', async () => {
-                this.userAllowance = true;
+                this.userGaveAllowance = true;
             })
             .on('transactionHash', (txHash: string) => {
                 callBack && callBack();
                 walletStore.notifySdk.hash(txHash);
-            })
-            .on('error', (error: any) => {
-                console.debug('Contract Error', error);
-                this.userAllowance = false;
             });
+            // .on('error', (error: any) => {
+            //     console.debug('Contract Error', error);
+            //     this.userGaveAllowance = false;
+        // });
     }
 
     /**
@@ -374,20 +286,8 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async getSsvContractBalance(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.ssvContract
-                .methods
-                .balanceOf(this.accountAddress)
-                .call()
-                .then((balance: any) => {
-                    const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
-                    this.ssvBalance = ssvBalance;
-                    resolve(ssvBalance);
-                })
-                .catch((error: any) => {
-                    reject(error);
-                });
-        });
+        const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
+        this.ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
     }
 
     /**
@@ -395,21 +295,9 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async getNetworkContractBalance(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract
-                .methods
-                .totalBalanceOf(this.accountAddress)
-                .call()
-                .then((balance: any) => {
-                    const ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
-                    this.networkContractBalance = ssvBalance;
-                    resolve(ssvBalance);
-                })
-                .catch((error: any) => {
-                    reject(error);
-                });
-        });
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const balance = await walletStore.getContract.methods.totalBalanceOf(this.accountAddress).call();
+        this.networkContractBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
     }
 
     /**
@@ -419,11 +307,10 @@ class SsvStore extends BaseStore {
     async getNetworkFees() {
         const walletStore: WalletStore = this.getStore('Wallet');
         const networkContract = walletStore.getContract;
-        await networkContract.methods.minimumBlocksBeforeLiquidation().call().then((response: any) => {
-            // hardcoded should be replace
-            this.networkFee = 0.00001755593086049;
-            this.liquidationCollateral = Number(response);
-        });
+        const networkFee = await networkContract.methods.minimumBlocksBeforeLiquidation().call();
+        // hardcoded should be replace
+        this.networkFee = 0.00001755593086049;
+        this.liquidationCollateral = Number(networkFee);
     }
 
     /**
@@ -431,34 +318,20 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async getOperatorRevenue(): Promise<any> {
-        return new Promise((resolve) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            const networkContract = walletStore.getContract;
-            networkContract.methods.totalEarningsOf(this.accountAddress).call().then((response: any) => {
-                resolve(walletStore.web3.utils.fromWei(response.toString()));
-            });
-        });
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const networkContract = walletStore.getContract;
+        const response = await networkContract.methods.totalEarningsOf(this.accountAddress).call();
+        return walletStore.web3.utils.fromWei(response.toString());
     }
 
     /**
      * Get account burn rate
      */
     @action.bound
-    async getAccountBurnRate(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            walletStore.getContract
-                .methods
-                .burnRate(this.accountAddress)
-                .call()
-                .then((burnRate: any) => {
-                    this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
-                    resolve(burnRate);
-                })
-                .catch((error: any) => {
-                    reject(error);
-                });
-        });
+    async getAccountBurnRate(): Promise<void> {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const burnRate = await walletStore.getContract.methods.burnRate(this.accountAddress).call();
+        this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
     }
 
     // /**

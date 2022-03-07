@@ -1,17 +1,17 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import CTAButton from '~app/common/components/CTAButton';
-import config, { translations } from '~app/common/config';
-import NameAndAddress from '~app/common/components/NameAndAddress';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
+// import CTAButton from '~app/common/components/CTAButton';
 import { useStyles } from './EnableAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import config, { translations } from '~app/common/config';
+import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
 
 const EnableAccount = () => {
     const stores = useStores();
@@ -35,6 +35,7 @@ const EnableAccount = () => {
     const unableAccount = (fee: any) => {
         ssvStore.activateValidator(fee);
     };
+    unableAccount;
 
     return (
       <div>
@@ -102,7 +103,7 @@ const EnableAccount = () => {
                 <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} subText={'~$490'} />
               </Grid>
               <Grid item>
-                <CTAButton text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance />
+                {/* <CTAButton text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance /> */}
               </Grid>
             </Grid>
           )}

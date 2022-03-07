@@ -34,21 +34,26 @@ export const useStyles = makeStyles((theme) => ({
         backgroundImage: `url(/images/copy/${theme.darkMode ? 'white' : 'gray'}.svg)`,
     },
     Status: {
-        width: '45px',
-        height: '20px',
-        fontSize: '12px',
-        fontWeight: 600,
-        padding: '2px 5px 3px 4px',
-    },
-    StatusText: {
-        textTransform: 'capitalize',
+        '& p': {
+            fontSize: 14,
+            margin: 'auto',
+            fontWeight: 500,
+            textTransform: 'capitalize',
+            // padding: '1px 6px',
+        },
     },
     Active: {
         color: theme.colors.primarySuccessDark,
         backgroundColor: theme.colors.primarySuccessRegularOpacity,
     },
+    NoValidators: {
+        width: 99,
+        height: 26,
+        color: theme.colors.gray80,
+        backgroundColor: theme.colors.gray20,
+    },
     Inactive: {
-        width: '52px',
+        width: 65,
         color: theme.colors.primaryError,
         backgroundColor: theme.colors.primaryErrorRegular,
     },

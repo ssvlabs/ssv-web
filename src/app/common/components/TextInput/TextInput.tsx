@@ -4,18 +4,18 @@ import { useStyles } from './TextInput.styles';
 
 type InputProps = {
     value?: any,
-    onBlur?: any,
-    onChange?: any,
     sideIcon?: any,
     disable?: boolean,
     withLock?: boolean,
     showError?: boolean,
     dataTestId?: string,
     placeHolder?: string,
+    onBlurCallBack?: any,
     withSideText?: boolean,
+    onChangeCallback?: any,
 };
 
-const TextInput = ({ value, placeHolder, onBlur, onChange, withLock, disable, showError, dataTestId, withSideText, sideIcon }: InputProps) => {
+const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withLock, disable, showError, dataTestId, withSideText, sideIcon }: InputProps) => {
     const classes = useStyles();
     const [password, showPassword] = useState(false);
 
@@ -28,8 +28,8 @@ const TextInput = ({ value, placeHolder, onBlur, onChange, withLock, disable, sh
         <Grid item xs>
           <input
             value={value}
-            onBlur={onBlur}
-            onChange={onChange}
+            onBlur={onBlurCallBack}
+            onChange={onChangeCallback}
             placeholder={placeHolder ?? ''}
             disabled={disable}
             data-testid={dataTestId}

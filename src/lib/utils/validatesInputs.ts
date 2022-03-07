@@ -1,5 +1,5 @@
 import config from '~app/common/config';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 interface ErrorObject {
     shouldDisplay: boolean,

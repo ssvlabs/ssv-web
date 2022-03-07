@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import config, { translations } from '~app/common/config';
 import LinkText from '~app/common/components/LinkText';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import config, { translations } from '~app/common/config';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import Typography from '@material-ui/core/Typography';
 
 const SuccessScreen = () => {
     const stores = useStores();
@@ -105,7 +105,7 @@ const SuccessScreen = () => {
               <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>
               {icon !== 'validator' && <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />}
               <Grid item className={`${classes.Text} ${classes.SubImageText}`}>{monitorText}</Grid>
-              <PrimaryButton text={buttonText} onClick={redirectTo} />
+              <PrimaryButton text={buttonText} submitFunction={redirectTo} />
             </Grid>,
           ]}
         />
@@ -151,7 +151,7 @@ const SuccessScreen = () => {
               <Grid item container>
                 <Grid container item className={classes.Feedback}>
                   <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review.</Grid>
-                  <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} onClick={takeSurvey} />
+                  <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} submitFunction={takeSurvey} />
                 </Grid>
               </Grid>,
             ]}

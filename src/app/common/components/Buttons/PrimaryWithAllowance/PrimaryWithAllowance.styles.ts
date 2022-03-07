@@ -4,7 +4,6 @@ export const useStyles = makeStyles((theme) => ({
     ButtonWrapper: {
         marginRight: theme.spacing(6),
     },
-
     button: {
         color: '#FFFFFF',
         cursor: 'pointer',

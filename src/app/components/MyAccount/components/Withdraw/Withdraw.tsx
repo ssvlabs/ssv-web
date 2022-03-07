@@ -8,10 +8,10 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CTAButton from '~app/common/components/CTAButton/CTAButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays';
+import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
 import { useStyles } from './Withdrew.styles';
 
 const Withdraw = () => {
@@ -24,8 +24,7 @@ const Withdraw = () => {
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
     useEffect(() => {
-        history;
-        // redirectUrl && history.push(redirectUrl);
+        redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     useEffect(() => {
@@ -42,9 +41,12 @@ const Withdraw = () => {
         });
     };
 
-    const inputHandler = (value: number) => {
+    const inputHandler = (e: any) => {
+        const value = e.target.value;
         if (value > ssvStore.networkContractBalance) {
             setInputValue(ssvStore.networkContractBalance);
+        } else if (value < 0) {
+            setInputValue(0);
         } else {
             setInputValue(value);
         }
@@ -57,9 +59,8 @@ const Withdraw = () => {
             <Grid item xs={6}>
               <IntegerInput
                 type="number"
-                onChange={(e) => { // @ts-ignore
-                                inputHandler(e.target.value); }}
                 value={inputValue}
+                onChange={inputHandler}
                 className={classes.Balance}
               />
             </Grid>
@@ -84,8 +85,8 @@ const Withdraw = () => {
     return (
       <>
         <BorderScreen
-          wrapperClass={classes.FirstSquare}
           header={'Available Balance'}
+          wrapperClass={classes.FirstSquare}
           navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
           navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           body={[
@@ -102,6 +103,7 @@ const Withdraw = () => {
                 ]}
         />
         <BorderScreen
+          withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={(
@@ -120,9 +122,9 @@ const Withdraw = () => {
                   </Typography>
                 )}
               />
-              <CTAButton
+              <PrimaryWithAllowance
                 text={'Withdraw'}
-                disable={!userAgree || inputValue !== 0}
+                disable={!userAgree || inputValue === 0}
                 onClick={withdrawSsv}
                 withAllowance
               />

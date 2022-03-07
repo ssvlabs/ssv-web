@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './ConnectWalletButton.styles';
 

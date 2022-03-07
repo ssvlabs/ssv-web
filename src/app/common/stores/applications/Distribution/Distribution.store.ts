@@ -2,8 +2,8 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import merkleTree from '~app/components/Distribution/assets/merkleTree.json';
 
 /**

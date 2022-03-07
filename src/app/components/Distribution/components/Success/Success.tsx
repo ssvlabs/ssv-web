@@ -5,10 +5,10 @@ import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { getEtherScanUrl } from '~lib/utils/beaconcha';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import SecondaryButton from '~app/common/components/SecondaryButton';
-import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
+import SecondaryButton from '~app/common/components/Buttons/SecondaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/Distribution/components/Success/Success.styles';
+import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 const Success = () => {
     const stores = useStores();

@@ -5,13 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from './ValidatorDropDownMenu.styles';
-// import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 
 type Props = {
     index: number,

@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import CheckBox from '~app/common/components/CheckBox';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import { useStyles } from '~app/common/components/CTAButton/CTAButton.styles';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import { useStyles } from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance.styles';
 
 type ButtonParams = {
     text: string,
@@ -20,7 +20,7 @@ type ButtonParams = {
     checkBoxesCallBack?: any[],
 };
 
-const CTAButton = (props: ButtonParams) => {
+const PrimaryWithAllowance = (props: ButtonParams) => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
@@ -31,29 +31,27 @@ const CTAButton = (props: ButtonParams) => {
     const { testId, withAllowance, disable, onClick, text, checkboxesText, checkBoxesCallBack } = props;
 
     useEffect(() => {
-        if (!ssvStore.approvedAllowance && withAllowance && !isApprovalProcess) {
+        if (!ssvStore.userGaveAllowance && withAllowance && !isApprovalProcess) {
             setApprovalProcess(true);
         }
-    }, [ssvStore.approvedAllowance, withAllowance, isApprovalProcess]);
+    }, [ssvStore.userGaveAllowance, withAllowance, isApprovalProcess]);
 
     const checkWalletConnected = async (onClickCallBack: any) => {
         if (!walletStore.connected) await walletStore.connect();
         if (walletStore.isWrongNetwork) {
-           await walletStore.networkHandler(10);
+           // await walletStore.networkHandler(10);
         } else if (onClickCallBack) onClickCallBack();
     };
-
+    
     const handlePendingTransaction = () => {
         setApproveButtonText('Approving…');
     };
 
-    const allowNetworkContract = () => {
+    const allowNetworkContract = async () => {
         setApproveButtonText('Waiting...');
-        ssvStore.approveAllowance(false, handlePendingTransaction).then((response: any) => {
-            ssvStore.setApprovedAllowance(response?.ssvValue);
-            setApproveButtonText('Approved');
-            setUserAllowance(true);
-        });
+        await ssvStore.approveAllowance(false, handlePendingTransaction);
+        setApproveButtonText('Approved');
+        setUserAllowance(true);
     };
 
     const regulerButton = () => {
@@ -61,7 +59,7 @@ const CTAButton = (props: ButtonParams) => {
           <PrimaryButton
             disable={disable}
             dataTestId={testId}
-            onClick={() => { checkWalletConnected(onClick); }}
+            submitFunction={() => { checkWalletConnected(onClick); }}
             text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
           />
         );
@@ -75,13 +73,13 @@ const CTAButton = (props: ButtonParams) => {
                 dataTestId={testId}
                 text={approveButtonText}
                 disable={userAllowance || disable}
-                onClick={() => { checkWalletConnected(allowNetworkContract); }}
+                submitFunction={() => { checkWalletConnected(allowNetworkContract); }}
               />
             </Grid>
             <Grid item xs>
               <PrimaryButton
                 disable={!userAllowance || disable}
-                dataTestId={testId} onClick={() => { checkWalletConnected(onClick); }}
+                dataTestId={testId} submitFunction={() => { checkWalletConnected(onClick); }}
                 text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
               />
             </Grid>
@@ -114,4 +112,4 @@ const CTAButton = (props: ButtonParams) => {
     );
 };
 
-export default observer(CTAButton);
+export default observer(PrimaryWithAllowance);

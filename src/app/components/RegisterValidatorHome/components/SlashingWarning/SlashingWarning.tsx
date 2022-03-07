@@ -5,9 +5,9 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import config, { translations } from '~app/common/config';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import PrimaryButton from '~app/common/components/PrimaryButton';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 
@@ -35,7 +35,7 @@ const SlashingWarning = () => {
           <Grid container>
             <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon chain:</Grid>
             <Grid item xs={12} className={classes.PublicKey}>
-              <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.validatorPublicKey} />
+              <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.keyStorePublicKey} />
             </Grid>
             <Grid item xs={12} className={classes.Text}>
               Running a validator simultaneously to the SSV network will cause slashing to your validator.
@@ -49,7 +49,7 @@ const SlashingWarning = () => {
               onClickCallBack={setUserAgreed}
             />
             <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
-              onClick={goToConfirmation} />
+              submitFunction={goToConfirmation} />
           </Grid>,
         ]}
       />

@@ -139,8 +139,8 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async balanceHandler() {
-        if (!process.env.REACT_APP_NEW_STAGE) return;
-        await this.ssvStore.initUser();
+        // if (!process.env.REACT_APP_NEW_STAGE) return;
+        // await this.ssvStore.initUser();
     }
 
     /**

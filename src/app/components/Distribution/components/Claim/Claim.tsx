@@ -6,13 +6,13 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
-import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
 import { useStyles } from '~app/components/Distribution/components/Claim/Claim.styles';
+import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 const Claim = () => {
     const stores = useStores();
@@ -63,7 +63,7 @@ const Claim = () => {
             <PrimaryButton
               wrapperClass={classes.CtaButton}
               text={!distributionStore.claimed && distributionStore.userAddress ? 'Claim SSV Reward' : 'Connect a Different Wallet'}
-              onClick={claimRewards}
+              submitFunction={claimRewards}
               dataTestId={'connect-to-wallet-button'}
             />
           </Grid>,

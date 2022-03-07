@@ -5,7 +5,7 @@ import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import CTAButton from '~app/common/components/CTAButton';
+// import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -29,6 +29,7 @@ const Deposit = () => {
         await ssvStore.deposit(inputValue.toString());
         setInputValue(0.0);
     };
+    depositSsv;
 
     return (
       <div>
@@ -69,9 +70,9 @@ const Deposit = () => {
                       </>
                     ),
           ]}
-          bottom={(
-            <CTAButton text={'Deposit'} disable={ssvStore.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
-          )}
+          // bottom={(
+          //   // <CTAButton text={'Deposit'} disable={ssvStore.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
+          // )}
         />
       </div>
     );

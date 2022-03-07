@@ -2,8 +2,8 @@ import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
 import BaseStore from '~app/common/stores/BaseStore';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 
 /**
  * Base store provides singe source of true

@@ -12,6 +12,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import { useStyles } from './Deposit.styles';
+import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
 
 const Deposit = () => {
     const stores = useStores();
@@ -21,8 +22,7 @@ const Deposit = () => {
     const [inputValue, setInputValue] = useState(0.0);
 
     useEffect(() => {
-        history;
-        // redirectUrl && history.push(redirectUrl);
+        redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
     const depositSsv = async () => {
@@ -52,27 +52,32 @@ const Deposit = () => {
                               />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                              <Grid item onClick={() => { setInputValue(ssvStore.ssvBalance); }} className={classes.MaxButton}>
+                              <Grid item onClick={() => { setInputValue(ssvStore.ssvContractBalance); }} className={classes.MaxButton}>
                                 MAX
                               </Grid>
                               <Grid item className={classes.MaxButtonText}>SSV</Grid>
                             </Grid>
                           </Grid>
-                          <Grid item xs={12} className={classes.WalletBalance} onClick={() => { setInputValue(ssvStore.ssvBalance); }}>
-                            Wallet Balance: {formatNumberToUi(ssvStore.ssvBalance)} SSV
+                          <Grid item xs={12} className={classes.WalletBalance} onClick={() => { setInputValue(ssvStore.ssvContractBalance); }}>
+                            Wallet Balance: {formatNumberToUi(ssvStore.ssvContractBalance)} SSV
                           </Grid>
                         </Grid>
                       </Grid>
                     ),
                     (
                       <>
-                        <RemainingDays fromPage={'deposit'} inputValue={inputValue} />
+                        <RemainingDays fromPage={'deposit'} desiredAmount={inputValue} />
                       </>
                     ),
           ]}
-          // bottom={(
-          //   // <CTAButton text={'Deposit'} disable={ssvStore.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
-          // )}
+          bottom={(
+            <PrimaryWithAllowance
+              withAllowance
+              text={'Deposit'}
+              onClick={depositSsv}
+              disable={ssvStore.ssvContractBalance === 0 || inputValue <= 0}
+            />
+          )}
         />
       </div>
     );

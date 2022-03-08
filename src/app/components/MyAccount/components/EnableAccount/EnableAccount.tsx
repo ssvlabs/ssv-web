@@ -63,7 +63,7 @@ const EnableAccount = () => {
                       Operators Fees Details
                     </Grid>
                     <Grid item container>
-                      {ssvStore.userValidators.map((publicKey: any, index: number) => {
+                      {[].map((publicKey: any, index: number) => {
                                   return (
                                     <ValidatorDropDownMenu allOperatorsFee={allOperatorsFee} setTotalFee={setTotalFee}
                                       key={index} index={index} validatorPublicKey={publicKey} />

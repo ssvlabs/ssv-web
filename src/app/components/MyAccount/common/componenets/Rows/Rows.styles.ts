@@ -34,15 +34,19 @@ export const useStyles = makeStyles((theme) => ({
         backgroundImage: `url(/images/copy/${theme.darkMode ? 'white' : 'gray'}.svg)`,
     },
     Status: {
+        borderRadius: 4,
         '& p': {
             fontSize: 14,
             margin: 'auto',
-            fontWeight: 500,
+            fontWeight: 'bold',
+            // fontWeight: 500,
             textTransform: 'capitalize',
             // padding: '1px 6px',
         },
     },
     Active: {
+        width: 54,
+        height: 26,
         color: theme.colors.primarySuccessDark,
         backgroundColor: theme.colors.primarySuccessRegularOpacity,
     },

@@ -31,8 +31,10 @@ const MyBalance = () => {
     const classes = useStyles();
     const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
-    const remainingDays = formatDaysToUi(ssvStore.getRemainingDays);
+    const remainingDays = formatDaysToUi(ssvStore.getRemainingDays());
     const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+
+    console.log(remainingDays);
 
     const renderBalance = () => {
         if (liquidated) {

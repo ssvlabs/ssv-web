@@ -8,6 +8,7 @@ import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import DataTable from '~app/common/components/DataTable/DataTable';
 import Rows from '~app/components/MyAccount/common/componenets/Rows';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { useStyles } from '~app/components/MyAccount/components/Tables/Tables.styles';
 
 const operatorHeaderInit = ['Public Key', 'Status', 'Revenue', 'Validators', ''];
@@ -16,6 +17,7 @@ const Tables = () => {
     const stores = useStores();
     const classes = useStyles();
     const defaultOperators: any[] = [];
+    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
@@ -26,8 +28,13 @@ const Tables = () => {
 
     useEffect(() => {
         if (walletStore.accountAddress) {
-            loadItems('operators');
+            // console.log('<<<<<<<<<here>>>>>>>>>');
+            // console.log(operators.length);
+            // console.log(validators.length);
+            // console.log('<<<<<<<<<here>>>>>>>>>');
+            ApiParams.cleanStorage();
             loadItems('validators');
+            loadItems('operators');
         }
     }, [walletStore.accountAddress]);
     /**
@@ -52,6 +59,7 @@ const Tables = () => {
         } else {
             setLoadingValidators(true);
             const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            if (result.validators.length > 0) ssvStore.userState = 'validator';
             setValidators(result.validators);
             setValidatorsPagination(result.pagination);
             setLoadingValidators(false);

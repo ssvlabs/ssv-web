@@ -11,26 +11,26 @@ import { useStyles } from '~app/components/MyAccount/common/componenets/Remainin
 
 type Props = {
     fromPage?: string,
-    inputValue?: number,
     wrapperClass?: any,
+    desiredAmount?: number,
 };
 
 const RemainingDays = (props: Props) => {
     const { fromPage, wrapperClass } = props;
-    let { inputValue } = props;
-    if (inputValue) {
-        inputValue = parseFloat(inputValue.toString().replace('-', ''));
+    let { desiredAmount } = props;
+    if (desiredAmount) {
+        desiredAmount = parseFloat(desiredAmount.toString().replace('-', ''));
     }
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const fromWithdraw = fromPage === 'withdraw';
-    const newRemainingDays: any = ssvStore.getNewRemainingDays(inputValue);
+    const newRemainingDays: any = ssvStore.getRemainingDays(desiredAmount);
     let currentRemainingDays: number;
     if (fromPage === 'withdraw') {
-        currentRemainingDays = ssvStore.getRemainingDays - newRemainingDays;
+        currentRemainingDays = ssvStore.getRemainingDays() - newRemainingDays;
     } else {
-        currentRemainingDays = ssvStore.getRemainingDays + newRemainingDays;
+        currentRemainingDays = ssvStore.getRemainingDays() + newRemainingDays;
     }
 
     const liquidationError = currentRemainingDays < 30;
@@ -58,7 +58,7 @@ const RemainingDays = (props: Props) => {
         <Grid item className={`${classes.Days} ${liquidationError ? classes.Red : ''}`}>
           days
         </Grid>
-        {!!inputValue && <Grid item xs className={`${classes.NewDaysEstimation} ${fromWithdraw ? classes.Red : ''}`}>({operatorSign}{formatNumberToUi(newRemainingDays, true)})</Grid>}
+        {!!desiredAmount && <Grid item xs className={`${classes.NewDaysEstimation} ${fromWithdraw ? classes.Red : ''}`}>({operatorSign}{formatNumberToUi(newRemainingDays, true)})</Grid>}
         {liquidationError && <ProgressBar remainingDays={currentRemainingDays} />}
         {liquidationError && <ErrorText marginTop={'16px'} errorType={errorMessageHandler()} />}
       </Grid>

@@ -171,11 +171,13 @@ const DepositScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  // condition: () => {
-  //   const stores = useStores();
-  //   const ssvStore: SsvStore = stores.SSV;
-  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  // },
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    ssvStore;
+    return true;
+    // return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+  },
 };
 
 const WithdrawScreen: IUserFlow = {
@@ -188,7 +190,8 @@ const WithdrawScreen: IUserFlow = {
     return true;
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
+    ssvStore;
+    return true;
   },
 };
 
@@ -201,7 +204,9 @@ const EnableAccountScreen: IUserFlow = {
   condition: () => {
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    return !ssvStore.userLiquidated && !!ssvStore.userValidators.length;
+    ssvStore;
+    return true;
+    // return !ssvStore.userLiquidated && !!ssvStore.userValidators.length;
   },
 };
 

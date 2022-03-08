@@ -204,7 +204,6 @@ const FirstSquare = () => {
         if (element.scrollTop + element.offsetHeight > element.scrollHeight - 100 && operatorsPagination.page <= operatorsPagination.pages) {
             const newPagination = Object.create(operatorsPagination);
             newPagination.page += 1;
-            console.log(newPagination);
             setOperatorsPagination(newPagination);
         }
     }, 700);

@@ -31,9 +31,10 @@ class Validator {
                 { name: 'content-type', value: 'application/json' },
                 { name: 'accept', value: 'application/json' },
             ],
+            errorCallback: () => { },
         };
         const response: any = await new ApiRequest(requestInfo).sendRequest();
-        if (response.validators.length) {
+        if (response.validators?.length) {
             const validatorsOwnerAddresses = response.validators.map((v: { public_key: string; }) => v.public_key);
             const balances = await this.getValidatorsBalances(validatorsOwnerAddresses);
             const hashedBalances = balances.reduce((obj: any, item: { pubkey: any; value: any; }) => ({ ...obj, [item.pubkey]: item }), {});
@@ -52,18 +53,25 @@ class Validator {
     }
 
     async getValidatorsBalances(publicKeys: string[]) {
-        const balanceUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${publicKeys.join(',')}`;
-        const response: any = await new ApiRequest({ url: balanceUrl, method: 'GET' }).sendRequest();
-        if (!Array.isArray(response.data)) {
-            response.data = [response.data];
+        try {
+            const balanceUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${publicKeys.join(',')}`;
+            const response: any = await new ApiRequest({ url: balanceUrl, method: 'GET', errorCallback: () => { return { data: [] }; } }).sendRequest();
+            if (!Array.isArray(response.data)) {
+                response.data = [response.data];
+            }
+            return response.data;
+        } catch (e) {
+            // console.log('<<<<<<<error>>>>>>>');
+            // console.log(e.message);
+            // console.log('<<<<<<<error>>>>>>>');
+            return [];
         }
-        return response.data;
     }
 
     buildValidatorStructure = async (validator: string, data: any) => {
         if (!data) return { public_key: validator, status: 'inactive', balance: '0', apr: '0' };
         const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${data.pubkey}/performance`;
-        return new ApiRequest({ url, method: 'GET' }).sendRequest().then((performance: any) => {
+        return new ApiRequest({ url, method: 'GET', errorCallback: () => {} }).sendRequest().then((performance: any) => {
             const balance = formatNumberFromBeaconcha(data.balance);
             const performance7days = performance.data ? formatNumberFromBeaconcha(performance.data.performance7d) : 0;
             // @ts-ignore

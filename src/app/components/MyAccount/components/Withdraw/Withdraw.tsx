@@ -79,7 +79,7 @@ const Withdraw = () => {
     )];
 
     if (ssvStore.isValidatorState) {
-     secondBorderScreen.push((<RemainingDays fromPage={'withdraw'} inputValue={inputValue} />));
+     secondBorderScreen.push((<RemainingDays fromPage={'withdraw'} desiredAmount={inputValue} />));
     }
 
     return (

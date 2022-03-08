@@ -7,7 +7,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 class SsvStore extends BaseStore {
     // Balances
-    @observable ssvBalance: number = 0;
+    @observable ssvContractBalance: number = 0;
     @observable networkContractBalance: number = 0;
 
     // Calculation props
@@ -17,10 +17,6 @@ class SsvStore extends BaseStore {
 
     // User state
     @observable userState: string = 'operator';
-
-    // User Validators and Operators
-    @observable userOperators: any[] = [];
-    @observable userValidators: any[] = [];
 
     // Allowance
     @observable userGaveAllowance: boolean = false;
@@ -65,13 +61,15 @@ class SsvStore extends BaseStore {
     /**
      * Returns days remaining before liquidation
      */
-    @computed
-    get getRemainingDays(): number {
+    @action.bound
+    getRemainingDays(amount?: number): number {
         const blocksPerDay = config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-        const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         const burnRatePerDay = this.accountBurnRate * blocksPerDay;
+        const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
-        return this.networkContractBalance / burnRatePerDay - liquidationCollateral ?? 0;
+        const ssvAmount = amount ?? this.networkContractBalance;
+        if (burnRatePerDay === 0) return ssvAmount - liquidationCollateral ?? 0;
+        return ssvAmount / burnRatePerDay - liquidationCollateral ?? 0;
     }
 
     /**
@@ -171,10 +169,8 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     initSettings() {
-        this.ssvBalance = 0;
+        this.ssvContractBalance = 0;
         this.networkFee = 0;
-        this.userOperators = [];
-        this.userValidators = [];
         this.accountBurnRate = 0;
         this.userLiquidated = false;
         this.userGaveAllowance = false;
@@ -287,7 +283,7 @@ class SsvStore extends BaseStore {
     @action.bound
     async getSsvContractBalance(): Promise<any> {
         const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
-        this.ssvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
+        this.ssvContractBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
     }
 
     /**

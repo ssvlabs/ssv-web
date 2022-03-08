@@ -42,6 +42,7 @@ class Operator {
                 { name: 'content-type', value: 'application/json' },
                 { name: 'accept', value: 'application/json' },
             ],
+            errorCallback: () => {},
         };
         const response: any = await new ApiRequest(requestInfo).sendRequest();
         return response;
@@ -68,6 +69,7 @@ class Operator {
                 { name: 'content-type', value: 'application/json' },
                 { name: 'accept', value: 'application/json' },
             ],
+            errorCallback: () => {},
         };
         const response: any = await new ApiRequest(requestInfo).sendRequest();
         return response;

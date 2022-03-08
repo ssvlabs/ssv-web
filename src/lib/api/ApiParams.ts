@@ -23,6 +23,13 @@ class ApiParams {
   }
 
   /**
+   * Clean history
+   */
+  static cleanStorage(): void {
+    localStorage.removeItem('params');
+  }
+
+  /**
    * Get value from storage
    * @param name
    */

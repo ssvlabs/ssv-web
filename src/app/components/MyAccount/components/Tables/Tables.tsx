@@ -21,20 +21,23 @@ const Tables = () => {
     const walletStore: WalletStore = stores.Wallet;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
-    const [loadingOperators, setLoadingOperators] = useState(false);
-    const [loadingValidators, setLoadingValidators] = useState(false);
+    const [loadingOperators, setLoadingOperators] = useState(true);
+    const [loadingValidators, setLoadingValidators] = useState(true);
     const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
     const [validatorsPagination, setValidatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
 
-    useEffect(() => {
+    // @ts-ignore
+    useEffect(async () => {
+        async function fetchData() {
+            await loadItems('validators');
+            await loadItems('operators');
+        }
         if (walletStore.accountAddress) {
+            fetchData();
             // console.log('<<<<<<<<<here>>>>>>>>>');
             // console.log(operators.length);
             // console.log(validators.length);
             // console.log('<<<<<<<<<here>>>>>>>>>');
-            ApiParams.cleanStorage();
-            loadItems('validators');
-            loadItems('operators');
         }
     }, [walletStore.accountAddress]);
     /**
@@ -42,7 +45,7 @@ const Tables = () => {
      * @param type
      * @param paginationPage
      */
-    const loadItems = async (type: string, paginationPage?: number) => {
+    async function loadItems(type: string, paginationPage?: number) {
         if (paginationPage) {
             ApiParams.saveInStorage(type, 'page', paginationPage);
         }
@@ -64,17 +67,17 @@ const Tables = () => {
             setValidatorsPagination(result.pagination);
             setLoadingValidators(false);
         }
-    };
+    }
 
     /**
      * When per page dropdown changed
      * @param type
      * @param perPage
      */
-    const onChangeRowsPerPage = (type: string, perPage: number) => {
+    function onChangeRowsPerPage(type: string, perPage: number) {
         ApiParams.saveInStorage(type, 'perPage', perPage);
         loadItems(type, 1);
-    };
+    }
 
     const operatorsRows = Rows({
         items: operators,
@@ -128,4 +131,4 @@ const Tables = () => {
     );
 };
 
-export default observer(Tables);
+export default React.memo(observer(Tables));

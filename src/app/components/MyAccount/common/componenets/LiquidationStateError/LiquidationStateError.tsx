@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useStyles } from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText.styles';
+import { useStyles } from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError.styles';
 
 const ErrorType = {
     Deposit: 0,
@@ -15,7 +15,7 @@ type Props = {
     marginTop?: string,
 };
 
-const ErrorText = (props: Props) => {
+const LiquidationStateError = (props: Props) => {
     const { errorType, marginTop } = props;
     const classes = useStyles();
 
@@ -46,4 +46,4 @@ const ErrorText = (props: Props) => {
     );
 };
 
-export default observer(ErrorText);
+export default observer(LiquidationStateError);

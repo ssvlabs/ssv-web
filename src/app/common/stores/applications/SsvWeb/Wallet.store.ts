@@ -113,7 +113,7 @@ class WalletStore extends BaseStore implements Wallet {
         this.setAccountDataLoaded(false);
         if (address === undefined) {
             this.accountAddress = address;
-            this.ssvStore.initSettings();
+            this.ssvStore.clearSettings();
             window.localStorage.removeItem('selectedWallet');
         } else {
             this.accountAddress = address;

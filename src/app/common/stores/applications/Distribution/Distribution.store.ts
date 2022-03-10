@@ -91,8 +91,8 @@ class DistributionStore extends BaseStore {
                 const merkleTreeUser = merkleTree.claims[address];
                 this.userAddress = address;
                 this.rewardIndex = merkleTreeUser.index;
+                this.rewardAmount = merkleTreeUser.amount;
                 this.rewardMerkleProof = merkleTreeUser.proof;
-                this.rewardAmount = parseInt(merkleTreeUser.amount, 16);
             }
         });
     }

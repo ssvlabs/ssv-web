@@ -67,8 +67,15 @@ const ValidatorDropDownMenu = (props: Props) => {
           {operators.map((operator: any, operatorIndex: number) => {
                         return (
                           <Grid key={operatorIndex} item container xs={12} className={classes.OperatorWrapper}>
-                            <Grid item><NameAndAddress address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`} name={operator.name} /></Grid>
-                            <Grid item xs><SsvAndSubTitle ssv={ssvStore.getFeeForYear(operator.fee)} subText={'/year'} /></Grid>
+                            <Grid item>
+                              <NameAndAddress
+                                address={`0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`}
+                                name={operator.name}
+                              />
+                            </Grid>
+                            <Grid item xs>
+                              <SsvAndSubTitle ssv={ssvStore.getFeeForYear(operator.fee)} subText={'/year'} />
+                            </Grid>
                           </Grid>
                         );
           })}

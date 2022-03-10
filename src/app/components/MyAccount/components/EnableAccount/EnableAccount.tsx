@@ -32,6 +32,10 @@ const EnableAccount = () => {
         redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
+    useEffect(() => {
+
+    }, []);
+
     const unableAccount = (fee: any) => {
         ssvStore.activateValidator(fee);
     };
@@ -64,11 +68,16 @@ const EnableAccount = () => {
                     </Grid>
                     <Grid item container>
                       {[].map((publicKey: any, index: number) => {
-                                  return (
-                                    <ValidatorDropDownMenu allOperatorsFee={allOperatorsFee} setTotalFee={setTotalFee}
-                                      key={index} index={index} validatorPublicKey={publicKey} />
-                                  );
-                              })}
+                            return (
+                              <ValidatorDropDownMenu
+                                key={index}
+                                index={index}
+                                setTotalFee={setTotalFee}
+                                validatorPublicKey={publicKey}
+                                allOperatorsFee={allOperatorsFee}
+                              />
+                            );
+                        })}
                     </Grid>
                   </Grid>
                 </Grid>

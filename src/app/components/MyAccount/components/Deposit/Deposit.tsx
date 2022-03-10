@@ -19,17 +19,27 @@ const Deposit = () => {
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const { redirectUrl, history } = useUserFlow();
-    const [inputValue, setInputValue] = useState(0.0);
+    const [inputValue, setInputValue] = useState('');
 
     useEffect(() => {
         redirectUrl && history.push(redirectUrl);
     }, [redirectUrl]);
 
-    const depositSsv = async () => {
+    async function depositSsv() {
         await ssvStore.deposit(inputValue.toString());
-        setInputValue(0.0);
-    };
-    depositSsv;
+        setInputValue('0.0');
+    }
+
+    function inputHandler(e: any) {
+        let value = e.target.value;
+        if (value === '') value = '0.0';
+        if (value > ssvStore.networkContractBalance) value = ssvStore.networkContractBalance;
+        setInputValue(`${+value}`);
+    }
+
+    function maxDeposit() {
+        setInputValue(String(ssvStore.networkContractBalance));
+    }
 
     return (
       <div>
@@ -44,21 +54,22 @@ const Deposit = () => {
                           <Grid item container xs={12}>
                             <Grid item xs={6}>
                               <IntegerInput
+                                min="0"
                                 type="number"
-                                onChange={(e) => { // @ts-ignore
-                                                setInputValue(e.target.value); }}
                                 value={inputValue}
+                                placeholder={'0.0'}
+                                onChange={inputHandler}
                                 className={classes.Balance}
                               />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                              <Grid item onClick={() => { setInputValue(ssvStore.ssvContractBalance); }} className={classes.MaxButton}>
+                              <Grid item onClick={maxDeposit} className={classes.MaxButton}>
                                 MAX
                               </Grid>
                               <Grid item className={classes.MaxButtonText}>SSV</Grid>
                             </Grid>
                           </Grid>
-                          <Grid item xs={12} className={classes.WalletBalance} onClick={() => { setInputValue(ssvStore.ssvContractBalance); }}>
+                          <Grid item xs={12} className={classes.WalletBalance} onClick={maxDeposit}>
                             Wallet Balance: {formatNumberToUi(ssvStore.ssvContractBalance)} SSV
                           </Grid>
                         </Grid>
@@ -66,7 +77,7 @@ const Deposit = () => {
                     ),
                     (
                       <>
-                        <RemainingDays fromPage={'deposit'} desiredAmount={inputValue} />
+                        <RemainingDays newRemainingDays={`+${formatNumberToUi(ssvStore.getRemainingDays(Number(inputValue)), true)}`} />
                       </>
                     ),
           ]}
@@ -75,7 +86,7 @@ const Deposit = () => {
               withAllowance
               text={'Deposit'}
               onClick={depositSsv}
-              disable={ssvStore.ssvContractBalance === 0 || inputValue <= 0}
+              disable={ssvStore.ssvContractBalance === 0 || Number(inputValue) <= 0}
             />
           )}
         />

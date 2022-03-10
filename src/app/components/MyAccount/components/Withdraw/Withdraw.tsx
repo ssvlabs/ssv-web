@@ -1,13 +1,11 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
-import Typography from '@material-ui/core/Typography';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays';
@@ -35,13 +33,13 @@ const Withdraw = () => {
         }
     }, [inputValue]);
 
-    const withdrawSsv = async () => {
+    function withdrawSsv() {
         ssvStore.withdrawSsv(inputValue.toString()).then((success: boolean) => {
             if (success) setInputValue(0.0);
         });
-    };
+    }
 
-    const inputHandler = (e: any) => {
+    function inputHandler(e: any) {
         const value = e.target.value;
         if (value > ssvStore.networkContractBalance) {
             setInputValue(ssvStore.networkContractBalance);
@@ -50,7 +48,11 @@ const Withdraw = () => {
         } else {
             setInputValue(value);
         }
-    };
+    }
+
+    function maxValue() {
+        setInputValue(ssvStore.networkContractBalance);
+    }
 
     const secondBorderScreen = [(
       <Grid item container>
@@ -65,7 +67,7 @@ const Withdraw = () => {
               />
             </Grid>
             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-              <Grid item onClick={() => { setInputValue(ssvStore.networkContractBalance); }} className={classes.MaxButton}>
+              <Grid item onClick={maxValue} className={classes.MaxButton}>
                 MAX
               </Grid>
               <Grid item className={classes.MaxButtonText}>SSV</Grid>
@@ -79,7 +81,8 @@ const Withdraw = () => {
     )];
 
     if (ssvStore.isValidatorState) {
-     secondBorderScreen.push((<RemainingDays fromPage={'withdraw'} desiredAmount={inputValue} />));
+        const remainDays = ssvStore.getRemainingDays(ssvStore.networkContractBalance - (ssvStore.networkContractBalance - Number(inputValue)));
+     secondBorderScreen.push((<RemainingDays withdraw newRemainingDays={`-${formatNumberToUi(remainDays, true)}`} />));
     }
 
     return (
@@ -107,28 +110,14 @@ const Withdraw = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={(
-            <Grid item xs={12}>
-              <FormControlLabel
-                onClick={() => { setUserAgreement(!userAgree); }}
-                style={{ marginBottom: '10px' }}
-                control={(
-                  <Grid className={classes.CheckboxWrapper}>
-                    <Grid className={userAgree ? classes.Checkbox : ''} />
-                  </Grid>
-                )}
-                label={(
-                  <Typography className={classes.Agreement}>
-                    I understand that withdrawing this amount will liquidate my account
-                  </Typography>
-                )}
+            <PrimaryWithAllowance
+              withAllowance
+              text={'Withdraw'}
+              onClick={withdrawSsv}
+              checkBoxesCallBack={[setUserAgreement]}
+              disable={!userAgree || inputValue === 0}
+              checkboxesText={['I understand that risks of having my account liquidated.']}
               />
-              <PrimaryWithAllowance
-                text={'Withdraw'}
-                disable={!userAgree || inputValue === 0}
-                onClick={withdrawSsv}
-                withAllowance
-              />
-            </Grid>
           )}
           />
       </>

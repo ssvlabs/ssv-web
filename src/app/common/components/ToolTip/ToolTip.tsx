@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { getImage } from '~lib/utils/filePath';
 import { useStyles } from './ToolTip.styles';
+import Typography from '@material-ui/core/Typography';
 
 type ToolTipProps = {
     link?: any,
@@ -20,9 +21,9 @@ const ToolTip = ({ text, link }: ToolTipProps) => {
       >
         <img className={classes.ToolTip} src={getImage('hint.svg')} />
         {isShown && (
-          <div className={classes.toolTipText}>
+          <Typography className={classes.toolTipText}>
             {text}
-          </div>
+          </Typography>
         )}
       </Grid>
     );

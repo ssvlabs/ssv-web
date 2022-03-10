@@ -68,8 +68,8 @@ class SsvStore extends BaseStore {
         const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
         const ssvAmount = amount ?? this.networkContractBalance;
-        if (burnRatePerDay === 0) return ssvAmount - liquidationCollateral ?? 0;
-        return ssvAmount / burnRatePerDay - liquidationCollateral ?? 0;
+        if (burnRatePerDay === 0) return Math.max(ssvAmount - liquidationCollateral, 0);
+        return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
     }
 
     /**
@@ -168,7 +168,7 @@ class SsvStore extends BaseStore {
      * Init settings
      */
     @action.bound
-    initSettings() {
+    clearSettings() {
         this.ssvContractBalance = 0;
         this.networkFee = 0;
         this.accountBurnRate = 0;

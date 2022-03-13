@@ -55,7 +55,6 @@ class Operator {
         };
         const response: any = await new ApiRequest(requestInfo).sendRequest();
         this.operators = response.operators;
-        console.log(response.pagination);
         this.pagination = response.pagination;
         return response;
     }

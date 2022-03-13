@@ -2,6 +2,9 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => createStyles({
     Root: {
+        '& p, select, input': {
+            color: theme.colors.black,
+        },
         textAlign: 'center',
         alignItems: 'center',
         padding: '20px 32px 32px 32px',
@@ -29,9 +32,9 @@ export const useStyles = makeStyles((theme) => createStyles({
         height: 36,
         padding: 6,
         borderRadius: 8,
-        cursor: 'pointer',
-        border: `solid 1px ${theme.colors.gray20}`,
+        cursor: (props: any) => props.firstPage ? 'normal' : 'pointer',
         backgroundColor: (props: any) => props.firstPage ? theme.colors.gray10 : theme.colors.white,
+        border: (props: any) => `solid 1px ${props.firstPage ? theme.colors.gray20 : theme.colors.gray30}`,
         '& div': {
             width: 24,
             height: 24,
@@ -46,9 +49,10 @@ export const useStyles = makeStyles((theme) => createStyles({
         height: 36,
         padding: 6,
         borderRadius: 8,
-        cursor: 'pointer',
-        border: `solid 1px ${theme.colors.gray20}`,
+        cursor: (props: any) => props.lastPage ? 'normal' : 'pointer',
         backgroundColor: (props: any) => props.lastPage ? theme.colors.gray10 : theme.colors.white,
+        // eslint-disable-next-line no-nested-ternary
+        border: (props: any) => `solid 1px ${props.lastPage ? theme.colors.gray20 : theme.colors.gray30}`,
         '& div': {
             width: 24,
             height: 24,
@@ -59,22 +63,26 @@ export const useStyles = makeStyles((theme) => createStyles({
         },
     },
     SingleLeft: {
-        cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
+        // cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
         backgroundImage: (props: any) => props.firstPage ? 'url(/images/page_arrows/single/disable.svg)' : 'url(/images/page_arrows/single/black.svg)',
     },
     ManyLeft: {
-        cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
+        // cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
         backgroundImage: (props: any) => props.firstPage ? 'url(/images/page_arrows/many/disable.svg)' : 'url(/images/page_arrows/many/black.svg)',
     },
     SingleRight: {
         transform: 'scaleX(-1)',
-        cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
+        // cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
         backgroundImage: (props: any) => props.lastPage ? 'url(/images/page_arrows/single/disable.svg)' : 'url(/images/page_arrows/single/black.svg)',
     },
     ManyRight: {
         transform: 'scaleX(-1)',
         cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
         backgroundImage: (props: any) => props.lastPage ? 'url(/images/page_arrows/many/disable.svg)' : 'url(/images/page_arrows/many/black.svg)',
+    },
+    PageWrapper: {
+        alignItems: 'center',
+        justifyContent: 'space-around',
     },
     PageNumber: {
         width: 54,
@@ -94,5 +102,6 @@ export const useStyles = makeStyles((theme) => createStyles({
     },
     PageEditor: {
         textAlign: 'center',
+        backgroundColor: theme.colors.white,
     },
 }));

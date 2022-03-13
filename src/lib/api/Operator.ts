@@ -12,11 +12,14 @@ type OperatorsListQuery = {
 };
 
 class Operator {
+    operators: any = null;
+    pagination: any = null;
     private static instance: Operator;
     private readonly baseUrl: string = '';
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
+        setInterval(this.clearOperatorsCache.bind(this), 600000);
     }
 
     static getInstance(): Operator {
@@ -30,10 +33,16 @@ class Operator {
         return 'prater';
     }
 
+    clearOperatorsCache() {
+        this.operators = null;
+        this.pagination = null;
+    }
+
     /**
      * Get operators by owner Address
      */
     async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
+        if (this.pagination?.page === page && this.pagination.per_page === perPage) return { pagination: this.pagination, operators: this.operators };
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
         const requestInfo: RequestData = {
             url: operatorsEndpointUrl,
@@ -45,6 +54,9 @@ class Operator {
             errorCallback: () => {},
         };
         const response: any = await new ApiRequest(requestInfo).sendRequest();
+        this.operators = response.operators;
+        console.log(response.pagination);
+        this.pagination = response.pagination;
         return response;
     }
 

@@ -18,6 +18,7 @@ const Tables = () => {
     const classes = useStyles();
     const defaultOperators: any[] = [];
     const ssvStore: SsvStore = stores.SSV;
+    const OperatorApi = Operator.getInstance();
     const walletStore: WalletStore = stores.Wallet;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
@@ -28,18 +29,12 @@ const Tables = () => {
 
     // @ts-ignore
     useEffect(async () => {
-        async function fetchData() {
-            await loadItems('validators');
-            await loadItems('operators');
-        }
         if (walletStore.accountAddress) {
-            fetchData();
-            // console.log('<<<<<<<<<here>>>>>>>>>');
-            // console.log(operators.length);
-            // console.log(validators.length);
-            // console.log('<<<<<<<<<here>>>>>>>>>');
+             loadItems('validators');
+             loadItems('operators');
         }
     }, [walletStore.accountAddress]);
+
     /**
      * Loading operators by page
      * @param type
@@ -55,16 +50,39 @@ const Tables = () => {
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            const result = await OperatorApi.getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
             setOperators(result.operators);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
-            if (result.validators.length > 0) ssvStore.userState = 'validator';
-            setValidators(result.validators);
-            setValidatorsPagination(result.pagination);
+            try {
+                const result: any = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+                let paginationValidators = result?.validators;
+                if (paginationValidators?.length) {
+                    const validatorsOwnerAddresses = paginationValidators.map((v: { public_key: string; }) => v.public_key);
+                    const balances = await Validator.getInstance().getValidatorsBalances(validatorsOwnerAddresses);
+                    const hashedBalances = balances.reduce((obj: any, item: { pubkey: any; value: any; }) => ({
+                        ...obj,
+                        [item.pubkey]: item,
+                    }), {});
+                    const detailedValidators = [];
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const validator of paginationValidators) {
+                        const validatorPublicKey = `0x${validator.public_key}`;
+                        const validatorBalance = hashedBalances[validatorPublicKey];
+                        // eslint-disable-next-line no-await-in-loop
+                        const detailedValidator = await Validator.getInstance().buildValidatorStructure(validatorPublicKey, validatorBalance);
+                        detailedValidators.push(detailedValidator);
+                    }
+                    paginationValidators = detailedValidators;
+                }
+                if (paginationValidators.length > 0) ssvStore.userState = 'validator';
+                setValidators(paginationValidators);
+                setValidatorsPagination(result.pagination);
+            } catch (e) {
+                console.log(e.message);
+            }
             setLoadingValidators(false);
         }
     }

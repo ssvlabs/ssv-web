@@ -4,6 +4,8 @@ import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 
 class Validator {
+    validators: any = null;
+    pagination: any = null;
     private static instance: Validator;
     private readonly baseUrl: string = '';
 
@@ -26,7 +28,7 @@ class Validator {
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
         const requestInfo: RequestData = {
             url: operatorsEndpointUrl,
-            method: 'GET',
+            method: 'GETt',
             headers: [
                 { name: 'content-type', value: 'application/json' },
                 { name: 'accept', value: 'application/json' },
@@ -34,21 +36,8 @@ class Validator {
             errorCallback: () => { },
         };
         const response: any = await new ApiRequest(requestInfo).sendRequest();
-        if (response.validators?.length) {
-            const validatorsOwnerAddresses = response.validators.map((v: { public_key: string; }) => v.public_key);
-            const balances = await this.getValidatorsBalances(validatorsOwnerAddresses);
-            const hashedBalances = balances.reduce((obj: any, item: { pubkey: any; value: any; }) => ({ ...obj, [item.pubkey]: item }), {});
-            const detailedValidators = [];
-            // eslint-disable-next-line no-restricted-syntax
-            for (const validator of response.validators) {
-                const validatorPublicKey = `0x${validator.public_key}`;
-                const validatorBalance = hashedBalances[validatorPublicKey];
-                // eslint-disable-next-line no-await-in-loop
-                const detailedValidator = await this.buildValidatorStructure(validatorPublicKey, validatorBalance);
-                detailedValidators.push(detailedValidator);
-            }
-            response.validators = detailedValidators;
-        }
+        this.validators = response.operators;
+        this.pagination = response.pagination;
         return response;
     }
 

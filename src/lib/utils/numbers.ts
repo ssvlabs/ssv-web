@@ -44,7 +44,7 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
     return floatString;
 };
 
-export const formatNumberToUi = (num: number, days?: boolean) => {
+export const formatNumberToUi = (num?: number, days?: boolean) => {
     // eslint-disable-next-line eqeqeq
     if (!num || num == 0 || Number.isNaN(num)) return '0';
     const splitNumber = num.toString().split('.');

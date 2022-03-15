@@ -65,15 +65,18 @@ const ImportValidator = () => {
     setErrorMessage('');
     validatorStore.setPassword(e.target.value);
   };
+  const validatorSelectionPage = () => {
+    operatorStore.unselectAllOperators();
+    applicationStore.setIsLoading(false);
+    history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+  };
 
   const submitHandler = () => {
-    const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
     validatorStore.extractPrivateKey().then(() => {
       const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
       return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
         const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
         if (response.data !== null && conditionalDataExtraction?.valid_signature) {
-          operatorStore.unselectAllOperators();
           validatorSelectionPage();
         } else {
           history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);

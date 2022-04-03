@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import config from '~app/common/config';
@@ -176,17 +176,18 @@ const MyAccount = () => {
             return { publicKey, status, balance, apr };
         });
     };
-
-    const validatorsRows = Rows({
+    
+    const validatorsRows = useMemo(() => Rows({
         items: validators,
         shouldDisplayStatus: displayStatus,
         shouldDisplayValidators: displayValidators,
-    });
-    const operatorsRows = Rows({
+    }), [validators, displayStatus, displayValidators]);
+
+    const operatorsRows = useMemo(() => Rows({
         items: operators,
         shouldDisplayStatus: displayStatus,
         shouldDisplayValidators: displayValidators,
-    });
+    }), [operators, displayStatus, displayValidators]);
 
     return (
       <Grid container className={classes.Wrapper}>

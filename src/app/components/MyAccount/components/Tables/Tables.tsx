@@ -28,16 +28,9 @@ const Tables = () => {
 
     // @ts-ignore
     useEffect(async () => {
-        async function fetchData() {
+        if (walletStore.accountAddress) {
             await loadItems('validators');
             await loadItems('operators');
-        }
-        if (walletStore.accountAddress) {
-            fetchData();
-            // console.log('<<<<<<<<<here>>>>>>>>>');
-            // console.log(operators.length);
-            // console.log(validators.length);
-            // console.log('<<<<<<<<<here>>>>>>>>>');
         }
     }, [walletStore.accountAddress]);
     /**
@@ -62,7 +55,7 @@ const Tables = () => {
         } else {
             setLoadingValidators(true);
             const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
-            if (result.validators.length > 0) ssvStore.userState = 'validator';
+            if (result?.validators?.length > 0) ssvStore.userState = 'validator';
             setValidators(result.validators);
             setValidatorsPagination(result.pagination);
             setLoadingValidators(false);
@@ -79,6 +72,11 @@ const Tables = () => {
         loadItems(type, 1);
     }
 
+    // const operatorsRows = Rows({
+    //     items: operators,
+    //     shouldDisplayStatus: true,
+    //     shouldDisplayValidators: true,
+    // });
     const operatorsRows = Rows({
         items: operators,
         shouldDisplayStatus: true,
@@ -90,6 +88,10 @@ const Tables = () => {
         shouldDisplayStatus: true,
         shouldDisplayValidators: true,
     });
+
+    console.log('render');
+    // console.log(operators);
+    // console.log(validators.length);
 
     return (
       <Grid container item className={classes.Table}>

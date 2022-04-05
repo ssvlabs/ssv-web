@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import React, { useRef, useState } from 'react';
-import ApiRequest from '~lib/utils/ApiRequest';
+// import ApiRequest from '~lib/utils/ApiRequest';
 import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import TextInput from '~app/common/components/TextInput';
@@ -15,6 +15,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
+import axios from 'axios';
 
 const ImportValidator = () => {
     const stores = useStores();
@@ -61,13 +62,16 @@ const ImportValidator = () => {
 
     const isDeposited = async (): Promise<boolean> => {
         const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
-        const response: any = await new ApiRequest({
-            url: beaconChaValidatorUrl,
-            method: 'GET',
-            errorCallback: validatorSelectionPage,
-        }).sendRequest();
-        const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
-        return response.data !== null && conditionalDataExtraction?.valid_signature;
+        const response: any = await axios.get(beaconChaValidatorUrl);
+        console.log(response);
+        // const response: any = await new ApiRequest({
+        //     url: beaconChaValidatorUrl,
+        //     method: 'GET',
+        //     errorCallback: validatorSelectionPage,
+        // }).sendRequest();
+        const conditionalDataExtraction = Array.isArray(response.data.data) ? response.data[0].data : response.data.data;
+        console.log(conditionalDataExtraction);
+        return response.data.data !== null && conditionalDataExtraction?.valid_signature;
     };
 
     const removeFile = () => {

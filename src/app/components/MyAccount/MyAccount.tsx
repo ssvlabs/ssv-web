@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import React, { useState, useEffect, useRef } from 'react';
 import config from '~app/common/config';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -48,7 +49,7 @@ const MyAccount = () => {
           </Grid>
           <Grid item xs={6}>
             <Grid ref={wrapperRef} className={classes.AddButton} onClick={() => { displayDropDownMenu(!dropDownMenu); }}>
-              <Grid className={classes.AddButtonText}>+ Add</Grid>
+              <Typography className={classes.AddButtonText}>+ Add</Typography>
               {dropDownMenu && (
                 <Grid container className={classes.AddButtonDropDown}>
                   <Grid item xs={12}

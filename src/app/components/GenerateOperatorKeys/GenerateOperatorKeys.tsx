@@ -134,10 +134,9 @@ const GenerateOperatorKeys = () => {
                   withHint
                   toolTipText={(
                     <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                      <LinkText text={'documentation.'} link={'https://docs.ssv.network/operators/install-instructions'} />
+                      <LinkText text={'documentation.'} link={config.links.TOOL_TIP_KEY_LINK} />
                     </div>
                   )}
-                  toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                 />
                 <TextInput
                   value={inputsData.publicKey}
@@ -153,10 +152,10 @@ const GenerateOperatorKeys = () => {
               {process.env.REACT_APP_NEW_STAGE && (
                 <Grid item className={classes.GridItem}>
                   <InputLabel
-                    title="yearly fee per validator"
                     withHint
+                    title="Yearly Fee Per Validator"
+                    // toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                     toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                    toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                   />
                   <TextInput
                     withSideText

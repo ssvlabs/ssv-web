@@ -60,9 +60,10 @@ const FirstSquare = () => {
         // skeletons = [0, 1, 2, 3, 4, 5, 6];
     }
 
-    const getOperators = (page: number) => {
-        if (page > operatorsPagination.pages) return;
-        const ordering: string = `type${sortBy || sortOrder ? `,${sortBy}:${sortOrder}` : ''}`;
+    const getOperators = async (page: number) => {
+        if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
+        const ordering: string = `${sortBy ? `,${sortBy}:${sortOrder}` : 'type'}`;
+
         const payload = {
             page,
             ordering,
@@ -73,19 +74,18 @@ const FirstSquare = () => {
         };
         setLoading(true);
 
-        Operator.getInstance().getOperators(payload).then((response: any) => {
-            if (response.pagination.page > 1) {
-                setOperatorsData([...operatorsData, ...response.operators]);
-            } else {
-                setOperatorsData(response.operators);
-            }
+        const response = await Operator.getInstance().getOperators(payload);
+        if (response.pagination.page > 1) {
+            setOperatorsData([...operatorsData, ...response.operators]);
+        } else {
+            setOperatorsData(response.operators);
+        }
 
-            setOperatorsPagination(response.pagination);
-            if (response.pagination.page === 1 && scrollRef.current) {
-                scrollRef.current.scrollTo(0, 0);
-            }
-            setLoading(false);
-        });
+        setOperatorsPagination(response.pagination);
+        if (response.pagination.page === 1 && scrollRef.current) {
+            scrollRef.current.scrollTo(0, 0);
+        }
+        setLoading(false);
     };
 
     const selectOperator = (e: any, operator: IOperator) => {

@@ -41,9 +41,7 @@ export const useStyles = makeStyles((theme) => ({
         float: 'right',
         borderRadius: 8,
         cursor: 'pointer',
-        textAlign: 'center',
         textDecoration: 'none',
-        padding: '8px 28px 8px 29px',
         backgroundColor: theme.colors.tint90,
     },
     MyBalanceWrapper: {
@@ -52,8 +50,6 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     AddButtonText: {
-        width: 43,
-        height: 20,
         fontSize: 16,
         fontWeight: 600,
         lineHeight: 1.25,

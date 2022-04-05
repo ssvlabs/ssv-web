@@ -70,7 +70,7 @@ class OperatorStore extends BaseStore {
         let sum: number = 0;
         // @ts-ignore
         Object.keys(this.selectedOperators).forEach((index: number) => {
-            const fee = this.operatorsFees[this.selectedOperators[index].public_key].ssv;
+            const fee = this.operatorsFees[this.selectedOperators[index].public_key]?.ssv ?? 0;
             // @ts-ignore
             sum += parseFloat(fee);
         });

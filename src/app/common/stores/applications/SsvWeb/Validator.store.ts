@@ -1,6 +1,6 @@
 import { Contract } from 'web3-eth-contract';
-import { action, observable, computed } from 'mobx';
 import EthereumKeyStore from 'eth2-keystore-js';
+import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { roundCryptoValueString } from '~lib/utils/numbers';

@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
-import { getImage } from '~lib/utils/filePath';
 import { useStyles } from './ToolTip.styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -19,11 +18,10 @@ const ToolTip = ({ text, link }: ToolTipProps) => {
         onMouseEnter={() => setIsShown(true)}
         onMouseLeave={() => setIsShown(false)}
       >
-        <img className={classes.ToolTip} src={getImage('hint.svg')} />
         {isShown && (
-          <Typography className={classes.toolTipText}>
-            {text}
-          </Typography>
+          <Grid className={classes.toolTipText}>
+            <Typography>{text}</Typography>
+          </Grid>
         )}
       </Grid>
     );

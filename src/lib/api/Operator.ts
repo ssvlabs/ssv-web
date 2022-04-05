@@ -1,5 +1,5 @@
 import config from '~app/common/config';
-import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import axios from 'axios';
 
 type OperatorsListQuery = {
     page?: number,
@@ -35,17 +35,8 @@ class Operator {
      */
     async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
-        const requestInfo: RequestData = {
-            url: operatorsEndpointUrl,
-            method: 'GET',
-            headers: [
-                { name: 'content-type', value: 'application/json' },
-                { name: 'accept', value: 'application/json' },
-            ],
-            errorCallback: () => {},
-        };
-        const response: any = await new ApiRequest(requestInfo).sendRequest();
-        return response;
+        const response: any = await axios.get(operatorsEndpointUrl);
+        return response.data;
     }
 
     /**
@@ -62,17 +53,8 @@ class Operator {
         if (perPage) operatorsEndpointUrl += `perPage=${perPage}&`;
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
-        const requestInfo: RequestData = {
-            url: operatorsEndpointUrl,
-            method: 'GET',
-            headers: [
-                { name: 'content-type', value: 'application/json' },
-                { name: 'accept', value: 'application/json' },
-            ],
-            errorCallback: () => {},
-        };
-        const response: any = await new ApiRequest(requestInfo).sendRequest();
-        return response;
+        const response: any = await axios.get(operatorsEndpointUrl);
+        return response.data;
     }
 }
 

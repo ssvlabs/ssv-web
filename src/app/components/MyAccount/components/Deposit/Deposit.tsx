@@ -8,16 +8,18 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 // import CTAButton from '~app/common/components/CTAButton';
 import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
-import { useStyles } from './Deposit.styles';
 import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
+import { useStyles } from './Deposit.styles';
 
 const Deposit = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
+    const applicationStore: ApplicationStore = stores.Application;
     const { redirectUrl, history } = useUserFlow();
     const [inputValue, setInputValue] = useState('');
 
@@ -26,19 +28,21 @@ const Deposit = () => {
     }, [redirectUrl]);
 
     async function depositSsv() {
+        applicationStore.setIsLoading(true);
         await ssvStore.deposit(inputValue.toString());
         setInputValue('0.0');
+        applicationStore.setIsLoading(false);
     }
 
     function inputHandler(e: any) {
         let value = e.target.value;
         if (value === '') value = '0.0';
-        if (value > ssvStore.networkContractBalance) value = ssvStore.networkContractBalance;
+        if (value > ssvStore.walletSsvBalance) value = ssvStore.walletSsvBalance;
         setInputValue(`${+value}`);
     }
 
     function maxDeposit() {
-        setInputValue(String(ssvStore.networkContractBalance));
+        setInputValue(String(ssvStore.walletSsvBalance));
     }
 
     return (
@@ -70,14 +74,14 @@ const Deposit = () => {
                             </Grid>
                           </Grid>
                           <Grid item xs={12} className={classes.WalletBalance} onClick={maxDeposit}>
-                            Wallet Balance: {formatNumberToUi(ssvStore.ssvContractBalance)} SSV
+                            Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
                           </Grid>
                         </Grid>
                       </Grid>
                     ),
                     (
                       <>
-                        <RemainingDays newRemainingDays={`+${formatNumberToUi(ssvStore.getRemainingDays(Number(inputValue)), true)}`} />
+                        <RemainingDays operator={'+'} newRemainingDays={ssvStore.getRemainingDays(Number(inputValue))} />
                       </>
                     ),
           ]}
@@ -86,7 +90,7 @@ const Deposit = () => {
               withAllowance
               text={'Deposit'}
               onClick={depositSsv}
-              disable={ssvStore.ssvContractBalance === 0 || Number(inputValue) <= 0}
+              disable={Number(inputValue) <= 0}
             />
           )}
         />

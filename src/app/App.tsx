@@ -4,13 +4,12 @@ import { useHistory } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { BrowserView, MobileView } from 'react-device-detect';
+import Routes from '~app/Routes/Routes';
 import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar';
-import Routes from '~app/components/Routes/Routes';
-// import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MobileNotSupported from '~app/components/MobileNotSupported';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -39,7 +38,7 @@ const App = () => {
             history.push(applicationStore.strategyRedirect);
         }
     }, [walletStore.accountDataLoaded]);
-    
+
     return (
       <MuiThemeProvider theme={applicationStore.theme}>
         <GlobalStyle />

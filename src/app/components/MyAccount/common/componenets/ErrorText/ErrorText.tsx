@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useStyles } from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText.styles';
+import LinkText from '~app/common/components/LinkText';
 
 const ErrorType = {
     Deposit: 0,
@@ -40,7 +41,7 @@ const ErrorText = (props: Props) => {
           {renderText()}
         </Grid>
         <Grid item className={classes.LinkText}>
-          <a href={'/a'}>Read more on liquidations</a>
+          <LinkText text={'Read more on liquidations'} link={''} />
         </Grid>
       </Grid>
     );

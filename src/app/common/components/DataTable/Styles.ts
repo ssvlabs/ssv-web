@@ -123,17 +123,6 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 18,
         borderRadius: 16,
         backgroundColor: theme.colors.white,
-        // '& h3': {
-        //     fontSize: 20,
-        //     lineHeight: 1.4,
-        //     fontWeight: 'bold',
-        //     paddingLeft: '15px',
-        //     fontFamily: defaultFont,
-        //     color: theme.colors.gray40,
-        // },
-        '& > .MuiTableContainer-root': {
-            // borderRadius: 16,
-        },
         '& .MuiTableCell-head': {
             height: 36,
             fontSize: 12,
@@ -147,8 +136,14 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.colors.white,
         },
         '& .MuiTableCell-body': {
-            height: 'fit-content',
-            padding: '12px 0 16px 32px',
+            '&:first-of-type': {
+                padding: '12px 0px 12px 36px',
+            },
+            '&:last-of-type': {
+                padding: '12px 36px 12px 36px',
+            },
+            width: 'fit-content',
+            padding: '12px 0px 12px 30px',
         },
     },
     TableHeader: {
@@ -163,12 +158,13 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray40,
     },
     TableCell: {
-        // borderBottom: 'none',
-        // textTransform: 'capitalize',
-        // lineHeight: '1.62 !important',
-        // backgroundColor: 'transparent',
-        // fontWeight: '500 !important' as any,
-        // color: `${theme.colors.gray40} !important`,
+    },
+    TableCellText: {
+        fontSize: 12,
+        marginRight: 4,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        color: theme.colors.gray40,
     },
     Link: {
         display: 'inline-flex',

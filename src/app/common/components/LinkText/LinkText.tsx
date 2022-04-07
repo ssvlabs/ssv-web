@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useStyles } from './LinkText.styles';
+import Typography from '@material-ui/core/Typography';
 
 type MessageDivProps ={
     text: string
@@ -16,7 +16,7 @@ const LinkText = ({ text, link }: MessageDivProps) => {
     };
 
     return (
-      <Grid item className={classes.Link} onClick={openLink}>{text}</Grid>
+      <Typography className={classes.Link} onClick={openLink}>{text}</Typography>
     );
 };
 

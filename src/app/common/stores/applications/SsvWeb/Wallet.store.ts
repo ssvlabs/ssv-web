@@ -4,9 +4,12 @@ import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
+import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
+import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -118,6 +121,10 @@ class WalletStore extends BaseStore implements Wallet {
         } else {
             this.accountAddress = address;
             await this.initializeUserInfo();
+            const applicationStore: Application = this.getStore('Application');
+            const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
+            const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress(1, 5, address);
+            applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? '/dashboard' : '/';
         }
         this.setAccountDataLoaded(true);
     }
@@ -139,8 +146,7 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async balanceHandler() {
-        // if (!process.env.REACT_APP_NEW_STAGE) return;
-        // await this.ssvStore.initUser();
+        await this.initializeUserInfo();
     }
 
     /**
@@ -159,23 +165,23 @@ class WalletStore extends BaseStore implements Wallet {
     }
 
     /**
-     * User address handler
-     * @param operatorKey: string
+     * encode key
+     * @param key
      */
     @action.bound
-    encodeKey(operatorKey?: string) {
-        if (!operatorKey) return '';
-        return this.web3.eth.abi.encodeParameter('string', operatorKey);
+    encodeKey(key?: string) {
+        if (!key) return '';
+        return this.web3?.eth.abi.encodeParameter('string', key);
     }
 
     /**
-     * User address handler
-     * @param operatorKey: string
+     * decode key
+     * @param key
      */
     @action.bound
-    decodeKey(operatorKey?: string) {
-        if (!operatorKey) return '';
-        return this.web3?.eth.abi.decodeParameter('string', operatorKey);
+    decodeKey(key?: string) {
+        if (!key) return '';
+        return this.web3?.eth.abi.decodeParameter('string', key);
     }
 
     /**

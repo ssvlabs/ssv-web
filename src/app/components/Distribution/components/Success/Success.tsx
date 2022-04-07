@@ -34,10 +34,10 @@ const Success = () => {
             />
             <Grid item container className={classes.AddSsvToWallet} onClick={distributionStore.registerSSVTokenInMetamask}>
               <Grid item className={classes.MetaMask} />
-              <Typography>Add SSV to Metamask</Typography>
+              <Typography component={'span'}>Add SSV to Metamask</Typography>
             </Grid>
             <Grid item xs className={classes.EtherScan} onClick={openEtherScan}>View Transaction on Etherscan</Grid>
-            <SecondaryButton onClick={openMarketingSite} text={'Learn more about the ssv network'} />
+            <SecondaryButton submitFunction={openMarketingSite} text={'Learn more about the ssv network'} />
           </Grid>,
         ]}
       />

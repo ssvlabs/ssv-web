@@ -22,11 +22,11 @@ export interface IOperator {
     score?: number,
     public_key: string,
     selected?: boolean,
-    verified?: boolean,
     dappNode?: boolean,
     ownerAddress: string,
     autoSelected?: boolean
     validatorsCount?: number,
+    verified_operator?: boolean,
 }
 
 export interface Operators {
@@ -92,8 +92,8 @@ class OperatorStore extends BaseStore {
     get stats(): { total: number, selected: number, selectedPercents: number } {
         const selected = Object.values(this.selectedOperators).length;
         return {
-            total: this.operators.length,
             selected,
+            total: this.operators.length,
             selectedPercents: ((selected / this.operators.length) * 100.0),
         };
     }

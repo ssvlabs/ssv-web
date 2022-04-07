@@ -12,14 +12,28 @@ import LiquidationStateError from '~app/components/MyAccount/common/componenets/
 
 type Props = {
     withdraw?: boolean,
-    newRemainingDays?: string
+    operator?: string,
+    newRemainingDays?: number
+};
+
+const math_it_up = {
+    // eslint-disable-next-line func-names
+    '+': function (x: any, y: any) {
+        return x + y;
+    },
+    // eslint-disable-next-line func-names
+    '-': function (x: number, y: number) {
+        return x - y;
+    },
 };
 
 const RemainingDays = (props: Props) => {
     const stores = useStores();
-    const { withdraw, newRemainingDays } = props;
+    const { withdraw, newRemainingDays, operator } = props;
     const ssvStore: SsvStore = stores.SSV;
-    const remainingDays = newRemainingDays ? ssvStore.getRemainingDays(ssvStore.networkContractBalance + Number(newRemainingDays)) : ssvStore.getRemainingDays();
+    const presentNewEstimation = Number(newRemainingDays) > 0;
+    // @ts-ignore
+    const remainingDays = operator ? ssvStore.getRemainingDays(math_it_up[operator](ssvStore.contractDepositSsvBalance, newRemainingDays)) : ssvStore.getRemainingDays();
     const warningState = remainingDays < 30;
     const classes = useStyles({ warning: warningState, withdraw });
 
@@ -27,22 +41,26 @@ const RemainingDays = (props: Props) => {
         if (newRemainingDays && Math.floor(remainingDays) === 0) return 3;
         return newRemainingDays ? 1 : 0;
     }
-    React.useEffect(() => {}, [ssvStore.networkContractBalance]);
-
+    React.useEffect(() => {}, [ssvStore.contractDepositSsvBalance]);
+    
     return (
       <Grid item container>
         <Grid item container>
           <Grid item container xs={12}>
             <Typography className={classes.AmountOfDaysText}>Est. Remaining Days</Typography>
-            <Typography className={classes.Hint}>
+            <Grid className={classes.Hint}>
               <Tooltip text={'need to implement'} />
-            </Typography>
+            </Grid>
           </Grid>
           <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>
           <Typography className={classes.Days}>
             days
           </Typography>
-          {newRemainingDays && <Grid item xs className={classes.NewDaysEstimation}>{`(${newRemainingDays})`}</Grid>}
+          {presentNewEstimation && (
+            <Grid item xs
+              className={classes.NewDaysEstimation}>{`(${operator ?? ''}${formatNumberToUi(newRemainingDays, true)})`}
+            </Grid>
+          )}
           {warningState && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays} />

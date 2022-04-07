@@ -28,14 +28,14 @@ import OperatorDetails from '~app/components/RegisterValidatorHome/components/Se
 
 const FirstSquare = () => {
     const stores = useStores();
-    const classes = useStyles();
+    const [loading, setLoading] = useState(false);
+    const classes = useStyles({ loading });
     const wrapperRef = useRef(null);
     const scrollRef: any = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
     const [filterBy, setFilterBy] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [sortOrder, setSortOrder] = useState('');
     const [searchInput, setSearchInput] = useState('');
     const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
@@ -183,10 +183,10 @@ const FirstSquare = () => {
                   <Grid container>
                     <Grid item>{operator.fee}</Grid>
                     {disabled && (
-                    <Grid item style={{ alignSelf: 'center' }}>
-                      <ToolTip text={'Operator reached  maximum amount of validators'} />
-                    </Grid>
-                          )}
+                      <Grid item style={{ alignSelf: 'center' }}>
+                        <ToolTip text={'Operator reached  maximum amount of validators'} />
+                      </Grid>
+                    )}
                   </Grid>
                 </StyledCell>
                 )}

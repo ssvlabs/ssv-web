@@ -62,15 +62,8 @@ const ImportValidator = () => {
 
     const isDeposited = async (): Promise<boolean> => {
         const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
-        const response: any = await axios.get(beaconChaValidatorUrl);
-        console.log(response);
-        // const response: any = await new ApiRequest({
-        //     url: beaconChaValidatorUrl,
-        //     method: 'GET',
-        //     errorCallback: validatorSelectionPage,
-        // }).sendRequest();
-        const conditionalDataExtraction = Array.isArray(response.data.data) ? response.data[0].data : response.data.data;
-        console.log(conditionalDataExtraction);
+        const response: any = (await axios.get(beaconChaValidatorUrl)).data;
+        const conditionalDataExtraction = Array.isArray(response.data) ? response[0].data : response.data;
         return response.data.data !== null && conditionalDataExtraction?.valid_signature;
     };
 

@@ -5,14 +5,13 @@ import { useStyles } from './ToolTip.styles';
 import Typography from '@material-ui/core/Typography';
 
 type ToolTipProps = {
-    link?: any,
     text?: string,
 };
 
-const ToolTip = ({ text, link }: ToolTipProps) => {
+const ToolTip = ({ text }: ToolTipProps) => {
     const [isShown, setIsShown] = useState(false);
     const classes = useStyles();
-    link;
+
     return (
       <Grid className={classes.ToolTipWrapper}
         onMouseEnter={() => setIsShown(true)}

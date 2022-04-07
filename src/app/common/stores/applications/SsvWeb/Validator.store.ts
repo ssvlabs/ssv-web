@@ -151,6 +151,7 @@ class ValidatorStore extends BaseStore {
       const encryptedKeys: string[] = encryptedShares.map((share: IShares) => {
         return walletStore.encodeKey(share.privateKey);
       });
+
       const payLoad = [
         thresholdResult.validatorPublicKey,
         operatorPublicKeys,

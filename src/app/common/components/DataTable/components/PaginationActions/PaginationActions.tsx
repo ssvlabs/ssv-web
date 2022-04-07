@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 // import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import { useStyles } from '~app/common/components/DataTable/components/PaginationActions/PaginationAction.styles';
 import IntegerInput from '~app/common/components/IntegerInput';
+import Typography from '@material-ui/core/Typography';
 
 interface TablePaginationActionsProps {
     count: number;
@@ -62,12 +63,12 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
     
     return (
       <Grid container className={classes.Root}>
-        <Grid item className={classes.PageRangeText}>
+        <Typography className={classes.PageRangeText}>
           {startAt} - {endAt} of {count}
-        </Grid>
+        </Typography>
         <Grid container item xs={9} spacing={1} style={{ marginLeft: 'auto' }}>
           <Grid container item className={classes.SelectFormWrapper} xs={5}>
-            <Grid item className={classes.PageRangeText}>Rows per page:</Grid>
+            <Typography className={classes.PageRangeText}>Rows per page:</Typography>
             <Grid item>
               <select defaultValue={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
                 <option value="5">5</option>
@@ -83,18 +84,16 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
               <Grid className={classes.SingleLeft} />
             </Grid>
           </Grid>
-          <Grid container item xs={3} style={{ alignItems: 'center' }} justify={'space-around'}>
+          <Grid container item xs={3} className={classes.PageWrapper}>
             <Grid item className={classes.PageNumber}>
               <IntegerInput
                 value={currentPage}
                 onChange={handleSetPage}
-                className={classes.PageEditor}
                 onBlur={changePageNumber}
+                className={classes.PageEditor}
               />
             </Grid>
-            <Grid item>
-              of {totalPages}
-            </Grid>
+            <Typography>of {totalPages}</Typography>
           </Grid>
           <Grid container item xs justify={'space-between'}>
             <Grid item className={classes.RightArrows} onClick={handleNextButtonClick}>

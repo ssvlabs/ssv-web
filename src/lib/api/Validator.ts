@@ -4,6 +4,8 @@ import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers'
 import axios from 'axios';
 
 class Validator {
+    validators: any = null;
+    pagination: any = null;
     private static instance: Validator;
     private readonly baseUrl: string = '';
 
@@ -23,6 +25,7 @@ class Validator {
     }
 
     async getValidatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
+        if (this.pagination?.page === page && this.pagination.per_page === perPage) return { pagination: this.pagination, validators: this.validators };
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
         const response: any = await axios.get(operatorsEndpointUrl);
         const apiResponseData = response.data;
@@ -42,6 +45,9 @@ class Validator {
             apiResponseData.validators = detailedValidators;
         }
 
+        this.validators = apiResponseData.validators;
+        this.pagination = apiResponseData.pagination;
+
         return apiResponseData;
     }
 
@@ -49,14 +55,12 @@ class Validator {
         try {
             const balanceUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${publicKeys.join(',')}`;
             const response: any = await axios.get(balanceUrl);
-            if (!Array.isArray(response.data)) {
-                response.data = [response.data];
+            const responseData = response.data;
+            if (!Array.isArray(responseData.data)) {
+                responseData.data = [responseData.data];
             }
-            return response.data;
+            return responseData.data;
         } catch (e) {
-            // console.log('<<<<<<<error>>>>>>>');
-            // console.log(e.message);
-            // console.log('<<<<<<<error>>>>>>>');
             return [];
         }
     }
@@ -64,7 +68,7 @@ class Validator {
     buildValidatorStructure = async (validator: string, data: any) => {
         if (!data) return { public_key: validator, status: 'inactive', balance: '0', apr: '0' };
         const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${data.pubkey}/performance`;
-        const performance = await axios.get(url);
+        const performance = (await axios.get(url)).data;
         const balance = formatNumberFromBeaconcha(data.balance);
         const performance7days = performance.data ? formatNumberFromBeaconcha(performance.data.performance7d) : 0;
         // @ts-ignore

@@ -11,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import ToolTip from '~app/common/components/ToolTip';
 import TableContainer from '@material-ui/core/TableContainer';
 // import TablePagination from '@material-ui/core/TablePagination';
-import StyledRow from '~app/common/components/Table/StyledRow';
 import StyledCell from '~app/common/components/Table/StyledCell';
 import PaginationActions from '~app/common/components/DataTable/components/PaginationActions';
 import { useStyles } from './Styles';
@@ -57,35 +56,37 @@ hidePagination;
   const dataRows = () => {
     if (isLoading) {
       return skeletons.map((rowIndex: number) => (
-        <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
+        <TableRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
           {headers.map((header: string) => (
             <StyledCell key={`cell-${header}`}>
               <Skeleton />
             </StyledCell>
           ))}
-        </StyledRow>
+        </TableRow>
       ));
     }
     if (!items?.length) {
       return (
-        <StyledRow hover role="checkbox" tabIndex={-1}>
+        <TableRow hover role="checkbox" tabIndex={-1}>
           <StyledCell align="center" colSpan={headers?.length || 1}>
             {noDataMessage ?? 'No records'}
           </StyledCell>
-        </StyledRow>
+        </TableRow>
       );
     }
     return items.map((row: any[], rowIndex: number) => (
-      <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
+      <TableRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
         {row.map((cell: any, cellIndex: number) => (
           <StyledCell
             key={`cell-${cellIndex}`}
             align={headersPositions?.length ? headersPositions[cellIndex] : undefined}
-          >
-            {cell}
+              >
+            <div style={{ height: 50 }}>
+              {cell}
+            </div>
           </StyledCell>
-        ))}
-      </StyledRow>
+          ))}
+      </TableRow>
     ));
   };
 
@@ -94,16 +95,16 @@ hidePagination;
       <TableContainer>
         {title ? <Typography className={classes.TableHeader}>{title}</Typography> : ''}
 
-        <Table stickyHeader aria-label="sticky table">
+        <Table>
           <TableHead>
             <TableRow>
               {headers.map((header: string, headerIndex: number) => (
                 <TableCell
-                  className={classes.TableCell}
                   key={header}
+                  className={classes.TableCell}
                   align={headersPositions?.length ? headersPositions[headerIndex] : undefined}
                 >
-                  {header}
+                  <Typography component={'span'} className={classes.TableCellText}>{header}</Typography>
                   { header === 'Status' && <ToolTip text={statusToolTipText} />}
                 </TableCell>
                 ))}

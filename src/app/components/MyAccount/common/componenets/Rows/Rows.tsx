@@ -78,7 +78,7 @@ const Rows = (props: Props) => {
         );
     };
     const displayAdditionalButtons = (isValidator: boolean, publicKey: string) => {
-        let linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${publicKey}`;
+        let linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${publicKey.replace('0x', '')}`;
         if (!isValidator) {
             linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${sha256(publicKey)}`;
         }

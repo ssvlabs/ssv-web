@@ -23,7 +23,7 @@ const RegisterOperatorHome = () => {
           <Grid container item justify={'space-evenly'}>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Run SSV Node'} onClick={() => { window.open(config.links.LINK_SSV_DEV_DOCS); }} />
+                <SecondaryButton text={'Run SSV Node'} submitFunction={() => { window.open(config.links.LINK_SSV_DEV_DOCS); }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
                 See our developer documentation
@@ -31,7 +31,7 @@ const RegisterOperatorHome = () => {
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Register Operator'} onClick={() => { history.push(config.routes.OPERATOR.GENERATE_KEYS); }} />
+                <SecondaryButton text={'Register Operator'} submitFunction={() => { history.push(config.routes.OPERATOR.GENERATE_KEYS); }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
                 Sign up as one of the network operators

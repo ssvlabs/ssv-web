@@ -31,7 +31,7 @@ export const useStyles = makeStyles((theme) => ({
         marginLeft: '6px',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/copy/${theme.darkMode ? 'white' : 'gray'}.svg)`,
+        backgroundImage: `url(/images/copy/${theme.darkMode ? 'light' : 'gray'}.svg)`,
     },
     Status: {
         borderRadius: 4,

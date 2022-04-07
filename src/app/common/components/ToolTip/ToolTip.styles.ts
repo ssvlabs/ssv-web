@@ -4,7 +4,6 @@ export const useStyles = makeStyles((theme) => ({
     ToolTipWrapper: {
         width: 14,
         height: 14,
-        marginLeft: 10,
         cursor: 'pointer',
         position: 'relative',
         verticalAlign: 'middle',
@@ -27,13 +26,12 @@ export const useStyles = makeStyles((theme) => ({
         minWidth: 350,
         fontWeight: 500,
         lineHeight: 1.62,
-        zIndex: 9999999,
         textAlign: 'center',
         borderRadius: '6px',
         position: 'absolute',
         transition: 'opacity 0.3s',
+        color: theme.colors.white,
         backgroundColor: theme.colors.gray90,
-        color: `${theme.colors.white} !important`,
         '& a': {
           color: theme.colors.primaryBlue,
         },

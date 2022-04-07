@@ -12,12 +12,14 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { useStyles } from '~app/components/MyAccount/components/Tables/Tables.styles';
 
 const operatorHeaderInit = ['Public Key', 'Status', 'Revenue', 'Validators', ''];
+const validatorHeaderInit = ['Public Key', 'Status', 'Balance', 'Est. APR', ''];
 
 const Tables = () => {
     const stores = useStores();
     const classes = useStyles();
     const defaultOperators: any[] = [];
     const ssvStore: SsvStore = stores.SSV;
+    const OperatorApi = Operator.getInstance();
     const walletStore: WalletStore = stores.Wallet;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
@@ -33,6 +35,7 @@ const Tables = () => {
             await loadItems('operators');
         }
     }, [walletStore.accountAddress]);
+
     /**
      * Loading operators by page
      * @param type
@@ -48,7 +51,7 @@ const Tables = () => {
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            const result = await OperatorApi.getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
             setOperators(result.operators);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
@@ -89,10 +92,6 @@ const Tables = () => {
         shouldDisplayValidators: true,
     });
 
-    console.log('render');
-    // console.log(operators);
-    // console.log(validators.length);
-
     return (
       <Grid container item className={classes.Table}>
         {operators.length > 0 && (
@@ -119,7 +118,7 @@ const Tables = () => {
               title={'Validators'}
               items={validatorsRows}
               onChangePage={loadItems}
-              headers={operatorHeaderInit}
+              headers={validatorHeaderInit}
               isLoading={loadingValidators}
               totalPages={validatorsPagination.pages}
               currentPage={validatorsPagination.page}

@@ -12,6 +12,7 @@ import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
+import LinkText from '~app/common/components/LinkText/LinkText';
 
 const EnableAccount = () => {
     const stores = useStores();
@@ -59,7 +60,7 @@ const EnableAccount = () => {
                       balance required for reactivation.
                     </Grid>
                     <Grid item>
-                      <a href={'www.bla.com'}>Read more on account reactivation</a>
+                      <LinkText text={'Read more on account reactivation'} link={'www.bla.com'} />
                     </Grid>
                   </Grid>
                   <Grid item container>

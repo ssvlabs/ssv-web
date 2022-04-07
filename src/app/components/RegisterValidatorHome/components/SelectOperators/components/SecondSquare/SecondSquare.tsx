@@ -9,7 +9,7 @@ import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 
@@ -39,13 +39,8 @@ const SecondSquare = () => {
     };
 
     useEffect(() => {
-        let allOperatorsAreVerified = true;
-        Object.values(operatorStore.selectedOperators).forEach((operator: IOperator) => {
-            if (!operator.verified && !operator.dappNode) allOperatorsAreVerified = false;
-        });
-        if (allSelectedOperatorsVerified !== allOperatorsAreVerified) {
-            setAllSelectedOperatorsVerified(allOperatorsAreVerified);
-        }
+        const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
+        setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
     }, [JSON.stringify(operatorStore.selectedOperators)]);
 
     return (

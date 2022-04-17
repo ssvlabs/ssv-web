@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { Skeleton } from '@material-ui/lab';
 import Table from '@material-ui/core/Table';
-import { TableCell } from '@material-ui/core';
+import { Grid, TableCell } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,20 +23,20 @@ const TableContainerWrapper = styled.div`
   }`;
 
 type DataTableProps = {
+  title?: any,
   items: any[],
   type: string,
-  title?: string,
-  perPage: number,
+  perPage?: number,
   headers: string[],
-  totalPages: number,
+  totalPages?: number,
   isLoading?: boolean,
-  currentPage: number,
+  currentPage?: number,
   noDataMessage?: string,
   hidePagination?: boolean,
   totalAmountOfItems: number,
   headersPositions?: HeaderPosition[],
   // eslint-disable-next-line no-unused-vars
-  onChangePage?: (type: string, page: number) => void,
+  onChangePage?: (props: { type: string, paginationPage?: number, force?: boolean }) => Promise<void>,
   // eslint-disable-next-line no-unused-vars
   onChangeRowsPerPage?: (type: string, perPage: any) => void,
 };
@@ -48,7 +48,6 @@ const DataTable = (props: DataTableProps) => {
   const { headers, type, items, totalAmountOfItems, currentPage, isLoading, totalPages,
     onChangePage, headersPositions, title, noDataMessage, hidePagination, perPage, onChangeRowsPerPage } = props;
   const classes = useStyles();
-hidePagination;
   const statusToolTipText = title === 'Operators' ?
       'Monitoring indication whether the operator is performing his network duties for the majority of his validators (per the last 2 epochs).' :
       'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).';
@@ -93,8 +92,7 @@ hidePagination;
   return (
     <div className={classes.TableWithBorder}>
       <TableContainer>
-        {title ? <Typography className={classes.TableHeader}>{title}</Typography> : ''}
-
+        {title ? <Grid className={classes.TableHeader}>{title}</Grid> : ''}
         <Table>
           <TableHead>
             <TableRow>
@@ -131,16 +129,18 @@ hidePagination;
         {/*    /> */}
         {/*  </TableContainerWrapper> */}
         {/* ) : ''} */}
+        {!hidePagination && (
         <TableContainerWrapper>
           <PaginationActions
-            page={currentPage}
-            rowsPerPage={perPage}
-            totalPages={totalPages}
+            page={currentPage ?? 0}
+            rowsPerPage={perPage ?? 0}
+            totalPages={totalPages ?? 0}
             count={totalAmountOfItems}
-            onChangePage={(changedPage: number) => onChangePage ? onChangePage(type, changedPage) : null}
+            onChangePage={(changedPage: number) => onChangePage ? onChangePage({ type, paginationPage: changedPage }) : null}
             onChangeRowsPerPage={(rowNumber: number) => onChangeRowsPerPage ? onChangeRowsPerPage(type, rowNumber) : null}
           />
         </TableContainerWrapper>
+        )}
       </TableContainer>
     </div>
   );

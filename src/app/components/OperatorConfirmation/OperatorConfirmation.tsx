@@ -11,7 +11,6 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -22,7 +21,6 @@ import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirma
 const OperatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
-    const ssvStore: SsvStore = stores.SSV;
     const { redirectUrl, history } = useUserFlow();
     const operatorStore: OperatorStore = stores.Operator;
     const walletStore: WalletStore = stores.Wallet;
@@ -59,7 +57,6 @@ const OperatorConfirmation = () => {
         blackHeader
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
-        navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
         body={[
           <Grid container>
             <TransactionPendingPopUp txHash={txHash} />
@@ -79,7 +76,7 @@ const OperatorConfirmation = () => {
                 </Grid>
                 <Grid item xs={6} className={classes.AlignRight}>
                   <SsvAndSubTitle
-                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.newOperatorKeys.fee))}
+                    ssv={formatNumberToUi(operatorStore.newOperatorKeys.fee)}
                     subText={'/year'} />
                 </Grid>
               </Grid>

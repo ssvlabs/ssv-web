@@ -6,7 +6,7 @@ import { useStores } from '~app/hooks/useStores';
 // import CTAButton from '~app/common/components/CTAButton';
 import { useStyles } from './EnableAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import config, { translations } from '~app/common/config';
+import config from '~app/common/config';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -46,8 +46,6 @@ const EnableAccount = () => {
       <div>
         <BorderScreen
           header={'Enable Account'}
-          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
-          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           sectionClass={classes.Section}
           body={[
               (

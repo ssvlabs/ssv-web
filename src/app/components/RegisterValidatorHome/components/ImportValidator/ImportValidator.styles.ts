@@ -43,15 +43,6 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: theme.colors.gray40,
     },
-    Browse: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.62,
-        cursor: 'pointer',
-        textDecoration: 'underline',
-        color: theme.colors.primaryBlue,
-        zIndex: theme.opacity.highPriority,
-    },
     Remove: {
         fontSize: 16,
         fontWeight: 500,

@@ -2,6 +2,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => createStyles({
     Root: {
+        width: '100%',
         '& p, select, input': {
             fontSize: 16,
             fontWeight: 500,
@@ -19,6 +20,7 @@ export const useStyles = makeStyles((theme) => createStyles({
         color: theme.colors.gray60,
     },
     SelectFormWrapper: {
+        marginRight: 24,
         '& select': {
             width: 64,
             height: 36,
@@ -29,6 +31,11 @@ export const useStyles = makeStyles((theme) => createStyles({
             border: `solid 1px ${theme.colors.gray30}`,
         },
         alignItems: 'center',
+    },
+    ButtonsWrapper: {
+        gap: 8,
+        alignItems: 'center',
+        justifyContent: 'flex-end',
     },
     LeftArrows: {
         width: 36,
@@ -82,10 +89,6 @@ export const useStyles = makeStyles((theme) => createStyles({
         transform: 'scaleX(-1)',
         cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
         backgroundImage: (props: any) => props.lastPage ? 'url(/images/page_arrows/many/disable.svg)' : 'url(/images/page_arrows/many/black.svg)',
-    },
-    PageWrapper: {
-        alignItems: 'center',
-        justifyContent: 'space-around',
     },
     PageNumber: {
         width: 54,

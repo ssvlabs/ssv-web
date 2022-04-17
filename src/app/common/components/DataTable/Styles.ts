@@ -131,9 +131,11 @@ export const useStyles = makeStyles((theme) => ({
             textAlign: 'left',
             fontFamily: 'Manrope',
             color: theme.colors.gray40,
-            textTransform: 'capitalize',
             padding: '9px 0px 8px 32px',
             backgroundColor: theme.colors.white,
+            '& span': {
+                textTransform: 'capitalize',
+            },
         },
         '& .MuiTableCell-body': {
             '&:first-of-type': {
@@ -161,7 +163,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     TableCellText: {
         fontSize: 12,
-        marginRight: 4,
+        marginRight: 8,
         fontWeight: 500,
         lineHeight: 1.62,
         color: theme.colors.gray40,

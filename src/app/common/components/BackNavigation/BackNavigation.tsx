@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import { useStores } from '~app/hooks/useStores';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 // import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 const BackNavigationLink = styled.div<Record<string, any>>`
@@ -33,18 +35,21 @@ const BackNavigationWrapper = styled.div`
 `;
 
 type BackNavigationProps = {
-  to: string,
   text?: string,
   color?: string
   onClick?: () => void
 };
 
-const BackNavigation = ({ to, text, color, onClick }: BackNavigationProps) => {
-  const defaultColor = '#A1ACBE';
+const BackNavigation = ({ text, color, onClick }: BackNavigationProps) => {
+  const stores = useStores();
   const history = useHistory();
+  const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
+  const applicationStore: ApplicationStore = stores.Application;
+
   const onNavigationClicked = () => {
-    to && history.push(to);
+    if (applicationStore.isLoading) return;
+    history.goBack();
     if (typeof onClick === 'function') {
       onClick();
     }

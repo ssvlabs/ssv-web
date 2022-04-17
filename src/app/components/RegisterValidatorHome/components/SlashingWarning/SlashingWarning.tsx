@@ -25,11 +25,10 @@ const SlashingWarning = () => {
   const goToConfirmation = () => {
       history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
   };
-  const linkTo = process.env.REACT_APP_NEW_STAGE ? config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE : config.routes.VALIDATOR.SELECT_OPERATORS;
+
     return (
       <BorderScreen
         blackHeader
-        navigationLink={linkTo}
         header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
         body={[
           <Grid container>

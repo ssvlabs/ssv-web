@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -93,8 +92,6 @@ const Withdraw = () => {
         <BorderScreen
           header={'Available Balance'}
           wrapperClass={classes.FirstSquare}
-          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
-          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           body={[
                     (
                       <Grid item container>

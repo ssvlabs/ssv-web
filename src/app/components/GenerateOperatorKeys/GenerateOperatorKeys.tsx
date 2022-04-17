@@ -77,11 +77,12 @@ const GenerateOperatorKeys = () => {
     const onRegisterClick = async () => {
         setOperatorExist(false);
         applicationStore.setIsLoading(true);
+
         const operatorKeys: NewOperator = {
+            fee: inputsData.fee,
             name: inputsData.name,
             address: walletStore.accountAddress,
             pubKey: walletStore.encodeKey(inputsData.publicKey),
-            fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
         };
         operatorStore.setOperatorKeys(operatorKeys);
         const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
@@ -90,7 +91,8 @@ const GenerateOperatorKeys = () => {
             try {
                 await operatorStore.addNewOperator(true);
                 history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
-            } catch {
+            } catch (e: any) {
+                console.log(e);
                 console.log('error!!!!!');
             }
         }
@@ -99,7 +101,6 @@ const GenerateOperatorKeys = () => {
 
     return (
       <BorderScreen
-        navigationLink={config.routes.OPERATOR.HOME}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}

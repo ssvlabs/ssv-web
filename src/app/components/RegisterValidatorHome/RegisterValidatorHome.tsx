@@ -22,11 +22,10 @@ const RegisterValidatorHome = () => {
 
   return (
     <BorderScreen
-      navigationLink={config.routes.HOME}
       body={[
         <Grid container>
           <HeaderSubHeader title={'Run Validator with the SSV Network'}
-            subtitle={'Any validator can run on the SSV network: create a new validator or import you exiting one to begin'}
+            subtitle={'Any validator can run on the SSV network: create a new validator or import your existing one to begin'}
           />
           <Grid container item justify={'space-evenly'}>
             <Grid container item className={classes.LinkButtonWrapper}>

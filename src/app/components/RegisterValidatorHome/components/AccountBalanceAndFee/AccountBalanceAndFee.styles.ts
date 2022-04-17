@@ -9,7 +9,9 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         color: theme.colors.gray80,
-        marginBottom: theme.spacing(3),
+        '&:first-child': {
+            marginBottom: theme.spacing(3),
+        },
     },
     ErrorTextWrapper: {
         height: 93,
@@ -22,10 +24,9 @@ export const useStyles = makeStyles((theme) => ({
 
     },
     ErrorText: {
-        // height: '60px',
-        fontSize: '14px',
+        fontSize: 14,
         fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#ec1c26',
+        lineHeight: 1.62,
+        color: theme.colors.gray90,
     },
 }));

@@ -1,11 +1,12 @@
 import React from 'react';
 import { sha256 } from 'js-sha256';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { useStyles } from './Rows.styles';
-import Typography from '@material-ui/core/Typography';
 
 type ItemProps = {
     apr?: string
@@ -24,9 +25,8 @@ type Props = {
 };
 
 const Rows = (props: Props) => {
-    // const stores = useStores();
     const classes = useStyles();
-    // const walletStore: WalletStore = stores.Wallet;
+    const history = useHistory();
     const { items, shouldDisplayStatus, shouldDisplayValidators } = props;
     const copyToClipboard = (publicKey: string) => {
         navigator.clipboard.writeText(publicKey);
@@ -34,12 +34,14 @@ const Rows = (props: Props) => {
     };
 
     const displayPublicKeyAndName = (publicKey: string, name: string | undefined, status: string) => {
+        const operatorAddress = sha256(publicKey);
+
         return (
           <Grid container item>
             {name && <Grid item xs={12} className={classes.Name}>{name}</Grid>}
             <Grid container item className={classes.Name}>
-              <Grid>{name ? longStringShorten(sha256(publicKey), 4) : `0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
-              <Grid className={classes.copyImage} onClick={() => { copyToClipboard(publicKey); }} />
+              <Grid>{name ? longStringShorten(sha256(publicKey), 4, 6) : `0x${longStringShorten(publicKey.replace('0x', ''), 4)}`}</Grid>
+              <Grid className={classes.copyImage} onClick={() => { copyToClipboard(name ? operatorAddress : publicKey); }} />
               {!shouldDisplayStatus && displayStatus(status)}
             </Grid>
           </Grid>
@@ -77,6 +79,11 @@ const Rows = (props: Props) => {
           </Grid>
         );
     };
+
+    const openSingleValidator = (publicKey: string) => {
+        history.push(`/dashboard/validator/${publicKey}`);
+    };
+
     const displayAdditionalButtons = (isValidator: boolean, publicKey: string) => {
         let linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${publicKey.replace('0x', '')}`;
         if (!isValidator) {
@@ -86,7 +93,7 @@ const Rows = (props: Props) => {
           <Grid container item>
             {isValidator && <Grid className={classes.BeaconImage} onClick={() => { window.open(`${getBaseBeaconchaUrl()}/validator/${publicKey}`); }} />}
             <Grid className={classes.ExplorerImage} onClick={() => { window.open(linkToExplorer); }} />
-            <Grid className={classes.SettingsImage} />
+            <Grid className={classes.SettingsImage} onClick={() => { openSingleValidator(publicKey); }} />
           </Grid>
         );
     };

@@ -6,13 +6,9 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 const Routes = () => {
     const stores = useStores();
     const applicationStore: ApplicationStore = stores.Application;
+    const ApplicationRoutes = applicationStore.applicationRoutes();
 
-    const conditionalRoutes = () => {
-        const ApplicationRoutes = applicationStore.applicationRoutes();
-        return <ApplicationRoutes />;
-    };
-
-    return conditionalRoutes();
+    return <ApplicationRoutes />;
 };
 
 export default observer(Routes);

@@ -19,6 +19,12 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
     const classes = useStyles({ showError, disable });
     const [password, showPassword] = useState(false);
 
+    const onChangeWrapper = (e: any) => {
+        const inputValue = e.target.value;
+        if (inputValue.length >= 100) return;
+        onChangeCallback(e);
+    };
+
     return (
       <Grid container
           // @ts-ignore
@@ -28,11 +34,12 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
         <Grid item xs>
           <input
             value={value}
+            maxLength={100}
             disabled={disable}
             onBlur={onBlurCallBack}
             data-testid={dataTestId}
             className={classes.Input}
-            onChange={onChangeCallback}
+            onChange={onChangeWrapper}
             placeholder={placeHolder ?? ''}
             type={(!withLock || password) ? 'text' : 'password'}
           />

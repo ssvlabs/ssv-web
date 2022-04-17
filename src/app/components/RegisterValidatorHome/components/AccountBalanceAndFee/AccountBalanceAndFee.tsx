@@ -7,6 +7,7 @@ import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
+import LinkText from '~app/common/components/LinkText';
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
@@ -16,8 +17,8 @@ const AccountBalanceAndFee = () => {
   
       return (
         <BorderScreen
+          blackHeader
           header={translations.VALIDATOR.BALANCE_AND_FEE.TITLE}
-          navigationLink={config.routes.VALIDATOR.SELECT_OPERATORS}
           body={[
             <Grid container>
               <Grid item container className={classes.bodyTextWrapper}>
@@ -31,8 +32,8 @@ const AccountBalanceAndFee = () => {
               </Grid>
               <Grid item container className={classes.ErrorTextWrapper}>
                 <Grid className={classes.ErrorText}>
-                  Accounts with insufficient balance are at risk of being <a target={'_blank'} href={'Todo'}>liquidated</a>,
-                  which will result in inactivation <a target={'_blank'} href={'Todo'}>(penalties on the beacon chain) </a>
+                  Accounts with insufficient balance are at risk of being <LinkText text={'liquidated'} link={'Todo'} />,
+                  which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'Todo'} />)
                   of their validators, as they will no longer be operated by the network.
                 </Grid>
               </Grid>

@@ -28,9 +28,11 @@ const Welcome = () => {
 
     return (
       <BorderScreen
+        withoutNavigation
         body={[
           <Grid container>
-            <HeaderSubHeader title={'Join the SSV Network'}
+            <HeaderSubHeader
+              title={'Join the SSV Network'}
               subtitle={'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators'}
             />
             <Grid container item className={classes.LinkButtonsWrapper}>

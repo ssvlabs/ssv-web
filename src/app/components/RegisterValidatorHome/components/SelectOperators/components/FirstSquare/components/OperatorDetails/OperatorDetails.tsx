@@ -4,17 +4,18 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { longStringShorten } from '~lib/utils/strings';
 import OperatorType from '~app/common/components/OperatorType/OperatorType';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+// import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from './OperatorDetails.styles';
 
 type Props = {
-    operator: IOperator
+    operator: any // ?? IOperator
+    withoutSha256?: boolean
 };
 
 const OperatorDetails = (props: Props) => {
-    const { operator } = props;
+    const { operator, withoutSha256 } = props;
     const classes = useStyles();
-    const shaPublicKey = `0x${longStringShorten(sha256(operator.public_key), 4)}`;
+    const shaPublicKey = `0x${longStringShorten(withoutSha256 ? operator.public_key : sha256(operator.public_key), 4)}`;
 
     return (
       <Grid container className={classes.Wrapper}>

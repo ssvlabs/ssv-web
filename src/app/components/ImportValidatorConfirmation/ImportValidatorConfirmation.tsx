@@ -20,6 +20,7 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
+import LinkText from '~app/common/components/LinkText';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
@@ -142,22 +143,17 @@ const ImportValidatorConfirmation = () => {
         </Grid>
             )}
         {process.env.REACT_APP_NEW_STAGE && (
-        <Grid item>
-          <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
-        </Grid>
-            )}
-        {process.env.REACT_APP_NEW_STAGE && (
+          <Grid item style={{ marginBottom: 20 }}>
+            <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
+          </Grid>
+        )}
+        {process.env.REACT_APP_NEW_STAGE && Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
         <Grid container item className={classes.InsufficientBalanceWrapper}>
           <Grid item xs>
             Insufficient SSV balance. There is not enough SSV in your wallet.
           </Grid>
           <Grid item>
-            <a
-              href="https://discord.gg/5DZ7Sm9D4W"
-              target="_blank"
-                        >
-              Need SSV?
-            </a>
+            <LinkText text={'Need SSV?'} link={'https://discord.gg/5DZ7Sm9D4W'} />
           </Grid>
         </Grid>
         )}
@@ -188,7 +184,6 @@ const ImportValidatorConfirmation = () => {
         body={components}
         sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}
-        navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
       />
     );
 };

@@ -2,14 +2,16 @@ import _ from 'underscore';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 export type IUserFlow = {
   name: string,
-  route: string | string[],
   depends?: IUserFlow[],
+  whiteAppBar?: boolean,
+  route: string | string[],
   condition?: () => boolean,
 };
 
@@ -158,11 +160,11 @@ const myAccountScreen: IUserFlow = {
   depends: [
     welcomeFlow,
   ],
-  // condition: () => {
-  //   const stores = useStores();
-  //   const ssvStore: SsvStore = stores.SSV;
-  //   return !!ssvStore.userOperators.length || !!ssvStore.userValidators.length;
-  // },
+  condition: () => {
+    const stores = useStores();
+    const walletStore: WalletStore = stores.Wallet;
+    return !!walletStore.accountAddress;
+  },
 };
 
 const DepositScreen: IUserFlow = {
@@ -210,6 +212,22 @@ const EnableAccountScreen: IUserFlow = {
   },
 };
 
+const SingleValidatorScreen: IUserFlow = {
+  name: 'Single Validator',
+  route: routes.MY_ACCOUNT.VALIDATOR,
+  depends: [
+    myAccountScreen,
+  ],
+  whiteAppBar: true,
+  condition: () => {
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
+    ssvStore;
+    return true;
+    // return !ssvStore.userLiquidated && !!ssvStore.userValidators.length;
+  },
+};
+
 const userFlows: IUserFlow[] = [
   welcomeFlow,
   successScreen,
@@ -223,6 +241,7 @@ const userFlows: IUserFlow[] = [
   slashingWarningFlow,
   createValidatorFlow,
   operatorConfirmation,
+  SingleValidatorScreen,
   validatorConfirmationFlow,
   importValidatorDecryptFlow,
   validatorSelectOperatorsFlow,

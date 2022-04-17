@@ -220,12 +220,18 @@ class OperatorStore extends BaseStore {
                 const gasEstimation: PriceEstimation = new PriceEstimation();
                 this.newOperatorReceipt = null;
 
+                try {
+                    walletStore.web3.utils.toWei(this.operatorFeePerBlock(transaction.fee));
+                } catch (e) {
+                    console.log(e.message);
+                }
+
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.web3.utils.toWei(roundCryptoValueString(transaction.fee)),
+                        walletStore.web3.utils.toWei(this.operatorFeePerBlock(transaction.fee)),
                     );
                 } else {
                     payload.push(
@@ -327,6 +333,15 @@ class OperatorStore extends BaseStore {
         });
 
         return exist;
+    }
+
+    /**
+     * Get operator fee for block
+     * @param fee
+     */
+    @action.bound
+    operatorFeePerBlock(fee: number): string {
+        return roundCryptoValueString(fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR);
     }
 
     @action.bound

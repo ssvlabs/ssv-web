@@ -9,7 +9,7 @@ import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import AppBar from '~app/common/components/AppBar';
+// import AppBar from '~app/common/components/AppBar';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MobileNotSupported from '~app/components/MobileNotSupported';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -48,7 +48,7 @@ const App = () => {
           </Grid>
         )}
         {/* <BarMessage /> */}
-        <AppBar />
+        {/* <AppBar /> */}
         <BrowserView>
           <Routes />
         </BrowserView>

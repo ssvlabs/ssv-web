@@ -20,11 +20,18 @@ const AppBar = () => {
     const [showMobileBar, setMobileBar] = useState(false);
     const isDistribution = applicationStore.strategyName === 'distribution';
 
-    const classes = useStyles({ isNewStage: process.env.REACT_APP_NEW_STAGE, isDistribution });
+    // @ts-ignore
+    const classes = useStyles({ whiteBackGround: applicationStore.whiteNavBarBackground, isNewStage: process.env.REACT_APP_NEW_STAGE, isDistribution });
 
     // Add event listener on screen size change
     useEffect(() => {
-        window.addEventListener('resize', () => setWidth(window.innerWidth));
+        const resize = () => {
+            setWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', resize);
+        return () => {
+            window.removeEventListener('mousedown', resize);
+        };
     }, []);
 
     useEffect(() => {
@@ -63,38 +70,32 @@ const AppBar = () => {
     }
 
     const moveToDashboard = () => {
+        if (applicationStore.isLoading) return;
         if (process.env.REACT_APP_NEW_STAGE) {
+            // @ts-ignore
+            applicationStore.whiteNavBarBackground = false;
             history.push('/dashboard');
         }
     };
 
-    return (
-      <Grid container className={classes.AppBarWrapper}>
-        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push(applicationStore.strategyName === 'distribution' ? '/claim' : '/'); }} />
-        {!showMobileBar && (
-          <Grid item container className={classes.Linkbuttons}>
-              {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.LinkButton}>Join</Grid>}
-            <Grid item className={classes.LinkButton} onClick={moveToDashboard}>My Account</Grid>
-            <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
-            <Grid item className={classes.LinkButton} onClick={openDocs}>Docs</Grid>
-          </Grid>
-          )}
-        <Grid item className={classes.Wrapper}>
-          <ConnectWalletButton />
-        </Grid>
-        {(!showMobileBar || isDistribution) && (
-          <Grid item>
-            <DarkModeSwitcher margin />
-          </Grid>
-        )}
-        { !isDistribution && showMobileBar && (
+    const Hamburger = () => {
+        if (isDistribution || !showMobileBar) return null;
+        return (
           <Grid item ref={wrapperRef}>
-            <Grid className={classes.Hamburger} onClick={() => { openMenuBar(!menuBar); }} />
+            <Grid className={classes.Hamburger}
+              onClick={() => {
+                          openMenuBar(!menuBar);
+                      }}
+                />
           </Grid>
-          )}
-        {!isDistribution && menuBar && (
+        );
+    };
+
+    const Buttons = () => {
+        if (isDistribution || !menuBar) return null;
+        return (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
-            <Grid item className={`${classes.MenuButton}`}>Join</Grid>
+            {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.MenuButton}>Join</Grid>}
             <Grid item className={classes.MenuButton} onClick={moveToDashboard}>My Account</Grid>
             <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
             <Grid item className={classes.MenuButton} onClick={openDocs}>Docs</Grid>
@@ -106,7 +107,51 @@ const AppBar = () => {
               </Grid>
             </Grid>
           </Grid>
-          )}
+        );
+    };
+
+    const DarkMode = () => {
+        if (isDistribution || showMobileBar) return null;
+        return (
+          <Grid item>
+            <DarkModeSwitcher margin />
+          </Grid>
+        );
+    };
+
+    const logoAction = () => {
+        if (applicationStore.isLoading) return;
+        // @ts-ignore
+        applicationStore.whiteNavBarBackground = false;
+        history.push(applicationStore.strategyName === 'distribution' ? '/claim' : '/');
+    };
+
+    const MobileButtons = () => {
+        if (showMobileBar) return null;
+        return (
+          <Grid item container className={classes.Linkbuttons}>
+            {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.LinkButton}>Join</Grid>}
+            <Grid item className={classes.LinkButton} onClick={moveToDashboard}>My Account</Grid>
+            <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
+            <Grid item className={classes.LinkButton} onClick={openDocs}>Docs</Grid>
+          </Grid>
+        );
+    };
+    
+    return (
+      <Grid container className={classes.AppBarWrapper}>
+        <Grid
+          item
+          onClick={logoAction}
+          className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`}
+        />
+        <MobileButtons />
+        <Grid item className={classes.Wrapper}>
+          <ConnectWalletButton />
+        </Grid>
+        <DarkMode />
+        <Hamburger />
+        <Buttons />
       </Grid>
     );
 };

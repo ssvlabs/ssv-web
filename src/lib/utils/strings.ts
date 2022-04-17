@@ -1,5 +1,5 @@
-export const longStringShorten = (key: string, friction: number = 10) => {
-  return `${key.substr(0, friction)}...${key.substr(key.length - friction, friction)}`;
+export const longStringShorten = (key: string, firstFriction: number = 10, secondFriction: number = firstFriction) => {
+  return `${key.substr(0, firstFriction)}...${key.substr(key.length - secondFriction, secondFriction)}`;
 };
 
 export const normalizeNumber = (number: number, friction: number = 2) => {

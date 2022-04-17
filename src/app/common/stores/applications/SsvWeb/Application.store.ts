@@ -19,6 +19,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable strategyName: string = 'ssv-web';
   @observable isShowingLoading: boolean = false;
   @observable walletConnectivity: boolean = false;
+  @observable whiteNavBarBackground: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
   @observable strategyRedirect: string = process.env.REACT_APP_NEW_STAGE ? '/dashboard' : '/';
 
@@ -39,6 +40,11 @@ class ApplicationStore extends BaseStore implements Application {
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
+  }
+
+  @action.bound
+  setWhiteNavBarBackground(status: boolean) {
+    this.whiteNavBarBackground = status;
   }
 
   @action.bound

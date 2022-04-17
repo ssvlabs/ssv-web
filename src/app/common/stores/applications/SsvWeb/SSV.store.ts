@@ -172,7 +172,9 @@ class SsvStore extends BaseStore {
     clearSettings() {
         this.networkFee = 0;
         this.accountBurnRate = 0;
+        this.walletSsvBalance = 0;
         this.userLiquidated = false;
+        this.userState = 'operator';
         this.userGaveAllowance = false;
         this.liquidationCollateral = 0;
         this.contractDepositSsvBalance = 0;

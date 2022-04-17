@@ -63,45 +63,45 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
     
     return (
       <Grid container className={classes.Root}>
-        <Typography className={classes.PageRangeText}>
-          {startAt} - {endAt} of {count}
-        </Typography>
-        <Grid container item xs={9} spacing={1} style={{ marginLeft: 'auto' }}>
-          <Grid container item className={classes.SelectFormWrapper} xs={5}>
-            <Typography className={classes.PageRangeText}>Rows per page:</Typography>
-            <Grid item>
-              <select defaultValue={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
-                <option value="5">5</option>
-                <option value="10">10</option>
-              </select>
+        <Grid container item xs={2}>
+          <Typography className={classes.PageRangeText}>
+            {startAt} - {endAt} of {count}
+          </Typography>
+        </Grid>
+        <Grid container item xs={10} className={classes.ButtonsWrapper}>
+          <Grid item className={classes.SelectFormWrapper}>
+            <Grid container item alignItems={'center'}>
+              <Typography className={classes.PageRangeText}>Rows per page:</Typography>
+              <Grid item>
+                <select defaultValue={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                </select>
+              </Grid>
             </Grid>
           </Grid>
-          <Grid container item xs justify={'space-between'}>
-            <Grid item className={classes.LeftArrows} onClick={handleFirstPageButtonClick}>
-              <Grid className={classes.ManyLeft} />
-            </Grid>
-            <Grid item className={classes.LeftArrows} onClick={handleBackButtonClick}>
-              <Grid className={classes.SingleLeft} />
-            </Grid>
+          <Grid item className={classes.LeftArrows} onClick={handleFirstPageButtonClick}>
+            <Grid className={classes.ManyLeft} />
           </Grid>
-          <Grid container item xs={3} className={classes.PageWrapper}>
-            <Grid item className={classes.PageNumber}>
-              <IntegerInput
-                value={currentPage}
-                onChange={handleSetPage}
-                onBlur={changePageNumber}
-                className={classes.PageEditor}
-              />
-            </Grid>
+          <Grid item className={classes.LeftArrows} onClick={handleBackButtonClick}>
+            <Grid className={classes.SingleLeft} />
+          </Grid>
+          <Grid item className={classes.PageNumber}>
+            <IntegerInput
+              value={currentPage}
+              onChange={handleSetPage}
+              onBlur={changePageNumber}
+              className={classes.PageEditor}
+            />
+          </Grid>
+          <Grid item>
             <Typography>of {totalPages}</Typography>
           </Grid>
-          <Grid container item xs justify={'space-between'}>
-            <Grid item className={classes.RightArrows} onClick={handleNextButtonClick}>
-              <Grid className={classes.SingleRight} />
-            </Grid>
-            <Grid item className={classes.RightArrows} onClick={handleLastPageButtonClick}>
-              <Grid className={classes.ManyRight} />
-            </Grid>
+          <Grid item className={classes.RightArrows} onClick={handleNextButtonClick}>
+            <Grid className={classes.SingleRight} />
+          </Grid>
+          <Grid item className={classes.RightArrows} onClick={handleLastPageButtonClick}>
+            <Grid className={classes.ManyRight} />
           </Grid>
         </Grid>
       </Grid>

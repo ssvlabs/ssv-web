@@ -41,8 +41,10 @@ class Operator {
     /**
      * Get operators by owner Address
      */
-    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
-        if (this.pagination?.page === page && this.pagination.per_page === perPage) return { pagination: this.pagination, operators: this.operators };
+    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
+        if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
+            return { pagination: this.pagination, operators: this.operators };
+        }
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
         const response: any = await axios.get(operatorsEndpointUrl);
         this.operators = response.data.operators;

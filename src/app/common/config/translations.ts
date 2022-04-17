@@ -1,9 +1,4 @@
 const translations = {
-  MY_ACCOUNT: {
-    DEPOSIT: {
-      NAVIGATION_TEXT: 'back to my account',
-    },
-  },
   VALIDATOR: {
     HOME: {
       TITLE: 'Run Validator with the SSV Network',
@@ -69,7 +64,6 @@ const translations = {
   },
   HOME: {
     TITLE: 'Join the SSV Network',
-    DESCRIPTION: 'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators.',
     MENUS: {
       NEW_OPERATOR: {
         TITLE: 'Create new Operator',

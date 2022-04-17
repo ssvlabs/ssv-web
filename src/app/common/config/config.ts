@@ -10,6 +10,8 @@ const config = {
             DEPOSIT: '/dashboard/deposit',
             WITHDRAW: '/dashboard/withdraw',
             ENABLE_ACCOUNT: '/dashboard/enable_account',
+            VALIDATOR: '/dashboard/validator/:validator_id',
+            EDIT_VALIDATOR: '/dashboard/validator/:validator_id/edit',
         },
         OPERATOR: {
             HOME: '/operator',

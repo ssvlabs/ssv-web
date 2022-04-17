@@ -81,11 +81,14 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async connectWalletFromCache() {
-        const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
-        if (selectedWallet) {
+        const selectedWallet: any = window.localStorage.getItem('selectedWallet');
+        if (selectedWallet && selectedWallet !== 'undefined') {
             await this.onboardSdk.walletSelect(selectedWallet);
             await this.onboardSdk.walletCheck();
         } else {
+            const applicationStore: Application = this.getStore('Application');
+            applicationStore.strategyRedirect = '/';
+            await this.resetUser();
             this.setAccountDataLoaded(true);
         }
     }
@@ -114,19 +117,28 @@ class WalletStore extends BaseStore implements Wallet {
     @action.bound
     async addressHandler(address: string) {
         this.setAccountDataLoaded(false);
-        if (address === undefined) {
-            this.accountAddress = address;
-            this.ssvStore.clearSettings();
-            window.localStorage.removeItem('selectedWallet');
+        const applicationStore: Application = this.getStore('Application');
+        if (address === undefined || !this.wallet?.name) {
+            await this.resetUser();
         } else {
             this.accountAddress = address;
             await this.initializeUserInfo();
-            const applicationStore: Application = this.getStore('Application');
-            const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
-            const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress(1, 5, address);
+            const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
+            const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress(1, 5, address, true);
             applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? '/dashboard' : '/';
         }
         this.setAccountDataLoaded(true);
+    }
+
+    @action.bound
+    async resetUser() {
+        const applicationStore: Application = this.getStore('Application');
+        this.accountAddress = '';
+        this.ssvStore.clearSettings();
+        applicationStore.strategyRedirect = '/';
+        this.onboardSdk.walletReset();
+        window.localStorage.removeItem('selectedWallet');
+        window.localStorage.removeItem('params');
     }
 
     /**
@@ -145,8 +157,8 @@ class WalletStore extends BaseStore implements Wallet {
      * Fetch user balances and fees
      */
     @action.bound
-    async balanceHandler() {
-        await this.initializeUserInfo();
+    async balanceHandler(balance: any) {
+        if (balance) await this.initializeUserInfo();
     }
 
     /**
@@ -155,7 +167,6 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async networkHandler(networkId: any) {
-        console.log('networkId: ', networkId);
         if (networkId !== 5 && networkId !== undefined) {
             this.wrongNetwork = true;
             this.notificationsStore.showMessage('Please change network to Goerli', 'error');

@@ -11,8 +11,6 @@ type Props = {
     sectionClass?: any,
     blackHeader?: boolean,
     borderRadius?: string,
-    navigationLink?: string,
-    navigationText?: string,
     withConversion?: boolean,
     withoutNavigation?: boolean,
 };
@@ -21,7 +19,7 @@ const BorderScreen = (props: Props) => {
     const classes = useStyles();
     const [coins] = useState(['SSV', 'USD']);
     const [currency, setCurrency] = useState('SSV');
-    const { wrapperClass, navigationLink, borderRadius, withoutNavigation, navigationText, blackHeader, header, withConversion, body, sectionClass, bottom } = props;
+    const { wrapperClass, borderRadius, withoutNavigation, blackHeader, header, withConversion, body, sectionClass, bottom } = props;
 
     const switchCurrency = (selectedCurrency: string) => {
         setCurrency(selectedCurrency);
@@ -31,7 +29,7 @@ const BorderScreen = (props: Props) => {
       <Grid container className={`${classes.BorderScreenWrapper} ${wrapperClass || ''}`}>
         {!withoutNavigation && (
           <Grid item className={classes.LinkWrapper}>
-            {navigationLink && <BackNavigation to={navigationLink} text={navigationText} />}
+            <BackNavigation />
           </Grid>
           )}
         <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>

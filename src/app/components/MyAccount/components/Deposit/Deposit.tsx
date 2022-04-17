@@ -6,7 +6,6 @@ import { useStores } from '~app/hooks/useStores';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { formatNumberToUi } from '~lib/utils/numbers';
 // import CTAButton from '~app/common/components/CTAButton';
-import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -49,8 +48,6 @@ const Deposit = () => {
       <div>
         <BorderScreen
           header={'Deposit'}
-          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
-          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           body={[
                     (
                       <Grid item container>

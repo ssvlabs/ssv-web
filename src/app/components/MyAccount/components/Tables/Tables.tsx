@@ -10,16 +10,22 @@ import DataTable from '~app/common/components/DataTable/DataTable';
 import Rows from '~app/components/MyAccount/common/componenets/Rows';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { useStyles } from '~app/components/MyAccount/components/Tables/Tables.styles';
+import { Table } from '~app/components/MyAccount/components/SingelValidator/components/Table/Table';
 
 const operatorHeaderInit = ['Public Key', 'Status', 'Revenue', 'Validators', ''];
 const validatorHeaderInit = ['Public Key', 'Status', 'Balance', 'Est. APR', ''];
+
+type LoadItemsParams = {
+    type: string;
+    force?: boolean;
+    paginationPage?: number;
+};
 
 const Tables = () => {
     const stores = useStores();
     const classes = useStyles();
     const defaultOperators: any[] = [];
     const ssvStore: SsvStore = stores.SSV;
-    const OperatorApi = Operator.getInstance();
     const walletStore: WalletStore = stores.Wallet;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
@@ -31,17 +37,18 @@ const Tables = () => {
     // @ts-ignore
     useEffect(async () => {
         if (walletStore.accountAddress) {
-            await loadItems('validators');
-            await loadItems('operators');
+                await loadItems({ type: 'validators' });
+                await loadItems({ type: 'operators' });
         }
     }, [walletStore.accountAddress]);
 
     /**
      * Loading operators by page
-     * @param type
-     * @param paginationPage
+     * @param props: LoadItemsParams
      */
-    async function loadItems(type: string, paginationPage?: number) {
+    async function loadItems(props: LoadItemsParams) {
+        // eslint-disable-next-line react/prop-types
+        const { type, paginationPage, force } = props;
         if (paginationPage) {
             ApiParams.saveInStorage(type, 'page', paginationPage);
         }
@@ -51,13 +58,13 @@ const Tables = () => {
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await OperatorApi.getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress, force);
             setOperators(result.operators);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress, force);
             if (result?.validators?.length > 0) ssvStore.userState = 'validator';
             setValidators(result.validators);
             setValidatorsPagination(result.pagination);
@@ -72,7 +79,7 @@ const Tables = () => {
      */
     function onChangeRowsPerPage(type: string, perPage: number) {
         ApiParams.saveInStorage(type, 'perPage', perPage);
-        loadItems(type, 1);
+        loadItems({ type, paginationPage: 1 });
     }
 
     // const operatorsRows = Rows({
@@ -96,6 +103,7 @@ const Tables = () => {
       <Grid container item className={classes.Table}>
         {operators.length > 0 && (
           <Grid item xs={12} style={{ marginBottom: 20 }}>
+            <Table columns={[]} data={[]} hideActions />
             <DataTable
               type={'operators'}
               title={'Operators'}

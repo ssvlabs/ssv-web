@@ -1,7 +1,7 @@
+import axios from 'axios';
 import config from '~app/common/config';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
-import axios from 'axios';
 
 class Validator {
     validators: any = null;
@@ -24,8 +24,10 @@ class Validator {
         return 'prater';
     }
 
-    async getValidatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
-        if (this.pagination?.page === page && this.pagination.per_page === perPage) return { pagination: this.pagination, validators: this.validators };
+    async getValidatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
+        if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
+            return { pagination: this.pagination, validators: this.validators };
+        }
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
         const response: any = await axios.get(operatorsEndpointUrl);
         const apiResponseData = response.data;
@@ -62,6 +64,21 @@ class Validator {
             return responseData.data;
         } catch (e) {
             return [];
+        }
+    }
+
+    async getValidator(publicKey: string) {
+        try {
+            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours`;
+            const response: any = await axios.get(url);
+            const balance = await this.getValidatorsBalances([publicKey]);
+            const detailedValidator = await this.buildValidatorStructure(response, balance[0]);
+            const validator = Object.create(detailedValidator);
+            validator.operators = response?.data?.operators;
+            return validator;
+        } catch (e) {
+            console.log(e.message);
+            return null;
         }
     }
 

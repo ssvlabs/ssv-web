@@ -13,11 +13,15 @@ import { useStyles } from './MyAccount.styles';
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
-    const { history } = useUserFlow();
     const ssvStore: SsvStore = stores.SSV;
     const wrapperRef = useRef(null);
+    const { redirectUrl, history } = useUserFlow();
     const [dropDownMenu, displayDropDownMenu] = useState(false);
     const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {

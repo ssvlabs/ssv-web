@@ -16,12 +16,14 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 import axios from 'axios';
+import LinkText from '~app/common/components/LinkText';
 
 const ImportValidator = () => {
     const stores = useStores();
     const classes = useStyles();
     const { history } = useUserFlow();
     const inputRef = useRef(null);
+    const removeButtons = useRef(null);
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -29,7 +31,7 @@ const ImportValidator = () => {
     const [keyStorePassword, setKeyStorePassword] = useState('');
 
     const handleClick = (e: any) => {
-        if (e.target !== inputRef.current) {
+        if (e.target !== inputRef.current && e.target !== removeButtons?.current) {
             // @ts-ignore
             inputRef.current.click();
         }
@@ -63,8 +65,8 @@ const ImportValidator = () => {
     const isDeposited = async (): Promise<boolean> => {
         const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
         const response: any = (await axios.get(beaconChaValidatorUrl)).data;
-        const conditionalDataExtraction = Array.isArray(response.data) ? response[0].data : response.data;
-        return response.data.data !== null && conditionalDataExtraction?.valid_signature;
+        const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
+        return conditionalDataExtraction?.valid_signature;
     };
 
     const removeFile = () => {
@@ -82,11 +84,13 @@ const ImportValidator = () => {
         return <Grid item className={fileClass} />;
     };
 
+    const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
+
     const renderFileText = () => {
         if (!validatorStore.keyStoreFile) {
             return (
               <Grid item xs={12} className={classes.FileText}>
-                Drag and drop files or <Grid className={classes.Browse}>browse</Grid>
+                Drag and drop files or <LinkText link={''} text={'browse'} />
               </Grid>
             );
         }
@@ -94,7 +98,7 @@ const ImportValidator = () => {
             return (
               <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
                 {validatorStore.keyStoreFile.name}
-                <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
+                <RemoveButton />
               </Grid>
             );
         }
@@ -102,7 +106,7 @@ const ImportValidator = () => {
             return (
               <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
                 Invalid file format - only .json files are supported
-                <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
+                <RemoveButton />
               </Grid>
             );
         }
@@ -133,7 +137,6 @@ const ImportValidator = () => {
       <BorderScreen
         blackHeader
         header={translations.VALIDATOR.IMPORT.TITLE}
-        navigationLink={config.routes.VALIDATOR.HOME}
         body={[
           <Grid item container>
             <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>

@@ -217,7 +217,8 @@ const FirstSquare = () => {
     };
 
     const inputHandler = debounce((e: any) => {
-        setSearchInput(e.target.value.trim());
+        const userInput = e.target.value.trim();
+        if (userInput.length >= 3 || userInput.length === 0) setSearchInput(e.target.value.trim());
     }, 1000);
 
     const rows: any = dataRows();
@@ -236,7 +237,6 @@ const FirstSquare = () => {
     return (
       <BorderScreen
         wrapperClass={classes.ScreenWrapper}
-        navigationLink={config.routes.VALIDATOR.IMPORT}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} />

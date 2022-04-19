@@ -6,6 +6,7 @@ import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
+import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
@@ -122,6 +123,7 @@ class WalletStore extends BaseStore implements Wallet {
             await this.resetUser();
         } else {
             this.accountAddress = address;
+            ApiParams.cleanStorage();
             await this.initializeUserInfo();
             const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
             const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress(1, 5, address, true);

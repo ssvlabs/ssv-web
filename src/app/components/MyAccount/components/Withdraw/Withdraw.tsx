@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import IntegerInput from '~app/common/components/IntegerInput';
@@ -17,14 +16,9 @@ const Withdraw = () => {
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
     const applicationStore: ApplicationStore = stores.Application;
-    const { redirectUrl, history } = useUserFlow();
     const [inputValue, setInputValue] = useState(0.0);
     const [userAgree, setUserAgreement] = useState(false);
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     useEffect(() => {
         if (inputValue === ssvStore.contractDepositSsvBalance && ssvStore.isValidatorState) {
@@ -119,7 +113,7 @@ const Withdraw = () => {
               checkboxesText={['I understand that risks of having my account liquidated.']}
             />
           )}
-          />
+        />
       </>
     );
 };

@@ -29,6 +29,7 @@ const App = () => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
 
+    console.log('now');
     useEffect(() => {
         walletStore.connectWalletFromCache();
     }, []);
@@ -50,7 +51,7 @@ const App = () => {
         {/* <BarMessage /> */}
         {/* <AppBar /> */}
         <BrowserView>
-          <Routes />
+          {walletStore.accountDataLoaded && <Routes />}
         </BrowserView>
         <MobileView>
           <MobileNotSupported />

@@ -1,36 +1,31 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
+import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import Status from '~app/common/components/Status';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/common/components/LinkText';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import BackNavigation from '~app/common/components/BackNavigation';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { Table } from '~app/components/MyAccount/components/SingelValidator/components/Table/Table';
+import { Table } from '~app/common/components/Table/Table';
 import { useStyles } from '~app/components/MyAccount/components/SingelValidator/SingelValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const SingleValidator = () => {
     const stores = useStores();
     const classes = useStyles();
-    const { redirectUrl, history } = useUserFlow();
+    const history = useHistory();
     // @ts-ignore
     const { validator_id } = useParams();
     const settingsRef = useRef(null);
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const [showSettings, setShowSettings] = useState(false);
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
@@ -68,10 +63,6 @@ const SingleValidator = () => {
         { key: 'apr', value: 'Est. APR' },
         // { key: 'totalOperatorsFee', value: 'Total Operator Fee' },
     ];
-
-    const editValidator = () => {
-        history.push('/dashboard/validator/12/edit');
-    };
 
     const ShowSettings = () => {
         if (!showSettings) return null;
@@ -122,7 +113,10 @@ const SingleValidator = () => {
         },
         [validator],
     );
-
+    const editValidator = () => {
+        history.push('/dashboard/validator/12/edit');
+    };
+    
     const columns = React.useMemo(
         () => [
             {
@@ -155,8 +149,7 @@ const SingleValidator = () => {
                     },
                 ],
             },
-        ],
-        [],
+        ], [],
     );
 
     if (!validator) return null;
@@ -180,7 +173,7 @@ const SingleValidator = () => {
                   // @ts-ignore
                   const fieldKey = validator[field.key];
                   return (
-                    <Grid key={index} item container direction={'column'}>
+                    <Grid key={index} item>
                       <Grid className={classes.DetailsHeader}>{field.value}</Grid>
                       <Grid className={classes.DetailsBody}>{field.key === 'status' ?
                         <Status status={fieldKey} /> : fieldKey}</Grid>

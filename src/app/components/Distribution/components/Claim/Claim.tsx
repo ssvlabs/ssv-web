@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -17,7 +17,7 @@ import DistributionStore from '~app/common/stores/applications/Distribution/Dist
 const Claim = () => {
     const stores = useStores();
     const classes = useStyles();
-    const { history } = useUserFlow();
+    const history = useHistory();
     const walletStore: WalletStore = stores.Wallet;
     const distributionStore: DistributionStore = stores.Distribution;
 

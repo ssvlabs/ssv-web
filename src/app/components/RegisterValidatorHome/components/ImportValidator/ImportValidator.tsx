@@ -1,9 +1,10 @@
+import axios from 'axios';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import { useHistory } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
-// import ApiRequest from '~lib/utils/ApiRequest';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
+import LinkText from '~app/common/components/LinkText';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
@@ -15,19 +16,18 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
-import axios from 'axios';
-import LinkText from '~app/common/components/LinkText';
 
 const ImportValidator = () => {
     const stores = useStores();
     const classes = useStyles();
-    const { history } = useUserFlow();
+    const history = useHistory();
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
     const [errorMessage, setErrorMessage] = useState('');
+
     const [keyStorePassword, setKeyStorePassword] = useState('');
 
     const handleClick = (e: any) => {
@@ -90,7 +90,7 @@ const ImportValidator = () => {
         if (!validatorStore.keyStoreFile) {
             return (
               <Grid item xs={12} className={classes.FileText}>
-                Drag and drop files or <LinkText link={''} text={'browse'} />
+                Drag and drop files or <LinkText text={'browse'} />
               </Grid>
             );
         }

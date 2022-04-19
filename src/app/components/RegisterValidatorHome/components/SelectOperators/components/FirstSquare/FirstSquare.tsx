@@ -26,7 +26,7 @@ import StyledCell from '~app/components/RegisterValidatorHome/components/SelectO
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
-const FirstSquare = () => {
+const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
     const [loading, setLoading] = useState(false);
     const classes = useStyles({ loading });
@@ -68,6 +68,7 @@ const FirstSquare = () => {
             page,
             ordering,
             perPage: 10,
+            withFee: true,
             type: filterBy,
             search: searchInput,
             validatorsCount: true,
@@ -227,15 +228,18 @@ const FirstSquare = () => {
     }, [JSON.stringify(operatorStore.selectedOperators)]);
 
     useEffect(() => {
+        console.log('1');
         getOperators(1);
     }, [searchInput, sortBy, sortOrder, filterBy]);
 
     useEffect(() => {
+        console.log('2');
         getOperators(operatorsPagination.page);
     }, [operatorsPagination.page]);
 
     return (
       <BorderScreen
+        withoutNavigation={editPage}
         wrapperClass={classes.ScreenWrapper}
         body={[
           <Grid container>

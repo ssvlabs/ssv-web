@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 // import CTAButton from '~app/common/components/CTAButton';
 import { useStyles } from './EnableAccount.styles';
@@ -18,7 +17,6 @@ const EnableAccount = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
-    const { redirectUrl, history } = useUserFlow();
     const [allOperatorsFee, setTotalFee] = useState(0);
     const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
     const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
@@ -28,10 +26,6 @@ const EnableAccount = () => {
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees) },
         { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     useEffect(() => {
 

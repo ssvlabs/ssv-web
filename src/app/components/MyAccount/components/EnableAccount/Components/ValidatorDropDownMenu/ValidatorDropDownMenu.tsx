@@ -4,7 +4,6 @@ import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from './ValidatorDropDownMenu.styles';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -24,16 +23,11 @@ const ValidatorDropDownMenu = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
-    const { redirectUrl, history } = useUserFlow();
     const walletStore: WalletStore = stores.Wallet;
     // const operatorStore: OperatorStore = stores.Operator;
     const [dropMenu, setDropMenu] = useState(false);
     const [operators, setOperators]: any = useState([]);
     const [validatorTotalFee, setValidatorTotalFee]: any = useState(0);
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     useEffect(() => {
         ssvStore.getValidatorOperators(validatorPublicKey).then((operatorsPublicKeys) => {

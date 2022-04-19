@@ -1,17 +1,17 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useState } from 'react';
-import useUserFlow from '~app/hooks/useUserFlow';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-// import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -20,17 +20,16 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
-import LinkText from '~app/common/components/LinkText';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
+    const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
-    const { redirectUrl, history } = useUserFlow();
     const [txHash, setTxHash] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
@@ -45,10 +44,6 @@ const ImportValidatorConfirmation = () => {
          liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
          totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     const handlePendingTransaction = (transactionHash: string) => {
         setTxHash(transactionHash);

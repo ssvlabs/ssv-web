@@ -1,9 +1,9 @@
+import React from 'react';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 // import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -17,13 +17,9 @@ const SuccessScreen = () => {
     const stores = useStores();
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
-    const { redirectUrl, history } = useUserFlow();
+    const history = useHistory();
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     let icon: string = '';
     let subTitle: any = '';

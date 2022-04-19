@@ -3,9 +3,9 @@ import { observer } from 'mobx-react';
 import { Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
 import MyAccount from '~app/components/MyAccount';
-import AppBar from '~app/common/components/AppBar';
 import Layout from '~app/common/components/Layout';
 import Welcome from '~app/components/Welcome/Welcome';
+import { SsvAppBar } from '~app/common/components/AppBar';
 import SuccessScreen from '~app/components/SuccessScreen';
 import Deposit from '~app/components/MyAccount/components/Deposit';
 import Withdraw from '~app/components/MyAccount/components/Withdraw';
@@ -23,11 +23,17 @@ import SlashingWarning from '~app/components/RegisterValidatorHome/components/Sl
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators';
 import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
 import AccountBalanceAndFee from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee';
+import { useStores } from '~app/hooks/useStores';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 const Routes: any = () => {
+    const stores = useStores();
+    const walletStore: WalletStore = stores.Wallet;
+    if (!walletStore.accountDataLoaded) return <div>Loading...</div>;
     return (
       <Layout>
-        <AppBar />
+        <SsvAppBar />
+        <Route exact path={config.routes.HOME} component={Welcome} />
         <Route path={config.routes.MY_ACCOUNT.DASHBOARD}>
           <Switch>
             <Route exact path={config.routes.MY_ACCOUNT.DEPOSIT} component={Deposit} />
@@ -38,7 +44,6 @@ const Routes: any = () => {
             <Route exact path={config.routes.MY_ACCOUNT.EDIT_VALIDATOR} component={EditValidator} />
           </Switch>
         </Route>
-        <Route exact path={config.routes.HOME} component={Welcome} />
         <Route path={config.routes.OPERATOR.HOME}>
           <Switch>
             <Route exact path={config.routes.OPERATOR.HOME} component={RegisterOperatorHome} />

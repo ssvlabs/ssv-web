@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
@@ -18,7 +18,7 @@ const Welcome = () => {
     const history = useHistory();
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
-
+    
     const connectToWallet = () => {
         if (walletStore.connected) {
             return applicationStore.showWalletPopUp(true);

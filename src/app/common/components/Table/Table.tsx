@@ -8,7 +8,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableContainer from '@material-ui/core/TableContainer';
-import PaginationActions from '~app/common/components/DataTable/components/PaginationActions';
+import PaginationActions from '~app/common/components/Table/PaginationActions';
 import { useStyles } from './Table.styles';
 
 type PaginationActionParams = {
@@ -22,6 +22,7 @@ type PaginationActionParams = {
 };
 
 export const Table = ({ columns, data, hideActions = false, actionProps }: { columns: any, data: any, hideActions?: boolean, actionProps?: PaginationActionParams }) => {
+    // console.log(actionProps?.onChangePage(5));
     const classes = useStyles({ hideActions });
 
     // Use the state and functions returned from useTable to build your UI
@@ -73,7 +74,7 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
             rowsPerPage={actionProps.perPage ?? 0}
             totalPages={actionProps.totalPages ?? 0}
             count={actionProps.totalAmountOfItems}
-            onChangePage={(changedPage: number) => actionProps.onChangePage ? actionProps.onChangePage(actionProps.type, changedPage) : null}
+            onChangePage={(changedPage: number) => actionProps.onChangePage ? actionProps.onChangePage({ type: actionProps.type, paginationPage: changedPage }) : null}
             onChangeRowsPerPage={(rowNumber: number) => actionProps.onChangeRowsPerPage ? actionProps.onChangeRowsPerPage(actionProps.type, rowNumber) : null}
           />
         )}

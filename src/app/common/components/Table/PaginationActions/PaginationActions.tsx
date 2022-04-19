@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 // import FirstPageIcon from '@material-ui/icons/FirstPage';
 // import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 // import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import { useStyles } from '~app/common/components/DataTable/components/PaginationActions/PaginationAction.styles';
+import { useStyles } from '~app/common/components/Table/PaginationActions/PaginationAction.styles';
 import IntegerInput from '~app/common/components/IntegerInput';
 import Typography from '@material-ui/core/Typography';
 

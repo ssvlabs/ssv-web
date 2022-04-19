@@ -5,9 +5,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import config from '~app/common/config';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import Tables from '~app/components/MyAccount/components/Tables';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import DashboardTables from '~app/components/MyAccount/components/DashboardTables';
 import { useStyles } from './MyAccount.styles';
 
 const MyAccount = () => {
@@ -74,7 +74,7 @@ const MyAccount = () => {
             <MyBalance />
           </Grid>
           <Grid item className={classes.TablesWrapper}>
-            <Tables />
+            <DashboardTables />
           </Grid>
         </Grid>
       </Grid>

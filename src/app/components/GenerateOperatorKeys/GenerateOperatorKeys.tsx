@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
+import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
@@ -121,6 +121,7 @@ const GenerateOperatorKeys = () => {
               <Grid item className={classes.GridItem}>
                 <InputLabel title="Display Name" />
                 <TextInput
+                  value={inputsData.name}
                   data-testid="new-operator-name"
                   showError={displayNameError.shouldDisplay}
                   onChangeCallback={(event: any) => { onInputChange('name', event.target.value); }}

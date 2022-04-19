@@ -1,11 +1,8 @@
 import { observer } from 'mobx-react';
-// import styled from 'styled-components';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { formatNumberToUi } from '~lib/utils/numbers';
-// import CTAButton from '~app/common/components/CTAButton';
 import IntegerInput from '~app/common/components/IntegerInput';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -19,12 +16,7 @@ const Deposit = () => {
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const applicationStore: ApplicationStore = stores.Application;
-    const { redirectUrl, history } = useUserFlow();
     const [inputValue, setInputValue] = useState('');
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     async function depositSsv() {
         applicationStore.setIsLoading(true);

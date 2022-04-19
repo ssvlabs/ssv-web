@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme) => ({
         height: 80,
         alignItems: 'center',
         padding: theme.spacing(4, 0, 4, 6),
-        backgroundColor: (props: any) => props.whiteBackGround ? theme.colors.white : '',
+        backgroundColor: (props: any) => props.backgroundColor ? props.backgroundColor : '',
     },
     AppBarIcon: {
         height: 48,
@@ -17,8 +17,42 @@ export const useStyles = makeStyles((theme) => ({
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundImage: `url(/images/logo/${theme.darkMode ? 'light' : 'dark'}.svg)`,
+        '@media only screen and (max-width: 500px)': {
+            height: 40,
+            width: 28.5,
+            backgroundImage: `url(/images/logo/${theme.darkMode ? 'small_light' : 'small_light'}.svg)`,
+        },
 
     },
+    GridItem: {
+        '&:nth-child(1)': {
+        },
+        '&:nth-child(2)': {
+            justifyContent: 'flex-end',
+        },
+        '&:nth-child(3)': {
+            justifyContent: 'flex-end',
+        },
+    },
+    Button: {
+        fontSize: 16,
+        borderRadius: 8,
+        fontWeight: 600,
+        lineHeight: 1.25,
+        cursor: 'pointer',
+        color: theme.colors.gray90,
+        margin: theme.spacing(0, '5%', 0, '5%'),
+        '@media only screen and (max-width: 800px)': {
+            display: 'none',
+        },
+    },
+    DarkModeWrapper: {
+        '@media only screen and (max-width: 500px)': {
+           display: 'none',
+        },
+    },
+
+    /// delete
     SmallLogo: {
         height: 40,
         width: 28.5,
@@ -30,11 +64,13 @@ export const useStyles = makeStyles((theme) => ({
         display: (props: any) => props.isDistribution ? 'none' : '',
     },
     Wrapper: {
-        marginLeft: (props: any) => props.isDistribution ? 'auto' : '',
-        '@media (max-width: 1200px)': {
-            marginLeft: 'auto',
-        },
+        // marginLeft: (props: any) => props.isDistribution ? 'auto' : '',
+        // '@media (max-width: 1200px)': {
+        //     marginLeft: 'auto',
+        // },
     },
+    /// delete
+
     Hamburger: {
         width: 24,
         height: 24,
@@ -44,6 +80,9 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         margin: theme.spacing(0, 6, 0, 6),
         backgroundImage: `url(/images/hamburger/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        '@media only screen and (min-width: 500px)': {
+            display: 'none',
+        },
     },
     MobileMenuBar: {
         top: 80,
@@ -62,6 +101,9 @@ export const useStyles = makeStyles((theme) => ({
             borderRadius: 0,
         },
     },
+    BlueLink: {
+        color: `${theme.colors.primaryBlue} !important`,
+    },
     MenuButton: {
         gap: 10,
         height: 56,
@@ -78,9 +120,6 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(4),
         justifyContent: 'flex-start',
         '-webkit-tap-highlight-color': 'transparent',
-        '&:nth-of-type(1)': {
-            color: theme.colors.primaryBlue,
-        },
         '&:nth-of-type(2)': {
             position: !theme.newStage ? 'relative' : '',
             '&:hover': {
@@ -118,17 +157,14 @@ export const useStyles = makeStyles((theme) => ({
         height: 48,
         fontSize: 16,
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         fontWeight: 600,
         lineHeight: 1.25,
         cursor: 'pointer',
         textAlign: 'center',
-        marginLeft: theme.spacing(10),
+        alignItems: 'center',
+        justifyContent: 'center',
         color: theme.colors.black,
-        '&:nth-of-type(1)': {
-            color: theme.colors.primaryBlue,
-        },
+        marginLeft: theme.spacing(10),
         '&:nth-of-type(2)': {
             // width: 144,
             // marginRight: theme.spacing(5),

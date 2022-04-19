@@ -18,6 +18,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable walletPopUp: boolean = false;
   @observable strategyName: string = 'ssv-web';
   @observable isShowingLoading: boolean = false;
+  @observable runningProcess: string = 'ssv-web';
   @observable walletConnectivity: boolean = false;
   @observable whiteNavBarBackground: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
@@ -35,6 +36,11 @@ class ApplicationStore extends BaseStore implements Application {
     } else {
       this.switchDarkMode(false);
     }
+  }
+
+  @action.bound
+  setApplicationProcess(process: string) {
+    this.runningProcess = process;
   }
 
   @action.bound

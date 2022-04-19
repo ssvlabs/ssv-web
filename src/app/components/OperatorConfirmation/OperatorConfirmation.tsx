@@ -1,9 +1,9 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
@@ -21,17 +21,13 @@ import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirma
 const OperatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
-    const { redirectUrl, history } = useUserFlow();
+    const history = useHistory();
     const operatorStore: OperatorStore = stores.Operator;
     const walletStore: WalletStore = stores.Wallet;
     // const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     const [txHash, setTxHash] = useState('');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     const onRegisterClick = async () => {
         try {

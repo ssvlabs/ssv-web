@@ -16,7 +16,7 @@ const DarkModeSwitcher = (props: Props) => {
     const classes = useStyles({ isDarkMode: applicationStore.darkMode, margin });
 
     return (
-      <Grid container onClick={() => { applicationStore.switchDarkMode(!applicationStore.darkMode); }}>
+      <Grid item container onClick={() => { applicationStore.switchDarkMode(!applicationStore.darkMode); }}>
         <Grid item className={classes.Image} />
       </Grid>
     );

@@ -1,6 +1,21 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
+    Table: {
+        borderRadius: 8,
+        // backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.applicationBackgroundColor,
+    },
+    ExplorerImage: {
+        width: '24px',
+        height: '24px',
+        cursor: 'pointer',
+        marginRight: '12px',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        // backgroundPosition: 'center',
+        backgroundImage: `url(/images/chart/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
     Name: {
         '&:nth-of-type(1)': {
             fontSize: 16,
@@ -17,14 +32,6 @@ export const useStyles = makeStyles((theme) => ({
             marginBottom: theme.spacing(0),
         },
     },
-    PublicKeyBold: {
-        width: '87px',
-        height: '20px',
-        fontSize: '14px',
-        fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#5b6c84',
-    },
     copyImage: {
         width: 24,
         cursor: 'pointer',
@@ -32,34 +39,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundImage: `url(/images/copy/${theme.darkMode ? 'light' : 'gray'}.svg)`,
-    },
-    Status: {
-        borderRadius: 4,
-        '& p': {
-            fontSize: 14,
-            margin: 'auto',
-            fontWeight: 'bold',
-            // fontWeight: 500,
-            textTransform: 'capitalize',
-            // padding: '1px 6px',
-        },
-    },
-    Active: {
-        width: 54,
-        height: 26,
-        color: theme.colors.primarySuccessDark,
-        backgroundColor: theme.colors.primarySuccessRegularOpacity,
-    },
-    NoValidators: {
-        width: 99,
-        height: 26,
-        color: theme.colors.gray80,
-        backgroundColor: theme.colors.gray20,
-    },
-    Inactive: {
-        width: 65,
-        color: theme.colors.primaryError,
-        backgroundColor: theme.colors.primaryErrorRegular,
     },
     Balance: {
         width: '54px',
@@ -92,16 +71,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         // backgroundPosition: 'center',
         backgroundImage: `url(/images/beacon/${theme.darkMode ? 'dark' : 'light'}.svg)`,
-    },
-    ExplorerImage: {
-        width: '24px',
-        height: '24px',
-        cursor: 'pointer',
-        marginRight: '12px',
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        // backgroundPosition: 'center',
-        backgroundImage: `url(/images/chart/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     SettingsImage: {
         width: '24px',

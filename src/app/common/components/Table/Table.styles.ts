@@ -38,7 +38,6 @@ export const useStyles = makeStyles((theme) => ({
                             borderBottom: `1px solid ${theme.colors.gray20}`,
 
                             '&:first-child': {
-                                width: 350,
                                 paddingLeft: 32,
                             },
 
@@ -53,9 +52,10 @@ export const useStyles = makeStyles((theme) => ({
             '& tbody': {
                 '& tr': {
                     '& td': {
+                        height: 72,
                         border: 'none',
-                        alignContent: 'center',
-                        padding: '20px 8px 24px 8px',
+                        verticalAlign: 'top',
+                        padding: '12px 8px 12px 8px',
                         borderBottom: `1px solid ${theme.colors.gray20}`,
                         '&:first-child': {
                             paddingLeft: 32,

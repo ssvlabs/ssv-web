@@ -5,14 +5,14 @@ import Typography from '@material-ui/core/Typography';
 
 type MessageDivProps ={
     text: string
-    link: string
+    link?: string
 };
 
 const LinkText = ({ text, link }: MessageDivProps) => {
     const classes = useStyles();
 
     const openLink = () => {
-        window.open(link);
+        if (link) window.open(link);
     };
 
     return (

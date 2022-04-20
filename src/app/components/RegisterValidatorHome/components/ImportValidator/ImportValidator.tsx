@@ -62,8 +62,6 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         }
     };
 
-    const validatorSelectionPage = () => history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
-
     const isDeposited = async (): Promise<boolean> => {
         const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
         const response: any = (await axios.get(beaconChaValidatorUrl)).data;
@@ -119,13 +117,11 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         try {
             await validatorStore.extractKeyStoreData(keyStorePassword);
             const deposited = await isDeposited();
-            if (deposited) {
-                operatorStore.unselectAllOperators();
-                validatorSelectionPage();
-            }
             if (reUpload) {
-                console.log('reupload');
                 history.push(`/dashboard/validator/${public_key}/confirm`);
+            } else if (deposited) {
+                operatorStore.unselectAllOperators();
+                history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
             } else {
                 history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
             }

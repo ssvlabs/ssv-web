@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
 import TextInput from '~app/common/components/TextInput';
@@ -17,10 +17,12 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
-const ImportValidator = () => {
+const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
+    // @ts-ignore
+    const { public_key } = useParams();
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
     const operatorStore: OperatorStore = stores.Operator;
@@ -120,6 +122,10 @@ const ImportValidator = () => {
             if (deposited) {
                 operatorStore.unselectAllOperators();
                 validatorSelectionPage();
+            }
+            if (reUpload) {
+                console.log('reupload');
+                history.push(`/dashboard/validator/${public_key}/confirm`);
             } else {
                 history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
             }
@@ -136,6 +142,7 @@ const ImportValidator = () => {
     return (
       <BorderScreen
         blackHeader
+        wrapperClass={classes.Wrapper}
         header={translations.VALIDATOR.IMPORT.TITLE}
         body={[
           <Grid item container>

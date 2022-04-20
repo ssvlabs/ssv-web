@@ -1,5 +1,4 @@
 import React from 'react';
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { longStringShorten } from '~lib/utils/strings';
@@ -9,13 +8,12 @@ import { useStyles } from './OperatorDetails.styles';
 
 type Props = {
     operator: any // ?? IOperator
-    withoutSha256?: boolean
 };
 
 const OperatorDetails = (props: Props) => {
-    const { operator, withoutSha256 } = props;
+    const { operator } = props;
     const classes = useStyles();
-    const shaPublicKey = `0x${longStringShorten(withoutSha256 ? operator.public_key : sha256(operator.public_key), 4)}`;
+    const shaPublicKey = `0x${longStringShorten(operator.address, 4)}`;
 
     return (
       <Grid container className={classes.Wrapper}>

@@ -16,6 +16,7 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     CancelWrapper: {
+        cursor: 'pointer',
         justifyContent: 'flex-end',
         gap: 8,
         '& p': {

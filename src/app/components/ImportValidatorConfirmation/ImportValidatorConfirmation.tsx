@@ -100,7 +100,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.public_key]?.ssv ?? 0))}
+                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.address]?.ssv ?? 0))}
                             subText={'/year'}
                           />
                         </Grid>

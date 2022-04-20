@@ -4,6 +4,7 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 
 class Validator {
+    validator: any = null;
     validators: any = null;
     pagination: any = null;
     private static instance: Validator;
@@ -69,6 +70,7 @@ class Validator {
 
     async getValidator(publicKey: string) {
         try {
+            if (this.validator?.public_key === publicKey) return this.validator;
             const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours`;
             const response: any = await axios.get(url);
             const balance = await this.getValidatorsBalances([publicKey]);

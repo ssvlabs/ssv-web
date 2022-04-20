@@ -14,6 +14,7 @@ import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
 import EnableAccount from '~app/components/MyAccount/components/EnableAccount';
 import EditValidator from '~app/components/MyAccount/components/EditValidator';
+import UploadKeyStore from '~app/components/MyAccount/components/UploadKeyStore';
 import SingleValidator from '~app/components/MyAccount/components/SingelValidator';
 import OperatorTransactionConfirmation from '~app/components/OperatorConfirmation';
 import ValidatorTransactionConfirmation from '~app/components/ImportValidatorConfirmation';
@@ -21,6 +22,7 @@ import ImportValidator from '~app/components/RegisterValidatorHome/components/Im
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/RegisterValidatorHome/components/SlashingWarning';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators';
+import ConfirmOperatorsChange from '~app/components/MyAccount/components/ConfirmOperatorsChange';
 import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
 import AccountBalanceAndFee from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee';
 import { useStores } from '~app/hooks/useStores';
@@ -42,6 +44,8 @@ const Routes: any = () => {
             <Route exact path={config.routes.MY_ACCOUNT.VALIDATOR} component={SingleValidator} />
             <Route exact path={config.routes.MY_ACCOUNT.ENABLE_ACCOUNT} component={EnableAccount} />
             <Route exact path={config.routes.MY_ACCOUNT.EDIT_VALIDATOR} component={EditValidator} />
+            <Route exact path={config.routes.MY_ACCOUNT.UPLOAD_KEY_STORE} component={UploadKeyStore} />
+            <Route exact path={config.routes.MY_ACCOUNT.CONFIRM_OPERATORS} component={ConfirmOperatorsChange} />
           </Switch>
         </Route>
         <Route path={config.routes.OPERATOR.HOME}>

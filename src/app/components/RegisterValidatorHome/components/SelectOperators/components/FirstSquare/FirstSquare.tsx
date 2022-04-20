@@ -93,8 +93,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         // @ts-ignore
         if (wrapperRef.current?.isEqualNode(e.target)) return;
 
-        if (operatorStore.isOperatorSelected(operator.public_key)) {
-            operatorStore.unselectOperatorByPublicKey(operator.public_key);
+        if (operatorStore.isOperatorSelected(operator.address)) {
+            operatorStore.unselectOperatorByPublicKey(operator.address);
           return;
         }
         const indexes = [1, 2, 3, 4];
@@ -155,7 +155,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         }
 
         return operatorsData.map((operator) => {
-            const isSelected = operatorStore.isOperatorSelected(operator.public_key);
+            const isSelected = operatorStore.isOperatorSelected(operator.address);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
             return (
               <TableRow
@@ -192,7 +192,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 </StyledCell>
                 )}
                 <StyledCell>
-                  <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
+                  <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => { redirectTo(operator.address); }} />
                 </StyledCell>
               </TableRow>
             );
@@ -228,12 +228,10 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     }, [JSON.stringify(operatorStore.selectedOperators)]);
 
     useEffect(() => {
-        console.log('1');
         getOperators(1);
     }, [searchInput, sortBy, sortOrder, filterBy]);
 
     useEffect(() => {
-        console.log('2');
         getOperators(operatorsPagination.page);
     }, [operatorsPagination.page]);
 

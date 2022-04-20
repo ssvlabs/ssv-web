@@ -21,7 +21,7 @@ const SingleValidator = () => {
     const classes = useStyles();
     const history = useHistory();
     // @ts-ignore
-    const { validator_id } = useParams();
+    const { public_key } = useParams();
     const settingsRef = useRef(null);
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
@@ -29,7 +29,7 @@ const SingleValidator = () => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Validator.getInstance().getValidator(validator_id).then((response: any) => {
+        Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
                 response.public_key = `0x${longStringShorten('998b01f35508d35db7804bb56c9e4d7122558cb981382487f11dd808b49f2b9cdaa0e21c38230b0dd8663e6743e2ec4d', 4)}`;
                 setValidator(response);
@@ -90,11 +90,11 @@ const SingleValidator = () => {
                 } = operator;
 
                 return {
-                    public_key: <OperatorDetails withoutSha256 operator={{
+                    public_key: <OperatorDetails operator={{
                         status,
                         name,
                         type,
-                        public_key: address,
+                        address,
                         fee,
                     }} />,
                     status: <Status status={status} />,
@@ -114,7 +114,7 @@ const SingleValidator = () => {
         [validator],
     );
     const editValidator = () => {
-        history.push('/dashboard/validator/12/edit');
+        history.push(`/dashboard/validator/${public_key}/edit`);
     };
     
     const columns = React.useMemo(

@@ -29,7 +29,6 @@ const App = () => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
 
-    console.log('now');
     useEffect(() => {
         walletStore.connectWalletFromCache();
     }, []);

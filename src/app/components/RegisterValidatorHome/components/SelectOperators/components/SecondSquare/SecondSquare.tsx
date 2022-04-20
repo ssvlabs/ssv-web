@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 
@@ -17,6 +17,8 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
+    // @ts-ignore
+    const { public_key } = useParams();
     const operatorStore: OperatorStore = stores.Operator;
     const ssvStore: SsvStore = stores.SSV;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
@@ -28,7 +30,11 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
     const onSelectOperatorsClick = async () => {
         if (process.env.REACT_APP_NEW_STAGE) {
-            history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+            if (editPage) {
+                history.push(`/dashboard/validator/${public_key}/upload_key_store`);
+            } else {
+                history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+            }
         } else {
             history.push(config.routes.VALIDATOR.SLASHING_WARNING);
         }

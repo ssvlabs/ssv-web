@@ -19,6 +19,7 @@ export interface IOperator {
     name: string,
     logo?: string,
     type?: string,
+    address: string,
     score?: number,
     public_key: string,
     selected?: boolean,
@@ -70,7 +71,7 @@ class OperatorStore extends BaseStore {
         let sum: number = 0;
         // @ts-ignore
         Object.keys(this.selectedOperators).forEach((index: number) => {
-            const fee = this.operatorsFees[this.selectedOperators[index].public_key]?.ssv ?? 0;
+            const fee = this.operatorsFees[this.selectedOperators[index].address]?.ssv ?? 0;
             // @ts-ignore
             sum += parseFloat(fee);
         });
@@ -314,11 +315,23 @@ class OperatorStore extends BaseStore {
         let operatorExist = false;
         // eslint-disable-next-line no-restricted-syntax
         for (const index of [1, 2, 3, 4]) {
-            if (this.selectedOperators[index]?.public_key === operator.public_key) {
+            if (this.selectedOperators[index]?.address === operator.address) {
                 operatorExist = true;
             }
         }
         if (!operatorExist) this.selectedOperators[selectedIndex] = operator;
+    }
+
+    /**
+     * Select operator
+     * @param operators
+     */
+    @action.bound
+    selectOperators(operators: IOperator[]) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const index of [1, 2, 3, 4]) {
+            this.selectedOperators[index] = operators[index - 1];
+        }
     }
 
     /**
@@ -329,7 +342,7 @@ class OperatorStore extends BaseStore {
     isOperatorSelected(publicKey: string): boolean {
         let exist = false;
         Object.values(this.selectedOperators).forEach((operator: IOperator) => {
-            if (operator.public_key === publicKey) exist = true;
+            if (operator.address === publicKey) exist = true;
         });
 
         return exist;

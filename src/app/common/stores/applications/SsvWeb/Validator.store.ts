@@ -107,7 +107,7 @@ class ValidatorStore extends BaseStore {
               });
         } else {
           // Send add operator transaction
-          await contract.methods.removeValidator(...payload).send({ from: ownerAddress })
+          this.conditionalContractFunction(contract, payload).send({ from: ownerAddress })
           .on('receipt', (receipt: any) => {
                 // eslint-disable-next-line no-prototype-builtins
                 const event: boolean = receipt.hasOwnProperty('events');

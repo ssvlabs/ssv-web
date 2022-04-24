@@ -15,7 +15,6 @@ const CheckBox = (props: Props) => {
     const [checked, setChecked] = useState(false);
 
     const checkAction = () => {
-        console.log(disable);
         if (disable) return;
         setChecked(!checked);
         onClickCallBack && onClickCallBack(!checked);

@@ -21,7 +21,7 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
 
     const onChangeWrapper = (e: any) => {
         const inputValue = e.target.value;
-        if (inputValue.length >= 100) return;
+        if (inputValue.length >= 614) return;
         onChangeCallback(e);
     };
 
@@ -34,7 +34,7 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
         <Grid item xs>
           <input
             value={value}
-            maxLength={100}
+            maxLength={614}
             disabled={disable}
             onBlur={onBlurCallBack}
             data-testid={dataTestId}

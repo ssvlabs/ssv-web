@@ -217,12 +217,6 @@ class OperatorStore extends BaseStore {
                 const gasEstimation: PriceEstimation = new PriceEstimation();
                 this.newOperatorReceipt = null;
 
-                try {
-                    walletStore.web3.utils.toWei(this.operatorFeePerBlock(transaction.fee));
-                } catch (e) {
-                    console.log(e.message);
-                }
-
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(

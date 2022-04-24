@@ -10,6 +10,7 @@ import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 // import AppBar from '~app/common/components/AppBar';
+import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MobileNotSupported from '~app/components/MobileNotSupported';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -47,7 +48,7 @@ const App = () => {
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
         )}
-        {/* <BarMessage /> */}
+        <BarMessage />
         {/* <AppBar /> */}
         <BrowserView>
           {walletStore.accountDataLoaded && <Routes />}

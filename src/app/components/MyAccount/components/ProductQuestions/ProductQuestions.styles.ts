@@ -1,20 +1,19 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => ({
-    Wrapper: {},
+
+    ProductQuestionsWrapper: {
+        marginTop: 24,
+    },
     SubHeaderWrapper: {
         gap: 8,
         marginTop: 12,
         paddingBottom: 30,
     },
-    BottomWrapper: {
-        gap: 8,
-        marginTop: 8,
-        display: 'flex',
-        marginLeft: 300,
-        alignItems: 'flex-start',
+    TextFieldWrapper: {
+        marginBottom: 24,
     },
-    TableWrapper: {
-        gap: 24,
+    ButtonsWrapper: {
+      gap: 24,
     },
 }));

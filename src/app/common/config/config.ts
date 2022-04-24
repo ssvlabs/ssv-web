@@ -12,6 +12,8 @@ const config = {
             ENABLE_ACCOUNT: '/dashboard/enable_account',
             VALIDATOR: '/dashboard/validator/:public_key',
             EDIT_VALIDATOR: '/dashboard/validator/:public_key/edit',
+            REMOVE_VALIDATOR: '/dashboard/validator/:public_key/remove',
+            VALIDATOR_REMOVED: '/dashboard/validator/:public_key/removed',
             CONFIRM_OPERATORS: '/dashboard/validator/:public_key/confirm',
             UPLOAD_KEY_STORE: '/dashboard/validator/:public_key/upload_key_store',
         },

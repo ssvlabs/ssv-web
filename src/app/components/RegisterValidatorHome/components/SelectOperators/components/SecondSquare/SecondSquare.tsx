@@ -6,7 +6,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
@@ -20,7 +19,6 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     // @ts-ignore
     const { public_key } = useParams();
     const operatorStore: OperatorStore = stores.Operator;
-    const ssvStore: SsvStore = stores.SSV;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
     const boxes = [1, 2, 3, 4];
 
@@ -92,7 +90,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                   Total Operators Yearly Fee
                 </Grid>
                 <Grid item>
-                  <SsvAndSubTitle bold ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)}
+                  <SsvAndSubTitle bold ssv={operatorStore.getSelectedOperatorsFee}
                     subText={'~$757.5'} subTextCenter={false} />
                 </Grid>
               </Grid>

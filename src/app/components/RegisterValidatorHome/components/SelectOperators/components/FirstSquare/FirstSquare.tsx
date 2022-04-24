@@ -2,7 +2,6 @@ import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
 import Table from '@material-ui/core/Table';
-// import { Skeleton } from '@material-ui/lab';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,10 +20,11 @@ import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-// import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledRow';
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+
+useEffect;
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -62,7 +62,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const getOperators = async (page: number) => {
         if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
-        const ordering: string = `${sortBy ? `,${sortBy}:${sortOrder}` : 'type'}`;
+        const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'type'}`;
 
         const payload = {
             page,
@@ -74,7 +74,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             validatorsCount: true,
         };
         setLoading(true);
-
         const response = await Operator.getInstance().getOperators(payload);
         if (response.pagination.page > 1) {
             setOperatorsData([...operatorsData, ...response.operators]);
@@ -157,6 +156,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         return operatorsData.map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.address);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
+
             return (
               <TableRow
                 key={Math.floor(Math.random() * 10000000)}

@@ -68,14 +68,10 @@ class OperatorStore extends BaseStore {
 
     @computed
     get getSelectedOperatorsFee(): number {
-        let sum: number = 0;
-        // @ts-ignore
-        Object.keys(this.selectedOperators).forEach((index: number) => {
-            const fee = this.operatorsFees[this.selectedOperators[index].address]?.ssv ?? 0;
-            // @ts-ignore
-            sum += parseFloat(fee);
-        });
-        return sum;
+        return Object.values(this.selectedOperators).reduce(
+            (previousValue: number, currentValue: IOperator) => previousValue + (currentValue.fee ?? 0),
+            0,
+        );
     }
 
     /**

@@ -14,7 +14,10 @@ type OperatorsListQuery = {
 
 class Operator {
     operators: any = null;
-    pagination: any = null;
+    operatorsQuery: any = null;
+    operatorsPagination: any = null;
+    ownerAddressOperators: any = null;
+    ownerAddressPagination: any = null;
     private static instance: Operator;
     private readonly baseUrl: string = '';
 
@@ -36,20 +39,22 @@ class Operator {
 
     clearOperatorsCache() {
         this.operators = null;
-        this.pagination = null;
+        this.operatorsPagination = null;
+        this.ownerAddressOperators = null;
+        this.ownerAddressPagination = null;
     }
 
     /**
      * Get operators by owner Address
      */
     async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
-        if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
-            return { pagination: this.pagination, operators: this.operators };
+        if (!force && this.ownerAddressPagination?.page === page && this.ownerAddressPagination.per_page === perPage) {
+            return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
         }
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
         const response: any = await axios.get(operatorsEndpointUrl);
-        this.operators = response.data.operators;
-        this.pagination = response.data.pagination;
+        this.ownerAddressPagination = response.data.pagination;
+        this.ownerAddressOperators = response.data.operators;
         return response.data;
     }
 
@@ -68,7 +73,18 @@ class Operator {
         if (withFee) operatorsEndpointUrl += 'withFee=true&';
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
+        if (this.operatorsQuery === operatorsEndpointUrl) {
+            return { operators: this.operators, pagination: this.operatorsPagination };
+        }
+
         const response: any = await axios.get(operatorsEndpointUrl);
+
+        if (response.data.operators) {
+            this.operators = response.data.operators;
+            this.operatorsQuery = operatorsEndpointUrl;
+            this.operatorsPagination = response.data.pagination;
+        }
+
         return response.data;
     }
 }

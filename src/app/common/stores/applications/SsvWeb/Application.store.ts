@@ -4,6 +4,7 @@ import { AppTheme } from '~root/Theme';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 /**
  * Base store provides singe source of true
@@ -51,6 +52,13 @@ class ApplicationStore extends BaseStore implements Application {
   @action.bound
   setWhiteNavBarBackground(status: boolean) {
     this.whiteNavBarBackground = status;
+  }
+
+  @action.bound
+  cancelProcess() {
+    const validatorStore: ValidatorStore = this.getStore('Validator');
+    validatorStore.clearValidatorData();
+    this.runningProcess = '';
   }
 
   @action.bound

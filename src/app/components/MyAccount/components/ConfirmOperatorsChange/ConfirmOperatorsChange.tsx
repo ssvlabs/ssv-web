@@ -1,17 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
+// import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
+import OperatorsReceipt from '~app/common/components/OperatorsRecipt';
+// import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import { useStyles } from './ConfirmOperatorsChange.styles';
+import Validator from '~lib/api/Validator';
+import BackNavigation from '~app/common/components/BackNavigation';
 
 const ConfirmOperatorsChange = () => {
+    // const stores = useStores();
     const classes = useStyles();
+    const [operators, setOperators] = useState(null);
+    // const application: ApplicationStore = stores.application;
+
+    useEffect(() => {
+        Validator.getInstance().getValidator(public_key).then((response: any) => {
+            console.log(response);
+            setOperators(response.operators);
+        });
+    }, []);
 
     // @ts-ignore
     const { public_key } = useParams();
+
+    if (!operators) return null;
 
     return (
       <Grid container className={classes.Wrapper}>
@@ -23,6 +40,19 @@ const ConfirmOperatorsChange = () => {
             <ImageDiv image={'beacon'} width={24} height={24} />
           </Grid>
         </WhiteWrapper>
+        <Grid container item className={classes.BottomWrapper}>
+          <Grid item xs={12}>
+            <BackNavigation />
+          </Grid>
+          <Grid container item className={classes.TableWrapper}>
+            <Grid item>
+              <OperatorsReceipt operators={operators} currentOperators header={'Current Operators'} />
+            </Grid>
+            <Grid item>
+              <OperatorsReceipt operators={operators} header={'New Operators'} />
+            </Grid>
+          </Grid>
+        </Grid>
       </Grid>
     );
 };

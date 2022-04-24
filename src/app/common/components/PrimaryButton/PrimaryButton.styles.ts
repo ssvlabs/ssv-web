@@ -4,6 +4,7 @@ export const useStyles = makeStyles((theme) => ({
     PrimaryButton: {
         height: 60,
         fontSize: 16,
+        width: '100%',
         // width: 584,
         fontWeight: 600,
         borderRadius: 8,

@@ -7,7 +7,8 @@ import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
-import { longStringShorten } from '~lib/utils/strings';
+// import { longStringShorten } from '~lib/utils/strings';
+// `0x${longStringShorten('998b01f35508d35db7804bb56c9e4d7122558cb981382487f11dd808b49f2b9cdaa0e21c38230b0dd8663e6743e2ec4d', 4)}`
 import LinkText from '~app/common/components/LinkText';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import BackNavigation from '~app/common/components/BackNavigation';
@@ -30,8 +31,8 @@ const SingleValidator = () => {
     useEffect(() => {
         applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(public_key).then((response: any) => {
+            console.log(response);
             if (response) {
-                response.public_key = `0x${longStringShorten('998b01f35508d35db7804bb56c9e4d7122558cb981382487f11dd808b49f2b9cdaa0e21c38230b0dd8663e6743e2ec4d', 4)}`;
                 setValidator(response);
                 applicationStore.setIsLoading(false);
             }
@@ -63,12 +64,15 @@ const SingleValidator = () => {
         { key: 'apr', value: 'Est. APR' },
         // { key: 'totalOperatorsFee', value: 'Total Operator Fee' },
     ];
+    const removeValidatorPage = () => {
+        history.push(`/dashboard/validator/${public_key}/remove`);
+    };
 
     const ShowSettings = () => {
         if (!showSettings) return null;
         return (
-          <Grid container item className={classes.Settings}>
-            <Grid item className={classes.Button}>Remove Validator</Grid>
+          <Grid ref={settingsRef} container item className={classes.Settings}>
+            <Grid item className={classes.Button} onClick={removeValidatorPage}>Remove Validator</Grid>
           </Grid>
         );
     };
@@ -102,7 +106,7 @@ const SingleValidator = () => {
                     fee: <Grid item container justify={'space-between'}>
                       <Grid item container xs>
                         <Grid item xs={12}>
-                          <Typography>30 SSV</Typography>
+                          <Typography>{operator.fee} SSV</Typography>
                         </Grid>
                         <Grid item>~$757.5</Grid>
                       </Grid>
@@ -165,7 +169,7 @@ const SingleValidator = () => {
               <Grid item xs>
                 <Typography className={classes.Header}>Validator Details</Typography>
               </Grid>
-              <Grid item className={classes.Options} onClick={() => { setShowSettings(!showSettings); }} ref={settingsRef} />
+              <Grid item className={classes.Options} onClick={() => { setShowSettings(!showSettings); }} />
             </Grid>
 
             <Grid item container className={classes.FieldsWrapper}>

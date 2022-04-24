@@ -50,12 +50,12 @@ const PrimaryButton = (props: Props) => {
     };
 
     return (
-      <Grid container item>
+      <Grid container>
         <Button
-          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+          onClick={submit}
           data-testid={dataTestId}
           disabled={disable || applicationStore.isLoading}
-          onClick={submit}
+          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
         >
           {applicationStore.isLoading && <Spinner />}
           {text}

@@ -16,7 +16,9 @@ import EnableAccount from '~app/components/MyAccount/components/EnableAccount';
 import EditValidator from '~app/components/MyAccount/components/EditValidator';
 import UploadKeyStore from '~app/components/MyAccount/components/UploadKeyStore';
 import SingleValidator from '~app/components/MyAccount/components/SingelValidator';
+import RemoveValidator from '~app/components/MyAccount/components/RemoveValidator';
 import OperatorTransactionConfirmation from '~app/components/OperatorConfirmation';
+import ProductQuestions from '~app/components/MyAccount/components/ProductQuestions';
 import ValidatorTransactionConfirmation from '~app/components/ImportValidatorConfirmation';
 import ImportValidator from '~app/components/RegisterValidatorHome/components/ImportValidator';
 import CreateValidator from '~app/components/RegisterValidatorHome/components/CreateValidator';
@@ -45,6 +47,8 @@ const Routes: any = () => {
             <Route exact path={config.routes.MY_ACCOUNT.ENABLE_ACCOUNT} component={EnableAccount} />
             <Route exact path={config.routes.MY_ACCOUNT.EDIT_VALIDATOR} component={EditValidator} />
             <Route exact path={config.routes.MY_ACCOUNT.UPLOAD_KEY_STORE} component={UploadKeyStore} />
+            <Route exact path={config.routes.MY_ACCOUNT.REMOVE_VALIDATOR} component={RemoveValidator} />
+            <Route exact path={config.routes.MY_ACCOUNT.VALIDATOR_REMOVED} component={ProductQuestions} />
             <Route exact path={config.routes.MY_ACCOUNT.CONFIRM_OPERATORS} component={ConfirmOperatorsChange} />
           </Switch>
         </Route>

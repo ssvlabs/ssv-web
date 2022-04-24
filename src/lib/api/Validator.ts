@@ -71,14 +71,16 @@ class Validator {
     async getValidator(publicKey: string) {
         try {
             if (this.validator?.public_key === publicKey) return this.validator;
-            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours`;
+            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours&withFee=true`;
             const response: any = await axios.get(url);
             const balance = await this.getValidatorsBalances([publicKey]);
             const detailedValidator = await this.buildValidatorStructure(response, balance[0]);
             const validator = Object.create(detailedValidator);
             validator.operators = response?.data?.operators;
+            this.validator = validator;
             return validator;
         } catch (e) {
+            console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
             console.log(e.message);
             return null;
         }

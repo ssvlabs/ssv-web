@@ -28,6 +28,8 @@ class ValidatorStore extends BaseStore {
   @action.bound
   clearValidatorData() {
     this.keyStoreFile = null;
+    this.keyStorePublicKey = '';
+    this.keyStorePrivateKey = '';
     this.createValidatorPayLoad = undefined;
   }
 
@@ -37,6 +39,24 @@ class ValidatorStore extends BaseStore {
     const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
     this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
     this.keyStorePublicKey = await ethereumKeyStore.getPublicKey();
+  }
+
+  /**
+   * Add new validator
+   */
+  @action.bound
+  async removeValidator(publicKey: string) {
+    console.log(publicKey);
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const contract: Contract = walletStore.getContract;
+    const ownerAddress: string = walletStore.accountAddress;
+
+    try {
+      await contract.methods.removeValidator(publicKey).send({ from: ownerAddress });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
@@ -87,8 +107,7 @@ class ValidatorStore extends BaseStore {
               });
         } else {
           // Send add operator transaction
-          this.conditionalContractFunction(contract, payload)
-              .send({ from: ownerAddress })
+          await contract.methods.removeValidator(...payload).send({ from: ownerAddress })
           .on('receipt', (receipt: any) => {
                 // eslint-disable-next-line no-prototype-builtins
                 const event: boolean = receipt.hasOwnProperty('events');
@@ -128,9 +147,9 @@ class ValidatorStore extends BaseStore {
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.keyStorePrivateKey);
     let totalAmountOfSsv = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
-      const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
-      const liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
-       totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
+      const operatorsFees = operatorStore.getSelectedOperatorsFee;
+      const liquidationCollateral = (ssvStore.networkFee + parseFloat(operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee))) * ssvStore.liquidationCollateral;
+      totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
     }
 
     return new Promise((resolve) => {

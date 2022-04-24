@@ -11,9 +11,10 @@ import { useStyles } from '~app/components/MyAccount/common/componenets/Remainin
 import LiquidationStateError from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 
 type Props = {
-    withdraw?: boolean,
+    gray80?: boolean,
     operator?: string,
-    newRemainingDays?: number
+    withdraw?: boolean,
+    newRemainingDays?: number,
 };
 
 const math_it_up = {
@@ -29,13 +30,13 @@ const math_it_up = {
 
 const RemainingDays = (props: Props) => {
     const stores = useStores();
-    const { withdraw, newRemainingDays, operator } = props;
+    const { gray80, withdraw, newRemainingDays, operator } = props;
     const ssvStore: SsvStore = stores.SSV;
     const presentNewEstimation = Number(newRemainingDays) > 0;
     // @ts-ignore
     const remainingDays = operator ? ssvStore.getRemainingDays(math_it_up[operator](ssvStore.contractDepositSsvBalance, newRemainingDays)) : ssvStore.getRemainingDays();
     const warningState = remainingDays < 30;
-    const classes = useStyles({ warning: warningState, withdraw });
+    const classes = useStyles({ warning: warningState, withdraw, gray80 });
 
     function conditionalErrorType() {
         if (newRemainingDays && Math.floor(remainingDays) === 0) return 3;

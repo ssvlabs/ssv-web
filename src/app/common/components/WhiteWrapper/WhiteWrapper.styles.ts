@@ -35,4 +35,13 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         backgroundImage: `url(/images/x/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
+    DialogWrapper: {
+        width: 424,
+        padding: 32,
+        height: 222,
+        borderRadius: 16,
+    },
+    ButtonsWrapper: {
+        gap: 24,
+    },
 }));

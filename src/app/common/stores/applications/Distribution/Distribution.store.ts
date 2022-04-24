@@ -45,6 +45,7 @@ class DistributionStore extends BaseStore {
                     applicationStore.setIsLoading(false);
                     applicationStore.showTransactionPendingPopUp(false);
                     this.userWithdrawRewards = true;
+                    this.claimed = true;
                     resolve(true);
                 })
                 .on('transactionHash', (txHash: string) => {

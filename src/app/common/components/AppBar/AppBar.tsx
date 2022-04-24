@@ -55,7 +55,6 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
     const Buttons = () => {
         return (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
-            {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.MenuButton}>Join</Grid>}
             {buttons?.map((button, index) => {
                   return (
                     <Grid

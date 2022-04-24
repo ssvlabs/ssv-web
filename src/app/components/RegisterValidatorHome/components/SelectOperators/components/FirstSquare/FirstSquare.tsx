@@ -90,6 +90,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const selectOperator = (e: any, operator: IOperator) => {
         // @ts-ignore
+        console.log(wrapperRef.current?.isEqualNode(e.target));
+        // @ts-ignore
         if (wrapperRef.current?.isEqualNode(e.target)) return;
 
         if (operatorStore.isOperatorSelected(operator.address)) {

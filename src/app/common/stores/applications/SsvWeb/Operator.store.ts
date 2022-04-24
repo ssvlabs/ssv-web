@@ -289,7 +289,7 @@ class OperatorStore extends BaseStore {
     @action.bound
     unselectOperatorByPublicKey(public_key: string) {
         Object.keys(this.selectedOperators).forEach((index) => {
-            if (this.selectedOperators[index].public_key === public_key) {
+            if (this.selectedOperators[index].address === public_key) {
                 delete this.selectedOperators[index];
             }
         });

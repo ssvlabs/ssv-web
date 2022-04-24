@@ -32,6 +32,7 @@ const Claim = () => {
 
     return (
       <BorderScreen
+        withoutNavigation
         body={[
           <Grid container>
             {distributionStore.txHash && <TransactionPendingPopUp txHash={distributionStore.txHash} />}

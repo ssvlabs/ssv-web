@@ -24,6 +24,7 @@ const Welcome = () => {
 
     return (
       <BorderScreen
+        withoutNavigation
         body={[
           <Grid container>
             <HeaderSubHeader title={'Claim Testnet Rewards'}

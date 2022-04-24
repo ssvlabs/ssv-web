@@ -42,7 +42,7 @@ export const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         color: theme.colors.gray90,
         margin: theme.spacing(0, '5%', 0, '5%'),
-        '@media only screen and (max-width: 800px)': {
+        '@media only screen and (max-width: 768px)': {
             display: 'none',
         },
         '&:nth-of-type(1)': {
@@ -64,7 +64,7 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     DarkModeWrapper: {
-        '@media only screen and (max-width: 500px)': {
+        '@media only screen and (max-width: 768px)': {
            display: 'none',
         },
     },
@@ -97,7 +97,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         margin: theme.spacing(0, 6, 0, 6),
         backgroundImage: `url(/images/hamburger/${theme.darkMode ? 'dark' : 'light'}.svg)`,
-        '@media only screen and (min-width: 500px)': {
+        '@media only screen and (min-width: 769px)': {
             display: 'none',
         },
     },

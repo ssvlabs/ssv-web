@@ -1,4 +1,3 @@
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
 import Table from '@material-ui/core/Table';
@@ -15,7 +14,6 @@ import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/common/components/ToolTip';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -24,15 +22,12 @@ import StyledCell from '~app/components/RegisterValidatorHome/components/SelectO
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
-useEffect;
-
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
     const [loading, setLoading] = useState(false);
     const classes = useStyles({ loading });
     const wrapperRef = useRef(null);
     const scrollRef: any = useRef(null);
-    const walletStore: WalletStore = stores.Wallet;
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
     const [filterBy, setFilterBy] = useState([]);
@@ -112,7 +107,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     };
 
     const redirectTo = (pubKey: string) => {
-        window.open(`${config.links.LINK_EXPLORER}/operators/${sha256(walletStore.decodeKey(pubKey))}`);
+        window.open(`${config.links.LINK_EXPLORER}/operators/${pubKey}`, '_blank');
     };
 
     const sortHandler = (sortType: string) => {

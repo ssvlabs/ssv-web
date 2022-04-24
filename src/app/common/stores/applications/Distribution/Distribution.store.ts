@@ -12,8 +12,8 @@ import NotificationsStore from '~app/common/stores/applications/Distribution/Not
  * for keeping all stores instances in one place
  */
 
-console.log(merkleTree.merkleRoot);
-console.log(config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS);
+console.log('merkle tree root: ', merkleTree.merkleRoot);
+console.log('distribution contract address: ', config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS);
 
 class DistributionStore extends BaseStore {
     @observable txHash: string = '';

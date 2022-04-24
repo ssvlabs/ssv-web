@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -27,10 +27,12 @@ const MyBalance = () => {
               </Grid>
             );
         }
+
         return (
           <Grid item xs={12} className={classes.CurrentBalance}>
-            {formatNumberToUi(ssvStore.networkContractBalance)} SSV
+            {formatNumberToUi(ssvStore.contractDepositSsvBalance)} SSV
           </Grid>
+
         );
     };
 
@@ -93,18 +95,19 @@ const MyBalance = () => {
           </Grid>
         </Grid>
         {renderConditionalLine()}
-        <Grid item className={classes.SeparationLine} xs={12} />
-        <Grid container item className={classes.SectionWrapper}>
-          {!ssvStore.userLiquidated && <RemainingDays />}
-          {liquidated && (
+        {ssvStore.isValidatorState && (
+          <Grid container item className={classes.SectionWrapper}>
+            {!ssvStore.userLiquidated && <RemainingDays />}
+            {liquidated && (
             <Grid className={classes.ErrorMessageWrapper}>
               <ErrorText
                 marginTop={'16px'}
                 errorType={2}
-            />
+              />
             </Grid>
+            )}
+          </Grid>
           )}
-        </Grid>
         <Grid item className={classes.SeparationLine} xs={12} />
         {renderCtaActions()}
       </Grid>

@@ -8,6 +8,7 @@ import CheckBox from '~app/common/components/CheckBox';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import SecondaryButton from '~app/common/components/Buttons/SecondaryButton';
 import { useStyles } from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance.styles';
 
 type ButtonParams = {
@@ -39,19 +40,23 @@ const PrimaryWithAllowance = (props: ButtonParams) => {
     const checkWalletConnected = async (onClickCallBack: any) => {
         if (!walletStore.connected) await walletStore.connect();
         if (walletStore.isWrongNetwork) {
-           // await walletStore.networkHandler(10);
+            // await walletStore.networkHandler(10);
         } else if (onClickCallBack) onClickCallBack();
     };
-    
+
     const handlePendingTransaction = () => {
         setApproveButtonText('Approving…');
     };
 
     const allowNetworkContract = async () => {
         setApproveButtonText('Waiting...');
-        await ssvStore.approveAllowance(false, handlePendingTransaction);
-        setApproveButtonText('Approved');
-        setUserAllowance(true);
+        const userGavePermission = await ssvStore.approveAllowance(false, handlePendingTransaction);
+        if (userGavePermission) {
+            setApproveButtonText('Approved');
+            setUserAllowance(true);
+        } else {
+            setApproveButtonText(approveButtonText);
+        }
     };
 
     const regulerButton = () => {
@@ -77,7 +82,7 @@ const PrimaryWithAllowance = (props: ButtonParams) => {
               />
             </Grid>
             <Grid item xs>
-              <PrimaryButton
+              <SecondaryButton
                 disable={!userAllowance || disable}
                 dataTestId={testId} submitFunction={() => { checkWalletConnected(onClick); }}
                 text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
@@ -101,12 +106,12 @@ const PrimaryWithAllowance = (props: ButtonParams) => {
     return (
       <Grid container>
         {checkboxesText?.map((checkboxText: string, index: number) => {
-            return (
-                // @ts-ignore
-              <Grid key={index} item xs={12}><CheckBox onClickCallBack={checkBoxesCallBack[index]}
-                text={checkboxText} /></Grid>
-            );
-        })}
+                return (
+                    // @ts-ignore
+                  <Grid key={index} item xs={12}><CheckBox onClickCallBack={checkBoxesCallBack[index]}
+                    text={checkboxText} /></Grid>
+                );
+            })}
         {isApprovalProcess && process.env.REACT_APP_NEW_STAGE ? userNeedApproval() : regulerButton()}
       </Grid>
     );

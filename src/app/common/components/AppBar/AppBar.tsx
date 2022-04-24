@@ -5,36 +5,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import DarkModeSwitcher from '~app/common/components/AppBar/components/DarkModeSwitcher';
-import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton';
+import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton/ConnectWalletButton';
+import DarkModeSwitcher from '~app/common/components/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
 import { useStyles } from './AppBar.styles';
 
-const AppBar = () => {
+type Button = {
+  label: string;
+  onClick: () => void;
+  blueColor?: boolean;
+};
+
+const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundColor?: string }) => {
     const stores = useStores();
     const history = useHistory();
     const wrapperRef = useRef(null);
     const buttonsRef = useRef(null);
-    const [width, setWidth] = useState(window.innerWidth);
     const [menuBar, openMenuBar] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
-    const [showMobileBar, setMobileBar] = useState(false);
-    const isDistribution = applicationStore.strategyName === 'distribution';
-
-    const classes = useStyles({ isNewStage: process.env.REACT_APP_NEW_STAGE, isDistribution });
-
-    // Add event listener on screen size change
-    useEffect(() => {
-        window.addEventListener('resize', () => setWidth(window.innerWidth));
-    }, []);
-
-    useEffect(() => {
-        if (width < 1200 && !showMobileBar) {
-            setMobileBar(true);
-        } else if (width >= 1200 && showMobileBar) {
-            openMenuBar(false);
-            setMobileBar(false);
-        }
-    }, [width]);
+    // const isDistribution = applicationStore.strategyName === 'distribution';
+    const hasOperatorsOrValidators = applicationStore.strategyRedirect === '/dashboard';
+    // @ts-ignore
+    const classes = useStyles({ backgroundColor });
 
     useEffect(() => {
         /**
@@ -54,50 +45,29 @@ const AppBar = () => {
         };
     }, [wrapperRef, buttonsRef, menuBar]);
 
-    function openExplorer() {
-        window.open(config.links.LINK_EXPLORER);
-    }
-
-    function openDocs() {
-        window.open(config.links.LINK_SSV_DEV_DOCS);
-    }
-
-    const moveToDashboard = () => {
-        if (process.env.REACT_APP_NEW_STAGE) {
-            history.push('/dashboard');
-        }
+    const logoAction = () => {
+        if (applicationStore.isLoading) return;
+        // @ts-ignore
+        applicationStore.whiteNavBarBackground = false;
+        history.push(applicationStore.strategyName === 'distribution' ? '/claim' : config.routes.HOME);
     };
 
-    return (
-      <Grid container className={classes.AppBarWrapper}>
-        <Grid item className={`${classes.AppBarIcon} ${width < 500 ? classes.SmallLogo : ''}`} onClick={() => { history.push(applicationStore.strategyName === 'distribution' ? '/claim' : '/'); }} />
-        {!showMobileBar && (
-          <Grid item container className={classes.Linkbuttons}>
-              {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.LinkButton}>Join</Grid>}
-            <Grid item className={classes.LinkButton} onClick={moveToDashboard}>My Account</Grid>
-            <Grid item className={classes.LinkButton} onClick={openExplorer}>Explorer</Grid>
-            <Grid item className={classes.LinkButton} onClick={openDocs}>Docs</Grid>
-          </Grid>
-          )}
-        <Grid item className={classes.Wrapper}>
-          <ConnectWalletButton />
-        </Grid>
-        {(!showMobileBar || isDistribution) && (
-          <Grid item>
-            <DarkModeSwitcher margin />
-          </Grid>
-        )}
-        { !isDistribution && showMobileBar && (
-          <Grid item ref={wrapperRef}>
-            <Grid className={classes.Hamburger} onClick={() => { openMenuBar(!menuBar); }} />
-          </Grid>
-          )}
-        {!isDistribution && menuBar && (
+    const Buttons = () => {
+        return (
           <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
-            <Grid item className={`${classes.MenuButton}`}>Join</Grid>
-            <Grid item className={classes.MenuButton} onClick={moveToDashboard}>My Account</Grid>
-            <Grid item className={classes.MenuButton} onClick={openExplorer}>Explorer</Grid>
-            <Grid item className={classes.MenuButton} onClick={openDocs}>Docs</Grid>
+            {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.MenuButton}>Join</Grid>}
+            {buttons?.map((button, index) => {
+                  return (
+                    <Grid
+                      item
+                      key={index}
+                      onClick={button.onClick}
+                      className={`${classes.MenuButton} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
+                      >
+                      {button.label}
+                    </Grid>
+                  );
+              })}
             <Grid item className={classes.UnderLine} />
             <Grid item container className={`${classes.MenuButton} ${classes.Slider}`}>
               <Grid item xs>{applicationStore.darkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
@@ -106,7 +76,56 @@ const AppBar = () => {
               </Grid>
             </Grid>
           </Grid>
-          )}
+        );
+    };
+
+    const Hamburger = () => {
+        return (
+          <Grid item ref={wrapperRef}>
+            <Grid className={classes.Hamburger}
+              onClick={() => { openMenuBar(!menuBar); }}
+            />
+          </Grid>
+        );
+    };
+
+    return (
+      <Grid container className={classes.AppBarWrapper}>
+        <Grid item className={classes.GridItem}>
+          <Grid
+            item
+            onClick={logoAction}
+            className={classes.AppBarIcon}
+          />
+        </Grid>
+        <Grid item container xs className={classes.GridItem}>
+          <Grid item container justify={'center'}>
+            {buttons?.map((button, index) => {
+                    return (
+                      <Grid
+                        item
+                        key={index}
+                        onClick={button.onClick}
+                        className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
+                      >
+                        {button.label}
+                      </Grid>
+                    );
+                })}
+          </Grid>
+        </Grid>
+        <Grid item className={classes.GridItem}>
+          <Grid item container style={{ alignItems: 'center' }}>
+            <Grid item>
+              <ConnectWalletButton />
+            </Grid>
+            <Grid item className={classes.DarkModeWrapper}>
+              <DarkModeSwitcher margin />
+            </Grid>
+            <Hamburger />
+          </Grid>
+        </Grid>
+        {menuBar && <Buttons />}
       </Grid>
     );
 };

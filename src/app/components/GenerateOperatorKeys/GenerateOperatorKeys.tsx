@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
+import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
@@ -77,11 +77,12 @@ const GenerateOperatorKeys = () => {
     const onRegisterClick = async () => {
         setOperatorExist(false);
         applicationStore.setIsLoading(true);
+
         const operatorKeys: NewOperator = {
+            fee: inputsData.fee,
             name: inputsData.name,
             address: walletStore.accountAddress,
             pubKey: walletStore.encodeKey(inputsData.publicKey),
-            fee: inputsData.fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR,
         };
         operatorStore.setOperatorKeys(operatorKeys);
         const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
@@ -90,7 +91,8 @@ const GenerateOperatorKeys = () => {
             try {
                 await operatorStore.addNewOperator(true);
                 history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
-            } catch {
+            } catch (e: any) {
+                console.log(e);
                 console.log('error!!!!!');
             }
         }
@@ -99,7 +101,6 @@ const GenerateOperatorKeys = () => {
 
     return (
       <BorderScreen
-        navigationLink={config.routes.OPERATOR.HOME}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
@@ -120,6 +121,7 @@ const GenerateOperatorKeys = () => {
               <Grid item className={classes.GridItem}>
                 <InputLabel title="Display Name" />
                 <TextInput
+                  value={inputsData.name}
                   data-testid="new-operator-name"
                   showError={displayNameError.shouldDisplay}
                   onChangeCallback={(event: any) => { onInputChange('name', event.target.value); }}
@@ -134,10 +136,9 @@ const GenerateOperatorKeys = () => {
                   withHint
                   toolTipText={(
                     <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                      <LinkText text={'documentation.'} link={'https://docs.ssv.network/operators/install-instructions'} />
+                      <LinkText text={'documentation.'} link={config.links.TOOL_TIP_KEY_LINK} />
                     </div>
                   )}
-                  toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                 />
                 <TextInput
                   value={inputsData.publicKey}
@@ -153,10 +154,10 @@ const GenerateOperatorKeys = () => {
               {process.env.REACT_APP_NEW_STAGE && (
                 <Grid item className={classes.GridItem}>
                   <InputLabel
-                    title="yearly fee per validator"
                     withHint
+                    title="Yearly Fee Per Validator"
+                    // toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                     toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                    toolTipLink={config.links.TOOL_TIP_KEY_LINK}
                   />
                   <TextInput
                     withSideText

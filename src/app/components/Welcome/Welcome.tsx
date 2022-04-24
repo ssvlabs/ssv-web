@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
@@ -18,7 +18,7 @@ const Welcome = () => {
     const history = useHistory();
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
-
+    
     const connectToWallet = () => {
         if (walletStore.connected) {
             return applicationStore.showWalletPopUp(true);
@@ -28,9 +28,11 @@ const Welcome = () => {
 
     return (
       <BorderScreen
+        withoutNavigation
         body={[
           <Grid container>
-            <HeaderSubHeader title={'Join the SSV Network'}
+            <HeaderSubHeader
+              title={'Join the SSV Network'}
               subtitle={'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators'}
             />
             <Grid container item className={classes.LinkButtonsWrapper}>
@@ -38,14 +40,14 @@ const Welcome = () => {
                 <SecondaryButton
                   withVerifyConnection
                   text={'Run Validator'}
-                  onClick={() => { walletStore.connected && history.push(config.routes.VALIDATOR.HOME); }}
+                  submitFunction={() => { walletStore.connected && history.push(config.routes.VALIDATOR.HOME); }}
                 />
               </Grid>
               <Grid item className={classes.LinkButtonWrapper}>
                 <SecondaryButton
                   withVerifyConnection
                   text={'Join as Operator'}
-                  onClick={() => { walletStore.connected && history.push(config.routes.OPERATOR.HOME); }}
+                  submitFunction={() => { walletStore.connected && history.push(config.routes.OPERATOR.HOME); }}
                 />
               </Grid>
             </Grid>

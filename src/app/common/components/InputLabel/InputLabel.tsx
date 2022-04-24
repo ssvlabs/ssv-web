@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import { useStyles } from './InputLable.styles';
 
@@ -50,23 +51,18 @@ type InputLabelProps = {
   subTitle?: string,
   withHint?: boolean,
   toolTipText?: any,
-  toolTipLink?: string
 };
 
-const InputLabel = ({ children, title, subTitle, withHint, toolTipText, toolTipLink }: InputLabelProps) => {
+const InputLabel = ({ children, title, subTitle, withHint, toolTipText }: InputLabelProps) => {
   const classes = useStyles();
   // eslint-disable-next-line no-constant-condition
   if (true) {
     return (
       <Grid container className={classes.Wrapper}>
-        <Grid item className={classes.Text}>
+        <Typography className={classes.Text}>
           {title}
-        </Grid>
-        {withHint && (
-        <Grid item>
-          <Tooltip text={toolTipText} link={toolTipLink} />
-        </Grid>
-        )}
+        </Typography>
+        {withHint && <Tooltip text={toolTipText} />}
       </Grid>
     );
   }
@@ -75,7 +71,7 @@ const InputLabel = ({ children, title, subTitle, withHint, toolTipText, toolTipL
       <InputHeader>
         <Header>{title}</Header>
         <SubHeader>{subTitle}</SubHeader>
-        {withHint && <Tooltip text={toolTipText} link={toolTipLink} />}
+        {withHint && <Tooltip text={toolTipText} />}
       </InputHeader>
       {children}
     </InputLabelWrapper>

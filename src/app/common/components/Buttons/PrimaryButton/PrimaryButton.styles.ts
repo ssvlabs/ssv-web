@@ -7,12 +7,12 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%',
         fontWeight: 600,
         borderRadius: 8,
-        color: theme.colors.white,
         textTransform: 'capitalize',
         fontFamily: 'Manrope !important',
-        backgroundColor: theme.colors.primaryBlue,
+        color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.white,
+        backgroundColor: (props: any) => props.errorButton ? theme.colors.primaryErrorRegular : theme.colors.primaryBlue,
         '&:hover': {
-            backgroundColor: theme.colors.shade20,
+            backgroundColor: (props: any) => props.errorButton ? '' : theme.colors.shade20,
         },
         '&:active': {
             backgroundColor: theme.colors.shade40,

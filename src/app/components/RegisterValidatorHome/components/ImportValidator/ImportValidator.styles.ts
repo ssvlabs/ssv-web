@@ -1,6 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
+    Wrapper: {
+        marginTop: 8,
+    },
     SubHeader: {
         fontSize: 16,
         fontWeight: 500,
@@ -42,15 +45,6 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: 1.62,
         textAlign: 'center',
         color: theme.colors.gray40,
-    },
-    Browse: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.62,
-        cursor: 'pointer',
-        textDecoration: 'underline',
-        color: theme.colors.primaryBlue,
-        zIndex: theme.opacity.highPriority,
     },
     Remove: {
         fontSize: 16,

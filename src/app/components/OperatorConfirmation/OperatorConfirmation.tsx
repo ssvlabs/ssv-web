@@ -1,9 +1,9 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
@@ -11,7 +11,6 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -22,18 +21,13 @@ import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirma
 const OperatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
-    const ssvStore: SsvStore = stores.SSV;
-    const { redirectUrl, history } = useUserFlow();
+    const history = useHistory();
     const operatorStore: OperatorStore = stores.Operator;
     const walletStore: WalletStore = stores.Wallet;
     // const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     const [txHash, setTxHash] = useState('');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     const onRegisterClick = async () => {
         try {
@@ -59,7 +53,6 @@ const OperatorConfirmation = () => {
         blackHeader
         sectionClass={classes.Section}
         header={translations.OPERATOR.CONFIRMATION.TITLE}
-        navigationLink={config.routes.OPERATOR.GENERATE_KEYS}
         body={[
           <Grid container>
             <TransactionPendingPopUp txHash={txHash} />
@@ -79,7 +72,7 @@ const OperatorConfirmation = () => {
                 </Grid>
                 <Grid item xs={6} className={classes.AlignRight}>
                   <SsvAndSubTitle
-                    ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.newOperatorKeys.fee))}
+                    ssv={formatNumberToUi(operatorStore.newOperatorKeys.fee)}
                     subText={'/year'} />
                 </Grid>
               </Grid>

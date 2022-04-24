@@ -18,7 +18,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     buttonText;
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const classes = useStyles({ walletConnected: true });
+    const classes = useStyles({ walletConnected: walletStore.connected });
     const applicationStore: ApplicationStore = stores.Application;
 
     const onClick = () => {
@@ -51,7 +51,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     };
 
     return (
-      <Grid container className={classes.ConnectWalletWrapper} onClick={onClick}>
+      <Grid item container className={classes.ConnectWalletWrapper} onClick={onClick}>
         {!walletStore.connected && <Grid item>Connect Wallet</Grid>}
         {walletStore.connected && (
         <Grid item container>

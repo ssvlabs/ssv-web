@@ -13,6 +13,7 @@ export const globalStyle = () => {
       * {
         font-family: 'Manrope', sans-serif !important;
       },
+
       .bn-onboard-custom {
         z-index: 999;
 
@@ -79,13 +80,12 @@ export const globalStyle = () => {
             }
           }
         }
+      },
+      . bn-onboard-custom . bn-onboard-select-info-container . svelte-w9ftfy {
+        justify-content: center;
+        text-decoration: underline;
+        text-decoration-color: #4a90e2;
       }
-
-        .bn-onboard-custom.bn-onboard-select-info-container.svelte-w9ftfy {
-          justify-content: center;
-          text-decoration: underline;
-          text-decoration-color: #4a90e2;
-        }
       }
 
       }`;

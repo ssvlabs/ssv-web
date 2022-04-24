@@ -1,12 +1,11 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
-import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays';
 import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
@@ -16,33 +15,30 @@ const Withdraw = () => {
     const classes = useStyles();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    const { redirectUrl, history } = useUserFlow();
+    const applicationStore: ApplicationStore = stores.Application;
     const [inputValue, setInputValue] = useState(0.0);
     const [userAgree, setUserAgreement] = useState(false);
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
     useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
-
-    useEffect(() => {
-        if (inputValue === ssvStore.networkContractBalance && ssvStore.isValidatorState) {
+        if (inputValue === ssvStore.contractDepositSsvBalance && ssvStore.isValidatorState) {
             setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
         } else if (buttonColor.default === '#ec1c2640') {
             setButtonColor({ userAgree: '', default: '' });
         }
     }, [inputValue]);
 
-    function withdrawSsv() {
-        ssvStore.withdrawSsv(inputValue.toString()).then((success: boolean) => {
-            if (success) setInputValue(0.0);
-        });
-    }
+    const withdrawSsv = async () => {
+        applicationStore.setIsLoading(true);
+        const success = await ssvStore.withdrawSsv(inputValue.toString());
+        applicationStore.setIsLoading(false);
+        if (success) setInputValue(0.0);
+    };
 
     function inputHandler(e: any) {
         const value = e.target.value;
-        if (value > ssvStore.networkContractBalance) {
-            setInputValue(ssvStore.networkContractBalance);
+        if (value > ssvStore.contractDepositSsvBalance) {
+            setInputValue(ssvStore.contractDepositSsvBalance);
         } else if (value < 0) {
             setInputValue(0);
         } else {
@@ -51,7 +47,7 @@ const Withdraw = () => {
     }
 
     function maxValue() {
-        setInputValue(ssvStore.networkContractBalance);
+        setInputValue(ssvStore.contractDepositSsvBalance);
     }
 
     const secondBorderScreen = [(
@@ -81,8 +77,8 @@ const Withdraw = () => {
     )];
 
     if (ssvStore.isValidatorState) {
-        const remainDays = ssvStore.getRemainingDays(ssvStore.networkContractBalance - (ssvStore.networkContractBalance - Number(inputValue)));
-     secondBorderScreen.push((<RemainingDays withdraw newRemainingDays={`-${formatNumberToUi(remainDays, true)}`} />));
+        const remainDays = ssvStore.getRemainingDays(ssvStore.contractDepositSsvBalance - (ssvStore.contractDepositSsvBalance - Number(inputValue)));
+     secondBorderScreen.push((<RemainingDays withdraw operator={'-'} newRemainingDays={remainDays} />));
     }
 
     return (
@@ -90,13 +86,11 @@ const Withdraw = () => {
         <BorderScreen
           header={'Available Balance'}
           wrapperClass={classes.FirstSquare}
-          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
-          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           body={[
                     (
                       <Grid item container>
                         <Grid item xs={12} className={classes.currentBalance}>
-                          {formatNumberToUi(ssvStore.networkContractBalance)} SSV
+                          {formatNumberToUi(ssvStore.contractDepositSsvBalance)} SSV
                         </Grid>
                         <Grid item xs={12} className={classes.currentBalanceDollar}>
                           ~$2,449.53
@@ -117,9 +111,9 @@ const Withdraw = () => {
               checkBoxesCallBack={[setUserAgreement]}
               disable={!userAgree || inputValue === 0}
               checkboxesText={['I understand that risks of having my account liquidated.']}
-              />
+            />
           )}
-          />
+        />
       </>
     );
 };

@@ -10,6 +10,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     Hint: {
         alignSelf: 'center',
+        marginLeft: 8,
         marginBottom: 8,
     },
     Red: {

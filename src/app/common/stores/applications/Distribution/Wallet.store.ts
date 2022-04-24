@@ -11,25 +11,26 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 class WalletStore extends BaseStore implements Wallet {
-  @observable web3: any = null;
-  @observable wallet: any = null;
-  @observable notifySdk: any = null;
-  @observable onboardSdk: any = null;
-  @observable accountAddress: string = '';
-  @observable wrongNetwork: boolean = false;
-  @observable networkId: number | null = null;
-  @observable accountDataLoaded: boolean = false;
+    @observable web3: any = null;
+    @observable wallet: any = null;
+    @observable ssvBalance: any = 0;
+    @observable notifySdk: any = null;
+    @observable onboardSdk: any = null;
+    @observable accountAddress: string = '';
+    @observable wrongNetwork: boolean = false;
+    @observable networkId: number | null = null;
+    @observable accountDataLoaded: boolean = false;
 
-  private contract: Contract | undefined;
-  private distributionStore: DistributionStore = this.getStore('Distribution');
-  private notificationsStore: NotificationsStore = this.getStore('Notifications');
+    private contract: Contract | undefined;
+    private distributionStore: DistributionStore = this.getStore('Distribution');
+    private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
-  constructor() {
-    super();
-    this.initWalletHooks();
-  }
+    constructor() {
+        super();
+        this.initWalletHooks();
+    }
 
-  /**
+    /**
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */

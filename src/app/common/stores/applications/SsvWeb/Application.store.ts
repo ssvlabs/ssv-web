@@ -4,6 +4,7 @@ import { AppTheme } from '~root/Theme';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 /**
  * Base store provides singe source of true
@@ -18,7 +19,9 @@ class ApplicationStore extends BaseStore implements Application {
   @observable walletPopUp: boolean = false;
   @observable strategyName: string = 'ssv-web';
   @observable isShowingLoading: boolean = false;
+  @observable runningProcess: string = 'ssv-web';
   @observable walletConnectivity: boolean = false;
+  @observable whiteNavBarBackground: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
   @observable strategyRedirect: string = process.env.REACT_APP_NEW_STAGE ? '/dashboard' : '/';
 
@@ -37,8 +40,25 @@ class ApplicationStore extends BaseStore implements Application {
   }
 
   @action.bound
+  setApplicationProcess(process: string) {
+    this.runningProcess = process;
+  }
+
+  @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
+  }
+
+  @action.bound
+  setWhiteNavBarBackground(status: boolean) {
+    this.whiteNavBarBackground = status;
+  }
+
+  @action.bound
+  cancelProcess() {
+    const validatorStore: ValidatorStore = this.getStore('Validator');
+    validatorStore.clearValidatorData();
+    this.runningProcess = '';
   }
 
   @action.bound

@@ -22,7 +22,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     ScreenWrapper: {
         borderRadius: 16,
-        backgroundColor: theme.colors.squareScreenBackground,
+        border: (props: any) => props.gray80 ? `1px solid ${theme.colors.gray20}` : 'none',
+        backgroundColor: (props: any) => props.gray80 ? theme.colors.gray0 : theme.colors.squareScreenBackground,
         [screenSizes.xs]: {
             borderRadius: 0,
         },
@@ -43,10 +44,15 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 20,
         lineHeight: 1.4,
         fontWeight: 'bold',
-        color: theme.colors.gray40,
-    },
-    BlackHeader: {
-        color: theme.colors.gray90,
+        color: (props: any) => {
+            if (props.blackHeader) {
+                return theme.colors.gray90;
+            }
+            if (props.gray80) {
+                return theme.colors.gray80;
+            }
+            return theme.colors.gray40;
+        },
     },
     Conversion: {
         width: 88,

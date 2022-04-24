@@ -12,6 +12,7 @@ class WalletTestStore extends BaseStore implements Wallet {
     @observable notifySdk: any;
     @observable web3: any = null;
     @observable wallet: any = null;
+    @observable ssvBalance: number = 0;
     @observable onboardSdk: any = null;
     @observable ready: boolean = false;
     @observable accountAddress: string = '';

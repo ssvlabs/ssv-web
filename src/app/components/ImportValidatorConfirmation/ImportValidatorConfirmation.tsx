@@ -1,17 +1,17 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useState } from 'react';
-import useUserFlow from '~app/hooks/useUserFlow';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-// import CTAButton from '~app/common/components/CTAButton/CTAButton';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -24,12 +24,12 @@ import { useStyles } from './ImportValidatorConfirmation.styles';
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
+    const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
-    const { redirectUrl, history } = useUserFlow();
     const [txHash, setTxHash] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
@@ -44,10 +44,6 @@ const ImportValidatorConfirmation = () => {
          liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
          totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     const handlePendingTransaction = (transactionHash: string) => {
         setTxHash(transactionHash);
@@ -104,7 +100,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.public_key].ssv))}
+                            ssv={formatNumberToUi(operator.fee)}
                             subText={'/year'}
                           />
                         </Grid>
@@ -142,22 +138,17 @@ const ImportValidatorConfirmation = () => {
         </Grid>
             )}
         {process.env.REACT_APP_NEW_STAGE && (
-        <Grid item>
-          <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
-        </Grid>
-            )}
-        {process.env.REACT_APP_NEW_STAGE && (
+          <Grid item style={{ marginBottom: 20 }}>
+            <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
+          </Grid>
+        )}
+        {process.env.REACT_APP_NEW_STAGE && Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
         <Grid container item className={classes.InsufficientBalanceWrapper}>
           <Grid item xs>
             Insufficient SSV balance. There is not enough SSV in your wallet.
           </Grid>
           <Grid item>
-            <a
-              href="https://discord.gg/5DZ7Sm9D4W"
-              target="_blank"
-                        >
-              Need SSV?
-            </a>
+            <LinkText text={'Need SSV?'} link={'https://discord.gg/5DZ7Sm9D4W'} />
           </Grid>
         </Grid>
         )}
@@ -188,7 +179,6 @@ const ImportValidatorConfirmation = () => {
         body={components}
         sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}
-        navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
       />
     );
 };

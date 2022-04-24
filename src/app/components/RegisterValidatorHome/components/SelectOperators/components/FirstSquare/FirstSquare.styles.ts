@@ -21,10 +21,11 @@ export const useStyles = makeStyles((theme) => ({
     },
 
     OperatorsTable: {
-        height: 458,
+        height: 480,
         borderRadius: 16,
         marginTop: theme.spacing(5),
         border: `solid 1px ${theme.colors.gray20}`,
+        pointerEvents: (props: any) => props.loading ? 'none' : 'auto',
     },
     HeaderWrapper: {
         cursor: 'pointer',

@@ -4,9 +4,13 @@ import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
+import Validator from '~lib/api/Validator';
+import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
+import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -78,11 +82,14 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async connectWalletFromCache() {
-        const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
-        if (selectedWallet) {
+        const selectedWallet: any = window.localStorage.getItem('selectedWallet');
+        if (selectedWallet && selectedWallet !== 'undefined') {
             await this.onboardSdk.walletSelect(selectedWallet);
             await this.onboardSdk.walletCheck();
         } else {
+            const applicationStore: Application = this.getStore('Application');
+            applicationStore.strategyRedirect = '/';
+            await this.resetUser();
             this.setAccountDataLoaded(true);
         }
     }
@@ -111,15 +118,31 @@ class WalletStore extends BaseStore implements Wallet {
     @action.bound
     async addressHandler(address: string) {
         this.setAccountDataLoaded(false);
-        if (address === undefined) {
-            this.accountAddress = address;
-            this.ssvStore.clearSettings();
-            window.localStorage.removeItem('selectedWallet');
+        const applicationStore: Application = this.getStore('Application');
+        if (address === undefined || !this.wallet?.name) {
+            await this.resetUser();
         } else {
             this.accountAddress = address;
+            ApiParams.cleanStorage();
             await this.initializeUserInfo();
+            if (process.env.REACT_APP_NEW_STAGE) {
+                const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
+                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress(1, 5, address, true);
+                applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? '/dashboard' : '/';
+            }
         }
         this.setAccountDataLoaded(true);
+    }
+
+    @action.bound
+    async resetUser() {
+        const applicationStore: Application = this.getStore('Application');
+        this.accountAddress = '';
+        this.ssvStore.clearSettings();
+        applicationStore.strategyRedirect = '/';
+        this.onboardSdk.walletReset();
+        window.localStorage.removeItem('selectedWallet');
+        window.localStorage.removeItem('params');
     }
 
     /**
@@ -138,9 +161,8 @@ class WalletStore extends BaseStore implements Wallet {
      * Fetch user balances and fees
      */
     @action.bound
-    async balanceHandler() {
-        // if (!process.env.REACT_APP_NEW_STAGE) return;
-        // await this.ssvStore.initUser();
+    async balanceHandler(balance: any) {
+        if (balance) await this.initializeUserInfo();
     }
 
     /**
@@ -149,7 +171,6 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async networkHandler(networkId: any) {
-        console.log('networkId: ', networkId);
         if (networkId !== 5 && networkId !== undefined) {
             this.wrongNetwork = true;
             this.notificationsStore.showMessage('Please change network to Goerli', 'error');
@@ -159,23 +180,23 @@ class WalletStore extends BaseStore implements Wallet {
     }
 
     /**
-     * User address handler
-     * @param operatorKey: string
+     * encode key
+     * @param key
      */
     @action.bound
-    encodeKey(operatorKey?: string) {
-        if (!operatorKey) return '';
-        return this.web3.eth.abi.encodeParameter('string', operatorKey);
+    encodeKey(key?: string) {
+        if (!key) return '';
+        return this.web3?.eth.abi.encodeParameter('string', key);
     }
 
     /**
-     * User address handler
-     * @param operatorKey: string
+     * decode key
+     * @param key
      */
     @action.bound
-    decodeKey(operatorKey?: string) {
-        if (!operatorKey) return '';
-        return this.web3?.eth.abi.decodeParameter('string', operatorKey);
+    decodeKey(key?: string) {
+        if (!key) return '';
+        return this.web3?.eth.abi.decodeParameter('string', key);
     }
 
     /**

@@ -2,7 +2,6 @@ import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
 import Table from '@material-ui/core/Table';
-// import { Skeleton } from '@material-ui/lab';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,21 +20,22 @@ import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-// import StyledRow from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledRow';
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
-const FirstSquare = () => {
+useEffect;
+
+const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
-    const classes = useStyles();
+    const [loading, setLoading] = useState(false);
+    const classes = useStyles({ loading });
     const wrapperRef = useRef(null);
     const scrollRef: any = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
     const [filterBy, setFilterBy] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [sortOrder, setSortOrder] = useState('');
     const [searchInput, setSearchInput] = useState('');
     const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
@@ -60,40 +60,40 @@ const FirstSquare = () => {
         // skeletons = [0, 1, 2, 3, 4, 5, 6];
     }
 
-    const getOperators = (page: number) => {
-        if (page > operatorsPagination.pages) return;
-        const ordering: string = `type${sortBy || sortOrder ? `,${sortBy}:${sortOrder}` : ''}`;
+    const getOperators = async (page: number) => {
+        if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
+        const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'type'}`;
+
         const payload = {
             page,
             ordering,
             perPage: 10,
+            withFee: true,
             type: filterBy,
             search: searchInput,
             validatorsCount: true,
         };
         setLoading(true);
+        const response = await Operator.getInstance().getOperators(payload);
+        if (response.pagination.page > 1) {
+            setOperatorsData([...operatorsData, ...response.operators]);
+        } else {
+            setOperatorsData(response.operators);
+        }
 
-        Operator.getInstance().getOperators(payload).then((response: any) => {
-            if (response.pagination.page > 1) {
-                setOperatorsData([...operatorsData, ...response.operators]);
-            } else {
-                setOperatorsData(response.operators);
-            }
-
-            setOperatorsPagination(response.pagination);
-            if (response.pagination.page === 1 && scrollRef.current) {
-                scrollRef.current.scrollTo(0, 0);
-            }
-            setLoading(false);
-        });
+        setOperatorsPagination(response.pagination);
+        if (response.pagination.page === 1 && scrollRef.current) {
+            scrollRef.current.scrollTo(0, 0);
+        }
+        setLoading(false);
     };
 
     const selectOperator = (e: any, operator: IOperator) => {
         // @ts-ignore
         if (wrapperRef.current?.isEqualNode(e.target)) return;
 
-        if (operatorStore.isOperatorSelected(operator.public_key)) {
-            operatorStore.unselectOperatorByPublicKey(operator.public_key);
+        if (operatorStore.isOperatorSelected(operator.address)) {
+            operatorStore.unselectOperatorByPublicKey(operator.address);
           return;
         }
         const indexes = [1, 2, 3, 4];
@@ -154,8 +154,9 @@ const FirstSquare = () => {
         }
 
         return operatorsData.map((operator) => {
-            const isSelected = operatorStore.isOperatorSelected(operator.public_key);
+            const isSelected = operatorStore.isOperatorSelected(operator.address);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
+
             return (
               <TableRow
                 key={Math.floor(Math.random() * 10000000)}
@@ -183,15 +184,15 @@ const FirstSquare = () => {
                   <Grid container>
                     <Grid item>{operator.fee}</Grid>
                     {disabled && (
-                    <Grid item style={{ alignSelf: 'center' }}>
-                      <ToolTip text={'Operator reached  maximum amount of validators'} />
-                    </Grid>
-                          )}
+                      <Grid item style={{ alignSelf: 'center' }}>
+                        <ToolTip text={'Operator reached  maximum amount of validators'} />
+                      </Grid>
+                    )}
                   </Grid>
                 </StyledCell>
                 )}
                 <StyledCell>
-                  <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => { redirectTo(operator.pubkey); }} />
+                  <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => { redirectTo(operator.address); }} />
                 </StyledCell>
               </TableRow>
             );
@@ -217,7 +218,8 @@ const FirstSquare = () => {
     };
 
     const inputHandler = debounce((e: any) => {
-        setSearchInput(e.target.value.trim());
+        const userInput = e.target.value.trim();
+        if (userInput.length >= 3 || userInput.length === 0) setSearchInput(e.target.value.trim());
     }, 1000);
 
     const rows: any = dataRows();
@@ -235,8 +237,8 @@ const FirstSquare = () => {
 
     return (
       <BorderScreen
+        withoutNavigation={editPage}
         wrapperClass={classes.ScreenWrapper}
-        navigationLink={config.routes.VALIDATOR.IMPORT}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} />

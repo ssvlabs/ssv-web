@@ -1,22 +1,27 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import React, { useState, useEffect, useRef } from 'react';
 import config from '~app/common/config';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import Tables from '~app/components/MyAccount/components/Tables';
 import MyBalance from '~app/components/MyAccount/components/MyBalance';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import DashboardTables from '~app/components/MyAccount/components/DashboardTables';
 import { useStyles } from './MyAccount.styles';
 
 const MyAccount = () => {
     const classes = useStyles();
     const stores = useStores();
-    const { history } = useUserFlow();
     const ssvStore: SsvStore = stores.SSV;
     const wrapperRef = useRef(null);
+    const { redirectUrl, history } = useUserFlow();
     const [dropDownMenu, displayDropDownMenu] = useState(false);
     const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+
+    useEffect(() => {
+        redirectUrl && history.push(redirectUrl);
+    }, [redirectUrl]);
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {
@@ -48,7 +53,7 @@ const MyAccount = () => {
           </Grid>
           <Grid item xs={6}>
             <Grid ref={wrapperRef} className={classes.AddButton} onClick={() => { displayDropDownMenu(!dropDownMenu); }}>
-              <Grid className={classes.AddButtonText}>+ Add</Grid>
+              <Typography className={classes.AddButtonText}>+ Add</Typography>
               {dropDownMenu && (
                 <Grid container className={classes.AddButtonDropDown}>
                   <Grid item xs={12}
@@ -69,7 +74,7 @@ const MyAccount = () => {
             <MyBalance />
           </Grid>
           <Grid item className={classes.TablesWrapper}>
-            <Tables />
+            <DashboardTables />
           </Grid>
         </Grid>
       </Grid>

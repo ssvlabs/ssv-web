@@ -1,5 +1,5 @@
 import config from '~app/common/config';
-import ApiRequest, { RequestData } from '~lib/utils/ApiRequest';
+import axios from 'axios';
 
 type OperatorsListQuery = {
     page?: number,
@@ -7,16 +7,23 @@ type OperatorsListQuery = {
     type?: string[],
     perPage?: number
     status?: boolean,
+    withFee?: boolean,
     ordering?: string,
     validatorsCount?: boolean,
 };
 
 class Operator {
+    operators: any = null;
+    operatorsQuery: any = null;
+    operatorsPagination: any = null;
+    ownerAddressOperators: any = null;
+    ownerAddressPagination: any = null;
     private static instance: Operator;
     private readonly baseUrl: string = '';
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
+        setInterval(this.clearOperatorsCache.bind(this), 600000);
     }
 
     static getInstance(): Operator {
@@ -30,29 +37,32 @@ class Operator {
         return 'prater';
     }
 
+    clearOperatorsCache() {
+        this.operators = null;
+        this.operatorsPagination = null;
+        this.ownerAddressOperators = null;
+        this.ownerAddressPagination = null;
+    }
+
     /**
      * Get operators by owner Address
      */
-    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
+    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
+        if (!force && this.ownerAddressPagination?.page === page && this.ownerAddressPagination.per_page === perPage) {
+            return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
+        }
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
-        const requestInfo: RequestData = {
-            url: operatorsEndpointUrl,
-            method: 'GET',
-            headers: [
-                { name: 'content-type', value: 'application/json' },
-                { name: 'accept', value: 'application/json' },
-            ],
-            errorCallback: () => {},
-        };
-        const response: any = await new ApiRequest(requestInfo).sendRequest();
-        return response;
+        const response: any = await axios.get(operatorsEndpointUrl);
+        this.ownerAddressPagination = response.data.pagination;
+        this.ownerAddressOperators = response.data.operators;
+        return response.data;
     }
 
     /**
      * Get operators
      */
     async getOperators(props: OperatorsListQuery) {
-        const { page, perPage, type, ordering, status, search, validatorsCount } = props;
+        const { page, perPage, type, ordering, status, search, withFee, validatorsCount } = props;
         let operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators?`;
         if (validatorsCount) operatorsEndpointUrl += 'validatorsCount=true&';
         if (search) operatorsEndpointUrl += `search=${search}&`;
@@ -60,19 +70,22 @@ class Operator {
         if (status) operatorsEndpointUrl += 'status=true&';
         if (page) operatorsEndpointUrl += `page=${page}&`;
         if (perPage) operatorsEndpointUrl += `perPage=${perPage}&`;
+        if (withFee) operatorsEndpointUrl += 'withFee=true&';
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
-        const requestInfo: RequestData = {
-            url: operatorsEndpointUrl,
-            method: 'GET',
-            headers: [
-                { name: 'content-type', value: 'application/json' },
-                { name: 'accept', value: 'application/json' },
-            ],
-            errorCallback: () => {},
-        };
-        const response: any = await new ApiRequest(requestInfo).sendRequest();
-        return response;
+        if (this.operatorsQuery === operatorsEndpointUrl) {
+            return { operators: this.operators, pagination: this.operatorsPagination };
+        }
+
+        const response: any = await axios.get(operatorsEndpointUrl);
+
+        if (response.data.operators) {
+            this.operators = response.data.operators;
+            this.operatorsQuery = operatorsEndpointUrl;
+            this.operatorsPagination = response.data.pagination;
+        }
+
+        return response.data;
     }
 }
 

@@ -36,7 +36,6 @@ class DistributionStore extends BaseStore {
                 this.rewardMerkleProof,
             ).send({ from: walletStore.accountAddress })
                 .on('receipt', async (receipt: any) => {
-                    console.log('success!!!!!!');
                     console.log(receipt);
                     applicationStore.setIsLoading(false);
                     applicationStore.showTransactionPendingPopUp(false);

@@ -15,16 +15,17 @@ type Props = {
     submitFunction: any,
     dataTestId?: string,
     wrapperClass?: string,
+    errorButton?: boolean,
     withVerifyConnection?: boolean
 };
 
 const PrimaryButton = (props: Props) => {
     const stores = useStores();
-    const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
+    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withVerifyConnection } = props;
+    const classes = useStyles({ errorButton });
 
     useEffect(() => {
         const callback = (event: any) => {

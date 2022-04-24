@@ -7,8 +7,8 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 class SsvStore extends BaseStore {
     // Balances
-    @observable ssvContractBalance: number = 0;
-    @observable networkContractBalance: number = 0;
+    @observable walletSsvBalance: number = 0;
+    @observable contractDepositSsvBalance: number = 0;
 
     // Calculation props
     @observable networkFee: number = 0;
@@ -63,12 +63,13 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     getRemainingDays(amount?: number): number {
+        const ssvStore: SsvStore = this.getStore('SSV');
         const blocksPerDay = config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
         const burnRatePerDay = this.accountBurnRate * blocksPerDay;
         const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
-        const ssvAmount = amount ?? this.networkContractBalance;
-        if (burnRatePerDay === 0) return Math.max(ssvAmount - liquidationCollateral, 0);
+        const ssvAmount = amount ?? ssvStore.contractDepositSsvBalance;
+        if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
         return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
     }
 
@@ -81,8 +82,8 @@ class SsvStore extends BaseStore {
         await this.getNetworkFees();
         await this.checkIfLiquidated();
         await this.getAccountBurnRate();
-        await this.getSsvContractBalance();
-        await this.getNetworkContractBalance();
+        await this.getBalanceFromSsvContract();
+        await this.getBalanceFromDepositContract();
     }
 
     @action.bound
@@ -169,13 +170,34 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     clearSettings() {
-        this.ssvContractBalance = 0;
         this.networkFee = 0;
         this.accountBurnRate = 0;
+        this.walletSsvBalance = 0;
         this.userLiquidated = false;
+        this.userState = 'operator';
         this.userGaveAllowance = false;
         this.liquidationCollateral = 0;
-        this.networkContractBalance = 0;
+        this.contractDepositSsvBalance = 0;
+    }
+
+    /**
+     * Get account balance on ssv contract
+     */
+    @action.bound
+    async getBalanceFromSsvContract(): Promise<any> {
+        const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
+        const walletStore = this.getStore('Wallet');
+        this.walletSsvBalance = parseFloat(String(walletStore.web3.utils.fromWei(balance, 'ether')));
+    }
+
+    /**
+     * Get account balance on network contract
+     */
+    @action.bound
+    async getBalanceFromDepositContract(): Promise<any> {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const balance = await walletStore.getContract.methods.totalBalanceOf(this.accountAddress).call();
+        this.contractDepositSsvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
     }
 
     /**
@@ -241,59 +263,44 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async approveAllowance(estimate: boolean = false, callBack?: () => void): Promise<any> {
-        const ssvValue = String('115792089237316195423570985008687907853269984665640564039457584007913129639935');
-        const weiValue = ssvValue; // amount ? this.getStore('Wallet').web3.utils.toWei(ssvValue, 'ether') : ssvValue;
-        const walletStore: WalletStore = this.getStore('Wallet');
+        return new Promise((resolve => {
+            const ssvValue = String('115792089237316195423570985008687907853269984665640564039457584007913129639935');
+            const weiValue = ssvValue; // amount ? this.getStore('Wallet').web3.utils.toWei(ssvValue, 'ether') : ssvValue;
+            const walletStore: WalletStore = this.getStore('Wallet');
 
-        if (!estimate) {
-            console.debug('Approving:', { ssvValue, weiValue });
-        }
+            if (!estimate) {
+                console.debug('Approving:', { ssvValue, weiValue });
+            }
 
-        const methodCall = this.ssvContract
-            .methods
-            .approve(this.getContractAddress('ssv_network'), weiValue);
+            const methodCall = this.ssvContract
+                .methods
+                .approve(this.getContractAddress('ssv_network'), weiValue);
 
-        if (estimate) {
+            if (estimate) {
+                return methodCall
+                    .estimateGas({ from: this.accountAddress })
+                    .then((gasAmount: number) => {
+                        const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
+                        return parseFloat(floatString);
+                    });
+            }
+
             return methodCall
-                .estimateGas({ from: this.accountAddress })
-                .then((gasAmount: number) => {
-                    const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
-                    return parseFloat(floatString);
+                .send({ from: this.accountAddress })
+                .on('receipt', async () => {
+                    resolve(true);
+                    this.userGaveAllowance = true;
+                })
+                .on('transactionHash', (txHash: string) => {
+                    callBack && callBack();
+                    walletStore.notifySdk.hash(txHash);
+                })
+                .on('error', (error: any) => {
+                    console.debug('Contract Error', error);
+                    resolve(false);
+                    this.userGaveAllowance = false;
                 });
-        }
-
-        return methodCall
-            .send({ from: this.accountAddress })
-            .on('receipt', async () => {
-                this.userGaveAllowance = true;
-            })
-            .on('transactionHash', (txHash: string) => {
-                callBack && callBack();
-                walletStore.notifySdk.hash(txHash);
-            });
-            // .on('error', (error: any) => {
-            //     console.debug('Contract Error', error);
-            //     this.userGaveAllowance = false;
-        // });
-    }
-
-    /**
-     * Get account balance on ssv contract
-     */
-    @action.bound
-    async getSsvContractBalance(): Promise<any> {
-        const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
-        this.ssvContractBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
-    }
-
-    /**
-     * Get account balance on network contract
-     */
-    @action.bound
-    async getNetworkContractBalance(): Promise<any> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const balance = await walletStore.getContract.methods.totalBalanceOf(this.accountAddress).call();
-        this.networkContractBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
+        }));
     }
 
     /**

@@ -20,9 +20,12 @@ const WhiteWrapper = ({ children, header, withCancel = true }: any) => {
     const [openDialog, setOpenDialog] = React.useState(false);
 
     const cancelProcess = () => {
-        setOpenDialog(!openDialog);
         applicationStore.cancelProcess();
         history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+    };
+
+    const dialogHandler = () => {
+        setOpenDialog(!openDialog);
     };
 
     return (
@@ -34,7 +37,7 @@ const WhiteWrapper = ({ children, header, withCancel = true }: any) => {
           </Grid>
           {withCancel && (
           <Grid item xs={6}>
-            <Grid container item className={classes.CancelWrapper} onClick={cancelProcess}>
+            <Grid container item className={classes.CancelWrapper} onClick={dialogHandler}>
               <Typography>Cancel</Typography>
               <Grid item className={classes.CancelImage} />
             </Grid>
@@ -46,7 +49,7 @@ const WhiteWrapper = ({ children, header, withCancel = true }: any) => {
           {children}
         </Grid>
         <Dialog
-          open
+          open={openDialog}
           PaperProps={{
                   style: { borderRadius: 16 },
               }}
@@ -58,7 +61,7 @@ const WhiteWrapper = ({ children, header, withCancel = true }: any) => {
                 <SecondaryButton text={'Yes, Cancel'} onClick={cancelProcess} />
               </Grid>
               <Grid item xs>
-                <PrimaryButton text={'No, Go Back'} onClick={setOpenDialog} />
+                <PrimaryButton text={'No, Go Back'} onClick={dialogHandler} />
               </Grid>
             </Grid>
           </Grid>

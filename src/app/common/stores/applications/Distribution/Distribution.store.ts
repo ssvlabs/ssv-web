@@ -12,6 +12,7 @@ import NotificationsStore from '~app/common/stores/applications/Distribution/Not
  * for keeping all stores instances in one place
  */
 
+console.log(merkleTree);
 class DistributionStore extends BaseStore {
     @observable txHash: string = '';
     @observable rewardIndex: number = 0;
@@ -131,7 +132,7 @@ class DistributionStore extends BaseStore {
                 .showMessage(`Can not add SSV to wallet: ${error.message}`, 'error');
         });
     }
-    
+
     /**
      * Returns instance of Distribution contract
      */

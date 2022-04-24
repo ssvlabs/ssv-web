@@ -12,7 +12,9 @@ import NotificationsStore from '~app/common/stores/applications/Distribution/Not
  * for keeping all stores instances in one place
  */
 
-console.log(merkleTree);
+console.log(merkleTree.merkleRoot);
+console.log(config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS);
+
 class DistributionStore extends BaseStore {
     @observable txHash: string = '';
     @observable rewardIndex: number = 0;

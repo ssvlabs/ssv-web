@@ -49,7 +49,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
     return (
       <BorderScreen
-        withoutNavigation={editPage}
+        withoutNavigation
         wrapperClass={classes.ScreenWrapper}
         body={[
           <Grid container>

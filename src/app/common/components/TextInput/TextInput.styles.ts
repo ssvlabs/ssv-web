@@ -1,5 +1,22 @@
 import { makeStyles } from '@material-ui/core/styles';
 
+const conditionalBackgroundColor = (theme: any, props: any) => {
+    if (props.disable) {
+        return theme.colors.gray20;
+    }
+    return theme.colors.white;
+};
+
+const conditionalBorder = (theme: any, props: any) => {
+    if (props.error) {
+        return '1px solid red !important';
+    }
+    if (props.disable) {
+        return `solid 1px ${theme.colors.gray30}`;
+    }
+    return `solid 1px ${theme.colors.gray30}`;
+};
+
 export const useStyles = makeStyles((theme) => ({
     Wrapper: {
         height: 50,
@@ -10,15 +27,16 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: 1.62,
         color: theme.colors.black,
         padding: theme.spacing(3, 5),
-        backgroundColor: theme.colors.white,
-        border: `solid 1px ${theme.colors.gray30}`,
+        border: (props: any) => conditionalBorder(theme, props),
+        backgroundColor: (props: any) => conditionalBackgroundColor(theme, props),
     },
     Input: {
         fontSize: 16,
         width: '100%',
         fontWeight: 500,
+        lineHeight: 1.62,
         border: 'none !important',
-        color: theme.colors.black,
+        color: theme.colors.gray90,
         backgroundColor: 'transparent',
     },
     FullInput: {

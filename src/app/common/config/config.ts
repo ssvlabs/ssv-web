@@ -1,11 +1,21 @@
 const config = {
     routes: {
         HOME: '/',
+        DISTRIBUTION: {
+            CLAIM: '/claim',
+            SUCCESS: '/claim/success',
+        },
         MY_ACCOUNT: {
             DASHBOARD: '/dashboard',
             DEPOSIT: '/dashboard/deposit',
             WITHDRAW: '/dashboard/withdraw',
             ENABLE_ACCOUNT: '/dashboard/enable_account',
+            VALIDATOR: '/dashboard/validator/:public_key',
+            EDIT_VALIDATOR: '/dashboard/validator/:public_key/edit',
+            REMOVE_VALIDATOR: '/dashboard/validator/:public_key/remove',
+            VALIDATOR_REMOVED: '/dashboard/validator/:public_key/removed',
+            CONFIRM_OPERATORS: '/dashboard/validator/:public_key/confirm',
+            UPLOAD_KEY_STORE: '/dashboard/validator/:public_key/upload_key_store',
         },
         OPERATOR: {
             HOME: '/operator',
@@ -50,7 +60,7 @@ const config = {
     },
     GLOBAL_VARIABLE: {
         BLOCKS_PER_DAY: 6570,
-        OPERATORS_PER_PAGE: 5000,
+        OPERATORS_PER_PAGE: 50,
         BLOCKS_PER_YEAR: 2398050,
         VALIDATORS_PER_OPERATOR_LIMIT: 1,
         NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
@@ -63,8 +73,8 @@ const config = {
         COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
     },
     CONTRACTS: {
-        SSV: {
-            ADDRESS: String(process.env.REACT_APP_SSV_CONTRACT_ADDRESS),
+        SSV_TOKEN: {
+            ADDRESS: String(process.env.REACT_APP_REGISTRY_CONTRACT_ADDRESS),
             ABI: [
                 {
                     'anonymous': false,
@@ -453,6 +463,83 @@ const config = {
                     'anonymous': false,
                     'inputs': [
                         {
+                            'indexed': true,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                    ],
+                    'name': 'AccountEnabled',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': true,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                    ],
+                    'name': 'AccountLiquidated',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'ApproveOperatorFeePeriodUpdated',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                    ],
+                    'name': 'FundsDeposited',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                    ],
+                    'name': 'FundsWithdrawn',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
                             'indexed': false,
                             'internalType': 'uint256',
                             'name': 'oldFee',
@@ -466,6 +553,25 @@ const config = {
                         },
                     ],
                     'name': 'NetworkFeeUpdated',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'address',
+                            'name': 'recipient',
+                            'type': 'address',
+                        },
+                    ],
+                    'name': 'NetworkFeesWithdrawn',
                     'type': 'event',
                 },
                 {
@@ -528,7 +634,7 @@ const config = {
                             'type': 'bytes',
                         },
                     ],
-                    'name': 'OperatorDeleted',
+                    'name': 'OperatorDeactivated',
                     'type': 'event',
                 },
                 {
@@ -559,7 +665,38 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'OperatorFeeUpdated',
+                    'name': 'OperatorFeeApproved',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': true,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'blockNumber',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'fee',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'OperatorFeeSet',
                     'type': 'event',
                 },
                 {
@@ -578,7 +715,26 @@ const config = {
                             'type': 'bytes',
                         },
                     ],
-                    'name': 'OperatorInactivated',
+                    'name': 'OperatorFeeSetCanceled',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': true,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                    ],
+                    'name': 'OperatorRemoved',
                     'type': 'event',
                 },
                 {
@@ -636,18 +792,12 @@ const config = {
                     'inputs': [
                         {
                             'indexed': false,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
                         },
                     ],
-                    'name': 'ValidatorActivated',
+                    'name': 'SetOperatorFeePeriodUpdated',
                     'type': 'event',
                 },
                 {
@@ -703,26 +853,7 @@ const config = {
                             'type': 'bytes',
                         },
                     ],
-                    'name': 'ValidatorDeleted',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
-                        {
-                            'indexed': false,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                    ],
-                    'name': 'ValidatorInactivated',
+                    'name': 'ValidatorRemoved',
                     'type': 'event',
                 },
                 {
@@ -778,24 +909,6 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                        {
-                            'internalType': 'uint256',
-                            'name': 'tokenAmount',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'activateValidator',
-                    'outputs': [],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
                             'internalType': 'address',
                             'name': 'ownerAddress',
                             'type': 'address',
@@ -810,6 +923,85 @@ const config = {
                         },
                     ],
                     'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                    ],
+                    'name': 'approveOperatorFee',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'string[]',
+                            'name': 'name',
+                            'type': 'string[]',
+                        },
+                        {
+                            'internalType': 'address[]',
+                            'name': 'ownerAddress',
+                            'type': 'address[]',
+                        },
+                        {
+                            'internalType': 'bytes[]',
+                            'name': 'publicKey',
+                            'type': 'bytes[]',
+                        },
+                        {
+                            'internalType': 'uint256[]',
+                            'name': 'fee',
+                            'type': 'uint256[]',
+                        },
+                    ],
+                    'name': 'batchRegisterOperator',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                        {
+                            'internalType': 'bytes[]',
+                            'name': 'operatorPublicKeys',
+                            'type': 'bytes[]',
+                        },
+                        {
+                            'internalType': 'bytes[]',
+                            'name': 'sharesPublicKeys',
+                            'type': 'bytes[]',
+                        },
+                        {
+                            'internalType': 'bytes[]',
+                            'name': 'encryptedKeys',
+                            'type': 'bytes[]',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': 'tokenAmount',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'batchRegisterValidator',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
                     'type': 'function',
                 },
                 {
@@ -839,46 +1031,20 @@ const config = {
                             'type': 'bytes',
                         },
                     ],
+                    'name': 'cancelSetOperatorFee',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                    ],
                     'name': 'deactivateOperator',
-                    'outputs': [],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                    ],
-                    'name': 'deactivateValidator',
-                    'outputs': [],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                    ],
-                    'name': 'deleteOperator',
-                    'outputs': [],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                    ],
-                    'name': 'deleteValidator',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
                     'type': 'function',
@@ -894,6 +1060,32 @@ const config = {
                     'name': 'deposit',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': 'tokenAmount',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'enableAccount',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'getApproveOperatorFeePeriod',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
                     'type': 'function',
                 },
                 {
@@ -919,6 +1111,35 @@ const config = {
                     ],
                     'name': 'getOperatorCurrentFee',
                     'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                    ],
+                    'name': 'getOperatorFeeChangeRequest',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
                         {
                             'internalType': 'uint256',
                             'name': '',
@@ -967,6 +1188,19 @@ const config = {
                     'type': 'function',
                 },
                 {
+                    'inputs': [],
+                    'name': 'getSetOperatorFeePeriod',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
                     'inputs': [
                         {
                             'internalType': 'address',
@@ -980,6 +1214,19 @@ const config = {
                             'internalType': 'bytes[]',
                             'name': '',
                             'type': 'bytes[]',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'getValidatorsPerOperatorLimit',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
                         },
                     ],
                     'stateMutability': 'view',
@@ -1007,10 +1254,39 @@ const config = {
                             'name': 'operatorMaxFeeIncrease',
                             'type': 'uint256',
                         },
+                        {
+                            'internalType': 'uint256',
+                            'name': 'setOperatorFeePeriod',
+                            'type': 'uint256',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': 'approveOperatorFeePeriod',
+                            'type': 'uint256',
+                        },
                     ],
                     'name': 'initialize',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                    ],
+                    'name': 'isOwnerValidatorsDisabled',
+                    'outputs': [
+                        {
+                            'internalType': 'bool',
+                            'name': '',
+                            'type': 'bool',
+                        },
+                    ],
+                    'stateMutability': 'view',
                     'type': 'function',
                 },
                 {
@@ -1035,25 +1311,12 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                    ],
-                    'name': 'liquidate',
-                    'outputs': [],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
                             'internalType': 'address[]',
                             'name': 'ownerAddresses',
                             'type': 'address[]',
                         },
                     ],
-                    'name': 'liquidateAll',
+                    'name': 'liquidate',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
                     'type': 'function',
@@ -1230,8 +1493,83 @@ const config = {
                     'type': 'function',
                 },
                 {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                    ],
+                    'name': 'removeOperator',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                    ],
+                    'name': 'removeValidator',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
                     'inputs': [],
                     'name': 'renounceOwnership',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': 'publicKey',
+                            'type': 'bytes',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': 'fee',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'setOperatorFee',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'bytes',
+                            'name': '_operatorPublicKey',
+                            'type': 'bytes',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': '_validatorsPerOperator',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'setValidatorsPerOperator',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '_validatorsPerOperatorLimit',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'setValidatorsPerOperatorLimit',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
                     'type': 'function',
@@ -1310,6 +1648,19 @@ const config = {
                     'inputs': [
                         {
                             'internalType': 'uint256',
+                            'name': 'approveOperatorFeePeriod',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'updateApproveOperatorFeePeriod',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
                             'name': 'minimumBlocksBeforeLiquidation',
                             'type': 'uint256',
                         },
@@ -1328,24 +1679,6 @@ const config = {
                         },
                     ],
                     'name': 'updateNetworkFee',
-                    'outputs': [],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                        {
-                            'internalType': 'uint256',
-                            'name': 'fee',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'updateOperatorFee',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
                     'type': 'function',
@@ -1377,6 +1710,19 @@ const config = {
                         },
                     ],
                     'name': 'updateOperatorScore',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': 'setOperatorFeePeriod',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'updateSetOperatorFeePeriod',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
                     'type': 'function',
@@ -1417,12 +1763,38 @@ const config = {
                 {
                     'inputs': [
                         {
+                            'internalType': 'bytes',
+                            'name': '_operatorPublicKey',
+                            'type': 'bytes',
+                        },
+                    ],
+                    'name': 'validatorsPerOperatorCount',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
                             'internalType': 'uint256',
                             'name': 'tokenAmount',
                             'type': 'uint256',
                         },
                     ],
                     'name': 'withdraw',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'withdrawAll',
                     'outputs': [],
                     'stateMutability': 'nonpayable',
                     'type': 'function',
@@ -1864,6 +2236,163 @@ const config = {
                             'internalType': 'uint256',
                             'name': '',
                             'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+            ],
+        },
+        SSV_DISTRIBUTION: {
+            ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),
+            ABI: [
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'address',
+                            'name': 'token_',
+                            'type': 'address',
+                        },
+                        {
+                            'internalType': 'bytes32',
+                            'name': 'merkleRoot_',
+                            'type': 'bytes32',
+                        },
+                        {
+                            'internalType': 'address',
+                            'name': 'treasury_',
+                            'type': 'address',
+                        },
+                    ],
+                    'stateMutability': 'nonpayable',
+                    'type': 'constructor',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'index',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'address',
+                            'name': 'account',
+                            'type': 'address',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'amount',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'Claimed',
+                    'type': 'event',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': 'index',
+                            'type': 'uint256',
+                        },
+                        {
+                            'internalType': 'address',
+                            'name': 'account',
+                            'type': 'address',
+                        },
+                        {
+                            'internalType': 'uint256',
+                            'name': 'amount',
+                            'type': 'uint256',
+                        },
+                        {
+                            'internalType': 'bytes32[]',
+                            'name': 'merkleProof',
+                            'type': 'bytes32[]',
+                        },
+                    ],
+                    'name': 'claim',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'endAirdrop',
+                    'outputs': [],
+                    'stateMutability': 'nonpayable',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': 'index',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'isClaimed',
+                    'outputs': [
+                        {
+                            'internalType': 'bool',
+                            'name': '',
+                            'type': 'bool',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'merkleRoot',
+                    'outputs': [
+                        {
+                            'internalType': 'bytes32',
+                            'name': '',
+                            'type': 'bytes32',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'timeout',
+                    'outputs': [
+                        {
+                            'internalType': 'uint256',
+                            'name': '',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'token',
+                    'outputs': [
+                        {
+                            'internalType': 'address',
+                            'name': '',
+                            'type': 'address',
+                        },
+                    ],
+                    'stateMutability': 'view',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [],
+                    'name': 'treasury',
+                    'outputs': [
+                        {
+                            'internalType': 'address',
+                            'name': '',
+                            'type': 'address',
                         },
                     ],
                     'stateMutability': 'view',

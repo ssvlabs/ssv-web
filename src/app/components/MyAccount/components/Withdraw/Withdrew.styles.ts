@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     FirstSquare: {
-      marginBottom: theme.spacing(8),
+      marginBottom: theme.spacing(6),
     },
     currentBalance: {
         fontSize: 28,

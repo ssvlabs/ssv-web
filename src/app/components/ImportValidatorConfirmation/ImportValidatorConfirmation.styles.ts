@@ -26,7 +26,9 @@ export const useStyles = makeStyles((theme) => ({
         borderBottom: `solid 1px ${theme.colors.gray20}`,
         '&:nth-child(3)': {
             padding: theme.spacing(5, 8, 8, 8),
-            borderBottom: 'none',
+        },
+        '&:last-child': {
+            border: 'none',
         },
     },
     InsufficientBalanceWrapper: {

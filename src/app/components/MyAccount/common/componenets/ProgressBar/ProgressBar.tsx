@@ -14,7 +14,7 @@ const ProgressBar = (props: Props) => {
     return (
       <Grid item container>
         <Grid item className={classes.LiquidationProgress}>
-          <Grid style={{ width: `${100 - (remainingDays / 30) * 100}%` }} className={classes.LiquidationProgressRed} />
+          <Grid style={{ width: `${100 - (Math.floor(remainingDays) / 30) * 100}%` }} className={classes.LiquidationProgressRed} />
         </Grid>
       </Grid>
     );

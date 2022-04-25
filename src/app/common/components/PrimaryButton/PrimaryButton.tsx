@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import NotificationsStore from '~app/common/stores/Notifications.store';
 import { useStyles } from './PrimaryButton.styles';
 import Spinner from '~app/common/components/Spinner';
-import ApplicationStore from '~app/common/stores/Application.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 type Props = {
     text: string,
@@ -50,12 +50,12 @@ const PrimaryButton = (props: Props) => {
     };
 
     return (
-      <Grid container item>
+      <Grid container>
         <Button
-          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+          onClick={submit}
           data-testid={dataTestId}
           disabled={disable || applicationStore.isLoading}
-          onClick={submit}
+          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
         >
           {applicationStore.isLoading && <Spinner />}
           {text}

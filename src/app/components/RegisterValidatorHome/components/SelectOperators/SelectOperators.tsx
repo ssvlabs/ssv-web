@@ -5,16 +5,16 @@ import { useStyles } from '~app/components/RegisterValidatorHome/components/Sele
 import SecondSquare from '~app/components/RegisterValidatorHome/components/SelectOperators/components/SecondSquare';
 import FirstSquare from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare';
 
-const SelectOperators = () => {
-    const classes = useStyles();
+const SelectOperators = ({ editPage }: { editPage: boolean }) => {
+    const classes = useStyles({ editPage });
 
     return (
       <Grid container className={classes.Container}>
         <Grid item className={classes.FirstSquare}>
-          <FirstSquare />
+          <FirstSquare editPage={editPage} />
         </Grid>
         <Grid item className={classes.SecondSquare}>
-          <SecondSquare />
+          <SecondSquare editPage={editPage} />
         </Grid>
       </Grid>
     );

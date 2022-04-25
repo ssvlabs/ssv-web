@@ -1,7 +1,7 @@
 import TableRow from '@material-ui/core/TableRow';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import BaseStore from '~app/common/stores/BaseStore';
-import ApplicationStore from '~app/common/stores/Application.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 const applicationStore: ApplicationStore = BaseStore.getInstance().getStore('Application');
 

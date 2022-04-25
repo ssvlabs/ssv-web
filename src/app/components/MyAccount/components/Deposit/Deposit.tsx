@@ -1,41 +1,45 @@
 import { observer } from 'mobx-react';
-// import styled from 'styled-components';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import CTAButton from '~app/common/components/CTAButton';
-import config, { translations } from '~app/common/config';
 import IntegerInput from '~app/common/components/IntegerInput';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
+import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
 import { useStyles } from './Deposit.styles';
 
 const Deposit = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
-    const { redirectUrl, history } = useUserFlow();
-    const [inputValue, setInputValue] = useState(0.0);
+    const applicationStore: ApplicationStore = stores.Application;
+    const [inputValue, setInputValue] = useState('');
 
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
-
-    const depositSsv = async () => {
+    async function depositSsv() {
+        applicationStore.setIsLoading(true);
         await ssvStore.deposit(inputValue.toString());
-        setInputValue(0.0);
-    };
+        setInputValue('0.0');
+        applicationStore.setIsLoading(false);
+    }
+
+    function inputHandler(e: any) {
+        let value = e.target.value;
+        if (value === '') value = '0.0';
+        if (value > ssvStore.walletSsvBalance) value = ssvStore.walletSsvBalance;
+        setInputValue(`${+value}`);
+    }
+
+    function maxDeposit() {
+        setInputValue(String(ssvStore.walletSsvBalance));
+    }
 
     return (
       <div>
         <BorderScreen
-          withConversion
           header={'Deposit'}
-          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
-          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           body={[
                     (
                       <Grid item container>
@@ -43,34 +47,40 @@ const Deposit = () => {
                           <Grid item container xs={12}>
                             <Grid item xs={6}>
                               <IntegerInput
+                                min="0"
                                 type="number"
-                                onChange={(e) => { // @ts-ignore
-                                                setInputValue(e.target.value); }}
                                 value={inputValue}
+                                placeholder={'0.0'}
+                                onChange={inputHandler}
                                 className={classes.Balance}
                               />
                             </Grid>
                             <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                              <Grid item onClick={() => { setInputValue(ssvStore.ssvBalance); }} className={classes.MaxButton}>
+                              <Grid item onClick={maxDeposit} className={classes.MaxButton}>
                                 MAX
                               </Grid>
                               <Grid item className={classes.MaxButtonText}>SSV</Grid>
                             </Grid>
                           </Grid>
-                          <Grid item xs={12} className={classes.WalletBalance} onClick={() => { setInputValue(ssvStore.ssvBalance); }}>
-                            Wallet Balance: {formatNumberToUi(ssvStore.ssvBalance)} SSV
+                          <Grid item xs={12} className={classes.WalletBalance} onClick={maxDeposit}>
+                            Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
                           </Grid>
                         </Grid>
                       </Grid>
                     ),
                     (
                       <>
-                        <RemainingDays fromPage={'deposit'} inputValue={inputValue} />
+                        <RemainingDays operator={'+'} newRemainingDays={ssvStore.getRemainingDays(Number(inputValue))} />
                       </>
                     ),
           ]}
           bottom={(
-            <CTAButton text={'Deposit'} disable={ssvStore.ssvBalance === 0 || inputValue <= 0} onClick={depositSsv} withAllowance />
+            <PrimaryWithAllowance
+              withAllowance
+              text={'Deposit'}
+              onClick={depositSsv}
+              disable={Number(inputValue) <= 0}
+            />
           )}
         />
       </div>

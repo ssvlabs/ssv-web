@@ -1,149 +1,162 @@
+import axios from 'axios';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
-import ApiRequest from '~lib/utils/ApiRequest';
+import React, { useRef, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
+import LinkText from '~app/common/components/LinkText';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
-import PrimaryButton from '~app/common/components/PrimaryButton';
-import ApplicationStore from '~app/common/stores/Application.store';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
-const ImportValidator = () => {
-  const stores = useStores();
-  const classes = useStyles();
-  const history = useHistory();
-  const inputRef = useRef(null);
-  const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
-  const applicationStore: ApplicationStore = stores.Application;
-  const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    validatorStore.setPassword('');
-  }, []);
-
-  const handleClick = () => {
+const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
+    const stores = useStores();
+    const classes = useStyles();
+    const history = useHistory();
     // @ts-ignore
-    inputRef.current.click();
-  };
+    const { public_key } = useParams();
+    const inputRef = useRef(null);
+    const removeButtons = useRef(null);
+    const operatorStore: OperatorStore = stores.Operator;
+    const validatorStore: ValidatorStore = stores.Validator;
+    const applicationStore: ApplicationStore = stores.Application;
+    const [errorMessage, setErrorMessage] = useState('');
 
-  const handleDrag = (e: any) => {
-    e.preventDefault();
-  };
-  
-  const handleDrop = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const event = e as Event;
-    // @ts-ignore
-    if (event.target.files) {
-      // @ts-ignore
-      fileHandler(event.target.files);
-    } else {
-      // @ts-ignore
-      const files = event.dataTransfer.files;
-      fileHandler(files);
-    }
-  };
+    const [keyStorePassword, setKeyStorePassword] = useState('');
 
-  const fileHandler = (files: any) => {
-    if (files.length === 1) {
-      const uploadedFile = files[0];
-      validatorStore.setValidatorPrivateKeyFile(uploadedFile);
-    }
-  };
+    const handleClick = (e: any) => {
+        if (e.target !== inputRef.current && e.target !== removeButtons?.current) {
+            // @ts-ignore
+            inputRef.current.click();
+        }
+    };
 
-  const inputHandler = (e: any) => {
-    setErrorMessage('');
-    validatorStore.setPassword(e.target.value);
-  };
-  const validatorSelectionPage = () => {
-    operatorStore.unselectAllOperators();
-    applicationStore.setIsLoading(false);
-    history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
-  };
+    const handleDrag = (e: any) => {
+        e.preventDefault();
+    };
 
-  const submitHandler = () => {
-    validatorStore.extractPrivateKey().then(() => {
-      const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.validatorPublicKey}/deposits`;
-      return new ApiRequest({ url: beaconChaValidatorUrl, method: 'GET', errorCallback: validatorSelectionPage }).sendRequest().then((response: any) => {
-        const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
-        if (response.data !== null && conditionalDataExtraction?.valid_signature) {
-          validatorSelectionPage();
-        } else {
-          history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+    const handleDrop = (acceptedFiles: any) => {
+        acceptedFiles.preventDefault();
+        const uploadedFile = acceptedFiles.target?.files ?? acceptedFiles.dataTransfer?.files;
+        if (uploadedFile.length > 0) fileHandler(uploadedFile);
+    };
+
+    const fileHandler = (files: any) => {
+        const uploadedFile = files[0];
+        validatorStore.setKeyStore(uploadedFile);
+    };
+
+    const handlePassword = (e: any) => {
+        const inputText = e.target.value;
+        setKeyStorePassword(inputText);
+        if (errorMessage !== '') {
+            setErrorMessage('');
+        }
+    };
+
+    const isDeposited = async (): Promise<boolean> => {
+        const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
+        const response: any = (await axios.get(beaconChaValidatorUrl)).data;
+        const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
+        return conditionalDataExtraction?.valid_signature;
+    };
+
+    const removeFile = () => {
+        validatorStore.setKeyStore(null);
+        try {
+            // @ts-ignore
+            inputRef.current.value = null;
+        } catch (e: any) {
+            console.log(e.message);
+        }
+    };
+
+    const renderFileImage = () => {
+        let fileClass: any = classes.FileImage;
+        if (validatorStore.isJsonFile) {
+            fileClass += ` ${classes.Success}`;
+        }
+        if (!validatorStore.isJsonFile && validatorStore.keyStoreFile) {
+            fileClass += ` ${classes.Fail}`;
+        }
+        return <Grid item className={fileClass} />;
+    };
+
+    const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
+
+    const renderFileText = () => {
+        if (!validatorStore.keyStoreFile) {
+            return (
+              <Grid item xs={12} className={classes.FileText}>
+                Drag and drop files or <LinkText text={'browse'} />
+              </Grid>
+            );
+        }
+        if (validatorStore.isJsonFile) {
+            return (
+              <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
+                {validatorStore.keyStoreFile.name}
+                <RemoveButton />
+              </Grid>
+            );
+        }
+        if (!validatorStore.isJsonFile) {
+            return (
+              <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+                Invalid file format - only .json files are supported
+                <RemoveButton />
+              </Grid>
+            );
+        }
+    };
+
+    const submitHandler = async () => {
+        applicationStore.setIsLoading(true);
+        try {
+            await validatorStore.extractKeyStoreData(keyStorePassword);
+            const deposited = await isDeposited();
+            if (reUpload) {
+                history.push(`/dashboard/validator/${public_key}/confirm`);
+            } else if (deposited) {
+                operatorStore.unselectAllOperators();
+                history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+            } else {
+                history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+            }
+        } catch (error: any) {
+            if (error.message !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
+                setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
+            } else {
+                setErrorMessage(error.message);
+            }
         }
         applicationStore.setIsLoading(false);
-      });
-    }).catch((error: string) => {
-      console.log(error);
-      applicationStore.setIsLoading(false);
-      if (error !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
-        setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
-      } else {
-        setErrorMessage(error);
-      }
-    });
-  };
-
-  const removeFile = () => {
-    validatorStore.setValidatorPrivateKeyFile(null);
-  };
-
-  const renderFileImage = () => {
-    let fileClass: any = classes.FileImage;
-    if (validatorStore.isJsonFile()) {
-      fileClass += ` ${classes.Success}`;
-    }
-    if (!validatorStore.isJsonFile() && validatorStore.validatorPrivateKeyFile) {
-      fileClass += ` ${classes.Fail}`;
-    }
-    return <Grid item className={fileClass} />;
-  };
-
-  const renderFileText = () => {
-    if (!validatorStore.validatorPrivateKeyFile) {
-      return (
-        <Grid item xs={12} className={classes.FileText}>
-          Drag and drop files or <Grid className={classes.Browse}>browse</Grid>
-        </Grid>
-      );
-    }
-    if (validatorStore.isJsonFile()) {
-      return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
-          {validatorStore.validatorPrivateKeyFile.name}
-          <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
-        </Grid>
-      );
-    }
-    if (!validatorStore.isJsonFile()) {
-      return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-          Invalid file format - only .json files are supported
-          <Grid onClick={removeFile} className={classes.Remove}>Remove</Grid>
-        </Grid>
-      );
-    }
-  };
+    };
 
     return (
       <BorderScreen
         blackHeader
+        wrapperClass={classes.Wrapper}
         header={translations.VALIDATOR.IMPORT.TITLE}
-        navigationLink={config.routes.VALIDATOR.HOME}
         body={[
           <Grid item container>
             <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>
-            <Grid container item xs={12} className={classes.DropZone} onDrop={handleDrop} onDragOver={handleDrag} onClick={handleClick}>
+            <Grid
+              container
+              item xs={12}
+              onDrop={handleDrop}
+              onClick={handleClick}
+              onDragOver={handleDrag}
+              className={classes.DropZone}
+            >
               <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop} />
               {renderFileImage()}
               {renderFileText()}
@@ -151,12 +164,13 @@ const ImportValidator = () => {
             <Grid container item xs={12}>
               <InputLabel title="Keystore Password" />
               <Grid item xs={12} className={classes.ItemWrapper}>
-                <TextInput withLock disable={!validatorStore.isJsonFile()} onChange={inputHandler} />
+                <TextInput withLock disable={!validatorStore.isJsonFile} value={keyStorePassword} onChangeCallback={handlePassword} />
               </Grid>
               <Grid item xs={12} className={classes.ErrorWrapper}>
-                {errorMessage && <MessageDiv text={translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD} />}
+                {errorMessage && <MessageDiv text={errorMessage} />}
               </Grid>
-              <PrimaryButton text={'Next'} onClick={submitHandler} disable={!validatorStore.isJsonFile() || !validatorStore.password || !!errorMessage} />
+              <PrimaryButton text={'Next'} submitFunction={submitHandler}
+                disable={!validatorStore.isJsonFile || !keyStorePassword || !!errorMessage} />
             </Grid>
           </Grid>,
         ]}

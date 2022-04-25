@@ -4,18 +4,10 @@ export const useStyles = makeStyles((theme) => ({
     Balance: {
         width: 78,
         height: 26,
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.62,
-        color: theme.colors.gray90,
-    },
-    BoldBalance: {
-        width: 78,
-        height: 28,
-        fontSize: 20,
-        fontWeight: 'bold',
-        lineHeight: 1.4,
-        color: theme.colors.gray90,
+        fontSize: (props: any) => props.bold ? 20 : 16,
+        lineHeight: (props: any) => props.bold ? 1.4 : 1.62,
+        fontWeight: (props: any) => props.bold ? 'bold' : 500,
+        color: (props: any) => props.gray80 ? theme.colors.gray80 : theme.colors.gray90,
     },
     DollarBalance: {
         width: 69,
@@ -23,6 +15,6 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 14,
         fontWeight: 500,
         lineHeight: 1.62,
-        color: theme.colors.gray40,
+        color: (props: any) => props.gray80 ? theme.colors.gray80 : theme.colors.gray40,
     },
 }));

@@ -1,23 +1,22 @@
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
-import useUserFlow from '~app/hooks/useUserFlow';
+import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
-import CTAButton from '~app/common/components/CTAButton';
-import config, { translations } from '~app/common/config';
-import NameAndAddress from '~app/common/components/NameAndAddress';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
+// import CTAButton from '~app/common/components/CTAButton';
 import { useStyles } from './EnableAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import config from '~app/common/config';
+import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
+import LinkText from '~app/common/components/LinkText/LinkText';
 
 const EnableAccount = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
-    const { redirectUrl, history } = useUserFlow();
     const [allOperatorsFee, setTotalFee] = useState(0);
     const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
     const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
@@ -29,20 +28,18 @@ const EnableAccount = () => {
     ];
 
     useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
+
+    }, []);
 
     const unableAccount = (fee: any) => {
         ssvStore.activateValidator(fee);
     };
+    unableAccount;
 
     return (
       <div>
         <BorderScreen
-          withConversion
           header={'Enable Account'}
-          navigationLink={config.routes.MY_ACCOUNT.DASHBOARD}
-          navigationText={translations.MY_ACCOUNT.DEPOSIT.NAVIGATION_TEXT}
           sectionClass={classes.Section}
           body={[
               (
@@ -55,7 +52,7 @@ const EnableAccount = () => {
                       balance required for reactivation.
                     </Grid>
                     <Grid item>
-                      <a href={'www.bla.com'}>Read more on account reactivation</a>
+                      <LinkText text={'Read more on account reactivation'} link={'www.bla.com'} />
                     </Grid>
                   </Grid>
                   <Grid item container>
@@ -63,12 +60,17 @@ const EnableAccount = () => {
                       Operators Fees Details
                     </Grid>
                     <Grid item container>
-                      {ssvStore.userValidators.map((publicKey: any, index: number) => {
-                                  return (
-                                    <ValidatorDropDownMenu allOperatorsFee={allOperatorsFee} setTotalFee={setTotalFee}
-                                      key={index} index={index} validatorPublicKey={publicKey} />
-                                  );
-                              })}
+                      {[].map((publicKey: any, index: number) => {
+                            return (
+                              <ValidatorDropDownMenu
+                                key={index}
+                                index={index}
+                                setTotalFee={setTotalFee}
+                                validatorPublicKey={publicKey}
+                                allOperatorsFee={allOperatorsFee}
+                              />
+                            );
+                        })}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -103,7 +105,7 @@ const EnableAccount = () => {
                 <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} subText={'~$490'} />
               </Grid>
               <Grid item>
-                <CTAButton text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance />
+                {/* <CTAButton text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance /> */}
               </Grid>
             </Grid>
           )}

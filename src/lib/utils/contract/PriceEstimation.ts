@@ -7,6 +7,7 @@ class PriceEstimation {
       url: String(config.links.LINK_COIN_EXCHANGE_API),
       method: 'GET',
       headers: [{ name: 'X-CoinAPI-Key', value: String(config.COIN_KEY.COIN_EXCHANGE_KEY) }],
+      errorCallback: () => {},
     };
     return new ApiRequest(requestInfo)
       .sendRequest()

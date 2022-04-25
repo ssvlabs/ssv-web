@@ -2,15 +2,23 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     ToolTipWrapper: {
-        marginLeft: 4,
+        bottom: 1,
+        width: 14,
+        height: 14,
+        cursor: 'pointer',
         position: 'relative',
-    },
-    ToolTip: {
-        width: 16,
-        height: 16,
         verticalAlign: 'middle',
-        // backgroundColor: 'blue',
+        display: 'inline-block',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: `url(/images/hint/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
+    // ToolTip: {
+    //     width: 16,
+    //     height: 16,
+    //     verticalAlign: 'middle',
+    // },
     toolTipText: {
         top: 15,
         left: -170,
@@ -19,13 +27,12 @@ export const useStyles = makeStyles((theme) => ({
         minWidth: 350,
         fontWeight: 500,
         lineHeight: 1.62,
-        zIndex: 9999999,
         textAlign: 'center',
         borderRadius: '6px',
         position: 'absolute',
         transition: 'opacity 0.3s',
+        color: theme.colors.white,
         backgroundColor: theme.colors.gray90,
-        color: `${theme.colors.white} !important`,
         '& a': {
           color: theme.colors.primaryBlue,
         },

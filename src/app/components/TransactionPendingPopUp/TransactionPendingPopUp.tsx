@@ -5,10 +5,10 @@ import Dialog from '@material-ui/core/Dialog';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
-import ApplicationStore from '~app/common/stores/Application.store';
-import AddressKeyInput from '~app/common/components/AddressKeyInput/AddressKeyInput';
-import { useStyles } from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp.styles';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import AddressKeyInput from '~app/common/components/AddressKeyInput/AddressKeyInput';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { useStyles } from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp.styles';
 
 type TransactionPendingPopUpParams = {
     txHash: string

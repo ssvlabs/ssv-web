@@ -4,15 +4,18 @@ import { Grid } from '@material-ui/core';
 
 type Props = {
     text: any,
+    disable?: boolean,
     onClickCallBack?: any,
+    grayBackGround?: boolean,
 };
 
 const CheckBox = (props: Props) => {
-    const { text, onClickCallBack } = props;
-    const classes = useStyles();
+    const { text, disable, onClickCallBack, grayBackGround } = props;
+    const classes = useStyles({ grayBackGround });
     const [checked, setChecked] = useState(false);
 
     const checkAction = () => {
+        if (disable) return;
         setChecked(!checked);
         onClickCallBack && onClickCallBack(!checked);
     };

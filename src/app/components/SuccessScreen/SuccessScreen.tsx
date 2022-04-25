@@ -1,29 +1,25 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
 // import Typography from '@material-ui/core/Typography';
+import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
-import OperatorStore from '~app/common/stores/Operator.store';
-import ValidatorStore from '~app/common/stores/Validator.store';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import PrimaryButton from '~app/common/components/PrimaryButton';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 
 const SuccessScreen = () => {
     const stores = useStores();
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
-    const { redirectUrl, history } = useUserFlow();
+    const history = useHistory();
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
-
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
 
     let icon: string = '';
     let subTitle: any = '';
@@ -71,7 +67,6 @@ const SuccessScreen = () => {
 
     const redirectTo = async () => {
         if (process.env.REACT_APP_NEW_STAGE) {
-            await operatorStore.loadOperators(true);
             await walletStore.initializeUserInfo();
             history.push(config.routes.MY_ACCOUNT.DASHBOARD);
         } else {
@@ -90,7 +85,6 @@ const SuccessScreen = () => {
         window.open(surveyLink);
         localStorage.setItem('firstCreation', 'true');
     };
-
     // const linkToExchange = (url: string) => {
     //     window.open(url);
     // };
@@ -107,7 +101,7 @@ const SuccessScreen = () => {
               <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>
               {icon !== 'validator' && <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />}
               <Grid item className={`${classes.Text} ${classes.SubImageText}`}>{monitorText}</Grid>
-              <PrimaryButton text={buttonText} onClick={redirectTo} />
+              <PrimaryButton text={buttonText} submitFunction={redirectTo} />
             </Grid>,
           ]}
         />
@@ -140,9 +134,8 @@ const SuccessScreen = () => {
         {/*      </Typography> */}
         {/*    </Grid>, */}
 
-        {/*      ]} */}
-        {/*  /> */}
-
+        {/*  ]} */}
+        {/* /> */}
         {!localStorage.getItem('firstCreation') && (
           <BorderScreen
             blackHeader
@@ -154,7 +147,7 @@ const SuccessScreen = () => {
               <Grid item container>
                 <Grid container item className={classes.Feedback}>
                   <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review.</Grid>
-                  <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} onClick={takeSurvey} />
+                  <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} submitFunction={takeSurvey} />
                 </Grid>
               </Grid>,
             ]}

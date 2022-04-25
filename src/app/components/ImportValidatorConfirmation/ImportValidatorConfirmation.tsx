@@ -1,33 +1,35 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useState } from 'react';
-import useUserFlow from '~app/hooks/useUserFlow';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
-import ValidatorStore from '~app/common/stores/Validator.store';
-// import CTAButton from '~app/common/components/CTAButton/CTAButton';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import ApplicationStore from '~app/common/stores/Application.store';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
-import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
-import PrimaryButton from '~app/common/components/PrimaryButton';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
+    const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
-    const { redirectUrl, history } = useUserFlow();
     const [txHash, setTxHash] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
@@ -43,10 +45,6 @@ const ImportValidatorConfirmation = () => {
          totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
 
-    useEffect(() => {
-        redirectUrl && history.push(redirectUrl);
-    }, [redirectUrl]);
-
     const handlePendingTransaction = (transactionHash: string) => {
         setTxHash(transactionHash);
         applicationStore.showTransactionPendingPopUp(true);
@@ -59,7 +57,7 @@ const ImportValidatorConfirmation = () => {
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
         /* eslint-disable no-await-in-loop */
         for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].pubkey);
+            const operatorValidators = await operatorStore.getOperatorValidatorsCount(walletStore.encodeKey(selectedOperatorsKeys[i].public_key));
             if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
                 setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
                 setActionButtonText('Run validator');
@@ -90,7 +88,7 @@ const ImportValidatorConfirmation = () => {
       <Grid container>
         <TransactionPendingPopUp txHash={txHash} />
         <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-        <ValidatorKeyInput withBeaconcha address={validatorStore.validatorPublicKey} />
+        <ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
           <Grid item className={classes.SubHeader}>Selected Operators</Grid>
           {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
@@ -102,7 +100,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.operatorsFees[operator.pubkey].ssv))}
+                            ssv={formatNumberToUi(operator.fee)}
                             subText={'/year'}
                           />
                         </Grid>
@@ -140,22 +138,17 @@ const ImportValidatorConfirmation = () => {
         </Grid>
             )}
         {process.env.REACT_APP_NEW_STAGE && (
-        <Grid item>
-          <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
-        </Grid>
-            )}
-        {process.env.REACT_APP_NEW_STAGE && (
+          <Grid item style={{ marginBottom: 20 }}>
+            <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
+          </Grid>
+        )}
+        {process.env.REACT_APP_NEW_STAGE && Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
         <Grid container item className={classes.InsufficientBalanceWrapper}>
           <Grid item xs>
             Insufficient SSV balance. There is not enough SSV in your wallet.
           </Grid>
           <Grid item>
-            <a
-              href="https://discord.gg/5DZ7Sm9D4W"
-              target="_blank"
-                        >
-              Need SSV?
-            </a>
+            <LinkText text={'Need SSV?'} link={'https://discord.gg/5DZ7Sm9D4W'} />
           </Grid>
         </Grid>
         )}
@@ -165,7 +158,7 @@ const ImportValidatorConfirmation = () => {
             disable={false}
             dataTestId={'confirm-button'}
             text={actionButtonText}
-            onClick={onRegisterValidatorClick}
+            submitFunction={onRegisterValidatorClick}
           />
           {/* <CTAButton */}
           {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}
@@ -183,11 +176,9 @@ const ImportValidatorConfirmation = () => {
     return (
       <BorderScreen
         blackHeader
-        withConversion
         body={components}
         sectionClass={classes.Section}
         header={translations.VALIDATOR.CONFIRMATION.TITLE}
-        navigationLink={config.routes.VALIDATOR.SLASHING_WARNING}
       />
     );
 };

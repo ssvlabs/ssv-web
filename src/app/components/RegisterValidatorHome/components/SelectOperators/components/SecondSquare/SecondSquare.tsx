@@ -1,24 +1,24 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import useUserFlow from '~app/hooks/useUserFlow';
-import SsvStore from '~app/common/stores/SSV.store';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import PrimaryButton from '~app/common/components/PrimaryButton/PrimaryButton';
-import OperatorStore, { IOperator } from '~app/common/stores/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 
-const SecondSquare = () => {
+const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
     const classes = useStyles();
-    const { history } = useUserFlow();
+    const history = useHistory();
+    // @ts-ignore
+    const { public_key } = useParams();
     const operatorStore: OperatorStore = stores.Operator;
-    const ssvStore: SsvStore = stores.SSV;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
     const boxes = [1, 2, 3, 4];
 
@@ -28,7 +28,11 @@ const SecondSquare = () => {
 
     const onSelectOperatorsClick = async () => {
         if (process.env.REACT_APP_NEW_STAGE) {
-            history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+            if (editPage) {
+                history.push(`/dashboard/validator/${public_key}/upload_key_store`);
+            } else {
+                history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+            }
         } else {
             history.push(config.routes.VALIDATOR.SLASHING_WARNING);
         }
@@ -39,17 +43,13 @@ const SecondSquare = () => {
     };
 
     useEffect(() => {
-        let allOperatorsAreVerified = true;
-        Object.values(operatorStore.selectedOperators).forEach((operator: IOperator) => {
-            if (!operator.verified && !operator.dappNode) allOperatorsAreVerified = false;
-        });
-        if (allSelectedOperatorsVerified !== allOperatorsAreVerified) {
-            setAllSelectedOperatorsVerified(allOperatorsAreVerified);
-        }
+        const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
+        setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
     }, [JSON.stringify(operatorStore.selectedOperators)]);
 
     return (
       <BorderScreen
+        withoutNavigation
         wrapperClass={classes.ScreenWrapper}
         body={[
           <Grid container>
@@ -90,12 +90,12 @@ const SecondSquare = () => {
                   Total Operators Yearly Fee
                 </Grid>
                 <Grid item>
-                  <SsvAndSubTitle bold ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)}
+                  <SsvAndSubTitle bold ssv={operatorStore.getSelectedOperatorsFee}
                     subText={'~$757.5'} subTextCenter={false} />
                 </Grid>
               </Grid>
               )}
-            <PrimaryButton dataTestId={'operators-selected-button'} disable={!operatorStore.selectedEnoughOperators} text={'Next'} onClick={onSelectOperatorsClick} />
+            <PrimaryButton dataTestId={'operators-selected-button'} disable={!operatorStore.selectedEnoughOperators} text={'Next'} submitFunction={onSelectOperatorsClick} />
           </Grid>,
         ]}
       />

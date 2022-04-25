@@ -1,66 +1,74 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/SSV.store';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import Typography from '@material-ui/core/Typography';
 import Tooltip from '~app/common/components/ToolTip/ToolTip';
-import ProgressBar from '~app/components/MyAccount/common/componenets/ProgressBar';
-import ErrorText from '~app/components/MyAccount/common/componenets/ErrorText/ErrorText';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { useStores } from '~app/hooks/useStores';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ProgressBar from '~app/components/MyAccount/common/componenets/ProgressBar/ProgressBar';
 import { useStyles } from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays.styles';
+import LiquidationStateError from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 
 type Props = {
-    fromPage?: string,
-    inputValue?: number,
-    wrapperClass?: any,
+    gray80?: boolean,
+    operator?: string,
+    withdraw?: boolean,
+    newRemainingDays?: number,
+};
+
+const math_it_up = {
+    // eslint-disable-next-line func-names
+    '+': function (x: any, y: any) {
+        return x + y;
+    },
+    // eslint-disable-next-line func-names
+    '-': function (x: number, y: number) {
+        return x - y;
+    },
 };
 
 const RemainingDays = (props: Props) => {
-    const { fromPage, wrapperClass } = props;
-    let { inputValue } = props;
-    if (inputValue) {
-        inputValue = parseFloat(inputValue.toString().replace('-', ''));
-    }
     const stores = useStores();
-    const classes = useStyles();
+    const { gray80, withdraw, newRemainingDays, operator } = props;
     const ssvStore: SsvStore = stores.SSV;
-    const fromWithdraw = fromPage === 'withdraw';
-    const newRemainingDays: any = ssvStore.getNewRemainingDays(inputValue);
-    let currentRemainingDays: number;
-    if (fromPage === 'withdraw') {
-        currentRemainingDays = ssvStore.getRemainingDays - newRemainingDays;
-    } else {
-        currentRemainingDays = ssvStore.getRemainingDays + newRemainingDays;
+    const presentNewEstimation = Number(newRemainingDays) > 0;
+    // @ts-ignore
+    const remainingDays = operator ? ssvStore.getRemainingDays(math_it_up[operator](ssvStore.contractDepositSsvBalance, newRemainingDays)) : ssvStore.getRemainingDays();
+    const warningState = remainingDays < 30;
+    const classes = useStyles({ warning: warningState, withdraw, gray80 });
+
+    function conditionalErrorType() {
+        if (newRemainingDays && Math.floor(remainingDays) === 0) return 3;
+        return newRemainingDays ? 1 : 0;
     }
-
-    const liquidationError = currentRemainingDays < 30;
-    const operatorSign = fromWithdraw ? '-' : '+';
-
-    const errorMessageHandler = () => {
-        if (ssvStore.networkContractBalance === 0) {
-            return 2;
-        }
-        if (currentRemainingDays === 0) {
-            return 3;
-        }
-        return 1;
-    };
-
+    React.useEffect(() => {}, [ssvStore.contractDepositSsvBalance]);
+    
     return (
-      <Grid item container className={wrapperClass}>
-        <Grid item container xs={12}>
-          <Grid className={classes.AmountOfDaysText} item>Est. Remaining Days</Grid>
-          <Grid item className={classes.Hint}>
-            <Tooltip text={'need to implement'} />
+      <Grid item container>
+        <Grid item container>
+          <Grid item container xs={12}>
+            <Typography className={classes.AmountOfDaysText}>Est. Remaining Days</Typography>
+            <Grid className={classes.Hint}>
+              <Tooltip text={'need to implement'} />
+            </Grid>
           </Grid>
+          <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>
+          <Typography className={classes.Days}>
+            days
+          </Typography>
+          {presentNewEstimation && (
+            <Grid item xs
+              className={classes.NewDaysEstimation}>{`(${operator ?? ''}${formatNumberToUi(newRemainingDays, true)})`}
+            </Grid>
+          )}
+          {warningState && (
+            <Grid container>
+              <ProgressBar remainingDays={remainingDays} />
+              <LiquidationStateError marginTop={'16px'} errorType={conditionalErrorType()} />
+            </Grid>
+          )}
         </Grid>
-        <Grid item className={`${classes.AmountOfDays} ${liquidationError ? classes.Red : ''}`}>{formatNumberToUi(currentRemainingDays, true)}</Grid>
-        <Grid item className={`${classes.Days} ${liquidationError ? classes.Red : ''}`}>
-          days
-        </Grid>
-        {!!inputValue && <Grid item xs className={`${classes.NewDaysEstimation} ${fromWithdraw ? classes.Red : ''}`}>({operatorSign}{formatNumberToUi(newRemainingDays, true)})</Grid>}
-        {liquidationError && <ProgressBar remainingDays={currentRemainingDays} />}
-        {liquidationError && <ErrorText marginTop={'16px'} errorType={errorMessageHandler()} />}
       </Grid>
     );
 };

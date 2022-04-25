@@ -25,8 +25,8 @@ type ThemeParams = {
 export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
     return {
         spacing: 4,
-        newStage: process.env.REACT_APP_NEW_STAGE,
         darkMode: isDarkMode,
+        newStage: process.env.REACT_APP_NEW_STAGE,
         applicationBackgroundColor: isDarkMode ? '#011627' : '#f4f7fa',
         colors: {
             // @ts-ignore

@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     SectionWrapper: {
-      padding: theme.spacing(3, 8, 8, 8),
+        padding: theme.spacing(3, 8, 8, 8),
     },
     Text: {
         fontSize: 16,
@@ -12,10 +12,10 @@ export const useStyles = makeStyles((theme) => ({
     },
     Header: {},
     SubHeader: {
-        marginBottom: theme.spacing(3),
+        marginBottom: theme.spacing(6),
     },
     CtaWrapper: {
-      marginBottom: 0,
+        marginBottom: 0,
     },
     SubImageText: {
         marginBottom: theme.spacing(10),

@@ -1,22 +1,22 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useStyles } from './LinkText.styles';
+import Typography from '@material-ui/core/Typography';
 
 type MessageDivProps ={
     text: string
-    link: string
+    link?: string
 };
 
 const LinkText = ({ text, link }: MessageDivProps) => {
     const classes = useStyles();
 
     const openLink = () => {
-        window.open(link);
+        if (link) window.open(link);
     };
 
     return (
-      <Grid item className={classes.Link} onClick={openLink}>{text}</Grid>
+      <Typography className={classes.Link} onClick={openLink}>{text}</Typography>
     );
 };
 

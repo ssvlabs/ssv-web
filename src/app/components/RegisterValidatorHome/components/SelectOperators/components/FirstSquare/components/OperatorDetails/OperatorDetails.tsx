@@ -1,28 +1,24 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useStores } from '~app/hooks/useStores';
-import OperatorType from '~app/common/components/OperatorType/OperatorType';
-import { useStyles } from './OperatorDetails.styles';
 import { longStringShorten } from '~lib/utils/strings';
-import { sha256 } from 'js-sha256';
-import WalletStore from '~app/common/stores/Wallet/Wallet.store';
-import { IOperator } from '~app/common/stores/Operator.store';
+import OperatorType from '~app/common/components/OperatorType/OperatorType';
+// import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { useStyles } from './OperatorDetails.styles';
 
 type Props = {
-    operator: IOperator
+    gray80?: boolean;
+    operator: any // ?? IOperator
 };
 
 const OperatorDetails = (props: Props) => {
-    const { operator } = props;
-    const stores = useStores();
-    const walletStore: WalletStore = stores.Wallet;
-    const classes = useStyles();
-    const shaPublicKey = `0x${longStringShorten(sha256(walletStore.decodeKey(operator.pubkey)), 4)}`;
+    const { gray80, operator } = props;
+    const classes = useStyles({ operatorLogo: operator.logo, gray80 });
+    const shaPublicKey = `0x${longStringShorten(operator.address, 4)}`;
 
     return (
       <Grid container className={classes.Wrapper}>
-        <Grid item className={classes.OperatorLogo} style={{ backgroundImage: operator.logo ? `url(${operator.logo})` : '' }} />
+        <Grid item className={classes.OperatorLogo} />
         <Grid container item xs>
           <Grid item className={classes.Name}>{operator.name}</Grid>
           <Grid item className={classes.OperatorType}>

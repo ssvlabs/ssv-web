@@ -24,6 +24,7 @@ export interface IOperator {
     public_key: string,
     selected?: boolean,
     dappNode?: boolean,
+    operator_id: any,
     ownerAddress: string,
     autoSelected?: boolean
     validatorsCount?: number,
@@ -124,13 +125,13 @@ class OperatorStore extends BaseStore {
      * get validators of operator
      */
     @action.bound
-    async getOperatorValidatorsCount(publicKey: string): Promise<any> {
+    async getOperatorValidatorsCount(operatorId: number): Promise<any> {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contract: Contract = walletStore.getContract;
-            contract.methods.validatorsPerOperatorCount(publicKey).call().then((response: any) => {
+            contract.methods.validatorsPerOperatorCount(operatorId).call().then((response: any) => {
                 resolve(response);
-            });
+            }).catch(console.log);
         });
     }
 

@@ -14,6 +14,7 @@ type Props = {
     gray80?: boolean,
     operator?: string,
     withdraw?: boolean,
+    disableWarning?: boolean,
     newRemainingDays?: number,
 };
 
@@ -30,7 +31,7 @@ const math_it_up = {
 
 const RemainingDays = (props: Props) => {
     const stores = useStores();
-    const { gray80, withdraw, newRemainingDays, operator } = props;
+    const { gray80, withdraw, newRemainingDays, disableWarning = false, operator } = props;
     const ssvStore: SsvStore = stores.SSV;
     const presentNewEstimation = Number(newRemainingDays) > 0;
     // @ts-ignore
@@ -62,7 +63,7 @@ const RemainingDays = (props: Props) => {
               className={classes.NewDaysEstimation}>{`(${operator ?? ''}${formatNumberToUi(newRemainingDays, true)})`}
             </Grid>
           )}
-          {warningState && (
+          {!disableWarning && warningState && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays} />
               <LiquidationStateError marginTop={'16px'} errorType={conditionalErrorType()} />

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
@@ -17,17 +17,14 @@ const EditValidator = () => {
     const classes = useStyles();
     // @ts-ignore
     const { public_key } = useParams();
-    const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const operatorStore: OperatorStore = stores.Operator;
 
-validator;
     useEffect(() => {
         applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
                 operatorStore.selectOperators(response?.operators);
-                setValidator(response);
                 applicationStore.setIsLoading(false);
             }
         });

@@ -34,6 +34,17 @@ class ValidatorStore extends BaseStore {
   }
 
   @action.bound
+  async getKeyStorePublicKey(): Promise<string> {
+    try {
+      const fileJson = await this.keyStoreFile?.text();
+      // @ts-ignore
+      return JSON.parse(fileJson).pubkey;
+    } catch (e: any) {
+      return '';
+    }
+  }
+
+  @action.bound
   async extractKeyStoreData(keyStorePassword: string): Promise<any> {
     const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
     const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
@@ -178,6 +189,11 @@ class ValidatorStore extends BaseStore {
       const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey: string) => {
         return atob(walletStore.decodeKey(operatorKey));
       });
+
+      const operatorPublicIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+        return operator.operator_id;
+      });
+
       const encryptedShares: EncryptShare[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
       // Collect all private keys from shares
       const encryptedKeys: string[] = encryptedShares.map((share: IShares) => {
@@ -186,7 +202,7 @@ class ValidatorStore extends BaseStore {
 
       const payLoad = [
         thresholdResult.validatorPublicKey,
-        operatorPublicKeys,
+        operatorPublicIds,
         sharePublicKeys,
         encryptedKeys,
       ];
@@ -205,21 +221,15 @@ class ValidatorStore extends BaseStore {
    * @param keyStore
    */
   @action.bound
-  setKeyStore(keyStore: any) {
-    this.keyStorePublicKey = '';
+  async setKeyStore(keyStore: any) {
     this.keyStorePrivateKey = '';
     this.keyStoreFile = keyStore;
+    this.keyStorePublicKey = await this.getKeyStorePublicKey();
   }
 
   @computed
   get isJsonFile(): boolean {
     return this.keyStoreFile?.type === 'application/json';
-  }
-
-  @computed
-  get bla(): boolean {
-    this.keyStoreFile?.text().then(console.log);
-    return true;
   }
 
   conditionalContractFunction(contract: any, payload: any[]) {

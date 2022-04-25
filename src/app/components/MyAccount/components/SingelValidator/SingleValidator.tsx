@@ -31,7 +31,6 @@ const SingleValidator = () => {
     useEffect(() => {
         applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(public_key).then((response: any) => {
-            console.log(response);
             if (response) {
                 setValidator(response);
                 applicationStore.setIsLoading(false);

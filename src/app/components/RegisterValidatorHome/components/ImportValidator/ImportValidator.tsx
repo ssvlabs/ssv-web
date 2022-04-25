@@ -64,9 +64,14 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
     const isDeposited = async (): Promise<boolean> => {
         const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
-        const response: any = (await axios.get(beaconChaValidatorUrl)).data;
-        const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
-        return conditionalDataExtraction?.valid_signature;
+        try {
+            const response: any = (await axios.get(beaconChaValidatorUrl)).data;
+            const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
+            return conditionalDataExtraction?.valid_signature;
+        } catch (e: any) {
+            console.log(e.message);
+            return true;
+        }
     };
 
     const removeFile = () => {
@@ -81,10 +86,18 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
     const renderFileImage = () => {
         let fileClass: any = classes.FileImage;
-        if (validatorStore.isJsonFile) {
+        const keyStorePublicKey = validatorStore.keyStorePublicKey;
+        const validatorPublicKey = public_key;
+
+        if (
+            reUpload &&
+            validatorStore.isJsonFile &&
+            keyStorePublicKey.toLowerCase() !== validatorPublicKey.replace('0x', '').toLowerCase()
+        ) {
+            fileClass += ` ${classes.Fail}`;
+        } else if (validatorStore.isJsonFile) {
             fileClass += ` ${classes.Success}`;
-        }
-        if (!validatorStore.isJsonFile && validatorStore.keyStoreFile) {
+        } else if (!validatorStore.isJsonFile && validatorStore.keyStoreFile) {
             fileClass += ` ${classes.Fail}`;
         }
         return <Grid item className={fileClass} />;
@@ -100,8 +113,20 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
               </Grid>
             );
         }
+        const keyStorePublicKey = validatorStore.keyStorePublicKey;
+        const validatorPublicKey = public_key;
 
-        console.log(validatorStore.bla);
+        if (
+            reUpload &&
+            keyStorePublicKey.toLowerCase() !== validatorPublicKey.replace('0x', '').toLowerCase()
+        ) {
+            return (
+              <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+                This keystore is not associated with this validator
+                <RemoveButton />
+              </Grid>
+            );
+        }
         if (!validatorStore.isJsonFile) {
             return (
               <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>

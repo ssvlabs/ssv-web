@@ -6,7 +6,6 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
@@ -26,7 +25,6 @@ const ImportValidatorConfirmation = () => {
     const classes = useStyles();
     const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
-    const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -57,7 +55,7 @@ const ImportValidatorConfirmation = () => {
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
         /* eslint-disable no-await-in-loop */
         for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-            const operatorValidators = await operatorStore.getOperatorValidatorsCount(walletStore.encodeKey(selectedOperatorsKeys[i].public_key));
+            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].operator_id);
             if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
                 setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
                 setActionButtonText('Run validator');

@@ -72,11 +72,11 @@ class Validator {
         try {
             if (this.validator?.public_key === publicKey) return this.validator;
             const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours&withFee=true`;
-            const response: any = await axios.get(url);
+            const response: any = (await axios.get(url)).data;
             const balance = await this.getValidatorsBalances([publicKey]);
-            const detailedValidator = await this.buildValidatorStructure(response, balance[0]);
+            const detailedValidator = await this.buildValidatorStructure(response?.public_key, balance[0]);
             const validator = Object.create(detailedValidator);
-            validator.operators = response?.data?.operators;
+            validator.operators = response?.operators;
             this.validator = validator;
             return validator;
         } catch (e) {

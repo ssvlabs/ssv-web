@@ -67,7 +67,7 @@ const OperatorsReceipt = (props: Props) => {
         </Grid>
       </Grid>,
       <Grid container item>
-        <RemainingDays gray80={currentOperators} />
+        <RemainingDays disableWarning={currentOperators} gray80={currentOperators} />
       </Grid>,
     ];
     if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} onClick={validatorStore.updateValidator} />);

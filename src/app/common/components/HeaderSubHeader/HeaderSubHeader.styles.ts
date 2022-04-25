@@ -13,6 +13,6 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         color: theme.colors.gray80,
-        marginBottom: theme.spacing(10),
+        marginBottom: (props: any) => props.rewardPage ? theme.spacing(2) : theme.spacing(10),
     },
 }));

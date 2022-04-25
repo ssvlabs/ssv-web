@@ -39,7 +39,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (this.onboardSdk) return;
     const connectionConfig = {
       dappId: config.ONBOARD.API_KEY,
-      networkId: this.networkId || Number(config.ONBOARD.NETWORK_ID),
+      networkId: 1,
       walletSelect: {
         wallets,
       },
@@ -53,7 +53,7 @@ class WalletStore extends BaseStore implements Wallet {
     this.onboardSdk = Onboard(connectionConfig);
     const notifyOptions = {
       dappId: config.ONBOARD.API_KEY,
-      networkId: this.networkId || Number(config.ONBOARD.NETWORK_ID),
+      networkId: 1,
       desktopPosition: 'topRight',
     };
     // @ts-ignore
@@ -135,7 +135,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async networkHandler(networkId: any) {
     console.log('networkId: ', networkId);
-    this.wrongNetwork = networkId !== 5 && networkId !== undefined;
+    this.wrongNetwork = networkId !== 1 && networkId !== undefined;
   }
 
   /**

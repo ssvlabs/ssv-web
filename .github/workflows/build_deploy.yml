@@ -75,7 +75,9 @@ jobs:
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
+          SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
+          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
 
       - name: Deploy staging
         if: github.ref == 'refs/heads/stage'

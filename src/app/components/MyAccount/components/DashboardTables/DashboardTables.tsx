@@ -187,7 +187,7 @@ const DashboardTables = () => {
               {/* <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid> */}
             </Grid>,
             apr: <Grid container item>
-              <Grid item xs={12} className={classes.ValidatorApr}>{apr}</Grid>
+              <Grid item xs={12} className={classes.ValidatorApr}>{apr}%</Grid>
             </Grid>,
             extra_buttons: <Grid container item justify={'flex-end'}>
               <Grid className={classes.ExplorerImage} onClick={() => {

@@ -71,6 +71,12 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
     const removeFile = () => {
         validatorStore.setKeyStore(null);
+        try {
+            // @ts-ignore
+            inputRef.current.value = null;
+        } catch (e: any) {
+            console.log(e.message);
+        }
     };
 
     const renderFileImage = () => {

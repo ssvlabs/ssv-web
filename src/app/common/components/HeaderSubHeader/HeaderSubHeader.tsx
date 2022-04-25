@@ -5,10 +5,11 @@ import { useStyles } from '~app/common/components/HeaderSubHeader/HeaderSubHeade
 type HeaderProps = {
     title?: string,
     subtitle?: any,
+    rewardPage?: boolean,
 };
 
-const HeaderSubHeader = ({ title, subtitle }: HeaderProps) => {
-    const classes = useStyles();
+const HeaderSubHeader = ({ title, subtitle, rewardPage }: HeaderProps) => {
+    const classes = useStyles({ rewardPage });
     return (
       <Grid container item>
         {title && <Grid item xs={12} className={classes.Header}>{title}</Grid>}

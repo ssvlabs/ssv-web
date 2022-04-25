@@ -216,6 +216,12 @@ class ValidatorStore extends BaseStore {
     return this.keyStoreFile?.type === 'application/json';
   }
 
+  @computed
+  get bla(): boolean {
+    this.keyStoreFile?.text().then(console.log);
+    return true;
+  }
+
   conditionalContractFunction(contract: any, payload: any[]) {
     if (process.env.REACT_APP_NEW_STAGE) return contract.methods.registerValidator(...payload);
     return contract.methods.addValidator(...payload);

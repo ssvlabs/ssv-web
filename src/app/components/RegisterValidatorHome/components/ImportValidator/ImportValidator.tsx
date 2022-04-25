@@ -94,10 +94,12 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
               </Grid>
             );
         }
-        if (validatorStore.isJsonFile) {
+
+        console.log(validatorStore.bla);
+        if (!validatorStore.isJsonFile) {
             return (
-              <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
-                {validatorStore.keyStoreFile.name}
+              <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+                Invalid file format - only .json files are supported
                 <RemoveButton />
               </Grid>
             );
@@ -106,6 +108,15 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             return (
               <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
                 Invalid file format - only .json files are supported
+                <RemoveButton />
+              </Grid>
+            );
+        }
+
+        if (validatorStore.isJsonFile) {
+            return (
+              <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
+                {validatorStore.keyStoreFile.name}
                 <RemoveButton />
               </Grid>
             );

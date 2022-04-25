@@ -42,12 +42,29 @@ export const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         color: theme.colors.gray90,
         margin: theme.spacing(0, '5%', 0, '5%'),
-        '@media only screen and (max-width: 800px)': {
+        '@media only screen and (max-width: 768px)': {
             display: 'none',
+        },
+        '&:nth-of-type(1)': {
+            position: !theme.newStage ? 'relative' : '',
+            '&:hover': {
+                color: theme.colors.primaryBlue,
+                '&::after': !theme.newStage ? {
+                    left: 20,
+                    width: 150,
+                    padding: 10,
+                    borderRadius: 8,
+                    display: 'block',
+                    position: 'absolute',
+                    color: theme.colors.white,
+                    content: '"Coming Soon..."',
+                    backgroundColor: theme.colors.primaryBlue,
+                } : {},
+            },
         },
     },
     DarkModeWrapper: {
-        '@media only screen and (max-width: 500px)': {
+        '@media only screen and (max-width: 768px)': {
            display: 'none',
         },
     },
@@ -80,7 +97,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         margin: theme.spacing(0, 6, 0, 6),
         backgroundImage: `url(/images/hamburger/${theme.darkMode ? 'dark' : 'light'}.svg)`,
-        '@media only screen and (min-width: 500px)': {
+        '@media only screen and (min-width: 769px)': {
             display: 'none',
         },
     },
@@ -120,9 +137,10 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(4),
         justifyContent: 'flex-start',
         '-webkit-tap-highlight-color': 'transparent',
-        '&:nth-of-type(2)': {
+        '&:nth-of-type(1)': {
             position: !theme.newStage ? 'relative' : '',
             '&:hover': {
+                color: theme.colors.primaryBlue,
                 '&::after': !theme.newStage ? {
                     left: 20,
                     width: 150,
@@ -165,24 +183,5 @@ export const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         color: theme.colors.black,
         marginLeft: theme.spacing(10),
-        '&:nth-of-type(2)': {
-            // width: 144,
-            // marginRight: theme.spacing(5),
-            position: !theme.newStage ? 'relative' : '',
-            '&:hover': {
-                color: theme.colors.primaryBlue,
-                '&::after': !theme.newStage ? {
-                    left: 20,
-                    width: 150,
-                    padding: 10,
-                    borderRadius: 8,
-                    display: 'block',
-                    position: 'absolute',
-                    color: theme.colors.white,
-                    content: '"Coming Soon..."',
-                    backgroundColor: theme.colors.primaryBlue,
-                } : {},
-            },
-        },
     },
 }));

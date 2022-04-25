@@ -60,6 +60,19 @@ class ValidatorStore extends BaseStore {
   }
 
   /**
+   * Update validator
+   */
+  @action.bound
+  async updateValidator() {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const contract: Contract = walletStore.getContract;
+    const payload: (string | string[])[] = await this.createPayLoad();
+    console.log(payload);
+    const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress });
+    console.log(response);
+  }
+
+  /**
    * Add new validator
    * @param getGasEstimation
    * @param callBack

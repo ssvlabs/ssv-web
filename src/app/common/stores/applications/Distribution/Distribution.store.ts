@@ -5,11 +5,15 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import merkleTree from '~app/components/Distribution/assets/merkleTree.json';
+import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
 
 /**
  * Base store provides singe source of true
  * for keeping all stores instances in one place
  */
+
+console.log('merkle tree root: ', merkleTree.merkleRoot);
+console.log('distribution contract address: ', config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS);
 
 class DistributionStore extends BaseStore {
     @observable txHash: string = '';
@@ -28,6 +32,7 @@ class DistributionStore extends BaseStore {
             const contract = this.distributionContract;
             const walletStore: WalletStore = this.getStore('Wallet');
             const applicationStore: ApplicationStore = this.getStore('Application');
+            const notificationsStore: NotificationsStore = this.getStore('Notifications');
             applicationStore.setIsLoading(true);
             await contract.methods.claim(
                 this.rewardIndex,
@@ -40,6 +45,7 @@ class DistributionStore extends BaseStore {
                     applicationStore.setIsLoading(false);
                     applicationStore.showTransactionPendingPopUp(false);
                     this.userWithdrawRewards = true;
+                    this.claimed = true;
                     resolve(true);
                 })
                 .on('transactionHash', (txHash: string) => {
@@ -47,9 +53,8 @@ class DistributionStore extends BaseStore {
                     applicationStore.showTransactionPendingPopUp(true);
                 })
                 .on('error', (error: any) => {
-                    console.log('error!!!!!!');
-                    console.log(error);
                     applicationStore.setIsLoading(false);
+                    notificationsStore.showMessage(error.message, 'error');
                     applicationStore.showTransactionPendingPopUp(false);
                     resolve(false);
                 });
@@ -130,7 +135,7 @@ class DistributionStore extends BaseStore {
                 .showMessage(`Can not add SSV to wallet: ${error.message}`, 'error');
         });
     }
-    
+
     /**
      * Returns instance of Distribution contract
      */

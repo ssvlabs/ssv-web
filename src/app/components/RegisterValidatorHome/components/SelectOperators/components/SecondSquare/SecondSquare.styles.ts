@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     ScreenWrapper: {
+        marginTop: 28,
         width: '100%',
     },
     DeleteOperator: {

@@ -1,18 +1,18 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import OperatorDetails
-    from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { useStyles } from './OperatorsReceipt.style';
 import Tooltip from '~app/common/components/ToolTip/ToolTip';
-import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import Typography from '@material-ui/core/Typography';
-import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PrimaryButton from '~app/common/components/PrimaryButton';
+import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
+import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import { useStyles } from './OperatorsReceipt.style';
 
 type Props = {
     operators: any,
@@ -22,8 +22,9 @@ type Props = {
 const OperatorsReceipt = (props: Props) => {
     const stores = useStores();
     const { operators, header, currentOperators } = props;
-    const walletStore: WalletStore = stores.Wallet;
     const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
+    const validatorStore: ValidatorStore = stores.Validator;
     const classes = useStyles({ currentOperators });
     walletStore;
 
@@ -31,6 +32,7 @@ const OperatorsReceipt = (props: Props) => {
       <Grid container item>
         <Grid container item className={classes.OperatorsWrapper}>
           {operators.map((operator: any, index: number) => {
+              if (!currentOperators) console.log(Object.keys(operator));
                     return (
                       <Grid key={index} container item xs={12} className={classes.OperatorsDetails}>
                         <Grid item xs>
@@ -68,7 +70,7 @@ const OperatorsReceipt = (props: Props) => {
         <RemainingDays gray80={currentOperators} />
       </Grid>,
     ];
-    if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} onClick={console.log} />);
+    if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} onClick={validatorStore.updateValidator} />);
 
     return (
       <BorderScreen

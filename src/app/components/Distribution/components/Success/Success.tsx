@@ -37,7 +37,7 @@ const Success = () => {
               <Typography component={'span'}>Add SSV to Metamask</Typography>
             </Grid>
             <Grid item xs className={classes.EtherScan} onClick={openEtherScan}>View Transaction on Etherscan</Grid>
-            <SecondaryButton submitFunction={openMarketingSite} text={'Learn more about the ssv network'} />
+            <SecondaryButton submitFunction={openMarketingSite} text={'Learn more about the SSV network'} />
           </Grid>,
         ]}
       />

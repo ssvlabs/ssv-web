@@ -82,6 +82,7 @@ export const formatDaysToUi = (days: number) => {
 };
 
 export const roundCryptoValueString = (desiredNumber: number, decimalPlaces: number = 18) => {
+    if (desiredNumber === 0) return '0';
     const arr = desiredNumber.toString().split('.');
     const fraction = arr[1].substr(0, decimalPlaces);
     return `${arr[0]}.${fraction}`;

@@ -63,10 +63,14 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     };
 
     const isDeposited = async (): Promise<boolean> => {
-        const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
-        const response: any = (await axios.get(beaconChaValidatorUrl)).data;
-        const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
-        return conditionalDataExtraction?.valid_signature;
+        try {
+            const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
+            const response: any = (await axios.get(beaconChaValidatorUrl)).data;
+            const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
+            return conditionalDataExtraction?.valid_signature;
+        } catch (e) {
+            return true;
+        }
     };
 
     const removeFile = () => {

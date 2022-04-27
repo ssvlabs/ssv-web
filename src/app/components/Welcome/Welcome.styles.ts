@@ -86,6 +86,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/claim/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        backgroundImage: 'url(/images/claim/light.svg)',
     },
 }));

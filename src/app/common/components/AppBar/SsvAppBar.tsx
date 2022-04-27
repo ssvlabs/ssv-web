@@ -127,7 +127,7 @@ const SsvAppBar = () => {
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
-        history.push(applicationStore.strategyName === 'distribution' ? '/claim' : '/');
+        history.push(config.routes.HOME);
     };
 
     const MobileButtons = () => {

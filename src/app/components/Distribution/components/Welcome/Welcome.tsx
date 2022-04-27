@@ -29,13 +29,7 @@ const Welcome = () => {
           <Grid container>
             <HeaderSubHeader title={'Claim Testnet Rewards'}
               subtitle={'Connect your wallet to check your rewards eligibility'} />
-            {!walletStore.connected && false && (
-            <Grid container item className={classes.OrLineWrapper}>
-              <Grid item className={classes.Line} xs />
-              <Grid item className={classes.Or}>OR</Grid>
-              <Grid item className={classes.Line} xs />
-            </Grid>
-            )}
+            <Grid container item className={classes.ImageWrapper} />
             <PrimaryButton
               text={'Connect Wallet'}
               submitFunction={connectToWallet}

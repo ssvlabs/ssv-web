@@ -16,6 +16,7 @@ type Props = {
     dataTestId?: string,
     wrapperClass?: string,
     errorButton?: boolean,
+    withoutLoader?: boolean,
     withVerifyConnection?: boolean
 };
 
@@ -24,7 +25,7 @@ const PrimaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withVerifyConnection } = props;
+    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
 
     useEffect(() => {
@@ -59,7 +60,7 @@ const PrimaryButton = (props: Props) => {
           disabled={disable || applicationStore.isLoading}
           className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
         >
-          {applicationStore.isLoading && <Spinner />}
+          {applicationStore.isLoading && !withoutLoader && <Spinner />}
           {text}
         </Button>
       </Grid>

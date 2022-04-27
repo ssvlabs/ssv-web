@@ -8,8 +8,8 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
-import SecondaryButton from '~app/common/components/Buttons/SecondaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
+import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 
 const Welcome = () => {

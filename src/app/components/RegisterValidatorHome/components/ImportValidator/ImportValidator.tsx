@@ -9,7 +9,7 @@ import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/common/components/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -123,14 +123,6 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             return (
               <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
                 This keystore is not associated with this validator
-                <RemoveButton />
-              </Grid>
-            );
-        }
-        if (!validatorStore.isJsonFile) {
-            return (
-              <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-                Invalid file format - only .json files are supported
                 <RemoveButton />
               </Grid>
             );

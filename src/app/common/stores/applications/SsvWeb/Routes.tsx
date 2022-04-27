@@ -14,6 +14,7 @@ import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
 import EnableAccount from '~app/components/MyAccount/components/EnableAccount';
 import EditValidator from '~app/components/MyAccount/components/EditValidator';
+import SingleOperator from '~app/components/MyAccount/components/SingleOperator';
 import UploadKeyStore from '~app/components/MyAccount/components/UploadKeyStore';
 import SingleValidator from '~app/components/MyAccount/components/SingelValidator';
 import RemoveValidator from '~app/components/MyAccount/components/RemoveValidator';
@@ -34,10 +35,12 @@ const Routes: any = () => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
     if (!walletStore.accountDataLoaded) return <div>Loading...</div>;
+    Welcome;
     return (
       <Layout>
         <SsvAppBar />
-        <Route exact path={config.routes.HOME} component={Welcome} />
+        {/* <Route exact path={config.routes.HOME} component={Welcome} /> */}
+        <Route exact path={config.routes.HOME} component={SingleOperator} />
         <Route path={config.routes.MY_ACCOUNT.DASHBOARD}>
           <Switch>
             <Route exact path={config.routes.MY_ACCOUNT.DEPOSIT} component={Deposit} />

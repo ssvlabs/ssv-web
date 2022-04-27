@@ -13,7 +13,6 @@ import InputLabel from '~app/common/components/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/GenerateOperatorKeys/GenerateOperatorKeys.styles';
@@ -24,6 +23,7 @@ import {
     validateAddressInput,
     validateFeeInput,
 } from '~lib/utils/validatesInputs';
+import Button from '~app/common/components/Button';
 
 const GenerateOperatorKeys = () => {
     const stores = useStores();
@@ -173,7 +173,7 @@ const GenerateOperatorKeys = () => {
               )}
             </Grid>
             {/* <Checkbox onClickCallBack={setUserAgreement} text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'} /> */}
-            <PrimaryButton disable={!registerButtonEnabled} text={'Next'} submitFunction={onRegisterClick} />
+            <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
           </Grid>,
         ]}
       />

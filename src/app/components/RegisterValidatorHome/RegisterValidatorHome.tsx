@@ -7,7 +7,7 @@ import { useStores } from '~app/hooks/useStores';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import SecondaryButton from '~app/common/components/Buttons/SecondaryButton/SecondaryButton';
+import SecondaryButton from '~app/common/components/Button/SecondaryButton/SecondaryButton';
 import { useStyles } from '~app/components/RegisterValidatorHome/RegisterValidatorHome.styles';
 
 const RegisterValidatorHome = () => {

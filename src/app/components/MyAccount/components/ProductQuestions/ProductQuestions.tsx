@@ -9,7 +9,7 @@ import TextInput from '~app/common/components/TextInput';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import SecondaryButton from '~app/common/components/SecondaryButton';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from './ProductQuestions.styles';

@@ -6,7 +6,7 @@ import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';

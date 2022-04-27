@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import SecondaryButton from '~app/common/components/Buttons/SecondaryButton/SecondaryButton';
+import SecondaryButton from '~app/common/components/Button/SecondaryButton/SecondaryButton';
 import { useStyles } from '~app/components/RegisterOperatorHome/RegisterOperatorHome.styles';
 
 const RegisterOperatorHome = () => {

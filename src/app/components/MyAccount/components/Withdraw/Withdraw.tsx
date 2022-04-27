@@ -8,7 +8,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays';
-import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
+import Button from '~app/common/components/Button/Button';
 import { useStyles } from './Withdrew.styles';
 
 const Withdraw = () => {
@@ -104,7 +104,7 @@ const Withdraw = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={(
-            <PrimaryWithAllowance
+            <Button
               withAllowance
               text={'Withdraw'}
               onClick={withdrawSsv}

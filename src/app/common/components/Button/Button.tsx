@@ -7,9 +7,9 @@ import { translations } from '~app/common/config';
 import CheckBox from '~app/common/components/CheckBox';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
-import SecondaryButton from '~app/common/components/Buttons/SecondaryButton';
-import { useStyles } from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance.styles';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
+import { useStyles } from '~app/common/components/Button/Button.styles';
+import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 
 type ButtonParams = {
     text: string,
@@ -21,7 +21,7 @@ type ButtonParams = {
     checkBoxesCallBack?: any[],
 };
 
-const PrimaryWithAllowance = (props: ButtonParams) => {
+const Button = (props: ButtonParams) => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
@@ -77,6 +77,7 @@ const PrimaryWithAllowance = (props: ButtonParams) => {
               <PrimaryButton
                 dataTestId={testId}
                 text={approveButtonText}
+                withoutLoader={userAllowance}
                 disable={userAllowance || disable}
                 submitFunction={() => { checkWalletConnected(allowNetworkContract); }}
               />
@@ -117,4 +118,4 @@ const PrimaryWithAllowance = (props: ButtonParams) => {
     );
 };
 
-export default observer(PrimaryWithAllowance);
+export default observer(Button);

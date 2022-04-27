@@ -7,7 +7,7 @@ import { useStyles } from '~app/components/Welcome/Welcome.styles';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 
 const Welcome = () => {
     const stores = useStores();

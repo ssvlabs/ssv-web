@@ -2,12 +2,11 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-// import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -24,7 +23,6 @@ const SuccessScreen = () => {
     let icon: string = '';
     let subTitle: any = '';
     let buttonText: string = '';
-    let surveyLink: string = '';
     let monitorText: any = '';
 
     if (operatorStore.newOperatorRegisterSuccessfully) {
@@ -51,8 +49,6 @@ const SuccessScreen = () => {
               </Grid>
             );
         }
-
-        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeOcsFJ20f1VFhqZ8rbqGdEsyvS8xdqpBC2aTc7VTVhqFfWQw/viewform';
     } else if (validatorStore.newValidatorReceipt) {
         icon = 'validator';
         buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
@@ -62,7 +58,6 @@ const SuccessScreen = () => {
         } else {
             monitorText = 'View your validators performance in the ssv network explorer.';
         }
-        surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeTPm6imiND4kja5mmnnjZ6iRcuocebGrIMhvm1rVtM7ZtrCA/viewform';
     }
 
     const redirectTo = async () => {
@@ -79,11 +74,6 @@ const SuccessScreen = () => {
             }
             window.open(linkToExplorer);
         }
-    };
-
-    const takeSurvey = () => {
-        window.open(surveyLink);
-        localStorage.setItem('firstCreation', 'true');
     };
     // const linkToExchange = (url: string) => {
     //     window.open(url);
@@ -136,23 +126,6 @@ const SuccessScreen = () => {
 
         {/*  ]} */}
         {/* /> */}
-        {!localStorage.getItem('firstCreation') && (
-          <BorderScreen
-            blackHeader
-            withoutNavigation
-            wrapperClass={classes.FeedbackWrapper}
-            sectionClass={classes.FeedbackSection}
-            header={translations.SUCCESS.FEEDBACK_HEADER}
-            body={[
-              <Grid item container>
-                <Grid container item className={classes.Feedback}>
-                  <Grid item className={`${classes.Text} ${classes.SubHeader}`}>In order to improve and optimize, open sourced networks thrive on feedback and peer review.</Grid>
-                  <PrimaryButton wrapperClass={classes.CtaWrapper} text={'Take the survey'} submitFunction={takeSurvey} />
-                </Grid>
-              </Grid>,
-            ]}
-          />
-        )}
       </>
     );
 };

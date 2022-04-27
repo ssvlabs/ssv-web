@@ -4,11 +4,11 @@ import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import IntegerInput from '~app/common/components/IntegerInput';
+import Button from '~app/common/components/Button/Button';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
-import PrimaryWithAllowance from '~app/common/components/Buttons/PrimaryWithAllowance/PrimaryWithAllowance';
 import { useStyles } from './Deposit.styles';
 
 const Deposit = () => {
@@ -75,7 +75,7 @@ const Deposit = () => {
                     ),
           ]}
           bottom={(
-            <PrimaryWithAllowance
+            <Button
               withAllowance
               text={'Deposit'}
               onClick={depositSsv}

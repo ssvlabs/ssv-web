@@ -1,10 +1,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/common/components/AppBar/AppBar';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 
 const SsvAppBar = () => {
     const stores = useStores();
@@ -12,7 +12,7 @@ const SsvAppBar = () => {
     const location = useLocation();
     const applicationStore: ApplicationStore = stores.Application;
     const hasOperatorsOrValidators = applicationStore.strategyRedirect === '/dashboard';
-    const backgroundColor = location.pathname.includes('/dashboard/validator') ? '#fdfefe' : '';
+    const backgroundColor = location.pathname.includes('/dashboard/validator') ? applicationStore.theme.colors.white : '';
 
     const moveToDashboard = () => {
         if (applicationStore.isLoading) return;

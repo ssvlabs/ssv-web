@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import config from '~app/common/config';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
+import Button from '~app/common/components/Button';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 
@@ -31,7 +31,7 @@ const CreateValidator = () => {
               <Grid item container xs={12}>
                 <Grid item className={classes.rhinoImage} />
               </Grid>
-              <PrimaryButton text={'Visit Ethereum Launchpad'} submitFunction={redirectToLaunchpad} />
+              <Button text={'Visit Ethereum Launchpad'} onClick={redirectToLaunchpad} disable={false} />
             </Grid>,
           ]}
         />

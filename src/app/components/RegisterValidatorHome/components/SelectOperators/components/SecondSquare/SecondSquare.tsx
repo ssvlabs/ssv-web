@@ -8,7 +8,7 @@ import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 

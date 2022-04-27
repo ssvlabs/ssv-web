@@ -10,7 +10,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import { useStyles } from '~app/components/Distribution/components/Claim/Claim.styles';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 

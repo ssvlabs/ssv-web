@@ -14,7 +14,7 @@ import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton/PrimaryButton';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/OperatorConfirmation/OperatorConfirmation.styles';
 

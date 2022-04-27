@@ -14,7 +14,7 @@ import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryBu
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/MyAccount/components/RemoveValidator/RemoveValidator.styles';
 
-const RemoveValidator = () => {
+const SingelOperator = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
@@ -106,4 +106,4 @@ const RemoveValidator = () => {
     );
 };
 
-export default observer(RemoveValidator);
+export default observer(SingelOperator);

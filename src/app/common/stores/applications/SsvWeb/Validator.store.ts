@@ -201,7 +201,7 @@ class ValidatorStore extends BaseStore {
       });
 
       const payLoad = [
-        thresholdResult.validatorPublicKey,
+        '0x81981ca353a0aca2d7199a3e30e1ac14ea723ca484f642cec2a94eeee6e930118fb981489c83ba25db582b30491b39b1',
         operatorPublicIds,
         sharePublicKeys,
         encryptedKeys,

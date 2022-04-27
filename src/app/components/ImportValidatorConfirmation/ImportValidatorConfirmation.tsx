@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
+import Button from '~app/common/components/Button';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
@@ -10,7 +11,6 @@ import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -152,11 +152,12 @@ const ImportValidatorConfirmation = () => {
         )}
         {errorMessage && <MessageDiv text={errorMessage} />}
         <Grid container>
-          <PrimaryButton
+          <Button
+            withAllowance
             disable={false}
-            dataTestId={'confirm-button'}
             text={actionButtonText}
-            submitFunction={onRegisterValidatorClick}
+            testId={'confirm-button'}
+            onClick={onRegisterValidatorClick}
           />
           {/* <CTAButton */}
           {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}

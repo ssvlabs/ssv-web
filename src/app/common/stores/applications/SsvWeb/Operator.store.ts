@@ -198,6 +198,21 @@ class OperatorStore extends BaseStore {
             return true;
         }
     }
+    /**
+     * Check if operator already exists in the contract
+     * @param operatorId
+     */
+    @action.bound
+    async getOperatorsRevenue(operatorId: number): Promise<number> {
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contractInstance = walletStore.getContract;
+            return contractInstance.methods.operatorEarningsOf(operatorId).call({ from: this.newOperatorKeys.address });
+        } catch (e) {
+            console.log(e.message);
+            return 0;
+        }
+    }
 
     /**
      * Add new operator

@@ -51,7 +51,7 @@ class Operator {
         if (!force && this.ownerAddressPagination?.page === page && this.ownerAddressPagination.per_page === perPage) {
             return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
         }
-        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
+        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true`;
         const response: any = await axios.get(operatorsEndpointUrl);
         this.ownerAddressPagination = response.data.pagination;
         this.ownerAddressOperators = response.data.operators;

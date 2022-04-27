@@ -11,8 +11,8 @@ export default abstract class Application {
         this.theme = theme;
         this.isLoading = false;
         this.darkMode = darkMode;
+        this.strategyRedirect = '/';
         this.strategyName = 'Distribution';
-        this.strategyRedirect = '/dashboard';
     }
 
     // eslint-disable-next-line no-unused-vars

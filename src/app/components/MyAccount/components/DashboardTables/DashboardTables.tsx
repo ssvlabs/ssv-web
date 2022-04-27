@@ -16,6 +16,7 @@ import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { ReactTable } from '~app/common/components/ReactTable';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/MyAccount/components/DashboardTables/DashboardTables.styles';
 
 type LoadItemsParams = {
@@ -30,6 +31,7 @@ const DashboardTables = () => {
     const defaultOperators: any[] = [];
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
     const [loadingOperators, setLoadingOperators] = useState(true);
@@ -44,6 +46,17 @@ const DashboardTables = () => {
             await loadItems({ type: 'operators' });
         }
     }, [walletStore.accountAddress]);
+
+    const getOperatorRevenue = async (operator: any) => {
+        const revenue = await operatorStore.getOperatorsRevenue(operator.operator_id);
+        // eslint-disable-next-line no-param-reassign
+        operator.revenue = revenue;
+        return operator;
+    };
+
+    const getOperatorsRevenue = async (operatorsList: any) => {
+        return Promise.all(operatorsList.map((operator: any) => getOperatorRevenue(operator)));
+    };
 
     /**
      * Loading operators by page
@@ -62,7 +75,8 @@ const DashboardTables = () => {
         if (type === 'operators') {
             setLoadingOperators(true);
             const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
-            setOperators(result.operators);
+            const operatorsList = await getOperatorsRevenue(result.operators);
+            setOperators(operatorsList);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
         } else {

@@ -49,7 +49,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
-        history.push(applicationStore.strategyName === 'distribution' ? '/claim' : config.routes.HOME);
+        history.push(config.routes.HOME);
     };
 
     const Buttons = () => {

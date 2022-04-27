@@ -2,8 +2,8 @@ const config = {
     routes: {
         HOME: '/',
         DISTRIBUTION: {
-            CLAIM: '/claim',
-            SUCCESS: '/claim/success',
+            CLAIM: '/',
+            SUCCESS: '/success',
         },
         MY_ACCOUNT: {
             DASHBOARD: '/dashboard',

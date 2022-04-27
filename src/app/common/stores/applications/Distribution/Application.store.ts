@@ -16,8 +16,8 @@ class ApplicationStore extends BaseStore implements Application {
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;
+  @observable strategyRedirect: string = '/';
   @observable isShowingLoading: boolean = false;
-  @observable strategyRedirect: string = '/claim';
   @observable walletConnectivity: boolean = false;
   @observable strategyName: string = 'distribution';
   @observable transactionPendingPopUp: boolean = false;

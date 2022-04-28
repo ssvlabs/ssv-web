@@ -52,9 +52,12 @@ export const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     DetailsHeader: {
+        gap: 4,
         fontSize: 14,
         fontWeight: 500,
+        display: 'flex',
         lineHeight: 1.62,
+        alignItems: 'center',
         letterSpacing: 'normal',
         color: theme.colors.gray40,
     },
@@ -153,7 +156,18 @@ export const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        textTransform: 'capitalize',
         color: theme.colors.primaryBlue,
         backgroundColor: theme.colors.tint90,
+        '&:hover': {
+            backgroundColor: theme.colors.tint80,
+        },
+        '&:active': {
+            backgroundColor: theme.colors.tint70,
+        },
+        '&:disabled': {
+            color: theme.colors.gray40,
+            backgroundColor: theme.colors.gray20,
+        },
     },
 }));

@@ -77,52 +77,10 @@ export const useStyles = makeStyles((theme) => ({
         color: '#5b6c84',
     },
     ActionButtonWrapper: {
+        gap: 24,
         [screenSizes.xs]: {
             direction: 'row',
         },
         padding: theme.spacing(8),
-    },
-    ActionButton: {
-        height: 60,
-        width: 168,
-        fontSize: 16,
-        maxWidth: 168,
-        fontWeight: 600,
-        borderRadius: 8,
-        cursor: 'pointer',
-        textAlign: 'center',
-        alignItems: 'center',
-        color: theme.colors.white,
-        backgroundColor: theme.colors.primaryBlue,
-        padding: theme.spacing(5, 13.75, 5, 13.25),
-        '&:nth-of-type(2)': {
-            marginLeft: theme.spacing(6),
-            color: theme.colors.primaryBlue,
-            padding: theme.spacing(5, 12, 5, 11.5),
-            backgroundColor: theme.colors.tint90,
-        },
-        // [screenSizes.lg]: {
-        //     maxWidth: '340px',
-        // },
-        // [screenSizes.md]: {
-        //     maxWidth: '340px',
-        // },
-        // [screenSizes.xs]: {
-        //     display: 'block',
-        //     maxWidth: '425px',
-        // },
-    },
-    ActionButtonLarge: {
-        height: 60,
-        maxWidth: 360,
-        borderRadius: 8,
-        color: theme.colors.primaryBlue,
-        backgroundColor: theme.colors.tint90,
-    },
-    ActionButtonLiquidated: {
-        maxWidth: '304px',
-        height: '48px',
-        borderRadius: '6px',
-        cursor: 'pointer',
     },
 }));

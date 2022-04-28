@@ -14,7 +14,7 @@ import { useStyles } from './SecondSquare.styles';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
-    const classes = useStyles();
+    const classes = useStyles({ editPage });
     const history = useHistory();
     // @ts-ignore
     const { public_key } = useParams();

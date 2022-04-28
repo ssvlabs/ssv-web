@@ -131,7 +131,7 @@ class OperatorStore extends BaseStore {
             const contract: Contract = walletStore.getContract;
             contract.methods.validatorsPerOperatorCount(operatorId).call().then((response: any) => {
                 resolve(response);
-            }).catch(console.log);
+            });
         });
     }
 
@@ -191,7 +191,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
             const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.operators(publicKey).call({ from: this.newOperatorKeys.address });
+            const result = await contractInstance.methods.operatorsByPublicKey(publicKey).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);

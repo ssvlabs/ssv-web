@@ -7,16 +7,16 @@ import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
-// import { longStringShorten } from '~lib/utils/strings';
-// `0x${longStringShorten('998b01f35508d35db7804bb56c9e4d7122558cb981382487f11dd808b49f2b9cdaa0e21c38230b0dd8663e6743e2ec4d', 4)}`
 import LinkText from '~app/common/components/LinkText';
+import { longStringShorten } from '~lib/utils/strings';
+import { Table } from '~app/common/components/Table/Table';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import BackNavigation from '~app/common/components/BackNavigation';
+import SecondaryButton from '~app/common/components/SecondaryButton';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { Table } from '~app/common/components/Table/Table';
 import { useStyles } from '~app/components/MyAccount/components/SingelValidator/SingelValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { longStringShorten } from '~lib/utils/strings';
 
 const SingleValidator = () => {
     const stores = useStores();
@@ -24,6 +24,7 @@ const SingleValidator = () => {
     const history = useHistory();
     // @ts-ignore
     const { public_key } = useParams();
+    const ssvStore: SsvStore = stores.SSV;
     const settingsRef = useRef(null);
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
@@ -131,7 +132,7 @@ const SingleValidator = () => {
                 id: 'col13',
                 Header: <Grid container justify={'space-between'} alignItems={'center'}>
                   <Typography>My Operators</Typography>
-                  <Grid item className={classes.Edit} onClick={editValidator}>Edit</Grid>
+                  <SecondaryButton disable={ssvStore.userLiquidated} className={classes.Edit} submitFunction={editValidator} text={'Edit'} />
                 </Grid>,
                 columns: [
                     {
@@ -143,7 +144,7 @@ const SingleValidator = () => {
                           <Grid item style={{ marginRight: 4 }}>
                             Status
                           </Grid>
-                          <ToolTip text={'this is a tool tip!!'} />
+                          <ToolTip text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
                         </Grid>,
                         accessor: 'status',
                     },
@@ -182,7 +183,10 @@ const SingleValidator = () => {
                   const fieldKey = validator[field.key];
                   return (
                     <Grid key={index} item>
-                      <Grid className={classes.DetailsHeader}>{field.value}</Grid>
+                      <Grid className={classes.DetailsHeader}>
+                        {field.value}
+                        {field.key === 'status' && <ToolTip text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'} />}
+                      </Grid>
                       <Grid className={classes.DetailsBody}>{field.key === 'status' ?
                         <Status status={fieldKey} /> : fieldKey}</Grid>
                     </Grid>

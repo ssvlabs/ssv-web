@@ -3,6 +3,13 @@ import config from '~app/common/config';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 
+type GetValidatorsByOwnerAddress = {
+    page: number,
+    force?: boolean
+    perPage: number,
+    ownerAddress: string,
+};
+
 class Validator {
     validator: any = null;
     validators: any = null;
@@ -25,7 +32,8 @@ class Validator {
         return 'prater';
     }
 
-    async getValidatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
+    async getValidatorsByOwnerAddress(props: GetValidatorsByOwnerAddress): Promise<any> {
+        const { page, perPage, ownerAddress, force } = props;
         if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
             return { pagination: this.pagination, validators: this.validators };
         }

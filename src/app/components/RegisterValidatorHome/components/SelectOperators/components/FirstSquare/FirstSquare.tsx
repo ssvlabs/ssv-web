@@ -49,6 +49,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             { type: '', displayName: '' },
             { type: 'name', displayName: 'Name' },
             { type: 'validators_count', displayName: 'Validators' },
+            { type: 'performance', displayName: '1D performance' },
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];
@@ -172,6 +173,16 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                     <Grid item style={{ alignSelf: 'center' }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'} />
                     </Grid>
+                    )}
+                  </Grid>
+                </StyledCell>
+                <StyledCell>
+                  <Grid container>
+                    <Grid item>{operator.performance}</Grid>
+                    {disabled && (
+                      <Grid item style={{ alignSelf: 'center' }}>
+                        <ToolTip text={'Operator reached  maximum amount of validators'} />
+                      </Grid>
                     )}
                   </Grid>
                 </StyledCell>

@@ -1299,80 +1299,6 @@ const config = {
                     },
                     {
                         'inputs': [
-                            {
-                                'internalType': 'string',
-                                'name': 'name',
-                                'type': 'string',
-                            },
-                            {
-                                'internalType': 'address',
-                                'name': 'ownerAddress',
-                                'type': 'address',
-                            },
-                            {
-                                'internalType': 'bytes',
-                                'name': 'publicKey',
-                                'type': 'bytes',
-                            },
-                            {
-                                'internalType': 'uint256',
-                                'name': 'fee',
-                                'type': 'uint256',
-                            },
-                        ],
-                        'name': 'migrateRegisterOperator',
-                        'outputs': [
-                            {
-                                'internalType': 'uint256',
-                                'name': 'operatorId',
-                                'type': 'uint256',
-                            },
-                        ],
-                        'stateMutability': 'nonpayable',
-                        'type': 'function',
-                    },
-                    {
-                        'inputs': [
-                            {
-                                'internalType': 'address',
-                                'name': 'ownerAddress',
-                                'type': 'address',
-                            },
-                            {
-                                'internalType': 'bytes',
-                                'name': 'publicKey',
-                                'type': 'bytes',
-                            },
-                            {
-                                'internalType': 'uint256[]',
-                                'name': 'operatorIds',
-                                'type': 'uint256[]',
-                            },
-                            {
-                                'internalType': 'bytes[]',
-                                'name': 'sharesPublicKeys',
-                                'type': 'bytes[]',
-                            },
-                            {
-                                'internalType': 'bytes[]',
-                                'name': 'encryptedKeys',
-                                'type': 'bytes[]',
-                            },
-                            {
-                                'internalType': 'uint256',
-                                'name': 'tokenAmount',
-                                'type': 'uint256',
-                            },
-                        ],
-                        'name': 'migrateRegisterValidator',
-                        'outputs': [
-
-                        ],
-                        'stateMutability': 'nonpayable',
-                        'type': 'function',
-                    },
-                    {
-                        'inputs': [
 
                         ],
                         'name': 'minimumBlocksBeforeLiquidation',
@@ -1444,6 +1370,45 @@ const config = {
                             },
                         ],
                         'name': 'operators',
+                        'outputs': [
+                            {
+                                'internalType': 'string',
+                                'name': '',
+                                'type': 'string',
+                            },
+                            {
+                                'internalType': 'address',
+                                'name': '',
+                                'type': 'address',
+                            },
+                            {
+                                'internalType': 'bytes',
+                                'name': '',
+                                'type': 'bytes',
+                            },
+                            {
+                                'internalType': 'uint256',
+                                'name': '',
+                                'type': 'uint256',
+                            },
+                            {
+                                'internalType': 'bool',
+                                'name': '',
+                                'type': 'bool',
+                            },
+                        ],
+                        'stateMutability': 'view',
+                        'type': 'function',
+                    },
+                    {
+                        'inputs': [
+                            {
+                                'internalType': 'bytes',
+                                'name': 'publicKey',
+                                'type': 'bytes',
+                            },
+                        ],
+                        'name': 'operatorsByPublicKey',
                         'outputs': [
                             {
                                 'internalType': 'string',

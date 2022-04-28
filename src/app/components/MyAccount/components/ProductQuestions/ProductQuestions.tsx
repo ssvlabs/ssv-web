@@ -94,7 +94,7 @@ const ProductQuestions = () => {
               )}
               <Grid container item className={classes.ButtonsWrapper}>
                 <Grid item xs>
-                  <SecondaryButton text={'Back to My Account'} onClick={backToMyAccount} />
+                  <SecondaryButton text={'Back to My Account'} submitFunction={backToMyAccount} />
                 </Grid>
                 <Grid item xs>
                   <PrimaryButton text={'Submit Feedback'} submitFunction={submitAnswer} />

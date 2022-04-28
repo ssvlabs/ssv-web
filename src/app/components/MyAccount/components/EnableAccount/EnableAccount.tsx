@@ -12,11 +12,15 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
 import LinkText from '~app/common/components/LinkText/LinkText';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import Validator from '~lib/api/Validator';
 
 const EnableAccount = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
+    const [validators, setValidators] = useState(null);
     const [allOperatorsFee, setTotalFee] = useState(0);
     const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
     const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
@@ -28,7 +32,10 @@ const EnableAccount = () => {
     ];
 
     useEffect(() => {
-
+        Validator.getInstance().getValidatorsByOwnerAddress({ ownerAddress: walletStore.accountAddress, page: 1, perPage: 10 }).then(res => {
+            setValidators(res);
+            console.log(validators);
+        });
     }, []);
 
     const unableAccount = (fee: any) => {
@@ -46,7 +53,7 @@ const EnableAccount = () => {
                 <Grid container>
                   <Grid item container className={classes.WarningWrapper}>
                     <Grid item>
-                      Your account has been <a href={'www.bla.com'}>liquidated</a> due to insufficient balance
+                      Your account has been <LinkText text={'liquidated'} link={'www.google.com'} /> due to insufficient balance
                       for
                       its maintenance. If you would like to resume its operations, you must deposit sufficient
                       balance required for reactivation.

@@ -32,7 +32,6 @@ const OperatorsReceipt = (props: Props) => {
       <Grid container item>
         <Grid container item className={classes.OperatorsWrapper}>
           {operators.map((operator: any, index: number) => {
-              if (!currentOperators) console.log(Object.keys(operator));
                     return (
                       <Grid key={index} container item xs={12} className={classes.OperatorsDetails}>
                         <Grid item xs>
@@ -70,7 +69,7 @@ const OperatorsReceipt = (props: Props) => {
         <RemainingDays disableWarning={currentOperators} gray80={currentOperators} />
       </Grid>,
     ];
-    if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} onClick={validatorStore.updateValidator} />);
+    if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} submitFunction={validatorStore.updateValidator} />);
 
     return (
       <BorderScreen

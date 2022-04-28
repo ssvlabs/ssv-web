@@ -11,9 +11,9 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 
 type Props = {
     text: string,
-    onClick: any,
     disable?: boolean,
     dataTestId?: string,
+    submitFunction: any,
     wrapperClass?: string,
     withVerifyConnection?: boolean
 };
@@ -24,7 +24,7 @@ const PrimaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, onClick, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
+    const { text, submitFunction, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
 
     useEffect(() => {
         const listener = async (event: any) => {
@@ -46,7 +46,7 @@ const PrimaryButton = (props: Props) => {
         if (withVerifyConnection && !walletStore.connected) {
             await walletStore.connect();
         }
-        await onClick();
+        await submitFunction();
     };
 
     return (

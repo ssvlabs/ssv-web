@@ -19,7 +19,7 @@ export const useStyles = makeStyles((theme) => ({
         '&:active': {
             backgroundColor: theme.colors.tint70,
         },
-        '&:disable': {
+        '&:disabled': {
             color: theme.colors.gray40,
             backgroundColor: theme.colors.gray20,
         },

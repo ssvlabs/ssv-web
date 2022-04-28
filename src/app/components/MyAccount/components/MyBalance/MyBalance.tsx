@@ -10,6 +10,7 @@ import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import ErrorText from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 import { useStyles } from './MyBalance.styles';
+import SecondaryButton from '~app/common/components/SecondaryButton';
 
 const MyBalance = () => {
     const stores = useStores();
@@ -41,7 +42,7 @@ const MyBalance = () => {
     }
 
     function moveToDeposit() {
-        return history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
     }
 
     function moveToWithdraw() {
@@ -60,16 +61,12 @@ const MyBalance = () => {
         return (
           <Grid container item className={classes.ActionButtonWrapper}>
             {ssvStore.isValidatorState && (
-            <Grid item className={classes.ActionButton} onClick={moveToDeposit}>
-              Deposit
+            <Grid item xs>
+              <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit} />
             </Grid>
-            )}
-            <Grid item
-              xs
-              className={`${classes.ActionButton} ${!ssvStore.isValidatorState ? classes.ActionButtonLarge : ''}`}
-              onClick={moveToWithdraw}
-            >
-              Withdraw
+                )}
+            <Grid item xs>
+              <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw} />
             </Grid>
           </Grid>
         );

@@ -33,14 +33,6 @@ export default class PaginationHandler {
         return PaginationHandler.instance;
     }
 
-    /**
-     * Finally, any singleton should define some business logic, which can be
-     * executed on its instance.
-     */
-    public someBusinessLogic() {
-        console.log(this);
-    }
-
     public lastPage() {
 
     }

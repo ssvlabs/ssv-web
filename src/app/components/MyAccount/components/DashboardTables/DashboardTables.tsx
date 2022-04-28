@@ -21,6 +21,7 @@ import { useStyles } from '~app/components/MyAccount/components/DashboardTables/
 
 type LoadItemsParams = {
     type: string;
+    forcePerPage?: number;
     paginationPage?: number;
 };
 
@@ -49,7 +50,6 @@ const DashboardTables = () => {
 
     const getOperatorRevenue = async (operator: any) => {
         const revenue = await operatorStore.getOperatorsRevenue(operator.operator_id);
-        console.log(revenue);
         // eslint-disable-next-line no-param-reassign
         operator.revenue = revenue;
         return operator;
@@ -65,25 +65,26 @@ const DashboardTables = () => {
      */
     async function loadItems(props: LoadItemsParams) {
         // eslint-disable-next-line react/prop-types
-        const { type, paginationPage } = props;
+        const { type, forcePerPage, paginationPage } = props;
         if (paginationPage) {
             ApiParams.saveInStorage(type, 'page', paginationPage);
         }
+        const operatorsExist = Operator.getInstance()?.ownerAddressOperators?.length > 0;
+        const validatorsExist = Validator.getInstance()?.validators?.length > 0;
 
         const page: number = ApiParams.getInteger(type, 'page', 1);
-        const perPage: number = ApiParams.getInteger(type, 'perPage', ApiParams.PER_PAGE);
+        const perPage: number = !validatorsExist || !operatorsExist ? 10 : ApiParams.getInteger(type, 'perPage', ApiParams.PER_PAGE);
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, forcePerPage ?? perPage, walletStore.accountAddress);
             const operatorsList = await getOperatorsRevenue(result.operators);
-            console.log(operatorsList);
             setOperators(operatorsList);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            const result = await Validator.getInstance().getValidatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
+            const result = await Validator.getInstance().getValidatorsByOwnerAddress({ page, perPage: forcePerPage ?? perPage, ownerAddress: walletStore.accountAddress });
             if (result?.validators?.length > 0) ssvStore.userState = 'validator';
             setValidators(result.validators);
             setValidatorsPagination(result.pagination);

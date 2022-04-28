@@ -127,7 +127,7 @@ class WalletStore extends BaseStore implements Wallet {
             await this.initializeUserInfo();
             if (process.env.REACT_APP_NEW_STAGE) {
                 const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
-                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress(1, 5, address, true);
+                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: 1, perPage: 5, ownerAddress: address, force: true });
                 applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? '/dashboard' : '/';
             }
         }

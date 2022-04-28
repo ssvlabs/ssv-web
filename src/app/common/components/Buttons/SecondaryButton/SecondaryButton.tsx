@@ -40,8 +40,8 @@ const SecondaryButton = (props: Props) => {
         type="submit"
         onClick={submit}
         data-testid={dataTestId}
-        disabled={disable || applicationStore.isLoading}
         className={classes.SecondaryButton}
+        disabled={disable || applicationStore.isLoading}
       >
         {applicationStore.isLoading && <Spinner />}
         {text}

@@ -34,6 +34,9 @@ const SingleValidator = () => {
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
                 response.public_key = longStringShorten(public_key, 6, 4);
+                response.total_operators_fee = response.operators.reduce((acc: number, operator: any) => {
+                    return acc + operator.fee;
+                }, 0);
                 setValidator(response);
                 applicationStore.setIsLoading(false);
             }
@@ -63,7 +66,7 @@ const SingleValidator = () => {
         { key: 'status', value: 'Status' },
         { key: 'balance', value: 'Balance' },
         { key: 'apr', value: 'Est. APR' },
-        // { key: 'totalOperatorsFee', value: 'Total Operator Fee' },
+        { key: 'total_operators_fee', value: 'Total Operators Fee' },
     ];
     const removeValidatorPage = () => {
         history.push(`/dashboard/validator/${public_key}/remove`);

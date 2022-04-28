@@ -195,7 +195,7 @@ class OperatorStore extends BaseStore {
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);
-            return true;
+            return false;
         }
     }
     /**

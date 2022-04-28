@@ -70,7 +70,7 @@ class OperatorStore extends BaseStore {
     @computed
     get getSelectedOperatorsFee(): number {
         return Object.values(this.selectedOperators).reduce(
-            (previousValue: number, currentValue: IOperator) => previousValue + (currentValue.fee ?? 0),
+            (previousValue: number, currentValue: IOperator) => previousValue + (Number(currentValue.fee) ?? 0),
             0,
         );
     }
@@ -209,6 +209,7 @@ class OperatorStore extends BaseStore {
             const contractInstance = walletStore.getContract;
             return contractInstance.methods.operatorEarningsOf(operatorId).call({ from: this.newOperatorKeys.address });
         } catch (e) {
+            console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
             console.log(e.message);
             return 0;
         }

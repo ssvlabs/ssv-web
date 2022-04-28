@@ -74,7 +74,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async connectWalletFromCache() {
     const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
-    if (selectedWallet) {
+    if (selectedWallet && selectedWallet !== 'undefined') {
       await this.onboardSdk.walletSelect(selectedWallet);
       await this.onboardSdk.walletCheck();
     } else {
@@ -99,22 +99,22 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  /**
-   * User address handler
-   * @param address: string
-   */
-  @action.bound
- async addressHandler(address: string) {
-    if (address === undefined) {
-      window.localStorage.removeItem('selectedWallet');
-    } else {
+    /**
+     * User address handler
+     * @param address: string
+     */
+    @action.bound
+    async addressHandler(address: string) {
         this.setAccountDataLoaded(false);
-        this.accountAddress = address;
-        await this.distributionStore.eligibleForReward();
-        await this.distributionStore.checkIfClaimed();
+        if (address === undefined) {
+            window.localStorage.removeItem('selectedWallet');
+        } else {
+            this.accountAddress = address;
+            await this.distributionStore.eligibleForReward();
+            await this.distributionStore.checkIfClaimed();
+        }
         this.setAccountDataLoaded(true);
     }
-  }
 
   /**
    * Callback for connected wallet

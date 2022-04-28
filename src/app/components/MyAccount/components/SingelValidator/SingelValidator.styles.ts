@@ -44,6 +44,9 @@ export const useStyles = makeStyles((theme) => ({
     FieldsWrapper: {
         gap: 100,
         marginBottom: 62,
+        // '@media (max-width: 1200px)': {
+        //     gap: '15%',
+        // },
     },
     SettingsWrapper: {
         position: 'relative',

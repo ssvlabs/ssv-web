@@ -16,6 +16,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import { Table } from '~app/common/components/Table/Table';
 import { useStyles } from '~app/components/MyAccount/components/SingelValidator/SingelValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import { longStringShorten } from '~lib/utils/strings';
 
 const SingleValidator = () => {
     const stores = useStores();
@@ -32,6 +33,7 @@ const SingleValidator = () => {
         applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
+                response.public_key = longStringShorten(public_key, 6, 4);
                 setValidator(response);
                 applicationStore.setIsLoading(false);
             }

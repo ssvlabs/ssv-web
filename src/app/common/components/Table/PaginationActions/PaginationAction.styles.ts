@@ -74,21 +74,41 @@ export const useStyles = makeStyles((theme) => createStyles({
     },
     SingleLeft: {
         // cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
-        backgroundImage: (props: any) => props.firstPage ? 'url(/images/page_arrows/single/disable.svg)' : 'url(/images/page_arrows/single/black.svg)',
+        backgroundImage: (props: any) => {
+            if (props.firstPage || theme.darkMode) {
+                return 'url(/images/page_arrows/single/disable.svg)';
+            } 
+                return 'url(/images/page_arrows/single/black.svg)';
+        },
     },
     ManyLeft: {
         // cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
-        backgroundImage: (props: any) => props.firstPage ? 'url(/images/page_arrows/many/disable.svg)' : 'url(/images/page_arrows/many/black.svg)',
+        backgroundImage: (props: any) => {
+            if (props.firstPage || theme.darkMode) {
+                return 'url(/images/page_arrows/many/disable.svg)';
+            }
+            return 'url(/images/page_arrows/many/black.svg)';
+        },
     },
     SingleRight: {
         transform: 'scaleX(-1)',
         // cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
-        backgroundImage: (props: any) => props.lastPage ? 'url(/images/page_arrows/single/disable.svg)' : 'url(/images/page_arrows/single/black.svg)',
+        backgroundImage: (props: any) => {
+            if (props.lastPage || theme.darkMode) {
+                return 'url(/images/page_arrows/single/disable.svg)';
+            }
+            return 'url(/images/page_arrows/single/black.svg)';
+        },
     },
     ManyRight: {
         transform: 'scaleX(-1)',
         cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
-        backgroundImage: (props: any) => props.lastPage ? 'url(/images/page_arrows/many/disable.svg)' : 'url(/images/page_arrows/many/black.svg)',
+        backgroundImage: (props: any) => {
+            if (props.lastPage || theme.darkMode) {
+                return 'url(/images/page_arrows/many/disable.svg)';
+            }
+            return 'url(/images/page_arrows/many/black.svg)';
+        },
     },
     PageNumber: {
         width: 54,

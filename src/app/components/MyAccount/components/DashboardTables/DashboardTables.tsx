@@ -49,6 +49,7 @@ const DashboardTables = () => {
 
     const getOperatorRevenue = async (operator: any) => {
         const revenue = await operatorStore.getOperatorsRevenue(operator.operator_id);
+        console.log(revenue);
         // eslint-disable-next-line no-param-reassign
         operator.revenue = revenue;
         return operator;
@@ -76,6 +77,7 @@ const DashboardTables = () => {
             setLoadingOperators(true);
             const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress);
             const operatorsList = await getOperatorsRevenue(result.operators);
+            console.log(operatorsList);
             setOperators(operatorsList);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);

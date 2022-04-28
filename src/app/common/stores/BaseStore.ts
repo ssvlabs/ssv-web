@@ -23,7 +23,7 @@ class BaseStore {
   }
 
   applicationStrategy(): string {
-    if (process.env.REACT_APP_STAGE_CLAIM_PAGE) {
+    if (process.env.REACT_APP_CLAIM_PAGE) {
       return 'Distribution';
     }
       return 'SsvWeb';

@@ -14,6 +14,8 @@ import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import BackNavigation from '~app/common/components/BackNavigation';
 import SecondaryButton from '~app/common/components/SecondaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/MyAccount/components/SingelValidator/SingelValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
@@ -26,6 +28,8 @@ const SingleValidator = () => {
     const { public_key } = useParams();
     const ssvStore: SsvStore = stores.SSV;
     const settingsRef = useRef(null);
+    const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const [showSettings, setShowSettings] = useState(false);
@@ -111,7 +115,7 @@ const SingleValidator = () => {
                     fee: <Grid item container justify={'space-between'}>
                       <Grid item container xs>
                         <Grid item xs={12}>
-                          <Typography>{operator.fee} SSV</Typography>
+                          <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography>
                         </Grid>
                         <Grid item>~$757.5</Grid>
                       </Grid>

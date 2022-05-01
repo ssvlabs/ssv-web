@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
 import Table from '@material-ui/core/Table';
@@ -7,7 +8,6 @@ import TableBody from '@material-ui/core/TableBody';
 import { CircularProgress, Grid } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react';
 import TableContainer from '@material-ui/core/TableContainer';
-import _ from 'underscore';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
@@ -15,6 +15,7 @@ import ToolTip from '~app/common/components/ToolTip';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
@@ -28,6 +29,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const classes = useStyles({ loading });
     const wrapperRef = useRef(null);
     const scrollRef: any = useRef(null);
+    const walletStore: WalletStore = stores.Wallet;
+    walletStore;
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
     const [filterBy, setFilterBy] = useState([]);
@@ -72,6 +75,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         };
         setLoading(true);
         const response = await Operator.getInstance().getOperators(payload);
+
         if (response.pagination.page > 1) {
             setOperatorsData([...operatorsData, ...response.operators]);
         } else {
@@ -189,7 +193,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 {process.env.REACT_APP_NEW_STAGE && (
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{operator.fee}</Grid>
+                    <Grid item>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />

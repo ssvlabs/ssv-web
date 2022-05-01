@@ -6,10 +6,11 @@ import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from './ValidatorDropDownMenu.styles';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 type Props = {
     index: number,
@@ -24,7 +25,7 @@ const ValidatorDropDownMenu = (props: Props) => {
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    // const operatorStore: OperatorStore = stores.Operator;
+    const operatorStore: OperatorStore = stores.Operator;
     const [dropMenu, setDropMenu] = useState(false);
     const [operators, setOperators]: any = useState([]);
     const [validatorTotalFee, setValidatorTotalFee]: any = useState(0);
@@ -36,9 +37,6 @@ const ValidatorDropDownMenu = (props: Props) => {
             operatorsPublicKeys.forEach((publicKey: string) => {
                 const operator = publicKey;
                 if (operator) {
-                    // if (operator.fee != null) {
-                    //     totalFee += ssvStore.getFeeForYear(operator.fee);
-                    // }
                     validatorOperators.push(operator);   
                 }
             });
@@ -68,7 +66,7 @@ const ValidatorDropDownMenu = (props: Props) => {
                               />
                             </Grid>
                             <Grid item xs>
-                              <SsvAndSubTitle ssv={ssvStore.getFeeForYear(operator.fee)} subText={'/year'} />
+                              <SsvAndSubTitle ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
                             </Grid>
                           </Grid>
                         );

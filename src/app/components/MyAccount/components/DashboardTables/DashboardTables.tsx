@@ -13,9 +13,9 @@ import Status from '~app/common/components/Status';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { ReactTable } from '~app/common/components/ReactTable';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/MyAccount/components/DashboardTables/DashboardTables.styles';
 
@@ -240,7 +240,7 @@ const DashboardTables = () => {
             fee: <Grid item container justify={'space-between'}>
               <Grid item container xs>
                 <Grid item xs={12}>
-                  <Typography>{operator.fee} SSV</Typography>
+                  <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography>
                 </Grid>
                 <Grid item>~$757.5</Grid>
               </Grid>

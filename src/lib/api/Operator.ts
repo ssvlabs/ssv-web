@@ -77,15 +77,15 @@ class Operator {
             return { operators: this.operators, pagination: this.operatorsPagination };
         }
 
-        const response: any = await axios.get(operatorsEndpointUrl);
+        const response: any = (await axios.get(operatorsEndpointUrl)).data;
 
-        if (response.data.operators) {
-            this.operators = response.data.operators;
+        if (response.operators) {
+            this.operators = response.operators;
             this.operatorsQuery = operatorsEndpointUrl;
-            this.operatorsPagination = response.data.pagination;
+            this.operatorsPagination = response.pagination;
         }
 
-        return response.data;
+        return response;
     }
 }
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
@@ -31,6 +31,10 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const [keyStorePassword, setKeyStorePassword] = useState('');
+
+    useEffect(() => {
+        validatorStore.clearValidatorData();
+    }, []);
 
     const handleClick = (e: any) => {
         if (e.target !== inputRef.current && e.target !== removeButtons?.current) {

@@ -90,7 +90,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                   Total Operators Yearly Fee
                 </Grid>
                 <Grid item>
-                  <SsvAndSubTitle bold ssv={operatorStore.getSelectedOperatorsFee}
+                  <SsvAndSubTitle bold ssv={operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee)}
                     subText={'~$757.5'} subTextCenter={false} />
                 </Grid>
               </Grid>

@@ -29,6 +29,18 @@ class WalletTestStore extends BaseStore implements Wallet {
     }
 
     @action.bound
+    fromWei(amount?: string): number {
+        if (!amount) return 0;
+        return this.web3?.utils.fromWei(amount, 'ether');
+    }
+
+    @action.bound
+    toWei(amount?: number): string {
+        if (!amount) return '0';
+        return this.web3?.utils.toWei(amount.toString(), 'ether');
+    }
+
+    @action.bound
     buildContract(address: string) {
         const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
         return new this.web3.eth.Contract(abi, address);

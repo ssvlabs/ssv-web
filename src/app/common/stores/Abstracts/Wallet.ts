@@ -28,6 +28,10 @@ export default abstract class Wallet extends BaseStore {
     public abstract decodeKey(publicKey: string): string;
     // eslint-disable-next-line no-unused-vars
     public abstract encodeKey(publicKey: string): string;
+    // eslint-disable-next-line no-unused-vars
+    public abstract fromWei(amount?: string): number;
+    // eslint-disable-next-line no-unused-vars
+    public abstract toWei(amount?: number): string;
     public abstract initWalletHooks(): void;
     public abstract connectWalletFromCache(): void;
 }

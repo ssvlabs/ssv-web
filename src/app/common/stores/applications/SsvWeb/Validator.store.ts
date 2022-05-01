@@ -27,9 +27,9 @@ class ValidatorStore extends BaseStore {
 
   @action.bound
   clearValidatorData() {
-    this.keyStoreFile = null;
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
+    this.newValidatorReceipt = null;
     this.createValidatorPayLoad = undefined;
   }
 
@@ -138,7 +138,7 @@ class ValidatorStore extends BaseStore {
                 if (event) {
                   console.debug('Contract Receipt', receipt);
                   this.newValidatorReceipt = payload[1];
-                  this.clearValidatorData();
+                  this.keyStoreFile = null;
                   resolve(event);
                 }
               })
@@ -146,7 +146,7 @@ class ValidatorStore extends BaseStore {
                 callBack && callBack(txHash);
               })
               .on('error', (error: any) => {
-                console.debug('Contract Error', error);
+                console.debug('Contract Error', error.message);
                 reject(error);
               })
               .catch((error: any) => {
@@ -171,8 +171,8 @@ class ValidatorStore extends BaseStore {
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.keyStorePrivateKey);
     let totalAmountOfSsv = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
-      const operatorsFees = operatorStore.getSelectedOperatorsFee;
-      const liquidationCollateral = (ssvStore.networkFee + parseFloat(operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee))) * ssvStore.liquidationCollateral;
+      const operatorsFees = operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee);
+      const liquidationCollateral = (ssvStore.networkFee + operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee)) * ssvStore.liquidationCollateral;
       totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
     }
 
@@ -201,12 +201,13 @@ class ValidatorStore extends BaseStore {
       });
 
       const payLoad = [
-        '0x81981ca353a0aca2d7199a3e30e1ac14ea723ca484f642cec2a94eeee6e930118fb981489c83ba25db582b30491b39b1',
+        `0x${this.keyStorePublicKey}`,
         operatorPublicIds,
         sharePublicKeys,
         encryptedKeys,
       ];
       if (process.env.REACT_APP_NEW_STAGE) {
+        console.log(totalAmountOfSsv);
         payLoad.push(walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)));
       } else {
         payLoad.unshift(walletStore.accountAddress);

@@ -3,9 +3,9 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import { roundCryptoValueString } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
+import { roundNumber } from '~lib/utils/numbers';
 
 export interface NewOperator {
     name: string,
@@ -15,7 +15,7 @@ export interface NewOperator {
 }
 
 export interface IOperator {
-    fee?: number,
+    fee?: string,
     name: string,
     logo?: string,
     type?: string,
@@ -69,8 +69,13 @@ class OperatorStore extends BaseStore {
 
     @computed
     get getSelectedOperatorsFee(): number {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        console.log(Object.values(this.selectedOperators).reduce(
+            (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+            0,
+        ));
         return Object.values(this.selectedOperators).reduce(
-            (previousValue: number, currentValue: IOperator) => previousValue + (Number(currentValue.fee) ?? 0),
+            (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
             0,
         );
     }
@@ -360,8 +365,24 @@ class OperatorStore extends BaseStore {
      * @param fee
      */
     @action.bound
-    operatorFeePerBlock(fee: number): string {
-        return roundCryptoValueString(fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR);
+    operatorFeePerBlock(fee: any): number {
+        return roundNumber(fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
+    }
+
+    @action.bound
+    getFeePerYear(fee: any): number {
+        return roundNumber(fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
+    }
+
+    @action.bound
+    getFeePer(type: string, fee: number): number {
+        if (type === 'year') {
+            console.log(fee);
+            return fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        } if (type === 'block') {
+            return fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR ?? 0;
+        }
+        return fee;
     }
 
     @action.bound

@@ -11,6 +11,7 @@ import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/common/components/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NameAndAddress from '~app/common/components/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
@@ -25,6 +26,7 @@ const ImportValidatorConfirmation = () => {
     const classes = useStyles();
     const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -32,17 +34,17 @@ const ImportValidatorConfirmation = () => {
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
-    let totalOperatorsYearlyFee = 0;
+    let totalAmountOfSsv;
     let yearlyNetworkFee = 0;
     let liquidationCollateral = 0;
-    let totalAmountOfSsv;
+    let totalOperatorsYearlyFee = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
-         totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
-         yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
-         liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
+         yearlyNetworkFee = operatorStore.getFeePerYear(ssvStore.networkFee);
+        totalOperatorsYearlyFee = operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee);
+        liquidationCollateral = (ssvStore.networkFee + Number(operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee))) * ssvStore.liquidationCollateral;
          totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
-
+    
     const handlePendingTransaction = (transactionHash: string) => {
         setTxHash(transactionHash);
         applicationStore.showTransactionPendingPopUp(true);
@@ -98,7 +100,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={formatNumberToUi(operator.fee)}
+                            ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))}
                             subText={'/year'}
                           />
                         </Grid>

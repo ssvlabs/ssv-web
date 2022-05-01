@@ -83,9 +83,10 @@ const SuccessScreen = () => {
       <>
         <BorderScreen
           blackHeader
+          withoutNavigation
           borderRadius={'16px 16px 0px 0px'}
-          sectionClass={classes.SectionWrapper}
           header={translations.SUCCESS.TITLE}
+          sectionClass={classes.SectionWrapper}
           body={[
             <Grid item container>
               <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>

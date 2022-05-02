@@ -3,7 +3,6 @@ import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
@@ -13,24 +12,25 @@ import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScr
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/MyAccount/components/RemoveValidator/RemoveValidator.styles';
+import Operator from '~lib/api/Operator';
 
-const SingelOperator = () => {
+const SingleOperator = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
     history;
     // @ts-ignore
-    const { public_key } = useParams();
+    const { operator_id } = useParams();
     const validatorStore: ValidatorStore = stores.Validator;
-    const [validator, setValidator] = useState(null);
+    const [operator, setOperator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
     
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Validator.getInstance().getValidator(public_key).then((response: any) => {
+        Operator.getInstance().getOperator(operator_id).then((response: any) => {
             if (response) {
-                setValidator(response);
+                setOperator(response);
                 applicationStore.setIsLoading(false);
             }
         });
@@ -41,21 +41,21 @@ const SingelOperator = () => {
     };
 
     const removeValidator = async () => {
-        const response = await validatorStore.removeValidator(public_key);
+        const response = await validatorStore.removeValidator(operator_id);
         if (response) {
-            history.push(`/dashboard/validator/${public_key}/removed`);
+            history.push(`/dashboard/validator/${operator_id}/removed`);
         } else {
-            history.push(`/dashboard/validator/${public_key}/removed`);
+            history.push(`/dashboard/validator/${operator_id}/removed`);
         }
     };
 
-    if (!validator) return null;
+    if (!operator) return null;
 
     return (
       <Grid container item>
         <WhiteWrapper header={'Remove Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
-            <Typography>{public_key}</Typography>
+            <Typography>{operator_id}</Typography>
             <ImageDiv image={'copy'} width={24} height={24} />
             <ImageDiv image={'explorer'} width={24} height={24} />
             <ImageDiv image={'beacon'} width={24} height={24} />
@@ -106,4 +106,4 @@ const SingelOperator = () => {
     );
 };
 
-export default observer(SingelOperator);
+export default observer(SingleOperator);

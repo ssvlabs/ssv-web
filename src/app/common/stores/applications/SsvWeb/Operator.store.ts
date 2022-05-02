@@ -70,10 +70,6 @@ class OperatorStore extends BaseStore {
     @computed
     get getSelectedOperatorsFee(): number {
         const walletStore: WalletStore = this.getStore('Wallet');
-        console.log(Object.values(this.selectedOperators).reduce(
-            (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
-            0,
-        ));
         return Object.values(this.selectedOperators).reduce(
             (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
             0,
@@ -192,11 +188,11 @@ class OperatorStore extends BaseStore {
      * @param contract
      */
     @action.bound
-    async checkIfOperatorExists(publicKey: string): Promise<boolean> {
+    async checkIfOperatorExists(operatorId: string): Promise<boolean> {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
             const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.operatorsByPublicKey(publicKey).call({ from: this.newOperatorKeys.address });
+            const result = await contractInstance.methods.operatorsByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);
@@ -244,7 +240,7 @@ class OperatorStore extends BaseStore {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.web3.utils.toWei(this.operatorFeePerBlock(transaction.fee)),
+                        walletStore.toWei(this.operatorFeePerBlock(transaction.fee)),
                     );
                 } else {
                     payload.push(
@@ -366,23 +362,12 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     operatorFeePerBlock(fee: any): number {
-        return roundNumber(fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
+        return fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
     }
 
     @action.bound
     getFeePerYear(fee: any): number {
         return roundNumber(fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
-    }
-
-    @action.bound
-    getFeePer(type: string, fee: number): number {
-        if (type === 'year') {
-            console.log(fee);
-            return fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        } if (type === 'block') {
-            return fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR ?? 0;
-        }
-        return fee;
     }
 
     @action.bound

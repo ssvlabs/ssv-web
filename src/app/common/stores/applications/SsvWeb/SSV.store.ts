@@ -62,16 +62,21 @@ class SsvStore extends BaseStore {
      * Returns days remaining before liquidation
      */
     @action.bound
-    getRemainingDays(amount?: number): number {
+    getRemainingDays({ newBalance, newBurnRate }: { newBalance?: number, newBurnRate?: number }): number {
         const ssvStore: SsvStore = this.getStore('SSV');
-        const blocksPerDay = config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-        const burnRatePerDay = this.accountBurnRate * blocksPerDay;
-        const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
-        const ssvAmount = amount ?? ssvStore.contractDepositSsvBalance;
+        const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
+        const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
+        const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+        const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
         return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
     }
+
+    // return (this.accountBurnRate - oldOperatorsFee + newOperatorsFee) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+
+    // Balance / (Get account burn rate * 6570 ) - (liquidation threshold period / 6570)
+
+    // Balance / (Get account burn rate - 4 old operator fees + 4 new operators fee  * 6570 ) - (liquidation threshold period / 6570)
 
     /**
      * Init User
@@ -335,6 +340,14 @@ class SsvStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const burnRate = await walletStore.getContract.methods.burnRate(this.accountAddress).call();
         this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
+    }
+
+    /**
+     * Get new account burn rate
+     */
+    @action.bound
+    getNewAccountBurnRate(oldOperatorsFee: number, newOperatorsFee: number): number {
+      return (this.accountBurnRate - oldOperatorsFee + newOperatorsFee) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
     }
 
     // /**

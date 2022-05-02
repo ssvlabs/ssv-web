@@ -33,6 +33,9 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const [keyStorePassword, setKeyStorePassword] = useState('');
 
     useEffect(() => {
+        if (reUpload) {
+            validatorStore.keyStoreFile = null;
+        }
         validatorStore.clearValidatorData();
     }, []);
 

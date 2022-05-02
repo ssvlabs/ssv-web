@@ -13,7 +13,9 @@ type OperatorsListQuery = {
 };
 
 class Operator {
+    operator: any = null;
     operators: any = null;
+    operatorQuery: any = null;
     operatorsQuery: any = null;
     operatorsPagination: any = null;
     ownerAddressOperators: any = null;
@@ -83,6 +85,26 @@ class Operator {
             this.operators = response.operators;
             this.operatorsQuery = operatorsEndpointUrl;
             this.operatorsPagination = response.pagination;
+        }
+
+        return response;
+    }
+
+    /**
+     * Get operator
+     */
+    async getOperator(operatorId: string) {
+        const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/prater/${operatorId}?performances=24hours&withFee=true`;
+
+        if (this.operatorQuery === operatorEndpointUrl) {
+            return this.operator;
+        }
+
+        const response: any = (await axios.get(operatorEndpointUrl)).data;
+
+        if (response.operators) {
+            this.operator = response.operator;
+            this.operatorQuery = operatorEndpointUrl;
         }
 
         return response;

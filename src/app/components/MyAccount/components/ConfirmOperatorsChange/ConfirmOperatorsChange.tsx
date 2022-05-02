@@ -49,7 +49,7 @@ const ConfirmOperatorsChange = () => {
               <OperatorsReceipt operators={operators} currentOperators header={'Current Operators'} />
             </Grid>
             <Grid item>
-              <OperatorsReceipt operators={Object.values(operatorStore.selectedOperators)} header={'New Operators'} />
+              <OperatorsReceipt previousOperators={operators} operators={Object.values(operatorStore.selectedOperators)} header={'New Operators'} />
             </Grid>
           </Grid>
         </Grid>

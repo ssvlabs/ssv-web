@@ -8,25 +8,43 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PrimaryButton from '~app/common/components/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
+import { roundNumber } from '~lib/utils/numbers';
 
 type Props = {
     operators: any,
     header?: string,
+    previousOperators?: any,
     currentOperators?: boolean,
 };
 const OperatorsReceipt = (props: Props) => {
     const stores = useStores();
-    const { operators, header, currentOperators } = props;
+    const { operators, header, previousOperators, currentOperators } = props;
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const classes = useStyles({ currentOperators });
-    walletStore;
+    
+    const oldOperatorsFee = previousOperators?.reduce(
+        (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+        0,
+    );
+
+    const newOperatorsFee = operators.reduce(
+        (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+        0,
+    );
+
+    const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
+    const operatorsYearlyFee = operatorStore.getFeePerYear(newOperatorsFee);
+    const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
+    console.log(remainingDays);
 
     const body = [
       <Grid container item>
@@ -41,7 +59,7 @@ const OperatorsReceipt = (props: Props) => {
                           <Status status={operator.status} />
                         </Grid>
                         <Grid item xs>
-                          <SsvAndSubTitle gray80={currentOperators} ssv={operator.ssv ?? 0} subText={'/year'} />
+                          <SsvAndSubTitle gray80={currentOperators} ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
                         </Grid>
                       </Grid>
                     );
@@ -52,7 +70,7 @@ const OperatorsReceipt = (props: Props) => {
               <Tooltip text={'Network yearly fee'} />
             </Grid>
             <Grid item>
-              <Typography className={classes.NetworkYearlyFee}>{ssvStore.getFeeForYear(ssvStore.networkFee)} SSV</Typography>
+              <Typography className={classes.NetworkYearlyFee}>{networkFee} SSV</Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -62,11 +80,11 @@ const OperatorsReceipt = (props: Props) => {
           <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
         </Grid>
         <Grid item>
-          <SsvAndSubTitle bold gray80={currentOperators} ssv={ssvStore.getFeeForYear(ssvStore.networkFee)} subText={'~$757.5'} />
+          <SsvAndSubTitle bold gray80={currentOperators} ssv={roundNumber(networkFee + operatorsYearlyFee, 8)} subText={'~$757.5'} />
         </Grid>
       </Grid>,
       <Grid container item>
-        <RemainingDays disableWarning={currentOperators} gray80={currentOperators} />
+        <RemainingDays newRemainingDays={remainingDays} disableWarning={currentOperators} gray80={currentOperators} />
       </Grid>,
     ];
     if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} submitFunction={validatorStore.updateValidator} />);

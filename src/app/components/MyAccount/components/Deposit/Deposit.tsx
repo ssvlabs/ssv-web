@@ -70,7 +70,7 @@ const Deposit = () => {
                     ),
                     (
                       <>
-                        <RemainingDays operator={'+'} newRemainingDays={ssvStore.getRemainingDays(Number(inputValue))} />
+                        <RemainingDays operator={'+'} newRemainingDays={ssvStore.getRemainingDays({ newBalance: Number(inputValue) })} />
                       </>
                     ),
           ]}

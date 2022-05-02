@@ -12,7 +12,10 @@ const SsvAppBar = () => {
     const location = useLocation();
     const applicationStore: ApplicationStore = stores.Application;
     const hasOperatorsOrValidators = applicationStore.strategyRedirect === '/dashboard';
-    const backgroundColor = location.pathname.includes('/dashboard/validator') ? applicationStore.theme.colors.white : '';
+    const backgroundColor = location.pathname.includes('/dashboard/validator')
+    || location.pathname.includes('/dashboard/operator')
+        ? applicationStore.theme.colors.white
+        : '';
 
     const moveToDashboard = () => {
         if (applicationStore.isLoading) return;

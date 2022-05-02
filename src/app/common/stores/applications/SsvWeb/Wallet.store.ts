@@ -86,6 +86,14 @@ class WalletStore extends BaseStore implements Wallet {
     @action.bound
     toWei(amount?: number): string {
         if (!amount) return '0';
+        try {
+            console.log('<<<<<<1>>>>>>');
+            console.log(this.web3.utils.toWei(amount.toString(), 'ether'));
+        } catch (e: any) {
+            console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
+            console.log(e.message);
+            console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
+        }
         return this.web3.utils.toWei(amount.toString(), 'ether');
     }
 

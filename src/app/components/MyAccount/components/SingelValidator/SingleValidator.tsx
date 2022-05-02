@@ -15,7 +15,7 @@ import BackNavigation from '~app/common/components/BackNavigation';
 import SecondaryButton from '~app/common/components/SecondaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/MyAccount/components/SingelValidator/SingelValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
@@ -39,9 +39,10 @@ const SingleValidator = () => {
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
                 response.public_key = longStringShorten(public_key, 6, 4);
-                response.total_operators_fee = response.operators.reduce((acc: number, operator: any) => {
-                    return acc + operator.fee;
-                }, 0);
+                response.total_operators_fee = operatorStore.getFeePerYear(response.operators.reduce(
+                    (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+                    0,
+                ));
                 setValidator(response);
                 applicationStore.setIsLoading(false);
             }

@@ -18,7 +18,7 @@ type Props = {
     newRemainingDays?: number,
 };
 
-const math_it_up = {
+const math_it_up: any = {
     // eslint-disable-next-line func-names
     '+': function (x: any, y: any) {
         return x + y;
@@ -35,7 +35,9 @@ const RemainingDays = (props: Props) => {
     const ssvStore: SsvStore = stores.SSV;
     const presentNewEstimation = Number(newRemainingDays) > 0;
     // @ts-ignore
-    const remainingDays = operator ? ssvStore.getRemainingDays(math_it_up[operator](ssvStore.contractDepositSsvBalance, newRemainingDays)) : ssvStore.getRemainingDays();
+    const remainingDays = operator ?
+        ssvStore.getRemainingDays({ newBalance: math_it_up[operator](ssvStore.contractDepositSsvBalance, newRemainingDays) })
+        : ssvStore.getRemainingDays({});
     const warningState = remainingDays < 30;
     const classes = useStyles({ warning: warningState, withdraw, gray80 });
 

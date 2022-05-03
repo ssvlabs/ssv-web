@@ -27,12 +27,6 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
   };
   const countryGetters = [
     {
-      url: 'http://ip-api.com/json',
-      callback: (response: any) => {
-        return response.country;
-      },
-    },
-    {
       url: 'http://geolocation-db.com/json/',
       callback: (response: any) => {
         return response.country_name;

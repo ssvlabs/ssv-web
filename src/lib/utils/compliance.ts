@@ -12,7 +12,7 @@ const getRestrictedCountriesList = async () => {
   if (restrictedCountries === null) {
     restrictedCountries = response.countries;
   }
-  // response.push('Israel');
+  response.push('Israel');
   return response;
 };
 
@@ -26,12 +26,6 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
       .then(getCountryCallback);
   };
   const countryGetters = [
-    {
-      url: 'https://extreme-ip-lookup.com/json/',
-      callback: (response: any) => {
-        return response.country;
-      },
-    },
     {
       url: 'http://ip-api.com/json',
       callback: (response: any) => {

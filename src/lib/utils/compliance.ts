@@ -27,7 +27,7 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
   };
   const countryGetters = [
     {
-      url: 'http://geolocation-db.com/json/',
+      url: 'https://geolocation-db.com/json/',
       callback: (response: any) => {
         return response.country_name;
       },

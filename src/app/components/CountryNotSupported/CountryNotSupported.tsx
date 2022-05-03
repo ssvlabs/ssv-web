@@ -17,7 +17,7 @@ const CountryNotSupported = () => {
     const openMarketingSite = () => {
         window.open('https://ssv.network/');
     };
-    const websiteUrl = applicationStore.strategyName === 'Distribution' ? 'https://claim.ssv.network' : 'app.prater.ssv.network';
+    const websiteUrl = applicationStore.strategyName === 'distribution' ? 'claim.ssv.network' : 'app.prater.ssv.network';
 
     return (
       <BorderScreen
@@ -31,11 +31,11 @@ const CountryNotSupported = () => {
               subtitle={(
                 <span>
                   We noticed you are located in {applicationStore.userGeo}.<br />
-                  Please note that the website <LinkText text={websiteUrl} link={websiteUrl} /> is not available in your country.</span>
+                  Please note that the website <LinkText text={websiteUrl} link={`https://${websiteUrl}`} /> is not available in your country.</span>
               )}
             />
             <Grid container item className={classes.ImageWrapper} />
-            <SecondaryButton noCamelCase onClick={openMarketingSite} text={'Learn more about the ssv network'} />
+            <SecondaryButton noCamelCase onClick={openMarketingSite} text={'Learn more about the SSV network'} />
           </Grid>,
             ]}
         />

@@ -8,19 +8,18 @@ import { useStyles } from './SecondaryButton.styles';
 
 type Props = {
     text: string,
-    disable?: boolean,
-    className?: string,
+    onClick: any,
     dataTestId?: string,
-    submitFunction: any,
+    noCamelCase?: boolean,
     withVerifyConnection?: boolean
 };
 
 const SecondaryButton = (props: Props) => {
     const stores = useStores();
-    const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, className, dataTestId, withVerifyConnection } = props;
+    const { text, onClick, dataTestId, noCamelCase, withVerifyConnection } = props;
+    const classes = useStyles({ noCamelCase });
 
     const submit = async () => {
         if (walletStore.isWrongNetwork) {
@@ -30,16 +29,15 @@ const SecondaryButton = (props: Props) => {
         if (withVerifyConnection && !walletStore.connected) {
             await walletStore.connect();
         }
-        submitFunction();
+        onClick();
     };
 
     return (
       <Button
-        onClick={submit}
-        disabled={disable}
+        className={classes.SecondaryButton}
         data-testid={dataTestId}
-        className={className ?? classes.SecondaryButton}
-      >
+        onClick={submit}
+        >
         {text}
       </Button>
     );

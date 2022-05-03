@@ -14,6 +14,7 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
   @observable theme: Theme;
+  @observable userGeo: string = '';
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;

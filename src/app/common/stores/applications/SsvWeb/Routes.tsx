@@ -11,6 +11,7 @@ import SuccessScreen from '~app/components/SuccessScreen';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Deposit from '~app/components/MyAccount/components/Deposit';
 import Withdraw from '~app/components/MyAccount/components/Withdraw';
+import CountryNotSupported from '~app/components/CountryNotSupported';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
@@ -39,6 +40,7 @@ const Routes: any = () => {
     return (
       <Layout>
         <SsvAppBar />
+        <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
         <Route exact path={config.routes.HOME} component={Welcome} />
         <Route path={config.routes.MY_ACCOUNT.DASHBOARD}>
           <Switch>

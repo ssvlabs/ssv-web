@@ -10,12 +10,14 @@ export default abstract class Wallet extends BaseStore {
     getContract: Contract;
     accountAddress: string;
     isWrongNetwork: boolean;
+    networkId: number | null;
     accountDataLoaded: boolean;
 
     protected constructor(getContract: Contract) {
         super();
         this.wallet = null;
         this.connected = '';
+        this.networkId = null;
         this.accountAddress = '';
         this.isWrongNetwork = false;
         this.getContract = getContract;

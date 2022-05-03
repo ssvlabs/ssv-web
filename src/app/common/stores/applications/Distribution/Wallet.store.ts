@@ -147,6 +147,7 @@ class WalletStore extends BaseStore implements Wallet {
   @action.bound
   async networkHandler(networkId: any) {
     console.log('networkId: ', networkId);
+    this.networkId = networkId;
     this.wrongNetwork = networkId !== 1 && networkId !== undefined;
   }
 

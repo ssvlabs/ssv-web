@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: 8,
         lineHeight: 1.25,
         transition: 'none',
-        textTransform: 'capitalize',
+        textTransform: (props: any) => props.noCamelCase ? 'none' : 'capitalize',
         color: theme.colors.primaryBlue,
         fontFamily: 'Manrope !important',
         backgroundColor: theme.colors.tint90,

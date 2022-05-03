@@ -58,7 +58,7 @@ const WhiteWrapper = ({ children, header, withCancel = true }: any) => {
             <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'} />
             <Grid container className={classes.ButtonsWrapper}>
               <Grid item xs>
-                <SecondaryButton text={'Yes, Cancel'} submitFunction={cancelProcess} />
+                <SecondaryButton text={'Yes, Cancel'} onClick={cancelProcess} />
               </Grid>
               <Grid item xs>
                 <PrimaryButton text={'No, Go Back'} submitFunction={dialogHandler} />

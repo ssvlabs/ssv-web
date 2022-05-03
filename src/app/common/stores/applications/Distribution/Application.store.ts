@@ -13,6 +13,7 @@ import Application from '~app/common/stores/Abstracts/Application';
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
   @observable theme: Theme;
+  @observable userGeo: string = '';
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;

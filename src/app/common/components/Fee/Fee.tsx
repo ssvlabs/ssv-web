@@ -27,7 +27,7 @@ const Fee = (props: Props) => {
                     setFee(ssvStore.getFeeForYear(operatorFee));
                     setIsLoading(false);
                 } catch (e: any) {
-                    console.log('<<<<<<<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>>>>>>>');
+                    console.log('<<<<<<<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>>>>>>>');
                 }
             }, 500);
         });

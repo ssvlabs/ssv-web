@@ -63,13 +63,18 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     getRemainingDays({ newBalance, newBurnRate }: { newBalance?: number, newBurnRate?: number }): number {
-        const ssvStore: SsvStore = this.getStore('SSV');
-        const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
-        const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
-        const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-        const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
-        return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
+        try {
+            const ssvStore: SsvStore = this.getStore('SSV');
+            const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
+            const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
+            const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+            const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+            if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
+            if (ssvAmount === 0) return 0;
+            return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
+        } catch (e) {
+            return 0;
+        }
     }
 
     // return (this.accountBurnRate - oldOperatorsFee + newOperatorsFee) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
@@ -146,7 +151,7 @@ class SsvStore extends BaseStore {
     async deposit(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const ssvAmount = walletStore.web3.utils.toWei(amount);
+            const ssvAmount = walletStore.toWei(amount);
             walletStore.getContract.methods
                 .deposit(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
@@ -192,7 +197,7 @@ class SsvStore extends BaseStore {
     async getBalanceFromSsvContract(): Promise<any> {
         const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
         const walletStore = this.getStore('Wallet');
-        this.walletSsvBalance = parseFloat(String(walletStore.web3.utils.fromWei(balance, 'ether')));
+        this.walletSsvBalance = parseFloat(String(walletStore.fromWei(balance, 'ether')));
     }
 
     /**
@@ -213,7 +218,7 @@ class SsvStore extends BaseStore {
     async withdrawSsv(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const ssvAmount = walletStore.web3.utils.toWei(amount);
+            const ssvAmount = walletStore.toWei(amount);
             walletStore.getContract.methods.withdraw(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
@@ -235,7 +240,7 @@ class SsvStore extends BaseStore {
     async activateValidator(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const ssvAmount = walletStore.web3.utils.toWei(amount.toString());
+            const ssvAmount = walletStore.toWei(amount.toString());
             walletStore.getContract.methods.activateValidator(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
@@ -329,7 +334,7 @@ class SsvStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const networkContract = walletStore.getContract;
         const response = await networkContract.methods.totalEarningsOf(this.accountAddress).call();
-        return walletStore.web3.utils.fromWei(response.toString());
+        return walletStore.fromWei(response.toString());
     }
 
     /**

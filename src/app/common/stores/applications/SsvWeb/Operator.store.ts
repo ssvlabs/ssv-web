@@ -162,7 +162,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const contract: Contract = walletStore.getContract;
                 contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {
-                    const ssv = walletStore.web3.utils.fromWei(response);
+                    const ssv = walletStore.fromWei(response);
                     this.operatorsFees[publicKey] = { ssv, dollar: 0 };
                     resolve(ssv);
                 });
@@ -234,6 +234,15 @@ class OperatorStore extends BaseStore {
                 const transaction: NewOperator = this.newOperatorKeys;
                 const gasEstimation: PriceEstimation = new PriceEstimation();
                 this.newOperatorReceipt = null;
+
+                // try {
+                //     console.log(this.operatorFeePerBlock(transaction.fee));
+                //     console.log(roundNumber(this.operatorFeePerBlock(transaction.fee), 16));
+                //     console.log(walletStore.toWei(roundNumber(this.operatorFeePerBlock(transaction.fee), 16)));
+                // } catch (e: any) {
+                //     console.log('<<<<<<<<ehre>>>>>>>>');
+                //     console.log(e.message);
+                // }
 
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {

@@ -4,13 +4,12 @@ import screenSizes from '~lib/utils/screenSizes';
 export const useStyles = makeStyles((theme) => ({
     MyBalanceWrapper: {
         width: '424px',
-        '@media (max-width: 1079px)': {
+        '@media (max-width: 1200px)': {
             width: '100%',
         },
-        // padding: theme.spacing(0, 0, 8, 0),
         borderRadius: '8px',
-        backgroundColor: theme.colors.squareScreenBackground,
         marginBottom: '20px',
+        backgroundColor: theme.colors.squareScreenBackground,
     },
     SectionWrapper: {
         padding: theme.spacing(8),

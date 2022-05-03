@@ -1,14 +1,14 @@
 import { makeStyles } from '@material-ui/core/styles';
-import screenSizes from '~lib/utils/screenSizes';
+// import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme) => ({
     Wrapper: {
-        width: '95%',
         margin: 'auto',
-        [screenSizes.lg]: {
+        // width: '95%',
+        maxWidth: 1200,
+        '@media only screen and (max-width: 1200px)': {
             width: 728,
         },
-        maxWidth: 1200,
         marginTop: '40px',
         padding: theme.spacing(3, 3, 3, 3),
     },
@@ -57,7 +57,7 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.primaryBlue,
     },
     MyBalanceWrapper: {
-        [screenSizes.xl]: {
+        '@media only screen and (min-width: 1200px)': {
             marginRight: theme.spacing(6),
         },
     },

@@ -176,6 +176,11 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         applicationStore.setIsLoading(false);
     };
 
+    const buttonDisableConditions = !validatorStore.isJsonFile
+        || !keyStorePassword
+        || !!errorMessage
+        || validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase();
+
     return (
       <BorderScreen
         blackHeader
@@ -204,8 +209,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
               <Grid item xs={12} className={classes.ErrorWrapper}>
                 {errorMessage && <MessageDiv text={errorMessage} />}
               </Grid>
-              <PrimaryButton text={'Next'} submitFunction={submitHandler}
-                disable={!validatorStore.isJsonFile || !keyStorePassword || !!errorMessage} />
+              <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions} />
             </Grid>
           </Grid>,
         ]}

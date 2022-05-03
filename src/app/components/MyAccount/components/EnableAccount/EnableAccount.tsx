@@ -21,6 +21,7 @@ const EnableAccount = () => {
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const [validators, setValidators] = useState(null);
+    validators;
     const [allOperatorsFee, setTotalFee] = useState(0);
     const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
     const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
@@ -34,7 +35,6 @@ const EnableAccount = () => {
     useEffect(() => {
         Validator.getInstance().getValidatorsByOwnerAddress({ ownerAddress: walletStore.accountAddress, page: 1, perPage: 10 }).then(res => {
             setValidators(res);
-            console.log(validators);
         });
     }, []);
 

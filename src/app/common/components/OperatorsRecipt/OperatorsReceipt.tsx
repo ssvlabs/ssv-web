@@ -44,7 +44,7 @@ const OperatorsReceipt = (props: Props) => {
     const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
     const operatorsYearlyFee = operatorStore.getFeePerYear(newOperatorsFee);
     const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
-    console.log(remainingDays);
+    remainingDays;
 
     const body = [
       <Grid container item>
@@ -84,7 +84,7 @@ const OperatorsReceipt = (props: Props) => {
         </Grid>
       </Grid>,
       <Grid container item>
-        <RemainingDays newRemainingDays={remainingDays} disableWarning={currentOperators} gray80={currentOperators} />
+        <RemainingDays disableWarning={currentOperators} gray80={currentOperators} />
       </Grid>,
     ];
     if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} submitFunction={validatorStore.updateValidator} />);

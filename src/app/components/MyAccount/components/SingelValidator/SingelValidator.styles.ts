@@ -115,6 +115,12 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         backgroundImage: 'url(/images/explorer/blue.svg)',
     },
+    PerformanceHeader: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        color: theme.colors.gray90,
+    },
     ExplorerImage: {
         width: 24,
         height: 24,

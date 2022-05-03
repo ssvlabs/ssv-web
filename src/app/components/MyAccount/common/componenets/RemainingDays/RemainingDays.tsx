@@ -12,41 +12,34 @@ import LiquidationStateError from '~app/components/MyAccount/common/componenets/
 
 type Props = {
     gray80?: boolean,
-    operator?: string,
-    withdraw?: boolean,
+    newBalance?: number,
     disableWarning?: boolean,
-    newRemainingDays?: number,
-};
-
-const math_it_up: any = {
-    // eslint-disable-next-line func-names
-    '+': function (x: any, y: any) {
-        return x + y;
-    },
-    // eslint-disable-next-line func-names
-    '-': function (x: number, y: number) {
-        return x - y;
-    },
 };
 
 const RemainingDays = (props: Props) => {
     const stores = useStores();
-    const { gray80, withdraw, newRemainingDays, disableWarning = false, operator } = props;
     const ssvStore: SsvStore = stores.SSV;
-    const presentNewEstimation = Number(newRemainingDays) > 0;
-    // @ts-ignore
-    const remainingDays = operator ?
-        ssvStore.getRemainingDays({ newBalance: math_it_up[operator](ssvStore.contractDepositSsvBalance, newRemainingDays) })
-        : ssvStore.getRemainingDays({});
-    const warningState = remainingDays < 30;
-    const classes = useStyles({ warning: warningState, withdraw, gray80 });
+    const { gray80, newBalance, disableWarning = false } = props;
+    const oldRemainingDays = ssvStore.getRemainingDays({});
+    let withdrawState: boolean = false;
+    let newRemainingDays: number | undefined;
+    let warningLiquidationState: boolean = oldRemainingDays < 30;
 
-    function conditionalErrorType() {
-        if (newRemainingDays && Math.floor(remainingDays) === 0) return 3;
-        return newRemainingDays ? 1 : 0;
+    if (typeof newBalance !== 'undefined') {
+        newRemainingDays = ssvStore.getRemainingDays({ newBalance });
+        withdrawState = oldRemainingDays > newRemainingDays;
+        warningLiquidationState = newRemainingDays < 30;
     }
+    // @ts-ignore
+    const classes = useStyles({ warningLiquidationState, withdrawState, gray80 });
+
+    const conditionalErrorType = () => {
+        if (newRemainingDays === 0) return 3;
+        return newRemainingDays ? 1 : 0;
+    };
+
     React.useEffect(() => {}, [ssvStore.contractDepositSsvBalance]);
-    
+
     return (
       <Grid item container>
         <Grid item container>
@@ -56,18 +49,18 @@ const RemainingDays = (props: Props) => {
               <Tooltip text={'need to implement'} />
             </Grid>
           </Grid>
-          <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>
+          <Typography className={classes.AmountOfDays}>{formatNumberToUi(newRemainingDays ?? oldRemainingDays, true)}</Typography>
           <Typography className={classes.Days}>
             days
           </Typography>
-          {presentNewEstimation && (
+          {newRemainingDays !== undefined && (
             <Grid item xs
-              className={classes.NewDaysEstimation}>{`(${operator ?? ''}${formatNumberToUi(newRemainingDays, true)})`}
+              className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - oldRemainingDays, true)})`}
             </Grid>
           )}
-          {!disableWarning && warningState && (
+          {!disableWarning && warningLiquidationState && (
             <Grid container>
-              <ProgressBar remainingDays={remainingDays} />
+              <ProgressBar remainingDays={newRemainingDays ?? 0} />
               <LiquidationStateError marginTop={'16px'} errorType={conditionalErrorType()} />
             </Grid>
           )}

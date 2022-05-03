@@ -14,6 +14,7 @@ import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { roundNumber } from '~lib/utils/numbers';
 
 class WalletStore extends BaseStore implements Wallet {
     @observable web3: any = null;
@@ -84,16 +85,10 @@ class WalletStore extends BaseStore implements Wallet {
     }
 
     @action.bound
-    toWei(amount?: number): string {
+    toWei(amount?: number | string): string {
         if (!amount) return '0';
-        try {
-            console.log('<<<<<<1>>>>>>');
-            console.log(this.web3.utils.toWei(amount.toString(), 'ether'));
-        } catch (e: any) {
-            console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
-            console.log(e.message);
-            console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
-        }
+        // eslint-disable-next-line no-param-reassign
+        if (typeof amount === 'number') amount = roundNumber(amount, 16);
         return this.web3.utils.toWei(amount.toString(), 'ether');
     }
 

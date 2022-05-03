@@ -36,6 +36,8 @@ const Deposit = () => {
         setInputValue(String(ssvStore.walletSsvBalance));
     }
 
+    const newBalance = inputValue ? ssvStore.contractDepositSsvBalance + Number(inputValue) : undefined;
+
     return (
       <div>
         <BorderScreen
@@ -70,7 +72,7 @@ const Deposit = () => {
                     ),
                     (
                       <>
-                        <RemainingDays operator={'+'} newRemainingDays={ssvStore.getRemainingDays({ newBalance: Number(inputValue) })} />
+                        <RemainingDays newBalance={newBalance} />
                       </>
                     ),
           ]}
@@ -86,4 +88,5 @@ const Deposit = () => {
       </div>
     );
 };
+
 export default observer(Deposit);

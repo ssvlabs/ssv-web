@@ -25,7 +25,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.24,
         textAlign: 'left',
-        color: (props: any) => { return props.warning ? 'red' : theme.colors.black; },
+        color: (props: any) => { return props.warningLiquidationState ? 'red' : theme.colors.black; },
     },
     Days: {
         fontSize: 16,
@@ -33,7 +33,7 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: 1.62,
         marginLeft: theme.spacing(1),
         marginTop: theme.spacing(1.5),
-        color: (props: any) => { return props.warning ? 'red' : theme.colors.gray40; },
+        color: (props: any) => { return props.warningLiquidationState ? 'red' : theme.colors.gray40; },
     },
     NewDaysEstimation: {
         marginTop: 10,
@@ -41,6 +41,6 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: 1.2,
         fontSize: '20px',
         fontWeight: 'normal',
-        color: (props: any) => { return props.warning || props.withdraw ? 'red' : theme.colors.primarySuccessDark; },
+        color: (props: any) => { return props.warningLiquidationState || props.withdrawState ? 'red' : theme.colors.primarySuccessDark; },
     },
 }));

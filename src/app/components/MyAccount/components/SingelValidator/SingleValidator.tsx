@@ -12,6 +12,7 @@ import { longStringShorten } from '~lib/utils/strings';
 import { Table } from '~app/common/components/Table/Table';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import BackNavigation from '~app/common/components/BackNavigation';
+import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SecondaryButton from '~app/common/components/SecondaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -112,20 +113,24 @@ const SingleValidator = () => {
                         fee,
                     }} />,
                     status: <Status status={status} />,
-                    performance,
+                    performance: <Typography className={classes.PerformanceHeader}>{performance}</Typography>,
                     fee: <Grid item container justify={'space-between'}>
-                      <Grid item container xs>
-                        <Grid item xs={12}>
-                          <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography>
-                        </Grid>
-                        <Grid item>~$757.5</Grid>
+                      <Grid item>
+                        <SsvAndSubTitle leftTextAlign ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} subText={'~$757.5'} />
                       </Grid>
-                      <Grid className={classes.ExplorerImage} onClick={() => { window.open(`${config.links.LINK_EXPLORER}/operators/${address}`); }} />
+
+                      {/* <Grid item container xs> */}
+                      {/*  <Grid item xs={12}> */}
+                      {/*    <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography> */}
+                      {/*  </Grid> */}
+                      {/*  <Grid item>~$757.5</Grid> */}
+                      {/* </Grid> */}
+                      <Grid item className={classes.ExplorerImage} onClick={() => { window.open(`${config.links.LINK_EXPLORER}/operators/${address}`); }} />
                     </Grid>,
                 };
             });
         },
-        [validator],
+        [validator, applicationStore.darkMode],
     );
     const editValidator = () => {
         history.push(`/dashboard/validator/${public_key}/edit`);
@@ -163,7 +168,7 @@ const SingleValidator = () => {
                     },
                 ],
             },
-        ], [],
+        ], [applicationStore.darkMode],
     );
 
     if (!validator) return null;

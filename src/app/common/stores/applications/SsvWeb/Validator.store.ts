@@ -208,7 +208,7 @@ class ValidatorStore extends BaseStore {
       ];
       if (process.env.REACT_APP_NEW_STAGE) {
         console.log(totalAmountOfSsv);
-        payLoad.push(walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)));
+        payLoad.push(walletStore.toWei(roundCryptoValueString(totalAmountOfSsv)));
       } else {
         payLoad.unshift(walletStore.accountAddress);
       }

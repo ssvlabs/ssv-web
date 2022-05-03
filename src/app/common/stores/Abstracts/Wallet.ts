@@ -31,7 +31,7 @@ export default abstract class Wallet extends BaseStore {
     // eslint-disable-next-line no-unused-vars
     public abstract fromWei(amount?: string): number;
     // eslint-disable-next-line no-unused-vars
-    public abstract toWei(amount?: number): string;
+    public abstract toWei(amount?: number | string): string;
     public abstract initWalletHooks(): void;
     public abstract connectWalletFromCache(): void;
 }

@@ -76,9 +76,10 @@ const Withdraw = () => {
       </Grid>
     )];
 
+    const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
+
     if (ssvStore.isValidatorState) {
-        const remainDays = ssvStore.getRemainingDays({ newBalance: ssvStore.contractDepositSsvBalance - (ssvStore.contractDepositSsvBalance - Number(inputValue)) });
-     secondBorderScreen.push((<RemainingDays withdraw operator={'-'} newRemainingDays={remainDays} />));
+     secondBorderScreen.push((<RemainingDays newBalance={newBalance} />));
     }
 
     return (

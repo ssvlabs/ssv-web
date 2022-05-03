@@ -2,13 +2,16 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { Route, Switch } from 'react-router-dom';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import MyAccount from '~app/components/MyAccount';
 import Layout from '~app/common/components/Layout';
 import Welcome from '~app/components/Welcome/Welcome';
 import { SsvAppBar } from '~app/common/components/AppBar';
 import SuccessScreen from '~app/components/SuccessScreen';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Deposit from '~app/components/MyAccount/components/Deposit';
 import Withdraw from '~app/components/MyAccount/components/Withdraw';
+import CountryNotSupported from '~app/components/CountryNotSupported';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
@@ -27,8 +30,6 @@ import SelectOperators from '~app/components/RegisterValidatorHome/components/Se
 import ConfirmOperatorsChange from '~app/components/MyAccount/components/ConfirmOperatorsChange';
 import DepositViaLaunchpad from '~app/components/RegisterValidatorHome/components/DepositViaLaunchpad';
 import AccountBalanceAndFee from '~app/components/RegisterValidatorHome/components/AccountBalanceAndFee';
-import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 const Routes: any = () => {
     const stores = useStores();
@@ -37,6 +38,7 @@ const Routes: any = () => {
     return (
       <Layout>
         <SsvAppBar />
+        <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
         <Route exact path={config.routes.HOME} component={Welcome} />
         <Route path={config.routes.MY_ACCOUNT.DASHBOARD}>
           <Switch>

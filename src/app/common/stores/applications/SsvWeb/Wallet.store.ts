@@ -171,6 +171,7 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async networkHandler(networkId: any) {
+        this.networkId = networkId;
         if (networkId !== 5 && networkId !== undefined) {
             this.wrongNetwork = true;
             this.notificationsStore.showMessage('Please change network to Goerli', 'error');

@@ -1,6 +1,7 @@
 const config = {
     routes: {
         HOME: '/',
+        COUNTRY_NOT_SUPPORTED: '/compliance',
         DISTRIBUTION: {
             CLAIM: '/',
             SUCCESS: '/success',

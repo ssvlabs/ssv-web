@@ -6,10 +6,12 @@ export default abstract class Application {
     isLoading: boolean;
     strategyName: string;
     strategyRedirect: string;
+    userGeo: string | undefined;
 
     protected constructor(theme: Theme, darkMode: boolean) {
         this.theme = theme;
         this.isLoading = false;
+        this.userGeo = undefined;
         this.darkMode = darkMode;
         this.strategyName = 'Distribution';
         this.strategyRedirect = '/dashboard';

@@ -1,10 +1,19 @@
 import config from '~app/common/config';
 
+let restrictedCountries: any = null;
 /**
  * Get the list of restricted countries from blox.
  */
 const getRestrictedCountriesList = async () => {
-  return fetch(String(config.links.COMPLIANCE_URL)).then(res => res.json());
+  if (restrictedCountries) {
+    return restrictedCountries;
+  }
+  const response = await fetch(String(config.links.COMPLIANCE_URL)).then(res => res.json());
+  if (restrictedCountries === null) {
+    restrictedCountries = response.countries;
+  }
+  // response.push('Israel');
+  return response;
 };
 
 /**
@@ -60,12 +69,12 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
 /**
  * Returns true if country is restricted or false otherwise
  */
-export const checkUserCountryRestriction = async (): Promise<boolean> => {
+export const checkUserCountryRestriction = async (): Promise<any> => {
   const userCountry = await getCurrentUserCountry();
-  const restrictedCountries = await getRestrictedCountriesList();
+  const countries = await getRestrictedCountriesList();
   const params = new URLSearchParams(window.location.search);
   if (params.get('restrictCountry')) {
     return true;
   }
-  return restrictedCountries.indexOf(userCountry) !== -1;
+  return { restricted: countries.indexOf(userCountry) !== -1, userGeo: userCountry };
 };

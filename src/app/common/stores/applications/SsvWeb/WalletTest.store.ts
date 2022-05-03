@@ -17,6 +17,7 @@ class WalletTestStore extends BaseStore implements Wallet {
     @observable ready: boolean = false;
     @observable accountAddress: string = '';
     @observable wrongNetwork: boolean = false;
+    @observable networkId: number | null = null;
     @observable isAccountLoaded: boolean = false;
     @observable accountDataLoaded: boolean = true;
 

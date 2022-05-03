@@ -14,6 +14,8 @@ import BarMessage from '~app/common/components/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MobileNotSupported from '~app/components/MobileNotSupported';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { checkUserCountryRestriction } from '~lib/utils/compliance';
+import config from '~app/common/config';
 
 declare global {
     interface Window {
@@ -31,7 +33,16 @@ const App = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
-        walletStore.connectWalletFromCache();
+        checkUserCountryRestriction().then((res: any) => {
+            if (res.restricted) {
+                walletStore.accountDataLoaded = true;
+                applicationStore.userGeo = res.userGeo;
+                applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+                history.push(config.routes.COUNTRY_NOT_SUPPORTED);
+            } else {
+                walletStore.connectWalletFromCache();
+            }
+        });
     }, []);
 
     useEffect(() => {

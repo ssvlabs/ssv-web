@@ -10,15 +10,16 @@ type Props = {
     text: string,
     onClick: any,
     dataTestId?: string,
+    noCamelCase?: boolean,
     withVerifyConnection?: boolean
 };
 
 const SecondaryButton = (props: Props) => {
     const stores = useStores();
-    const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, onClick, dataTestId, withVerifyConnection } = props;
+    const { text, onClick, dataTestId, noCamelCase, withVerifyConnection } = props;
+    const classes = useStyles({ noCamelCase });
 
     const submit = async () => {
         if (walletStore.isWrongNetwork) {

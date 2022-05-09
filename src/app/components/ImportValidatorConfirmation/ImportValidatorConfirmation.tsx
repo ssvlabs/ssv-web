@@ -17,7 +17,6 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
 
@@ -30,7 +29,6 @@ const ImportValidatorConfirmation = () => {
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
-    const [txHash, setTxHash] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
@@ -44,11 +42,6 @@ const ImportValidatorConfirmation = () => {
         liquidationCollateral = (ssvStore.networkFee + Number(operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee))) * ssvStore.liquidationCollateral;
         totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
-    
-    const handlePendingTransaction = (transactionHash: string) => {
-        setTxHash(transactionHash);
-        applicationStore.showTransactionPendingPopUp(true);
-    };
 
     const onRegisterValidatorClick = async () => {
         applicationStore.setIsLoading(true);
@@ -66,16 +59,15 @@ const ImportValidatorConfirmation = () => {
             }
         }
 
-        return validatorStore.addNewValidator(false, handlePendingTransaction).then(() => {
-            applicationStore.setIsLoading(false);
+        const response = await validatorStore.addNewValidator(false);
+        if (response) {
             operatorStore.unselectAllOperators();
             applicationStore.showTransactionPendingPopUp(false);
             history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
-        }).catch(() => {
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
+        }
+        else {
             setActionButtonText('Run validator');
-        });
+        }
     };
 
     const fields = [
@@ -86,7 +78,6 @@ const ImportValidatorConfirmation = () => {
 
     const components = [
       <Grid container>
-        <TransactionPendingPopUp txHash={txHash} />
         <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
         <ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey} />
         <Grid container item xs={12} className={classes.RowWrapper}>
@@ -152,7 +143,9 @@ const ImportValidatorConfirmation = () => {
           </Grid>
         </Grid>
         )}
+
         {errorMessage && <MessageDiv text={errorMessage} />}
+
         <Grid container>
           <Button
             withAllowance

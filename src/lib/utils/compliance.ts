@@ -12,7 +12,7 @@ const getRestrictedCountriesList = async () => {
   if (restrictedCountries === null) {
     restrictedCountries = response.countries;
   }
-  response.push('Israel');
+  if (process.env.NODE_ENV !== 'development') response.push('Israel');
   return response;
 };
 

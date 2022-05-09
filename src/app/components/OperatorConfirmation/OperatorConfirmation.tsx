@@ -11,7 +11,6 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
@@ -26,26 +25,19 @@ const OperatorConfirmation = () => {
     const walletStore: WalletStore = stores.Wallet;
     // const [checked, setCheckBox] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
-    const [txHash, setTxHash] = useState('');
     const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
     const onRegisterClick = async () => {
         try {
             applicationStore.setIsLoading(true);
             setActionButtonText('Waiting for confirmation...');
-            await operatorStore.addNewOperator(false, handlePendingTransaction);
+            await operatorStore.addNewOperator(false);
             history.push(config.routes.OPERATOR.SUCCESS_PAGE);
         } catch {
             setActionButtonText('Register Operator');
         }
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
-    };
-
-    const handlePendingTransaction = (transactionHash: string) => {
-        setTxHash(transactionHash);
-        setActionButtonText('Sending transaction…');
-        applicationStore.showTransactionPendingPopUp(true);
     };
 
     return (
@@ -55,7 +47,6 @@ const OperatorConfirmation = () => {
         header={translations.OPERATOR.CONFIRMATION.TITLE}
         body={[
           <Grid container>
-            <TransactionPendingPopUp txHash={txHash} />
             <Grid item xs={12} className={classes.SubHeader}>Operator</Grid>
             <Grid container item xs={12} className={classes.RowWrapper}>
               <Grid item xs={6}>

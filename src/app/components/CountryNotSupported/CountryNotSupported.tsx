@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import SecondaryButton from '~app/common/components/SecondaryButton';
+import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/CountryNotSupported/CountryNotSupported.styles';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -17,7 +17,7 @@ const CountryNotSupported = () => {
     const openMarketingSite = () => {
         window.open('https://ssv.network/');
     };
-    const websiteUrl = applicationStore.strategyName === 'Distribution' ? 'claim.ssv.network' : 'app.prater.ssv.network';
+    const websiteUrl = applicationStore.strategyName === 'distribution' ? 'claim.ssv.network' : 'app.prater.ssv.network';
 
     return (
       <BorderScreen
@@ -35,7 +35,7 @@ const CountryNotSupported = () => {
               )}
             />
             <Grid container item className={classes.ImageWrapper} />
-            <SecondaryButton noCamelCase onClick={openMarketingSite} text={'Learn more about the ssv network'} />
+            <SecondaryButton noCamelCase submitFunction={openMarketingSite} text={'Learn more about the SSV network'} />
           </Grid>,
             ]}
         />

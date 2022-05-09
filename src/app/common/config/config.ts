@@ -12,6 +12,8 @@ const config = {
             WITHDRAW: '/dashboard/withdraw',
             ENABLE_ACCOUNT: '/dashboard/enable_account',
             OPERATOR: '/dashboard/operator/:operator_id',
+            REMOVE_OPERATOR: '/dashboard/operator/:operator_id/remove',
+            OPERATOR_REMOVED: '/dashboard/operator/:operator_id/removed',
             VALIDATOR: '/dashboard/validator/:public_key',
             EDIT_VALIDATOR: '/dashboard/validator/:public_key/edit',
             REMOVE_VALIDATOR: '/dashboard/validator/:public_key/remove',

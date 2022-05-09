@@ -7,10 +7,10 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
+import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import ErrorText from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 import { useStyles } from './MyBalance.styles';
-import SecondaryButton from '~app/common/components/SecondaryButton';
 
 const MyBalance = () => {
     const stores = useStores();

@@ -27,7 +27,8 @@ export const useStyles = makeStyles((theme) => ({
         color: (props: any) => props.gray80 ? theme.colors.gray80 : theme.colors.gray90,
     },
     OperatorType: {
-      marginTop: 5,
+        marginTop: 5,
+        marginLeft: 4,
     },
     Address: {
         fontSize: 12,

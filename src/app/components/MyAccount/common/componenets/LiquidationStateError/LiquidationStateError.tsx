@@ -1,14 +1,17 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import { useStyles } from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError.styles';
+import { Grid, Typography } from '@material-ui/core';
+import config from '~app/common/config';
 import LinkText from '~app/common/components/LinkText/LinkText';
+import { useStyles } from '~app/components/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError.styles';
 
 const ErrorType = {
     Deposit: 0,
     Withdraw: 1,
     Liquidated: 2,
     WithdrawAll: 3,
+    ChangeOperatorsLiquidation: 5,
+    ChangeOperatorsLiquidationWarning: 4,
 } as const;
 
 type Props = {
@@ -22,7 +25,7 @@ const LiquidationStateError = (props: Props) => {
 
     const renderText = () => {
         if (errorType === ErrorType.WithdrawAll) {
-            return <div>Withdrawing the requested amount will liquidate your account, which will result in inactivation (<a href={'/a'}>penalties on the beacon chain</a>) of your validators, as they will no longer be operated by the network.</div>;
+            return <div>Withdrawing the requested amount will liquidate your account, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'/a'} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
             return 'Your account has been liquidated. Please reactivate your account in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
@@ -32,7 +35,24 @@ const LiquidationStateError = (props: Props) => {
             return 'This withdrawal amount will putting your account at risk of liquidation.\n' +
                 'To avoid liquidation please withdraw less funds from your account.\n';
         }
-            return '';
+        const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your account at risk of liquidation.' : 'This fee change will liquidate your account, please deposit more SSV or';
+        const secondText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your account.' : 'change to a different set of operators.';
+
+        if (errorType === ErrorType.ChangeOperatorsLiquidationWarning || errorType === ErrorType.ChangeOperatorsLiquidation) {
+            return (
+              <Grid container item className={classes.OperatorChangeTextWrapper}>
+                <Grid item>
+                  <Typography className={classes.OperatorChangeText}>{firstText}</Typography>
+                  <Typography className={classes.OperatorChangeText}>{secondText}</Typography>
+                </Grid>
+                <Grid item>
+                  <LinkText routePush withoutUnderline text={'Deposit'} link={config.routes.MY_ACCOUNT.DEPOSIT} />
+                </Grid>
+              </Grid>
+            );
+        }
+
+        return '';
     };
 
     return (
@@ -40,9 +60,11 @@ const LiquidationStateError = (props: Props) => {
         <Grid item className={classes.ErrorText}>
           {renderText()}
         </Grid>
-        <Grid item className={classes.LinkText}>
-          <LinkText text={'Read more on liquidations'} link={''} />
-        </Grid>
+        {errorType !== 4 && errorType !== 5 && (
+          <Grid item className={classes.LinkText}>
+            <LinkText text={'Read more on liquidations'} link={''} />
+          </Grid>
+          )}
       </Grid>
     );
 };

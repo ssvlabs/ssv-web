@@ -13,27 +13,37 @@ import LiquidationStateError from '~app/components/MyAccount/common/componenets/
 type Props = {
     gray80?: boolean,
     newBalance?: number,
+    newBurnRate?: number,
     disableWarning?: boolean,
+    operatorChange?: boolean,
 };
 
 const RemainingDays = (props: Props) => {
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    const { gray80, newBalance, disableWarning = false } = props;
+    const { gray80, newBalance, newBurnRate, operatorChange, disableWarning = false } = props;
+
     const oldRemainingDays = ssvStore.getRemainingDays({});
     let withdrawState: boolean = false;
     let newRemainingDays: number | undefined;
     let warningLiquidationState: boolean = oldRemainingDays < 30;
 
-    if (typeof newBalance !== 'undefined') {
-        newRemainingDays = ssvStore.getRemainingDays({ newBalance });
+    if (typeof newBalance !== 'undefined' || typeof newBurnRate !== 'undefined') {
+        newRemainingDays = ssvStore.getRemainingDays({ newBalance, newBurnRate });
         withdrawState = oldRemainingDays > newRemainingDays;
         warningLiquidationState = newRemainingDays < 30;
     }
+
     // @ts-ignore
     const classes = useStyles({ warningLiquidationState, withdrawState, gray80 });
 
     const conditionalErrorType = () => {
+        if (operatorChange && newRemainingDays === 0) {
+            return 5;
+        }
+        if (operatorChange && newRemainingDays) {
+            return 4;
+        }
         if (newRemainingDays === 0) return 3;
         return newRemainingDays ? 1 : 0;
     };
@@ -53,7 +63,7 @@ const RemainingDays = (props: Props) => {
           <Typography className={classes.Days}>
             days
           </Typography>
-          {newRemainingDays !== undefined && (
+          {newRemainingDays !== undefined && newRemainingDays - oldRemainingDays !== 0 && (
             <Grid item xs
               className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - oldRemainingDays, true)})`}
             </Grid>

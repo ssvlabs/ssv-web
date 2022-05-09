@@ -11,11 +11,7 @@ import AddressKeyInput from '~app/common/components/AddressKeyInput/AddressKeyIn
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/TransactionPendingPopUp/TransactionPendingPopUp.styles';
 
-type TransactionPendingPopUpParams = {
-    txHash: string
-};
-
-const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
+const TransactionPendingPopUp = () => {
     const stores = useStores();
     const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
@@ -32,9 +28,9 @@ const TransactionPendingPopUp = ({ txHash }: TransactionPendingPopUpParams) => {
             <Grid item xs>
               <div className={classes.validatorText}>Transaction Hash</div>
             </Grid>
-            <AddressKeyInput whiteBackgroundColor withCopy address={txHash} />
+            <AddressKeyInput whiteBackgroundColor withCopy address={applicationStore.txHash} />
           </Grid>
-          <LinkText text={'View on Etherscan'} link={`https://${walletStore.networkId === 5 ? 'goerli.' : ''}etherscan.io/tx/${txHash}`} />
+          <LinkText text={'View on Etherscan'} link={`https://${walletStore.networkId === 5 ? 'goerli.' : ''}etherscan.io/tx/${applicationStore.txHash}`} />
         </Grid>
       </Dialog>
     );

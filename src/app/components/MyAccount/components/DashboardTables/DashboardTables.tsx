@@ -257,7 +257,7 @@ const DashboardTables = () => {
                     window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`);
                 }} />
               <Grid className={classes.ExplorerImage} onClick={() => {
-                    window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`);
+                    window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
                 }} />
               <Grid className={classes.SettingsImage} onClick={() => {
                     openSingleOperator(operator.operator_id);

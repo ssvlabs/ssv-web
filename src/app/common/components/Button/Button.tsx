@@ -16,8 +16,9 @@ type ButtonParams = {
     disable: boolean,
     onClick?: any,
     testId?: string,
-    withAllowance?: boolean,
+    errorButton?: boolean,
     checkboxesText?: any[],
+    withAllowance?: boolean,
     checkBoxesCallBack?: any[],
 };
 
@@ -29,7 +30,7 @@ const Button = (props: ButtonParams) => {
     const [userAllowance, setUserAllowance] = useState(false);
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
-    const { testId, withAllowance, disable, onClick, text, checkboxesText, checkBoxesCallBack } = props;
+    const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack } = props;
 
     useEffect(() => {
         if (!ssvStore.userGaveAllowance && withAllowance && !isApprovalProcess) {
@@ -59,11 +60,12 @@ const Button = (props: ButtonParams) => {
         }
     };
 
-    const regulerButton = () => {
+    const regularButton = () => {
         return (
           <PrimaryButton
             disable={disable}
             dataTestId={testId}
+            errorButton={errorButton}
             submitFunction={() => { checkWalletConnected(onClick); }}
             text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
           />
@@ -113,7 +115,7 @@ const Button = (props: ButtonParams) => {
                     text={checkboxText} /></Grid>
                 );
             })}
-        {isApprovalProcess && process.env.REACT_APP_NEW_STAGE ? userNeedApproval() : regulerButton()}
+        {isApprovalProcess && process.env.REACT_APP_NEW_STAGE ? userNeedApproval() : regularButton()}
       </Grid>
     );
 };

@@ -32,7 +32,7 @@ const EditValidator = () => {
 
     return (
       <Grid container className={classes.EditValidatorWrapper}>
-        <WhiteWrapper header={'Update Operators for Validator'}>
+        <WhiteWrapper withCancel withBackButton={false} header={'Update Operators for Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
             <ImageDiv image={'copy'} width={24} height={24} />

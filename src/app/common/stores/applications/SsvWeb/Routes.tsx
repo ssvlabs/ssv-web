@@ -19,9 +19,11 @@ import EditValidator from '~app/components/MyAccount/components/EditValidator';
 import EnableAccount from '~app/components/MyAccount/components/EnableAccount';
 import SingleOperator from '~app/components/MyAccount/components/SingleOperator';
 import UploadKeyStore from '~app/components/MyAccount/components/UploadKeyStore';
-import SingleValidator from '~app/components/MyAccount/components/SingelValidator';
-import RemoveValidator from '~app/components/MyAccount/components/RemoveValidator';
+import OperatorRemoved from '~app/components/MyAccount/components/OperatorRemoved';
+import RemoveOperator from '~app/components/MyAccount/components/RemoveOperator';
+import SingleValidator from '~app/components/MyAccount/components/SingleValidator';
 import OperatorTransactionConfirmation from '~app/components/OperatorConfirmation';
+import RemoveValidator from '~app/components/MyAccount/components/RemoveValidator';
 import ProductQuestions from '~app/components/MyAccount/components/ProductQuestions';
 import ValidatorTransactionConfirmation from '~app/components/ImportValidatorConfirmation';
 import ImportValidator from '~app/components/RegisterValidatorHome/components/ImportValidator';
@@ -51,6 +53,8 @@ const Routes: any = () => {
             <Route exact path={config.routes.MY_ACCOUNT.VALIDATOR} component={SingleValidator} />
             <Route exact path={config.routes.MY_ACCOUNT.ENABLE_ACCOUNT} component={EnableAccount} />
             <Route exact path={config.routes.MY_ACCOUNT.EDIT_VALIDATOR} component={EditValidator} />
+            <Route exact path={config.routes.MY_ACCOUNT.REMOVE_OPERATOR} component={RemoveOperator} />
+            <Route exact path={config.routes.MY_ACCOUNT.OPERATOR_REMOVED} component={OperatorRemoved} />
             <Route exact path={config.routes.MY_ACCOUNT.UPLOAD_KEY_STORE} component={UploadKeyStore} />
             <Route exact path={config.routes.MY_ACCOUNT.REMOVE_VALIDATOR} component={RemoveValidator} />
             <Route exact path={config.routes.MY_ACCOUNT.VALIDATOR_REMOVED} component={ProductQuestions} />

@@ -5,12 +5,12 @@ import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
+import Button from '~app/common/components/Button';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import Checkbox from '~app/common/components/CheckBox/CheckBox';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/MyAccount/components/RemoveValidator/RemoveValidator.styles';
 
@@ -42,11 +42,8 @@ const RemoveValidator = () => {
 
     const removeValidator = async () => {
         const response = await validatorStore.removeValidator(public_key);
-        if (response) {
-            history.push(`/dashboard/validator/${public_key}/removed`);
-        } else {
-            history.push(`/dashboard/validator/${public_key}/removed`);
-        }
+        if (response) history.push(`/dashboard/validator/${public_key}/removed`);
+        history.push(`/dashboard/validator/${public_key}/removed`);
     };
 
     if (!validator) return null;
@@ -90,13 +87,13 @@ const RemoveValidator = () => {
               <Grid item className={classes.CheckBoxWrapper}>
                 <Checkbox
                   onClickCallBack={checkboxChange}
-                  text={'I understand that that my validator will be removed from the network and it will stop attesting on the beacon chain'}
+                  text={'I understand that my validator will be removed from the network and it will stop attesting on the beacon chain'}
                 />
-                <PrimaryButton
+                <Button
                   errorButton
-                  text={'Remove Validator '}
+                  text={'Remove Validator'}
+                  onClick={removeValidator}
                   disable={!removeButtonEnabled}
-                  submitFunction={removeValidator}
                 />
               </Grid>
             </Grid>,

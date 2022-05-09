@@ -42,8 +42,8 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
             <TableHead>
               {headerGroups.map((headerGroup: any) => (
                 <TableRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column: any) => (
-                    <TableCell {...column.getHeaderProps()}>
+                  {headerGroup.headers.map((column: any, index: number) => (
+                    <TableCell style={{ width: index === 0 ? '30%' : 'auto' }} {...column.getHeaderProps()}>
                       {column.render('Header')}
                     </TableCell>
                             ))}

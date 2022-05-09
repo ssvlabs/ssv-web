@@ -199,6 +199,7 @@ class OperatorStore extends BaseStore {
             return false;
         }
     }
+
     /**
      * Check if operator already exists in the contract
      * @param operatorId
@@ -213,6 +214,25 @@ class OperatorStore extends BaseStore {
             console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
             console.log(e.message);
             return 0;
+        }
+    }
+
+    /**
+     * Remove Operator
+     * @param operatorId
+     */
+    @action.bound
+    async removeOperator(operatorId: number): Promise<any> {
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contractInstance = walletStore.getContract;
+            await contractInstance.methods.removeOperator(operatorId).call({ from: walletStore.accountAddress });
+            return true;
+        } catch (e) {
+            // TODO: handle error
+            console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
+            console.log(e.message);
+            return false;
         }
     }
 

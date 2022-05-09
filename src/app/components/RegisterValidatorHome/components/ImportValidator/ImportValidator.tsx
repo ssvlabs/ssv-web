@@ -179,7 +179,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const buttonDisableConditions = !validatorStore.isJsonFile
         || !keyStorePassword
         || !!errorMessage
-        || validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase();
+        || (reUpload && validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase());
 
     return (
       <BorderScreen

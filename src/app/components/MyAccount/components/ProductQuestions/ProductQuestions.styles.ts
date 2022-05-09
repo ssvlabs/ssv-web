@@ -7,7 +7,6 @@ export const useStyles = makeStyles(() => ({
     },
     SubHeaderWrapper: {
         gap: 8,
-        marginTop: 12,
         paddingBottom: 30,
     },
     TextFieldWrapper: {

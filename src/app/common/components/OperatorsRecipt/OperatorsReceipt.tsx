@@ -2,10 +2,12 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
+import { roundNumber } from '~lib/utils/numbers';
 import Status from '~app/common/components/Status';
+import Button from '~app/common/components/Button';
+import Checkbox from '~app/common/components/CheckBox';
 import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import PrimaryButton from '~app/common/components/PrimaryButton';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -14,7 +16,6 @@ import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScr
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
-import { roundNumber } from '~lib/utils/numbers';
 
 type Props = {
     operators: any,
@@ -30,7 +31,8 @@ const OperatorsReceipt = (props: Props) => {
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const classes = useStyles({ currentOperators });
-    
+    const [checked, setChecked] = React.useState(false);
+
     const oldOperatorsFee = previousOperators?.reduce(
         (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
         0,
@@ -44,7 +46,16 @@ const OperatorsReceipt = (props: Props) => {
     const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
     const operatorsYearlyFee = operatorStore.getFeePerYear(newOperatorsFee);
     const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
-    remainingDays;
+
+    const checkBox = () => {
+        // @ts-ignore
+        if (remainingDays < 30 && remainingDays !== 0) {
+            return (
+              <Checkbox disable={false} text={'I understand the risks of having my account liquidated'} onClickCallBack={() => { setChecked(!checked); }} />
+            );
+        }
+        return null;
+    };
 
     const body = [
       <Grid container item>
@@ -84,10 +95,29 @@ const OperatorsReceipt = (props: Props) => {
         </Grid>
       </Grid>,
       <Grid container item>
-        <RemainingDays disableWarning={currentOperators} gray80={currentOperators} />
+        <RemainingDays
+          gray80={currentOperators}
+          disableWarning={currentOperators}
+          operatorChange={!currentOperators}
+          newBurnRate={!currentOperators ? ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) : undefined}
+        />
       </Grid>,
     ];
-    if (!currentOperators) body.push(<PrimaryButton text={'Update Operators'} submitFunction={validatorStore.updateValidator} />);
+
+    if (!currentOperators) {
+        body.push(
+          <Grid item xs>
+            {checkBox()}
+            <Button
+                // @ts-ignore
+              text={'Update Operators'}
+              onClick={validatorStore.updateValidator}
+                // @ts-ignore
+              disable={remainingDays === 0 || (remainingDays < 30 && !checked)}
+            />
+          </Grid>,
+        );
+    }
 
     return (
       <BorderScreen

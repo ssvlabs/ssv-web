@@ -13,7 +13,6 @@ import NotificationsStore from '~app/common/stores/applications/Distribution/Not
  */
 
 class DistributionStore extends BaseStore {
-    @observable txHash: string = '';
     @observable rewardIndex: number = 0;
     @observable claimed: boolean = false;
     @observable userAddress: string = '';
@@ -46,7 +45,7 @@ class DistributionStore extends BaseStore {
                     resolve(true);
                 })
                 .on('transactionHash', (txHash: string) => {
-                    this.txHash = txHash;
+                    applicationStore.txHash = txHash;
                     applicationStore.showTransactionPendingPopUp(true);
                 })
                 .on('error', (error: any) => {

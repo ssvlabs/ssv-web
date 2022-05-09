@@ -107,11 +107,13 @@ const Withdraw = () => {
           bottom={(
             <Button
               withAllowance
-              text={'Withdraw'}
+                /* TODO: in case checkbox clicked and disappear from screen when it will return the state will be clicked but the checkbox will not be reflected  */
+              text={ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
               onClick={withdrawSsv}
-              checkBoxesCallBack={[setUserAgreement]}
-              disable={!userAgree || inputValue === 0}
-              checkboxesText={['I understand that risks of having my account liquidated.']}
+              errorButton={ssvStore.getRemainingDays({ newBalance }) === 0}
+              disable={(ssvStore.getRemainingDays({ newBalance }) === 0 && !userAgree) || inputValue === 0}
+              checkBoxesCallBack={ssvStore.getRemainingDays({ newBalance }) <= 30 ? [setUserAgreement] : []}
+              checkboxesText={ssvStore.getRemainingDays({ newBalance }) === 0 ? ['I understand that risks of having my account liquidated.'] : []}
             />
           )}
         />

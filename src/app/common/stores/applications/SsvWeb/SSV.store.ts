@@ -65,12 +65,12 @@ class SsvStore extends BaseStore {
     getRemainingDays({ newBalance, newBurnRate }: { newBalance?: number, newBurnRate?: number }): number {
         try {
             const ssvStore: SsvStore = this.getStore('SSV');
-            const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
             const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
+            const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
             const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
             const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-            if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
             if (ssvAmount === 0) return 0;
+            if (burnRatePerDay === 0) return 0;
             return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
         } catch (e) {
             return 0;
@@ -115,20 +115,6 @@ class SsvStore extends BaseStore {
             });
         });
     };
-
-    /**
-     Gets new remaining days for account after deposit or withdraw
-     * @param newBalance
-     */
-    @action.bound
-    getNewRemainingDays(newBalance: number | undefined): number {
-        if (!newBalance) return 0;
-        const blocksPerDay = config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-        const blocksPerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        const burnRatePerDay = this.accountBurnRate * blocksPerDay;
-        const liquidationCollateral = this.liquidationCollateral / blocksPerYear;
-        return newBalance / burnRatePerDay - liquidationCollateral ?? 0;
-    }
 
     /**
      * Gets the contract address regarding the testnet/mainnet flag in url search params.
@@ -352,7 +338,7 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     getNewAccountBurnRate(oldOperatorsFee: number, newOperatorsFee: number): number {
-      return (this.accountBurnRate - oldOperatorsFee + newOperatorsFee) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+      return this.accountBurnRate - oldOperatorsFee + newOperatorsFee;
     }
 
     // /**

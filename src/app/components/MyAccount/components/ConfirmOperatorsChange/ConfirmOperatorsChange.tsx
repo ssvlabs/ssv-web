@@ -7,11 +7,11 @@ import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import OperatorsReceipt from '~app/common/components/OperatorsRecipt';
 // import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
-import { useStyles } from './ConfirmOperatorsChange.styles';
 import Validator from '~lib/api/Validator';
 import BackNavigation from '~app/common/components/BackNavigation';
+import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { useStyles } from './ConfirmOperatorsChange.styles';
 
 const ConfirmOperatorsChange = () => {
     const stores = useStores();
@@ -32,7 +32,7 @@ const ConfirmOperatorsChange = () => {
 
     return (
       <Grid container className={classes.Wrapper}>
-        <WhiteWrapper header={'Update Operators for Validator'}>
+        <WhiteWrapper withCancel withBackButton={false} header={'Update Operators for Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
             <ImageDiv image={'copy'} width={24} height={24} />
@@ -45,10 +45,10 @@ const ConfirmOperatorsChange = () => {
             <BackNavigation />
           </Grid>
           <Grid container item className={classes.TableWrapper}>
-            <Grid item>
+            <Grid item className={classes.Table}>
               <OperatorsReceipt operators={operators} currentOperators header={'Current Operators'} />
             </Grid>
-            <Grid item>
+            <Grid item className={classes.Table}>
               <OperatorsReceipt previousOperators={operators} operators={Object.values(operatorStore.selectedOperators)} header={'New Operators'} />
             </Grid>
           </Grid>

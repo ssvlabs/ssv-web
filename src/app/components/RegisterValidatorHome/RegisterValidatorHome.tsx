@@ -35,7 +35,7 @@ const RegisterValidatorHome = () => {
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Import Validator'} submitFunction={() => { history.push(config.routes.VALIDATOR.IMPORT); }} />
+                <SecondaryButton text={'Import Validator'} submitFunction={() => { validatorStore.keyStoreFile = null; history.push(config.routes.VALIDATOR.IMPORT); }} />
               </Grid>
             </Grid>
           </Grid>

@@ -34,6 +34,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         const handleClickOutside = (e: any) => {
             // @ts-ignore
             if (menuBar && wrapperRef.current && (!wrapperRef.current.contains(e.target) && !buttonsRef.current.contains(e.target))) {
+                console.log('close menu');
                 openMenuBar(false);
             }
         };
@@ -61,7 +62,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
                     <Grid
                       item
                       key={index}
-                      onClick={button.onClick}
+                      onClick={() => { openMenuBar(false); button.onClick(); }}
                       className={`${classes.MenuButton} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
                       >
                       {button.label}

@@ -4,7 +4,8 @@ export const useStyles = makeStyles((theme) => ({
     Link: {
         cursor: 'pointer',
         display: 'inline-block',
-        textDecoration: 'underline',
+        overflowWrap: 'break-word',
         color: theme.colors.primaryBlue,
+        textDecoration: (props: any) => props.withoutUnderline ? '' : 'underline',
     },
 }));

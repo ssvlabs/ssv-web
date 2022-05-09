@@ -144,9 +144,8 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: 24,
     },
     OperatorsWrapper: {
-        width: '100%',
-        marginLeft: 300,
-        marginRight: 300,
+        width: 1320,
+        margin: 'auto',
     },
     Edit: {
         gap: 10,

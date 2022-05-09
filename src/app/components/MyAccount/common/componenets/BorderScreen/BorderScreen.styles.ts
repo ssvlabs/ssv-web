@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme) => ({
             width: '100%',
         },
         [screenSizes.md]: {
-            width: 452,
+            width: 648,
         },
         [screenSizes.lg]: {
             width: 648,

@@ -21,6 +21,9 @@ const Withdraw = () => {
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
     useEffect(() => {
+        if (ssvStore.getRemainingDays({ newBalance }) > 30 && userAgree) {
+            setUserAgreement(false);
+        }
         if (inputValue === ssvStore.contractDepositSsvBalance && ssvStore.isValidatorState) {
             setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
         } else if (buttonColor.default === '#ec1c2640') {
@@ -107,13 +110,12 @@ const Withdraw = () => {
           bottom={(
             <Button
               withAllowance
-                /* TODO: in case checkbox clicked and disappear from screen when it will return the state will be clicked but the checkbox will not be reflected  */
-              text={ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
               onClick={withdrawSsv}
               errorButton={ssvStore.getRemainingDays({ newBalance }) === 0}
-              disable={(ssvStore.getRemainingDays({ newBalance }) === 0 && !userAgree) || inputValue === 0}
+              text={ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
+              disable={(ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || inputValue === 0}
               checkBoxesCallBack={ssvStore.getRemainingDays({ newBalance }) <= 30 ? [setUserAgreement] : []}
-              checkboxesText={ssvStore.getRemainingDays({ newBalance }) === 0 ? ['I understand that risks of having my account liquidated.'] : []}
+              checkboxesText={ssvStore.getRemainingDays({ newBalance }) <= 30 ? ['I understand that risks of having my account liquidated.'] : []}
             />
           )}
         />

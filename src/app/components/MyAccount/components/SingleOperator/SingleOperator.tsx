@@ -60,7 +60,7 @@ const SingleOperator = () => {
     // @ts-ignore
     const { page, pages, perPage, total } = operatorsValidatorsPagination || {};
     // @ts-ignore
-    const { name, logo, type, status, address, validators_count } = operator || {};
+    const { name, logo, type, status, address, validators_count, fee } = operator || {};
     const classes = useStyles({ operatorLogo: logo });
 
     const copyToClipboard = (key: string) => {
@@ -134,7 +134,7 @@ const SingleOperator = () => {
                 } = validator;
 
                 return {
-                    status: <Status status={'active'} />,
+                    status: <Status status={'inactive'} />,
                     public_key: <Typography
                       className={classes.TableValueText}>{`0x${longStringShorten(public_key, 6, 4)}`}</Typography>,
                     extra_buttons: <Grid item container className={classes.ExtraButtonWrapper}>
@@ -155,7 +155,7 @@ const SingleOperator = () => {
         () => [
             {
                 id: 'col13',
-                Header: <Grid container justify={'space-between'} alignItems={'center'}>
+                Header: <Grid item container justify={'space-between'} alignItems={'center'}>
                   <Typography>Validators</Typography>
                 </Grid>,
                 columns: [
@@ -204,7 +204,7 @@ const SingleOperator = () => {
                 </Grid>
                 {item.value}
               </Grid>
-                    ))}
+            ))}
           </Grid>
         </WhiteWrapper>
         <Grid container item className={classes.SecondSectionWrapper}>
@@ -224,20 +224,24 @@ const SingleOperator = () => {
               />
             </Grid>
           )}
+
           <Grid item className={classes.AnnualWrapper}>
             <BorderScreen
               withoutNavigation
               header={'Annual Fee'}
               body={[
-                <Grid container item justify={'space-between'}>
+                <Grid container item style={{ gap: 20 }}>
                   <Grid item xs={12}>
-                    <SsvAndSubTitle ssv={100} bold leftTextAlign subText={'~$76.78'} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button disable={false} text={'bla'} onClick={console.log} />,
+                    <SsvAndSubTitle ssv={fee || 0} bold leftTextAlign subText={'~$76.78'} />
                   </Grid>
                 </Grid>,
               ]}
+              bottom={[
+                <Grid item xs>
+                  <Button disable={false} text={'Change Fee'} onClick={console.log} />
+                </Grid>,
+              ]}
+              bottomWrapper={classes.ButtonSection}
               wrapperClass={classes.AnnualWrapper}
             />
           </Grid>

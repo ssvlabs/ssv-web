@@ -53,14 +53,11 @@ export const useStyles = makeStyles((theme) => ({
             marginBottom: 24,
         },
     },
-    AnnualSection: {
+    ButtonSection: {
         height: 'fit-content',
         padding: theme.spacing(8),
-        '&:nth-child(2)': {
-            backgroundColor: 'red',
-            borderTop: `solid 1px ${theme.colors.gray20}`,
-            // padding: theme.spacing(5, 8, 8, 8),
-        },
+        border: 'none',
+        borderTop: '1px solid rgba(230, 234, 247, 0.5)',
     },
     TableValueText: {
         fontSize: 16,

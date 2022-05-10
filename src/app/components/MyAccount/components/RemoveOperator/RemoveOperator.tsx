@@ -110,10 +110,9 @@ const RemoveOperator = () => {
     };
 
     const submitForm = async () => {
-        console.log('before');
+        // TODO: sit with product to understand how to send data to backend
         const isRemoved = await operatorStore.removeOperator(operator_id);
         if (isRemoved) history.push(`/dashboard/operator/${operator_id}/removed`);
-        console.log(userTextReason);
     };
 
     // @ts-ignore

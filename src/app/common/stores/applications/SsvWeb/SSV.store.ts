@@ -70,7 +70,7 @@ class SsvStore extends BaseStore {
             const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
             const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
             if (ssvAmount === 0) return 0;
-            if (burnRatePerDay === 0) return 0;
+            if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
             return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
         } catch (e) {
             return 0;

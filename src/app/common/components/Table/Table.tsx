@@ -40,10 +40,10 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
         <TableContainer className={classes.CustomizeCss}>
           <MaUTable {...getTableProps()}>
             <TableHead>
-              {headerGroups.map((headerGroup: any) => (
-                <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (
+                <TableRow key={headerGroupIndex} {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column: any, index: number) => (
-                    <TableCell style={{ width: index === 0 ? '30%' : 'auto' }} {...column.getHeaderProps()}>
+                    <TableCell key={index} style={{ width: index === 0 ? '30%' : 'auto' }} {...column.getHeaderProps()}>
                       {column.render('Header')}
                     </TableCell>
                             ))}
@@ -51,13 +51,13 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
                     ))}
             </TableHead>
             <TableBody>
-              {rows.map((row: any) => {
+              {rows.map((row: any, index: number) => {
                         prepareRow(row);
                         return (
-                          <TableRow {...row.getRowProps()}>
-                            {row.cells.map((cell: any) => {
+                          <TableRow key={index} {...row.getRowProps()}>
+                            {row.cells.map((cell: any, rowIndex: number) => {
                                     return (
-                                      <TableCell {...cell.getCellProps()}>
+                                      <TableCell key={rowIndex} {...cell.getCellProps()}>
                                         {cell.render('Cell')}
                                       </TableCell>
                                     );

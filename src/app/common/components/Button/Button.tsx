@@ -110,9 +110,9 @@ const Button = (props: ButtonParams) => {
       <Grid container>
         {checkboxesText?.map((checkboxText: string, index: number) => {
                 return (
-                    // @ts-ignore
-                  <Grid key={index} item xs={12}><CheckBox onClickCallBack={checkBoxesCallBack[index]}
-                    text={checkboxText} /></Grid>
+                  <Grid key={index} item xs={12}>
+                    <CheckBox onClickCallBack={checkBoxesCallBack && checkBoxesCallBack[index]} text={checkboxText} />
+                  </Grid>
                 );
             })}
         {isApprovalProcess && process.env.REACT_APP_NEW_STAGE ? userNeedApproval() : regularButton()}

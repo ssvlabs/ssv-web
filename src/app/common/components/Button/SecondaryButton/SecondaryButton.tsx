@@ -11,18 +11,20 @@ import { useStyles } from './SecondaryButton.styles';
 type Props = {
     text: string,
     disable?: boolean,
+    className?: string,
     submitFunction: any,
     dataTestId?: string,
+    noCamelCase?: boolean,
     withVerifyConnection?: boolean
 };
 
 const SecondaryButton = (props: Props) => {
     const stores = useStores();
-    const classes = useStyles();
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, dataTestId, withVerifyConnection } = props;
+    const { text, submitFunction, className, disable, dataTestId, noCamelCase, withVerifyConnection } = props;
+    const classes = useStyles({ noCamelCase });
 
     const submit = async () => {
         if (walletStore.isWrongNetwork) {
@@ -40,7 +42,7 @@ const SecondaryButton = (props: Props) => {
         type="submit"
         onClick={submit}
         data-testid={dataTestId}
-        className={classes.SecondaryButton}
+        className={className ?? classes.SecondaryButton}
         disabled={disable || applicationStore.isLoading}
       >
         {applicationStore.isLoading && <Spinner />}

@@ -1,6 +1,7 @@
 const config = {
     routes: {
         HOME: '/',
+        COUNTRY_NOT_SUPPORTED: '/compliance',
         DISTRIBUTION: {
             CLAIM: '/',
             SUCCESS: '/success',
@@ -10,7 +11,9 @@ const config = {
             DEPOSIT: '/dashboard/deposit',
             WITHDRAW: '/dashboard/withdraw',
             ENABLE_ACCOUNT: '/dashboard/enable_account',
-            OPERATOR: '/dashboard/operator/:public_key',
+            OPERATOR: '/dashboard/operator/:operator_id',
+            REMOVE_OPERATOR: '/dashboard/operator/:operator_id/remove',
+            OPERATOR_REMOVED: '/dashboard/operator/:operator_id/removed',
             VALIDATOR: '/dashboard/validator/:public_key',
             EDIT_VALIDATOR: '/dashboard/validator/:public_key/edit',
             REMOVE_VALIDATOR: '/dashboard/validator/:public_key/remove',

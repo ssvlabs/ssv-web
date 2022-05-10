@@ -6,7 +6,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     SubHeaderWrapper: {
         gap: 8,
-        marginTop: 12,
         paddingBottom: 30,
     },
     Section: {

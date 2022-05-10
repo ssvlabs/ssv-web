@@ -75,8 +75,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         };
         setLoading(true);
         const response = await Operator.getInstance().getOperators(payload);
-
-        if (response.pagination.page > 1) {
+        if (response?.pagination?.page > 1) {
             setOperatorsData([...operatorsData, ...response.operators]);
         } else {
             setOperatorsData(response.operators);

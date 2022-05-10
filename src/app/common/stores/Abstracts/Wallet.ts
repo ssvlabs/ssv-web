@@ -10,12 +10,14 @@ export default abstract class Wallet extends BaseStore {
     getContract: Contract;
     accountAddress: string;
     isWrongNetwork: boolean;
+    networkId: number | null;
     accountDataLoaded: boolean;
 
     protected constructor(getContract: Contract) {
         super();
         this.wallet = null;
         this.connected = '';
+        this.networkId = null;
         this.accountAddress = '';
         this.isWrongNetwork = false;
         this.getContract = getContract;
@@ -31,7 +33,7 @@ export default abstract class Wallet extends BaseStore {
     // eslint-disable-next-line no-unused-vars
     public abstract fromWei(amount?: string): number;
     // eslint-disable-next-line no-unused-vars
-    public abstract toWei(amount?: number): string;
+    public abstract toWei(amount?: number | string): string;
     public abstract initWalletHooks(): void;
     public abstract connectWalletFromCache(): void;
 }

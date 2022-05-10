@@ -16,7 +16,15 @@ export const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         padding: theme.spacing(3, 4, 3, 4),
         width: (props: any) => props.walletConnected ? 189 : 171,
-        backgroundColor: (props: any) => props.walletConnected ? theme.colors.white : theme.colors.primaryBlue,
+        backgroundColor: (props: any) => {
+            if (props.whiteAppBar) {
+                return theme.colors.gray10;
+            }
+            if (props.walletConnected) {
+                return theme.colors.white;
+            }
+            return theme.colors.primaryBlue;
+        },
     },
     WalletImage: {
         width: 24,

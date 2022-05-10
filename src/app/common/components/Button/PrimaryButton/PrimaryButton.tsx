@@ -60,7 +60,7 @@ const PrimaryButton = (props: Props) => {
           disabled={disable || applicationStore.isLoading}
           className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
         >
-          {applicationStore.isLoading && !withoutLoader && <Spinner />}
+          {applicationStore.isLoading && !withoutLoader && <Spinner errorSpinner={errorButton} />}
           {text}
         </Button>
       </Grid>

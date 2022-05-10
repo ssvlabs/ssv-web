@@ -54,7 +54,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         body={[
           <Grid container>
             <HeaderSubHeader title={'Selected Operators'} />
-            <Grid container item>
+            <Grid container item className={classes.BoxesWrapper}>
               {boxes.map((index: number) => {
                       if (operatorStore.selectedOperators[index]) {
                           const operator = operatorStore.selectedOperators[index];
@@ -90,8 +90,12 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                   Total Operators Yearly Fee
                 </Grid>
                 <Grid item>
-                  <SsvAndSubTitle bold ssv={operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee)}
-                    subText={'~$757.5'} subTextCenter={false} />
+                  <SsvAndSubTitle
+                    bold
+                    subText={'~$757.5'}
+                    subTextCenter={false}
+                    ssv={operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee)}
+                  />
                 </Grid>
               </Grid>
               )}

@@ -15,7 +15,7 @@ const UploadKeyStore = () => {
 
     return (
       <Grid container className={classes.Wrapper}>
-        <WhiteWrapper header={'Update Operators for Validator'}>
+        <WhiteWrapper withBackButton={false} header={'Update Operators for Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
             <ImageDiv image={'copy'} width={24} height={24} />

@@ -8,7 +8,6 @@ import TextInput from '~app/common/components/TextInput';
 import InputLabel from '~app/common/components/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import { useStyles } from '~app/components/Distribution/components/Claim/Claim.styles';
@@ -35,7 +34,6 @@ const Claim = () => {
         withoutNavigation
         body={[
           <Grid container>
-            {distributionStore.txHash && <TransactionPendingPopUp txHash={distributionStore.txHash} />}
             <HeaderSubHeader
               title={distributionStore.userAddress ? 'Congrats, you are eligible for the following rewards!' : 'Claim Testnet Rewards'}
               subtitle={distributionStore.userAddress ? 'Thank you for participating in the ssv.network testnet!' : ''}
@@ -62,10 +60,10 @@ const Claim = () => {
               </Grid>
             )}
             <PrimaryButton
-              wrapperClass={classes.CtaButton}
-              text={!distributionStore.claimed && distributionStore.userAddress ? 'Claim SSV Reward' : 'Connect a Different Wallet'}
               submitFunction={claimRewards}
+              wrapperClass={classes.CtaButton}
               dataTestId={'connect-to-wallet-button'}
+              text={!distributionStore.claimed && distributionStore.userAddress ? 'Claim SSV Reward' : 'Connect a Different Wallet'}
             />
           </Grid>,
         ]}

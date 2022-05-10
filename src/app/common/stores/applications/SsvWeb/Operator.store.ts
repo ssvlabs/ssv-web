@@ -70,10 +70,6 @@ class OperatorStore extends BaseStore {
     @computed
     get getSelectedOperatorsFee(): number {
         const walletStore: WalletStore = this.getStore('Wallet');
-        console.log(Object.values(this.selectedOperators).reduce(
-            (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
-            0,
-        ));
         return Object.values(this.selectedOperators).reduce(
             (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
             0,
@@ -166,7 +162,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const contract: Contract = walletStore.getContract;
                 contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {
-                    const ssv = walletStore.web3.utils.fromWei(response);
+                    const ssv = walletStore.fromWei(response);
                     this.operatorsFees[publicKey] = { ssv, dollar: 0 };
                     resolve(ssv);
                 });
@@ -192,17 +188,18 @@ class OperatorStore extends BaseStore {
      * @param contract
      */
     @action.bound
-    async checkIfOperatorExists(publicKey: string): Promise<boolean> {
+    async checkIfOperatorExists(operatorId: string): Promise<boolean> {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
             const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.operatorsByPublicKey(publicKey).call({ from: this.newOperatorKeys.address });
+            const result = await contractInstance.methods.operatorsByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);
             return false;
         }
     }
+
     /**
      * Check if operator already exists in the contract
      * @param operatorId
@@ -217,6 +214,25 @@ class OperatorStore extends BaseStore {
             console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
             console.log(e.message);
             return 0;
+        }
+    }
+
+    /**
+     * Remove Operator
+     * @param operatorId
+     */
+    @action.bound
+    async removeOperator(operatorId: number): Promise<any> {
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const contractInstance = walletStore.getContract;
+            await contractInstance.methods.removeOperator(operatorId).call({ from: walletStore.accountAddress });
+            return true;
+        } catch (e) {
+            // TODO: handle error
+            console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
+            console.log(e.message);
+            return false;
         }
     }
 
@@ -239,12 +255,21 @@ class OperatorStore extends BaseStore {
                 const gasEstimation: PriceEstimation = new PriceEstimation();
                 this.newOperatorReceipt = null;
 
+                // try {
+                //     console.log(this.operatorFeePerBlock(transaction.fee));
+                //     console.log(roundNumber(this.operatorFeePerBlock(transaction.fee), 16));
+                //     console.log(walletStore.toWei(roundNumber(this.operatorFeePerBlock(transaction.fee), 16)));
+                // } catch (e: any) {
+                //     console.log('<<<<<<<<ehre>>>>>>>>');
+                //     console.log(e.message);
+                // }
+
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.web3.utils.toWei(this.operatorFeePerBlock(transaction.fee)),
+                        walletStore.toWei(this.operatorFeePerBlock(transaction.fee)),
                     );
                 } else {
                     payload.push(
@@ -366,23 +391,12 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     operatorFeePerBlock(fee: any): number {
-        return roundNumber(fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
+        return fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
     }
 
     @action.bound
     getFeePerYear(fee: any): number {
         return roundNumber(fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
-    }
-
-    @action.bound
-    getFeePer(type: string, fee: number): number {
-        if (type === 'year') {
-            console.log(fee);
-            return fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        } if (type === 'block') {
-            return fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR ?? 0;
-        }
-        return fee;
     }
 
     @action.bound

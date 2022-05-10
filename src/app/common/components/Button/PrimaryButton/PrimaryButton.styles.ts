@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%',
         fontWeight: 600,
         borderRadius: 8,
-        textTransform: 'capitalize',
+        textTransform: 'none',
         fontFamily: 'Manrope !important',
         color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.white,
         backgroundColor: (props: any) => props.errorButton ? theme.colors.primaryErrorRegular : theme.colors.primaryBlue,
@@ -30,17 +30,17 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: 16,
         textTransform: 'capitalize',
         fontFamily: 'Manrope !important',
-        color: theme.colors.tint20,
-        backgroundColor: theme.colors.tint80,
+        color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.tint20,
+        backgroundColor: (props: any) => props.errorButton ? theme.colors.primaryErrorRegular : theme.colors.tint80,
         '&:hover': {
-            backgroundColor: theme.colors.tint80,
+            backgroundColor: (props: any) => props.errorButton ? '' : theme.colors.tint80,
         },
         '&:focus': {
             backgroundColor: theme.colors.tint80,
         },
         '&:disabled': {
-            color: theme.colors.tint20,
-            backgroundColor: theme.colors.tint80,
+            color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.tint20,
+            backgroundColor: (props: any) => props.errorButton ? theme.colors.primaryErrorRegular : theme.colors.tint80,
         },
     },
     CheckBoxWrapper: {

@@ -34,6 +34,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         const handleClickOutside = (e: any) => {
             // @ts-ignore
             if (menuBar && wrapperRef.current && (!wrapperRef.current.contains(e.target) && !buttonsRef.current.contains(e.target))) {
+                console.log('close menu');
                 openMenuBar(false);
             }
         };
@@ -46,6 +47,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
     }, [wrapperRef, buttonsRef, menuBar]);
 
     const logoAction = () => {
+        if (applicationStore.userGeo) return;
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
@@ -60,7 +62,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
                     <Grid
                       item
                       key={index}
-                      onClick={button.onClick}
+                      onClick={() => { openMenuBar(false); button.onClick(); }}
                       className={`${classes.MenuButton} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
                       >
                       {button.label}
@@ -113,11 +115,14 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
                 })}
           </Grid>
         </Grid>
+
         <Grid item className={classes.GridItem}>
           <Grid item container style={{ alignItems: 'center' }}>
-            <Grid item>
-              <ConnectWalletButton />
-            </Grid>
+            {!applicationStore.userGeo && (
+              <Grid item>
+                <ConnectWalletButton />
+              </Grid>
+              )}
             <Grid item className={classes.DarkModeWrapper}>
               <DarkModeSwitcher margin />
             </Grid>

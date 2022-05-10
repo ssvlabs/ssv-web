@@ -18,8 +18,11 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     buttonText;
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const classes = useStyles({ walletConnected: walletStore.connected });
     const applicationStore: ApplicationStore = stores.Application;
+    const classes = useStyles({
+        walletConnected: walletStore.connected,
+        whiteAppBar: applicationStore.whiteNavBarBackground,
+    });
 
     const onClick = () => {
       if (walletStore.connected) {

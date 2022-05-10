@@ -8,12 +8,12 @@ type Props = {
 };
 
 const OperatorType = (props: Props) => {
-    const classes = useStyles();
     const isVerified = props.type === 'verified_operator';
     const isDappNode = props.type === 'dapp_node';
+    const classes = useStyles({ isVerified, isDappNode });
 
     return (
-      <Grid item className={`${classes.OperatorType} ${isVerified ? classes.Verified : ''} ${isDappNode ? classes.DappNode : ''}`} />
+      <Grid item className={classes.OperatorType} />
     );
 };
 

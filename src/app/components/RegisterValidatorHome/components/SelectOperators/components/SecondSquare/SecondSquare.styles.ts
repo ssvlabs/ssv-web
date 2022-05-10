@@ -3,7 +3,12 @@ import { makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) => ({
     ScreenWrapper: {
         width: '100%',
+        marginBottom: 100,
         marginTop: (props: any) => props.editPage ? '' : 28,
+        '@media only screen and (max-width: 1400px)': {
+            marginTop: 24,
+            marginBottom: 24,
+        },
     },
     DeleteOperator: {
         top: -10,
@@ -23,7 +28,11 @@ export const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         backgroundColor: theme.colors.white,
     },
-
+    BoxesWrapper: {
+        '@media only screen and (max-width: 1400px)': {
+            justifyContent: 'space-between',
+        },
+    },
     SelectedOperatorBox: {
         width: 360,
         height: 97,
@@ -37,6 +46,9 @@ export const useStyles = makeStyles((theme) => ({
         padding: '28px 20px 29px 20px',
         backgroundColor: theme.colors.white,
         border: `solid 1px ${theme.colors.gray20}`,
+        '@media only screen and (max-width: 1400px)': {
+            maxWidth: 300,
+        },
     },
 
     BoxPlaceHolder: {
@@ -51,6 +63,9 @@ export const useStyles = makeStyles((theme) => ({
         padding: '24px 100px 47px 20px',
         backgroundColor: theme.colors.gray10,
         border: `dashed 1px ${theme.colors.gray30}`,
+        '@media only screen and (max-width: 1400px)': {
+            maxWidth: 300,
+        },
     },
     WarningMessage: {
         gap: 8,

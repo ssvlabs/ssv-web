@@ -14,6 +14,8 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
   @observable theme: Theme;
+  @observable txHash: string = '';
+  @observable userGeo: string = '';
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;
@@ -45,6 +47,16 @@ class ApplicationStore extends BaseStore implements Application {
   }
 
   @action.bound
+  setTransactionHash(txHash: string) {
+    this.txHash = txHash;
+  }
+
+  @action.bound
+  showTransactionPendingPopUp(status: boolean) {
+    this.transactionPendingPopUp = status;
+  }
+
+  @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
   }
@@ -73,11 +85,6 @@ class ApplicationStore extends BaseStore implements Application {
   @action.bound
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
-  }
-
-  @action.bound
-  showTransactionPendingPopUp(status: boolean) {
-    this.transactionPendingPopUp = status;
   }
 
   @action.bound

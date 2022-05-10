@@ -11,6 +11,7 @@ import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
@@ -56,18 +57,32 @@ class ValidatorStore extends BaseStore {
    * Add new validator
    */
   @action.bound
-  async removeValidator(publicKey: string) {
-    console.log(publicKey);
+  async removeValidator(publicKey: string): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
+    const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract: Contract = walletStore.getContract;
     const ownerAddress: string = walletStore.accountAddress;
-
-    try {
-      await contract.methods.removeValidator(publicKey).send({ from: ownerAddress });
-      return true;
-    } catch (e) {
-      return false;
-    }
+    applicationStore.setIsLoading(true);
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      await contract.methods.removeValidator(publicKey).send({ from: ownerAddress })
+          .on('receipt', async () => {
+            applicationStore.setIsLoading(false);
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(true);
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            applicationStore.setIsLoading(false);
+            notificationsStore.showMessage(error.message, 'error');
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(false);
+          });
+    });
   }
 
   /**
@@ -77,7 +92,7 @@ class ValidatorStore extends BaseStore {
   async updateValidator() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getContract;
-    const payload: (string | string[])[] = await this.createPayLoad();
+    const payload: (string | string[])[] = await this.createPayLoad(false);
     console.log(payload);
     const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress });
     console.log(response);
@@ -90,8 +105,9 @@ class ValidatorStore extends BaseStore {
    */
   @action.bound
   // eslint-disable-next-line no-unused-vars
-  async addNewValidator(getGasEstimation?: boolean, callBack?: (txHash: string) => void) {
+  async addNewValidator(getGasEstimation?: boolean) {
     const walletStore: WalletStore = this.getStore('Wallet');
+    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const gasEstimation: PriceEstimation = new PriceEstimation();
     const contract: Contract = walletStore.getContract;
@@ -100,7 +116,7 @@ class ValidatorStore extends BaseStore {
     this.newValidatorReceipt = null;
 
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const payload: (string | string[])[] = await this.createPayLoad();
 
         console.debug('Add Validator Payload: ', payload);
@@ -127,7 +143,7 @@ class ValidatorStore extends BaseStore {
                 }
               })
               .catch((error: any) => {
-                reject(error);
+                resolve(error);
               });
         } else {
           // Send add operator transaction
@@ -136,23 +152,27 @@ class ValidatorStore extends BaseStore {
                 // eslint-disable-next-line no-prototype-builtins
                 const event: boolean = receipt.hasOwnProperty('events');
                 if (event) {
-                  console.debug('Contract Receipt', receipt);
-                  this.newValidatorReceipt = payload[1];
                   this.keyStoreFile = null;
-                  resolve(event);
+                  this.newValidatorReceipt = payload[1];
+                  applicationStore.setIsLoading(false);
+                  console.debug('Contract Receipt', receipt);
+                  resolve(true);
                 }
               })
               .on('transactionHash', (txHash: string) => {
-                callBack && callBack(txHash);
+                applicationStore.txHash = txHash;
+                applicationStore.showTransactionPendingPopUp(true);
               })
               .on('error', (error: any) => {
                 console.debug('Contract Error', error.message);
-                reject(error);
+                applicationStore.setIsLoading(false);
+                resolve(false);
               })
               .catch((error: any) => {
+                applicationStore.setIsLoading(false);
                 if (error) {
                   notificationsStore.showMessage(error.message, 'error');
-                  reject(error);
+                  resolve(false);
                 }
                 console.debug('Contract Error', error);
                 resolve(true);
@@ -162,7 +182,7 @@ class ValidatorStore extends BaseStore {
   }
 
   @action.bound
-  async createPayLoad(): Promise<(string | string[])[]> {
+  async createPayLoad(update: boolean = false): Promise<(string | string[])[]> {
     if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
@@ -207,8 +227,7 @@ class ValidatorStore extends BaseStore {
         encryptedKeys,
       ];
       if (process.env.REACT_APP_NEW_STAGE) {
-        console.log(totalAmountOfSsv);
-        payLoad.push(walletStore.web3.utils.toWei(roundCryptoValueString(totalAmountOfSsv)));
+        if (!update) payLoad.push(walletStore.toWei(roundCryptoValueString(totalAmountOfSsv)));
       } else {
         payLoad.unshift(walletStore.accountAddress);
       }

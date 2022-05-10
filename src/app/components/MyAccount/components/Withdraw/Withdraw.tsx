@@ -21,6 +21,9 @@ const Withdraw = () => {
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
     useEffect(() => {
+        if (ssvStore.getRemainingDays({ newBalance }) > 30 && userAgree) {
+            setUserAgreement(false);
+        }
         if (inputValue === ssvStore.contractDepositSsvBalance && ssvStore.isValidatorState) {
             setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
         } else if (buttonColor.default === '#ec1c2640') {
@@ -76,9 +79,10 @@ const Withdraw = () => {
       </Grid>
     )];
 
+    const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
+
     if (ssvStore.isValidatorState) {
-        const remainDays = ssvStore.getRemainingDays(ssvStore.contractDepositSsvBalance - (ssvStore.contractDepositSsvBalance - Number(inputValue)));
-     secondBorderScreen.push((<RemainingDays withdraw operator={'-'} newRemainingDays={remainDays} />));
+     secondBorderScreen.push((<RemainingDays newBalance={newBalance} />));
     }
 
     return (
@@ -106,11 +110,12 @@ const Withdraw = () => {
           bottom={(
             <Button
               withAllowance
-              text={'Withdraw'}
               onClick={withdrawSsv}
-              checkBoxesCallBack={[setUserAgreement]}
-              disable={!userAgree || inputValue === 0}
-              checkboxesText={['I understand that risks of having my account liquidated.']}
+              errorButton={ssvStore.getRemainingDays({ newBalance }) === 0}
+              text={ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
+              disable={(ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || inputValue === 0}
+              checkBoxesCallBack={ssvStore.getRemainingDays({ newBalance }) <= 30 ? [setUserAgreement] : []}
+              checkboxesText={ssvStore.getRemainingDays({ newBalance }) <= 30 ? ['I understand that risks of having my account liquidated.'] : []}
             />
           )}
         />

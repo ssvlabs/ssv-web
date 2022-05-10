@@ -12,9 +12,20 @@ type OperatorsListQuery = {
     validatorsCount?: boolean,
 };
 
+type OperatorValidatorListQuery = {
+    page?: number,
+    perPage?: number
+    operatorId: number,
+};
+
 class Operator {
+    operator: any = null;
     operators: any = null;
+    operatorQuery: any = null;
     operatorsQuery: any = null;
+    operatorValidators: any = null;
+    operatorValidatorsQuery: any = null;
+    operatorValidatorsPagination: any = null;
     operatorsPagination: any = null;
     ownerAddressOperators: any = null;
     ownerAddressPagination: any = null;
@@ -52,10 +63,14 @@ class Operator {
             return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
         }
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true`;
-        const response: any = await axios.get(operatorsEndpointUrl);
-        this.ownerAddressPagination = response.data.pagination;
-        this.ownerAddressOperators = response.data.operators;
-        return response.data;
+        try {
+            const response: any = await axios.get(operatorsEndpointUrl);
+            this.ownerAddressPagination = response.data.pagination;
+            this.ownerAddressOperators = response.data.operators;
+            return response.data;
+        } catch (e) {
+            return { operators: [], pagination: {} };
+        }
     }
 
     /**
@@ -77,15 +92,68 @@ class Operator {
             return { operators: this.operators, pagination: this.operatorsPagination };
         }
 
-        const response: any = (await axios.get(operatorsEndpointUrl)).data;
+        try {
+            const response: any = (await axios.get(operatorsEndpointUrl)).data;
 
-        if (response.operators) {
-            this.operators = response.operators;
-            this.operatorsQuery = operatorsEndpointUrl;
-            this.operatorsPagination = response.pagination;
+            if (response.operators) {
+                this.operators = response.operators;
+                this.operatorsQuery = operatorsEndpointUrl;
+                this.operatorsPagination = response.pagination;
+            }
+
+            return response;
+        } catch (e) {
+            return { operators: [], pagination: {} };
+        }
+    }
+
+    /**
+     * Get operator
+     */
+    async getOperator(operatorId: string) {
+        const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/prater/${operatorId}?performances=24hours&withFee=true`;
+
+        if (this.operatorQuery === operatorEndpointUrl) {
+            return this.operator;
         }
 
-        return response;
+        try {
+            const response: any = (await axios.get(operatorEndpointUrl)).data;
+
+            if (response) {
+                this.operator = response;
+                this.operatorQuery = operatorEndpointUrl;
+            }
+
+            return response;
+        } catch (e) {
+            return null;
+        }
+    }
+    /**
+     * Get operator validators
+     */
+    async getOperatorValidators(props: OperatorValidatorListQuery) {
+        const { page, perPage, operatorId } = props;
+        const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}`;
+
+        if (this.operatorValidatorsQuery === operatorEndpointUrl) {
+            return { validators: this.operatorValidators, pagination: this.operatorValidatorsPagination };
+        }
+
+        try {
+            const response: any = (await axios.get(operatorEndpointUrl)).data;
+
+            if (response) {
+                this.operatorValidators = response.validators;
+                this.operatorValidatorsPagination = response.pagination;
+                this.operatorValidatorsQuery = operatorEndpointUrl;
+            }
+
+            return response;
+        } catch (e) {
+            return { validators: [], pagination: {} };
+        }
     }
 }
 

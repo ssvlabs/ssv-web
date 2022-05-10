@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import WalletPopUp from '~app/components/WalletPopUp';
 import { useStyles } from '~app/common/components/Layout/Layout.styles';
+import TransactionPendingPopUp from '~app/components/TransactionPendingPopUp';
 
 const Layout = ({ children }: any) => {
     const classes = useStyles();
@@ -13,6 +14,7 @@ const Layout = ({ children }: any) => {
           { children }
         </Grid>
         <WalletPopUp />
+        <TransactionPendingPopUp />
       </Grid>
     );
 };

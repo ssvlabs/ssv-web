@@ -2,7 +2,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     ToolTipWrapper: {
-        bottom: 1,
         width: 14,
         height: 14,
         cursor: 'pointer',

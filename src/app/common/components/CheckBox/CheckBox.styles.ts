@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
     BoxWrapper: {
         width: 24,
         height: 24,
-        borderRadius: 9,
+        borderRadius: 2,
         marginRight: theme.spacing(4),
         border: (props: any) => props.grayBackGround ? `1px solid ${theme.colors.gray40}` : '1px solid #5b6c84',
         backgroundColor: (props: any) => props.grayBackGround ? theme.colors.gray10 : 'transparent',

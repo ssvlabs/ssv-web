@@ -2,8 +2,18 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     WhiteWrapper: {
-        padding: '0px 300px',
         backgroundColor: theme.colors.white,
+    },
+    Wrapper: {
+        margin: 'auto',
+        maxWidth: 1320,
+        '@media only screen and (max-width: 1400px)': {
+            margin: 'auto',
+            maxWidth: '80%',
+        },
+    },
+    BackButtonWrapper: {
+        marginBottom: 20,
     },
     HeaderWrapper: {
         '& p': {
@@ -14,6 +24,40 @@ export const useStyles = makeStyles((theme) => ({
             letterSpacing: -0.25,
             color: theme.colors.gray90,
         },
+    },
+
+    Settings: {
+        gap: 8,
+        top: -20,
+        right: 0,
+        width: 272,
+        height: 88,
+        display: 'flex',
+        padding: '16px',
+        borderRadius: 16,
+        position: 'absolute',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        backgroundColor: theme.colors.white,
+        boxShadow: '0 12px 40px 0 #0116271e',
+        border: `solid 1px ${theme.colors.gray10}`,
+    },
+    Button: {
+        gap: 10,
+        height: 56,
+        flexGrow: 0,
+        fontSize: 16,
+        borderRadius: 8,
+        display: 'flex',
+        fontWeight: 600,
+        lineHeight: 1.25,
+        cursor: 'pointer',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: '18px 24px',
+        justifyContent: 'flex-start',
+        color: theme.colors.primaryError,
     },
     CancelWrapper: {
         cursor: 'pointer',
@@ -34,6 +78,23 @@ export const useStyles = makeStyles((theme) => ({
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundImage: `url(/images/x/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
+    Options: {
+        width: 24,
+        height: 24,
+        float: 'right',
+        cursor: 'pointer',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: `url(/images/three_dots/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
+    SettingsWrapper: {
+        top: 60,
+        position: 'relative',
+    },
+    ChildWrapper: {
+        marginTop: 28,
     },
     DialogWrapper: {
         width: 424,

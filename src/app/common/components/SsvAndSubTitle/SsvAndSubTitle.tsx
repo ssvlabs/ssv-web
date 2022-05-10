@@ -8,13 +8,20 @@ type Props = {
     subText?: string,
     gray80?: boolean,
     subTextCenter?: boolean,
+    leftTextAlign?: boolean,
 };
 const SsvAndSubTitle = (props: Props) => {
     const { ssv, subText, gray80, bold, subTextCenter } = props;
     const classes = useStyles({ bold, gray80 });
+    let textAlign: any = 'right';
+    if (subTextCenter) {
+        textAlign = 'center';
+    } else if (props.leftTextAlign) {
+        textAlign = 'left';
+    }
 
     return (
-      <Grid container item style={{ textAlign: subTextCenter ? 'center' : 'right' }}>
+      <Grid container item style={{ textAlign }}>
         <Grid item xs={12} className={classes.Balance}>{ssv} SSV</Grid>
         {subText && <Grid item xs={12} className={classes.DollarBalance}>{subText}</Grid>}
       </Grid>

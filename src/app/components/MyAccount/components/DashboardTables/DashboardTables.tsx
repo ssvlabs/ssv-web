@@ -18,6 +18,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/MyAccount/components/DashboardTables/DashboardTables.styles';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 type LoadItemsParams = {
     type: string;
@@ -104,6 +105,9 @@ const DashboardTables = () => {
 
     const openSingleValidator = (publicKey: string) => {
         history.push(`/dashboard/validator/${publicKey}`);
+    };
+    const openSingleOperator = (operator_id: string) => {
+        history.push(`/dashboard/operator/${operator_id}`);
     };
 
     const copyToClipboard = (publicKey: string) => {
@@ -233,7 +237,7 @@ const DashboardTables = () => {
             </Grid>,
             status: <Status status={status} />,
             revenue: <Grid container item>
-              <Grid item xs={12} className={classes.Balance}>{revenue} SSV</Grid>
+              <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(revenue)} SSV</Grid>
               <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid>
             </Grid>,
             validators_count: <Grid item className={classes.ValidatorApr}>{validators_count}</Grid>,
@@ -253,9 +257,11 @@ const DashboardTables = () => {
                     window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`);
                 }} />
               <Grid className={classes.ExplorerImage} onClick={() => {
-                    window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`);
+                    window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
                 }} />
-              <Grid className={classes.SettingsImage} onClick={() => {}} />
+              <Grid className={classes.SettingsImage} onClick={() => {
+                    openSingleOperator(operator.operator_id);
+                }} />
             </Grid>,
         };
     });

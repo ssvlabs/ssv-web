@@ -132,7 +132,7 @@ const DashboardTables = () => {
                       <Grid item style={{ marginRight: 4 }}>
                         Status
                       </Grid>
-                      <ToolTip text={'this is a tool tip!!'} />
+                      <ToolTip text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'} />
                     </Grid>,
                     accessor: 'status',
                 },
@@ -169,7 +169,7 @@ const DashboardTables = () => {
                       <Grid item style={{ marginRight: 4 }}>
                         Status
                       </Grid>
-                      <ToolTip text={'this is a tool tip!!'} />
+                      <ToolTip text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
                     </Grid>,
                     accessor: 'status',
                 },

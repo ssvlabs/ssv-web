@@ -89,6 +89,8 @@ class WalletStore extends BaseStore implements Wallet {
         if (!amount) return '0';
         // eslint-disable-next-line no-param-reassign
         if (typeof amount === 'number') amount = roundNumber(amount, 16);
+        // eslint-disable-next-line no-param-reassign
+        if (typeof amount === 'string') amount = amount.slice(0, 18);
         return this.web3.utils.toWei(amount.toString(), 'ether');
     }
 

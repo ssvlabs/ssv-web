@@ -37,9 +37,9 @@ const ImportValidatorConfirmation = () => {
     let liquidationCollateral = 0;
     let totalOperatorsYearlyFee = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
-        yearlyNetworkFee = operatorStore.getFeePerYear(ssvStore.networkFee);
-        totalOperatorsYearlyFee = operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee);
-        liquidationCollateral = (ssvStore.networkFee + Number(operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee))) * ssvStore.liquidationCollateral;
+        yearlyNetworkFee = operatorStore.getFeePerYear(ssvStore.networkFee, 10);
+        totalOperatorsYearlyFee = operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee, 6);
+        liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
         totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
 

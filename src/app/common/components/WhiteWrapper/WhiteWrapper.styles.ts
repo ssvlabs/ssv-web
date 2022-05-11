@@ -101,6 +101,7 @@ export const useStyles = makeStyles((theme) => ({
         padding: 32,
         height: 222,
         borderRadius: 16,
+        backgroundColor: theme.colors.white,
     },
     ButtonsWrapper: {
         gap: 24,

@@ -6,11 +6,13 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
-import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import OperatorDetails
+    from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
+import Validator from '~lib/api/Validator';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -20,7 +22,17 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const { public_key } = useParams();
     const operatorStore: OperatorStore = stores.Operator;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
+    const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
     const boxes = [1, 2, 3, 4];
+
+    useEffect(() => {
+        Validator.getInstance().getValidator(public_key).then(validator => {
+            if (validator?.operators) {
+                // @ts-ignore
+                setPreviousOperatorsIds(validator.operators.map(({ operator_id }) => operator_id));
+            }
+        });
+    }, [editPage]);
 
     const removeOperator = (index: number) => {
         operatorStore.unselectOperator(index);
@@ -40,6 +52,16 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
     const linkToNotVerified = () => {
         window.open('https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH');
+    };
+
+    const disableButton = (): boolean => {
+        return !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
+            // @ts-ignore
+            // eslint-disable-next-line no-param-reassign
+            if (!previousOperatorsIds.includes(operator.operator_id)) acc = true;
+            return acc;
+        }, false);
+      // if(!operatorStore.selectedEnoughOperators)
     };
 
     useEffect(() => {
@@ -99,7 +121,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                 </Grid>
               </Grid>
               )}
-            <PrimaryButton dataTestId={'operators-selected-button'} disable={!operatorStore.selectedEnoughOperators} text={'Next'} submitFunction={onSelectOperatorsClick} />
+            <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'} submitFunction={onSelectOperatorsClick} />
           </Grid>,
         ]}
       />

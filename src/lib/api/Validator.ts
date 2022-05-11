@@ -39,7 +39,7 @@ class Validator {
         }
 
         try {
-            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
+            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&page=${page}&perPage=${perPage}`;
             const response: any = await axios.get(operatorsEndpointUrl);
             const apiResponseData = response.data;
             if (apiResponseData.validators?.length) {

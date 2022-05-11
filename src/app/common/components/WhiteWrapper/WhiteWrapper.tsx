@@ -115,7 +115,7 @@ const WhiteWrapper = (props: Props) => {
           <Dialog
             open={openDialog}
             PaperProps={{
-                  style: { borderRadius: 16 },
+                  style: { borderRadius: 16, backgroundColor: 'transparent' },
               }}
           >
             <Grid container item className={classes.DialogWrapper}>

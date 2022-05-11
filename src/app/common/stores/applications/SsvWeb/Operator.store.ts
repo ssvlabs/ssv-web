@@ -6,6 +6,8 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import { roundNumber } from '~lib/utils/numbers';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 
 export interface NewOperator {
     name: string,
@@ -223,15 +225,38 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     async removeOperator(operatorId: number): Promise<any> {
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+        const applicationStore: ApplicationStore = this.getStore('Application');
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contractInstance = walletStore.getContract;
-            await contractInstance.methods.removeOperator(operatorId).call({ from: walletStore.accountAddress });
-            return true;
+
+            // eslint-disable-next-line no-async-promise-executor
+            return await new Promise(async (resolve) => {
+                await contractInstance.methods.removeOperator(operatorId).send({ from: walletStore.accountAddress })
+                    .on('receipt', (receipt: any) => {
+                        // eslint-disable-next-line no-prototype-builtins
+                        const event: boolean = receipt.hasOwnProperty('events');
+                        if (event) {
+                            applicationStore.setIsLoading(false);
+                            console.debug('Contract Receipt', receipt);
+                            applicationStore.showTransactionPendingPopUp(false);
+                            resolve(true);
+                        }
+                    })
+                    .on('transactionHash', (txHash: string) => {
+                        applicationStore.txHash = txHash;
+                        applicationStore.showTransactionPendingPopUp(true);
+                    })
+                    .on('error', (error: any) => {
+                        applicationStore.setIsLoading(false);
+                        applicationStore.showTransactionPendingPopUp(false);
+                        notificationsStore.showMessage(error.message, 'error');
+                        resolve(false);
+                    });
+            });
         } catch (e) {
-            // TODO: handle error
-            console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
-            console.log(e.message);
+            notificationsStore.showMessage(e.message, 'error');
             return false;
         }
     }
@@ -395,8 +420,8 @@ class OperatorStore extends BaseStore {
     }
 
     @action.bound
-    getFeePerYear(fee: any): number {
-        return roundNumber(fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, 2);
+    getFeePerYear(fee: any, roundTo?: number): number {
+        return roundNumber(fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, roundTo ?? 2);
     }
 
     @action.bound

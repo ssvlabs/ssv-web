@@ -1,28 +1,25 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { useStores } from '~app/hooks/useStores';
-import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from '~app/components/MyAccount/components/SingleOperator/SingleOperator.styles';
-import Operator from '~lib/api/Operator';
-import OperatorType from '~app/common/components/OperatorType';
 import Typography from '@material-ui/core/Typography';
-// import { longStringShorten } from '~lib/utils/strings';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
+import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
-import { longStringShorten } from '~lib/utils/strings';
+import Operator from '~lib/api/Operator';
+import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
-import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
-import ToolTip from '~app/common/components/ToolTip/ToolTip';
-import { Table } from '~app/common/components/Table/Table';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import Button from '~app/common/components/Button';
-// import SecondaryButton from '~app/common/components/Button/SecondaryButton/SecondaryButton';
-// import ToolTip from '~app/common/components/ToolTip/ToolTip';
+import { longStringShorten } from '~lib/utils/strings';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import { Table } from '~app/common/components/Table/Table';
+import ToolTip from '~app/common/components/ToolTip/ToolTip';
+import OperatorType from '~app/common/components/OperatorType';
+import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
+import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
+import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { useStyles } from '~app/components/MyAccount/components/SingleOperator/SingleOperator.styles';
 
 const SingleOperator = () => {
     const stores = useStores();
@@ -31,7 +28,7 @@ const SingleOperator = () => {
     const { operator_id } = useParams();
     const beaconchaBaseUrl = getBaseBeaconchaUrl();
     const [operator, setOperator] = useState(null);
-    const [operatorsValidators, setOperatorsValidators] = useState(null);
+    const [operatorsValidators, setOperatorsValidators] = useState([]);
     const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
@@ -61,7 +58,7 @@ const SingleOperator = () => {
     const { page, pages, perPage, total } = operatorsValidatorsPagination || {};
     // @ts-ignore
     const { name, logo, type, status, address, validators_count, fee } = operator || {};
-    const classes = useStyles({ operatorLogo: logo });
+    const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
     const copyToClipboard = (key: string) => {
         navigator.clipboard.writeText(key);
@@ -208,7 +205,7 @@ const SingleOperator = () => {
           </Grid>
         </WhiteWrapper>
         <Grid container item className={classes.SecondSectionWrapper}>
-          {operatorsValidators && (
+          {operatorsValidators && operatorsValidators.length > 0 && (
             <Grid item className={classes.OperatorsValidatorsTable}>
               <Table columns={columns} data={data} actionProps={{
                             perPage,
@@ -224,6 +221,22 @@ const SingleOperator = () => {
               />
             </Grid>
           )}
+          {operatorsValidatorsPagination && operatorsValidators.length === 0 && (
+          <Grid item className={classes.OperatorsValidatorsTable}>
+            <Grid item xs={12} className={classes.NoRecordImage} />
+            <Grid item xs={12} className={classes.NoRecordsText}>No Validators</Grid>
+          </Grid>
+            //     <Grid hover>
+            //     <StyledCell className={classes.NoRecordsWrapper}>
+            //         <Grid container>
+            //             <Grid item xs={12} className={classes.NoRecordImage}/>
+            //             <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
+            //             <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or
+            //                 filter</Grid>
+            //         </Grid>
+            //     </StyledCell>
+            // </TableRow>
+            )}
 
           <Grid item className={classes.AnnualWrapper}>
             <BorderScreen

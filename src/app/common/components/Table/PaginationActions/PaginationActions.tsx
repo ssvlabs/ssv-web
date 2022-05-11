@@ -32,17 +32,21 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
     }, [page]);
 
     const handleFirstPageButtonClick = () => {
+        if (page === 1) return;
         if (page !== 1) onChangePage(1);
     };
 
     const handleBackButtonClick = () => {
+        if (page === 1) return;
         if (page !== 1) onChangePage(page - 1);
     };
     const handleNextButtonClick = () => {
+        if (page === totalPages) return;
         onChangePage(page + 1);
     };
 
     const handleLastPageButtonClick = () => {
+        if (page === totalPages) return;
         onChangePage(totalPages);
     };
     const handlePerPage = (event: any) => {

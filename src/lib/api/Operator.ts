@@ -65,8 +65,8 @@ class Operator {
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true`;
         try {
             const response: any = await axios.get(operatorsEndpointUrl);
-            this.ownerAddressPagination = response.data.pagination;
             this.ownerAddressOperators = response.data.operators;
+            this.ownerAddressPagination = response.data.pagination;
             return response.data;
         } catch (e) {
             return { operators: [], pagination: {} };

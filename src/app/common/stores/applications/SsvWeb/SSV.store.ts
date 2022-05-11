@@ -70,7 +70,7 @@ class SsvStore extends BaseStore {
             const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
             const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
             if (ssvAmount === 0) return 0;
-            if (burnRatePerDay === 0) return Math.max(ssvAmount, 0);
+            if (burnRatePerDay === 0) return 0;
             return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
         } catch (e) {
             return 0;
@@ -157,8 +157,13 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async checkIfLiquidated(): Promise<void> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        this.userLiquidated = await walletStore.getContract.methods.liquidatable(this.accountAddress).call();
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            this.userLiquidated = await walletStore.getContract.methods.liquidatable(this.accountAddress).call();
+        } catch (e) {
+            // TODO: handle error
+            console.log(e.message);
+        }
     }
 
     /**
@@ -191,9 +196,14 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async getBalanceFromDepositContract(): Promise<any> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const balance = await walletStore.getContract.methods.totalBalanceOf(this.accountAddress).call();
-        this.contractDepositSsvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const balance = await walletStore.getContract.methods.totalBalanceOf(this.accountAddress).call();
+            this.contractDepositSsvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
+        } catch (e) {
+            // TODO: handle error
+            console.log(e.message);
+        }
     }
 
     /**
@@ -306,10 +316,12 @@ class SsvStore extends BaseStore {
     async getNetworkFees() {
         const walletStore: WalletStore = this.getStore('Wallet');
         const networkContract = walletStore.getContract;
-        const networkFee = await networkContract.methods.minimumBlocksBeforeLiquidation().call();
-        // hardcoded should be replace
-        this.networkFee = 0.00001755593086049;
-        this.liquidationCollateral = Number(networkFee);
+        const liquidationCollateral = await networkContract.methods.minimumBlocksBeforeLiquidation().call();
+        const networkFee = await networkContract.methods.networkFee().call();
+        // hardcoded should be replaced
+        this.networkFee = walletStore.fromWei(networkFee);
+        console.log(this.networkFee);
+        this.liquidationCollateral = Number(liquidationCollateral);
     }
 
     /**
@@ -328,9 +340,14 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     async getAccountBurnRate(): Promise<void> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const burnRate = await walletStore.getContract.methods.burnRate(this.accountAddress).call();
-        this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const burnRate = await walletStore.getContract.methods.burnRate(this.accountAddress).call();
+            this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
+        } catch (e) {
+            // TODO: handle error
+            console.log(e.message);
+        }
     }
 
     /**

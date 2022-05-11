@@ -79,9 +79,12 @@ class WalletStore extends BaseStore implements Wallet {
     }
 
     @action.bound
-    fromWei(amount?: string): number {
+    fromWei(amount?: number | string): number {
         if (!amount) return 0;
-        return parseFloat(this.web3.utils.fromWei(amount, 'ether'));
+        if (typeof amount === 'number' && amount === 0) return 0;
+        if (typeof amount === 'string' && Number(amount) === 0) return 0;
+
+        return parseFloat(this.web3.utils.fromWei(amount.toString(), 'ether'));
     }
 
     @action.bound
@@ -90,7 +93,7 @@ class WalletStore extends BaseStore implements Wallet {
         // eslint-disable-next-line no-param-reassign
         if (typeof amount === 'number') amount = roundNumber(amount, 16);
         // eslint-disable-next-line no-param-reassign
-        if (typeof amount === 'string') amount = amount.slice(0, 18);
+        if (typeof amount === 'string') amount = amount.slice(0, 16);
         return this.web3.utils.toWei(amount.toString(), 'ether');
     }
 
@@ -139,6 +142,7 @@ class WalletStore extends BaseStore implements Wallet {
         if (address === undefined || !this.wallet?.name) {
             await this.resetUser();
         } else {
+            this.ssvStore.clearSettings();
             this.accountAddress = address;
             ApiParams.cleanStorage();
             await this.initializeUserInfo();

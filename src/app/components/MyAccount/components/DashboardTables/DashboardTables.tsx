@@ -211,6 +211,9 @@ const DashboardTables = () => {
               <Grid item xs={12} className={classes.ValidatorApr}>{apr}%</Grid>
             </Grid>,
             extra_buttons: <Grid container item justify={'flex-end'}>
+              <Grid className={classes.BeaconImage} onClick={() => {
+                    window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`);
+                }} />
               <Grid className={classes.ExplorerImage} onClick={() => {
                     window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`);
                 }} />
@@ -253,9 +256,6 @@ const DashboardTables = () => {
                 }} />
             </Grid>,
             extra_buttons: <Grid container item justify={'flex-end'}>
-              <Grid className={classes.BeaconImage} onClick={() => {
-                    window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`);
-                }} />
               <Grid className={classes.ExplorerImage} onClick={() => {
                     window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
                 }} />

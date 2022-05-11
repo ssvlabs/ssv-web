@@ -40,8 +40,36 @@ export const useStyles = makeStyles((theme) => ({
     },
     OperatorsValidatorsTable: {
         width: 872,
+        height: (props: any) => props.noValidators ? 286 : '',
+        borderRadius: (props: any) => props.noValidators ? 16 : '',
+        backgroundColor: (props: any) => props.noValidators ? theme.colors.white : '',
         '@media only screen and (max-width: 1400px)': {
             width: '100%',
+        },
+    },
+    NoRecordImage: {
+        width: 100,
+        height: 100,
+        margin: 'auto',
+        marginTop: 40,
+        marginBottom: 40,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'url(/images/logo/gray.svg)',
+    },
+    NoRecordsText: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        textAlign: 'center',
+        '&:nth-child(2)': {
+            fontWeight: 'bold',
+            color: theme.colors.black,
+        },
+        '&:nth-child(3)': {
+            color: theme.colors.gray40,
+            marginBottom: 131,
         },
     },
     AnnualWrapper: {

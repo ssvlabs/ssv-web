@@ -160,6 +160,7 @@ class ValidatorStore extends BaseStore {
                 }
               })
               .on('transactionHash', (txHash: string) => {
+                console.log(txHash);
                 applicationStore.txHash = txHash;
                 applicationStore.showTransactionPendingPopUp(true);
               })

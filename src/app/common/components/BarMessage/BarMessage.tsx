@@ -22,8 +22,8 @@ const BarMessage = () => {
 
   return (
     <Snackbar
-      anchorOrigin={snackbarAnchorOrigin}
       onClose={handleClose}
+      anchorOrigin={snackbarAnchorOrigin}
       open={notificationsStore.showSnackBar}
       autoHideDuration={notificationsStore.autoHideDuration || 5000}
     >

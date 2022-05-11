@@ -15,8 +15,8 @@ const Withdraw = () => {
     const classes = useStyles();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    const applicationStore: ApplicationStore = stores.Application;
     const [inputValue, setInputValue] = useState(0.0);
+    const applicationStore: ApplicationStore = stores.Application;
     const [userAgree, setUserAgreement] = useState(false);
     const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
@@ -111,11 +111,11 @@ const Withdraw = () => {
             <Button
               withAllowance
               onClick={withdrawSsv}
-              errorButton={ssvStore.getRemainingDays({ newBalance }) === 0}
-              text={ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
-              disable={(ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || inputValue === 0}
+              errorButton={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0}
               checkBoxesCallBack={ssvStore.getRemainingDays({ newBalance }) <= 30 ? [setUserAgreement] : []}
-              checkboxesText={ssvStore.getRemainingDays({ newBalance }) <= 30 ? ['I understand that risks of having my account liquidated.'] : []}
+              text={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
+              disable={(ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
+              checkboxesText={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 ? ['I understand that risks of having my account liquidated.'] : []}
             />
           )}
         />

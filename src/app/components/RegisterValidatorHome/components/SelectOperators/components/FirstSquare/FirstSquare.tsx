@@ -172,11 +172,11 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 <StyledCell>
                   <Grid container>
                     <Grid item>{operator.validators_count}</Grid>
-                    {disabled && (
+                    {/* {disabled && ( */}
                     <Grid item style={{ alignSelf: 'center' }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'} />
                     </Grid>
-                    )}
+                    {/* )} */}
                   </Grid>
                 </StyledCell>
                 <StyledCell>

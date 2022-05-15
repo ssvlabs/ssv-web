@@ -45,19 +45,17 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
 };
 
 export const formatNumberToUi = (num?: number, days?: boolean) => {
-    console.log(num);
     // eslint-disable-next-line eqeqeq
     if (!num || num == 0 || Number.isNaN(num)) return days ? '0' : '0.0';
     const splitNumber = num.toString().split('.');
-    const numLowerThan1 = num < 1;
-    if ((numLowerThan1 && splitNumber[1]) && !days) {
+    if (splitNumber[1] && !days) {
         const number = splitNumber[0];
         let decimal = splitNumber[1];
         let deleteFromIndex = 0;
         let shouldContinue = true;
         let indexLoop = 0;
         while (deleteFromIndex === 0 || shouldContinue) {
-            if (numLowerThan1 && decimal) {
+            if (decimal) {
                 if (decimal[indexLoop] !== '0') {
                     deleteFromIndex = indexLoop + 2;
                     shouldContinue = false;
@@ -70,16 +68,14 @@ export const formatNumberToUi = (num?: number, days?: boolean) => {
                 indexLoop += 1;
             }
         }
-        if (decimal && decimal[deleteFromIndex - 1] === '0') deleteFromIndex -= 1;
+        if (decimal && decimal[deleteFromIndex - 1] === '0') {
+            deleteFromIndex -= 1;
+        }
 
         decimal = decimal.slice(0, deleteFromIndex);
         return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}.${decimal}`;
     }
     return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
-};
-
-export const formatDaysToUi = (days: number) => {
-        return Math.trunc(days);
 };
 
 export const roundCryptoValueString = (desiredNumber: number, decimalPlaces: number = 18) => {

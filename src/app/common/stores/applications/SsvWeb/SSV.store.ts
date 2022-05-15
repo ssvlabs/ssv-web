@@ -1,3 +1,4 @@
+// import currency from 'currency.js';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
@@ -57,7 +58,6 @@ class SsvStore extends BaseStore {
     get accountAddress(): String {
         return this.getStore('Wallet').accountAddress;
     }
-
     /**
      * Returns days remaining before liquidation
      */
@@ -99,6 +99,12 @@ class SsvStore extends BaseStore {
     @action.bound
     getFeeForYear = (fee: number): number => {
         const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        return roundNumber(perYear, 8);
+    };
+
+    @action.bound
+    getFeeForBlock = (fee: number): number => {
+        const perYear = fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
         return roundNumber(perYear, 8);
     };
 
@@ -199,7 +205,7 @@ class SsvStore extends BaseStore {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
             const balance = await walletStore.getContract.methods.totalBalanceOf(this.accountAddress).call();
-            this.contractDepositSsvBalance = parseFloat(String(this.getStore('Wallet').web3.utils.fromWei(balance, 'ether')));
+            this.contractDepositSsvBalance = walletStore.fromWei(balance);
         } catch (e) {
             // TODO: handle error
             console.log(e.message);
@@ -209,13 +215,15 @@ class SsvStore extends BaseStore {
     /**
      * Withdraw ssv
      * @param amount
+     * @param withdrawAll
      */
     @action.bound
-    async withdrawSsv(amount: string) {
+    async withdrawSsv(amount: string, withdrawAll: boolean = false) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.toWei(amount);
-            walletStore.getContract.methods.withdraw(ssvAmount).send({ from: this.accountAddress })
+            const contractFunction = withdrawAll ? walletStore.getContract.methods.withdrawAll() : walletStore.getContract.methods.withdraw(ssvAmount);
+            contractFunction.send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })
@@ -320,7 +328,6 @@ class SsvStore extends BaseStore {
         const networkFee = await networkContract.methods.networkFee().call();
         // hardcoded should be replaced
         this.networkFee = walletStore.fromWei(networkFee);
-        console.log(this.networkFee);
         this.liquidationCollateral = Number(liquidationCollateral);
     }
 

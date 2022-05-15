@@ -2,12 +2,14 @@ import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
+import ApiParams from '~lib/api/ApiParams';
+import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
-import { roundNumber } from '~lib/utils/numbers';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 export interface NewOperator {
     name: string,
@@ -238,6 +240,7 @@ class OperatorStore extends BaseStore {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
+                            ApiParams.initStorage(true);
                             applicationStore.setIsLoading(false);
                             console.debug('Contract Receipt', receipt);
                             applicationStore.showTransactionPendingPopUp(false);
@@ -273,6 +276,7 @@ class OperatorStore extends BaseStore {
         return new Promise(async (resolve, reject) => {
             try {
                 const payload: any[] = [];
+                const ssvStore: SsvStore = this.getStore('SSV');
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const contract: Contract = walletStore.getContract;
                 const address: string = this.newOperatorKeys.address;
@@ -280,21 +284,12 @@ class OperatorStore extends BaseStore {
                 const gasEstimation: PriceEstimation = new PriceEstimation();
                 this.newOperatorReceipt = null;
 
-                // try {
-                //     console.log(this.operatorFeePerBlock(transaction.fee));
-                //     console.log(roundNumber(this.operatorFeePerBlock(transaction.fee), 16));
-                //     console.log(walletStore.toWei(roundNumber(this.operatorFeePerBlock(transaction.fee), 16)));
-                // } catch (e: any) {
-                //     console.log('<<<<<<<<ehre>>>>>>>>');
-                //     console.log(e.message);
-                // }
-
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.toWei(this.operatorFeePerBlock(transaction.fee)),
+                        walletStore.toWei(ssvStore.getFeeForBlock(transaction.fee)),
                     );
                 } else {
                     payload.push(
@@ -408,15 +403,6 @@ class OperatorStore extends BaseStore {
         });
 
         return exist;
-    }
-
-    /**
-     * Get operator fee for block
-     * @param fee
-     */
-    @action.bound
-    operatorFeePerBlock(fee: any): number {
-        return fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
     }
 
     @action.bound

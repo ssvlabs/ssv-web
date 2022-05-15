@@ -3,12 +3,12 @@ import { Grid } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import Button from '~app/common/components/Button/Button';
 import IntegerInput from '~app/common/components/IntegerInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays/RemainingDays';
-import Button from '~app/common/components/Button/Button';
 import { useStyles } from './Withdrew.styles';
 
 const Withdraw = () => {
@@ -33,7 +33,7 @@ const Withdraw = () => {
 
     const withdrawSsv = async () => {
         applicationStore.setIsLoading(true);
-        const success = await ssvStore.withdrawSsv(inputValue.toString());
+        const success = await ssvStore.withdrawSsv(inputValue.toString(), inputValue === ssvStore.contractDepositSsvBalance);
         applicationStore.setIsLoading(false);
         if (success) setInputValue(0.0);
     };

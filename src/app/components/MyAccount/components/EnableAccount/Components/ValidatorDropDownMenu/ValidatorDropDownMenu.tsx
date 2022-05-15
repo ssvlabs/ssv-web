@@ -10,7 +10,6 @@ import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 type Props = {
     index: number,
@@ -25,7 +24,6 @@ const ValidatorDropDownMenu = (props: Props) => {
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const operatorStore: OperatorStore = stores.Operator;
     const [dropMenu, setDropMenu] = useState(false);
     const [operators, setOperators]: any = useState([]);
     const [validatorTotalFee, setValidatorTotalFee]: any = useState(0);
@@ -66,7 +64,7 @@ const ValidatorDropDownMenu = (props: Props) => {
                               />
                             </Grid>
                             <Grid item xs>
-                              <SsvAndSubTitle ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
+                              <SsvAndSubTitle ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
                             </Grid>
                           </Grid>
                         );

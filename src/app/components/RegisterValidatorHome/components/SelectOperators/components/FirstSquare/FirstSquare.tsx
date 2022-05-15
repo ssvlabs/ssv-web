@@ -22,9 +22,11 @@ import Filters from '~app/components/RegisterValidatorHome/components/SelectOper
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
     const [loading, setLoading] = useState(false);
     const classes = useStyles({ loading });
     const wrapperRef = useRef(null);
@@ -172,11 +174,9 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 <StyledCell>
                   <Grid container>
                     <Grid item>{operator.validators_count}</Grid>
-                    {/* {disabled && ( */}
-                    <Grid item style={{ alignSelf: 'center' }}>
+                    <Grid item style={{ marginLeft: 4 }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'} />
                     </Grid>
-                    {/* )} */}
                   </Grid>
                 </StyledCell>
                 <StyledCell>
@@ -192,7 +192,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 {process.env.REACT_APP_NEW_STAGE && (
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))}</Grid>
+                    <Grid item>{ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />

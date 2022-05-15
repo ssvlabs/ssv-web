@@ -10,10 +10,11 @@ import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
 
@@ -28,8 +29,8 @@ const OperatorsReceipt = (props: Props) => {
     const { operators, header, previousOperators, currentOperators } = props;
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
+    const applicationStore: ApplicationStore = stores.Application;
     const classes = useStyles({ currentOperators });
     const [checked, setChecked] = React.useState(false);
 
@@ -44,7 +45,7 @@ const OperatorsReceipt = (props: Props) => {
     );
 
     const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
-    const operatorsYearlyFee = operatorStore.getFeePerYear(newOperatorsFee);
+    const operatorsYearlyFee = ssvStore.getFeeForYear(newOperatorsFee);
     const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
 
     const checkBox = () => {
@@ -55,6 +56,16 @@ const OperatorsReceipt = (props: Props) => {
             );
         }
         return null;
+    };
+
+    const updateValidator = async () => {
+        applicationStore.setIsLoading(true);
+        const response = await validatorStore.updateValidator();
+        if (response) {
+            console.log('finsihed');
+        } else {
+            console.log('error');
+        }
     };
 
     const body = [
@@ -70,7 +81,7 @@ const OperatorsReceipt = (props: Props) => {
                           <Status status={operator.status} />
                         </Grid>
                         <Grid item xs>
-                          <SsvAndSubTitle gray80={currentOperators} ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
+                          <SsvAndSubTitle gray80={currentOperators} ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
                         </Grid>
                       </Grid>
                     );
@@ -111,7 +122,7 @@ const OperatorsReceipt = (props: Props) => {
             <Button
                 // @ts-ignore
               text={'Update Operators'}
-              onClick={validatorStore.updateValidator}
+              onClick={updateValidator}
                 // @ts-ignore
               disable={remainingDays === 0 || (remainingDays < 30 && !checked)}
             />

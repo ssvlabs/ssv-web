@@ -43,7 +43,6 @@ const RemoveValidator = () => {
     const removeValidator = async () => {
         const response = await validatorStore.removeValidator(public_key);
         if (response) history.push(`/dashboard/validator/${public_key}/removed`);
-        history.push(`/dashboard/validator/${public_key}/removed`);
     };
 
     if (!validator) return null;

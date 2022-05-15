@@ -101,7 +101,7 @@ export const useStyles = makeStyles((theme) => ({
         height: 24,
         marginLeft: 20,
         marginRight: 20,
-        borderRadius: 8,
+        // borderRadius: 8,
         cursor: 'pointer',
         backgroundColor: theme.colors.white,
         border: `1px solid ${theme.colors.gray40}`,

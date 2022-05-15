@@ -26,6 +26,7 @@ export const useStyles = makeStyles((theme) => ({
         minWidth: 350,
         fontWeight: 500,
         lineHeight: 1.62,
+        zIndex: 9999999,
         textAlign: 'center',
         borderRadius: '6px',
         position: 'absolute',

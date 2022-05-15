@@ -55,6 +55,11 @@ class Operator {
         this.ownerAddressPagination = null;
     }
 
+    clearOperatorsByOwnerAddressCache() {
+        this.ownerAddressOperators = null;
+        this.ownerAddressPagination = null;
+    }
+
     /**
      * Get operators by owner Address
      */

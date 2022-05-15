@@ -12,6 +12,7 @@ import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ApiParams from '~lib/api/ApiParams';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
@@ -68,6 +69,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       await contract.methods.removeValidator(publicKey).send({ from: ownerAddress })
           .on('receipt', async () => {
+            ApiParams.initStorage(true);
             applicationStore.setIsLoading(false);
             applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
@@ -91,11 +93,36 @@ class ValidatorStore extends BaseStore {
   @action.bound
   async updateValidator() {
     const walletStore: WalletStore = this.getStore('Wallet');
+    const applicationStore: ApplicationStore = this.getStore('Application');
     const contract: Contract = walletStore.getContract;
     const payload: (string | string[])[] = await this.createPayLoad(false);
-    console.log(payload);
-    const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress });
-    console.log(response);
+
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress })
+          .on('receipt', (receipt: any) => {
+            // eslint-disable-next-line no-prototype-builtins
+            const event: boolean = receipt.hasOwnProperty('events');
+            if (event) {
+              this.keyStoreFile = null;
+              this.newValidatorReceipt = payload[1];
+              applicationStore.setIsLoading(false);
+              applicationStore.showTransactionPendingPopUp(false);
+              resolve(true);
+            }
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            console.debug('Contract Error', error.message);
+            applicationStore.setIsLoading(false);
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(false);
+          });
+      console.log(response);
+    });
   }
 
   /**
@@ -192,8 +219,8 @@ class ValidatorStore extends BaseStore {
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.keyStorePrivateKey);
     let totalAmountOfSsv = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
-      const operatorsFees = operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee);
-      const liquidationCollateral = (ssvStore.networkFee + operatorStore.operatorFeePerBlock(operatorStore.getSelectedOperatorsFee)) * ssvStore.liquidationCollateral;
+      const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
+      const liquidationCollateral = (ssvStore.networkFee + ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)) * ssvStore.liquidationCollateral;
       totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
     }
 

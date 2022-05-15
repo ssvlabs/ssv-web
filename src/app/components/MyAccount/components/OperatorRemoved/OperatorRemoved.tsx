@@ -3,26 +3,22 @@ import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useHistory, useParams } from 'react-router-dom';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/MyAccount/components/OperatorRemoved/OperatorRemoved.styles';
-import config from '~app/common/config';
 
 const OperatorRemoved = () => {
     const stores = useStores();
     const history = useHistory();
-    history;
     // @ts-ignore
     const { operator_id } = useParams();
-    const [operator, setOperator] = useState(null);
     const classes = useStyles({});
-    const operatorStore: OperatorStore = stores.Operator;
-    operatorStore;
+    const [operator, setOperator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
@@ -35,7 +31,7 @@ const OperatorRemoved = () => {
         });
     }, []);
 
-    const backToMyAccount = () => {
+    const backToMyAccount = async () => {
         history.push(config.routes.MY_ACCOUNT.DASHBOARD);
     };
 

@@ -247,7 +247,7 @@ const DashboardTables = () => {
             fee: <Grid item container justify={'space-between'}>
               <Grid item container xs>
                 <Grid item xs={12}>
-                  <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography>
+                  <Typography>{ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} SSV</Typography>
                 </Grid>
                 <Grid item>~$757.5</Grid>
               </Grid>

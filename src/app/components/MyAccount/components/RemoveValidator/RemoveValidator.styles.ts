@@ -6,7 +6,11 @@ export const useStyles = makeStyles((theme) => ({
     },
     SubHeaderWrapper: {
         gap: 8,
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
         paddingBottom: 30,
+        color: theme.colors.gray80,
     },
     Section: {
         padding: '12px 32px 32px',

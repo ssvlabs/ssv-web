@@ -7,7 +7,6 @@ import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
-import LinkText from '~app/common/components/LinkText';
 import { longStringShorten } from '~lib/utils/strings';
 import { Table } from '~app/common/components/Table/Table';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
@@ -17,9 +16,10 @@ import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/MyAccount/components/SingleValidator/SingleValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 
 const SingleValidator = () => {
     const stores = useStores();
@@ -29,7 +29,6 @@ const SingleValidator = () => {
     const { public_key } = useParams();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const operatorStore: OperatorStore = stores.Operator;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
 
@@ -38,7 +37,7 @@ const SingleValidator = () => {
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
                 response.public_key = longStringShorten(public_key, 6, 4);
-                response.total_operators_fee = operatorStore.getFeePerYear(response.operators.reduce(
+                response.total_operators_fee = ssvStore.getFeeForYear(response.operators.reduce(
                     (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
                     0,
                 ));
@@ -49,7 +48,6 @@ const SingleValidator = () => {
     }, []);
 
     const fields = [
-        { key: 'public_key', value: 'Address' },
         { key: 'status', value: 'Status' },
         { key: 'balance', value: 'Balance' },
         { key: 'apr', value: 'Est. APR' },
@@ -88,7 +86,7 @@ const SingleValidator = () => {
                     performance: <Typography className={classes.PerformanceHeader}>{performance}</Typography>,
                     fee: <Grid item container justify={'space-between'}>
                       <Grid item>
-                        <SsvAndSubTitle leftTextAlign ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} subText={'~$757.5'} />
+                        <SsvAndSubTitle leftTextAlign ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} subText={'~$757.5'} />
                       </Grid>
 
                       {/* <Grid item container xs> */}
@@ -158,6 +156,17 @@ const SingleValidator = () => {
           header={'Validator Details'}
         >
           <Grid item container className={classes.FieldsWrapper}>
+            <Grid item>
+              <Grid className={classes.DetailsHeader}>
+                Address
+              </Grid>
+              <Grid item container className={classes.SubHeaderWrapper}>
+                <Typography>{longStringShorten(public_key, 6, 4)}</Typography>
+                <ImageDiv image={'copy'} width={24} height={24} />
+                <ImageDiv image={'explorer'} width={24} height={24} />
+                <ImageDiv image={'beacon'} width={24} height={24} />
+              </Grid>
+            </Grid>
             {fields.map((field: { key: string, value: string }, index: number) => {
                       // @ts-ignore
                       const fieldKey = validator[field.key];
@@ -167,17 +176,12 @@ const SingleValidator = () => {
                             {field.value}
                             {field.key === 'status' && <ToolTip text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'} />}
                           </Grid>
-                          <Grid className={classes.DetailsBody}>{field.key === 'status' ?
-                            <Status status={fieldKey} /> : fieldKey}</Grid>
+                          <Grid className={classes.DetailsBody}>
+                            {field.key === 'status' ? <Status status={fieldKey} /> : fieldKey}
+                          </Grid>
                         </Grid>
                       );
                   })}
-          </Grid>
-          <Grid item container className={classes.Links}>
-            <LinkText text={'Explorer'} link={'https://www.google.com'} />
-            <Grid item className={classes.BlueExplorerImage} />
-            <LinkText text={'Beaconcha'} link={'https://www.google.com'} />
-            <Grid item className={classes.BeaconImage} />
           </Grid>
         </WhiteWrapper>
         <Grid item container className={classes.SecondSectionWrapper}>

@@ -37,8 +37,8 @@ const ImportValidatorConfirmation = () => {
     let liquidationCollateral = 0;
     let totalOperatorsYearlyFee = 0;
     if (process.env.REACT_APP_NEW_STAGE) {
-        yearlyNetworkFee = operatorStore.getFeePerYear(ssvStore.networkFee, 10);
-        totalOperatorsYearlyFee = operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee, 6);
+        yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
+        totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
         liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
         totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
     }
@@ -71,7 +71,7 @@ const ImportValidatorConfirmation = () => {
     };
 
     const fields = [
-        { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
+        { key: 'Operators yearly fee', value: totalOperatorsYearlyFee },
         { key: 'Network yearly fee', value: formatNumberToUi(yearlyNetworkFee) },
         { key: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];
@@ -91,7 +91,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))}
+                            ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))}
                             subText={'/year'}
                           />
                         </Grid>

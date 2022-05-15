@@ -3,16 +3,17 @@ import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
+import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails
     from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
-import Validator from '~lib/api/Validator';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -21,6 +22,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     // @ts-ignore
     const { public_key } = useParams();
     const operatorStore: OperatorStore = stores.Operator;
+    const ssvStore: SsvStore = stores.SSV;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
     const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
     const boxes = [1, 2, 3, 4];
@@ -116,7 +118,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                     bold
                     subText={'~$757.5'}
                     subTextCenter={false}
-                    ssv={operatorStore.getFeePerYear(operatorStore.getSelectedOperatorsFee)}
+                    ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)}
                   />
                 </Grid>
               </Grid>

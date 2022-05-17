@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
+import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
-import OperatorsReceipt from '~app/common/components/OperatorsRecipt';
-// import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import Validator from '~lib/api/Validator';
 import BackNavigation from '~app/common/components/BackNavigation';
+import OperatorsReceipt from '~app/common/components/OperatorsRecipt';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './ConfirmOperatorsChange.styles';
 
 const ConfirmOperatorsChange = () => {
@@ -18,12 +18,18 @@ const ConfirmOperatorsChange = () => {
     const classes = useStyles();
     const [operators, setOperators] = useState(null);
     const operatorStore: OperatorStore = stores.Operator;
+    const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             setOperators(response.operators);
         });
     }, []);
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(public_key);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
 
     // @ts-ignore
     const { public_key } = useParams();
@@ -35,7 +41,7 @@ const ConfirmOperatorsChange = () => {
         <WhiteWrapper withCancel withBackButton={false} header={'Update Operators for Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
-            <ImageDiv image={'copy'} width={24} height={24} />
+            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
             <ImageDiv image={'explorer'} width={24} height={24} />
             <ImageDiv image={'beacon'} width={24} height={24} />
           </Grid>

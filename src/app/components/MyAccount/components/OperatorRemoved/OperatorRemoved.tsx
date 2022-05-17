@@ -10,6 +10,7 @@ import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/MyAccount/components/OperatorRemoved/OperatorRemoved.styles';
 
 const OperatorRemoved = () => {
@@ -20,6 +21,7 @@ const OperatorRemoved = () => {
     const classes = useStyles({});
     const [operator, setOperator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
+    const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
@@ -35,6 +37,11 @@ const OperatorRemoved = () => {
         history.push(config.routes.MY_ACCOUNT.DASHBOARD);
     };
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(address);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
+
     // @ts-ignore
     const { address } = operator || {};
 
@@ -45,7 +52,7 @@ const OperatorRemoved = () => {
         <WhiteWrapper withBackButton={false} header={'Remove Operator'}>
           <Grid item container className={classes.HeaderWrapper}>
             <Typography className={classes.Address}>{address}</Typography>
-            <ImageDiv image={'copy'} width={24} height={24} />
+            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
             <ImageDiv image={'explorer'} width={24} height={24} />
           </Grid>
         </WhiteWrapper>

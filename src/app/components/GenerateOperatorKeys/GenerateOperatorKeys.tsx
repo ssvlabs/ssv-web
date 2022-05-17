@@ -21,7 +21,7 @@ import {
     validatePublicKeyInput,
     validateDisplayNameInput,
     validateAddressInput,
-    validateFeeInput,
+    // validateFeeInput,
 } from '~lib/utils/validatesInputs';
 import Button from '~app/common/components/Button';
 
@@ -39,21 +39,21 @@ const GenerateOperatorKeys = () => {
     const [operatorExist, setOperatorExist] = useState(false);
     // const [userAgreement, setUserAgreement] = useState(false);
     const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
-    const [feeError, setFeeError] = useState({ shouldDisplay: false, errorMessage: '' });
+    // const [feeError, setFeeError] = useState({ shouldDisplay: false, errorMessage: '' });
     const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
     const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
-    const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '', fee: 0 });
+    const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
     const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
 
     // Inputs validation
     useEffect(() => {
         const isRegisterButtonEnabled = !inputsData.name
-            || !inputsData.publicKey || (!inputsData.fee && process.env.REACT_APP_NEW_STAGE)
+            || !inputsData.publicKey
             || !walletStore.accountAddress
             || displayNameError.shouldDisplay
             || publicKeyError.shouldDisplay
-            || addressError.shouldDisplay
-            || feeError.shouldDisplay;
+            || addressError.shouldDisplay;
+            // || feeError.shouldDisplay;
         setRegisterButtonEnabled(!isRegisterButtonEnabled);
         return () => {
             setRegisterButtonEnabled(false);
@@ -61,12 +61,11 @@ const GenerateOperatorKeys = () => {
     }, [inputsData,
         walletStore.accountAddress,
         displayNameError.shouldDisplay,
-        feeError.shouldDisplay,
+        // feeError.shouldDisplay,
         addressError.shouldDisplay,
         publicKeyError.shouldDisplay,
         inputsData.name,
         inputsData.publicKey,
-        inputsData.fee,
     ]);
 
     const onInputChange = (name: string, value: string) => {
@@ -79,7 +78,7 @@ const GenerateOperatorKeys = () => {
         applicationStore.setIsLoading(true);
 
         const operatorKeys: NewOperator = {
-            fee: inputsData.fee,
+            fee: 0,
             name: inputsData.name,
             address: walletStore.accountAddress,
             pubKey: walletStore.encodeKey(inputsData.publicKey),
@@ -89,7 +88,7 @@ const GenerateOperatorKeys = () => {
         setOperatorExist(isExists);
         if (!isExists) {
             try {
-                await operatorStore.addNewOperator(true);
+                // await operatorStore.addNewOperator(true);
                 history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
             } catch (e: any) {
                 console.log(e);
@@ -151,26 +150,26 @@ const GenerateOperatorKeys = () => {
                 <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
               </Grid>
               {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
-              {process.env.REACT_APP_NEW_STAGE && (
-                <Grid item className={classes.GridItem}>
-                  <InputLabel
-                    withHint
-                    title="Yearly Fee Per Validator"
-                    // toolTipLink={config.links.TOOL_TIP_KEY_LINK}
-                    toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                  />
-                  <TextInput
-                    withSideText
-                    value={inputsData.fee}
-                    dataTestId={'new-operator-fee'}
-                    showError={feeError.shouldDisplay}
-                    onChangeCallback={(event: any) => { onInputChange('fee', event.target.value); }}
-                    onBlurCallBack={(event: any) => { validateFeeInput(event.target.value, setFeeError); }}
-                  />
-                  {feeError.shouldDisplay &&
-                  <Typography className={classes.TextError}>{feeError.errorMessage}</Typography>}
-                </Grid>
-              )}
+              {/* {process.env.REACT_APP_NEW_STAGE && ( */}
+              {/*  <Grid item className={classes.GridItem}> */}
+              {/*    <InputLabel */}
+              {/*      withHint */}
+              {/*      title="Yearly Fee Per Validator" */}
+              {/*      // toolTipLink={config.links.TOOL_TIP_KEY_LINK} */}
+              {/*      toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY} */}
+              {/*    /> */}
+              {/*    <TextInput */}
+              {/*      withSideText */}
+              {/*      value={inputsData.fee} */}
+              {/*      dataTestId={'new-operator-fee'} */}
+              {/*      showError={feeError.shouldDisplay} */}
+              {/*      onChangeCallback={(event: any) => { onInputChange('fee', event.target.value); }} */}
+              {/*      onBlurCallBack={(event: any) => { validateFeeInput(event.target.value, setFeeError); }} */}
+              {/*    /> */}
+              {/*    {feeError.shouldDisplay && */}
+              {/*    <Typography className={classes.TextError}>{feeError.errorMessage}</Typography>} */}
+              {/*  </Grid> */}
+              {/* )} */}
             </Grid>
             {/* <Checkbox onClickCallBack={setUserAgreement} text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'} /> */}
             <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />

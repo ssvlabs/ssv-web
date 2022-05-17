@@ -9,6 +9,7 @@ import ImageDiv from '~app/common/components/ImageDiv';
 import WhiteWrapper from '~app/common/components/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import SelectOperators from '~app/components/RegisterValidatorHome/components/SelectOperators';
 import { useStyles } from './EditValidator.styles';
 
@@ -17,8 +18,9 @@ const EditValidator = () => {
     const classes = useStyles();
     // @ts-ignore
     const { public_key } = useParams();
-    const applicationStore: ApplicationStore = stores.Application;
     const operatorStore: OperatorStore = stores.Operator;
+    const applicationStore: ApplicationStore = stores.Application;
+    const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
@@ -30,12 +32,17 @@ const EditValidator = () => {
         });
     }, []);
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(public_key);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
+
     return (
       <Grid container className={classes.EditValidatorWrapper}>
         <WhiteWrapper withCancel withBackButton={false} header={'Update Operators for Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
-            <ImageDiv image={'copy'} width={24} height={24} />
+            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
             <ImageDiv image={'explorer'} width={24} height={24} />
             <ImageDiv image={'beacon'} width={24} height={24} />
           </Grid>

@@ -52,7 +52,7 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
     callback(response);
 };
 
-export const validateFeeInput = (value: string, callback: React.Dispatch<ErrorObject>) :void => {
+export const validateFeeInput = (value: string, callback: any) :void => {
     // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
     const response = { shouldDisplay: false, errorMessage: '' };
     // eslint-disable-next-line radix
@@ -60,6 +60,24 @@ export const validateFeeInput = (value: string, callback: React.Dispatch<ErrorOb
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a greater fee amount.';
     } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please use numbers only.';
+    } else {
+        response.shouldDisplay = false;
+    }
+
+    callback(response);
+};
+
+export const validateFeeUpdate = (previousValue: number, newValue: string, callback: any) :void => {
+    console.log(typeof previousValue);
+    console.log(Number(newValue) === previousValue);
+    const response = { shouldDisplay: false, errorMessage: '' };
+    // eslint-disable-next-line radix
+    if (10 ** (-14) > (Number(newValue) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please set a greater fee amount.';
+    } else if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue)) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please use numbers only.';
     } else {

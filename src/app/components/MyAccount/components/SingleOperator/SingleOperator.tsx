@@ -69,6 +69,10 @@ const SingleOperator = () => {
         window.open(`${config.links.LINK_EXPLORER}/${key}`, '_blank');
     };
 
+    const moveToUpdateFee = () => {
+        history.push(`/dashboard/operator/${operator_id}/update-fee`);
+    };
+
     const openBeaconcha = (publicKey: string) => {
         window.open(`${beaconchaBaseUrl}/validator/${publicKey}`, '_blank');
     };
@@ -251,7 +255,7 @@ const SingleOperator = () => {
               ]}
               bottom={[
                 <Grid item xs>
-                  <Button disable={false} text={'Change Fee'} onClick={console.log} />
+                  <Button disable={false} text={'Change Fee'} onClick={moveToUpdateFee} />
                 </Grid>,
               ]}
               bottomWrapper={classes.ButtonSection}

@@ -35,6 +35,9 @@ export const useStyles = makeStyles((theme) => ({
         '&:nth-child(2)': {
             padding: theme.spacing(5, 8, 8, 8),
         },
+        '&:last-child': {
+            borderBottom: 'none',
+        },
     },
     HeaderSection: {
         padding: theme.spacing(8, 8, 0, 8),

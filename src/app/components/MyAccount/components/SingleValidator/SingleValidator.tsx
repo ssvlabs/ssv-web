@@ -20,6 +20,7 @@ import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store
 import { useStyles } from '~app/components/MyAccount/components/SingleValidator/SingleValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 const SingleValidator = () => {
     const stores = useStores();
@@ -31,6 +32,7 @@ const SingleValidator = () => {
     const walletStore: WalletStore = stores.Wallet;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
+    const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
@@ -55,6 +57,11 @@ const SingleValidator = () => {
     ];
     const removeValidatorPage = () => {
         history.push(`/dashboard/validator/${public_key}/remove`);
+    };
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(public_key);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
     removeValidatorPage;
 
@@ -162,7 +169,7 @@ const SingleValidator = () => {
               </Grid>
               <Grid item container className={classes.SubHeaderWrapper}>
                 <Typography>{longStringShorten(public_key, 6, 4)}</Typography>
-                <ImageDiv image={'copy'} width={24} height={24} />
+                <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
                 <ImageDiv image={'explorer'} width={24} height={24} />
                 <ImageDiv image={'beacon'} width={24} height={24} />
               </Grid>

@@ -12,6 +12,7 @@ import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/MyAccount/components/RemoveValidator/RemoveValidator.styles';
 
 const RemoveValidator = () => {
@@ -24,6 +25,7 @@ const RemoveValidator = () => {
     const validatorStore: ValidatorStore = stores.Validator;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
+    const notificationsStore: NotificationsStore = stores.Notifications;
     const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
     
     useEffect(() => {
@@ -45,6 +47,11 @@ const RemoveValidator = () => {
         if (response) history.push(`/dashboard/validator/${public_key}/removed`);
     };
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(public_key);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
+
     if (!validator) return null;
 
     return (
@@ -52,7 +59,7 @@ const RemoveValidator = () => {
         <WhiteWrapper header={'Remove Validator'}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
-            <ImageDiv image={'copy'} width={24} height={24} />
+            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
             <ImageDiv image={'explorer'} width={24} height={24} />
             <ImageDiv image={'beacon'} width={24} height={24} />
           </Grid>

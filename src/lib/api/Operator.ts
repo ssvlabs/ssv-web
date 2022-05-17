@@ -50,9 +50,12 @@ class Operator {
 
     clearOperatorsCache() {
         this.operators = null;
+        this.operatorQuery = null;
+        this.operatorsQuery = null;
         this.operatorsPagination = null;
         this.ownerAddressOperators = null;
         this.ownerAddressPagination = null;
+        this.operatorValidatorsQuery = null;
     }
 
     clearOperatorsByOwnerAddressCache() {
@@ -94,8 +97,14 @@ class Operator {
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
         if (this.operatorsQuery === operatorsEndpointUrl) {
+            // console.log('<<<<<<<<<<here>>>>>>>>>>');
+            // console.log(this.operatorsQuery);
+            // console.log(this.operators);
+            // console.log(this.operatorsPagination);
+            // console.log('<<<<<<<<<<here>>>>>>>>>>');
             return { operators: this.operators, pagination: this.operatorsPagination };
         }
+        console.log('<<<<<<<<<<here2>>>>>>>>>>');
 
         try {
             const response: any = (await axios.get(operatorsEndpointUrl)).data;

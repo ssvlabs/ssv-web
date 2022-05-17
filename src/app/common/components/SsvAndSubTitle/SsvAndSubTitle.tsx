@@ -21,9 +21,9 @@ const SsvAndSubTitle = (props: Props) => {
     }
 
     return (
-      <Grid container item style={{ textAlign }}>
-        <Grid item xs={12} className={classes.Balance}>{ssv} SSV</Grid>
-        {subText && <Grid item xs={12} className={classes.DollarBalance}>{subText}</Grid>}
+      <Grid container item style={{ textAlign, flexDirection: 'column' }}>
+        <Grid item xs className={classes.Balance}>{ssv} SSV</Grid>
+        {subText && <Grid item className={classes.DollarBalance}>{subText}</Grid>}
       </Grid>
     );
 };

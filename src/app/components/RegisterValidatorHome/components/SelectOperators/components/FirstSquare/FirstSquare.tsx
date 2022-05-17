@@ -84,7 +84,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         }
 
         setOperatorsPagination(response.pagination);
-        if (response.pagination.page === 1 && scrollRef.current) {
+        if (response?.pagination?.page === 1 && scrollRef.current) {
             scrollRef.current.scrollTo(0, 0);
         }
         setLoading(false);
@@ -141,7 +141,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         // }
         // if (loading) return [];
 
-        if (operatorsData.length === 0 && !loading) {
+        if (operatorsData?.length === 0 && !loading) {
             return (
               <TableRow hover>
                 <StyledCell className={classes.NoRecordsWrapper}>
@@ -174,9 +174,11 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 <StyledCell>
                   <Grid container>
                     <Grid item>{operator.validators_count}</Grid>
-                    <Grid item style={{ marginLeft: 4 }}>
-                      <ToolTip text={'Operator reached  maximum amount of validators'} />
-                    </Grid>
+                    {disabled && (
+                      <Grid item style={{ marginLeft: 4 }}>
+                        <ToolTip text={'Operator reached  maximum amount of validators'} />
+                      </Grid>
+                    )}
                   </Grid>
                 </StyledCell>
                 <StyledCell>

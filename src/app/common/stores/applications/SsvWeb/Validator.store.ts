@@ -238,7 +238,7 @@ class ValidatorStore extends BaseStore {
         return atob(walletStore.decodeKey(operatorKey));
       });
 
-      const operatorPublicIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+      const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
         return operator.operator_id;
       });
 
@@ -250,7 +250,7 @@ class ValidatorStore extends BaseStore {
 
       const payLoad = [
         `0x${this.keyStorePublicKey}`,
-        operatorPublicIds,
+        operatorIds,
         sharePublicKeys,
         encryptedKeys,
       ];

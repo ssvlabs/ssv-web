@@ -13,6 +13,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Deposit from '~app/components/MyAccount/components/Deposit';
 import Withdraw from '~app/components/MyAccount/components/Withdraw';
 import CountryNotSupported from '~app/components/CountryNotSupported';
+import OperatorSuccessPage from '~app/components/OperatorSuccessPage';
 import UpdateFee from '~app/components/MyAccount/components/UpdateFee';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
@@ -67,7 +68,7 @@ const Routes: any = () => {
         <Route path={config.routes.OPERATOR.HOME}>
           <Switch>
             <Route exact path={config.routes.OPERATOR.HOME} component={RegisterOperatorHome} />
-            <Route exact path={config.routes.OPERATOR.SUCCESS_PAGE} component={SuccessScreen} />
+            <Route exact path={config.routes.OPERATOR.SUCCESS_PAGE} component={OperatorSuccessPage} />
             <Route exact path={config.routes.OPERATOR.GENERATE_KEYS} component={GenerateOperatorKeys} />
             <Route exact path={config.routes.OPERATOR.SET_FEE_PAGE} component={SetOperatorFee} />
             <Route exact path={config.routes.OPERATOR.CONFIRMATION_PAGE} component={OperatorTransactionConfirmation} />

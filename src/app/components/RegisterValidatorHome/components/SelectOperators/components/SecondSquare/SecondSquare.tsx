@@ -14,6 +14,7 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import OperatorDetails
     from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -118,7 +119,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                     bold
                     subText={'~$757.5'}
                     subTextCenter={false}
-                    ssv={ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)}
+                    ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
                   />
                 </Grid>
               </Grid>

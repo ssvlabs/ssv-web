@@ -2,19 +2,19 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
-import { roundNumber } from '~lib/utils/numbers';
 import Status from '~app/common/components/Status';
 import Button from '~app/common/components/Button';
 import Checkbox from '~app/common/components/CheckBox';
 import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import RemainingDays from '~app/components/MyAccount/common/componenets/RemainingDays';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
 
@@ -44,8 +44,8 @@ const OperatorsReceipt = (props: Props) => {
         0,
     );
 
-    const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
-    const operatorsYearlyFee = ssvStore.getFeeForYear(newOperatorsFee);
+    const networkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
+    const operatorsYearlyFee = ssvStore.newGetFeeForYear(newOperatorsFee);
     const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
 
     const checkBox = () => {
@@ -81,7 +81,7 @@ const OperatorsReceipt = (props: Props) => {
                           <Status status={operator.status} />
                         </Grid>
                         <Grid item xs>
-                          <SsvAndSubTitle gray80={currentOperators} ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
+                          <SsvAndSubTitle gray80={currentOperators} ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} subText={'/year'} />
                         </Grid>
                       </Grid>
                     );
@@ -102,7 +102,7 @@ const OperatorsReceipt = (props: Props) => {
           <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
         </Grid>
         <Grid item>
-          <SsvAndSubTitle bold gray80={currentOperators} ssv={roundNumber(networkFee + operatorsYearlyFee, 8)} subText={'~$757.5'} />
+          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(addNumber(networkFee, operatorsYearlyFee))} subText={'~$757.5'} />
         </Grid>
       </Grid>,
       <Grid container item>

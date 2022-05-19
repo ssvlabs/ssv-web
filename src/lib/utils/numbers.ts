@@ -1,3 +1,14 @@
+// new functionality
+import Decimal from 'decimal.js';
+
+export const addNumber = (num1: any, num2: any) => {
+    return new Decimal(num1).add(num2).toString();
+};
+
+export const multiplyNumber = (num1: any, num2: any) => {
+    return new Decimal(num1).mul(num2).toFixed(2).toString();
+};
+
 /**
  * Get maximum precision of float number.
  * @param numeric
@@ -44,7 +55,7 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
     return floatString;
 };
 
-export const formatNumberToUi = (num?: number, days?: boolean) => {
+export const formatNumberToUi = (num?: number | string, days?: boolean) => {
     // eslint-disable-next-line eqeqeq
     if (!num || num == 0 || Number.isNaN(num)) return days ? '0' : '0.0';
     const splitNumber = num.toString().split('.');
@@ -71,9 +82,8 @@ export const formatNumberToUi = (num?: number, days?: boolean) => {
         if (decimal && decimal[deleteFromIndex - 1] === '0') {
             deleteFromIndex -= 1;
         }
-
         decimal = decimal.slice(0, deleteFromIndex);
-        return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}.${decimal}`;
+        return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${decimal !== '00' ? `.${decimal}` : ''}`;
     }
     return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
 };

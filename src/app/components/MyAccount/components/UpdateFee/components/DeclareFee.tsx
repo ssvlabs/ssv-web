@@ -7,7 +7,6 @@ import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/common/components/TextInput';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
@@ -19,7 +18,6 @@ const UpdateFee = () => {
     const stores = useStores();
     // @ts-ignore
     const { operator_id } = useParams();
-    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const [operator, setOperator] = useState(null);
     const [userInput, setUserInput] = useState('');
@@ -93,7 +91,8 @@ const UpdateFee = () => {
                   dataTestId={'edit-operator-fee'}
                   onChangeCallback={(e: any) => setUserInput(e.target.value)}
                   onBlurCallBack={(event: any) => { // @ts-ignore
-                      validateFeeUpdate(ssvStore.getFeeForYear(walletStore.fromWei(operator?.fee)), event.target.value, setError); }}
+                      validateFeeUpdate(walletStore.fromWei(operator?.fee), event.target.value, setError);
+                  }}
                 />
               </Grid>
             </Grid>

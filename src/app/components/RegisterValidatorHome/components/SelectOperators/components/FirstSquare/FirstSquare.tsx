@@ -12,9 +12,11 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/common/components/ToolTip';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import TextInput from '~app/common/components/TextInput';
 import config, { translations } from '~app/common/config';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -22,7 +24,6 @@ import Filters from '~app/components/RegisterValidatorHome/components/SelectOper
 import StyledCell from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -32,7 +33,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const wrapperRef = useRef(null);
     const scrollRef: any = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
-    walletStore;
     const [sortBy, setSortBy] = useState('');
     const operatorStore: OperatorStore = stores.Operator;
     const [filterBy, setFilterBy] = useState([]);
@@ -194,7 +194,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 {process.env.REACT_APP_NEW_STAGE && (
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))}</Grid>
+                    <Grid item>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />

@@ -33,7 +33,6 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         const handleClickOutside = (e: any) => {
             // @ts-ignore
             if (menuBar && wrapperRef.current && (!wrapperRef.current.contains(e.target) && !buttonsRef.current.contains(e.target))) {
-                console.log('close menu');
                 openMenuBar(false);
             }
         };

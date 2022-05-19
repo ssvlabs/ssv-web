@@ -1,43 +1,75 @@
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { useStyles } from './SetOperatorFee.styles';
+import LinkText from '~app/common/components/LinkText';
+import TextInput from '~app/common/components/TextInput';
+import { validateFeeInput } from '~lib/utils/validatesInputs';
 import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import SecondaryButton from '~app/common/components/Button/SecondaryButton/SecondaryButton';
-import { useStyles } from '~app/components/RegisterValidatorHome/RegisterValidatorHome.styles';
 
 const SetOperatorFee = () => {
-  const classes = useStyles();
   const stores = useStores();
+  const classes = useStyles();
   const history = useHistory();
-  const validatorStore: ValidatorStore = stores.Validator;
+  const operatorStore: OperatorStore = stores.Operator;
+  const [userInput, setUserInput] = useState(0);
+  const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
+  const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
 
   useEffect(() => {
-      validatorStore.clearValidatorData();
-  });
+    const isRegisterButtonEnabled = !userInput || error.shouldDisplay;
+    setRegisterButtonEnabled(!isRegisterButtonEnabled);
+    return () => {
+      setRegisterButtonEnabled(false);
+    };
+  }, [error.shouldDisplay, userInput]);
+
+  const moveToSubmitConfirmation = () => {
+    const operatorWithFee = operatorStore.newOperatorKeys;
+    operatorWithFee.fee = userInput;
+    operatorStore.setOperatorKeys(operatorWithFee);
+    history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+  };
 
   return (
     <BorderScreen
       body={[
-        <Grid container>
-          <HeaderSubHeader title={'Run Validator with the SSV Network'}
-            subtitle={'Any validator can run on the SSV network: create a new validator or import your existing one to begin'}
-          />
-          <Grid container item justify={'space-evenly'}>
-            <Grid container item className={classes.LinkButtonWrapper}>
-              <Grid item xs={12}>
-                <SecondaryButton text={'Create Validator'} submitFunction={() => { history.push(config.routes.VALIDATOR.CREATE); }} />
+        <Grid container style={{ position: 'relative' }}>
+          <HeaderSubHeader title={'Set Operator Fee'} />
+          <Grid item container style={{ gap: 24 }}>
+            <Typography className={classes.Text}>The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators.</Typography>
+            <Typography className={classes.Text}>Operators set their own fees, denominated in SSV tokens, to be charged per each validator that selects them as one of their operators.</Typography>
+            <Typography className={classes.Text}>Fees are presented as annual payments, but in practice are paid to operators continuously as an ongoing process - per each passed block.</Typography>
+            <Grid className={classes.Text}>Please note that you could always change your fee (according to <br /> the <LinkText text={'limitations'} link={''} />) to align with market dynamics, such as competitiveness and SSV price fluctuations.</Grid>
+          </Grid>
+          <Grid item container className={classes.InputWrapper}>
+            <Grid item container>
+              <Grid item className={classes.InputText}>
+                <Typography>Annual fee</Typography>
               </Grid>
+              {/* <Grid item> */}
+              {/*  <Typography>Annual fee</Typography> */}
+              {/* </Grid> */}
             </Grid>
-            <Grid container item className={classes.LinkButtonWrapper}>
-              <Grid item xs={12}>
-                <SecondaryButton text={'Import Validator'} submitFunction={() => { validatorStore.keyStoreFile = null; history.push(config.routes.VALIDATOR.IMPORT); }} />
-              </Grid>
+            <Grid item container style={{ marginBottom: 24 }}>
+              <TextInput
+                withSideText
+                value={userInput}
+                placeHolder={'0.0'}
+                showError={error.shouldDisplay}
+                dataTestId={'edit-operator-fee'}
+                onChangeCallback={(e: any) => setUserInput(e.target.value)}
+                onBlurCallBack={(event: any) => { validateFeeInput(event.target.value, setError); }} />
+              {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
+            <PrimaryButton text={'Next'} disable={!registerButtonEnabled} submitFunction={moveToSubmitConfirmation} />
           </Grid>
         </Grid>,
       ]}

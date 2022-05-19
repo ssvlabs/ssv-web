@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/common/components/Button';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import { addNumber, formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
@@ -33,14 +33,14 @@ const ImportValidatorConfirmation = () => {
     // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
     let totalAmountOfSsv;
-    let yearlyNetworkFee = 0;
-    let liquidationCollateral = 0;
-    let totalOperatorsYearlyFee = 0;
+    let yearlyNetworkFee = '0';
+    let liquidationCollateral = '0';
+    let totalOperatorsYearlyFee = '0';
     if (process.env.REACT_APP_NEW_STAGE) {
-        yearlyNetworkFee = ssvStore.getFeeForYear(ssvStore.networkFee);
-        totalOperatorsYearlyFee = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
-        liquidationCollateral = (ssvStore.networkFee + operatorStore.getSelectedOperatorsFee) * ssvStore.liquidationCollateral;
-        totalAmountOfSsv = formatNumberToUi(totalOperatorsYearlyFee + yearlyNetworkFee + liquidationCollateral);
+        yearlyNetworkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
+        totalOperatorsYearlyFee = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
+        liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
+        totalAmountOfSsv = formatNumberToUi(addNumber(addNumber(totalOperatorsYearlyFee, yearlyNetworkFee), liquidationCollateral));
     }
 
     const onRegisterValidatorClick = async () => {
@@ -91,7 +91,7 @@ const ImportValidatorConfirmation = () => {
                         {process.env.REACT_APP_NEW_STAGE && (
                         <Grid item xs>
                           <SsvAndSubTitle
-                            ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))}
+                            ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}
                             subText={'/year'}
                           />
                         </Grid>

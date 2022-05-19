@@ -22,6 +22,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     ScreenWrapper: {
         borderRadius: 16,
+        overflow: 'hidden',
         border: (props: any) => props.gray80 ? `1px solid ${theme.colors.gray20}` : 'none',
         backgroundColor: (props: any) => props.gray80 ? theme.colors.gray0 : theme.colors.squareScreenBackground,
         [screenSizes.xs]: {

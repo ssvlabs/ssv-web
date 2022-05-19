@@ -58,11 +58,6 @@ class Operator {
         this.operatorValidatorsQuery = null;
     }
 
-    clearOperatorsByOwnerAddressCache() {
-        this.ownerAddressOperators = null;
-        this.ownerAddressPagination = null;
-    }
-
     /**
      * Get operators by owner Address
      */
@@ -104,7 +99,6 @@ class Operator {
             // console.log('<<<<<<<<<<here>>>>>>>>>>');
             return { operators: this.operators, pagination: this.operatorsPagination };
         }
-        console.log('<<<<<<<<<<here2>>>>>>>>>>');
 
         try {
             const response: any = (await axios.get(operatorsEndpointUrl)).data;

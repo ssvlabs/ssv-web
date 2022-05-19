@@ -86,15 +86,7 @@ const GenerateOperatorKeys = () => {
         operatorStore.setOperatorKeys(operatorKeys);
         const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
         setOperatorExist(isExists);
-        if (!isExists) {
-            try {
-                // await operatorStore.addNewOperator(true);
-                history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
-            } catch (e: any) {
-                console.log(e);
-                console.log('error!!!!!');
-            }
-        }
+        if (!isExists) history.push(config.routes.OPERATOR.SET_FEE_PAGE);
         applicationStore.setIsLoading(false);
     };
 

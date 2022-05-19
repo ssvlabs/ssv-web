@@ -8,19 +8,21 @@ import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
 import { longStringShorten } from '~lib/utils/strings';
+import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/common/components/Table/Table';
 import ToolTip from '~app/common/components/ToolTip/ToolTip';
+import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import SecondaryButton from '~app/common/components/Button/SecondaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/MyAccount/components/SingleValidator/SingleValidator.styles';
 import OperatorDetails from '~app/components/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 const SingleValidator = () => {
     const stores = useStores();
@@ -39,7 +41,7 @@ const SingleValidator = () => {
         Validator.getInstance().getValidator(public_key).then((response: any) => {
             if (response) {
                 response.public_key = longStringShorten(public_key, 6, 4);
-                response.total_operators_fee = ssvStore.getFeeForYear(response.operators.reduce(
+                response.total_operators_fee = ssvStore.newGetFeeForYear(response.operators.reduce(
                     (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
                     0,
                 ));
@@ -55,15 +57,19 @@ const SingleValidator = () => {
         { key: 'apr', value: 'Est. APR' },
         { key: 'total_operators_fee', value: 'Total Operators Fee' },
     ];
-    const removeValidatorPage = () => {
-        history.push(`/dashboard/validator/${public_key}/remove`);
+
+    const openBeaconcha = () => {
+        window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`, '_blank');
     };
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(public_key);
         notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
-    removeValidatorPage;
+
+    const openExplorer = () => {
+        window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`, '_blank');
+    };
 
     const data = React.useMemo(
         () => {
@@ -93,7 +99,7 @@ const SingleValidator = () => {
                     performance: <Typography className={classes.PerformanceHeader}>{performance}</Typography>,
                     fee: <Grid item container justify={'space-between'}>
                       <Grid item>
-                        <SsvAndSubTitle leftTextAlign ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} subText={'~$757.5'} />
+                        <SsvAndSubTitle leftTextAlign ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} subText={'~$757.5'} />
                       </Grid>
 
                       {/* <Grid item container xs> */}
@@ -170,8 +176,8 @@ const SingleValidator = () => {
               <Grid item container className={classes.SubHeaderWrapper}>
                 <Typography>{longStringShorten(public_key, 6, 4)}</Typography>
                 <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
-                <ImageDiv image={'explorer'} width={24} height={24} />
-                <ImageDiv image={'beacon'} width={24} height={24} />
+                <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />
+                <ImageDiv onClick={openBeaconcha} image={'beacon'} width={24} height={24} />
               </Grid>
             </Grid>
             {fields.map((field: { key: string, value: string }, index: number) => {

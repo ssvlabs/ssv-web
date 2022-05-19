@@ -10,6 +10,7 @@ import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 type Props = {
     index: number,
@@ -64,7 +65,7 @@ const ValidatorDropDownMenu = (props: Props) => {
                               />
                             </Grid>
                             <Grid item xs>
-                              <SsvAndSubTitle ssv={ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} subText={'/year'} />
+                              <SsvAndSubTitle ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} subText={'/year'} />
                             </Grid>
                           </Grid>
                         );

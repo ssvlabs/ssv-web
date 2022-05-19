@@ -70,8 +70,6 @@ export const validateFeeInput = (value: string, callback: any) :void => {
 };
 
 export const validateFeeUpdate = (previousValue: number, newValue: string, callback: any) :void => {
-    console.log(typeof previousValue);
-    console.log(Number(newValue) === previousValue);
     const response = { shouldDisplay: false, errorMessage: '' };
     // eslint-disable-next-line radix
     if (10 ** (-14) > (Number(newValue) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)) {

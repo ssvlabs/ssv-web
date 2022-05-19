@@ -31,8 +31,9 @@ const OperatorConfirmation = () => {
         try {
             applicationStore.setIsLoading(true);
             setActionButtonText('Waiting for confirmation...');
-            await operatorStore.addNewOperator(false);
-            history.push(config.routes.OPERATOR.SUCCESS_PAGE);
+            const operatorAdded = await operatorStore.addNewOperator(false);
+            if (operatorAdded) history.push(config.routes.OPERATOR.SUCCESS_PAGE);
+            setActionButtonText('Register Operator');
         } catch {
             setActionButtonText('Register Operator');
         }

@@ -14,6 +14,7 @@ const config = {
             OPERATOR: '/dashboard/operator/:operator_id',
             REMOVE_OPERATOR: '/dashboard/operator/:operator_id/remove',
             OPERATOR_REMOVED: '/dashboard/operator/:operator_id/removed',
+            OPERATOR_UPDATE_FEE: '/dashboard/operator/:operator_id/update-fee',
             VALIDATOR: '/dashboard/validator/:public_key',
             EDIT_VALIDATOR: '/dashboard/validator/:public_key/edit',
             REMOVE_VALIDATOR: '/dashboard/validator/:public_key/remove',
@@ -25,6 +26,7 @@ const config = {
             HOME: '/operator',
             SUCCESS_PAGE: '/operator/success',
             GENERATE_KEYS: '/operator/generate',
+            SET_FEE_PAGE: '/operator/fee',
             CONFIRMATION_PAGE: '/operator/confirm',
         },
         VALIDATOR: {

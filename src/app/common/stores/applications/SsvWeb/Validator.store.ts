@@ -3,7 +3,7 @@ import EthereumKeyStore from 'eth2-keystore-js';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import { roundCryptoValueString } from '~lib/utils/numbers';
+import { addNumber, multiplyNumber } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -187,7 +187,6 @@ class ValidatorStore extends BaseStore {
                 }
               })
               .on('transactionHash', (txHash: string) => {
-                console.log(txHash);
                 applicationStore.txHash = txHash;
                 applicationStore.showTransactionPendingPopUp(true);
               })
@@ -217,11 +216,11 @@ class ValidatorStore extends BaseStore {
     const operatorStore: OperatorStore = this.getStore('Operator');
     const threshold: Threshold = new Threshold();
     const thresholdResult: ISharesKeyPairs = await threshold.create(this.keyStorePrivateKey);
-    let totalAmountOfSsv = 0;
+    let totalAmountOfSsv = '0';
     if (process.env.REACT_APP_NEW_STAGE) {
-      const operatorsFees = ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee);
-      const liquidationCollateral = (ssvStore.networkFee + ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee)) * ssvStore.liquidationCollateral;
-      totalAmountOfSsv = liquidationCollateral + ssvStore.getFeeForYear(ssvStore.networkFee) + operatorsFees;
+      const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
+      const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee)), ssvStore.liquidationCollateral);
+      totalAmountOfSsv = addNumber(addNumber(liquidationCollateral, ssvStore.newGetFeeForYear(ssvStore.networkFee, 11)), operatorsFees);
     }
 
     return new Promise((resolve) => {
@@ -238,7 +237,7 @@ class ValidatorStore extends BaseStore {
         return atob(walletStore.decodeKey(operatorKey));
       });
 
-      const operatorPublicIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+      const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
         return operator.operator_id;
       });
 
@@ -250,12 +249,12 @@ class ValidatorStore extends BaseStore {
 
       const payLoad = [
         `0x${this.keyStorePublicKey}`,
-        operatorPublicIds,
+        operatorIds,
         sharePublicKeys,
         encryptedKeys,
       ];
       if (process.env.REACT_APP_NEW_STAGE) {
-        if (!update) payLoad.push(walletStore.toWei(roundCryptoValueString(totalAmountOfSsv)));
+        if (!update) payLoad.push(walletStore.toWei(totalAmountOfSsv));
       } else {
         payLoad.unshift(walletStore.accountAddress);
       }

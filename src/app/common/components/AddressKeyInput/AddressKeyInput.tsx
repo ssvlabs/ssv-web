@@ -5,6 +5,7 @@ import { useStores } from '~app/hooks/useStores';
 import { getBaseBeaconchaUrl, getEtherScanUrl } from '~lib/utils/beaconcha';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './AddressKeyInput.styles';
+import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 
 type ValidatorPrivateKeyInputProps = {
     address: string,
@@ -42,7 +43,7 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
         data-testid="validator-private-key-slashing-input"
         >
         <Grid item xs className={classes.PublicKey}>{address}</Grid>
-        {withCopy && <Grid item className={classes.CopyImage} onClick={copyToClipboard} />}
+        {withCopy && <ImageDiv image={'copy'} width={24} height={24} onClick={copyToClipboard} />}
         {withEtherScan && <Grid item className={classes.EtherScanImage} onClick={openEtherScan} />}
         {withBeaconcha && <Grid item className={classes.BeaconImage} onClick={openBeaconcha} />}
       </Grid>

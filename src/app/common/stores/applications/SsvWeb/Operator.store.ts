@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
@@ -8,7 +9,6 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 export interface NewOperator {
@@ -271,12 +271,13 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     // eslint-disable-next-line no-unused-vars
-    async addNewOperator(getGasEstimation: boolean = false, callBack?: (txHash: string) => void) {
+    async addNewOperator(getGasEstimation: boolean = false) {
+        const applicationStore: ApplicationStore = this.getStore('Application');
+        const notificationsStore: NotificationsStore = this.getStore('Notifications');
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             try {
                 const payload: any[] = [];
-                const ssvStore: SsvStore = this.getStore('SSV');
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const contract: Contract = walletStore.getContract;
                 const address: string = this.newOperatorKeys.address;
@@ -284,12 +285,14 @@ class OperatorStore extends BaseStore {
                 const gasEstimation: PriceEstimation = new PriceEstimation();
                 this.newOperatorReceipt = null;
 
+                const fee = new Decimal(transaction.fee);
+
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.toWei(ssvStore.getFeeForBlock(transaction.fee)),
+                        walletStore.toWei(fee.dividedBy(2398050).toFixed().toString()),
                     );
                 } else {
                     payload.push(
@@ -325,12 +328,14 @@ class OperatorStore extends BaseStore {
                             }
                         })
                         .on('transactionHash', (txHash: string) => {
-                            callBack && callBack(txHash);
+                            applicationStore.txHash = txHash;
+                            applicationStore.showTransactionPendingPopUp(true);
                         })
                         .on('error', (error: any) => {
-                            console.debug('Contract Error', error);
-                            // eslint-disable-next-line prefer-promise-reject-errors
-                            reject(false);
+                            applicationStore.setIsLoading(false);
+                            applicationStore.showTransactionPendingPopUp(false);
+                            notificationsStore.showMessage(error.message, 'error');
+                            resolve(false);
                         });
                 }
             } catch {

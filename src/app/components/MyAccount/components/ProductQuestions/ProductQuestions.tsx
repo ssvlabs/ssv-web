@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import Checkbox from '~app/common/components/CheckBox';
 import TextInput from '~app/common/components/TextInput';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
@@ -12,6 +13,7 @@ import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './ProductQuestions.styles';
 
 const checkBoxTypes: any = {
@@ -24,9 +26,11 @@ const checkBoxTypes: any = {
 const ProductQuestions = () => {
     const classes = useStyles();
     const history = useHistory();
+    const stores = useStores();
     // @ts-ignore
     const { public_key } = useParams();
     const [inputValue, setInputValue] = React.useState(false);
+    const notificationsStore: NotificationsStore = stores.Notifications;
     const [textFieldOpen, setTextFieldOpen] = React.useState(false);
     const [selectedCheckbox, setSelectedCheckbox] = React.useState(0);
 
@@ -57,12 +61,17 @@ const ProductQuestions = () => {
         return type !== selectedCheckbox && selectedCheckbox !== 0;
     };
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(public_key);
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
+    };
+
     return (
       <Grid container item>
         <WhiteWrapper header={'Removed Validator'} withCancel={false}>
           <Grid item container className={classes.SubHeaderWrapper}>
             <Typography>{public_key}</Typography>
-            <ImageDiv image={'copy'} width={24} height={24} />
+            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
             <ImageDiv image={'explorer'} width={24} height={24} />
             <ImageDiv image={'beacon'} width={24} height={24} />
           </Grid>

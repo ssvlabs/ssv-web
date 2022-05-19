@@ -42,7 +42,7 @@
     "cross-env": "^7.0.3",
     "crypto": "^1.0.1",
     "css-loader": "4.3.0",
-    "currency.js": "^2.0.4",
+    "decimal.js": "^10.3.1",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^7.11.0",

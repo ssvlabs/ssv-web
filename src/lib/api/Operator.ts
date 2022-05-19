@@ -50,14 +50,12 @@ class Operator {
 
     clearOperatorsCache() {
         this.operators = null;
+        this.operatorQuery = null;
+        this.operatorsQuery = null;
         this.operatorsPagination = null;
         this.ownerAddressOperators = null;
         this.ownerAddressPagination = null;
-    }
-
-    clearOperatorsByOwnerAddressCache() {
-        this.ownerAddressOperators = null;
-        this.ownerAddressPagination = null;
+        this.operatorValidatorsQuery = null;
     }
 
     /**
@@ -94,6 +92,11 @@ class Operator {
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
         if (this.operatorsQuery === operatorsEndpointUrl) {
+            // console.log('<<<<<<<<<<here>>>>>>>>>>');
+            // console.log(this.operatorsQuery);
+            // console.log(this.operators);
+            // console.log(this.operatorsPagination);
+            // console.log('<<<<<<<<<<here>>>>>>>>>>');
             return { operators: this.operators, pagination: this.operatorsPagination };
         }
 

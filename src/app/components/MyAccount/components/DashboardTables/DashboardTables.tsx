@@ -70,11 +70,11 @@ const DashboardTables = () => {
         if (paginationPage) {
             ApiParams.saveInStorage(type, 'page', paginationPage);
         }
-        const operatorsExist = Operator.getInstance()?.ownerAddressOperators?.length > 0;
-        const validatorsExist = Validator.getInstance()?.validators?.length > 0;
+        // const operatorsExist = Operator.getInstance()?.ownerAddressOperators?.length > 0;
+        // const validatorsExist = Validator.getInstance()?.validators?.length > 0;
 
         const page: number = ApiParams.getInteger(type, 'page', 1);
-        const perPage: number = !validatorsExist || !operatorsExist ? 10 : ApiParams.getInteger(type, 'perPage', ApiParams.PER_PAGE);
+        const perPage: number = ApiParams.getInteger(type, 'perPage', ApiParams.PER_PAGE);
 
         if (type === 'operators') {
             setLoadingOperators(true);
@@ -240,21 +240,21 @@ const DashboardTables = () => {
             </Grid>,
             status: <Status status={status} />,
             revenue: <Grid container item>
-              <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(revenue)} SSV</Grid>
+              <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(walletStore.fromWei(revenue))} SSV</Grid>
               <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid>
             </Grid>,
             validators_count: <Grid item className={classes.ValidatorApr}>{validators_count}</Grid>,
-            fee: <Grid item container justify={'space-between'}>
-              <Grid item container xs>
-                <Grid item xs={12}>
-                  <Typography>{ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} SSV</Typography>
-                </Grid>
-                <Grid item>~$757.5</Grid>
-              </Grid>
-              <Grid className={classes.ExplorerImage} onClick={() => {
-                    window.open(`${config.links.LINK_EXPLORER}/operators/${public_key}`);
-                }} />
-            </Grid>,
+            // fee: <Grid item container justify={'space-between'}>
+            //   <Grid item container xs>
+            //     <Grid item xs={12}>
+            //       <Typography>{ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} asdSSV</Typography>
+            //     </Grid>
+            //     <Grid item>~$757.5</Grid>
+            //   </Grid>
+            //   <Grid className={classes.ExplorerImage} onClick={() => {
+            //         window.open(`${config.links.LINK_EXPLORER}/operators/${public_key}`);
+            //     }} />
+            // </Grid>,
             extra_buttons: <Grid container item justify={'flex-end'}>
               <Grid className={classes.ExplorerImage} onClick={() => {
                     window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);

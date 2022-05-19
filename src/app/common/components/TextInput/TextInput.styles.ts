@@ -8,12 +8,13 @@ const conditionalBackgroundColor = (theme: any, props: any) => {
 };
 
 const conditionalBorder = (theme: any, props: any) => {
-    if (props.error) {
+    if (props.showError) {
         return '1px solid red !important';
     }
     if (props.disable) {
         return `solid 1px ${theme.colors.gray30}`;
     }
+
     return `solid 1px ${theme.colors.gray30}`;
 };
 
@@ -47,9 +48,6 @@ export const useStyles = makeStyles((theme) => ({
     disable: {
         backgroundColor: theme.colors.gray20,
         border: `solid 1px ${theme.colors.gray30}`,
-    },
-    Error: {
-        border: '1px solid red !important',
     },
     Lock: {
         width: 24,

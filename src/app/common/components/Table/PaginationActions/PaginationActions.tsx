@@ -23,6 +23,11 @@ interface TablePaginationActionsProps {
 const PaginationActions = (props: TablePaginationActionsProps) => {
     const { count, page, rowsPerPage, totalPages, onChangePage, onChangeRowsPerPage } = props;
     const classes = useStyles({ firstPage: page === 1, lastPage: page === totalPages });
+    // console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
+    // console.log(page);
+    // console.log(rowsPerPage);
+    // console.log(totalPages);
+    // console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
     const startAt = rowsPerPage * (page - 1) + 1;
     const [currentPage, setCurrentPage] = useState(page);
     const endAt = startAt + rowsPerPage - 1 > count ? count : startAt + rowsPerPage - 1;

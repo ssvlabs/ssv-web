@@ -1,10 +1,11 @@
-// import currency from 'currency.js';
+import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
-import { roundNumber } from '~lib/utils/numbers';
+// import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import { roundNumber } from '~lib/utils/numbers';
 
 class SsvStore extends BaseStore {
     // Balances
@@ -70,7 +71,7 @@ class SsvStore extends BaseStore {
             const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
             const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
             if (ssvAmount === 0) return 0;
-            if (burnRatePerDay === 0) return 0;
+            // if (burnRatePerDay === 0) return 0;
             return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
         } catch (e) {
             return 0;
@@ -97,15 +98,15 @@ class SsvStore extends BaseStore {
     }
 
     @action.bound
-    getFeeForYear = (fee: number): number => {
-        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        return roundNumber(perYear, 8);
+    newGetFeeForYear = (fee: number, decimalPlaces?: number): string => {
+        const wrapFee = new Decimal(fee);
+        return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
     };
 
     @action.bound
-    getFeeForBlock = (fee: number): number => {
-        const perYear = fee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        return roundNumber(perYear, 8);
+    getFeeForYear = (fee: number): number => {
+        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+        return roundNumber(perYear, 11);
     };
 
     /**

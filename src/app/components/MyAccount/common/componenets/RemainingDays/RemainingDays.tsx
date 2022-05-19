@@ -33,6 +33,9 @@ const RemainingDays = (props: Props) => {
         withdrawState = oldRemainingDays > newRemainingDays;
         warningLiquidationState = newRemainingDays < 30;
     }
+    // console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
+    // console.log(oldRemainingDays);
+    // console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
 
     // @ts-ignore
     const classes = useStyles({ warningLiquidationState, withdrawState, gray80 });

@@ -2,7 +2,6 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import ConnectWalletButton from '~app/common/components/AppBar/components/ConnectWalletButton/ConnectWalletButton';
@@ -34,7 +33,6 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         const handleClickOutside = (e: any) => {
             // @ts-ignore
             if (menuBar && wrapperRef.current && (!wrapperRef.current.contains(e.target) && !buttonsRef.current.contains(e.target))) {
-                console.log('close menu');
                 openMenuBar(false);
             }
         };
@@ -51,7 +49,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
-        history.push(config.routes.HOME);
+        history.push(applicationStore.strategyRedirect);
     };
 
     const Buttons = () => {

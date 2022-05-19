@@ -8,10 +8,13 @@ import Layout from '~app/common/components/Layout';
 import Welcome from '~app/components/Welcome/Welcome';
 import { SsvAppBar } from '~app/common/components/AppBar';
 import SuccessScreen from '~app/components/SuccessScreen';
+import SetOperatorFee from '~app/components/SetOperatorFee';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Deposit from '~app/components/MyAccount/components/Deposit';
 import Withdraw from '~app/components/MyAccount/components/Withdraw';
 import CountryNotSupported from '~app/components/CountryNotSupported';
+import OperatorSuccessPage from '~app/components/OperatorSuccessPage';
+import UpdateFee from '~app/components/MyAccount/components/UpdateFee';
 import GenerateOperatorKeys from '~app/components/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/RegisterValidatorHome';
@@ -53,6 +56,7 @@ const Routes: any = () => {
             <Route exact path={config.routes.MY_ACCOUNT.VALIDATOR} component={SingleValidator} />
             <Route exact path={config.routes.MY_ACCOUNT.ENABLE_ACCOUNT} component={EnableAccount} />
             <Route exact path={config.routes.MY_ACCOUNT.EDIT_VALIDATOR} component={EditValidator} />
+            <Route exact path={config.routes.MY_ACCOUNT.OPERATOR_UPDATE_FEE} component={UpdateFee} />
             <Route exact path={config.routes.MY_ACCOUNT.REMOVE_OPERATOR} component={RemoveOperator} />
             <Route exact path={config.routes.MY_ACCOUNT.OPERATOR_REMOVED} component={OperatorRemoved} />
             <Route exact path={config.routes.MY_ACCOUNT.UPLOAD_KEY_STORE} component={UploadKeyStore} />
@@ -64,8 +68,9 @@ const Routes: any = () => {
         <Route path={config.routes.OPERATOR.HOME}>
           <Switch>
             <Route exact path={config.routes.OPERATOR.HOME} component={RegisterOperatorHome} />
-            <Route exact path={config.routes.OPERATOR.SUCCESS_PAGE} component={SuccessScreen} />
+            <Route exact path={config.routes.OPERATOR.SUCCESS_PAGE} component={OperatorSuccessPage} />
             <Route exact path={config.routes.OPERATOR.GENERATE_KEYS} component={GenerateOperatorKeys} />
+            <Route exact path={config.routes.OPERATOR.SET_FEE_PAGE} component={SetOperatorFee} />
             <Route exact path={config.routes.OPERATOR.CONFIRMATION_PAGE} component={OperatorTransactionConfirmation} />
           </Switch>
         </Route>

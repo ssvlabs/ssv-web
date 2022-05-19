@@ -8,6 +8,7 @@ import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
 import Button from '~app/common/components/Button';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/common/components/Table/Table';
@@ -15,7 +16,9 @@ import ToolTip from '~app/common/components/ToolTip/ToolTip';
 import OperatorType from '~app/common/components/OperatorType';
 import ImageDiv from '~app/common/components/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -30,6 +33,8 @@ const SingleOperator = () => {
     const [operator, setOperator] = useState(null);
     const [operatorsValidators, setOperatorsValidators] = useState([]);
     const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
+    const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
 
@@ -58,6 +63,7 @@ const SingleOperator = () => {
     const { page, pages, perPage, total } = operatorsValidatorsPagination || {};
     // @ts-ignore
     const { name, logo, type, status, address, validators_count, fee } = operator || {};
+    const yearlyFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(fee)));
     const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
     const copyToClipboard = (key: string) => {
@@ -66,7 +72,11 @@ const SingleOperator = () => {
     };
 
     const openExplorer = (key: string) => {
-        window.open(`${config.links.LINK_EXPLORER}/${key}`, '_blank');
+        window.open(`${config.links.LINK_EXPLORER}/operators${key}`, '_blank');
+    };
+
+    const moveToUpdateFee = () => {
+        history.push(`/dashboard/operator/${operator_id}/update-fee`);
     };
 
     const openBeaconcha = (publicKey: string) => {
@@ -245,13 +255,13 @@ const SingleOperator = () => {
               body={[
                 <Grid container item style={{ gap: 20 }}>
                   <Grid item xs={12}>
-                    <SsvAndSubTitle ssv={fee || 0} bold leftTextAlign subText={'~$76.78'} />
+                    <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign subText={'~$76.78'} />
                   </Grid>
                 </Grid>,
               ]}
               bottom={[
                 <Grid item xs>
-                  <Button disable={false} text={'Change Fee'} onClick={console.log} />
+                  <Button disable={false} text={'Change Fee'} onClick={moveToUpdateFee} />
                 </Grid>,
               ]}
               bottomWrapper={classes.ButtonSection}

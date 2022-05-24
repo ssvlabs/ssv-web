@@ -71,14 +71,19 @@ export const validateFeeInput = (value: string, callback: any) :void => {
     callback(response);
 };
 
-export const validateFeeUpdate = (previousValue: number, newValue: string, callback: any) :void => {
+export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, callback: any) :void => {
+console.log(maxFeeIncrease);
     const response = { shouldDisplay: false, errorMessage: '' };
-    if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue)) {
+    if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please use numbers only.';
     } else if (compareNumbers(previousValue, newValue)) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a different fee amount from previous.';
+    }
+    else if (new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).lessThan(newValue)) {
+        response.shouldDisplay = true;
+        response.errorMessage = `Increase too high you allow to increase max to ${new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).toString()}`;
     }
     // eslint-disable-next-line radix
     else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(10 ** (-14))) {

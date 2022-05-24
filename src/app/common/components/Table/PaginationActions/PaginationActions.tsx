@@ -96,6 +96,7 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
           </Grid>
           <Grid item className={classes.PageNumber}>
             <IntegerInput
+              type="number"
               value={currentPage}
               onChange={handleSetPage}
               onBlur={changePageNumber}

@@ -53,7 +53,7 @@ const UpdateFee = () => {
             } else if (startPendingStateTime >= todayDate) {
                 setProcessState(1);
             } else if (todayDate > endPendingStateTime) {
-                setProcessState(4);
+                setProcessState(2);
             }
         }
     };

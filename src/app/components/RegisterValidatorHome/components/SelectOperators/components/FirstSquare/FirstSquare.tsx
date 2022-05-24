@@ -75,7 +75,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             search: searchInput,
             validatorsCount: true,
         };
-        setLoading(true);
+
         const response = await Operator.getInstance().getOperators(payload);
         if (response?.pagination?.page > 1) {
             setOperatorsData([...operatorsData, ...response.operators]);
@@ -84,7 +84,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         }
 
         setOperatorsPagination(response.pagination);
-        setLoading(false);
     };
 
     const selectOperator = (e: any, operator: IOperator) => {
@@ -208,21 +207,20 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         });
     };
 
-    const updateValue = _.debounce((e: any) => {
-        const element = e.target;
+    const updateValue = _.debounce(() => {
         if (loading) return;
-        if (element.scrollTop + element.offsetHeight > element.scrollHeight - 100 && operatorsPagination.page <= operatorsPagination.pages) {
+        if (operatorsPagination.page <= operatorsPagination.pages) {
             const newPagination = Object.create(operatorsPagination);
             newPagination.page += 1;
             setOperatorsPagination(newPagination);
         }
-    }, 700);
+    }, 100);
 
     const handleScroll = (event: any) => {
         const element = event.target;
         if (loading) return;
-        if (element.scrollTop + element.offsetHeight > element.scrollHeight && !loading) {
-            updateValue(event);
+        if (element.scrollTop + element.offsetHeight > element.scrollHeight * 0.5) {
+            updateValue();
         }
     };
 
@@ -237,7 +235,9 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     }, [JSON.stringify(operatorStore.selectedOperators)]);
 
     useEffect(() => {
+        setLoading(true);
         getOperators(1);
+        setLoading(false);
         scrollRef.current.scrollTop = 0;
     }, [searchInput, sortBy, sortOrder, filterBy]);
 

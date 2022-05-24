@@ -4,12 +4,16 @@ import { Grid } from '@material-ui/core';
 import { useStyles } from './index.styles';
 import Typography from '@material-ui/core/Typography';
 
-const ReactStepper = ({ step }:{ step: number }) => {
-    const classes = useStyles({ step });
-    const steps = ['Declare Fee', 'Waiting Period', 'Pending Execution', 'Fee Updated'];
-    step;
-    steps;
-    classes;
+type Props = {
+    step: number,
+    subText?: string,
+    subTextAlign: string,
+    registerButtonEnabled?: boolean
+};
+
+const ReactStepper = (props: Props) => {
+    const { step, registerButtonEnabled, subTextAlign, subText } = props;
+    const classes = useStyles({ step, registerButtonEnabled, subTextAlign });
 
     return (
       <Grid item container className={classes.Stepper}>
@@ -25,15 +29,17 @@ const ReactStepper = ({ step }:{ step: number }) => {
         <Grid item container className={classes.ProgressBarTextWrapper}>
           <Grid className={classes.ProgressBarText}>
             Declare Fee
-            <Typography className={classes.ProgressBarText}>
-              21 Mar, 18:55
-            </Typography>
+            {registerButtonEnabled && (
+              <Typography className={classes.ProgressBarText}>
+                {subText}
+              </Typography>
+              )}
           </Grid>
           <Grid className={classes.ProgressBarText}>
             Waiting Period
             {step === 1 && (
             <Typography className={classes.WaitingPeriod}>
-              1 day 2 hrs left
+                {subText}
             </Typography>
             )}
           </Grid>
@@ -41,7 +47,7 @@ const ReactStepper = ({ step }:{ step: number }) => {
             Pending Execution
             {step === 2 && (
             <Typography className={classes.ExpiresIn}>
-              Expires in ~ 2 days 5 hrs
+                {subText}
             </Typography>
             )}
           </Grid>

@@ -9,10 +9,10 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: 8,
         lineHeight: 1.25,
         transition: 'none',
-        textTransform: (props: any) => props.noCamelCase ? 'unset' : 'capitalize',
         color: theme.colors.primaryBlue,
         fontFamily: 'Manrope !important',
         backgroundColor: theme.colors.tint90,
+        textTransform: (props: any) => props.noCamelCase ? 'unset' : 'capitalize',
         '&:hover': {
             backgroundColor: theme.colors.tint80,
         },

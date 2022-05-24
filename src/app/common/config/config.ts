@@ -68,7 +68,6 @@ const config = {
         BLOCKS_PER_DAY: 6570,
         OPERATORS_PER_PAGE: 50,
         BLOCKS_PER_YEAR: 2398050,
-        VALIDATORS_PER_OPERATOR_LIMIT: 1,
         NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
     },
     ONBOARD: {

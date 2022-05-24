@@ -43,7 +43,7 @@ const WhiteWrapper = (props: Props) => {
     };
 
     const dialogHandler = () => {
-        setOpenDialog(!openDialog);
+        if (!applicationStore.isLoading) setOpenDialog(!openDialog);
     };
 
     const ShowSettings = () => {

@@ -27,6 +27,9 @@ export const useStyles = makeStyles((theme) => ({
         },
         '&:nth-of-type(6)': {
             backgroundColor: (props: any) => {
+                if (props.step === 4) {
+                    return theme.colors.primaryError;
+                }
                 if (props.step <= 2) {
                     return theme.colors.gray20;
                 }
@@ -53,10 +56,24 @@ export const useStyles = makeStyles((theme) => ({
     },
     ProgressBarText: {
         fontSize: 14,
-        fontWeight: 800,
         lineHeight: 1.62,
-        textAlign: 'center',
-        color: theme.colors.gray60,
+        textAlign: (props: any) => props.subTextAlign,
+        '&:nth-child(1)': {
+            fontWeight: (props: any) => (props.step === 0 && props.registerButtonEnabled) ? 800 : 500,
+            color: (props: any) => (props.step === 0 && props.registerButtonEnabled) ? theme.colors.gray80 : theme.colors.gray60,
+        },
+        '&:nth-child(2)': {
+            fontWeight: (props: any) => props.step === 1 ? 800 : 500,
+            color: (props: any) => props.step === 1 ? theme.colors.gray80 : theme.colors.gray60,
+        },
+        '&:nth-child(3)': {
+            fontWeight: (props: any) => props.step === 2 ? 800 : 500,
+            color: (props: any) => props.step === 2 ? theme.colors.gray80 : theme.colors.gray60,
+        },
+        '&:nth-child(4)': {
+            fontWeight: 500,
+            color: theme.colors.gray60,
+        },
     },
     WaitingPeriod: {
         fontSize: 14,
@@ -116,6 +133,9 @@ export const useStyles = makeStyles((theme) => ({
                 return 'none';
             },
             backgroundColor: (props: any) => {
+                if (props.step === 4) {
+                    return theme.colors.primaryError;
+                }
                 if (props.step === 2) {
                     return theme.colors.primaryBlue;
                 }
@@ -125,6 +145,9 @@ export const useStyles = makeStyles((theme) => ({
                 return 'none';
             },
             backgroundImage: (props: any) => {
+                if (props.step === 4) {
+                    return theme.colors.primaryError;
+                }
                 if (props.step > 2) {
                     return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
                 }
@@ -133,12 +156,18 @@ export const useStyles = makeStyles((theme) => ({
         },
         '&:nth-of-type(7)': {
             backgroundColor: (props: any) => {
+                if (props.step === 4) {
+                    return theme.colors.primaryError;
+                }
                 if (props.step < 3) {
                     return theme.colors.gray20;
                 }
                 return 'none';
             },
             backgroundImage: (props: any) => {
+                if (props.step === 4) {
+                    return theme.colors.primaryError;
+                }
                 if (props.step === 3) {
                     return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
                 }
@@ -180,6 +209,7 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.colors.tint70,
         },
         '&:disabled': {
+            border: 'none',
             color: theme.colors.gray40,
             backgroundColor: theme.colors.gray20,
         },
@@ -205,6 +235,12 @@ export const useStyles = makeStyles((theme) => ({
         gap: 8,
         justifyContent: 'space-between',
     },
+    TextError: {
+        color: 'red',
+        marginTop: 4,
+        zIndex: 9123123,
+        fontSize: '0.8rem',
+    },
     TextWrapper: {
         gap: 12,
         marginBottom: 40,
@@ -212,6 +248,16 @@ export const useStyles = makeStyles((theme) => ({
     FeesChangeWrapper: {
         gap: 12,
         marginBottom: (props: any) => props.lastStep ? 24 : 40,
+    },
+    NegativeArrow: {
+        width: 29,
+        height: 29,
+        cursor: 'pointer',
+        transform: 'rotate(180deg)',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'url(/images/arrow/light_red.svg)',
     },
     Arrow: {
         width: 29,
@@ -234,6 +280,9 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         color: (props: any) => {
+            if (props.expiredStep) {
+                return theme.colors.primaryError;
+            }
             if (props.lastStep) {
                 return theme.colors.white;
             }
@@ -243,6 +292,9 @@ export const useStyles = makeStyles((theme) => ({
             return theme.colors.primaryBlue;
         },
         backgroundColor: (props: any) => {
+            if (props.expiredStep) {
+                return theme.colors.primaryErrorRegular;
+            }
             if (props.lastStep) {
                 return theme.colors.primaryBlue;
             }

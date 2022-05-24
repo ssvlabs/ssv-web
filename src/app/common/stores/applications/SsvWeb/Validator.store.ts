@@ -2,6 +2,8 @@ import { Contract } from 'web3-eth-contract';
 import EthereumKeyStore from 'eth2-keystore-js';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
+import ApiParams from '~lib/api/ApiParams';
+import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import { addNumber, multiplyNumber } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -9,10 +11,9 @@ import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import Threshold, { IShares, ISharesKeyPairs } from '~lib/crypto/Threshold';
 import Encryption, { EncryptShare } from '~lib/crypto/Encryption/Encryption';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import ApiParams from '~lib/api/ApiParams';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
@@ -24,6 +25,7 @@ class ValidatorStore extends BaseStore {
   // Key Stores keys
   @observable keyStorePublicKey: string = '';
   @observable keyStorePrivateKey: string = '';
+  @observable validatorPublicKeyExist: boolean = false;
 
   public static OPERATORS_SELECTION_GAP = 66.66;
 
@@ -32,6 +34,7 @@ class ValidatorStore extends BaseStore {
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
     this.newValidatorReceipt = null;
+    this.validatorPublicKeyExist = false;
     this.createValidatorPayLoad = undefined;
   }
 
@@ -95,7 +98,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const contract: Contract = walletStore.getContract;
-    const payload: (string | string[])[] = await this.createPayLoad(false);
+    const payload: (string | string[])[] = await this.createPayLoad(true);
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
@@ -254,7 +257,7 @@ class ValidatorStore extends BaseStore {
         encryptedKeys,
       ];
       if (process.env.REACT_APP_NEW_STAGE) {
-        if (!update) payLoad.push(walletStore.toWei(totalAmountOfSsv));
+        payLoad.push(walletStore.toWei(update ? 0 : totalAmountOfSsv));
       } else {
         payLoad.unshift(walletStore.accountAddress);
       }
@@ -266,12 +269,19 @@ class ValidatorStore extends BaseStore {
   /**
    * Set keystore file
    * @param keyStore
+   * @param callBack
    */
   @action.bound
-  async setKeyStore(keyStore: any) {
-    this.keyStorePrivateKey = '';
-    this.keyStoreFile = keyStore;
-    this.keyStorePublicKey = await this.getKeyStorePublicKey();
+  async setKeyStore(keyStore: any, callBack?: any) {
+      try {
+          this.keyStorePrivateKey = '';
+          this.keyStoreFile = keyStore;
+          this.keyStorePublicKey = await this.getKeyStorePublicKey();
+          this.validatorPublicKeyExist = !!await Validator.getInstance().getValidator(this.keyStorePublicKey, true);
+      } catch (e: any) {
+          console.log(e.message);
+      }
+      !!callBack && callBack();
   }
 
   @computed

@@ -2,13 +2,18 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     Header: {
+        zIndex: 9,
         fontSize: 20,
         lineHeight: 1.4,
         fontWeight: 'bold',
         color: theme.colors.gray90,
-        marginBottom: theme.spacing(3),
+        marginBottom: (props: any) => {
+            if (props.marginBottom) return props.marginBottom;
+            return theme.spacing(3);
+        },
     },
     SubHeader: {
+        zIndex: 9,
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,

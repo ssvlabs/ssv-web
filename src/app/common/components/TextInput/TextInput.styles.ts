@@ -66,6 +66,7 @@ export const useStyles = makeStyles((theme) => ({
     Text: {
         fontSize: 16,
         fontWeight: 500,
+        paddingLeft: 20,
         lineHeight: 1.62,
     },
 }));

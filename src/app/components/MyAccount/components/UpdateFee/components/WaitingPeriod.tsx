@@ -3,21 +3,30 @@ import { Grid } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
-import ReactStepper from '~app/components/MyAccount/components/UpdateFee/components/Stepper';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from './index.styles';
+import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SecondaryButton from '~app/common/components/Button/SecondaryButton';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ReactStepper from '~app/components/MyAccount/components/UpdateFee/components/Stepper';
+import { useStyles } from './index.styles';
+import { timeDiffCalc } from '~lib/utils/time';
 
 const WaitingPeriod = () => {
     const stores = useStores();
+    const classes = useStyles({});
     // @ts-ignore
     const { operator_id } = useParams();
+    const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
+
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
@@ -31,7 +40,17 @@ const WaitingPeriod = () => {
     }, []);
 
     // @ts-ignore
-    const classes = useStyles({});
+    const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
+    const endDay = operatorEndApprovalTime.getUTCDate();
+    const today = new Date();
+    const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });
+
+    // @ts-ignore
+    const currentOperatorFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorCurrentFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    // @ts-ignore
+    const operatorFutureFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorFutureFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+
+    // @ts-ignore
 
     if (!operator) return null;
 
@@ -49,23 +68,23 @@ const WaitingPeriod = () => {
                 Waiting Period
               </Grid>
             </Grid>
-            <ReactStepper step={1} />
+            <ReactStepper subTextAlign={'center'} step={1} subText={`${timeDiffCalc(operatorEndApprovalTime, today)} Left`} />
             <Grid item container className={classes.TextWrapper}>
               <Grid item>
                 <Typography>You have declared a new fee update and your managed validators has been <br />
-                  notified. Keep in mind that if you do not execute your new fee <b>until 30 Mar</b> <br />
+                  notified. Keep in mind that if you do not execute your new fee <b>until {endDay} {endMonth}</b> <br />
                   it will expire and you will have to start the process anew.</Typography>
               </Grid>
             </Grid>
             <Grid item container className={classes.FeesChangeWrapper}>
               <Grid item>
-                <SsvAndSubTitle leftTextAlign ssv={10} subText={'~$78.56'} />
+                <SsvAndSubTitle leftTextAlign ssv={currentOperatorFee} subText={'~$78.56'} />
               </Grid>
               <Grid item className={classes.Arrow}>
 
               </Grid>
               <Grid item>
-                <SsvAndSubTitle leftTextAlign ssv={11} subText={'~$98.56'} />
+                <SsvAndSubTitle leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
               </Grid>
             </Grid>
             <Grid item className={classes.Notice}>
@@ -77,10 +96,10 @@ const WaitingPeriod = () => {
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
               <Grid item xs>
-                <SecondaryButton className={classes.CancelButton} disable={false} text={'Cancel'} submitFunction={console.log} />
+                <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} text={'Cancel'} submitFunction={operatorStore.switchCancelDialog} />
               </Grid>
               <Grid item xs>
-                <PrimaryButton disable text={'Execute'} submitFunction={console.log} />
+                <PrimaryButton withoutLoader disable text={'Execute'} submitFunction={console.log} />
               </Grid>
             </Grid>
           </Grid>,

@@ -7,18 +7,26 @@ import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/common/components/TextInput';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton/PrimaryButton';
 import ReactStepper from '~app/components/MyAccount/components/UpdateFee/components/Stepper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './index.styles';
 
-const UpdateFee = () => {
+type Props = {
+    getCurrentState: () => void,
+};
+
+const DeclareFee = (props: Props) => {
     const stores = useStores();
     // @ts-ignore
     const { operator_id } = useParams();
+    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
     const [userInput, setUserInput] = useState('');
     const applicationStore: ApplicationStore = stores.Application;
@@ -44,9 +52,26 @@ const UpdateFee = () => {
     }, [error.shouldDisplay, userInput]);
     
     // @ts-ignore
-    const classes = useStyles({ });
+    const classes = useStyles({ registerButtonEnabled });
 
     if (!operator) return null;
+    // @ts-ignore
+    const operatorFee = ssvStore.newGetFeeForYear(walletStore.fromWei(operator?.fee));
+
+    const changeOperatorFee = async () => {
+        applicationStore.setIsLoading(true);
+        const response = await operatorStore.updateOperatorFee(operator_id, userInput);
+        if (response) {
+            await props.getCurrentState();
+        }
+        applicationStore.setIsLoading(false);
+    };
+
+    const currentDate = new Date();
+    const options = {
+        month: 'short',
+        day: 'numeric', hour: '2-digit', minute: '2-digit',
+    };
 
     return (
       <BorderScreen
@@ -62,7 +87,12 @@ const UpdateFee = () => {
                 Declare Fee
               </Grid>
             </Grid>
-            <ReactStepper step={0} />
+            <ReactStepper
+              step={0}
+              subTextAlign={'left'}
+              registerButtonEnabled={registerButtonEnabled}
+              subText={currentDate.toLocaleTimeString('en-us', options).replace('PM', '').replace('AM', '')}
+            />
             <Grid item container className={classes.TextWrapper}>
               <Grid item>
                 <Typography>Updating your operator fee is done in a few steps:</Typography>
@@ -91,9 +121,10 @@ const UpdateFee = () => {
                   dataTestId={'edit-operator-fee'}
                   onChangeCallback={(e: any) => setUserInput(e.target.value)}
                   onBlurCallBack={(event: any) => { // @ts-ignore
-                      validateFeeUpdate(walletStore.fromWei(operator?.fee), event.target.value, setError);
+                      validateFeeUpdate(operatorFee, event.target.value, setError);
                   }}
                 />
+                {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
               </Grid>
             </Grid>
             <Grid item className={classes.Notice}>
@@ -104,11 +135,11 @@ const UpdateFee = () => {
                 </ul>
               </Grid>
             </Grid>
-            <PrimaryButton disable={!registerButtonEnabled} text={'Declare New Fee'} submitFunction={console.log} />
+            <PrimaryButton disable={!registerButtonEnabled} text={'Declare New Fee'} submitFunction={changeOperatorFee} />
           </Grid>,
         ]}
       />
     );
 };
 
-export default observer(UpdateFee);
+export default observer(DeclareFee);

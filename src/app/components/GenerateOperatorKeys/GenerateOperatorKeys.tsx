@@ -21,7 +21,6 @@ import {
     validatePublicKeyInput,
     validateDisplayNameInput,
     validateAddressInput,
-    // validateFeeInput,
 } from '~lib/utils/validatesInputs';
 import Button from '~app/common/components/Button';
 
@@ -142,26 +141,6 @@ const GenerateOperatorKeys = () => {
                 <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
               </Grid>
               {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
-              {/* {process.env.REACT_APP_NEW_STAGE && ( */}
-              {/*  <Grid item className={classes.GridItem}> */}
-              {/*    <InputLabel */}
-              {/*      withHint */}
-              {/*      title="Yearly Fee Per Validator" */}
-              {/*      // toolTipLink={config.links.TOOL_TIP_KEY_LINK} */}
-              {/*      toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_KEY} */}
-              {/*    /> */}
-              {/*    <TextInput */}
-              {/*      withSideText */}
-              {/*      value={inputsData.fee} */}
-              {/*      dataTestId={'new-operator-fee'} */}
-              {/*      showError={feeError.shouldDisplay} */}
-              {/*      onChangeCallback={(event: any) => { onInputChange('fee', event.target.value); }} */}
-              {/*      onBlurCallBack={(event: any) => { validateFeeInput(event.target.value, setFeeError); }} */}
-              {/*    /> */}
-              {/*    {feeError.shouldDisplay && */}
-              {/*    <Typography className={classes.TextError}>{feeError.errorMessage}</Typography>} */}
-              {/*  </Grid> */}
-              {/* )} */}
             </Grid>
             {/* <Checkbox onClickCallBack={setUserAgreement} text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'} /> */}
             <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />

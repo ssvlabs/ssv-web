@@ -16,7 +16,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import ReactStepper from '~app/components/MyAccount/components/UpdateFee/components/Stepper';
 import { useStyles } from './index.styles';
 
-const FeeUpdated = () => {
+const PendingExpires = () => {
     const stores = useStores();
     // @ts-ignore
     const { operator_id } = useParams();
@@ -36,7 +36,7 @@ const FeeUpdated = () => {
     }, []);
 
     // @ts-ignore
-    const classes = useStyles({ lastStep: true });
+    const classes = useStyles({ expiredStep: true });
 
     if (!operator) return null;
 
@@ -56,22 +56,22 @@ const FeeUpdated = () => {
                 <Typography className={classes.Title}>Update Fee</Typography>
               </Grid>
               <Grid item className={classes.Step}>
-                Success
+                Expired
               </Grid>
             </Grid>
-            <ReactStepper step={3} subTextAlign={'center'} />
+            <ReactStepper step={4} subTextAlign={'center'} />
             <Grid item container className={classes.TextWrapper}>
               <Grid item>
-                <Typography>You have successfully updated your fee. The new fee will take effect immediately.</Typography>
+                <Typography>Your declare fee has expired because you have not executed it.</Typography>
               </Grid>
             </Grid>
             <Grid item container className={classes.FeesChangeWrapper}>
               <Grid item>
                 <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} subText={'~$78.56'} />
               </Grid>
-              <Grid item className={classes.Arrow} />
+              <Grid item className={classes.NegativeArrow} />
               <Grid item>
-                <SsvAndSubTitle bold leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
+                <SsvAndSubTitle fade bold leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
               </Grid>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
@@ -83,4 +83,4 @@ const FeeUpdated = () => {
     );
 };
 
-export default observer(FeeUpdated);
+export default observer(PendingExpires);

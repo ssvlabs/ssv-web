@@ -16,6 +16,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
+import Spinner from '~app/common/components/Spinner';
 
 const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const stores = useStores();
@@ -29,6 +30,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
     const [errorMessage, setErrorMessage] = useState('');
+    const [processingFile, setProcessFile] = useState(false);
 
     const [keyStorePassword, setKeyStorePassword] = useState('');
 
@@ -58,7 +60,8 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
     const fileHandler = (files: any) => {
         const uploadedFile = files[0];
-        validatorStore.setKeyStore(uploadedFile);
+        setProcessFile(true);
+        validatorStore.setKeyStore(uploadedFile, () => { setProcessFile(false); });
     };
 
     const handlePassword = (e: any) => {
@@ -82,7 +85,11 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     };
 
     const removeFile = () => {
-        validatorStore.setKeyStore(null);
+        setProcessFile(true);
+        validatorStore.clearValidatorData();
+        validatorStore.keyStoreFile = null;
+        setProcessFile(false);
+
         try {
             // @ts-ignore
             inputRef.current.value = null;
@@ -101,6 +108,8 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             validatorStore.isJsonFile &&
             keyStorePublicKey.toLowerCase() !== validatorPublicKey.replace('0x', '').toLowerCase()
         ) {
+            fileClass += ` ${classes.Fail}`;
+        } else if (!reUpload && validatorStore.validatorPublicKeyExist) {
             fileClass += ` ${classes.Fail}`;
         } else if (validatorStore.isJsonFile) {
             fileClass += ` ${classes.Success}`;
@@ -133,6 +142,15 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
                 <RemoveButton />
               </Grid>
             );
+        }
+        if (!reUpload && validatorStore.validatorPublicKeyExist) {
+           return (
+             <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+               validator already registered to the network, <br />
+               please try a different Keystore file
+               <RemoveButton />
+             </Grid>
+);
         }
         if (!validatorStore.isJsonFile) {
             return (
@@ -179,6 +197,12 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const buttonDisableConditions = !validatorStore.isJsonFile
         || !keyStorePassword
         || !!errorMessage
+        || (reUpload && validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase())
+        || (!reUpload && validatorStore.validatorPublicKeyExist);
+
+    const inputDisableConditions = !validatorStore.isJsonFile
+        || processingFile
+        || (!reUpload && validatorStore.validatorPublicKeyExist)
         || (reUpload && validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase());
 
     return (
@@ -198,13 +222,21 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
               className={classes.DropZone}
             >
               <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop} />
-              {renderFileImage()}
-              {renderFileText()}
+              {!processingFile && renderFileImage()}
+              {!processingFile && renderFileText()}
+              {processingFile && (
+                <Grid container item>
+                  <Grid item style={{ margin: 'auto' }}>
+                    <Spinner />
+                  </Grid>
+                </Grid>
+                )}
+
             </Grid>
             <Grid container item xs={12}>
               <InputLabel title="Keystore Password" />
               <Grid item xs={12} className={classes.ItemWrapper}>
-                <TextInput withLock disable={!validatorStore.isJsonFile} value={keyStorePassword} onChangeCallback={handlePassword} />
+                <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} />
               </Grid>
               <Grid item xs={12} className={classes.ErrorWrapper}>
                 {errorMessage && <MessageDiv text={errorMessage} />}

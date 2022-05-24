@@ -23,11 +23,6 @@ interface TablePaginationActionsProps {
 const PaginationActions = (props: TablePaginationActionsProps) => {
     const { count, page, rowsPerPage, totalPages, onChangePage, onChangeRowsPerPage } = props;
     const classes = useStyles({ firstPage: page === 1, lastPage: page === totalPages });
-    // console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
-    // console.log(page);
-    // console.log(rowsPerPage);
-    // console.log(totalPages);
-    // console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
     const startAt = rowsPerPage * (page - 1) + 1;
     const [currentPage, setCurrentPage] = useState(page);
     const endAt = startAt + rowsPerPage - 1 > count ? count : startAt + rowsPerPage - 1;
@@ -46,6 +41,10 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
         if (page !== 1) onChangePage(page - 1);
     };
     const handleNextButtonClick = () => {
+        console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
+        console.log(page);
+        console.log(totalPages);
+        console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
         if (page === totalPages) return;
         onChangePage(page + 1);
     };

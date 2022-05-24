@@ -27,7 +27,6 @@ export const useStyles = makeStyles((theme) => ({
         width: '100%',
         fontWeight: 600,
         borderRadius: 8,
-        marginBottom: 16,
         textTransform: 'capitalize',
         fontFamily: 'Manrope !important',
         color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.tint20,

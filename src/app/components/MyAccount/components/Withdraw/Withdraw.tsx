@@ -109,7 +109,7 @@ const Withdraw = () => {
           body={secondBorderScreen}
           bottom={(
             <Button
-              withAllowance
+              withAllowance={false}
               onClick={withdrawSsv}
               errorButton={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0}
               checkBoxesCallBack={ssvStore.getRemainingDays({ newBalance }) <= 30 ? [setUserAgreement] : []}

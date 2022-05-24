@@ -67,25 +67,21 @@ const DashboardTables = () => {
     async function loadItems(props: LoadItemsParams) {
         // eslint-disable-next-line react/prop-types
         const { type, forcePerPage, paginationPage } = props;
-        if (paginationPage) {
-            ApiParams.saveInStorage(type, 'page', paginationPage);
-        }
         // const operatorsExist = Operator.getInstance()?.ownerAddressOperators?.length > 0;
         // const validatorsExist = Validator.getInstance()?.validators?.length > 0;
 
-        const page: number = ApiParams.getInteger(type, 'page', 1);
         const perPage: number = ApiParams.getInteger(type, 'perPage', ApiParams.PER_PAGE);
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await Operator.getInstance().getOperatorsByOwnerAddress(page, forcePerPage ?? perPage, walletStore.accountAddress);
+            const result = await Operator.getInstance().getOperatorsByOwnerAddress(paginationPage, forcePerPage ?? perPage, walletStore.accountAddress);
             const operatorsList = await getOperatorsRevenue(result.operators);
             setOperators(operatorsList);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            const result = await Validator.getInstance().getValidatorsByOwnerAddress({ page, perPage: forcePerPage ?? perPage, ownerAddress: walletStore.accountAddress });
+            const result = await Validator.getInstance().getValidatorsByOwnerAddress({ page: paginationPage ?? 1, perPage: forcePerPage ?? perPage, ownerAddress: walletStore.accountAddress });
             if (result?.validators?.length > 0) ssvStore.userState = 'validator';
             setValidators(result.validators);
             setValidatorsPagination(result.pagination);

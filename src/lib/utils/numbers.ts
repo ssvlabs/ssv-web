@@ -9,6 +9,15 @@ export const multiplyNumber = (num1: any, num2: any) => {
     return new Decimal(num1).mul(num2).toFixed(2).toString();
 };
 
+export const devideNumber = (num1: any, num2: any) => {
+    return new Decimal(num1).dividedBy(num2).toFixed().toString();
+};
+
+export const compareNumbers = (num1: any, num2: any) => {
+    if (!num1 || !num2) return; 
+    return new Decimal(num1).comparedTo(num2) === 0;
+};
+
 /**
  * Get maximum precision of float number.
  * @param numeric

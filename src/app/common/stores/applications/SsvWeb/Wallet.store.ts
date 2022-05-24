@@ -7,6 +7,7 @@ import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
 import ApiParams from '~lib/api/ApiParams';
+import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
@@ -14,7 +15,6 @@ import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { roundNumber } from '~lib/utils/numbers';
 
 class WalletStore extends BaseStore implements Wallet {
     @observable web3: any = null;
@@ -72,9 +72,14 @@ class WalletStore extends BaseStore implements Wallet {
      */
     @action.bound
     async initializeUserInfo() {
-        await this.operatorStore.validatorsPerOperatorLimit();
-        if (process.env.REACT_APP_NEW_STAGE) {
-            await this.ssvStore.initUser();
+        try {
+            await this.operatorStore.validatorsPerOperatorLimit();
+            if (process.env.REACT_APP_NEW_STAGE) {
+                await this.ssvStore.initUser();
+                await this.operatorStore.initUser();
+            }
+        } catch (e) {
+            console.log(e.message);
         }
     }
 
@@ -147,12 +152,8 @@ class WalletStore extends BaseStore implements Wallet {
             ApiParams.cleanStorage();
             await this.initializeUserInfo();
             if (process.env.REACT_APP_NEW_STAGE) {
-                const operatorsPage: number = ApiParams.getInteger('operators', 'page', ApiParams.PER_PAGE);
-                const validatorsPage: number = ApiParams.getInteger('validators', 'page', ApiParams.PER_PAGE);
-                const operatorsPerPage: number = ApiParams.getInteger('operators', 'perPage', ApiParams.PER_PAGE);
-                const validatorsPerPage: number = ApiParams.getInteger('validators', 'perPage', ApiParams.PER_PAGE);
-                const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(operatorsPage, operatorsPerPage, address, true);
-                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: validatorsPage, perPage: validatorsPerPage, ownerAddress: address, force: true });
+                const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
+                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: 1, perPage: 5, ownerAddress: address, force: true });
                 applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? '/dashboard' : '/';
             }
         }
@@ -163,11 +164,12 @@ class WalletStore extends BaseStore implements Wallet {
     async resetUser() {
         const applicationStore: Application = this.getStore('Application');
         this.accountAddress = '';
-        this.ssvStore.clearSettings();
-        applicationStore.strategyRedirect = '/';
         this.onboardSdk.walletReset();
-        window.localStorage.removeItem('selectedWallet');
+        this.ssvStore.clearSettings();
+        this.operatorStore.clearSettings();
+        applicationStore.strategyRedirect = '/';
         window.localStorage.removeItem('params');
+        window.localStorage.removeItem('selectedWallet');
     }
 
     /**

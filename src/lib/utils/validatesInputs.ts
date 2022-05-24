@@ -1,4 +1,6 @@
+import Decimal from 'decimal.js';
 import config from '~app/common/config';
+import { compareNumbers } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 
 interface ErrorObject {
@@ -71,14 +73,19 @@ export const validateFeeInput = (value: string, callback: any) :void => {
 
 export const validateFeeUpdate = (previousValue: number, newValue: string, callback: any) :void => {
     const response = { shouldDisplay: false, errorMessage: '' };
-    // eslint-disable-next-line radix
-    if (10 ** (-14) > (Number(newValue) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)) {
-        response.shouldDisplay = true;
-        response.errorMessage = 'Please set a greater fee amount.';
-    } else if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue)) {
+    if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue)) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please use numbers only.';
+    } else if (compareNumbers(previousValue, newValue)) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please set a different fee amount from previous.';
+    }
+    // eslint-disable-next-line radix
+    else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(10 ** (-14))) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'Please set a greater fee amount.';
     } else {
+        response.errorMessage = '';
         response.shouldDisplay = false;
     }
 

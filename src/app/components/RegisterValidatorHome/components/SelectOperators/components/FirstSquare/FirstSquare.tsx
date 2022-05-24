@@ -5,8 +5,8 @@ import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
-import { CircularProgress, Grid } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react';
+import { CircularProgress, Grid } from '@material-ui/core';
 import TableContainer from '@material-ui/core/TableContainer';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
@@ -84,9 +84,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         }
 
         setOperatorsPagination(response.pagination);
-        if (response?.pagination?.page === 1 && scrollRef.current) {
-            scrollRef.current.scrollTo(0, 0);
-        }
         setLoading(false);
     };
 
@@ -140,7 +137,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         //     ));
         // }
         // if (loading) return [];
-
+        
         if (operatorsData?.length === 0 && !loading) {
             return (
               <TableRow hover>
@@ -224,7 +221,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const handleScroll = (event: any) => {
         const element = event.target;
         if (loading) return;
-        if (element.scrollTop + element.offsetHeight > element.scrollHeight) {
+        if (element.scrollTop + element.offsetHeight > element.scrollHeight && !loading) {
             updateValue(event);
         }
     };
@@ -258,9 +255,9 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
               <Grid item xs className={classes.SearchInputWrapper}>
                 <TextInput
                   withSideText
+                  placeHolder={'Search...'}
                   onChangeCallback={inputHandler}
                   sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> : <div className={classes.SearchIcon} />}
-                  placeHolder={'Search...'}
                 />
               </Grid>
               <Filters setFilterBy={setFilterBy} />

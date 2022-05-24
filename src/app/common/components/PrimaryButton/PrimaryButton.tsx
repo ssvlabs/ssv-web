@@ -12,8 +12,9 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 type Props = {
     text: string,
     disable?: boolean,
-    dataTestId?: string,
+    dataTestId?: string
     submitFunction: any,
+    withLoader?: boolean,
     wrapperClass?: string,
     withVerifyConnection?: boolean
 };
@@ -24,7 +25,7 @@ const PrimaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, wrapperClass, dataTestId, withVerifyConnection } = props;
+    const { text, submitFunction, disable, withLoader = true, wrapperClass, dataTestId, withVerifyConnection } = props;
 
     useEffect(() => {
         const listener = async (event: any) => {
@@ -57,7 +58,7 @@ const PrimaryButton = (props: Props) => {
           disabled={disable || applicationStore.isLoading}
           className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
         >
-          {applicationStore.isLoading && <Spinner />}
+          {(applicationStore.isLoading && withLoader) && <Spinner />}
           {text}
         </Button>
       </Grid>

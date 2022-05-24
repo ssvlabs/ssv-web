@@ -5,14 +5,15 @@ import { useStyles } from './SsvAndSubTitle.styles';
 type Props = {
     ssv: any,
     bold?: boolean,
+    fade?: boolean,
     subText?: string,
     gray80?: boolean,
     subTextCenter?: boolean,
     leftTextAlign?: boolean,
 };
 const SsvAndSubTitle = (props: Props) => {
-    const { ssv, subText, gray80, bold, subTextCenter } = props;
-    const classes = useStyles({ bold, gray80 });
+    const { ssv, subText, gray80, bold, fade, subTextCenter } = props;
+    const classes = useStyles({ bold, gray80, fade });
     let textAlign: any = 'right';
     if (subTextCenter) {
         textAlign = 'center';

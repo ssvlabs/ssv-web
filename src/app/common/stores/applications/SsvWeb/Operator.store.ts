@@ -4,7 +4,6 @@ import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
-import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
@@ -55,10 +54,22 @@ interface SelectedOperators {
 class OperatorStore extends BaseStore {
     public static OPERATORS_SELECTION_GAP = 66.66;
 
+    // Cancel dialog switcher
+    @observable openCancelDialog: boolean = false;
+
     @observable operators: IOperator[] = [];
     @observable operatorsFees: OperatorsFees = {};
     @observable selectedOperators: SelectedOperators = {};
 
+    // Operator update fee process
+    @observable maxFeeIncrease: number = 0;
+    @observable operatorCurrentFee: null | number = null;
+    @observable operatorFutureFee: null | number = null;
+    @observable getSetOperatorFeePeriod: null | number = null;
+    @observable operatorApprovalEndTime: null | number = null;
+    @observable approveOperatorFeePeriod: null | number = null;
+    @observable operatorApprovalBeginTime: null | number = null;
+    
     @observable newOperatorReceipt: any = null;
 
     @observable newOperatorKeys: NewOperator = { name: '', pubKey: '', address: '', fee: 0 };
@@ -111,6 +122,55 @@ class OperatorStore extends BaseStore {
     }
 
     /**
+     * Check if operator registrable
+     */
+    @action.bound
+    switchCancelDialog() {
+        this.openCancelDialog = !this.openCancelDialog;
+    }
+
+    /**
+     * Check if operator registrable
+     */
+    @action.bound
+    async initUser() {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const contract: Contract = walletStore.getContract;
+        this.getSetOperatorFeePeriod = await contract.methods.getSetOperatorFeePeriod().call();
+        this.approveOperatorFeePeriod = await contract.methods.getApproveOperatorFeePeriod().call();
+        this.maxFeeIncrease = await walletStore.getContract.methods.operatorMaxFeeIncrease().call();
+    }
+
+    /**
+     * Check if operator registrable
+     */
+    @action.bound
+    clearSettings() {
+        this.maxFeeIncrease = 0;
+        this.operatorFutureFee = null;
+        this.operatorCurrentFee = null;
+        this.getSetOperatorFeePeriod = null;
+        this.operatorApprovalEndTime = null;
+        this.approveOperatorFeePeriod = null;
+        this.operatorApprovalBeginTime = null;
+        this.clearOperatorData();
+    }
+
+    /**
+     * Check if operator registrable
+     */
+    @action.bound
+    async getOperatorFeeInfo(operatorId: number) {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const contract: Contract = walletStore.getContract;
+        this.operatorCurrentFee = await contract.methods.getOperatorCurrentFee(operatorId).call();
+        const response = await contract.methods.getOperatorFeeChangeRequest(operatorId).call();
+        this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
+        this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
+        this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+    }
+
+    /**
      * get validators per operator limit
      */
     @action.bound
@@ -123,6 +183,43 @@ class OperatorStore extends BaseStore {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
             }).catch(() => resolve(true));
+        });
+    }
+
+    /**
+     * Cancel change fee process for operator
+     */
+    @action.bound
+    async cancelChangeFeeProcess(operatorId: number): Promise<any> {
+        return new Promise((resolve) => {
+            try {
+                const walletStore: WalletStore = this.getStore('Wallet');
+                const applicationStore: ApplicationStore = this.getStore('Application');
+                const contract: Contract = walletStore.getContract;
+                contract.methods.cancelSetOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+                    .on('receipt', (receipt: any) => {
+                        // eslint-disable-next-line no-prototype-builtins
+                        const event: boolean = receipt.hasOwnProperty('events');
+                        if (event) {
+                            ApiParams.initStorage(true);
+                            applicationStore.setIsLoading(false);
+                            console.debug('Contract Receipt', receipt);
+                            applicationStore.showTransactionPendingPopUp(false);
+                            resolve(true);
+                        }
+                    })
+                    .on('transactionHash', (txHash: string) => {
+                        applicationStore.txHash = txHash;
+                        applicationStore.showTransactionPendingPopUp(true);
+                    })
+                    .on('error', () => {
+                        applicationStore.setIsLoading(false);
+                        applicationStore.showTransactionPendingPopUp(false);
+                        resolve(false);
+                    });
+            } catch (e) {
+                resolve(false);
+            }
         });
     }
 
@@ -222,12 +319,94 @@ class OperatorStore extends BaseStore {
     }
 
     /**
+     * Check if operator already exists in the contract
+     * @param operatorId
+     * @param newFee
+     */
+    @action.bound
+    async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve) => {
+            try {
+                const walletStore: WalletStore = this.getStore('Wallet');
+                const applicationStore: ApplicationStore = this.getStore('Application');
+                const contractInstance = walletStore.getContract;
+                const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+                await contractInstance.methods.setOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
+                    .on('receipt', (receipt: any) => {
+                        // eslint-disable-next-line no-prototype-builtins
+                        const event: boolean = receipt.hasOwnProperty('events');
+                        if (event) {
+                            applicationStore.setIsLoading(false);
+                            applicationStore.showTransactionPendingPopUp(false);
+                            resolve(true);
+                        }
+                    })
+                    .on('transactionHash', (txHash: string) => {
+                        applicationStore.txHash = txHash;
+                        applicationStore.showTransactionPendingPopUp(true);
+                    })
+                    .on('error', (error: any) => {
+                        console.debug('Contract Error', error.message);
+                        applicationStore.setIsLoading(false);
+                        applicationStore.showTransactionPendingPopUp(false);
+                        resolve(false);
+                    });
+            } catch (e) {
+                console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
+                console.log(e.message);
+                resolve(false);
+            }
+        });
+    }
+
+    /**
+     * Check if operator already exists in the contract
+     * @param operatorId
+     * @param newFee
+     */
+    @action.bound
+    async approveOperatorFee(operatorId: number): Promise<boolean> {
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve) => {
+            try {
+                const walletStore: WalletStore = this.getStore('Wallet');
+                const applicationStore: ApplicationStore = this.getStore('Application');
+                await walletStore.getContract.methods.approveOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+                    .on('receipt', (receipt: any) => {
+                        // eslint-disable-next-line no-prototype-builtins
+                        const event: boolean = receipt.hasOwnProperty('events');
+                        if (event) {
+                            applicationStore.setIsLoading(false);
+                            applicationStore.showTransactionPendingPopUp(false);
+                            resolve(true);
+                        }
+                    })
+                    .on('transactionHash', (txHash: string) => {
+                        applicationStore.txHash = txHash;
+                        applicationStore.showTransactionPendingPopUp(true);
+                    })
+                    .on('error', (error: any) => {
+                        console.debug('Contract Error', error.message);
+                        applicationStore.setIsLoading(false);
+                        applicationStore.showTransactionPendingPopUp(false);
+                        resolve(false);
+                    });
+            } catch (e) {
+                console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
+                console.log(e.message);
+                resolve(false);
+            }
+        });
+    }
+
+    /**
      * Remove Operator
      * @param operatorId
      */
     @action.bound
     async removeOperator(operatorId: number): Promise<any> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+        const notificationsStore: NotificationsStore = this.getStore('Notifications');
         const applicationStore: ApplicationStore = this.getStore('Application');
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
@@ -292,7 +471,7 @@ class OperatorStore extends BaseStore {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.toWei(fee.dividedBy(2398050).toFixed().toString()),
+                        walletStore.toWei(fee.dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()),
                     );
                 } else {
                     payload.push(
@@ -408,11 +587,6 @@ class OperatorStore extends BaseStore {
         });
 
         return exist;
-    }
-
-    @action.bound
-    getFeePerYear(fee: any, roundTo?: number): number {
-        return roundNumber(fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR, roundTo ?? 2);
     }
 
     @action.bound

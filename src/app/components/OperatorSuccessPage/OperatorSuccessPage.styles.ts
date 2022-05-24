@@ -5,6 +5,7 @@ export const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     BackgroundImage: {
+        zIndex: 0,
         top: -95,
         width: 236,
         height: 324,

@@ -15,6 +15,7 @@ type Props = {
     submitFunction: any,
     dataTestId?: string,
     noCamelCase?: boolean,
+    withoutLoader?: boolean,
     withVerifyConnection?: boolean
 };
 
@@ -23,7 +24,7 @@ const SecondaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, className, disable, dataTestId, noCamelCase, withVerifyConnection } = props;
+    const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection } = props;
     const classes = useStyles({ noCamelCase });
 
     const submit = async () => {
@@ -45,7 +46,7 @@ const SecondaryButton = (props: Props) => {
         className={className ?? classes.SecondaryButton}
         disabled={disable || applicationStore.isLoading}
       >
-        {applicationStore.isLoading && <Spinner />}
+        {applicationStore.isLoading && !withoutLoader && <Spinner />}
         {text}
       </Button>
     );

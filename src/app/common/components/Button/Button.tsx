@@ -9,7 +9,6 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import { useStyles } from '~app/common/components/Button/Button.styles';
-import SecondaryButton from '~app/common/components/Button/SecondaryButton';
 
 type ButtonParams = {
     text: string,
@@ -85,9 +84,10 @@ const Button = (props: ButtonParams) => {
               />
             </Grid>
             <Grid item xs>
-              <SecondaryButton
+              <PrimaryButton
+                dataTestId={testId}
                 disable={!userAllowance || disable}
-                dataTestId={testId} submitFunction={() => { checkWalletConnected(onClick); }}
+                submitFunction={() => { checkWalletConnected(onClick); }}
                 text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
               />
             </Grid>

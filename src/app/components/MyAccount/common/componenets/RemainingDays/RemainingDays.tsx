@@ -68,7 +68,7 @@ const RemainingDays = (props: Props) => {
           </Typography>
           {newRemainingDays !== undefined && newRemainingDays - oldRemainingDays !== 0 && (
             <Grid item xs
-              className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - oldRemainingDays, true)})`}
+              className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - oldRemainingDays, true)} days)`}
             </Grid>
           )}
           {!disableWarning && warningLiquidationState && (

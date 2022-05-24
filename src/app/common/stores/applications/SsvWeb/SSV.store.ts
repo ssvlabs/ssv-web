@@ -95,6 +95,7 @@ class SsvStore extends BaseStore {
         await this.getAccountBurnRate();
         await this.getBalanceFromSsvContract();
         await this.getBalanceFromDepositContract();
+        await this.getBalanceFromDepositContract();
     }
 
     @action.bound

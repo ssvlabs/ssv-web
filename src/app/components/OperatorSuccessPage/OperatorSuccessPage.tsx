@@ -15,9 +15,8 @@ import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import ApiParams from '~lib/api/ApiParams';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 const SetOperatorFee = () => {
     const stores = useStores();
@@ -35,9 +34,7 @@ const SetOperatorFee = () => {
 
     const moveToMyAccount = async () => {
         applicationStore.setIsLoading(true);
-        const page: number = ApiParams.getInteger('operators', 'page', 1);
-        const perPage: number = ApiParams.getInteger('operators', 'perPage', ApiParams.PER_PAGE);
-        await Operator.getInstance().getOperatorsByOwnerAddress(page, perPage, walletStore.accountAddress, true);
+        await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, walletStore.accountAddress, true);
         applicationStore.setIsLoading(false);
         history.push(config.routes.MY_ACCOUNT.DASHBOARD);
     };

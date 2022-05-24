@@ -3,75 +3,31 @@ import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
-import LinkText from '~app/common/components/LinkText';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 const SuccessScreen = () => {
     const stores = useStores();
     const classes = useStyles();
-    const walletStore: WalletStore = stores.Wallet;
     const history = useHistory();
-    const operatorStore: OperatorStore = stores.Operator;
+    const walletStore: WalletStore = stores.Wallet;
     const validatorStore: ValidatorStore = stores.Validator;
-
-    let icon: string = '';
-    let subTitle: any = '';
-    let buttonText: string = '';
-    let monitorText: any = '';
-
-    if (operatorStore.newOperatorRegisterSuccessfully) {
-        icon = 'operator';
-        buttonText = process.env.REACT_APP_NEW_STAGE ? 'Monitor Operator' : 'View Operator';
-        subTitle = (
-          <Grid container>
-            <Grid item>Your operator has been successfully registered!</Grid>
-            <Grid item>With every new operator, our network grows stronger.</Grid>
-          </Grid>
-        );
-        if (process.env.REACT_APP_NEW_STAGE) {
-            monitorText = 'View your operator\'s prefomance and manage it in the account dashboard';
-        } else {
-            monitorText = (
-              <Grid container spacing={3}>
-                <Grid item>
-                  Jump into our documentation to learn more
-                  about <LinkText text={'monitoring'} link={'https://docs.ssv.network/operators/installation-operator-1/operators-grafana-dashboard '} /> and <LinkText text={'troubleshooting'} link={'https://docs.ssv.network/operators/installation-operator-1/node-troubleshooting-faq'} /> your node.
-                </Grid>
-                <Grid item>
-                  View your operators prefomance the ssv network explorer.
-                </Grid>
-              </Grid>
-            );
-        }
-    } else if (validatorStore.newValidatorReceipt) {
-        icon = 'validator';
-        buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
-        subTitle = translations.SUCCESS.VALIDATOR_DESCRIPTION;
-        if (process.env.REACT_APP_NEW_STAGE) {
-            monitorText = 'View and mange your balance and validators in your account dashboard.';
-        } else {
-            monitorText = 'View your validators performance in the ssv network explorer.';
-        }
-    }
+    const applicationStore: ApplicationStore = stores.Application;
+    const buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
 
     const redirectTo = async () => {
+        applicationStore.setIsLoading(true);
         if (process.env.REACT_APP_NEW_STAGE) {
             await walletStore.initializeUserInfo();
+            applicationStore.setIsLoading(false);
             history.push(config.routes.MY_ACCOUNT.DASHBOARD);
         } else {
-            let linkToExplorer: string = '';
-            if (validatorStore.newValidatorReceipt) {
-                linkToExplorer = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
-            }
-            if (operatorStore.newOperatorRegisterSuccessfully) {
-                linkToExplorer = `${config.links.LINK_EXPLORER}/operators/${operatorStore.newOperatorRegisterSuccessfully}`;
-            }
+            const linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
             window.open(linkToExplorer);
         }
     };
@@ -88,10 +44,11 @@ const SuccessScreen = () => {
           header={translations.SUCCESS.TITLE}
           sectionClass={classes.SectionWrapper}
           body={[
-            <Grid item container>
-              <Grid item className={`${classes.Text} ${classes.SubHeader}`}>{subTitle}</Grid>
-              {icon !== 'validator' && <Grid item className={`${classes.SuccessLogo} ${icon === 'operator' ? classes.Operator : classes.Validator}`} />}
-              <Grid item className={`${classes.Text} ${classes.SubImageText}`}>{monitorText}</Grid>
+            <Grid item container className={classes.Wrapper}>
+              <Grid item className={classes.BackgroundImage} />
+              <Grid item className={classes.Text}>Your validator is now running on the secured and distributed infrastructure <br /> of our network.</Grid>
+              <Grid item className={classes.Text}>Your chosen operators have been notified and instantly started their <br /> operation.</Grid>
+              <Grid item className={classes.Text}>To manage your account and validator enter your account dashboard.</Grid>
               <PrimaryButton text={buttonText} submitFunction={redirectTo} />
             </Grid>,
           ]}

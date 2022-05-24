@@ -69,7 +69,7 @@ class SsvStore extends BaseStore {
             const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
             const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
             const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-            const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+            const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
             if (ssvAmount === 0) return 0;
             // if (burnRatePerDay === 0) return 0;
             return Math.max(ssvAmount / burnRatePerDay - liquidationCollateral, 0);
@@ -77,12 +77,6 @@ class SsvStore extends BaseStore {
             return 0;
         }
     }
-
-    // return (this.accountBurnRate - oldOperatorsFee + newOperatorsFee) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-
-    // Balance / (Get account burn rate * 6570 ) - (liquidation threshold period / 6570)
-
-    // Balance / (Get account burn rate - 4 old operator fees + 4 new operators fee  * 6570 ) - (liquidation threshold period / 6570)
 
     /**
      * Init User

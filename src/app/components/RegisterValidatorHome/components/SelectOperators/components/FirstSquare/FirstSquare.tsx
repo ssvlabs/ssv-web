@@ -238,6 +238,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     useEffect(() => {
         getOperators(1);
+        scrollRef.current.scrollTop = 0;
     }, [searchInput, sortBy, sortOrder, filterBy]);
 
     useEffect(() => {

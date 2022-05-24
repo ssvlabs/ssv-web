@@ -23,8 +23,13 @@ export const useStyles = makeStyles((theme) => ({
     OperatorsTable: {
         height: 480,
         borderRadius: 16,
+        cursor: 'pointer',
         marginTop: theme.spacing(5),
+        backgroundPosition: 'center',
+        backgroundSize: '300px 100px',
+        backgroundRepeat: 'no-repeat !important',
         border: `solid 1px ${theme.colors.gray20}`,
+        opacity: (props: any) => props.loading ? 0.5 : 1,
         pointerEvents: (props: any) => props.loading ? 'none' : 'auto',
     },
     HeaderWrapper: {

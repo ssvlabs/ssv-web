@@ -146,8 +146,8 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         if (!reUpload && validatorStore.validatorPublicKeyExist) {
            return (
              <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-               validator already registered to the network, <br />
-               please try a different Keystore file
+               Validator is already registered to the network, <br />
+               please try a different keystore file.
                <RemoveButton />
              </Grid>
 );

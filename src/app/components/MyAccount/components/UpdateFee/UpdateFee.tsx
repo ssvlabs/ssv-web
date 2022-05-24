@@ -50,10 +50,10 @@ const UpdateFee = () => {
 
             if (isInPendingState) {
                 setProcessState(2);
-            } else if (startPendingStateTime >= todayDate) {
+            } else if (startPendingStateTime > todayDate) {
                 setProcessState(1);
             } else if (todayDate > endPendingStateTime) {
-                setProcessState(2);
+                setProcessState(4);
             }
         }
     };

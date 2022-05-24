@@ -214,12 +214,12 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             newPagination.page += 1;
             setOperatorsPagination(newPagination);
         }
-    }, 100);
+    }, 200);
 
     const handleScroll = (event: any) => {
         const element = event.target;
         if (loading) return;
-        if (element.scrollTop + element.offsetHeight > element.scrollHeight * 0.5) {
+        if (element.scrollTop + element.offsetHeight > element.scrollHeight * 0.80) {
             updateValue();
         }
     };

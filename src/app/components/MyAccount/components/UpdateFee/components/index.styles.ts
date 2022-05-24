@@ -244,6 +244,7 @@ export const useStyles = makeStyles((theme) => ({
     TextWrapper: {
         gap: 12,
         marginBottom: 40,
+        color: theme.colors.gray80,
     },
     FeesChangeWrapper: {
         gap: 12,
@@ -308,7 +309,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 20,
         lineHeight: 1.4,
         fontWeight: 'bold',
-        color: theme.colors.gray70,
+        color: theme.colors.gray90,
     },
     HeaderWrapper: {
         gap: 8,

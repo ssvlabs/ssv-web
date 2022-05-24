@@ -121,7 +121,7 @@ const DeclareFee = (props: Props) => {
                   dataTestId={'edit-operator-fee'}
                   onChangeCallback={(e: any) => setUserInput(e.target.value)}
                   onBlurCallBack={(event: any) => { // @ts-ignore
-                      validateFeeUpdate(operatorFee, event.target.value, setError);
+                      validateFeeUpdate(operatorFee, event.target.value, operatorStore.maxFeeIncrease, setError);
                   }}
                 />
                 {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}

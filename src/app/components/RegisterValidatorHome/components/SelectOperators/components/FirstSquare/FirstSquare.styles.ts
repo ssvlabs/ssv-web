@@ -29,7 +29,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: '300px 100px',
         backgroundRepeat: 'no-repeat !important',
         border: `solid 1px ${theme.colors.gray20}`,
-        opacity: (props: any) => props.loading ? 0.5 : 1,
+        // opacity: (props: any) => props.loading ? 0.5 : 1,
         pointerEvents: (props: any) => props.loading ? 'none' : 'auto',
     },
     HeaderWrapper: {

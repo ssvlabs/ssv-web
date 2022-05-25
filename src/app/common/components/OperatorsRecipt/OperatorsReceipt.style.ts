@@ -7,6 +7,21 @@ export const useStyles = makeStyles((theme) => ({
     OperatorsWrapper: {
         gap: 12,
     },
+    DialogWrapper: {
+        width: 424,
+        height: 318,
+        borderRadius: 16,
+        padding: '32px 32px 60px',
+        backgroundColor: theme.colors.white,
+    },
+    Loader: {
+        top: '68%',
+        left: '50%',
+        width: '100px',
+        height: '100px',
+        position: 'absolute',
+        transform: 'translate(-50%, -50%)',
+    },
     OperatorsDetails: {
         justifyContent: 'space-between',
     },

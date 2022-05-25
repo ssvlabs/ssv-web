@@ -40,7 +40,11 @@ const UpdateFee = () => {
         });
     }, []);
 
-    const getCurrentState = async () => {
+    const getCurrentState = async (forceState?: number) => {
+        if (forceState) {
+            setProcessState(forceState);
+            return;
+        }
         await operatorStore.getOperatorFeeInfo(operator_id);
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
             const todayDate = new Date();
@@ -78,7 +82,7 @@ const UpdateFee = () => {
                 return <DeclareFee getCurrentState={getCurrentState} />;
             // @ts-ignore
             case 1:
-                return <WaitingPeriod />;
+                return <WaitingPeriod getCurrentState={getCurrentState} />;
             // @ts-ignore
             case 2:
                 return <PendingExecution getCurrentState={getCurrentState} />;

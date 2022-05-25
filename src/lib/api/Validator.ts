@@ -14,6 +14,7 @@ class Validator {
     validator: any = null;
     validators: any = null;
     pagination: any = null;
+    noValidatorsForOwnerAddress: boolean = false;
     private static instance: Validator;
     private readonly baseUrl: string = '';
 
@@ -32,12 +33,18 @@ class Validator {
         return 'prater';
     }
 
+    clearOperatorsCache() {
+        this.validator = null;
+        this.validators = null;
+        this.pagination = null;
+        this.noValidatorsForOwnerAddress = false;
+    }
+
     async getValidatorsByOwnerAddress(props: GetValidatorsByOwnerAddress): Promise<any> {
         const { page, perPage, ownerAddress, force } = props;
         if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
             return { pagination: this.pagination, validators: this.validators };
         }
-
         try {
             const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&page=${page}&perPage=${perPage}`;
             const response: any = await axios.get(operatorsEndpointUrl);
@@ -55,7 +62,10 @@ class Validator {
                     const detailedValidator = await this.buildValidatorStructure(validatorPublicKey, validatorBalance);
                     detailedValidators.push(detailedValidator);
                 }
+                this.noValidatorsForOwnerAddress = false;
                 apiResponseData.validators = detailedValidators;
+            } else {
+                this.noValidatorsForOwnerAddress = true;
             }
 
             this.validators = apiResponseData.validators;
@@ -63,6 +73,7 @@ class Validator {
 
             return apiResponseData;
         } catch (e) {
+            this.noValidatorsForOwnerAddress = true;
             return { validators: [], pagination: {} };
         }
     }

@@ -41,10 +41,6 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
         if (page !== 1) onChangePage(page - 1);
     };
     const handleNextButtonClick = () => {
-        console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
-        console.log(page);
-        console.log(totalPages);
-        console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
         if (page === totalPages) return;
         onChangePage(page + 1);
     };
@@ -81,7 +77,7 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
             <Grid container item alignItems={'center'}>
               <Typography className={classes.PageRangeText}>Rows per page:</Typography>
               <Grid item>
-                <select defaultValue={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
+                <select value={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
                   <option value="5">5</option>
                   <option value="10">10</option>
                 </select>

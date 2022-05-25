@@ -66,6 +66,7 @@ const ImportValidatorConfirmation = () => {
             history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
         }
         else {
+            applicationStore.showTransactionPendingPopUp(false);
             setActionButtonText('Run validator');
         }
     };

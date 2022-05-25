@@ -29,6 +29,7 @@ const Button = (props: ButtonParams) => {
     const [userAllowance, setUserAllowance] = useState(false);
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
+    const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
     const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack } = props;
 
     useEffect(() => {
@@ -49,6 +50,7 @@ const Button = (props: ButtonParams) => {
     };
 
     const allowNetworkContract = async () => {
+        setAllowanceButtonDisable(true);
         setApproveButtonText('Waiting...');
         const userGavePermission = await ssvStore.approveAllowance(false, handlePendingTransaction);
         if (userGavePermission) {
@@ -57,6 +59,7 @@ const Button = (props: ButtonParams) => {
         } else {
             setApproveButtonText(approveButtonText);
         }
+        setAllowanceButtonDisable(false);
     };
 
     const regularButton = () => {
@@ -80,7 +83,7 @@ const Button = (props: ButtonParams) => {
                 text={approveButtonText}
                 withoutLoader={userAllowance}
                 disable={userAllowance || disable}
-                submitFunction={() => { checkWalletConnected(allowNetworkContract); }}
+                submitFunction={() => { !allowanceButtonDisable && checkWalletConnected(allowNetworkContract); }}
               />
             </Grid>
             <Grid item xs>

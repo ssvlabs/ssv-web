@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
@@ -18,6 +18,8 @@ import { useStyles } from './index.styles';
 
 const FeeUpdated = () => {
     const stores = useStores();
+    const history = useHistory();
+
     // @ts-ignore
     const { operator_id } = useParams();
     const [operator, setOperator] = useState(null);
@@ -34,6 +36,10 @@ const FeeUpdated = () => {
             }
         });
     }, []);
+
+    const backToMyAccount = async () => {
+        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+    };
 
     // @ts-ignore
     const classes = useStyles({ lastStep: true });
@@ -75,7 +81,7 @@ const FeeUpdated = () => {
               </Grid>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
-              <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={console.log} />
+              <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={backToMyAccount} />
             </Grid>
           </Grid>,
         ]}

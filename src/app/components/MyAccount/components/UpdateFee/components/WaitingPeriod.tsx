@@ -18,7 +18,11 @@ import ReactStepper from '~app/components/MyAccount/components/UpdateFee/compone
 import { useStyles } from './index.styles';
 import { timeDiffCalc } from '~lib/utils/time';
 
-const WaitingPeriod = () => {
+type Props = {
+    getCurrentState: () => void,
+};
+
+const WaitingPeriod = (props: Props) => {
     const stores = useStores();
     const classes = useStyles({});
     // @ts-ignore
@@ -35,6 +39,9 @@ const WaitingPeriod = () => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
+                setTimeout(() => {
+                    props.getCurrentState();
+                }, 1000);
             }
         });
     }, []);

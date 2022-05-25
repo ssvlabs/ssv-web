@@ -1,6 +1,10 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
+import { useHistory, useParams } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
+import Validator from '~lib/api/Validator';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/common/components/Status';
 import Button from '~app/common/components/Button';
@@ -9,6 +13,7 @@ import Tooltip from '~app/common/components/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
+import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -26,6 +31,9 @@ type Props = {
 };
 const OperatorsReceipt = (props: Props) => {
     const stores = useStores();
+    const history = useHistory();
+    // @ts-ignore
+    const { public_key } = useParams();
     const { operators, header, previousOperators, currentOperators } = props;
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
@@ -33,6 +41,7 @@ const OperatorsReceipt = (props: Props) => {
     const applicationStore: ApplicationStore = stores.Application;
     const classes = useStyles({ currentOperators });
     const [checked, setChecked] = React.useState(false);
+    const [openRedirect, setOpenRedirect] = React.useState(false);
 
     const oldOperatorsFee = previousOperators?.reduce(
         (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
@@ -62,15 +71,31 @@ const OperatorsReceipt = (props: Props) => {
         applicationStore.setIsLoading(true);
         const response = await validatorStore.updateValidator();
         if (response) {
-            console.log('finsihed');
-        } else {
-            console.log('error');
+            setOpenRedirect(true);
+            Validator.getInstance().clearOperatorsCache();
+            setTimeout(() => {
+                history.push(`/dashboard/validator/${public_key}`);
+            }, 7000);
         }
     };
 
     const body = [
       <Grid container item>
         <Grid container item className={classes.OperatorsWrapper}>
+          <Dialog
+            open={openRedirect}
+            PaperProps={{
+                    style: { borderRadius: 16, backgroundColor: 'transparent' },
+                }}
+            >
+            <Grid className={classes.DialogWrapper}>
+              <HeaderSubHeader
+                title={'Your Validator Has been Updated'}
+                subtitle={'You are being redirected to your validator'}
+              />
+              <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+            </Grid>
+          </Dialog>
           {operators.map((operator: any, index: number) => {
                     return (
                       <Grid key={index} container item xs={12} className={classes.OperatorsDetails}>

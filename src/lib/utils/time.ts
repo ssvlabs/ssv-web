@@ -19,6 +19,8 @@ export const timeDiffCalc = (dateFuture: any, dateNow: any) => {
     }
     if (hours > 0) {
         difference += hours === 1 ? `${hours} hour ` : `${hours} hours`;
+    } else {
+        difference += minutes === 1 ? `${minutes} minutes ` : `${hours} minute`;
     }
 
     return difference;

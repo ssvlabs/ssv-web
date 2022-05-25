@@ -26,6 +26,7 @@ class Operator {
     operatorValidators: any = null;
     operatorValidatorsQuery: any = null;
     operatorValidatorsPagination: any = null;
+    noOperatorsForOwnerAddress: boolean = false;
     operatorsPagination: any = null;
     ownerAddressOperators: any = null;
     ownerAddressPagination: any = null;
@@ -34,7 +35,7 @@ class Operator {
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
-        setInterval(this.clearOperatorsCache.bind(this), 600000);
+        setInterval(this.clearOperatorsCache.bind(this), 10000);
     }
 
     static getInstance(): Operator {
@@ -56,6 +57,7 @@ class Operator {
         this.ownerAddressOperators = null;
         this.ownerAddressPagination = null;
         this.operatorValidatorsQuery = null;
+        this.noOperatorsForOwnerAddress = false;
     }
 
     /**
@@ -68,10 +70,12 @@ class Operator {
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true`;
         try {
             const response: any = await axios.get(operatorsEndpointUrl);
+            if (!response.data.operators) this.noOperatorsForOwnerAddress = true;
             this.ownerAddressOperators = response.data.operators;
             this.ownerAddressPagination = response.data.pagination;
             return response.data;
         } catch (e) {
+            this.noOperatorsForOwnerAddress = true;
             return { operators: [], pagination: {} };
         }
     }

@@ -44,8 +44,8 @@ const DashboardTables = () => {
     // @ts-ignore
     useEffect(async () => {
         if (walletStore.accountAddress) {
-            await loadItems({ type: 'validators' });
-            await loadItems({ type: 'operators' });
+            await loadItems({ type: 'validators', forcePerPage: Operator.getInstance().noOperatorsForOwnerAddress ? 10 : undefined });
+            await loadItems({ type: 'operators', forcePerPage: Validator.getInstance().noValidatorsForOwnerAddress ? 10 : undefined });
         }
     }, [walletStore.accountAddress]);
 
@@ -271,18 +271,17 @@ const DashboardTables = () => {
             cols={validatorsColumns}
             loading={loadingValidators}
             actionProps={{
-                            type: 'validators',
-                            onChangeRowsPerPage,
-                            onChangePage: loadItems,
-                            totalPages: validatorsPagination.pages,
-                            currentPage: validatorsPagination.page,
-                            totalAmountOfItems: validatorsPagination.total,
-                            perPage: ApiParams.getInteger('validators', 'perPage', ApiParams.PER_PAGE),
-                        }}
-          />
+                    type: 'validators',
+                    onChangeRowsPerPage,
+                    onChangePage: loadItems,
+                    totalPages: validatorsPagination.pages,
+                    currentPage: validatorsPagination.page,
+                    perPage: validatorsPagination.per_page,
+                    totalAmountOfItems: validatorsPagination.total,
+                }}
+            />
         </Grid>
         )}
-
         {operators.length > 0 && (
         <Grid item xs style={{ marginBottom: 20 }}>
           <ReactTable
@@ -290,15 +289,15 @@ const DashboardTables = () => {
             cols={operatorsColumns}
             loading={loadingOperators}
             actionProps={{
-                            type: 'operators',
-                            onChangeRowsPerPage,
-                            onChangePage: loadItems,
-                            totalPages: operatorsPagination.pages,
-                            currentPage: operatorsPagination.page,
-                            totalAmountOfItems: operatorsPagination.total,
-                            perPage: ApiParams.getInteger('operators', 'perPage', ApiParams.PER_PAGE),
-                        }}
-          />
+                    type: 'operators',
+                    onChangeRowsPerPage,
+                    onChangePage: loadItems,
+                    totalPages: operatorsPagination.pages,
+                    currentPage: operatorsPagination.page,
+                    perPage: operatorsPagination.per_page,
+                    totalAmountOfItems: operatorsPagination.total,
+                }}
+            />
         </Grid>
         )}
       </Grid>

@@ -24,9 +24,9 @@ const checkBoxTypes: any = {
 };
 
 const ProductQuestions = () => {
+    const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const stores = useStores();
     // @ts-ignore
     const { public_key } = useParams();
     const [inputValue, setInputValue] = React.useState(false);

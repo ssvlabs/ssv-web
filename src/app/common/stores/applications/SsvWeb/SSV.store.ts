@@ -5,7 +5,7 @@ import config from '~app/common/config';
 // import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import { roundNumber } from '~lib/utils/numbers';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 class SsvStore extends BaseStore {
     // Balances
@@ -96,12 +96,6 @@ class SsvStore extends BaseStore {
     newGetFeeForYear = (fee: number, decimalPlaces?: number): string => {
         const wrapFee = new Decimal(fee);
         return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
-    };
-
-    @action.bound
-    getFeeForYear = (fee: number): number => {
-        const perYear = fee * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
-        return roundNumber(perYear, 11);
     };
 
     /**
@@ -240,15 +234,19 @@ class SsvStore extends BaseStore {
     async activateValidator(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
+            const applicationStore: ApplicationStore = this.getStore('Application');
+            applicationStore.setIsLoading(true);
             const ssvAmount = walletStore.toWei(amount.toString());
-            walletStore.getContract.methods.activateValidator(ssvAmount).send({ from: this.accountAddress })
+            walletStore.getContract.methods.enableAccount(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
+                    applicationStore.setIsLoading(false);
                     resolve(true);
                 })
                 .on('transactionHash', (txHash: string) => {
                     walletStore.notifySdk.hash(txHash);
                 })
                 .on('error', () => {
+                    applicationStore.setIsLoading(false);
                     resolve(false);
                 });
         });

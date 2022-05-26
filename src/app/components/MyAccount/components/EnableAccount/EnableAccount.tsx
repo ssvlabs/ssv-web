@@ -1,47 +1,57 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
-// import CTAButton from '~app/common/components/CTAButton';
-import { useStyles } from './EnableAccount.styles';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import config from '~app/common/config';
+import Button from '~app/common/components/Button';
+import LinkText from '~app/common/components/LinkText/LinkText';
 import NameAndAddress from '~app/common/components/NameAndAddress';
 import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { addNumber, formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ValidatorDropDownMenu from '~app/components/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
-import LinkText from '~app/common/components/LinkText/LinkText';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import Validator from '~lib/api/Validator';
+import { useStyles } from './EnableAccount.styles';
 
 const EnableAccount = () => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const [validators, setValidators] = useState(null);
-    validators;
-    const [allOperatorsFee, setTotalFee] = useState(0);
-    const networkYearlyFees = ssvStore.getFeeForYear(ssvStore.networkFee);
-    const liquidationCollateral = (ssvStore.networkFee + allOperatorsFee / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR) * ssvStore.liquidationCollateral;
-    const totalFee = allOperatorsFee + networkYearlyFees + liquidationCollateral;
+    const [validators, setValidators] = useState([]);
+    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee);
+    const [ownerAddressCost, setOwnerAddressCost] = useState(0);
+    const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost);
+    const liquidationCollateral = multiplyNumber(
+        addNumber(ssvStore.networkFee, ownerAddressCost),
+        ssvStore.liquidationCollateral,
+    );
+    const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
     const summaryFields = [
         { name: 'Operators yearly fee', value: allOperatorsFee },
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees) },
-        { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
+        { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral.toString()) },
     ];
 
     useEffect(() => {
-        Validator.getInstance().getValidatorsByOwnerAddress({ ownerAddress: walletStore.accountAddress, page: 1, perPage: 10 }).then(res => {
-            setValidators(res);
+        Validator.getInstance().getValidatorsByOwnerAddress({
+            page: 1,
+            perPage: 100,
+            extendData: false,
+            withOperators: true,
+            ownerAddress: walletStore.accountAddress,
+        }).then(async (res) => {
+            const response = await Validator.getInstance().getOwnerAddressCost(walletStore.accountAddress);
+            setValidators(res.validators);
+            // @ts-ignore
+            setOwnerAddressCost(walletStore.fromWei(response.fees.per_block.wei));
         });
     }, []);
 
     const unableAccount = (fee: any) => {
         ssvStore.activateValidator(fee);
     };
-    unableAccount;
 
     return (
       <div>
@@ -66,15 +76,13 @@ const EnableAccount = () => {
                     <Grid item className={classes.OperatorsTitle}>
                       Operators Fees Details
                     </Grid>
-                    <Grid item container>
-                      {[].map((publicKey: any, index: number) => {
+                    <Grid item container xs={12} className={classes.ValidatorsDropDownWrapper}>
+                      {validators?.map((validator: any, index: number) => {
                             return (
                               <ValidatorDropDownMenu
                                 key={index}
                                 index={index}
-                                setTotalFee={setTotalFee}
-                                validatorPublicKey={publicKey}
-                                allOperatorsFee={allOperatorsFee}
+                                validator={validator}
                               />
                             );
                         })}
@@ -111,8 +119,8 @@ const EnableAccount = () => {
               <Grid item className={classes.AlignRight}>
                 <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} subText={'~$490'} />
               </Grid>
-              <Grid item>
-                {/* <CTAButton text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance /> */}
+              <Grid item xs={12}>
+                <Button text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance />
               </Grid>
             </Grid>
           )}

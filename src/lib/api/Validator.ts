@@ -8,6 +8,8 @@ type GetValidatorsByOwnerAddress = {
     force?: boolean
     perPage: number,
     ownerAddress: string,
+    extendData?: boolean,
+    withOperators?: boolean,
 };
 
 class Validator {
@@ -40,15 +42,27 @@ class Validator {
         this.noValidatorsForOwnerAddress = false;
     }
 
+    async getOwnerAddressCost(ownerAddress: string): Promise<any> {
+        try {
+            const endpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}/cost`;
+            return (await axios.get(endpointUrl)).data;
+        } catch (e) {
+            return null;
+        }
+    }
+
     async getValidatorsByOwnerAddress(props: GetValidatorsByOwnerAddress): Promise<any> {
-        const { page, perPage, ownerAddress, force } = props;
+        const { page, perPage, ownerAddress, extendData = true, withOperators, force } = props;
         if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
             return { pagination: this.pagination, validators: this.validators };
         }
         try {
-            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&page=${page}&perPage=${perPage}`;
+            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&page=${page}&perPage=${perPage}${withOperators ? '&operators=true' : ''}`;
             const response: any = await axios.get(operatorsEndpointUrl);
             const apiResponseData = response.data;
+            if (!extendData) {
+                return { validators: apiResponseData.validators, pagination: apiResponseData.pagination };
+            }
             if (apiResponseData.validators?.length) {
                 const validatorsOwnerAddresses = apiResponseData.validators.map((v: { public_key: string; }) => v.public_key);
                 const balances = await this.getValidatorsBalances(validatorsOwnerAddresses);

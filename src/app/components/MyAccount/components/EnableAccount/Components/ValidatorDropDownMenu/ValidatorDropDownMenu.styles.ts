@@ -16,9 +16,9 @@ export const useStyles = makeStyles(() => ({
     },
     OperatorsWrapper: {
         marginLeft: '4px',
+        marginTop: '-6px',
         padding: '12px 0px 0px 36px',
         borderLeft: 'solid 2px #979797',
-        marginTop: '-6px',
     },
     OperatorWrapper: {
       marginBottom: '12px',

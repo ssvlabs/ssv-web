@@ -34,11 +34,17 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.gray40,
         marginBottom: theme.spacing(2),
     },
+    ValidatorsDropDownWrapper: {
+        gap: 24,
+        height: 305,
+        overflow: 'scroll',
+    },
     SummaryField: {
         marginBottom: theme.spacing(2),
         justifyContent: 'space-between',
     },
     AlignRight: {
         textAlign: 'right',
+        marginBottom: 24,
     },
 }));

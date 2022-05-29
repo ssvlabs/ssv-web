@@ -23,6 +23,7 @@ const WalletPopUp = () => {
     const closePopUp = () => {
         applicationStore.showWalletPopUp(false);
     };
+
       return (
         <Dialog PaperProps={{ className: classes.Dialog }} aria-labelledby="simple-dialog-title" open={applicationStore.walletPopUp}>
           <Grid item className={classes.Exit} onClick={closePopUp} />

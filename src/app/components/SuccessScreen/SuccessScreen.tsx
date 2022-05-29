@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
+import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -24,8 +25,11 @@ const SuccessScreen = () => {
         applicationStore.setIsLoading(true);
         if (process.env.REACT_APP_NEW_STAGE) {
             await walletStore.initializeUserInfo();
-            applicationStore.setIsLoading(false);
-            history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+            Validator.getInstance().clearValidatorCache();
+            setTimeout(() => {
+                applicationStore.setIsLoading(false);
+                history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+            }, 7000);
         } else {
             const linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
             window.open(linkToExplorer);

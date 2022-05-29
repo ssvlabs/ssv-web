@@ -47,7 +47,7 @@ const WaitingPeriod = (props: Props) => {
     }, []);
 
     // @ts-ignore
-    const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
+    const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
     const endDay = operatorEndApprovalTime.getUTCDate();
     const today = new Date();
     const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });

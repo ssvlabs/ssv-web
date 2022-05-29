@@ -90,10 +90,9 @@ export const useStyles = makeStyles((theme) => ({
     },
     StepWrapper: {
         width: 24,
-        flexGrow: 1,
         height: 24,
+        flexGrow: 1,
         borderRadius: 16,
-        backgroundColor: theme.colors.white,
         '&:nth-of-type(1)': {
             border: (props: any) => {
                 return props.step === 0 ? `3px solid ${theme.colors.primaryBlue}` : 'none';
@@ -146,7 +145,7 @@ export const useStyles = makeStyles((theme) => ({
             },
             backgroundImage: (props: any) => {
                 if (props.step === 4) {
-                    return theme.colors.primaryError;
+                    return 'url(/images/x/white.svg)';
                 }
                 if (props.step > 2) {
                     return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;

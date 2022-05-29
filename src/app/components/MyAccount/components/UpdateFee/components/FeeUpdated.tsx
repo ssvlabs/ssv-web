@@ -38,7 +38,12 @@ const FeeUpdated = () => {
     }, []);
 
     const backToMyAccount = async () => {
-        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().clearOperatorsCache();
+        applicationStore.setIsLoading(true);
+        setTimeout(() => {
+            applicationStore.setIsLoading(false);
+            history.push(`/dashboard/operator/${operator_id}`);
+        }, 5000);
     };
 
     // @ts-ignore

@@ -7,9 +7,10 @@ export const useStyles = makeStyles((theme) => ({
     GridWrapper: {
         gap: 24,
         width: 424,
-        // height: 438,
         padding: 32,
+        // height: 438,
         flexDirection: 'column',
+        backgroundColor: theme.colors.white,
     },
     BackgroundImage: {
         top: -85,

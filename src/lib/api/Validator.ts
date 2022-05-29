@@ -22,6 +22,7 @@ class Validator {
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
+        setInterval(this.clearValidatorCache.bind(this), 10000);
     }
 
     static getInstance(): Validator {
@@ -35,7 +36,7 @@ class Validator {
         return 'prater';
     }
 
-    clearOperatorsCache() {
+    clearValidatorCache() {
         this.validator = null;
         this.validators = null;
         this.pagination = null;

@@ -11,17 +11,17 @@ export const timeDiffCalc = (dateFuture: any, dateNow: any) => {
 
     // calculate minutes
     const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
-    diffInMilliSeconds -= minutes * 60;
 
     let difference = '';
-    if (days > 0) {
+    if (days >= 1) {
         difference += days === 1 ? `${days} day ` : `${days} days `;
     }
-    if (hours > 0) {
+    if (hours >= 1) {
         difference += hours === 1 ? `${hours} hour ` : `${hours} hours`;
+    } else if (minutes >= 1) {
+        difference += minutes === 1 ? `${minutes} minutes ` : `${minutes} minute`;
     } else {
-        difference += minutes === 1 ? `${minutes} minutes ` : `${hours} minute`;
+        difference += 'less then a minute';
     }
-
     return difference;
 };

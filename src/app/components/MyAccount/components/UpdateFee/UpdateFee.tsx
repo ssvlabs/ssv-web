@@ -52,11 +52,14 @@ const UpdateFee = () => {
             const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
             const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
 
+            // @ts-ignore
+            const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
+
             if (isInPendingState) {
                 setProcessState(2);
             } else if (startPendingStateTime > todayDate) {
                 setProcessState(1);
-            } else if (todayDate > endPendingStateTime) {
+            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 0) {
                 setProcessState(4);
             }
         }
@@ -76,6 +79,7 @@ const UpdateFee = () => {
     };
 
     const renderBody = () => {
+        // @ts-ignore
         switch (processState) {
             // @ts-ignore
             case 0:
@@ -89,6 +93,7 @@ const UpdateFee = () => {
             // @ts-ignore
             case 3:
                 return <FeeUpdated />;
+            // @ts-ignore
             case 4:
                 return <PendingExpired />;
             default:

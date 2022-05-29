@@ -72,7 +72,7 @@ const OperatorsReceipt = (props: Props) => {
         const response = await validatorStore.updateValidator();
         if (response) {
             setOpenRedirect(true);
-            Validator.getInstance().clearOperatorsCache();
+            Validator.getInstance().clearValidatorCache();
             setTimeout(() => {
                 history.push(`/dashboard/validator/${public_key}`);
             }, 7000);

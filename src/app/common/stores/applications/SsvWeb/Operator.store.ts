@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
-import { action, observable, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';

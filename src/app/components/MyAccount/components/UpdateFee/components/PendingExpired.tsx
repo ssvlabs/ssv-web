@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
+import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -16,8 +16,9 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import ReactStepper from '~app/components/MyAccount/components/UpdateFee/components/Stepper';
 import { useStyles } from './index.styles';
 
-const PendingExpires = () => {
+const PendingExpired = () => {
     const stores = useStores();
+    const history = useHistory();
     // @ts-ignore
     const { operator_id } = useParams();
     const [operator, setOperator] = useState(null);
@@ -34,6 +35,10 @@ const PendingExpires = () => {
             }
         });
     }, []);
+
+    const backToMyAccount = () => {
+        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+    };
 
     // @ts-ignore
     const classes = useStyles({ expiredStep: true });
@@ -75,7 +80,7 @@ const PendingExpires = () => {
               </Grid>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
-              <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={console.log} />
+              <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={backToMyAccount} />
             </Grid>
           </Grid>,
         ]}
@@ -83,4 +88,4 @@ const PendingExpires = () => {
     );
 };
 
-export default observer(PendingExpires);
+export default observer(PendingExpired);

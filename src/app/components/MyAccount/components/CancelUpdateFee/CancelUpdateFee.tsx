@@ -13,7 +13,7 @@ import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+// import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './CancelUpdateFee.styles';
 
 const CancelUpdateFee = () => {
@@ -26,9 +26,7 @@ const CancelUpdateFee = () => {
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
-    const notificationsStore: NotificationsStore = stores.Notifications;
-    applicationStore;
-    notificationsStore;
+    // const notificationsStore: NotificationsStore = stores.Notifications;
 
     const cancelUpdateProcess = async () => {
         applicationStore.setIsLoading(true);
@@ -40,7 +38,7 @@ const CancelUpdateFee = () => {
     };
 
     const backToMyAccount = () => {
-        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        history.push(`/dashboard/operator/${operator_id}`);
         operatorStore.switchCancelDialog();
     };
 

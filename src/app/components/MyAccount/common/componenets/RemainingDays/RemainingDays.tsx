@@ -66,7 +66,7 @@ const RemainingDays = (props: Props) => {
           <Typography className={classes.Days}>
             days
           </Typography>
-          {newRemainingDays !== undefined && newRemainingDays - oldRemainingDays >= 1 && (
+          {newRemainingDays !== undefined && newRemainingDays !== oldRemainingDays && (
             <Grid item xs
               className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - oldRemainingDays, true)} days)`}
             </Grid>

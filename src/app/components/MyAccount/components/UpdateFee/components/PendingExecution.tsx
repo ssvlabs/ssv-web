@@ -106,7 +106,7 @@ const PendingExecution = (props: Props) => {
                 <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} text={'Cancel'} submitFunction={operatorStore.switchCancelDialog} />
               </Grid>
               <Grid item xs>
-                <PrimaryButton disable={false} text={'Execute'} submitFunction={submitFeeChange} />
+                <PrimaryButton withoutLoader={operatorStore.openCancelDialog} disable={false} text={'Execute'} submitFunction={submitFeeChange} />
               </Grid>
             </Grid>
           </Grid>,

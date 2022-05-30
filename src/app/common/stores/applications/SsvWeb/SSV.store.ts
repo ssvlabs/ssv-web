@@ -204,15 +204,20 @@ class SsvStore extends BaseStore {
 
     /**
      * Withdraw ssv
+     * @param type
      * @param amount
      * @param withdrawAll
      */
     @action.bound
-    async withdrawSsv(amount: string, withdrawAll: boolean = false) {
+    async withdrawSsv(validatorState: boolean, amount: string, withdrawAll: boolean = false) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.toWei(amount);
-            const contractFunction = withdrawAll ? walletStore.getContract.methods.withdrawAll() : walletStore.getContract.methods.withdraw(ssvAmount);
+            let contractFunction = null;
+            if (withdrawAll && !validatorState) contractFunction = walletStore.getContract.methods.withdrawAll();
+            if (withdrawAll && validatorState) contractFunction = walletStore.getContract.methods.liquidate([this.accountAddress]);
+            if (!withdrawAll) contractFunction = walletStore.getContract.methods.withdraw(ssvAmount);
+
             contractFunction.send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);

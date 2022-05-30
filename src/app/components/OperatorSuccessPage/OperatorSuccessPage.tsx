@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/common/components/LinkText';
 import ImageDiv from '~app/common/components/ImageDiv';
@@ -34,8 +35,11 @@ const SetOperatorFee = () => {
     const moveToMyAccount = async () => {
         applicationStore.setIsLoading(true);
         await walletStore.initializeUserInfo();
-        applicationStore.setIsLoading(false);
-        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().clearOperatorsCache();
+        setTimeout(() => {
+            applicationStore.setIsLoading(false);
+            history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        }, 7000);
     };
 
     return (

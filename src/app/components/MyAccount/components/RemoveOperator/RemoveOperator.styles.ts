@@ -15,7 +15,8 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: 24,
         margin: 'auto',
         marginBottom: 120,
-    },
+        pointerEvents: (props: any) => props.isLoading ? 'none' : 'auto',
+},
     BulletsWrapper: {
         fontSize: 16,
         fontWeight: 500,

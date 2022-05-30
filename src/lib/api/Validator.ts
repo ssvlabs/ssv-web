@@ -13,7 +13,6 @@ type GetValidatorsByOwnerAddress = {
 };
 
 class Validator {
-    validator: any = null;
     validators: any = null;
     pagination: any = null;
     noValidatorsForOwnerAddress: boolean = false;
@@ -37,7 +36,6 @@ class Validator {
     }
 
     clearValidatorCache() {
-        this.validator = null;
         this.validators = null;
         this.pagination = null;
         this.noValidatorsForOwnerAddress = false;
@@ -109,7 +107,6 @@ class Validator {
 
     async getValidator(publicKey: string, checkExistence?: boolean) {
         try {
-            if (this.validator?.public_key === publicKey) return this.validator;
             const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours&withFee=true`;
             const response: any = (await axios.get(url)).data;
             if (checkExistence) {
@@ -119,7 +116,6 @@ class Validator {
             const detailedValidator = await this.buildValidatorStructure(response?.public_key, balance[0]);
             const validator = Object.create(detailedValidator);
             validator.operators = response?.operators;
-            this.validator = validator;
             return validator;
         } catch (e) {
             return null;

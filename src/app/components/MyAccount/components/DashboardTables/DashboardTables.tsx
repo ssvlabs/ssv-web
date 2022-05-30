@@ -70,18 +70,16 @@ const DashboardTables = () => {
         // const operatorsExist = Operator.getInstance()?.ownerAddressOperators?.length > 0;
         // const validatorsExist = Validator.getInstance()?.validators?.length > 0;
 
-        const perPage: number = ApiParams.getInteger(type, 'perPage', ApiParams.PER_PAGE);
-
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await Operator.getInstance().getOperatorsByOwnerAddress(paginationPage, forcePerPage ?? perPage, walletStore.accountAddress);
+            const result = await Operator.getInstance().getOperatorsByOwnerAddress(paginationPage, forcePerPage ?? operatorsPagination.per_page, walletStore.accountAddress);
             const operatorsList = await getOperatorsRevenue(result.operators);
             setOperators(operatorsList);
             setOperatorsPagination(result.pagination);
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            const result = await Validator.getInstance().getValidatorsByOwnerAddress({ page: paginationPage ?? 1, perPage: forcePerPage ?? perPage, ownerAddress: walletStore.accountAddress });
+            const result = await Validator.getInstance().getValidatorsByOwnerAddress({ page: paginationPage ?? 1, perPage: forcePerPage ?? operatorsPagination.per_page, ownerAddress: walletStore.accountAddress });
             if (result?.validators?.length > 0) ssvStore.userState = 'validator';
             setValidators(result.validators);
             setValidatorsPagination(result.pagination);
@@ -95,8 +93,8 @@ const DashboardTables = () => {
      * @param perPage
      */
     function onChangeRowsPerPage(type: string, perPage: number) {
-        ApiParams.saveInStorage(type, 'perPage', perPage);
-        loadItems({ type, paginationPage: 1 });
+        // ApiParams.saveInStorage(type, 'perPage', perPage);
+        loadItems({ type, paginationPage: 1, forcePerPage: perPage });
     }
 
     const openSingleValidator = (publicKey: string) => {

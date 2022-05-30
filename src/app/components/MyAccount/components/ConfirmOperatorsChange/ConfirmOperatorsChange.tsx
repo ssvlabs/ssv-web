@@ -16,8 +16,8 @@ import { useStyles } from './ConfirmOperatorsChange.styles';
 const ConfirmOperatorsChange = () => {
     const stores = useStores();
     const classes = useStyles();
-    const [operators, setOperators] = useState(null);
     const operatorStore: OperatorStore = stores.Operator;
+    const [operators, setOperators] = useState(null);
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {

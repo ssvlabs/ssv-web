@@ -68,7 +68,7 @@ class SsvStore extends BaseStore {
             const ssvStore: SsvStore = this.getStore('SSV');
             const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
             const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;
-            const burnRatePerDay = burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+            const burnRatePerDay = Math.max(burnRatePerBlock * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY, 0);
             const liquidationCollateral = this.liquidationCollateral / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
             if (ssvAmount === 0) return 0;
             // if (burnRatePerDay === 0) return 0;

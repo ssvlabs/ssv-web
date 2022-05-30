@@ -19,9 +19,7 @@ type OperatorValidatorListQuery = {
 };
 
 class Operator {
-    operator: any = null;
     operators: any = null;
-    operatorQuery: any = null;
     operatorsQuery: any = null;
     operatorValidators: any = null;
     operatorValidatorsQuery: any = null;
@@ -51,7 +49,6 @@ class Operator {
 
     clearOperatorsCache() {
         this.operators = null;
-        this.operatorQuery = null;
         this.operatorsQuery = null;
         this.operatorsPagination = null;
         this.ownerAddressOperators = null;
@@ -96,11 +93,6 @@ class Operator {
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
         if (this.operatorsQuery === operatorsEndpointUrl) {
-            // console.log('<<<<<<<<<<here>>>>>>>>>>');
-            // console.log(this.operatorsQuery);
-            // console.log(this.operators);
-            // console.log(this.operatorsPagination);
-            // console.log('<<<<<<<<<<here>>>>>>>>>>');
             return { operators: this.operators, pagination: this.operatorsPagination };
         }
 
@@ -124,20 +116,8 @@ class Operator {
      */
     async getOperator(operatorId: string) {
         const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/prater/${operatorId}?performances=24hours&withFee=true`;
-
-        if (this.operatorQuery === operatorEndpointUrl) {
-            return this.operator;
-        }
-
         try {
-            const response: any = (await axios.get(operatorEndpointUrl)).data;
-
-            if (response) {
-                this.operator = response;
-                this.operatorQuery = operatorEndpointUrl;
-            }
-
-            return response;
+            return (await axios.get(operatorEndpointUrl)).data;
         } catch (e) {
             return null;
         }

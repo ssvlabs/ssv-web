@@ -75,7 +75,7 @@ const OperatorsReceipt = (props: Props) => {
             Validator.getInstance().clearValidatorCache();
             setTimeout(() => {
                 history.push(`/dashboard/validator/${public_key}`);
-            }, 7000);
+            }, 10000);
         }
     };
 

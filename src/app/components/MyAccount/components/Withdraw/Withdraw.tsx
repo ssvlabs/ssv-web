@@ -33,7 +33,7 @@ const Withdraw = () => {
 
     const withdrawSsv = async () => {
         applicationStore.setIsLoading(true);
-        const success = await ssvStore.withdrawSsv(inputValue.toString(), inputValue === ssvStore.contractDepositSsvBalance);
+        const success = await ssvStore.withdrawSsv(ssvStore.isValidatorState, inputValue.toString(), inputValue === ssvStore.contractDepositSsvBalance);
         applicationStore.setIsLoading(false);
         if (success) setInputValue(0.0);
     };
@@ -81,6 +81,9 @@ const Withdraw = () => {
 
     const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
 
+    const errorButton = ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0;
+    const showCheckBox = ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30;
+
     if (ssvStore.isValidatorState) {
      secondBorderScreen.push((<RemainingDays newBalance={newBalance} />));
     }
@@ -111,11 +114,11 @@ const Withdraw = () => {
             <Button
               withAllowance={false}
               onClick={withdrawSsv}
-              errorButton={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0}
-              checkBoxesCallBack={ssvStore.getRemainingDays({ newBalance }) <= 30 ? [setUserAgreement] : []}
-              text={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0 ? 'Withdraw All' : 'Withdraw'}
+              errorButton={errorButton}
+              text={errorButton ? 'Withdraw All' : 'Withdraw'}
+              checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
+              checkboxesText={showCheckBox ? ['I understand that risks of having my account liquidated.'] : []}
               disable={(ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
-              checkboxesText={ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 ? ['I understand that risks of having my account liquidated.'] : []}
             />
           )}
         />

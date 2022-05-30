@@ -27,9 +27,9 @@ const RemoveOperator = () => {
     const [checkbox, setCheckBox] = useState(false);
     const [leavingReason, setLeavingReason] = useState(0);
     const [userTextReason, setUserTextReason] = useState('');
-    const classes = useStyles({ leavingReason });
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
+    const classes = useStyles({ leavingReason, isLoading: applicationStore.isLoading });
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {

@@ -44,23 +44,31 @@ const SingleOperator = () => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
-                const operatorId = response.operator_id;
-                Operator.getInstance().getOperatorValidators({
-                    operatorId,
-                    page: 1,
-                    perPage: 5,
-                }).then((validatorsResponse: any) => {
-                    if (response) {
-                        setOperatorsValidators(validatorsResponse.validators);
-                        setOperatorsValidatorsPagination(validatorsResponse.pagination);
-                    }
-                });
+                loadOperatorValidators({ page: 1, perPage: 5 });
             }
         });
     }, []);
 
+    const loadOperatorValidators = async (props: { page: number, perPage: number }) => {
+        // eslint-disable-next-line react/prop-types
+        const { page, perPage } = props;
+        const response = await Operator.getInstance().getOperatorValidators({ operatorId: operator_id, page, perPage });
+        setOperatorsValidators(response.validators);
+        setOperatorsValidatorsPagination(response.pagination);
+    };
+
+    const onChangeRowsPerPage = (type: string, perPage: number) => {
+        loadOperatorValidators({ page: 1, perPage });
+    };  
+    
+    const onChangePage = (obj: any) => {
+        // @ts-ignore
+        loadOperatorValidators({ page: obj.paginationPage, perPage: operatorsValidatorsPagination?.per_page ?? 5 });
+    };
+
     // @ts-ignore
-    const { page, pages, perPage, total } = operatorsValidatorsPagination || {};
+    const { page, pages, per_page, total } = operatorsValidatorsPagination || {};
+
     // @ts-ignore
     const { name, logo, type, status, address, validators_count, fee } = operator || {};
     const yearlyFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(fee)));
@@ -217,17 +225,18 @@ const SingleOperator = () => {
         <Grid container item className={classes.SecondSectionWrapper}>
           {operatorsValidators && operatorsValidators.length > 0 && (
             <Grid item className={classes.OperatorsValidatorsTable}>
-              <Table columns={columns} data={data} actionProps={{
-                            perPage,
-                            type: 'operator',
-                            currentPage: page,
-                            totalPages: pages,
-                            onChangePage: () => {
-                            },
-                            totalAmountOfItems: total,
-                            onChangeRowsPerPage: () => {
-                            },
-                        }}
+              <Table
+                data={data}
+                columns={columns}
+                actionProps={{
+                    onChangePage,
+                    perPage: per_page,
+                    type: 'operator',
+                    currentPage: page,
+                    totalPages: pages,
+                    totalAmountOfItems: total,
+                    onChangeRowsPerPage,
+                }}
               />
             </Grid>
           )}

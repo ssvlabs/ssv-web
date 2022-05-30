@@ -64,7 +64,7 @@ class SsvStore extends BaseStore {
      */
     @action.bound
     getRemainingDays({ newBalance, newBurnRate }: { newBalance?: number, newBurnRate?: number }): number {
-        try {
+        try { '';
             const ssvStore: SsvStore = this.getStore('SSV');
             const burnRatePerBlock = newBurnRate ?? this.accountBurnRate;
             const ssvAmount = newBalance ?? ssvStore.contractDepositSsvBalance;

@@ -6,6 +6,9 @@ const config = {
             CLAIM: '/',
             SUCCESS: '/success',
         },
+        FAUCET: {
+            SUCCESS: '/success',
+        },
         MY_ACCOUNT: {
             DASHBOARD: '/dashboard',
             DEPOSIT: '/dashboard/deposit',

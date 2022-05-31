@@ -4,7 +4,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import merkleTree from '~app/components/Distribution/assets/merkleTree.json';
+import merkleTree from '~app/components/applications/Distribution/assets/merkleTree.json';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
 
 /**

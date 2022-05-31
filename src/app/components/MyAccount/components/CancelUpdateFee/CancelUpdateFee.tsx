@@ -16,7 +16,12 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 // import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './CancelUpdateFee.styles';
 
-const CancelUpdateFee = () => {
+type Props = {
+    // eslint-disable-next-line no-unused-vars
+    getCurrentState: (forceState?: number) => void,
+};
+
+const CancelUpdateFee = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
@@ -42,6 +47,11 @@ const CancelUpdateFee = () => {
         operatorStore.switchCancelDialog();
     };
 
+    const declareNewFee = async () => {
+        await props.getCurrentState(0);
+        operatorStore.switchCancelDialog();
+    };
+
     // @ts-ignore
     const currentOperatorFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorCurrentFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
     // @ts-ignore
@@ -59,13 +69,13 @@ const CancelUpdateFee = () => {
                 </Grid>
                 <Grid container item style={{ gap: 12 }}>
                   <Grid item>
-                    <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} subText={'~$78.56'} />
+                    <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} />
                   </Grid>
                   <Grid item>
                     <Grid item className={classes.NegativeArrow} />
                   </Grid>
                   <Grid item>
-                    <SsvAndSubTitle fade bold leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
+                    <SsvAndSubTitle fade bold leftTextAlign ssv={operatorFutureFee} />
                   </Grid>
                 </Grid>
               </Grid>
@@ -82,6 +92,7 @@ const CancelUpdateFee = () => {
 
     return (
       <Dialog className={classes.DialogWrapper} open={operatorStore.openCancelDialog}>
+        <Grid className={classes.CloseDialog} onClick={operatorStore.switchCancelDialog} />
         <Grid className={classes.GridWrapper} container>
           <HeaderSubHeader title={'Sending Transaction'} />
           <Grid className={classes.Text}>
@@ -95,7 +106,7 @@ const CancelUpdateFee = () => {
             process and start the process anew.
           </Grid>
           <PrimaryButton wrapperClass={classes.FirstButton} disable={false} text={'Cancel Update Fee'} submitFunction={cancelUpdateProcess} />
-          <PrimaryButton withLoader={false} wrapperClass={classes.SecondButton} disable={false} text={'Declare a New Fee'} submitFunction={operatorStore.switchCancelDialog} />
+          <PrimaryButton withLoader={false} wrapperClass={classes.SecondButton} disable={false} text={'Declare a New Fee'} submitFunction={declareNewFee} />
         </Grid>
       </Dialog>
     );

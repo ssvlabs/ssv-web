@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PrimaryButton from '~app/common/components/Button/PrimaryButton';
 import { useStyles } from '~app/components/SuccessScreen/SuccessScreen.styles';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -16,7 +15,6 @@ const SuccessScreen = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const walletStore: WalletStore = stores.Wallet;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
     const buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
@@ -24,7 +22,6 @@ const SuccessScreen = () => {
     const redirectTo = async () => {
         applicationStore.setIsLoading(true);
         if (process.env.REACT_APP_NEW_STAGE) {
-            await walletStore.initializeUserInfo();
             Validator.getInstance().clearValidatorCache();
             setTimeout(() => {
                 applicationStore.setIsLoading(false);

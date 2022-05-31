@@ -107,7 +107,7 @@ class Validator {
 
     async getValidator(publicKey: string, checkExistence?: boolean) {
         try {
-            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}?performances=24hours&withFee=true`;
+            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}${!checkExistence ? '?performances=24hours&withFee=true' : ''}`;
             const response: any = (await axios.get(url)).data;
             if (checkExistence) {
                 return response;

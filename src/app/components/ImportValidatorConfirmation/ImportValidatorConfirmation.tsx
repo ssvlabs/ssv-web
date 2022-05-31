@@ -131,7 +131,7 @@ const ImportValidatorConfirmation = () => {
             )}
         {process.env.REACT_APP_NEW_STAGE && (
           <Grid item style={{ marginBottom: 20 }}>
-            <SsvAndSubTitle ssv={totalAmountOfSsv} bold subText={'~$757.5'} />
+            <SsvAndSubTitle ssv={totalAmountOfSsv} bold />
           </Grid>
         )}
         {process.env.REACT_APP_NEW_STAGE && Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (

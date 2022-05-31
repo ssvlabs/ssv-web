@@ -114,7 +114,7 @@ const OperatorsReceipt = (props: Props) => {
           <Grid container item justify={'space-between'}>
             <Grid item xs>
               <Typography className={classes.NetworkYearlyFee} style={{ marginRight: 8 }} component={'span'}>Network yearly fees</Typography>
-              <Tooltip text={'Network yearly fee'} />
+              <Tooltip text={'Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. Read more on fees'} />
             </Grid>
             <Grid item>
               <Typography className={classes.NetworkYearlyFee}>{networkFee} SSV</Typography>
@@ -127,7 +127,7 @@ const OperatorsReceipt = (props: Props) => {
           <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
         </Grid>
         <Grid item>
-          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(addNumber(networkFee, operatorsYearlyFee))} subText={'~$757.5'} />
+          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(addNumber(networkFee, operatorsYearlyFee))} />
         </Grid>
       </Grid>,
       <Grid container item>

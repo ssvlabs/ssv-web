@@ -302,18 +302,16 @@ class OperatorStore extends BaseStore {
     }
 
     /**
-     * Check if operator already exists in the contract
-     * @param operatorId
+     * Get operator revenue
      */
     @action.bound
-    async getOperatorsRevenue(operatorId: number): Promise<number> {
+    async getOperatorRevenue(operatorId: number): Promise<any> {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const contractInstance = walletStore.getContract;
-            return contractInstance.methods.operatorEarningsOf(operatorId).call({ from: this.newOperatorKeys.address });
-        } catch (e) {
-            console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
-            console.log(e.message);
+            const networkContract = walletStore.getContract;
+            const response = await networkContract.methods.totalEarningsOf(operatorId).call();
+            return walletStore.fromWei(response.toString());
+        } catch (e: any) {
             return 0;
         }
     }

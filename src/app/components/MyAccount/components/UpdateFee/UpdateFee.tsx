@@ -41,7 +41,7 @@ const UpdateFee = () => {
     }, []);
 
     const getCurrentState = async (forceState?: number) => {
-        if (forceState) {
+        if (typeof forceState === 'number') {
             setProcessState(forceState);
             return;
         }
@@ -59,7 +59,7 @@ const UpdateFee = () => {
                 setProcessState(2);
             } else if (startPendingStateTime > todayDate) {
                 setProcessState(1);
-            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 0) {
+            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
                 setProcessState(4);
             }
         }
@@ -115,7 +115,7 @@ const UpdateFee = () => {
 
         <Grid className={classes.BodyWrapper}>
           {renderBody()}
-          <CancelUpdateFee />
+          <CancelUpdateFee getCurrentState={getCurrentState} />
         </Grid>
       </Grid>
     );

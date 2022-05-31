@@ -117,7 +117,6 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                 <Grid item>
                   <SsvAndSubTitle
                     bold
-                    subText={'~$757.5'}
                     subTextCenter={false}
                     ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
                   />

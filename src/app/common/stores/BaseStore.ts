@@ -23,7 +23,9 @@ class BaseStore {
   }
 
   applicationStrategy(): string {
-      if (process.env.REACT_APP_CLAIM_PAGE) {
+      if (process.env.REACT_APP_FAUCET_PAGE) {
+          return 'Faucet';
+      } if (process.env.REACT_APP_CLAIM_PAGE) {
           return 'Distribution';
       }
       return 'SsvWeb';

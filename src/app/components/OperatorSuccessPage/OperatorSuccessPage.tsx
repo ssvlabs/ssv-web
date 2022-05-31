@@ -34,7 +34,6 @@ const SetOperatorFee = () => {
 
     const moveToMyAccount = async () => {
         applicationStore.setIsLoading(true);
-        await walletStore.initializeUserInfo();
         Operator.getInstance().clearOperatorsCache();
         setTimeout(() => {
             applicationStore.setIsLoading(false);

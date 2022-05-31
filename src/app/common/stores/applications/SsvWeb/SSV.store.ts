@@ -8,6 +8,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 class SsvStore extends BaseStore {
+    @observable accountInterval: any = null;
     // Balances
     @observable walletSsvBalance: number = 0;
     @observable contractDepositSsvBalance: number = 0;
@@ -79,17 +80,26 @@ class SsvStore extends BaseStore {
     }
 
     /**
-     * Init User
+     * Init User Interval
      */
     @action.bound
-    async initUser() {
+    async userSyncInterval() {
         await this.checkAllowance();
         await this.getNetworkFees();
         await this.checkIfLiquidated();
         await this.getAccountBurnRate();
         await this.getBalanceFromSsvContract();
         await this.getBalanceFromDepositContract();
-        await this.getBalanceFromDepositContract();
+    }
+
+    /**
+     * Init User
+     */
+    @action.bound
+    async initUser() {
+        clearInterval(this.accountInterval);
+        this.userSyncInterval();
+        this.accountInterval = setInterval(this.userSyncInterval, 10000);
     }
 
     @action.bound
@@ -328,17 +338,6 @@ class SsvStore extends BaseStore {
         // hardcoded should be replaced
         this.networkFee = walletStore.fromWei(networkFee);
         this.liquidationCollateral = Number(liquidationCollateral);
-    }
-
-    /**
-     * Get operator revenue
-     */
-    @action.bound
-    async getOperatorRevenue(): Promise<any> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const networkContract = walletStore.getContract;
-        const response = await networkContract.methods.totalEarningsOf(this.accountAddress).call();
-        return walletStore.fromWei(response.toString());
     }
 
     /**

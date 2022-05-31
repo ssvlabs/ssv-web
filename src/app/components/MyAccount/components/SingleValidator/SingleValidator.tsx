@@ -99,7 +99,7 @@ const SingleValidator = () => {
                     performance: <Typography className={classes.PerformanceHeader}>{performance}</Typography>,
                     fee: <Grid item container justify={'space-between'}>
                       <Grid item>
-                        <SsvAndSubTitle leftTextAlign ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} subText={'~$757.5'} />
+                        <SsvAndSubTitle leftTextAlign ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />
                       </Grid>
 
                       {/* <Grid item container xs> */}

@@ -72,17 +72,18 @@ const PendingExpired = () => {
             </Grid>
             <Grid item container className={classes.FeesChangeWrapper}>
               <Grid item>
-                <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} subText={'~$78.56'} />
+                <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} />
               </Grid>
               <Grid item className={classes.NegativeArrow} />
               <Grid item>
-                <SsvAndSubTitle fade bold leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
+                <SsvAndSubTitle fade bold leftTextAlign ssv={operatorFutureFee} />
               </Grid>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
               <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={backToMyAccount} />
             </Grid>
           </Grid>,
+
         ]}
       />
     );

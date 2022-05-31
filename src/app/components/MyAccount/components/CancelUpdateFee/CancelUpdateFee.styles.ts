@@ -4,6 +4,18 @@ export const useStyles = makeStyles((theme) => ({
     DialogWrapper: {
         margin: 'auto',
     },
+    CloseDialog: {
+        top: 10,
+        right: 10,
+        width: 20,
+        height: 20,
+        cursor: 'pointer',
+        position: 'absolute',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: `url(/images/x/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    },
     GridWrapper: {
         gap: 24,
         width: 424,

@@ -117,7 +117,7 @@ const EnableAccount = () => {
                 <NameAndAddress name={'Total'} />
               </Grid>
               <Grid item className={classes.AlignRight}>
-                <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} subText={'~$490'} />
+                <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} />
               </Grid>
               <Grid item xs={12}>
                 <Button text={'Enable Account'} disable={false} onClick={() => { unableAccount(totalFee); }} withAllowance />

@@ -78,11 +78,11 @@ const FeeUpdated = () => {
             </Grid>
             <Grid item container className={classes.FeesChangeWrapper}>
               <Grid item>
-                <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} subText={'~$78.56'} />
+                <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} />
               </Grid>
               <Grid item className={classes.Arrow} />
               <Grid item>
-                <SsvAndSubTitle bold leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
+                <SsvAndSubTitle bold leftTextAlign ssv={operatorFutureFee} />
               </Grid>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>

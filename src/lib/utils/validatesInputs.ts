@@ -72,14 +72,13 @@ export const validateFeeInput = (value: string, callback: any) :void => {
 };
 
 export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, callback: any) :void => {
-console.log(maxFeeIncrease);
     const response = { shouldDisplay: false, errorMessage: '' };
     if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please use numbers only.';
     } else if (compareNumbers(previousValue, newValue)) {
         response.shouldDisplay = true;
-        response.errorMessage = 'Please set a different fee amount from previous.';
+        response.errorMessage = 'Please set a different fee amount from current.';
     }
     else if (new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).lessThan(newValue)) {
         response.shouldDisplay = true;

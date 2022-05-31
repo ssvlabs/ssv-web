@@ -85,13 +85,13 @@ const WaitingPeriod = (props: Props) => {
             </Grid>
             <Grid item container className={classes.FeesChangeWrapper}>
               <Grid item>
-                <SsvAndSubTitle leftTextAlign ssv={currentOperatorFee} subText={'~$78.56'} />
+                <SsvAndSubTitle leftTextAlign ssv={currentOperatorFee} />
               </Grid>
               <Grid item className={classes.Arrow}>
 
               </Grid>
               <Grid item>
-                <SsvAndSubTitle leftTextAlign ssv={operatorFutureFee} subText={'~$98.56'} />
+                <SsvAndSubTitle leftTextAlign ssv={operatorFutureFee} />
               </Grid>
             </Grid>
             <Grid item className={classes.Notice}>

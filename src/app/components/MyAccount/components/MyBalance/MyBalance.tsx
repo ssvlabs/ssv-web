@@ -85,7 +85,7 @@ const MyBalance = () => {
           <Grid container item>
             {renderBalance()}
             <Grid item xs={12} className={classes.CurrentBalanceDollars}>
-              ~$449.52
+              {/* ~$449.52 */}
             </Grid>
           </Grid>
         </Grid>

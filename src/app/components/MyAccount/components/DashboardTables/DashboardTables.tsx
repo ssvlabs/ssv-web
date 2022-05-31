@@ -50,7 +50,7 @@ const DashboardTables = () => {
     }, [walletStore.accountAddress]);
 
     const getOperatorRevenue = async (operator: any) => {
-        const revenue = await operatorStore.getOperatorsRevenue(operator.operator_id);
+        const revenue = await operatorStore.getOperatorRevenue(operator.operator_id);
         // eslint-disable-next-line no-param-reassign
         operator.revenue = revenue;
         return operator;
@@ -235,7 +235,6 @@ const DashboardTables = () => {
             status: <Status status={status} />,
             revenue: <Grid container item>
               <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(walletStore.fromWei(revenue))} SSV</Grid>
-              <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid>
             </Grid>,
             validators_count: <Grid item className={classes.ValidatorApr}>{validators_count}</Grid>,
             // fee: <Grid item container justify={'space-between'}>

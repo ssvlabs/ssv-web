@@ -19,6 +19,7 @@ import SsvAndSubTitle from '~app/common/components/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WhiteWrapper from '~app/common/components/WhiteWrapper/WhiteWrapper';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -35,13 +36,15 @@ const SingleOperator = () => {
     const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        Operator.getInstance().getOperator(operator_id).then(async (response: any) => {
             if (response) {
+                response.revenue = await operatorStore.getOperatorRevenue(operator_id);
                 setOperator(response);
                 applicationStore.setIsLoading(false);
                 loadOperatorValidators({ page: 1, perPage: 5 });
@@ -132,7 +135,10 @@ const SingleOperator = () => {
             {
                 key: <Typography>Revenue</Typography>,
                 value: <Grid item container className={classes.ItemWrapper} xs={12}>
-                  <SsvAndSubTitle leftTextAlign ssv={15.14} subText={'~$24.94'} />
+                  <SsvAndSubTitle leftTextAlign ssv={
+                      // @ts-ignore
+                      operator?.revenue
+                  } />
                 </Grid>,
             },
         ], [operator, applicationStore.darkMode],

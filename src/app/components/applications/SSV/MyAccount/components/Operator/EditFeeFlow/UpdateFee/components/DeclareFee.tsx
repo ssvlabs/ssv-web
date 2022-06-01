@@ -62,6 +62,12 @@ const DeclareFee = (props: Props) => {
         applicationStore.setIsLoading(true);
         const response = await operatorStore.updateOperatorFee(operator_id, userInput);
         if (response) {
+            // @ts-ignore
+            let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+            if (savedOperator && savedOperator?.includes(operator_id)) {
+                savedOperator = savedOperator.filter((item: any) => item !== operator_id);
+                localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
+            }
             await props.getCurrentState();
         }
         applicationStore.setIsLoading(false);

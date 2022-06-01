@@ -35,15 +35,17 @@ const UpdateFee = () => {
         });
     }, []);
 
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         console.log('now!');
+    //         getCurrentState(undefined);
+    //     }, 5000);
+    //     return () => clearInterval(interval);
+    // }, []);
+
     const getCurrentState = async (forceState?: number) => {
         if (typeof forceState === 'number') {
             setProcessState(forceState);
-            return;
-        }
-        // @ts-ignore
-        const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-        if (savedOperator && savedOperator?.includes(operator_id)) {
-            setProcessState(0);
             return;
         }
 
@@ -62,6 +64,12 @@ const UpdateFee = () => {
             } else if (startPendingStateTime > todayDate) {
                 setProcessState(1);
             } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
+                // @ts-ignore
+                const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+                if (savedOperator && savedOperator?.includes(operator_id)) {
+                    setProcessState(0);
+                    return;
+                }
                 setProcessState(4);
             }
         }

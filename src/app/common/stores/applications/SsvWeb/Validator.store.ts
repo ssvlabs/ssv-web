@@ -94,33 +94,39 @@ class ValidatorStore extends BaseStore {
    */
   @action.bound
   async updateValidator() {
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const applicationStore: ApplicationStore = this.getStore('Application');
-    const contract: Contract = walletStore.getContract;
-    const payload: (string | string[])[] = await this.createPayLoad(true);
-
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress })
-          .on('receipt', (receipt: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const event: boolean = receipt.hasOwnProperty('events');
-            if (event) {
-              this.keyStoreFile = null;
-              this.newValidatorReceipt = payload[1];
+      // eslint-disable-next-line no-async-promise-executor
+      return new Promise(async (resolve) => {
+          const walletStore: WalletStore = this.getStore('Wallet');
+          const applicationStore: ApplicationStore = this.getStore('Application');
+          const contract: Contract = walletStore.getContract;
+          const payload: (string | string[])[] = await this.createPayLoad(true);
+          if (!payload) {
               applicationStore.setIsLoading(false);
               applicationStore.showTransactionPendingPopUp(false);
-              resolve(true);
-            }
-          })
-          .on('transactionHash', (txHash: string) => {
-            applicationStore.txHash = txHash;
-            applicationStore.showTransactionPendingPopUp(true);
-          })
-          .on('error', (error: any) => {
-            console.debug('Contract Error', error.message);
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
+              resolve(false);
+              return;
+          }
+
+          const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress })
+              .on('receipt', (receipt: any) => {
+                  // eslint-disable-next-line no-prototype-builtins
+                  const event: boolean = receipt.hasOwnProperty('events');
+                  if (event) {
+                      this.keyStoreFile = null;
+                      this.newValidatorReceipt = payload[1];
+                      applicationStore.setIsLoading(false);
+                      applicationStore.showTransactionPendingPopUp(false);
+                      resolve(true);
+                  }
+              })
+              .on('transactionHash', (txHash: string) => {
+                  applicationStore.txHash = txHash;
+                  applicationStore.showTransactionPendingPopUp(true);
+              })
+              .on('error', (error: any) => {
+                  console.debug('Contract Error', error.message);
+                  applicationStore.setIsLoading(false);
+                  applicationStore.showTransactionPendingPopUp(false);
             resolve(false);
           });
       console.log(response);
@@ -135,83 +141,85 @@ class ValidatorStore extends BaseStore {
   @action.bound
   // eslint-disable-next-line no-unused-vars
   async addNewValidator(getGasEstimation?: boolean) {
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const applicationStore: ApplicationStore = this.getStore('Application');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const gasEstimation: PriceEstimation = new PriceEstimation();
-    const contract: Contract = walletStore.getContract;
-    const ownerAddress: string = walletStore.accountAddress;
+      // eslint-disable-next-line no-async-promise-executor
+      return new Promise(async (resolve) => {
+          const payload: any = await this.createPayLoad();
+          console.log(payload);
+          const walletStore: WalletStore = this.getStore('Wallet');
+          const applicationStore: ApplicationStore = this.getStore('Application');
+          const notificationsStore: NotificationsStore = this.getStore('Notifications');
+          const gasEstimation: PriceEstimation = new PriceEstimation();
+          const contract: Contract = walletStore.getContract;
+          const ownerAddress: string = walletStore.accountAddress;
 
-    this.newValidatorReceipt = null;
+          this.newValidatorReceipt = null;
 
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-        const payload: (string | string[])[] = await this.createPayLoad();
+          if (!payload) resolve(false);
 
-        console.debug('Add Validator Payload: ', payload);
+          console.debug('Add Validator Payload: ', payload);
 
-        if (getGasEstimation) {
-          // Send add operator transaction
-          this.conditionalContractFunction(contract, payload)
-              .estimateGas({ from: ownerAddress })
-              .then((gasAmount: any) => {
-                this.estimationGas = gasAmount * 0.000000001;
-                if (config.FEATURE.DOLLAR_CALCULATION) {
-                  gasEstimation
-                      .estimateGasInUSD(this.estimationGas)
-                      .then((rate: number) => {
-                        this.dollarEstimationGas = this.estimationGas * rate * 0;
-                        resolve(true);
-                      })
-                      .catch(() => {
-                        resolve(true);
-                      });
-                } else {
-                  this.dollarEstimationGas = 0;
-                  resolve(true);
-                }
-              })
-              .catch((error: any) => {
-                resolve(error);
-              });
-        } else {
-          // Send add operator transaction
-          this.conditionalContractFunction(contract, payload).send({ from: ownerAddress })
-          .on('receipt', (receipt: any) => {
-                // eslint-disable-next-line no-prototype-builtins
-                const event: boolean = receipt.hasOwnProperty('events');
-                if (event) {
-                  this.keyStoreFile = null;
-                  this.newValidatorReceipt = payload[1];
-                  applicationStore.setIsLoading(false);
-                  console.debug('Contract Receipt', receipt);
-                  resolve(true);
-                }
-              })
-              .on('transactionHash', (txHash: string) => {
-                applicationStore.txHash = txHash;
-                applicationStore.showTransactionPendingPopUp(true);
-              })
-              .on('error', (error: any) => {
-                console.debug('Contract Error', error.message);
-                applicationStore.setIsLoading(false);
-                resolve(false);
-              })
-              .catch((error: any) => {
-                applicationStore.setIsLoading(false);
-                if (error) {
-                  notificationsStore.showMessage(error.message, 'error');
-                  resolve(false);
-                }
-                console.debug('Contract Error', error);
-                resolve(true);
-              });
-        }
-    });
+          if (getGasEstimation) {
+              // Send add operator transaction
+              this.conditionalContractFunction(contract, payload)
+                  .estimateGas({ from: ownerAddress })
+                  .then((gasAmount: any) => {
+                      this.estimationGas = gasAmount * 0.000000001;
+                      if (config.FEATURE.DOLLAR_CALCULATION) {
+                          gasEstimation
+                              .estimateGasInUSD(this.estimationGas)
+                              .then((rate: number) => {
+                                  this.dollarEstimationGas = this.estimationGas * rate * 0;
+                                  resolve(true);
+                              })
+                              .catch(() => {
+                                  resolve(true);
+                              });
+                      } else {
+                          this.dollarEstimationGas = 0;
+                          resolve(true);
+                      }
+                  })
+                  .catch((error: any) => {
+                      resolve(error);
+                  });
+          } else {
+              // Send add operator transaction
+              this.conditionalContractFunction(contract, payload).send({ from: ownerAddress })
+                  .on('receipt', (receipt: any) => {
+                      // eslint-disable-next-line no-prototype-builtins
+                      const event: boolean = receipt.hasOwnProperty('events');
+                      if (event) {
+                          this.keyStoreFile = null;
+                          this.newValidatorReceipt = payload[1];
+                          applicationStore.setIsLoading(false);
+                          console.debug('Contract Receipt', receipt);
+                          resolve(true);
+                      }
+                  })
+                  .on('transactionHash', (txHash: string) => {
+                      applicationStore.txHash = txHash;
+                      applicationStore.showTransactionPendingPopUp(true);
+                  })
+                  .on('error', (error: any) => {
+                      console.debug('Contract Error', error.message);
+                      applicationStore.setIsLoading(false);
+                      resolve(false);
+                  })
+                  .catch((error: any) => {
+                      applicationStore.setIsLoading(false);
+                      if (error) {
+                          notificationsStore.showMessage(error.message, 'error');
+                          resolve(false);
+                      }
+                      console.debug('Contract Error', error);
+                      resolve(true);
+                  });
+          }
+      });
   }
 
   @action.bound
-  async createPayLoad(update: boolean = false): Promise<(string | string[])[]> {
+  async createPayLoad(update: boolean = false): Promise<any> {
     if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
@@ -226,42 +234,46 @@ class ValidatorStore extends BaseStore {
     }
 
     return new Promise((resolve) => {
-      // Get list of selected operator's public keys
-      const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-        return walletStore.encodeKey(operator.public_key);
-      });
+        try {
+            // Get list of selected operator's public keys
+            const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+                return walletStore.encodeKey(operator.public_key);
+            });
 
-      // Collect all public keys from shares
-      const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
-        return share.publicKey;
-      });
-      const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey: string) => {
-        return atob(walletStore.decodeKey(operatorKey));
-      });
+            // Collect all public keys from shares
+            const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
+                return share.publicKey;
+            });
+            const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey: string) => {
+                return atob(walletStore.decodeKey(operatorKey));
+            });
 
-      const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-        return operator.operator_id;
-      });
+            const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+                return operator.operator_id;
+            });
+            const encryptedShares: any[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
+            // Collect all private keys from shares
+            const encryptedKeys: string[] = encryptedShares.map((share: any) => {
+                return walletStore.encodeKey(share.privateKey);
+            });
 
-      const encryptedShares: any[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
-      // Collect all private keys from shares
-      const encryptedKeys: string[] = encryptedShares.map((share: any) => {
-        return walletStore.encodeKey(share.privateKey);
-      });
-
-      const payLoad = [
-        `0x${this.keyStorePublicKey}`,
-        operatorIds,
-        sharePublicKeys,
-        encryptedKeys,
-      ];
-      if (process.env.REACT_APP_NEW_STAGE) {
-        payLoad.push(walletStore.toWei(update ? 0 : totalAmountOfSsv));
-      } else {
-        payLoad.unshift(walletStore.accountAddress);
-      }
-      this.createValidatorPayLoad = payLoad;
-      resolve(payLoad);
+            const payLoad = [
+                `0x${this.keyStorePublicKey}`,
+                operatorIds,
+                sharePublicKeys,
+                encryptedKeys,
+            ];
+            if (process.env.REACT_APP_NEW_STAGE) {
+                payLoad.push(walletStore.toWei(update ? 0 : totalAmountOfSsv));
+            } else {
+                payLoad.unshift(walletStore.accountAddress);
+            }
+            this.createValidatorPayLoad = payLoad;
+            resolve(payLoad);
+        } catch (e) {
+            console.log(e.message);
+            resolve(false);
+        }
     });
   }
 

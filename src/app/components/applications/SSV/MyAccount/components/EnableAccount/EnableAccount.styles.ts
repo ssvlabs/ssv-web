@@ -36,12 +36,18 @@ export const useStyles = makeStyles((theme) => ({
     },
     ValidatorsDropDownWrapper: {
         gap: 24,
-        height: 305,
+        maxHeight: 305,
         overflow: 'scroll',
     },
     SummaryField: {
         marginBottom: theme.spacing(2),
         justifyContent: 'space-between',
+    },
+    Text: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        color: theme.colors.gray90,
     },
     AlignRight: {
         textAlign: 'right',

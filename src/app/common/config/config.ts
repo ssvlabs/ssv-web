@@ -8,6 +8,7 @@ const config = {
         },
         FAUCET: {
             SUCCESS: '/success',
+            DEPLETED: '/depleted',
         },
         MY_ACCOUNT: {
             DASHBOARD: '/dashboard',

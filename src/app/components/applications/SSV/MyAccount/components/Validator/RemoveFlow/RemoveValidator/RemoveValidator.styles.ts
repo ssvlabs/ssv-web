@@ -46,7 +46,7 @@ export const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         color: theme.colors.gray90,
         justifyContent: 'flex-start',
-        backgroundColor: '#ffd20a33',
+        backgroundColor: theme.colors.primaryWarningRegular,
         border: `solid 1px ${theme.colors.primaryWarningRegular}`,
     },
     CheckBoxWrapper: {

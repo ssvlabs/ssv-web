@@ -33,16 +33,20 @@ const App = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
-        checkUserCountryRestriction().then((res: any) => {
-            if (res.restricted) {
-                walletStore.accountDataLoaded = true;
-                applicationStore.userGeo = res.userGeo;
-                applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-                history.push(config.routes.COUNTRY_NOT_SUPPORTED);
-            } else {
-                walletStore.connectWalletFromCache();
-            }
-        });
+        if (applicationStore.strategyName !== 'ssv-web') {
+            checkUserCountryRestriction().then((res: any) => {
+                if (res.restricted) {
+                    walletStore.accountDataLoaded = true;
+                    applicationStore.userGeo = res.userGeo;
+                    applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+                    history.push(config.routes.COUNTRY_NOT_SUPPORTED);
+                } else {
+                    walletStore.connectWalletFromCache();
+                }
+            });
+        } else {
+            walletStore.connectWalletFromCache();
+        }
     }, []);
 
     useEffect(() => {

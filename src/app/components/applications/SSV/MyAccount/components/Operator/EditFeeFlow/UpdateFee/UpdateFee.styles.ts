@@ -45,7 +45,7 @@ export const useStyles = makeStyles((theme) => ({
         padding: '12px 16px',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#ffd20a33',
+        backgroundColor: theme.colors.primaryWarningRegular,
         border: `solid 1px ${theme.colors.primaryWarningRegular}`,
     },
     TechnicalImage: {

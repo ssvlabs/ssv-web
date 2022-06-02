@@ -80,9 +80,15 @@ const Withdraw = () => {
     )];
 
     const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
-
     const errorButton = ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0;
     const showCheckBox = ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30;
+    const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my account.' : 'I understand that risks of having my account liquidated.';
+    let buttonText = 'Withdraw';
+    if (errorButton) {
+        buttonText = 'Liquidate my account';
+    } else if (inputValue === ssvStore.contractDepositSsvBalance) {
+        buttonText = 'Withdraw All';
+    }
 
     if (ssvStore.isValidatorState) {
      secondBorderScreen.push((<RemainingDays newBalance={newBalance} />));
@@ -112,12 +118,12 @@ const Withdraw = () => {
           body={secondBorderScreen}
           bottom={(
             <Button
+              text={buttonText}
               withAllowance={false}
               onClick={withdrawSsv}
               errorButton={errorButton}
-              text={errorButton ? 'Withdraw All' : 'Withdraw'}
+              checkboxesText={showCheckBox ? [checkBoxText] : []}
               checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-              checkboxesText={showCheckBox ? ['I understand that risks of having my account liquidated.'] : []}
               disable={(ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
             />
           )}

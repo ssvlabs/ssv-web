@@ -106,7 +106,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         if (
             reUpload &&
             validatorStore.isJsonFile &&
-            keyStorePublicKey.toLowerCase() !== validatorPublicKey.replace('0x', '').toLowerCase()
+            keyStorePublicKey?.toLowerCase() !== validatorPublicKey.replace('0x', '')?.toLowerCase()
         ) {
             fileClass += ` ${classes.Fail}`;
         } else if (!reUpload && validatorStore.validatorPublicKeyExist) {
@@ -134,7 +134,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
         if (
             reUpload &&
-            keyStorePublicKey.toLowerCase() !== validatorPublicKey.replace('0x', '').toLowerCase()
+            keyStorePublicKey?.toLowerCase() !== validatorPublicKey.replace('0x', '')?.toLowerCase()
         ) {
             return (
               <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
@@ -197,13 +197,13 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const buttonDisableConditions = !validatorStore.isJsonFile
         || !keyStorePassword
         || !!errorMessage
-        || (reUpload && validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase())
+        || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== public_key.replace('0x', '')?.toLowerCase())
         || (!reUpload && validatorStore.validatorPublicKeyExist);
 
     const inputDisableConditions = !validatorStore.isJsonFile
         || processingFile
         || (!reUpload && validatorStore.validatorPublicKeyExist)
-        || (reUpload && validatorStore.keyStorePublicKey.toLowerCase() !== public_key.replace('0x', '').toLowerCase());
+        || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== public_key.replace('0x', '')?.toLowerCase());
 
     return (
       <BorderScreen

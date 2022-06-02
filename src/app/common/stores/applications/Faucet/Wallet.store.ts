@@ -7,7 +7,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
-import FaucetStore from '~app/common/stores/applications/Faucet/FaucetStore.store';
+import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 class WalletStore extends BaseStore implements Wallet {

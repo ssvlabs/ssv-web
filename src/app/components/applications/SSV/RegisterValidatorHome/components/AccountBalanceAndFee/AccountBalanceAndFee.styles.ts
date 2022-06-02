@@ -21,7 +21,6 @@ export const useStyles = makeStyles((theme) => ({
         background: 'rgb(236, 28, 38, 0.08);',
         border: `solid 1px ${theme.colors.primaryError}`,
         backgroundColor: theme.colors.primaryErrorRegular,
-
     },
     ErrorText: {
         fontSize: 14,

@@ -5,17 +5,16 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { BrowserView, MobileView } from 'react-device-detect';
 import Routes from '~app/Routes/Routes';
-import { useStyles } from '~app/App.styles';
+import config from '~app/common/config';
 import { globalStyle } from '~app/globalStyle';
+import { useStyles } from '~app/App.styles';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-// import AppBar from '~app/common/components/AppBar';
 import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
-import config from '~app/common/config';
 
 declare global {
     interface Window {

@@ -917,21 +917,6 @@ const config = {
                     {
                         'inputs': [
                             {
-                                'internalType': 'uint256',
-                                'name': 'operatorId',
-                                'type': 'uint256',
-                            },
-                        ],
-                        'name': 'activateOperator',
-                        'outputs': [
-
-                        ],
-                        'stateMutability': 'nonpayable',
-                        'type': 'function',
-                    },
-                    {
-                        'inputs': [
-                            {
                                 'internalType': 'address',
                                 'name': 'ownerAddress',
                                 'type': 'address',
@@ -991,21 +976,6 @@ const config = {
                             },
                         ],
                         'name': 'cancelSetOperatorFee',
-                        'outputs': [
-
-                        ],
-                        'stateMutability': 'nonpayable',
-                        'type': 'function',
-                    },
-                    {
-                        'inputs': [
-                            {
-                                'internalType': 'uint256',
-                                'name': 'operatorId',
-                                'type': 'uint256',
-                            },
-                        ],
-                        'name': 'deactivateOperator',
                         'outputs': [
 
                         ],
@@ -1111,6 +1081,25 @@ const config = {
                                 'name': '',
                                 'type': 'uint256',
                             },
+                            {
+                                'internalType': 'uint256',
+                                'name': '',
+                                'type': 'uint256',
+                            },
+                        ],
+                        'stateMutability': 'view',
+                        'type': 'function',
+                    },
+                    {
+                        'inputs': [
+                            {
+                                'internalType': 'uint256',
+                                'name': 'operatorId',
+                                'type': 'uint256',
+                            },
+                        ],
+                        'name': 'getOperatorPreviousFee',
+                        'outputs': [
                             {
                                 'internalType': 'uint256',
                                 'name': '',
@@ -1299,6 +1288,100 @@ const config = {
                             },
                         ],
                         'name': 'liquidate',
+                        'outputs': [
+
+                        ],
+                        'stateMutability': 'nonpayable',
+                        'type': 'function',
+                    },
+                    {
+                        'inputs': [
+                            {
+                                'internalType': 'string',
+                                'name': 'name',
+                                'type': 'string',
+                            },
+                            {
+                                'internalType': 'address',
+                                'name': 'ownerAddress',
+                                'type': 'address',
+                            },
+                            {
+                                'internalType': 'bytes',
+                                'name': 'publicKey',
+                                'type': 'bytes',
+                            },
+                            {
+                                'internalType': 'uint256',
+                                'name': 'fee',
+                                'type': 'uint256',
+                            },
+                        ],
+                        'name': 'migrateRegisterOperator',
+                        'outputs': [
+                            {
+                                'internalType': 'uint256',
+                                'name': 'operatorId',
+                                'type': 'uint256',
+                            },
+                        ],
+                        'stateMutability': 'nonpayable',
+                        'type': 'function',
+                    },
+                    {
+                        'inputs': [
+                            {
+                                'internalType': 'address',
+                                'name': 'ownerAddress',
+                                'type': 'address',
+                            },
+                            {
+                                'internalType': 'bytes',
+                                'name': 'publicKey',
+                                'type': 'bytes',
+                            },
+                            {
+                                'internalType': 'uint256[]',
+                                'name': 'operatorIds',
+                                'type': 'uint256[]',
+                            },
+                            {
+                                'internalType': 'bytes[]',
+                                'name': 'sharesPublicKeys',
+                                'type': 'bytes[]',
+                            },
+                            {
+                                'internalType': 'bytes[]',
+                                'name': 'encryptedKeys',
+                                'type': 'bytes[]',
+                            },
+                            {
+                                'internalType': 'uint256',
+                                'name': 'tokenAmount',
+                                'type': 'uint256',
+                            },
+                        ],
+                        'name': 'migrateRegisterValidator',
+                        'outputs': [
+
+                        ],
+                        'stateMutability': 'nonpayable',
+                        'type': 'function',
+                    },
+                    {
+                        'inputs': [
+                            {
+                                'internalType': 'address',
+                                'name': 'ownerAddress',
+                                'type': 'address',
+                            },
+                            {
+                                'internalType': 'uint256',
+                                'name': 'tokenAmount',
+                                'type': 'uint256',
+                            },
+                        ],
+                        'name': 'migrationDeposit',
                         'outputs': [
 
                         ],

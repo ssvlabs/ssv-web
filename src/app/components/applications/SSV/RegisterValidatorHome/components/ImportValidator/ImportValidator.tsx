@@ -185,10 +185,11 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
                 history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
             }
         } catch (error: any) {
-            if (error.message !== translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD) {
-                setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
+            console.log(error.message);
+            if (error.message === 'Invalid password') {
+                setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
             } else {
-                setErrorMessage(error.message);
+                setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
             }
         }
         applicationStore.setIsLoading(false);

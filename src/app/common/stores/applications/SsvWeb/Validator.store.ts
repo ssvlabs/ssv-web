@@ -237,21 +237,18 @@ class ValidatorStore extends BaseStore {
         try {
             // Get list of selected operator's public keys
             const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-                return walletStore.encodeKey(operator.public_key);
+                return operator.public_key;
             });
 
             // Collect all public keys from shares
             const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
                 return share.publicKey;
             });
-            const decodeOperatorsKey: string[] = operatorPublicKeys.map((operatorKey: string) => {
-                return atob(walletStore.decodeKey(operatorKey));
-            });
 
             const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
                 return operator.operator_id;
             });
-            const encryptedShares: any[] = new Encryption(decodeOperatorsKey, thresholdResult.shares).encrypt();
+            const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
             // Collect all private keys from shares
             const encryptedKeys: string[] = encryptedShares.map((share: any) => {
                 return walletStore.encodeKey(share.privateKey);

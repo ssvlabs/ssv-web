@@ -2,14 +2,13 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import { useStyles } from '~app/components/applications/SSV/SuccessScreen/SuccessScreen.styles';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import BorderScreen from '~app/components/common/BorderScreen';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { useStyles } from '~app/components/applications/SSV/SuccessScreen/SuccessScreen.styles';
 
 const SuccessScreen = () => {
     const stores = useStores();
@@ -22,7 +21,6 @@ const SuccessScreen = () => {
     const redirectTo = async () => {
         applicationStore.setIsLoading(true);
         if (process.env.REACT_APP_NEW_STAGE) {
-            Validator.getInstance().clearValidatorCache();
             setTimeout(() => {
                 applicationStore.setIsLoading(false);
                 history.push(config.routes.MY_ACCOUNT.DASHBOARD);

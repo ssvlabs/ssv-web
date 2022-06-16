@@ -30,7 +30,7 @@ const MyBalance = () => {
 
         return (
           <Grid item xs={12} className={classes.CurrentBalance}>
-            {formatNumberToUi(ssvStore.contractDepositSsvBalance)} SSV
+            {formatNumberToUi(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)))} SSV
           </Grid>
         );
     };

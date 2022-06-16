@@ -54,8 +54,8 @@ const EnableAccount = () => {
         });
     }, []);
 
-    const unableAccount = (fee: any) => {
-       const response = ssvStore.activateValidator(fee);
+    const enableAccount = async (fee: any) => {
+       const response = await ssvStore.activateValidator(fee);
        if (response) history.push(config.routes.MY_ACCOUNT.DASHBOARD);
     };
 
@@ -131,7 +131,7 @@ const EnableAccount = () => {
                 <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} />
               </Grid>
               <Grid item xs={12}>
-                <Button text={'Enable Account'} disable={validators.length === 0} onClick={() => { unableAccount(totalFee); }} withAllowance />
+                <Button text={'Enable Account'} disable={validators.length === 0} onClick={() => { enableAccount(totalFee); }} withAllowance />
               </Grid>
             </Grid>
           )}

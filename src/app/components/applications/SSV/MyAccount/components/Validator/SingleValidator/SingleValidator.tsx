@@ -160,14 +160,15 @@ const SingleValidator = () => {
     return (
       <Grid container className={classes.SingleValidatorWrapper}>
         <WhiteWrapper
+          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
           withSettings={{
-              text: 'Remove Validator',
-              onClick: () => {
-                  history.push(`/dashboard/validator/${public_key}/remove`);
-              },
-          }}
+                  text: 'Remove Validator',
+                  onClick: () => {
+                      history.push(`/dashboard/validator/${public_key}/remove`);
+                  },
+              }}
           header={'Validator Details'}
-        >
+          >
           <Grid item container className={classes.FieldsWrapper}>
             <Grid item>
               <Grid className={classes.DetailsHeader}>

@@ -108,6 +108,11 @@ class SsvStore extends BaseStore {
         return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
     };
 
+    @action.bound
+    toDecimalNumber = (fee: number, decimalPlaces?: number): string => {
+        return new Decimal(fee).toFixed(decimalPlaces ?? 18).toString();
+    };
+
     /**
      * Get operators per validator
      */

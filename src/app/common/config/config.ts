@@ -2359,6 +2359,7 @@ const config = {
                 },
             ],
         },
+
         SSV_DISTRIBUTION: {
             ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),
             ABI: [

@@ -136,9 +136,9 @@ class OperatorStore extends BaseStore {
     async initUser() {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getContract;
-        this.getSetOperatorFeePeriod = await contract.methods.getSetOperatorFeePeriod().call();
-        this.approveOperatorFeePeriod = await contract.methods.getApproveOperatorFeePeriod().call();
-        this.maxFeeIncrease = await walletStore.getContract.methods.operatorMaxFeeIncrease().call();
+        this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
+        this.approveOperatorFeePeriod = await contract.methods.getDeclareOperatorFeePeriod().call();
+        this.maxFeeIncrease = await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call();
     }
 
     /**
@@ -163,8 +163,8 @@ class OperatorStore extends BaseStore {
     async getOperatorFeeInfo(operatorId: number) {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getContract;
-        this.operatorCurrentFee = await contract.methods.getOperatorCurrentFee(operatorId).call();
-        const response = await contract.methods.getOperatorFeeChangeRequest(operatorId).call();
+        this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
+        const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
         this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
         this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
         this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
@@ -178,7 +178,7 @@ class OperatorStore extends BaseStore {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contract: Contract = walletStore.getContract;
-            const conditionalFunction = process.env.REACT_APP_NEW_STAGE ? contract.methods.getValidatorsPerOperatorLimit : contract.methods.validatorsPerOperatorLimit;
+            const conditionalFunction = process.env.REACT_APP_NEW_STAGE ? contract.methods.getValidatorsPerOperatorLimit : contract.methods.getValidatorsPerOperatorLimit;
             conditionalFunction().call().then((response: any) => {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
@@ -196,7 +196,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contract: Contract = walletStore.getContract;
-                contract.methods.cancelSetOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+                contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
@@ -262,7 +262,7 @@ class OperatorStore extends BaseStore {
             try {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const contract: Contract = walletStore.getContract;
-                contract.methods.getOperatorCurrentFee(publicKey).call().then((response: any) => {
+                contract.methods.getOperatorFee(publicKey).call().then((response: any) => {
                     const ssv = walletStore.fromWei(response);
                     this.operatorsFees[publicKey] = { ssv, dollar: 0 };
                     resolve(ssv);
@@ -370,7 +370,7 @@ class OperatorStore extends BaseStore {
             try {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
-                await walletStore.getContract.methods.approveOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+                await walletStore.getContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');

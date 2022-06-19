@@ -19,21 +19,16 @@ type OperatorValidatorListQuery = {
 };
 
 class Operator {
-    operators: any = null;
-    operatorsQuery: any = null;
-    operatorValidators: any = null;
-    operatorValidatorsQuery: any = null;
-    operatorValidatorsPagination: any = null;
-    noOperatorsForOwnerAddress: boolean = false;
-    operatorsPagination: any = null;
+    ownerAddress: string = '';
     ownerAddressOperators: any = null;
     ownerAddressPagination: any = null;
+    noOperatorsForOwnerAddress: boolean = false;
     private static instance: Operator;
     private readonly baseUrl: string = '';
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
-        setInterval(this.clearOperatorsCache.bind(this), 10000);
+        setInterval(this.clearOperatorsCache.bind(this), 8000);
     }
 
     static getInstance(): Operator {
@@ -48,13 +43,7 @@ class Operator {
     }
 
     clearOperatorsCache() {
-        this.operators = null;
-        this.operatorsQuery = null;
-        this.operatorsPagination = null;
-        this.ownerAddressOperators = null;
-        this.ownerAddressPagination = null;
-        this.operatorValidatorsQuery = null;
-        this.noOperatorsForOwnerAddress = false;
+        this.getOperatorsByOwnerAddress(this.ownerAddressPagination?.page, this.ownerAddressPagination?.per_page, this.ownerAddress, true);
     }
 
     /**
@@ -66,6 +55,7 @@ class Operator {
         }
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true`;
         try {
+            this.ownerAddress = ownerAddress;
             const response: any = await axios.get(operatorsEndpointUrl);
             if (!response.data.operators) this.noOperatorsForOwnerAddress = true;
             this.ownerAddressOperators = response.data.operators;
@@ -92,20 +82,8 @@ class Operator {
         if (withFee) operatorsEndpointUrl += 'withFee=true&';
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
-        if (this.operatorsQuery === operatorsEndpointUrl) {
-            return { operators: this.operators, pagination: this.operatorsPagination };
-        }
-
         try {
-            const response: any = (await axios.get(operatorsEndpointUrl)).data;
-
-            if (response.operators) {
-                this.operators = response.operators;
-                this.operatorsQuery = operatorsEndpointUrl;
-                this.operatorsPagination = response.pagination;
-            }
-
-            return response;
+            return (await axios.get(operatorsEndpointUrl)).data;
         } catch (e) {
             return { operators: [], pagination: {} };
         }
@@ -128,21 +106,8 @@ class Operator {
     async getOperatorValidators(props: OperatorValidatorListQuery) {
         const { page, perPage, operatorId } = props;
         const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}`;
-
-        if (this.operatorValidatorsQuery === operatorEndpointUrl) {
-            return { validators: this.operatorValidators, pagination: this.operatorValidatorsPagination };
-        }
-
         try {
-            const response: any = (await axios.get(operatorEndpointUrl)).data;
-
-            if (response) {
-                this.operatorValidators = response.validators;
-                this.operatorValidatorsPagination = response.pagination;
-                this.operatorValidatorsQuery = operatorEndpointUrl;
-            }
-
-            return response;
+            return (await axios.get(operatorEndpointUrl)).data;
         } catch (e) {
             return { validators: [], pagination: {} };
         }

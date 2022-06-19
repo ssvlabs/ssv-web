@@ -5,9 +5,9 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
+import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import BorderScreen from '~app/components/common/BorderScreen';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays/RemainingDays';
 import { useStyles } from './Withdrew.styles';
 import Decimal from 'decimal.js';
@@ -51,7 +51,8 @@ const Withdraw = () => {
     }
 
     function maxValue() {
-        setInputValue(ssvStore.contractDepositSsvBalance);
+        // @ts-ignore
+        setInputValue(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)));
     }
 
     const secondBorderScreen = [(
@@ -72,9 +73,9 @@ const Withdraw = () => {
               </Grid>
               <Grid item className={classes.MaxButtonText}>SSV</Grid>
             </Grid>
-            <Grid item xs={12} className={classes.BalanceInputDollar}>
-              ~$9485.67
-            </Grid>
+            {/* <Grid item xs={12} className={classes.BalanceInputDollar}> */}
+            {/*  ~$9485.67 */}
+            {/* </Grid> */}
           </Grid>
         </Grid>
       </Grid>
@@ -104,11 +105,11 @@ const Withdraw = () => {
                     (
                       <Grid item container>
                         <Grid item xs={12} className={classes.currentBalance}>
-                          {formatNumberToUi(ssvStore.contractDepositSsvBalance)} SSV
+                          {formatNumberToUi(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)))} SSV
                         </Grid>
-                        <Grid item xs={12} className={classes.currentBalanceDollar}>
-                          ~$2,449.53
-                        </Grid>
+                        {/* <Grid item xs={12} className={classes.currentBalanceDollar}> */}
+                        {/*  ~$2,449.53 */}
+                        {/* </Grid> */}
                       </Grid>
                     ),
                 ]}

@@ -184,8 +184,8 @@ const DashboardTables = () => {
     ];
 
     // return validator operators mapped with additional fields fee and performance
-    const validatorsData = validators?.map((operator: any) => {
-        const { public_key, status, balance, apr } = operator;
+    const validatorsData = validators?.map((validator: any) => {
+        const { public_key, status, balance, apr } = validator;
 
         return {
             public_key: <Grid container item>

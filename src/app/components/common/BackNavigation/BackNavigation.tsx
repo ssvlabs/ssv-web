@@ -37,10 +37,11 @@ const BackNavigationWrapper = styled.div`
 type BackNavigationProps = {
   text?: string,
   color?: string
-  onClick?: () => void
+  onClick?: () => void,
+  backButtonRedirect?: string,
 };
 
-const BackNavigation = ({ text, color, onClick }: BackNavigationProps) => {
+const BackNavigation = ({ text, color, onClick, backButtonRedirect }: BackNavigationProps) => {
   const stores = useStores();
   const history = useHistory();
   const defaultColor = '#A1ACBE';
@@ -49,7 +50,11 @@ const BackNavigation = ({ text, color, onClick }: BackNavigationProps) => {
 
   const onNavigationClicked = () => {
     if (applicationStore.isLoading) return;
-    history.goBack();
+    if (backButtonRedirect) {
+      history.push(backButtonRedirect);
+    } else {
+      history.goBack(); 
+    }
     if (typeof onClick === 'function') {
       onClick();
     }

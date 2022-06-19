@@ -108,6 +108,11 @@ class SsvStore extends BaseStore {
         return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
     };
 
+    @action.bound
+    toDecimalNumber = (fee: number, decimalPlaces?: number): string => {
+        return new Decimal(fee).toFixed(decimalPlaces ?? 18).toString();
+    };
+
     /**
      * Get operators per validator
      */
@@ -165,7 +170,7 @@ class SsvStore extends BaseStore {
     async checkIfLiquidated(): Promise<void> {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            this.userLiquidated = await walletStore.getContract.methods.isLiquidated(this.accountAddress).call();
+            this.userLiquidated = await walletStore.getContract.methods.isOwnerValidatorsDisabled(this.accountAddress).call();
         } catch (e) {
             // TODO: handle error
             console.log(e.message);

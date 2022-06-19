@@ -165,7 +165,7 @@ class SsvStore extends BaseStore {
     async checkIfLiquidated(): Promise<void> {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            this.userLiquidated = await walletStore.getContract.methods.isLiquidated(this.accountAddress).call();
+            this.userLiquidated = await walletStore.getContract.methods.isOwnerValidatorsDisabled(this.accountAddress).call();
         } catch (e) {
             // TODO: handle error
             console.log(e.message);

@@ -190,7 +190,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 {process.env.REACT_APP_NEW_STAGE && (
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
+                    <Grid item className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />

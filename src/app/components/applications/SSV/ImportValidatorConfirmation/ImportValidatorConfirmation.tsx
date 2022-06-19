@@ -32,7 +32,7 @@ const ImportValidatorConfirmation = () => {
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
-    let totalAmountOfSsv;
+    let totalAmountOfSsv = '';
     let yearlyNetworkFee = '0';
     let liquidationCollateral = '0';
     let totalOperatorsYearlyFee = '0';

@@ -10,6 +10,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import BorderScreen from '~app/components/common/BorderScreen';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays/RemainingDays';
 import { useStyles } from './Withdrew.styles';
+import Decimal from 'decimal.js';
 
 const Withdraw = () => {
     const classes = useStyles();
@@ -33,7 +34,7 @@ const Withdraw = () => {
 
     const withdrawSsv = async () => {
         applicationStore.setIsLoading(true);
-        const success = await ssvStore.withdrawSsv(ssvStore.isValidatorState, inputValue.toString(), inputValue === ssvStore.contractDepositSsvBalance);
+        const success = await ssvStore.withdrawSsv(ssvStore.isValidatorState, inputValue.toString(), new Decimal(inputValue).equals(ssvStore.contractDepositSsvBalance));
         applicationStore.setIsLoading(false);
         if (success) setInputValue(0.0);
     };

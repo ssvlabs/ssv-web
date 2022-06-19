@@ -209,14 +209,15 @@ const SingleOperator = () => {
     return (
       <Grid container item>
         <WhiteWrapper
+          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
           withSettings={{
-                    text: 'Remove Operator',
-                    onClick: () => {
-                        history.push(`/dashboard/operator/${operator_id}/remove`);
-                    },
-                }}
+                  text: 'Remove Operator',
+                  onClick: () => {
+                      history.push(`/dashboard/operator/${operator_id}/remove`);
+                  },
+              }}
           header={'Operator Details'}
-            >
+          >
           <Grid item container className={classes.ItemsWrapper}>
             {operatorView.map((item: any, index: number) => (
               <Grid item key={index}>
@@ -270,7 +271,7 @@ const SingleOperator = () => {
               body={[
                 <Grid container item style={{ gap: 20 }}>
                   <Grid item xs={12}>
-                    <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign subText={'~$76.78'} />
+                    <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign />
                   </Grid>
                 </Grid>,
               ]}

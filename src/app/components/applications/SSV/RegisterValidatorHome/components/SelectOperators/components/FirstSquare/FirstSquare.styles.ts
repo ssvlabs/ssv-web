@@ -7,6 +7,10 @@ export const useStyles = makeStyles((theme) => ({
     Loading: {
         color: theme.colors.tint20,
     },
+    FeeColumn: {
+        maxWidth: 76.5,
+        overflow: 'scroll',
+    },
     SearchIcon: {
         width: 24,
         height: 24,

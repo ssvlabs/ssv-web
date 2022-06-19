@@ -15,17 +15,21 @@ const OperatorDetails = (props: Props) => {
     const { gray80, operator } = props;
     const classes = useStyles({ operatorLogo: operator.logo, gray80 });
     const shaPublicKey = `0x${longStringShorten(operator.address, 4)}`;
+    let operatorName = operator?.name;
+    if (operator.name.length > 14) operatorName = `${operator.name.slice(0, 13)}...`;
 
     return (
       <Grid container className={classes.Wrapper}>
         <Grid item className={classes.OperatorLogo} />
-        <Grid container item xs>
-          <Grid item className={classes.Name}>{operator.name}</Grid>
+        <Grid item className={classes.TextWrapper}>
+          <Grid item className={classes.Name}>{operatorName}</Grid>
+          <Grid item className={classes.Address}>{shaPublicKey}</Grid>
+        </Grid>
+        {operator.type !== 'operator' && (
           <Grid item className={classes.OperatorType}>
             <OperatorType type={operator.type} />
           </Grid>
-          <Grid item className={classes.Address} xs={12}>{shaPublicKey}</Grid>
-        </Grid>
+        )}
       </Grid>
     );
 };

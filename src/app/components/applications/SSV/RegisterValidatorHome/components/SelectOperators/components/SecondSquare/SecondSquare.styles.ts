@@ -30,7 +30,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     BoxesWrapper: {
         '@media only screen and (max-width: 1400px)': {
-            justifyContent: 'space-between',
+            flexDirection: 'column',
         },
     },
     SelectedOperatorBox: {
@@ -43,11 +43,12 @@ export const useStyles = makeStyles((theme) => ({
         position: 'relative',
         color: theme.colors.gray30,
         marginBottom: theme.spacing(5),
-        padding: '28px 20px 29px 20px',
+        padding: '24px 19px 24px 20px',
+        justifyContent: 'space-between',
         backgroundColor: theme.colors.white,
         border: `solid 1px ${theme.colors.gray20}`,
         '@media only screen and (max-width: 1400px)': {
-            maxWidth: 300,
+            width: '100%',
         },
     },
 
@@ -64,7 +65,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.colors.gray10,
         border: `dashed 1px ${theme.colors.gray30}`,
         '@media only screen and (max-width: 1400px)': {
-            maxWidth: 300,
+            width: '100%',
         },
     },
     WarningMessage: {

@@ -15,13 +15,14 @@ type GetValidatorsByOwnerAddress = {
 class Validator {
     validators: any = null;
     pagination: any = null;
+    ownerAddress: string = '';
     noValidatorsForOwnerAddress: boolean = false;
     private static instance: Validator;
     private readonly baseUrl: string = '';
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
-        setInterval(this.clearValidatorCache.bind(this), 10000);
+        setInterval(this.clearValidatorsCache.bind(this), 8000);
     }
 
     static getInstance(): Validator {
@@ -35,15 +36,14 @@ class Validator {
         return 'prater';
     }
 
-    clearValidatorCache() {
-        this.validators = null;
-        this.pagination = null;
-        this.noValidatorsForOwnerAddress = false;
+    async clearValidatorsCache() {
+        await this.getValidatorsByOwnerAddress({ page: 1, perPage: 5, ownerAddress: this.ownerAddress, force: true, extendData: true });
     }
 
     async getOwnerAddressCost(ownerAddress: string): Promise<any> {
         try {
             const endpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}/cost`;
+            this.ownerAddress = ownerAddress;
             return (await axios.get(endpointUrl)).data;
         } catch (e) {
             return null;
@@ -56,15 +56,16 @@ class Validator {
             return { pagination: this.pagination, validators: this.validators };
         }
         try {
-            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&page=${page}&perPage=${perPage}${withOperators ? '&operators=true' : ''}`;
+            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&status=true&&page=${page}&perPage=${perPage}${withOperators ? '&operators=true' : ''}`;
+            this.ownerAddress = ownerAddress;
             const response: any = await axios.get(operatorsEndpointUrl);
             const apiResponseData = response.data;
             if (!extendData) {
                 return { validators: apiResponseData.validators, pagination: apiResponseData.pagination };
             }
             if (apiResponseData.validators?.length) {
-                const validatorsOwnerAddresses = apiResponseData.validators.map((v: { public_key: string; }) => v.public_key);
-                const balances = await this.getValidatorsBalances(validatorsOwnerAddresses);
+                const validatorsPublicKey = apiResponseData.validators.map((v: { public_key: string; }) => v.public_key);
+                const balances = await this.getValidatorsBalances(validatorsPublicKey);
                 const hashedBalances = balances.reduce((obj: any, item: { pubkey: any; value: any; }) => ({ ...obj, [item.pubkey]: item }), {});
                 const detailedValidators = [];
                 // eslint-disable-next-line no-restricted-syntax
@@ -72,7 +73,7 @@ class Validator {
                     const validatorPublicKey = `0x${validator.public_key}`;
                     const validatorBalance = hashedBalances[validatorPublicKey];
                     // eslint-disable-next-line no-await-in-loop
-                    const detailedValidator = await this.buildValidatorStructure(validatorPublicKey, validatorBalance);
+                    const detailedValidator = await this.buildValidatorStructure(validator, validatorBalance);
                     detailedValidators.push(detailedValidator);
                 }
                 this.noValidatorsForOwnerAddress = false;
@@ -122,8 +123,8 @@ class Validator {
         }
     }
 
-    buildValidatorStructure = async (validator: string, data: any) => {
-        if (!data) return { public_key: validator, status: 'inactive', balance: '0', apr: '0' };
+    buildValidatorStructure = async (validator: any, data: any) => {
+        if (!data) return { public_key: validator.public_key, status: validator.status, balance: '0', apr: '0' };
         const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${data.pubkey}/performance`;
         try {
             const performance = (await axios.get(url)).data;
@@ -131,11 +132,10 @@ class Validator {
             const performance7days = performance.data ? formatNumberFromBeaconcha(performance.data.performance7d) : 0;
             // @ts-ignore
             const apr = formatNumberToUi(((performance7days / 32) * 100) * config.GLOBAL_VARIABLE.NUMBERS_OF_WEEKS_IN_YEAR);
-            const status = data.status === 'active_online' ? 'active' : 'inactive';
             const public_key = data.pubkey;
-            return { public_key, status, balance, apr };
+            return { public_key, status: validator.status, balance, apr };
         } catch (e: any) {
-            return { public_key: data.pubkey, status: data.status, balance: 0, apr: 0 };
+            return { public_key: data.pubkey, status: validator.status, balance: 0, apr: 0 };
         }
     };
 }

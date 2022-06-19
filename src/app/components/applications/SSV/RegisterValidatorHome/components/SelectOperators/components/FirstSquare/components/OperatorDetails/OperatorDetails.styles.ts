@@ -3,17 +3,18 @@ import { makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) => ({
     Wrapper: {
         alignItems: 'center',
-        maxWidth: 269,
+    },
+    TextWrapper: {
+        marginLeft: 16,
+        flexDirection: 'column',
     },
     OperatorLogo: {
         width: 40,
         height: 40,
         borderRadius: 4,
-        alignContent: 'flex-end',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        marginRight: theme.spacing(4),
         backgroundColor: 'rgba(230, 234, 247, 0.5)',
         backgroundImage: (props: any) => `url(${props.logo ?? '/images/operator_default_background/light.svg'})`,
     },
@@ -28,7 +29,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     OperatorType: {
         marginTop: 5,
-        marginLeft: 4,
+        marginLeft: 8,
+        alignSelf: 'flex-start',
     },
     Address: {
         fontSize: 12,

@@ -330,7 +330,7 @@ class OperatorStore extends BaseStore {
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contractInstance = walletStore.getContract;
                 const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
-                await contractInstance.methods.setOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
+                await contractInstance.methods.declareOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');

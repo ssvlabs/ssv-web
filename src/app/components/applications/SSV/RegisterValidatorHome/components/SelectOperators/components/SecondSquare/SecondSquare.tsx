@@ -62,7 +62,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         return !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
             // @ts-ignore
             // eslint-disable-next-line no-param-reassign
-            if (!previousOperatorsIds.includes(operator.operator_id)) acc = true;
+            if (!previousOperatorsIds.includes(operator.id)) acc = true;
             return acc;
         }, false);
       // if(!operatorStore.selectedEnoughOperators)

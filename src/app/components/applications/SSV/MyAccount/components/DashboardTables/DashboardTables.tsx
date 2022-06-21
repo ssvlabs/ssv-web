@@ -50,7 +50,7 @@ const DashboardTables = () => {
     }, [walletStore.accountAddress]);
 
     const getOperatorRevenue = async (operator: any) => {
-        const revenue = await operatorStore.getOperatorRevenue(operator.operator_id);
+        const revenue = await operatorStore.getOperatorRevenue(operator.id);
         // eslint-disable-next-line no-param-reassign
         operator.revenue = revenue;
         return operator;
@@ -253,7 +253,7 @@ const DashboardTables = () => {
                     window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
                 }} />
               <Grid className={classes.SettingsImage} onClick={() => {
-                    openSingleOperator(operator.operator_id);
+                    openSingleOperator(operator.id);
                 }} />
             </Grid>,
         };

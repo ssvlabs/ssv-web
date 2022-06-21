@@ -54,7 +54,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             { type: '', displayName: '' },
             { type: 'name', displayName: 'Name' },
             { type: 'validators_count', displayName: 'Validators' },
-            { type: 'performance', displayName: '1D performance' },
+            { type: 'performance', displayName: '30d performance' },
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];

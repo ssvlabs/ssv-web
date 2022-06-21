@@ -50,7 +50,7 @@ const ImportValidatorConfirmation = () => {
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
         /* eslint-disable no-await-in-loop */
         for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].operator_id);
+            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
             if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
                 setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
                 setActionButtonText('Run validator');

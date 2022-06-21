@@ -18,6 +18,7 @@ export interface NewOperator {
 }
 
 export interface IOperator {
+    id: any,
     fee?: string,
     name: string,
     logo?: string,
@@ -27,7 +28,6 @@ export interface IOperator {
     public_key: string,
     selected?: boolean,
     dappNode?: boolean,
-    operator_id: any,
     ownerAddress: string,
     autoSelected?: boolean
     validatorsCount?: number,

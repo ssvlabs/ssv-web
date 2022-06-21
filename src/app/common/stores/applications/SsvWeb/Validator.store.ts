@@ -70,7 +70,7 @@ class ValidatorStore extends BaseStore {
     applicationStore.setIsLoading(true);
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      await contract.methods.removeValidator(publicKey).send({ from: ownerAddress })
+      await contract.methods.removeValidator(publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`).send({ from: ownerAddress })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             applicationStore.setIsLoading(false);
@@ -250,7 +250,7 @@ class ValidatorStore extends BaseStore {
             });
 
             const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-                return operator.operator_id;
+                return operator.id;
             });
             const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
             // Collect all private keys from shares

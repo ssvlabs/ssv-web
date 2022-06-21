@@ -77,7 +77,7 @@ const SingleValidator = () => {
             // @ts-ignore
             return validator?.operators?.map((operator: any) => {
                 // eslint-disable-next-line no-param-reassign
-                operator.performance = operator.performances['24hours'] || '0%';
+                operator.performance = operator.performance['30d'] || '0%';
                 const {
                     fee,
                     name,

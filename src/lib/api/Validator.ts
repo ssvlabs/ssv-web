@@ -56,7 +56,7 @@ class Validator {
             return { pagination: this.pagination, validators: this.validators };
         }
         try {
-            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?ownedBy=${ownerAddress}&status=true&&page=${page}&perPage=${perPage}${withOperators ? '&operators=true' : ''}`;
+            const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators?search=${ownerAddress}&status=true&&page=${page}&perPage=${perPage}${withOperators ? '&operators=true' : ''}`;
             this.ownerAddress = ownerAddress;
             const response: any = await axios.get(operatorsEndpointUrl);
             const apiResponseData = response.data;
@@ -108,7 +108,7 @@ class Validator {
 
     async getValidator(publicKey: string, checkExistence?: boolean) {
         try {
-            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/prater/${publicKey.replace('0x', '')}${!checkExistence ? '?performances=24hours&withFee=true' : ''}`;
+            const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/${publicKey.replace('0x', '')}${!checkExistence ? '?performances=24hours&withFee=true' : ''}`;
             const response: any = (await axios.get(url)).data;
             if (checkExistence) {
                 return response;

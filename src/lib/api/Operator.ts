@@ -6,10 +6,7 @@ type OperatorsListQuery = {
     search?: string,
     type?: string[],
     perPage?: number
-    status?: boolean,
-    withFee?: boolean,
     ordering?: string,
-    validatorsCount?: boolean,
 };
 
 type OperatorValidatorListQuery = {
@@ -71,15 +68,12 @@ class Operator {
      * Get operators
      */
     async getOperators(props: OperatorsListQuery) {
-        const { page, perPage, type, ordering, status, search, withFee, validatorsCount } = props;
+        const { page, perPage, type, ordering, search } = props;
         let operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators?`;
-        if (validatorsCount) operatorsEndpointUrl += 'validatorsCount=true&';
         if (search) operatorsEndpointUrl += `search=${search}&`;
         if (ordering) operatorsEndpointUrl += `ordering=${ordering}&`;
-        if (status) operatorsEndpointUrl += 'status=true&';
         if (page) operatorsEndpointUrl += `page=${page}&`;
         if (perPage) operatorsEndpointUrl += `perPage=${perPage}&`;
-        if (withFee) operatorsEndpointUrl += 'withFee=true&';
         if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
 
         try {
@@ -93,7 +87,7 @@ class Operator {
      * Get operator
      */
     async getOperator(operatorId: string) {
-        const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/prater/${operatorId}?performances=24hours&withFee=true`;
+        const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true`;
         try {
             return (await axios.get(operatorEndpointUrl)).data;
         } catch (e) {

@@ -150,7 +150,7 @@ class SsvStore extends BaseStore {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.toWei(amount);
             walletStore.getContract.methods
-                .deposit(ssvAmount).send({ from: this.accountAddress })
+                .deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })

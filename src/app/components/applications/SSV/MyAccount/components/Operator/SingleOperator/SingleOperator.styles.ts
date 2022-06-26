@@ -107,7 +107,7 @@ export const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/copy/${theme.darkMode ? 'dark' : 'new_light'}.svg)`,
+        backgroundImage: `url(/images/copy/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     Section: {
         padding: '12px 32px 32px',

@@ -7,9 +7,9 @@ import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Distribution/components/Claim/Claim.styles';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 

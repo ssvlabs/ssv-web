@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { useStyles } from './Filters.styles';
+import CheckBox from '~app/components/common/CheckBox';
 
 type Props = {
     setFilterBy: any;
@@ -50,15 +51,27 @@ const Filters = (props: Props) => {
         {filterSelected > 0 && <Grid item className={classes.FilterTextBlue}>{filterSelected}</Grid>}
         {shouldOpen && (
         <Grid container className={classes.Popup}>
-          <Grid item container xs={12} onClick={() => selectVerify(!verifySelected)} className={classes.Item}>
-            <Grid item className={`${classes.Checkbox} ${verifySelected ? classes.Checked : ''}`} />
-            <Grid item className={classes.Text}>Verified</Grid>
-          </Grid>
-          <Grid item container xs={12} onClick={() => selectDappNode(!dappNodeSelected)}
-            className={classes.Item}>
-            <Grid item className={`${classes.Checkbox} ${dappNodeSelected ? classes.Checked : ''}`} />
-            <Grid item className={classes.Text}>DappNode</Grid>
-          </Grid>
+          <CheckBox
+            width={24}
+            height={24}
+            isChecked={verifySelected}
+            onClickCallBack={() => selectVerify(!verifySelected)}
+            text={<Grid item className={classes.Text}>Verified</Grid>}
+          />
+          <CheckBox
+            width={24}
+            height={24}
+            isChecked={dappNodeSelected}
+            onClickCallBack={() => selectDappNode(!dappNodeSelected)}
+            text={<Grid item className={classes.Text}>DappNode</Grid>}
+          />
+            {/* <Grid item className={`${classes.Checkbox} ${verifySelected ? classes.Checked : ''}`} /> */}
+            {/* <Grid item className={classes.Text}>Verified</Grid> */}
+          {/* <Grid item container xs={12} onClick={() => selectDappNode(!dappNodeSelected)} */}
+          {/*  className={classes.Item}> */}
+          {/*  <Grid item className={`${classes.Checkbox} ${dappNodeSelected ? classes.Checked : ''}`} /> */}
+          {/*  <Grid item className={classes.Text}>DappNode</Grid> */}
+          {/* </Grid> */}
         </Grid>
         )}
       </Grid>

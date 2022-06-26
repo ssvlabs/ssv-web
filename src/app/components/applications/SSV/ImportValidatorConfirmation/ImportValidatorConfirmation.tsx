@@ -32,7 +32,7 @@ const ImportValidatorConfirmation = () => {
     const [errorMessage, setErrorMessage] = useState('');
     // const [checked, selectCheckBox] = useState(false);
     const [actionButtonText, setActionButtonText] = useState('Run validator');
-    let totalAmountOfSsv;
+    let totalAmountOfSsv = '';
     let yearlyNetworkFee = '0';
     let liquidationCollateral = '0';
     let totalOperatorsYearlyFee = '0';
@@ -50,7 +50,7 @@ const ImportValidatorConfirmation = () => {
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
         /* eslint-disable no-await-in-loop */
         for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].operator_id);
+            const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
             if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
                 setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
                 setActionButtonText('Run validator');
@@ -72,7 +72,7 @@ const ImportValidatorConfirmation = () => {
     };
 
     const fields = [
-        { key: 'Operators yearly fee', value: totalOperatorsYearlyFee },
+        { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
         { key: 'Network yearly fee', value: formatNumberToUi(yearlyNetworkFee) },
         { key: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];

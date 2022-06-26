@@ -12,6 +12,7 @@ import { EthereumKeyStore, Encryption, Threshold } from 'ssv-keys';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import Decimal from 'decimal.js';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
@@ -69,7 +70,7 @@ class ValidatorStore extends BaseStore {
     applicationStore.setIsLoading(true);
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      await contract.methods.removeValidator(publicKey).send({ from: ownerAddress })
+      await contract.methods.removeValidator(publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`).send({ from: ownerAddress })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             applicationStore.setIsLoading(false);
@@ -144,7 +145,6 @@ class ValidatorStore extends BaseStore {
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve) => {
           const payload: any = await this.createPayLoad();
-          console.log(payload);
           const walletStore: WalletStore = this.getStore('Wallet');
           const applicationStore: ApplicationStore = this.getStore('Application');
           const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -220,18 +220,22 @@ class ValidatorStore extends BaseStore {
 
   @action.bound
   async createPayLoad(update: boolean = false): Promise<any> {
-    if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
-    const ssvStore: SsvStore = this.getStore('SSV');
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const operatorStore: OperatorStore = this.getStore('Operator');
-    const threshold: Threshold = new Threshold();
-    const thresholdResult: any = await threshold.create(this.keyStorePrivateKey);
-    let totalAmountOfSsv = '0';
-    if (process.env.REACT_APP_NEW_STAGE) {
-      const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
-      const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
-      totalAmountOfSsv = addNumber(addNumber(liquidationCollateral, ssvStore.newGetFeeForYear(ssvStore.networkFee, 11)), operatorsFees);
-    }
+      if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
+      const threshold: Threshold = new Threshold();
+      const ssvStore: SsvStore = this.getStore('SSV');
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const operatorStore: OperatorStore = this.getStore('Operator');
+      const thresholdResult: any = await threshold.create(this.keyStorePrivateKey);
+      let totalAmountOfSsv = '0';
+      if (process.env.REACT_APP_NEW_STAGE) {
+          const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
+          const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
+          if (new Decimal(liquidationCollateral).isZero()) {
+              totalAmountOfSsv = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
+          } else {
+              totalAmountOfSsv = addNumber(addNumber(liquidationCollateral, ssvStore.newGetFeeForYear(ssvStore.networkFee, 11)), operatorsFees);
+          }
+      }
 
     return new Promise((resolve) => {
         try {
@@ -246,7 +250,7 @@ class ValidatorStore extends BaseStore {
             });
 
             const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-                return operator.operator_id;
+                return operator.id;
             });
             const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
             // Collect all private keys from shares

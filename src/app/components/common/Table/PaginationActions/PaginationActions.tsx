@@ -97,7 +97,7 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
               onChange={handleSetPage}
               onBlur={changePageNumber}
               className={classes.PageEditor}
-            />
+              />
           </Grid>
           <Grid item>
             <Typography>of {totalPages}</Typography>

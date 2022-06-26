@@ -16,20 +16,6 @@ export const useStyles = makeStyles((theme) => ({
             background: '#2a323e',
         },
     },
-    ApprovalButton: {
-        width: 280,
-        height: 60,
-        borderRadius: 8,
-        lineHeight: 1.25,
-        cursor: 'pointer',
-        textAlign: 'center',
-        color: theme.colors.white,
-        padding: '20px 92px 20px 90px',
-        backgroundColor: theme.colors.primaryBlue,
-        '&:nth-child(1)': {
-            marginRight: theme.spacing(6),
-        },
-    },
     ProgressStepsWrapper: {
         alignItems: 'center',
         padding: theme.spacing(4, 30, 0, 30),
@@ -40,7 +26,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 16,
         fontWeight: 600,
         textAlign: 'center',
-        color: theme.colors.gray60,
+        color: theme.colors.gray90,
         // margin: 'auto',
         // width: '9px',
         // paddingTop: '2px',
@@ -67,9 +53,8 @@ export const useStyles = makeStyles((theme) => ({
         border: `solid 1px ${theme.colors.gray30}`,
     },
     Current: {
-        color: theme.colors.black,
-        backgroundColor: theme.colors.primarySuccessRegularOpacity,
         border: `solid 1px ${theme.colors.primarySuccessDark}`,
+        backgroundColor: theme.colors.primarySuccessRegularOpacity,
     },
     Finish: {
         border: 'none',

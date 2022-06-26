@@ -12,7 +12,7 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/components/common/ToolTip';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -54,7 +54,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             { type: '', displayName: '' },
             { type: 'name', displayName: 'Name' },
             { type: 'validators_count', displayName: 'Validators' },
-            { type: 'performance', displayName: '1D performance' },
+            { type: 'performance', displayName: '30d performance' },
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];
@@ -63,20 +63,18 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const getOperators = async (page: number) => {
         if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
-        const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'type'}`;
+        const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : ''}`;
 
         const payload = {
             page,
             ordering,
             perPage: 10,
-            withFee: true,
-            status: true,
             type: filterBy,
             search: searchInput,
-            validatorsCount: true,
         };
 
         const response = await Operator.getInstance().getOperators(payload);
+
         if (response?.pagination?.page > 1) {
             setOperatorsData([...operatorsData, ...response.operators]);
         } else {
@@ -179,7 +177,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 </StyledCell>
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{operator.performance}</Grid>
+                    <Grid item>{roundNumber(operator.performance['30d'], 2)}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />
@@ -190,7 +188,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 {process.env.REACT_APP_NEW_STAGE && (
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
+                    <Grid item className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />

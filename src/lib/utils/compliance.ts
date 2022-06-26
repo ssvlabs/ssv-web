@@ -12,7 +12,6 @@ const getRestrictedCountriesList = async () => {
   if (restrictedCountries === null) {
     restrictedCountries = response.countries;
   }
-  if (process.env.NODE_ENV !== 'development' && !process.env.REACT_APP_NEW_STAGE) response.push('Israel');
   return response;
 };
 
@@ -60,9 +59,6 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
 export const checkUserCountryRestriction = async (): Promise<any> => {
   const userCountry = await getCurrentUserCountry();
   const countries = await getRestrictedCountriesList();
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('restrictCountry')) {
-    return true;
-  }
-  return { restricted: countries.indexOf(userCountry) !== -1, userGeo: userCountry };
+  const restricted = countries.indexOf(userCountry) !== -1 && process.env.NODE_ENV !== 'development';
+  return { restricted, userGeo: userCountry };
 };

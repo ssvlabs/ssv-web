@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/PrimaryButton';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';

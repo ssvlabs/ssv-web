@@ -77,7 +77,7 @@ const SingleValidator = () => {
             // @ts-ignore
             return validator?.operators?.map((operator: any) => {
                 // eslint-disable-next-line no-param-reassign
-                operator.performance = operator.performances['24hours'] || '0%';
+                operator.performance = operator.performance['30d'] || '0%';
                 const {
                     fee,
                     name,
@@ -160,14 +160,15 @@ const SingleValidator = () => {
     return (
       <Grid container className={classes.SingleValidatorWrapper}>
         <WhiteWrapper
+          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
           withSettings={{
-              text: 'Remove Validator',
-              onClick: () => {
-                  history.push(`/dashboard/validator/${public_key}/remove`);
-              },
-          }}
+                  text: 'Remove Validator',
+                  onClick: () => {
+                      history.push(`/dashboard/validator/${public_key}/remove`);
+                  },
+              }}
           header={'Validator Details'}
-        >
+          >
           <Grid item container className={classes.FieldsWrapper}>
             <Grid item>
               <Grid className={classes.DetailsHeader}>

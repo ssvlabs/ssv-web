@@ -86,13 +86,14 @@
   <link href="%PUBLIC_URL%/logo192.png" rel="apple-touch-icon"/>
   <link href="%PUBLIC_URL%/manifest.json" rel="manifest"/>
 </head>
-<body style="padding: 0; margin: 0">
+<body style="padding: 0; margin: 0" >
 <noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root" />
+<iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
 <noscript>
   <iframe height="0"
           src='%REACT_APP_GOOGLE_TAG_URL%%REACT_APP_GOOGLE_TAG_SECRET%' style="display:none;visibility:hidden"
           width="0"></iframe>
 </noscript>
-<iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
 </body>
 </html>

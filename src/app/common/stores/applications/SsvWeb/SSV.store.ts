@@ -108,6 +108,11 @@ class SsvStore extends BaseStore {
         return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
     };
 
+    @action.bound
+    toDecimalNumber = (fee: number, decimalPlaces?: number): string => {
+        return new Decimal(fee).toFixed(decimalPlaces ?? 18).toString();
+    };
+
     /**
      * Get operators per validator
      */
@@ -145,7 +150,7 @@ class SsvStore extends BaseStore {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.toWei(amount);
             walletStore.getContract.methods
-                .deposit(ssvAmount).send({ from: this.accountAddress })
+                .deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })
@@ -165,7 +170,7 @@ class SsvStore extends BaseStore {
     async checkIfLiquidated(): Promise<void> {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            this.userLiquidated = await walletStore.getContract.methods.isLiquidated(this.accountAddress).call();
+            this.userLiquidated = await walletStore.getContract.methods.isOwnerValidatorsDisabled(this.accountAddress).call();
         } catch (e) {
             // TODO: handle error
             console.log(e.message);
@@ -217,16 +222,15 @@ class SsvStore extends BaseStore {
      * @param amount
      * @param withdrawAll
      * @param validatorState
-     * @param shouldLiquidate
      */
     @action.bound
-    async withdrawSsv(validatorState: boolean, amount: string, withdrawAll: boolean = false, shouldLiquidate: boolean = false) {
+    async withdrawSsv(validatorState: boolean, amount: string, withdrawAll: boolean = false) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = walletStore.toWei(amount);
             let contractFunction = null;
             if (withdrawAll && !validatorState) contractFunction = walletStore.getContract.methods.withdrawAll();
-            else if (shouldLiquidate && validatorState) contractFunction = walletStore.getContract.methods.liquidate([this.accountAddress]);
+            else if (withdrawAll && validatorState) contractFunction = walletStore.getContract.methods.liquidate([this.accountAddress]);
             else if (!withdrawAll) contractFunction = walletStore.getContract.methods.withdraw(ssvAmount);
 
             contractFunction.send({ from: this.accountAddress })

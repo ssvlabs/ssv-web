@@ -113,7 +113,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/chart/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        backgroundImage: `url(/images/explorer/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     SubHeaderWrapper: {
         gap: 8,

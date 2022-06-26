@@ -9,11 +9,11 @@ import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import Checkbox from '~app/common/components/CheckBox/CheckBox';
+import BorderScreen from '~app/components/common/BorderScreen';
 import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
 

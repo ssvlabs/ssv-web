@@ -18,6 +18,7 @@ export interface NewOperator {
 }
 
 export interface IOperator {
+    id: any,
     fee?: string,
     name: string,
     logo?: string,
@@ -27,7 +28,6 @@ export interface IOperator {
     public_key: string,
     selected?: boolean,
     dappNode?: boolean,
-    operator_id: any,
     ownerAddress: string,
     autoSelected?: boolean
     validatorsCount?: number,
@@ -178,8 +178,7 @@ class OperatorStore extends BaseStore {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contract: Contract = walletStore.getContract;
-            const conditionalFunction = process.env.REACT_APP_NEW_STAGE ? contract.methods.getValidatorsPerOperatorLimit : contract.methods.getValidatorsPerOperatorLimit;
-            conditionalFunction().call().then((response: any) => {
+            contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
             }).catch(() => resolve(true));
@@ -293,7 +292,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
             const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.operatorsByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
+            const result = await contractInstance.methods.getOperatorByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);
@@ -330,7 +329,7 @@ class OperatorStore extends BaseStore {
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contractInstance = walletStore.getContract;
                 const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
-                await contractInstance.methods.setOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
+                await contractInstance.methods.declareOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');

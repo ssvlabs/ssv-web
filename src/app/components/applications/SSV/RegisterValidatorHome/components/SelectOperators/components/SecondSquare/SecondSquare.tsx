@@ -5,16 +5,16 @@ import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import OperatorDetails
-    from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
-import { formatNumberToUi } from '~lib/utils/numbers';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -22,8 +22,9 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const history = useHistory();
     // @ts-ignore
     const { public_key } = useParams();
-    const operatorStore: OperatorStore = stores.Operator;
     const ssvStore: SsvStore = stores.SSV;
+    const walletStore: WalletStore = stores.Wallet;
+    const operatorStore: OperatorStore = stores.Operator;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
     const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
     const boxes = [1, 2, 3, 4];
@@ -32,7 +33,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         Validator.getInstance().getValidator(public_key).then(validator => {
             if (validator?.operators) {
                 // @ts-ignore
-                setPreviousOperatorsIds(validator.operators.map(({ operator_id }) => operator_id));
+                setPreviousOperatorsIds(validator.operators.map(({ id }) => id));
             }
         });
     }, [editPage]);
@@ -61,7 +62,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         return !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
             // @ts-ignore
             // eslint-disable-next-line no-param-reassign
-            if (!previousOperatorsIds.includes(operator.operator_id)) acc = true;
+            if (!previousOperatorsIds.includes(operator.id)) acc = true;
             return acc;
         }, false);
       // if(!operatorStore.selectedEnoughOperators)
@@ -86,7 +87,12 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                           return (
                             <Grid key={index} container className={classes.SelectedOperatorBox}>
                               <Grid className={classes.DeleteOperator} onClick={() => { removeOperator(index); }}><Grid className={classes.whiteLine} /></Grid>
-                              <OperatorDetails operator={operator} />
+                              <Grid item>
+                                <OperatorDetails operator={operator} />
+                              </Grid>
+                              <Grid item>
+                                <SsvAndSubTitle ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />
+                              </Grid>
                             </Grid>
                           );
                       }
@@ -112,7 +118,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
             {process.env.REACT_APP_NEW_STAGE && (
               <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
                 <Grid item className={classes.TotalFeesHeader}>
-                  Total Operators Yearly Fee
+                  {editPage ? 'New total Operators Yearly Fee' : 'Total Operators Yearly Fee'}
                 </Grid>
                 <Grid item>
                   <SsvAndSubTitle

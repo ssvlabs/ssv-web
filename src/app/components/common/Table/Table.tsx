@@ -37,18 +37,19 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
     return (
       <Grid container className={classes.TableWrapper}>
 
-        <TableContainer className={classes.CustomizeCss}>
+        <TableContainer className={classes.CustomizeCss} style={{ overflowX: 'initial' }}>
           <MaUTable {...getTableProps()}>
             <TableHead>
               {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (
                 <TableRow key={headerGroupIndex} {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column: any, index: number) => (
-                    <TableCell key={index} style={{ width: index === 0 ? '30%' : 'auto' }} {...column.getHeaderProps()}>
+                    <TableCell key={index}
+                      style={{ width: index === 0 ? '30%' : 'auto' }} {...column.getHeaderProps()}>
                       {column.render('Header')}
                     </TableCell>
-                            ))}
+                  ))}
                 </TableRow>
-                    ))}
+              ))}
             </TableHead>
             <TableBody>
               {rows.map((row: any, index: number) => {
@@ -68,7 +69,7 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
             </TableBody>
           </MaUTable>
         </TableContainer>
-        {!hideActions && actionProps && (
+        {!hideActions && actionProps && actionProps.totalPages > 1 && (
           <PaginationActions
             page={actionProps.currentPage ?? 0}
             rowsPerPage={actionProps.perPage ?? 0}

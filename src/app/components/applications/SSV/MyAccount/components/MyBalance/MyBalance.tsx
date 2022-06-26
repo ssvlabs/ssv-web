@@ -30,7 +30,7 @@ const MyBalance = () => {
 
         return (
           <Grid item xs={12} className={classes.CurrentBalance}>
-            {formatNumberToUi(ssvStore.contractDepositSsvBalance)} SSV
+            {formatNumberToUi(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)))} SSV
           </Grid>
         );
     };
@@ -40,7 +40,7 @@ const MyBalance = () => {
     }
 
     function moveToDeposit() {
-        return history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
     }
 
     function moveToWithdraw() {

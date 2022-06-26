@@ -7,6 +7,10 @@ export const useStyles = makeStyles((theme) => ({
     Loading: {
         color: theme.colors.tint20,
     },
+    FeeColumn: {
+        maxWidth: 76.5,
+        overflow: 'scroll',
+    },
     SearchIcon: {
         width: 24,
         height: 24,
@@ -39,6 +43,7 @@ export const useStyles = makeStyles((theme) => ({
     SortArrow: {
         width: 16,
         height: 16,
+        marginTop: 2,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -131,6 +136,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/chart/gray.svg)',
+        backgroundImage: 'url(/images/explorer/gray.svg)',
     },
 }));

@@ -50,7 +50,7 @@ const DashboardTables = () => {
     }, [walletStore.accountAddress]);
 
     const getOperatorRevenue = async (operator: any) => {
-        const revenue = await operatorStore.getOperatorRevenue(operator.operator_id);
+        const revenue = await operatorStore.getOperatorRevenue(operator.id);
         // eslint-disable-next-line no-param-reassign
         operator.revenue = revenue;
         return operator;
@@ -184,8 +184,8 @@ const DashboardTables = () => {
     ];
 
     // return validator operators mapped with additional fields fee and performance
-    const validatorsData = validators?.map((operator: any) => {
-        const { public_key, status, balance, apr } = operator;
+    const validatorsData = validators?.map((validator: any) => {
+        const { public_key, status, balance, apr } = validator;
 
         return {
             public_key: <Grid container item>
@@ -253,7 +253,7 @@ const DashboardTables = () => {
                     window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
                 }} />
               <Grid className={classes.SettingsImage} onClick={() => {
-                    openSingleOperator(operator.operator_id);
+                    openSingleOperator(operator.id);
                 }} />
             </Grid>,
         };

@@ -46,6 +46,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.colors.primaryBlue,
     },
     Popup: {
+        gap: 18,
         top: 50,
         right: 0,
         width: 272,
@@ -53,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
         zIndex: 9999,
         borderRadius: 16,
         position: 'absolute',
-        padding: theme.spacing(4),
+        padding: theme.spacing(8, 8, 4, 8),
         backgroundColor: theme.colors.white,
         border: `solid 1px ${theme.colors.gray20}`,
         boxShadow: '0 12px 40px 0 rgba(1, 22, 39, 0.12)',
@@ -84,6 +85,5 @@ export const useStyles = makeStyles((theme) => ({
         lineHeight: 1.25,
         textAlign: 'center',
         color: theme.colors.gray90,
-        marginLeft: theme.spacing(4),
     },
 }));

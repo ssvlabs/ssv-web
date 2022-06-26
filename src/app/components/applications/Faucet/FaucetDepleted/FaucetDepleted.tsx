@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { Grid, Typography } from '@material-ui/core';
 import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/PrimaryButton';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
 
 const SuccessPage = () => {

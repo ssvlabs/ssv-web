@@ -93,6 +93,8 @@ export const useStyles = makeStyles((theme) => ({
         height: 24,
         flexGrow: 1,
         borderRadius: 16,
+
+        // first circle
         '&:nth-of-type(1)': {
             border: (props: any) => {
                 return props.step === 0 ? `3px solid ${theme.colors.primaryBlue}` : 'none';
@@ -104,6 +106,7 @@ export const useStyles = makeStyles((theme) => ({
                 return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
             },
         },
+        // second circle
         '&:nth-of-type(3)': {
             border: (props: any) => {
                 if (props.step === 1) {
@@ -124,6 +127,7 @@ export const useStyles = makeStyles((theme) => ({
                 return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
             },
         },
+        // third circle
         '&:nth-of-type(5)': {
             border: (props: any) => {
                 if (props.step === 2) {
@@ -153,6 +157,7 @@ export const useStyles = makeStyles((theme) => ({
                 return 'none';
             },
         },
+        // forth circle
         '&:nth-of-type(7)': {
             backgroundColor: (props: any) => {
                 if (props.step === 4) {
@@ -279,11 +284,24 @@ export const useStyles = makeStyles((theme) => ({
         padding: '1px 6px',
         alignItems: 'center',
         justifyContent: 'center',
+        border: (props: any) => {
+            if (props.expiredStep) {
+                return `1px solid ${theme.colors.primaryError}`;
+            }
+            if (props.lastStep) {
+                if (theme.darkMode) return `1px solid ${theme.colors.primaryBlue}`;
+            }
+            if (props.step3) {
+                return `1px solid ${theme.colors.tint20}`;
+            }
+            return `1px solid ${theme.colors.tint20}`;
+        },
         color: (props: any) => {
             if (props.expiredStep) {
                 return theme.colors.primaryError;
             }
             if (props.lastStep) {
+                if (theme.darkMode) return theme.colors.primaryBlue;
                 return theme.colors.white;
             }
             if (props.step3) {
@@ -296,6 +314,7 @@ export const useStyles = makeStyles((theme) => ({
                 return theme.colors.primaryErrorRegular;
             }
             if (props.lastStep) {
+                if (theme.darkMode) return 'transparent';
                 return theme.colors.primaryBlue;
             }
             if (props.step3) {
@@ -312,8 +331,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     HeaderWrapper: {
         gap: 8,
-        alignItems: 'center',
         marginBottom: 24,
+        alignItems: 'center',
     },
     StepperWrapper: {
         padding: 0,

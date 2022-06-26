@@ -3,7 +3,6 @@ import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import { useHistory, useParams } from 'react-router-dom';
-import Validator from '~lib/api/Validator';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
@@ -11,15 +10,15 @@ import Button from '~app/components/common/Button';
 import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
+import BorderScreen from '~app/components/common/BorderScreen';
+import { addNumber, formatNumberToUi, toFixed } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
-import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
 
@@ -49,8 +48,13 @@ const OperatorsReceipt = (props: Props) => {
     );
 
     const newOperatorsFee = operators.reduce(
-        (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
-        0,
+        (previousValue: number, currentValue: IOperator) => {
+            if (currentValue.ownerAddress !== walletStore.accountAddress) {
+                // eslint-disable-next-line no-param-reassign
+                previousValue += walletStore.fromWei(currentValue.fee);
+            }
+            return previousValue;
+        }, 0,
     );
 
     const networkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
@@ -72,7 +76,6 @@ const OperatorsReceipt = (props: Props) => {
         const response = await validatorStore.updateValidator();
         if (response) {
             setOpenRedirect(true);
-            Validator.getInstance().clearValidatorCache();
             setTimeout(() => {
                 history.push(`/dashboard/validator/${public_key}`);
             }, 10000);
@@ -127,7 +130,7 @@ const OperatorsReceipt = (props: Props) => {
           <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
         </Grid>
         <Grid item>
-          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(addNumber(networkFee, operatorsYearlyFee))} />
+          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(toFixed(addNumber(networkFee, operatorsYearlyFee)))} />
         </Grid>
       </Grid>,
       <Grid container item>

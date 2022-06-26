@@ -40,7 +40,7 @@ const MyBalance = () => {
     }
 
     function moveToDeposit() {
-        return history.push(config.routes.MY_ACCOUNT.DEPOSIT);
+        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
     }
 
     function moveToWithdraw() {

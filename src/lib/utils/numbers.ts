@@ -2,15 +2,20 @@
 import Decimal from 'decimal.js';
 
 export const addNumber = (num1: any, num2: any) => {
-    return new Decimal(num1).add(num2).toString();
+    return new Decimal(num1).plus(num2).toString();
 };
 
 export const multiplyNumber = (num1: any, num2: any) => {
     return new Decimal(num1).mul(num2).toFixed(2).toString();
 };
 
+export const toFixed = (num1: any) => {
+    return new Decimal(num1).toFixed().toString();
+};
+
 export const compareNumbers = (num1: any, num2: any) => {
-    if (!num1 || !num2) return; 
+    if (!num1 || !num2) return;
+
     return new Decimal(num1).comparedTo(num2) === 0;
 };
 

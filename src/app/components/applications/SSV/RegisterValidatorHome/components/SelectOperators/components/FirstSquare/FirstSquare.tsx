@@ -12,7 +12,7 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/components/common/ToolTip';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -177,7 +177,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 </StyledCell>
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{operator.performance['30d']}</Grid>
+                    <Grid item>{roundNumber(operator.performance['30d'], 2)}</Grid>
                     {disabled && (
                       <Grid item style={{ alignSelf: 'center' }}>
                         <ToolTip text={'Operator reached  maximum amount of validators'} />

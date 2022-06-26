@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 
 const DepositViaLaunchpad = () => {

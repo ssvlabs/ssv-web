@@ -7,8 +7,8 @@ export const useStyles = makeStyles((theme) => ({
         '@media (max-width: 1200px)': {
             width: '100%',
         },
-        borderRadius: '8px',
-        marginBottom: '20px',
+        borderRadius: 16,
+        marginBottom: 20,
         backgroundColor: theme.colors.squareScreenBackground,
     },
     SectionWrapper: {

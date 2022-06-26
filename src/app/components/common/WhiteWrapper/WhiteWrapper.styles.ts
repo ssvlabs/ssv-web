@@ -80,8 +80,8 @@ export const useStyles = makeStyles((theme) => ({
         backgroundImage: `url(/images/x/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     Options: {
-        width: 24,
-        height: 24,
+        width: 40,
+        height: 40,
         float: 'right',
         cursor: 'pointer',
         backgroundSize: 'contain',
@@ -94,7 +94,7 @@ export const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     ChildWrapper: {
-        marginTop: 28,
+        marginTop: 16,
     },
     DialogWrapper: {
         width: 424,

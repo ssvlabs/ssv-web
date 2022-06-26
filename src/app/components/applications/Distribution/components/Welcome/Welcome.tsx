@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
 
 const Welcome = () => {
     const stores = useStores();

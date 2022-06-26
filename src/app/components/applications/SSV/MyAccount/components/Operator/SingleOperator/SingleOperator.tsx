@@ -116,7 +116,7 @@ const SingleOperator = () => {
             },
             {
                 key: <Grid container item alignItems={'center'}>
-                  <Grid item style={{ marginRight: 4 }}>
+                  <Grid item style={{ marginTop: 1, marginRight: 4 }}>
                     Status
                   </Grid>
                   <ToolTip

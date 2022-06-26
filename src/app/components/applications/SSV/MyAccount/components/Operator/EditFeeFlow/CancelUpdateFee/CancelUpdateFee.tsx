@@ -6,10 +6,10 @@ import Typography from '@material-ui/core/Typography';
 import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import PrimaryButton from '~app/components/common/PrimaryButton';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -91,7 +91,7 @@ const CancelUpdateFee = (props: Props) => {
     }
 
     return (
-      <Dialog className={classes.DialogWrapper} open={operatorStore.openCancelDialog}>
+      <Dialog className={classes.DialogWrapper} PaperProps={{ style: { borderRadius: 16 } }} open={operatorStore.openCancelDialog}>
         <Grid className={classes.CloseDialog} onClick={operatorStore.switchCancelDialog} />
         <Grid className={classes.GridWrapper} container>
           <HeaderSubHeader title={'Sending Transaction'} />
@@ -106,7 +106,7 @@ const CancelUpdateFee = (props: Props) => {
             process and start the process anew.
           </Grid>
           <PrimaryButton wrapperClass={classes.FirstButton} disable={false} text={'Cancel Update Fee'} submitFunction={cancelUpdateProcess} />
-          <PrimaryButton withLoader={false} wrapperClass={classes.SecondButton} disable={false} text={'Declare a New Fee'} submitFunction={declareNewFee} />
+          <PrimaryButton withoutLoader wrapperClass={classes.SecondButton} disable={false} text={'Declare a New Fee'} submitFunction={declareNewFee} />
         </Grid>
       </Dialog>
     );

@@ -5,18 +5,18 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
+import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
+import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/Stepper';
 import { useStyles } from './index.styles';
-import { timeDiffCalc } from '~lib/utils/time';
 
 type Props = {
     getCurrentState: () => void,
@@ -85,13 +85,11 @@ const WaitingPeriod = (props: Props) => {
             </Grid>
             <Grid item container className={classes.FeesChangeWrapper}>
               <Grid item>
-                <SsvAndSubTitle leftTextAlign ssv={currentOperatorFee} />
+                <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} />
               </Grid>
-              <Grid item className={classes.Arrow}>
-
-              </Grid>
+              <Grid item className={classes.Arrow} />
               <Grid item>
-                <SsvAndSubTitle leftTextAlign ssv={operatorFutureFee} />
+                <SsvAndSubTitle bold leftTextAlign ssv={operatorFutureFee} />
               </Grid>
             </Grid>
             <Grid item className={classes.Notice}>

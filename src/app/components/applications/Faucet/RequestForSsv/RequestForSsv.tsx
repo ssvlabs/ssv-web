@@ -1,15 +1,15 @@
-import { useHistory } from 'react-router-dom';
-import React, { useState } from 'react';
 import { observer } from 'mobx-react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import TextInput from '~app/components/common/TextInput';
+import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/PrimaryButton';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
-import InputLabel from '~app/components/common/InputLabel';
-import TextInput from '~app/components/common/TextInput';
-import config from '~app/common/config';
 
 const RequestForSsv = () => {
     const stores = useStores();

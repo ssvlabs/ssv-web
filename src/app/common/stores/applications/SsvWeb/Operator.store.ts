@@ -178,8 +178,7 @@ class OperatorStore extends BaseStore {
         return new Promise((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const contract: Contract = walletStore.getContract;
-            const conditionalFunction = process.env.REACT_APP_NEW_STAGE ? contract.methods.getValidatorsPerOperatorLimit : contract.methods.getValidatorsPerOperatorLimit;
-            conditionalFunction().call().then((response: any) => {
+            contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
                 this.operatorValidatorsLimit = parseInt(response, 10);
                 resolve(true);
             }).catch(() => resolve(true));
@@ -293,7 +292,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         try {
             const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.operatorsByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
+            const result = await contractInstance.methods.getOperatorByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
             return result[1] !== '0x0000000000000000000000000000000000000000';
         } catch (e) {
             console.error('Exception from operator existence check:', e);

@@ -72,7 +72,7 @@ const ImportValidatorConfirmation = () => {
     };
 
     const fields = [
-        { key: 'Operators yearly fee', value: totalOperatorsYearlyFee },
+        { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
         { key: 'Network yearly fee', value: formatNumberToUi(yearlyNetworkFee) },
         { key: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];

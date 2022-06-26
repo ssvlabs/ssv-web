@@ -10,8 +10,8 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
@@ -33,7 +33,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         Validator.getInstance().getValidator(public_key).then(validator => {
             if (validator?.operators) {
                 // @ts-ignore
-                setPreviousOperatorsIds(validator.operators.map(({ operator_id }) => operator_id));
+                setPreviousOperatorsIds(validator.operators.map(({ id }) => id));
             }
         });
     }, [editPage]);

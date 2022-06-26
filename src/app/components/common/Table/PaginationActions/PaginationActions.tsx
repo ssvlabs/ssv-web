@@ -72,45 +72,43 @@ const PaginationActions = (props: TablePaginationActionsProps) => {
             {startAt} - {endAt} of {count}
           </Typography>
         </Grid>
-        {totalPages > 1 && (
-          <Grid container item xs={10} className={classes.ButtonsWrapper}>
-            <Grid item className={classes.SelectFormWrapper}>
-              <Grid container item alignItems={'center'}>
-                <Typography className={classes.PageRangeText}>Rows per page:</Typography>
-                <Grid item>
-                  <select value={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                  </select>
-                </Grid>
+        <Grid container item xs={10} className={classes.ButtonsWrapper}>
+          <Grid item className={classes.SelectFormWrapper}>
+            <Grid container item alignItems={'center'}>
+              <Typography className={classes.PageRangeText}>Rows per page:</Typography>
+              <Grid item>
+                <select value={rowsPerPage === 5 ? '5' : '10'} onChange={handlePerPage}>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                </select>
               </Grid>
             </Grid>
-            <Grid item className={classes.LeftArrows} onClick={handleFirstPageButtonClick}>
-              <Grid className={classes.ManyLeft} />
-            </Grid>
-            <Grid item className={classes.LeftArrows} onClick={handleBackButtonClick}>
-              <Grid className={classes.SingleLeft} />
-            </Grid>
-            <Grid item className={classes.PageNumber}>
-              <IntegerInput
-                type="number"
-                value={currentPage}
-                onChange={handleSetPage}
-                onBlur={changePageNumber}
-                className={classes.PageEditor}
-                      />
-            </Grid>
-            <Grid item>
-              <Typography>of {totalPages}</Typography>
-            </Grid>
-            <Grid item className={classes.RightArrows} onClick={handleNextButtonClick}>
-              <Grid className={classes.SingleRight} />
-            </Grid>
-            <Grid item className={classes.RightArrows} onClick={handleLastPageButtonClick}>
-              <Grid className={classes.ManyRight} />
-            </Grid>
           </Grid>
-          )}
+          <Grid item className={classes.LeftArrows} onClick={handleFirstPageButtonClick}>
+            <Grid className={classes.ManyLeft} />
+          </Grid>
+          <Grid item className={classes.LeftArrows} onClick={handleBackButtonClick}>
+            <Grid className={classes.SingleLeft} />
+          </Grid>
+          <Grid item className={classes.PageNumber}>
+            <IntegerInput
+              type="number"
+              value={currentPage}
+              onChange={handleSetPage}
+              onBlur={changePageNumber}
+              className={classes.PageEditor}
+              />
+          </Grid>
+          <Grid item>
+            <Typography>of {totalPages}</Typography>
+          </Grid>
+          <Grid item className={classes.RightArrows} onClick={handleNextButtonClick}>
+            <Grid className={classes.SingleRight} />
+          </Grid>
+          <Grid item className={classes.RightArrows} onClick={handleLastPageButtonClick}>
+            <Grid className={classes.ManyRight} />
+          </Grid>
+        </Grid>
       </Grid>
     );
 };

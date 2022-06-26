@@ -9,10 +9,15 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: 8,
         textTransform: 'none',
         fontFamily: 'Manrope !important',
+        border: (props: any) => props.errorButton && theme.darkMode ? `1px solid ${theme.colors.primaryError}` : '',
         color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.white,
-        backgroundColor: (props: any) => props.errorButton ? theme.colors.primaryErrorRegular : theme.colors.primaryBlue,
+        backgroundColor: (props: any) => {
+            if (props.errorButton && theme.darkMode) return 'transparent';
+            if (props.errorButton) return theme.colors.primaryErrorRegular;
+            return theme.colors.primaryBlue;
+        },
         '&:hover': {
-            backgroundColor: (props: any) => props.errorButton ? '' : theme.colors.shade20,
+            backgroundColor: (props: any) => props.errorButton ? theme.colors.primaryErrorRegular : theme.colors.shade20,
         },
         '&:active': {
             backgroundColor: theme.colors.shade40,

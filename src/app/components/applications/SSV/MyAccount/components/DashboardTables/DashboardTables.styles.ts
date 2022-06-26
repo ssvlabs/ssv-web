@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         // backgroundPosition: 'center',
-        backgroundImage: `url(/images/chart/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        backgroundImage: `url(/images/explorer/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     Name: {
         '&:nth-of-type(1)': {
@@ -38,7 +38,7 @@ export const useStyles = makeStyles((theme) => ({
         marginLeft: '6px',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/copy/${theme.darkMode ? 'light' : 'gray'}.svg)`,
+        backgroundImage: `url(/images/copy/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     Balance: {
         width: '54px',

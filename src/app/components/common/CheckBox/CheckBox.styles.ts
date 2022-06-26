@@ -4,6 +4,7 @@ export const useStyles = makeStyles((theme) => ({
     CheckBoxWrapper: {
         fontSize: 16,
         fontWeight: 500,
+        alignItems: 'center',
         lineHeight: 1.62,
         cursor: 'pointer',
         // alignItems: 'center',
@@ -11,18 +12,27 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(5),
     },
     BoxWrapper: {
-        width: 24,
-        height: 24,
         borderRadius: 2,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         marginRight: theme.spacing(4),
-        border: (props: any) => props.grayBackGround ? `1px solid ${theme.colors.gray40}` : '1px solid #5b6c84',
-        backgroundColor: (props: any) => props.grayBackGround ? theme.colors.gray10 : 'transparent',
-    },
-    Checked: {
-        width: 24,
-        height: 24,
-        border: 'none',
-        backgroundImage: `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        width: (props: any) => props.width ? props.width : 18,
+        height: (props: any) => props.height ? props.height : 18,
+        backgroundColor: (props: any) => {
+            if (props.grayBackGround && !props.checked) return theme.colors.gray10;
+            if (props.checked) return theme.colors.primaryBlue;
+            return 'transparent';
+        },
+        border: (props: any) => {
+            if (props.grayBackGround) return `1px solid ${theme.colors.gray40}`;
+            if (props.checked) return 'none';
+            return '1px solid #5b6c84';
+        },
+        backgroundImage: (props: any) => {
+            if (props.checked) return `url(/images/v/${theme.darkMode ? 'dark' : 'light'}.svg)`;
+            return 'none';
+        },
     },
     Text: {
         maxWidth: 543,

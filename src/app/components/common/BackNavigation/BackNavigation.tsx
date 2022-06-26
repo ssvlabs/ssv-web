@@ -4,44 +4,41 @@ import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 // import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-
-const BackNavigationLink = styled.div<Record<string, any>>`
-  color: #A1ACBE;
+const BackNavigationWrapper = styled.div`
+  gap: 4px;
+  height: 16px;
+  flex-grow: 1;
+  display: flex;
+  color: #1BA5F8;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
   text-align: left;
   line-height: 1.25;
   font-style: normal;
+  align-items: center;
   font-stretch: normal;
+  align-content: center;
   text-decoration: none;
-  letter-spacing: normal;
 `;
 
-// const BackIcon = styled(ArrowBackIosIcon)<Record<string, any>>`
-//   cursor: pointer;
-//   font-weight: bold;
-//   font-style: normal;
-//   color: #A1ACBE;
-//   font-size: 12px;
-//   text-decoration: none;
-// `;
-
-const BackNavigationWrapper = styled.div`
-  display: flex;
-  flex-grow: 1;
-  align-items: center;
-  align-content: center;
+const BackNavigationImage = styled.div<Record<string, any>>`
+  width: 14px;
+  height: 14px;
+  letter-spacing: normal;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(/images/backButton/light.svg);
 `;
 
 type BackNavigationProps = {
-  text?: string,
   color?: string
   onClick?: () => void,
   backButtonRedirect?: string,
 };
 
-const BackNavigation = ({ text, color, onClick, backButtonRedirect }: BackNavigationProps) => {
+const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationProps) => {
   const stores = useStores();
   const history = useHistory();
   const defaultColor = '#A1ACBE';
@@ -62,10 +59,8 @@ const BackNavigation = ({ text, color, onClick, backButtonRedirect }: BackNaviga
 
   return (
     <BackNavigationWrapper onClick={onNavigationClicked}>
-      {/* <BackIcon iconcolor={usedColor} /> */}
-      <BackNavigationLink color={usedColor}>
-        {text || '< Back'}
-      </BackNavigationLink>
+      <BackNavigationImage color={usedColor} />
+      <span>Back</span>
     </BackNavigationWrapper>
   );
 };

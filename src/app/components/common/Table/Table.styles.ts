@@ -66,7 +66,7 @@ export const useStyles = makeStyles((theme) => ({
                     },
                     '&:last-child': {
                         '& td': {
-                            borderBottom: (props: any) => props.hideActions ? 'none' : '',
+                            borderBottom: 'none',
                         },
                     },
                 },

@@ -5,9 +5,9 @@ import Typography from '@material-ui/core/Typography';
 import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
-import PrimaryButton from '~app/components/common/PrimaryButton';
 import BackNavigation from '~app/components/common/BackNavigation';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './WhiteWrapper.styles';
@@ -91,13 +91,13 @@ const WhiteWrapper = (props: Props) => {
                   <Typography>{header}</Typography>
                 </Grid>
                 {withCancel && (
-                <Grid item xs={6}>
-                  <Grid container item className={classes.CancelWrapper} onClick={dialogHandler}>
-                    <Typography>Cancel</Typography>
-                    <Grid item className={classes.CancelImage} />
+                  <Grid item xs={6}>
+                    <Grid container item className={classes.CancelWrapper} onClick={dialogHandler}>
+                      <Typography>Cancel</Typography>
+                      <Grid item className={classes.CancelImage} />
+                    </Grid>
                   </Grid>
-                </Grid>
-            )}
+                )}
               </Grid>
               {withSettings && (
               <Grid item xs={6}>

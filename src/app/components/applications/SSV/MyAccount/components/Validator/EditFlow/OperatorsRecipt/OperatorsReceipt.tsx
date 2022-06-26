@@ -11,7 +11,7 @@ import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
-import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
+import { addNumber, formatNumberToUi, toFixed } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -130,7 +130,7 @@ const OperatorsReceipt = (props: Props) => {
           <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
         </Grid>
         <Grid item>
-          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(addNumber(networkFee, operatorsYearlyFee))} />
+          <SsvAndSubTitle bold gray80={currentOperators} ssv={formatNumberToUi(toFixed(addNumber(networkFee, operatorsYearlyFee)))} />
         </Grid>
       </Grid>,
       <Grid container item>

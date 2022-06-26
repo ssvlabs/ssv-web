@@ -50,6 +50,6 @@ export const useStyles = makeStyles((theme) => ({
         border: `solid 1px ${theme.colors.primaryWarningRegular}`,
     },
     CheckBoxWrapper: {
-        marginTop: 45,
+        marginTop: 40,
     },
 }));

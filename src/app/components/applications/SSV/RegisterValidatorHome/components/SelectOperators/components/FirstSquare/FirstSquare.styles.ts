@@ -43,6 +43,7 @@ export const useStyles = makeStyles((theme) => ({
     SortArrow: {
         width: 16,
         height: 16,
+        marginTop: 2,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -135,6 +136,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/chart/gray.svg)',
+        backgroundImage: 'url(/images/explorer/gray.svg)',
     },
 }));

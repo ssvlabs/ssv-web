@@ -184,6 +184,7 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: ""
+          NEW_STAGE: "true"
           EXPLORER_URL: "https://explorer-v2.ssv.network"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}

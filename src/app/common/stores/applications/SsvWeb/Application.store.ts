@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
@@ -25,7 +26,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable walletConnectivity: boolean = false;
   @observable whiteNavBarBackground: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
-  @observable strategyRedirect: string = process.env.REACT_APP_NEW_STAGE ? '/dashboard' : '/';
+  @observable strategyRedirect: string = process.env.REACT_APP_NEW_STAGE ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
 
   constructor() {
     super();

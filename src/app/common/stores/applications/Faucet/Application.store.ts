@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
@@ -18,11 +19,11 @@ class ApplicationStore extends BaseStore implements Application {
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;
-  @observable strategyRedirect: string = '/';
+  @observable strategyName: string = 'faucet';
   @observable isShowingLoading: boolean = false;
   @observable walletConnectivity: boolean = false;
-  @observable strategyName: string = 'faucet';
   @observable transactionPendingPopUp: boolean = false;
+  @observable strategyRedirect: string = config.routes.FAUCET.ROOT;
 
   constructor() {
     super();

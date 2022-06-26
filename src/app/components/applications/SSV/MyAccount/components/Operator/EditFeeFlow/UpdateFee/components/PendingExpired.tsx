@@ -41,7 +41,7 @@ const PendingExpired = () => {
     }, []);
 
     const backToMyAccount = () => {
-        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     };
 
     // @ts-ignore

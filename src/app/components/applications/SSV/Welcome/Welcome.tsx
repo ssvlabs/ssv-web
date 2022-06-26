@@ -40,14 +40,14 @@ const Welcome = () => {
                 <SecondaryButton
                   withVerifyConnection
                   text={'Run Validator'}
-                  submitFunction={() => { walletStore.connected && history.push(config.routes.VALIDATOR.HOME); }}
+                  submitFunction={() => { walletStore.connected && history.push(config.routes.SSV.VALIDATOR.HOME); }}
                 />
               </Grid>
               <Grid item className={classes.LinkButtonWrapper}>
                 <SecondaryButton
                   withVerifyConnection
                   text={'Join as Operator'}
-                  submitFunction={() => { walletStore.connected && history.push(config.routes.OPERATOR.HOME); }}
+                  submitFunction={() => { walletStore.connected && history.push(config.routes.SSV.OPERATOR.HOME); }}
                 />
               </Grid>
             </Grid>

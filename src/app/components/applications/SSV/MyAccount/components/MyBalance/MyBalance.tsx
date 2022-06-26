@@ -36,15 +36,15 @@ const MyBalance = () => {
     };
 
     function moveToEnableAccount() {
-        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
+        return history.push(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
     }
 
     function moveToDeposit() {
-        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
+        return history.push(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
     }
 
     function moveToWithdraw() {
-        return history.push(config.routes.MY_ACCOUNT.WITHDRAW);
+        return history.push(config.routes.SSV.MY_ACCOUNT.WITHDRAW);
     }
 
     const renderCtaActions = () => {

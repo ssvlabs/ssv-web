@@ -19,7 +19,7 @@ const SsvAppBar = () => {
     const applicationStore: ApplicationStore = stores.Application;
     const [showMobileBar, setMobileBar] = useState(false);
     const isDistribution = applicationStore.strategyName === 'distribution';
-    const hasOperatorsOrValidators = applicationStore.strategyRedirect === '/dashboard';
+    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
 
     const classes = useStyles({
         // @ts-ignore
@@ -131,7 +131,7 @@ const SsvAppBar = () => {
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
-        history.push(config.routes.HOME);
+        history.push(config.routes.SSV.ROOT);
     };
 
     const MobileButtons = () => {

@@ -20,8 +20,8 @@ const Routes: any = () => {
       <Layout>
         <FaucetAppBar />
         <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-        {!walletStore.connected && <Route exact path={config.routes.HOME} component={ConnectWallet} />}
-        {walletStore.connected && <Route exact path={config.routes.HOME} component={RequestForSsv} />}
+        {!walletStore.connected && <Route exact path={config.routes.FAUCET.ROOT} component={ConnectWallet} />}
+        {walletStore.connected && <Route exact path={config.routes.FAUCET.ROOT} component={RequestForSsv} />}
         {walletStore.connected && <Route exact path={config.routes.FAUCET.DEPLETED} component={FaucetDepleted} />}
         {walletStore.connected && <Route exact path={config.routes.FAUCET.SUCCESS} component={SuccessPage} />}
       </Layout>

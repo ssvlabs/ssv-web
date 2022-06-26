@@ -180,9 +180,9 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
                 history.push(`/dashboard/validator/${public_key}/confirm`);
             } else if (deposited) {
                 operatorStore.unselectAllOperators();
-                history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+                history.push(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
             } else {
-                history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+                history.push(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
             }
         } catch (error: any) {
             console.log(error.message);

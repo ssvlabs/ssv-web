@@ -30,12 +30,12 @@ const RegisterValidatorHome = () => {
           <Grid container item justify={'space-evenly'}>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Create Validator'} submitFunction={() => { history.push(config.routes.VALIDATOR.CREATE); }} />
+                <SecondaryButton text={'Create Validator'} submitFunction={() => { history.push(config.routes.SSV.VALIDATOR.CREATE); }} />
               </Grid>
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Import Validator'} submitFunction={() => { validatorStore.keyStoreFile = null; history.push(config.routes.VALIDATOR.IMPORT); }} />
+                <SecondaryButton text={'Import Validator'} submitFunction={() => { validatorStore.keyStoreFile = null; history.push(config.routes.SSV.VALIDATOR.IMPORT); }} />
               </Grid>
             </Grid>
           </Grid>

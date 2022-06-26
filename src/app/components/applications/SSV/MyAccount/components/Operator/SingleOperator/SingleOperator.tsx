@@ -209,7 +209,7 @@ const SingleOperator = () => {
     return (
       <Grid container item>
         <WhiteWrapper
-          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
+          backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
           withSettings={{
                   text: 'Remove Operator',
                   onClick: () => {

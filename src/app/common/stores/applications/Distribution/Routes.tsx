@@ -21,8 +21,8 @@ const Routes: any = () => {
       <Layout>
         <DistributionAppBar />
         <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-        {walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.CLAIM} component={Claim} />}
-        {!walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.CLAIM} component={DistributionWelcome} />}
+        {walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.ROOT} component={Claim} />}
+        {!walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.ROOT} component={DistributionWelcome} />}
         {distributionStore.userWithdrawRewards && <Route exact path={config.routes.DISTRIBUTION.SUCCESS} component={Success} />}
       </Layout>
     );

@@ -58,10 +58,10 @@ const MyAccount = () => {
                 <Grid container className={classes.AddButtonDropDown}>
                   <Grid item xs={12}
                     className={`${classes.AddButtonDropDownItem} ${liquidated ? classes.Disable : ''}`}
-                    onClick={() => { !liquidated && history.push(config.routes.VALIDATOR.HOME); }}>Run Validator</Grid>
+                    onClick={() => { !liquidated && history.push(config.routes.SSV.VALIDATOR.HOME); }}>Run Validator</Grid>
                   <Grid item xs={12}
                     className={classes.AddButtonDropDownItem}
-                    onClick={() => { history.push(config.routes.OPERATOR.HOME); }}>
+                    onClick={() => { history.push(config.routes.SSV.OPERATOR.HOME); }}>
                     Register Operator
                   </Grid>
                 </Grid>

@@ -1,4 +1,5 @@
 import { Theme } from '@material-ui/core/styles';
+import config from '~app/common/config';
 
 export default abstract class Application {
     theme: Theme;
@@ -15,8 +16,8 @@ export default abstract class Application {
         this.isLoading = false;
         this.userGeo = undefined;
         this.darkMode = darkMode;
-        this.strategyRedirect = '/';
         this.strategyName = 'Distribution';
+        this.strategyRedirect = config.routes.DISTRIBUTION.ROOT;
     }
 
     // eslint-disable-next-line no-unused-vars

@@ -7,6 +7,7 @@ import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/components/common/Table/Table';
@@ -22,7 +23,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator/SingleValidator.styles';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 const SingleValidator = () => {
     const stores = useStores();
@@ -32,13 +33,15 @@ const SingleValidator = () => {
     const { public_key } = useParams();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const validatorStore: ValidatorStore = stores.Validator;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Validator.getInstance().getValidator(public_key).then((response: any) => {
+        if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
                 response.public_key = longStringShorten(public_key, 6, 4);
                 response.total_operators_fee = ssvStore.newGetFeeForYear(response.operators.reduce(
@@ -117,7 +120,7 @@ const SingleValidator = () => {
     );
 
     const editValidator = () => {
-        history.push(`/dashboard/validator/${public_key}/edit`);
+        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ROOT);
     };
     
     const columns = React.useMemo(
@@ -143,7 +146,7 @@ const SingleValidator = () => {
                         accessor: 'status',
                     },
                     {
-                        Header: '1D Performance',
+                        Header: '30D Performance',
                         accessor: 'performance',
                     },
                     {
@@ -160,11 +163,11 @@ const SingleValidator = () => {
     return (
       <Grid container className={classes.SingleValidatorWrapper}>
         <WhiteWrapper
-          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
+          backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
           withSettings={{
                   text: 'Remove Validator',
                   onClick: () => {
-                      history.push(`/dashboard/validator/${public_key}/remove`);
+                      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT);
                   },
               }}
           header={'Validator Details'}

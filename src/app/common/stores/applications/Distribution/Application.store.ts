@@ -4,6 +4,7 @@ import { AppTheme } from '~root/Theme';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
+import config from '~app/common/config';
 
 /**
  * Base store provides singe source of true
@@ -18,11 +19,11 @@ class ApplicationStore extends BaseStore implements Application {
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;
-  @observable strategyRedirect: string = '/';
   @observable isShowingLoading: boolean = false;
   @observable walletConnectivity: boolean = false;
   @observable strategyName: string = 'distribution';
   @observable transactionPendingPopUp: boolean = false;
+  @observable strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
 
   constructor() {
     super();

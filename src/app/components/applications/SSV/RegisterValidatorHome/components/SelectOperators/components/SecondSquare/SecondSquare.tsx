@@ -47,10 +47,10 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
             if (editPage) {
                 history.push(`/dashboard/validator/${public_key}/upload_key_store`);
             } else {
-                history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+                history.push(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
             }
         } else {
-            history.push(config.routes.VALIDATOR.SLASHING_WARNING);
+            history.push(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
         }
     };
 

@@ -56,7 +56,7 @@ const EnableAccount = () => {
 
     const enableAccount = async (fee: any) => {
        const response = await ssvStore.activateValidator(fee);
-       if (response) history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+       if (response) history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     };
 
     return (

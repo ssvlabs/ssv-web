@@ -19,7 +19,7 @@ export type IUserFlow = {
 
 const operatorConfirmation: IUserFlow = {
     name: 'Operator Confirmation',
-    route: routes.OPERATOR.CONFIRMATION_PAGE,
+    route: routes.SSV.OPERATOR.CONFIRMATION_PAGE,
     condition: () => {
         const stores = useStores();
         const operatorStore: OperatorStore = stores.Operator;
@@ -29,7 +29,7 @@ const operatorConfirmation: IUserFlow = {
 
 const importValidatorFlow: IUserFlow = {
     name: 'Import Validator',
-    route: routes.VALIDATOR.IMPORT,
+    route: routes.SSV.VALIDATOR.IMPORT,
     condition: () => {
         const stores = useStores();
         const validatorStore: ValidatorStore = stores.Validator;
@@ -39,7 +39,7 @@ const importValidatorFlow: IUserFlow = {
 
 const slashingWarningFlow: IUserFlow = {
     name: 'Slashing Warning',
-    route: routes.VALIDATOR.SLASHING_WARNING,
+    route: routes.SSV.VALIDATOR.SLASHING_WARNING,
     condition: () => {
         const stores = useStores();
         const operatorStore: OperatorStore = stores.Operator;
@@ -49,7 +49,7 @@ const slashingWarningFlow: IUserFlow = {
 
 const validatorConfirmationFlow: IUserFlow = {
     name: 'Validator Confirmation',
-    route: routes.VALIDATOR.CONFIRMATION_PAGE,
+    route: routes.SSV.VALIDATOR.CONFIRMATION_PAGE,
     depends: [
         slashingWarningFlow,
     ],
@@ -67,8 +67,8 @@ const validatorConfirmationFlow: IUserFlow = {
 const successScreen: IUserFlow = {
     name: 'Success Screen',
     route: [
-        routes.VALIDATOR.SUCCESS_PAGE,
-        routes.OPERATOR.SUCCESS_PAGE,
+        routes.SSV.VALIDATOR.SUCCESS_PAGE,
+        routes.SSV.OPERATOR.SUCCESS_PAGE,
     ],
     condition: () => {
         const stores = useStores();
@@ -80,12 +80,12 @@ const successScreen: IUserFlow = {
 
 const myAccountScreen: IUserFlow = {
     name: 'My Account',
-    route: routes.MY_ACCOUNT.DASHBOARD,
+    route: routes.SSV.MY_ACCOUNT.DASHBOARD,
 };
 
 const EnableAccountScreen: IUserFlow = {
     name: 'Enable Account',
-    route: routes.MY_ACCOUNT.ENABLE_ACCOUNT,
+    route: routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT,
     depends: [
         myAccountScreen,
     ],
@@ -93,7 +93,7 @@ const EnableAccountScreen: IUserFlow = {
 
 const SingleValidatorScreen: IUserFlow = {
     name: 'Single Validator',
-    route: routes.MY_ACCOUNT.VALIDATOR,
+    route: routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT,
     depends: [
         myAccountScreen,
     ],

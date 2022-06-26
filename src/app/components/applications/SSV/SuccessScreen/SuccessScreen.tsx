@@ -23,7 +23,7 @@ const SuccessScreen = () => {
         if (process.env.REACT_APP_NEW_STAGE) {
             setTimeout(() => {
                 applicationStore.setIsLoading(false);
-                history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+                history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
             }, 7000);
         } else {
             const linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;

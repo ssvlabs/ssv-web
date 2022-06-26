@@ -20,9 +20,16 @@ const config = {
                 ENABLE_ACCOUNT: '/dashboard/reactivate',
                 OPERATOR: {
                     ROOT: '/dashboard/operator',
-                    REMOVE_OPERATOR: '/dashboard/operator/remove',
-                    OPERATOR_UPDATE_FEE: '/dashboard/operator/update-fee',
-                    OPERATOR_REMOVED: '/dashboard/operator/update-fee/success',
+                    REMOVE: {
+                        ROOT: '/dashboard/operator/remove',
+                        SUCCESS: '/dashboard/operator/remove/success',
+                    },
+                    UPDATE: {
+                        SELECT_OPERATORS: '/dashboard/operator/update/choose-operators',
+                        UPLOAD_KEY_STORE: '/dashboard/operator/update/enter-key',
+                        CONFIRM_TRANSACTION: '/dashboard/operator/update/confirm-transaction',
+                        SUCCESS: '/dashboard/operator/update/success',
+                    },
                 },
                 VALIDATOR: {
                     ROOT: '/dashboard/validator',

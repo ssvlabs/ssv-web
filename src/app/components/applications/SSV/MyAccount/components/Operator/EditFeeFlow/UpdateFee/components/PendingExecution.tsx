@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -25,8 +25,7 @@ type Props = {
 
 const PendingExecution = (props: Props) => {
     const stores = useStores();
-    // @ts-ignore
-    const { operator_id } = useParams();
+    const history = useHistory();
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
@@ -34,7 +33,8 @@ const PendingExecution = (props: Props) => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
@@ -47,7 +47,8 @@ const PendingExecution = (props: Props) => {
 
     const submitFeeChange = async () => {
         applicationStore.setIsLoading(true);
-        const response = await operatorStore.approveOperatorFee(operator_id);
+        // @ts-ignore
+        const response = await operatorStore.approveOperatorFee(operatorStore.processOperatorId);
         if (response) {
             await props.getCurrentState(3);
         }

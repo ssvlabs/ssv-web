@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -17,8 +18,7 @@ import PendingExecution from '~app/components/applications/SSV/MyAccount/compone
 
 const UpdateFee = () => {
     const stores = useStores();
-    // @ts-ignore
-    const { operator_id } = useParams();
+    const history = useHistory();
     const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
     const [processState, setProcessState] = useState(0);
@@ -26,7 +26,8 @@ const UpdateFee = () => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
@@ -49,7 +50,8 @@ const UpdateFee = () => {
             return;
         }
 
-        await operatorStore.getOperatorFeeInfo(operator_id);
+        // @ts-ignore
+        await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
             const todayDate = new Date();
             const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
@@ -66,7 +68,7 @@ const UpdateFee = () => {
             } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
                 // @ts-ignore
                 const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-                if (savedOperator && savedOperator?.includes(operator_id)) {
+                if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
                     setProcessState(0);
                     return;
                 }

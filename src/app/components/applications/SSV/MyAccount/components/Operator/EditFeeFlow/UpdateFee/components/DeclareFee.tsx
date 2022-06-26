@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
@@ -22,8 +23,7 @@ type Props = {
 
 const DeclareFee = (props: Props) => {
     const stores = useStores();
-    // @ts-ignore
-    const { operator_id } = useParams();
+    const history = useHistory();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
@@ -35,7 +35,8 @@ const DeclareFee = (props: Props) => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
@@ -60,12 +61,13 @@ const DeclareFee = (props: Props) => {
 
     const changeOperatorFee = async () => {
         applicationStore.setIsLoading(true);
-        const response = await operatorStore.updateOperatorFee(operator_id, userInput);
+        // @ts-ignore
+        const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, userInput);
         if (response) {
             // @ts-ignore
             let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-            if (savedOperator && savedOperator?.includes(operator_id)) {
-                savedOperator = savedOperator.filter((item: any) => item !== operator_id);
+            if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
+                savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
                 localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
             }
             await props.getCurrentState();

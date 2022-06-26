@@ -55,7 +55,7 @@ class OperatorStore extends BaseStore {
     public static OPERATORS_SELECTION_GAP = 66.66;
 
     // Process data
-    @observable processOperatorId: string = '';
+    @observable processOperatorId: number | undefined;
 
     // Cancel dialog switcher
     @observable openCancelDialog: boolean = false;

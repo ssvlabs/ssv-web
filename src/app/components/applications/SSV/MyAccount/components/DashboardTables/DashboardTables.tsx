@@ -103,7 +103,7 @@ const DashboardTables = () => {
         validatorStore.processValidatorPublicKey = publicKey;
         history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
     };
-    const openSingleOperator = (operatorId: string) => {
+    const openSingleOperator = (operatorId: number) => {
         operatorStore.processOperatorId = operatorId;
         history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
     };

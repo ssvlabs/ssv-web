@@ -1,18 +1,19 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import CheckBox from '~app/components/common/CheckBox';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
+import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator/RemoveOperator.styles';
@@ -20,9 +21,6 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 const RemoveOperator = () => {
     const stores = useStores();
     const history = useHistory();
-    history;
-    // @ts-ignore
-    const { operator_id } = useParams();
     const [operator, setOperator] = useState(null);
     const [checkbox, setCheckBox] = useState(false);
     const [leavingReason, setLeavingReason] = useState(0);
@@ -34,7 +32,8 @@ const RemoveOperator = () => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
@@ -114,9 +113,10 @@ const RemoveOperator = () => {
     const submitForm = async () => {
         // TODO: sit with product to understand how to send data to backend
         applicationStore.setIsLoading(true);
-        const isRemoved = await operatorStore.removeOperator(operator_id);
+        // @ts-ignore
+        const isRemoved = await operatorStore.removeOperator(operatorStore.processOperatorId);
         applicationStore.setIsLoading(false);
-        if (isRemoved) history.push(`/dashboard/operator/${operator_id}/removed`);
+        if (isRemoved) history.push(`/dashboard/operator/${operatorStore.processOperatorId}/removed`);
     };
 
     const copyToClipboard = () => {

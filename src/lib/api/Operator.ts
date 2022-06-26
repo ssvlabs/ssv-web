@@ -86,7 +86,7 @@ class Operator {
     /**
      * Get operator
      */
-    async getOperator(operatorId: string) {
+    async getOperator(operatorId: number) {
         const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true`;
         try {
             return (await axios.get(operatorEndpointUrl)).data;

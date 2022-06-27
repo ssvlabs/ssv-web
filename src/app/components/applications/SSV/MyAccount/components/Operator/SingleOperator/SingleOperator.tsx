@@ -88,7 +88,7 @@ const SingleOperator = () => {
     };
 
     const moveToUpdateFee = () => {
-        history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE.);
+        history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
     };
 
     const openBeaconcha = (publicKey: string) => {
@@ -214,7 +214,7 @@ const SingleOperator = () => {
           withSettings={{
                   text: 'Remove Operator',
                   onClick: () => {
-                      history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE_OPERATOR.ROOT);
+                      history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
                   },
               }}
           header={'Operator Details'}

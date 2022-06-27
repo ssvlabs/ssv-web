@@ -24,11 +24,8 @@ const config = {
                         ROOT: '/dashboard/operator/remove',
                         SUCCESS: '/dashboard/operator/remove/success',
                     },
-                    UPDATE: {
-                        SELECT_OPERATORS: '/dashboard/operator/update/choose-operators',
-                        UPLOAD_KEY_STORE: '/dashboard/operator/update/enter-key',
-                        CONFIRM_TRANSACTION: '/dashboard/operator/update/confirm-transaction',
-                        SUCCESS: '/dashboard/operator/update/success',
+                    UPDATE_FEE: {
+                        START: '/dashboard/operator/start',
                     },
                 },
                 VALIDATOR: {

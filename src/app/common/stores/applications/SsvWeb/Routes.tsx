@@ -52,7 +52,7 @@ const Routes: any = () => {
         { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ROOT, component: SingleValidator },
         { path: ssvRoutes.MY_ACCOUNT.UPLOAD_KEY_STORE, component: UploadKeyStore },
         { path: ssvRoutes.MY_ACCOUNT.REMOVE_VALIDATOR, component: RemoveValidator },
-        { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE.SELECT_OPERATORS, component: UpdateFee },
+        { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START, component: UpdateFee },
         { path: ssvRoutes.MY_ACCOUNT.CONFIRM_OPERATORS, component: ConfirmOperatorsChange },
         { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, component: RemoveOperator },
         { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, component: ProductQuestions },

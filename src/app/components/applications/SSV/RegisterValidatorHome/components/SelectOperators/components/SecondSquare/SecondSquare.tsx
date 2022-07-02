@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
@@ -12,6 +12,7 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
@@ -20,22 +21,24 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
     const classes = useStyles({ editPage });
     const history = useHistory();
-    // @ts-ignore
-    const { public_key } = useParams();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
+    const validatorStore: ValidatorStore = stores.Validator;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
     const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
     const boxes = [1, 2, 3, 4];
 
     useEffect(() => {
-        Validator.getInstance().getValidator(public_key).then(validator => {
-            if (validator?.operators) {
-                // @ts-ignore
-                setPreviousOperatorsIds(validator.operators.map(({ id }) => id));
-            }
-        });
+        if (editPage) {
+            if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+            Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
+                if (validator?.operators) {
+                    // @ts-ignore
+                    setPreviousOperatorsIds(validator.operators.map(({ id }) => id));
+                }
+            });
+        }
     }, [editPage]);
 
     const removeOperator = (index: number) => {
@@ -45,12 +48,12 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const onSelectOperatorsClick = async () => {
         if (process.env.REACT_APP_NEW_STAGE) {
             if (editPage) {
-                history.push(`/dashboard/validator/${public_key}/upload_key_store`);
+                history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
             } else {
-                history.push(config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+                history.push(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
             }
         } else {
-            history.push(config.routes.VALIDATOR.SLASHING_WARNING);
+            history.push(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
         }
     };
 

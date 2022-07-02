@@ -26,6 +26,9 @@ class ValidatorStore extends BaseStore {
   @observable keyStorePrivateKey: string = '';
   @observable validatorPublicKeyExist: boolean = false;
 
+  // process data
+  @observable processValidatorPublicKey: string = '';
+
   public static OPERATORS_SELECTION_GAP = 66.66;
 
   @action.bound

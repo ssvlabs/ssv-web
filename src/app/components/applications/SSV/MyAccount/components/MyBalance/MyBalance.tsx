@@ -20,31 +20,23 @@ const MyBalance = () => {
     const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
 
     const renderBalance = () => {
-        if (liquidated) {
-            return (
-              <Grid item xs={12} className={classes.CurrentBalanceLiquidated}>
-                0.0 SSV
-              </Grid>
-            );
-        }
-
         return (
-          <Grid item xs={12} className={classes.CurrentBalance}>
+          <Grid item xs={12} className={liquidated ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
             {formatNumberToUi(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)))} SSV
           </Grid>
         );
     };
 
     function moveToEnableAccount() {
-        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
+        return history.push(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
     }
 
     function moveToDeposit() {
-        return history.push(config.routes.MY_ACCOUNT.ENABLE_ACCOUNT);
+        return history.push(config.routes.SSV.MY_ACCOUNT.DEPOSIT);
     }
 
     function moveToWithdraw() {
-        return history.push(config.routes.MY_ACCOUNT.WITHDRAW);
+        return history.push(config.routes.SSV.MY_ACCOUNT.WITHDRAW);
     }
 
     const renderCtaActions = () => {

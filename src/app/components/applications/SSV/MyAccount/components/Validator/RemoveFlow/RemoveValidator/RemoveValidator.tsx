@@ -2,7 +2,8 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
@@ -17,8 +18,6 @@ const RemoveValidator = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    // @ts-ignore
-    const { public_key } = useParams();
     const validatorStore: ValidatorStore = stores.Validator;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
@@ -26,7 +25,8 @@ const RemoveValidator = () => {
     
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Validator.getInstance().getValidator(public_key).then((response: any) => {
+        if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
                 setValidator(response);
                 applicationStore.setIsLoading(false);
@@ -39,8 +39,10 @@ const RemoveValidator = () => {
     };
 
     const removeValidator = async () => {
-        const response = await validatorStore.removeValidator(public_key);
-        if (response) history.push(`/dashboard/validator/${public_key}/removed`);
+        if (validatorStore.processValidatorPublicKey) {
+            const response = await validatorStore.removeValidator(validatorStore.processValidatorPublicKey);
+            if (response) history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
+        }
     };
 
     if (!validator) return null;

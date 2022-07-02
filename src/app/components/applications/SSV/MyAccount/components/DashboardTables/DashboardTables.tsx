@@ -10,6 +10,7 @@ import Validator from '~lib/api/Validator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
@@ -17,8 +18,9 @@ import { ReactTable } from '~app/components/common/ReactTable';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/DashboardTables/DashboardTables.styles';
-import { formatNumberToUi } from '~lib/utils/numbers';
 
 type LoadItemsParams = {
     type: string;
@@ -34,8 +36,10 @@ const DashboardTables = () => {
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
+    const validatorStore: ValidatorStore = stores.Validator;
     const [operators, setOperators] = useState(defaultOperators);
     const [validators, setValidators] = useState(defaultOperators);
+    const notificationsStore: NotificationsStore = stores.Notifications;
     const [loadingOperators, setLoadingOperators] = useState(true);
     const [loadingValidators, setLoadingValidators] = useState(true);
     const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
@@ -98,15 +102,17 @@ const DashboardTables = () => {
     }
 
     const openSingleValidator = (publicKey: string) => {
-        history.push(`/dashboard/validator/${publicKey}`);
+        validatorStore.processValidatorPublicKey = publicKey;
+        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
     };
-    const openSingleOperator = (operator_id: string) => {
-        history.push(`/dashboard/operator/${operator_id}`);
+    const openSingleOperator = (operatorId: number) => {
+        operatorStore.processOperatorId = operatorId;
+        history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
     };
 
     const copyToClipboard = (publicKey: string) => {
         navigator.clipboard.writeText(publicKey);
-        // notificationsStore.showMessage('Copied to clipboard.', 'success');
+        notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
 
     const validatorsColumns = [

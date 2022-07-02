@@ -37,7 +37,7 @@ const SetOperatorFee = () => {
         Operator.getInstance().clearOperatorsCache();
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }, 7000);
     };
 

@@ -63,7 +63,7 @@ const ImportValidatorConfirmation = () => {
         if (response) {
             operatorStore.unselectAllOperators();
             applicationStore.showTransactionPendingPopUp(false);
-            history.push(config.routes.VALIDATOR.SUCCESS_PAGE);
+            history.push(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
         }
         else {
             applicationStore.showTransactionPendingPopUp(false);

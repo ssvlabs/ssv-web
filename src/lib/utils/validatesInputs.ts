@@ -82,7 +82,7 @@ export const validateFeeUpdate = (previousValue: number, newValue: string, maxFe
     }
     else if (new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).lessThan(newValue)) {
         response.shouldDisplay = true;
-        response.errorMessage = `You can only increase your fee up to ${new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).toString()}`;
+        response.errorMessage = `You can only increase your fee up to ${new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).toFixed(2).toString()}`;
     }
     // eslint-disable-next-line radix
     else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(10 ** (-14))) {

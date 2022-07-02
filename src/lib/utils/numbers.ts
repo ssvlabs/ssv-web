@@ -6,7 +6,7 @@ export const addNumber = (num1: any, num2: any) => {
 };
 
 export const multiplyNumber = (num1: any, num2: any) => {
-    return new Decimal(num1).mul(num2).toFixed(2).toString();
+    return new Decimal(num1).mul(num2).toFixed().toString();
 };
 
 export const toFixed = (num1: any) => {
@@ -93,7 +93,7 @@ export const formatNumberToUi = (num?: number | string, days?: boolean) => {
             deleteFromIndex -= 1;
         }
         decimal = decimal.slice(0, deleteFromIndex);
-        return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${decimal !== '00' ? `.${decimal}` : ''}`;
+        return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${decimal.replace(/^0+/, '') !== '' ? `.${decimal}` : ''}`;
     }
     return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
 };

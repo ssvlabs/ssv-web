@@ -1,8 +1,9 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
+import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
+import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
@@ -11,10 +12,10 @@ import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
-import { addNumber, formatNumberToUi, toFixed } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { addNumber, formatNumberToUi, toFixed } from '~lib/utils/numbers';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -31,8 +32,6 @@ type Props = {
 const OperatorsReceipt = (props: Props) => {
     const stores = useStores();
     const history = useHistory();
-    // @ts-ignore
-    const { public_key } = useParams();
     const { operators, header, previousOperators, currentOperators } = props;
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
@@ -77,7 +76,7 @@ const OperatorsReceipt = (props: Props) => {
         if (response) {
             setOpenRedirect(true);
             setTimeout(() => {
-                history.push(`/dashboard/validator/${public_key}`);
+                history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
             }, 10000);
         }
     };
@@ -120,7 +119,7 @@ const OperatorsReceipt = (props: Props) => {
               <Tooltip text={'Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. Read more on fees'} />
             </Grid>
             <Grid item>
-              <Typography className={classes.NetworkYearlyFee}>{networkFee} SSV</Typography>
+              <Typography className={classes.NetworkYearlyFee}>{formatNumberToUi(networkFee)} SSV</Typography>
             </Grid>
           </Grid>
         </Grid>

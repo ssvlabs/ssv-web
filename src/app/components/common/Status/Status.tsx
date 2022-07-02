@@ -5,7 +5,7 @@ import { useStyles } from './Status.styles';
 
 const Status = ({ status }: { status: string }) => {
     const classes = useStyles();
-    const isActive = status === 'active';
+    const isActive = status?.toLowerCase() === 'active';
     const noValidators = status === 'No validators';
     let classesStatus = classes.Status;
     if (isActive) classesStatus += ` ${classes.Active}`;

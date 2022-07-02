@@ -114,8 +114,8 @@ class Validator {
                 return response;
             }
             const balance = await this.getValidatorsBalances([publicKey]);
-            const detailedValidator = await this.buildValidatorStructure(response?.public_key, balance[0]);
-            const validator = Object.create(detailedValidator);
+            const detailedValidator = await this.buildValidatorStructure(response, balance[0]);
+            const validator = { operators: undefined, ...detailedValidator };
             validator.operators = response?.operators;
             return validator;
         } catch (e) {
@@ -125,17 +125,17 @@ class Validator {
 
     buildValidatorStructure = async (validator: any, data: any) => {
         if (!data) return { public_key: validator.public_key, status: validator.status, balance: '0', apr: '0' };
-        const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${data.pubkey}/performance`;
+        const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${validator.public_key}/performance`;
         try {
             const performance = (await axios.get(url)).data;
             const balance = formatNumberFromBeaconcha(data.balance);
             const performance7days = performance.data ? formatNumberFromBeaconcha(performance.data.performance7d) : 0;
             // @ts-ignore
             const apr = formatNumberToUi(((performance7days / 32) * 100) * config.GLOBAL_VARIABLE.NUMBERS_OF_WEEKS_IN_YEAR);
-            const public_key = data.pubkey;
+            const public_key = validator.public_key;
             return { public_key, status: validator.status, balance, apr };
         } catch (e: any) {
-            return { public_key: data.pubkey, status: validator.status, balance: 0, apr: 0 };
+            return { public_key: validator.public_key, status: validator.status, balance: 0, apr: 0 };
         }
     };
 }

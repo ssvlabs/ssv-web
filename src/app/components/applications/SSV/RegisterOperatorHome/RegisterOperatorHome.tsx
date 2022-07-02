@@ -30,7 +30,7 @@ const RegisterOperatorHome = () => {
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Register Operator'} submitFunction={() => { history.push(config.routes.OPERATOR.GENERATE_KEYS); }} />
+                <SecondaryButton text={'Register Operator'} submitFunction={() => { history.push(config.routes.SSV.OPERATOR.GENERATE_KEYS); }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
                 Sign up as one of the network operators

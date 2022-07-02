@@ -35,7 +35,7 @@ const SetOperatorFee = () => {
     const operatorWithFee = operatorStore.newOperatorKeys;
     operatorWithFee.fee = userInput;
     operatorStore.setOperatorKeys(operatorWithFee);
-    history.push(config.routes.OPERATOR.CONFIRMATION_PAGE);
+    history.push(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
   };
 
   return (

@@ -1,41 +1,44 @@
 import axios from 'axios';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
+import Spinner from '~app/components/common/Spinner';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/components/common/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import BorderScreen from '~app/components/common/BorderScreen';
 import MessageDiv from '~app/components/common/MessageDiv/MessageDiv';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
-import Spinner from '~app/components/common/Spinner';
 
 const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    // @ts-ignore
-    const { public_key } = useParams();
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
+    const [validatorPublicKey, setValidatorPublicKey] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [processingFile, setProcessFile] = useState(false);
-
     const [keyStorePassword, setKeyStorePassword] = useState('');
 
     useEffect(() => {
         if (reUpload) {
+            if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+            Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
+                setValidatorPublicKey(validator.public_key);
+            });
             validatorStore.keyStoreFile = null;
         }
         validatorStore.clearValidatorData();
@@ -101,8 +104,6 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const renderFileImage = () => {
         let fileClass: any = classes.FileImage;
         const keyStorePublicKey = validatorStore.keyStorePublicKey;
-        const validatorPublicKey = public_key;
-
         if (
             reUpload &&
             validatorStore.isJsonFile &&
@@ -130,7 +131,6 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             );
         }
         const keyStorePublicKey = validatorStore.keyStorePublicKey;
-        const validatorPublicKey = public_key;
 
         if (
             reUpload &&
@@ -177,12 +177,12 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             await validatorStore.extractKeyStoreData(keyStorePassword);
             const deposited = await isDeposited();
             if (reUpload) {
-                history.push(`/dashboard/validator/${public_key}/confirm`);
+                history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
             } else if (deposited) {
                 operatorStore.unselectAllOperators();
-                history.push(config.routes.VALIDATOR.SELECT_OPERATORS);
+                history.push(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
             } else {
-                history.push(config.routes.VALIDATOR.DEPOSIT_VALIDATOR);
+                history.push(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
             }
         } catch (error: any) {
             console.log(error.message);
@@ -198,13 +198,13 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const buttonDisableConditions = !validatorStore.isJsonFile
         || !keyStorePassword
         || !!errorMessage
-        || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== public_key.replace('0x', '')?.toLowerCase())
+        || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== validatorPublicKey?.replace('0x', '')?.toLowerCase())
         || (!reUpload && validatorStore.validatorPublicKeyExist);
 
     const inputDisableConditions = !validatorStore.isJsonFile
         || processingFile
         || (!reUpload && validatorStore.validatorPublicKeyExist)
-        || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== public_key.replace('0x', '')?.toLowerCase());
+        || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== validatorPublicKey?.replace('0x', '')?.toLowerCase());
 
     return (
       <BorderScreen

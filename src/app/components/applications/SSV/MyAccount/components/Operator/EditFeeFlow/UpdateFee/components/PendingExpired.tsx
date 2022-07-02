@@ -32,7 +32,8 @@ const PendingExpired = () => {
         if (savedOperator && !savedOperator.includes(operator_id)) savedOperator.push(operator_id);
         localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
@@ -41,7 +42,7 @@ const PendingExpired = () => {
     }, []);
 
     const backToMyAccount = () => {
-        history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+        history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     };
 
     // @ts-ignore

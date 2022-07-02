@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
@@ -19,9 +19,6 @@ import { useStyles } from './index.styles';
 const FeeUpdated = () => {
     const stores = useStores();
     const history = useHistory();
-
-    // @ts-ignore
-    const { operator_id } = useParams();
     const [operator, setOperator] = useState(null);
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
@@ -29,7 +26,8 @@ const FeeUpdated = () => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then((response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
                 applicationStore.setIsLoading(false);
@@ -42,7 +40,7 @@ const FeeUpdated = () => {
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(`/dashboard/operator/${operator_id}`);
+            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }, 5000);
     };
 

@@ -113,7 +113,7 @@ class WalletStore extends BaseStore implements Wallet {
             await this.onboardSdk.walletCheck();
         } else {
             const applicationStore: Application = this.getStore('Application');
-            applicationStore.strategyRedirect = '/';
+            applicationStore.strategyRedirect = config.routes.SSV.ROOT;
             await this.resetUser();
             this.setAccountDataLoaded(true);
         }
@@ -154,7 +154,7 @@ class WalletStore extends BaseStore implements Wallet {
             if (process.env.REACT_APP_NEW_STAGE) {
                 const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
                 const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: 1, perPage: 5, ownerAddress: address, force: true });
-                applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? '/dashboard' : '/';
+                applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
             }
         }
         this.setAccountDataLoaded(true);
@@ -167,9 +167,9 @@ class WalletStore extends BaseStore implements Wallet {
         this.onboardSdk.walletReset();
         this.ssvStore.clearSettings();
         this.operatorStore.clearSettings();
-        applicationStore.strategyRedirect = '/';
         window.localStorage.removeItem('params');
         window.localStorage.removeItem('selectedWallet');
+        applicationStore.strategyRedirect = config.routes.SSV.ROOT;
     }
 
     /**

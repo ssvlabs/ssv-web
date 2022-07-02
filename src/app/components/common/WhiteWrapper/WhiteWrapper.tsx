@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import BackNavigation from '~app/components/common/BackNavigation';
@@ -11,6 +11,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './WhiteWrapper.styles';
+import config from '~app/common/config';
 
 type Props = {
     header: any,
@@ -30,8 +31,6 @@ const WhiteWrapper = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    // @ts-ignore
-    const { public_key } = useParams();
     const { header, children, withCancel, withSettings, backButtonRedirect, withBackButton = true } = props;
     const applicationStore: ApplicationStore = stores.Application;
     const settingsRef = useRef(null);
@@ -41,7 +40,7 @@ const WhiteWrapper = (props: Props) => {
 
     const cancelProcess = () => {
         applicationStore.cancelProcess();
-        history.push(`/dashboard/validator/${public_key}`);
+        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
     };
 
     const dialogHandler = () => {

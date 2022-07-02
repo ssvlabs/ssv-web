@@ -1,12 +1,13 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/components/common/Table/Table';
@@ -18,29 +19,31 @@ import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator/SingleValidator.styles';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { formatNumberToUi } from '~lib/utils/numbers';
 
 const SingleValidator = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    // @ts-ignore
-    const { public_key } = useParams();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const validatorStore: ValidatorStore = stores.Validator;
     const [validator, setValidator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
+    // @ts-ignore
+    const validatorPublicKey = validator?.public_key;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Validator.getInstance().getValidator(public_key).then((response: any) => {
+        if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
-                response.public_key = longStringShorten(public_key, 6, 4);
+                response.public_key = longStringShorten(response.public_key, 6, 4);
                 response.total_operators_fee = ssvStore.newGetFeeForYear(response.operators.reduce(
                     (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
                     0,
@@ -59,16 +62,16 @@ const SingleValidator = () => {
     ];
 
     const openBeaconcha = () => {
-        window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`, '_blank');
+        window.open(`${getBaseBeaconchaUrl()}/validator/${validatorPublicKey}`, '_blank');
     };
 
     const copyToClipboard = () => {
-        navigator.clipboard.writeText(public_key);
+        navigator.clipboard.writeText(validatorPublicKey);
         notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
 
     const openExplorer = () => {
-        window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`, '_blank');
+        window.open(`${config.links.LINK_EXPLORER}/validators/${validatorPublicKey.replace('0x', '')}`, '_blank');
     };
 
     const data = React.useMemo(
@@ -117,7 +120,7 @@ const SingleValidator = () => {
     );
 
     const editValidator = () => {
-        history.push(`/dashboard/validator/${public_key}/edit`);
+        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS);
     };
     
     const columns = React.useMemo(
@@ -143,7 +146,7 @@ const SingleValidator = () => {
                         accessor: 'status',
                     },
                     {
-                        Header: '1D Performance',
+                        Header: '30D Performance',
                         accessor: 'performance',
                     },
                     {
@@ -160,11 +163,11 @@ const SingleValidator = () => {
     return (
       <Grid container className={classes.SingleValidatorWrapper}>
         <WhiteWrapper
-          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
+          backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
           withSettings={{
                   text: 'Remove Validator',
                   onClick: () => {
-                      history.push(`/dashboard/validator/${public_key}/remove`);
+                      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT);
                   },
               }}
           header={'Validator Details'}
@@ -175,7 +178,7 @@ const SingleValidator = () => {
                 Address
               </Grid>
               <Grid item container className={classes.SubHeaderWrapper}>
-                <Typography>{longStringShorten(public_key, 6, 4)}</Typography>
+                <Typography>{longStringShorten(validatorPublicKey, 6, 4)}</Typography>
                 <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
                 <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />
                 <ImageDiv onClick={openBeaconcha} image={'beacon'} width={24} height={24} />

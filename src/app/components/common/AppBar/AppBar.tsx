@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
@@ -22,7 +23,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
     const [menuBar, openMenuBar] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     // const isDistribution = applicationStore.strategyName === 'distribution';
-    const hasOperatorsOrValidators = applicationStore.strategyRedirect === '/dashboard';
+    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
     // @ts-ignore
     const classes = useStyles({ backgroundColor });
 

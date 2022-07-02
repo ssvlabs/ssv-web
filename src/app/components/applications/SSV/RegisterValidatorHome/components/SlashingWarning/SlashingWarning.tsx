@@ -19,7 +19,7 @@ const SlashingWarning = () => {
     const [userAgreed, setUserAgreed] = useState(false);
 
     const goToConfirmation = () => {
-        history.push(config.routes.VALIDATOR.CONFIRMATION_PAGE);
+        history.push(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
     };
 
     return (

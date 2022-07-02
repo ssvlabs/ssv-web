@@ -40,51 +40,52 @@ const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/S
 const Routes: any = () => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
+    const ssvRoutes = config.routes.SSV;
     if (!walletStore.accountDataLoaded) return <div>Loading...</div>;
 
     const dashboardRoutes = [
-        { path: config.routes.MY_ACCOUNT.DEPOSIT, component: Deposit },
-        { path: config.routes.MY_ACCOUNT.WITHDRAW, component: Withdraw },
-        { path: config.routes.MY_ACCOUNT.DASHBOARD, component: MyAccount },
-        { path: config.routes.MY_ACCOUNT.OPERATOR, component: SingleOperator },
-        { path: config.routes.MY_ACCOUNT.VALIDATOR, component: SingleValidator },
-        { path: config.routes.MY_ACCOUNT.ENABLE_ACCOUNT, component: EnableAccount },
-        { path: config.routes.MY_ACCOUNT.EDIT_VALIDATOR, component: EditValidator },
-        { path: config.routes.MY_ACCOUNT.OPERATOR_UPDATE_FEE, component: UpdateFee },
-        { path: config.routes.MY_ACCOUNT.REMOVE_OPERATOR, component: RemoveOperator },
-        { path: config.routes.MY_ACCOUNT.OPERATOR_REMOVED, component: OperatorRemoved },
-        { path: config.routes.MY_ACCOUNT.UPLOAD_KEY_STORE, component: UploadKeyStore },
-        { path: config.routes.MY_ACCOUNT.REMOVE_VALIDATOR, component: RemoveValidator },
-        { path: config.routes.MY_ACCOUNT.VALIDATOR_REMOVED, component: ProductQuestions },
-        { path: config.routes.MY_ACCOUNT.CONFIRM_OPERATORS, component: ConfirmOperatorsChange },
+        { path: ssvRoutes.MY_ACCOUNT.DEPOSIT, component: Deposit },
+        { path: ssvRoutes.MY_ACCOUNT.WITHDRAW, component: Withdraw },
+        { path: ssvRoutes.MY_ACCOUNT.DASHBOARD, component: MyAccount },
+        { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, component: SingleOperator },
+        { path: ssvRoutes.MY_ACCOUNT.ENABLE_ACCOUNT, component: EnableAccount },
+        { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ROOT, component: SingleValidator },
+        { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START, component: UpdateFee },
+        { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, component: RemoveOperator },
+        { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, component: OperatorRemoved },
+        { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, component: RemoveValidator },
+        { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, component: ProductQuestions },
+        { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE, component: UploadKeyStore },
+        { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS, component: EditValidator },
+        { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, component: ConfirmOperatorsChange },
     ];
 
     const operatorRoutes = [
-        { path: config.routes.OPERATOR.HOME, component: RegisterOperatorHome },
-        { path: config.routes.OPERATOR.SET_FEE_PAGE, component: SetOperatorFee },
-        { path: config.routes.OPERATOR.SUCCESS_PAGE, component: OperatorSuccessPage },
-        { path: config.routes.OPERATOR.GENERATE_KEYS, component: GenerateOperatorKeys },
-        { path: config.routes.OPERATOR.CONFIRMATION_PAGE, component: OperatorTransactionConfirmation },
+        { path: ssvRoutes.OPERATOR.HOME, component: RegisterOperatorHome },
+        { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, component: SetOperatorFee },
+        { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, component: OperatorSuccessPage },
+        { path: ssvRoutes.OPERATOR.GENERATE_KEYS, component: GenerateOperatorKeys },
+        { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, component: OperatorTransactionConfirmation },
     ];
 
     const validatorsRoutes = [
-        { path: config.routes.VALIDATOR.CREATE, component: CreateValidator },
-        { path: config.routes.VALIDATOR.IMPORT, component: ImportValidator },
-        { path: config.routes.VALIDATOR.HOME, component: RegisterValidatorHome },
-        { path: config.routes.VALIDATOR.SUCCESS_PAGE, component: SuccessScreen },
-        { path: config.routes.VALIDATOR.SELECT_OPERATORS, component: SelectOperators },
-        { path: config.routes.VALIDATOR.SLASHING_WARNING, component: SlashingWarning },
-        { path: config.routes.VALIDATOR.DEPOSIT_VALIDATOR, component: DepositViaLaunchpad },
-        { path: config.routes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, component: AccountBalanceAndFee },
-        { path: config.routes.VALIDATOR.CONFIRMATION_PAGE, component: ValidatorTransactionConfirmation },
+        { path: ssvRoutes.VALIDATOR.CREATE, component: CreateValidator },
+        { path: ssvRoutes.VALIDATOR.IMPORT, component: ImportValidator },
+        { path: ssvRoutes.VALIDATOR.HOME, component: RegisterValidatorHome },
+        { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, component: SuccessScreen },
+        { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, component: SelectOperators },
+        { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, component: SlashingWarning },
+        { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, component: DepositViaLaunchpad },
+        { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, component: AccountBalanceAndFee },
+        { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, component: ValidatorTransactionConfirmation },
     ];
 
     return (
       <Layout>
         <SsvAppBar />
         <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-        <Route exact path={config.routes.HOME} component={Welcome} />
-        <Route path={config.routes.MY_ACCOUNT.DASHBOARD}>
+        <Route exact path={ssvRoutes.ROOT} component={Welcome} />
+        <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
           <Switch>
             {dashboardRoutes.map((route, index:number) => {
                   return (
@@ -97,7 +98,7 @@ const Routes: any = () => {
               })}
           </Switch>
         </Route>
-        <Route path={config.routes.OPERATOR.HOME}>
+        <Route path={ssvRoutes.OPERATOR.HOME}>
           <Switch>
             {operatorRoutes.map((route, index:number) => {
                   return (
@@ -111,7 +112,7 @@ const Routes: any = () => {
           </Switch>
         </Route>
 
-        <Route path={config.routes.VALIDATOR.HOME}>
+        <Route path={ssvRoutes.VALIDATOR.HOME}>
           <Switch>
             {validatorsRoutes.map((route, index:number) => {
                   return (

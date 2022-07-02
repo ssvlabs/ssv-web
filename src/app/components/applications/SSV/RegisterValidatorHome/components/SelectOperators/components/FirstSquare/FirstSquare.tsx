@@ -111,13 +111,13 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const sortHandler = (sortType: string) => {
         if (sortBy === sortType && sortOrder === 'asc') {
+            setSortBy('');
             setSortOrder('desc');
         } else if (sortBy === sortType && sortOrder === 'desc') {
-            setSortBy('');
             setSortOrder('asc');
         } else {
             setSortBy(sortType);
-            setSortOrder('asc');
+            setSortOrder('desc');
         }
     };
 
@@ -270,9 +270,10 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                         const ascending = sortOrder === 'asc';
                         const descending = sortOrder === 'desc';
                         let headerClasses = classes.SortArrow;
+
                         if (sortByType) {
-                            if (descending) headerClasses += ` ${classes.ArrowUp}`;
                             if (ascending) headerClasses += ` ${classes.ArrowDown}`;
+                            if (descending) headerClasses += ` ${classes.ArrowUp}`;
                         }
 
                           return (

@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -28,8 +28,6 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 const SingleOperator = () => {
     const stores = useStores();
     const history = useHistory();
-    // @ts-ignore
-    const { operator_id } = useParams();
     const beaconchaBaseUrl = getBaseBeaconchaUrl();
     const [operator, setOperator] = useState(null);
     const [operatorsValidators, setOperatorsValidators] = useState([]);
@@ -42,9 +40,11 @@ const SingleOperator = () => {
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().getOperator(operator_id).then(async (response: any) => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
-                response.revenue = await operatorStore.getOperatorRevenue(operator_id);
+                // @ts-ignore
+                response.revenue = await operatorStore.getOperatorRevenue(operatorStore.processOperatorId);
                 setOperator(response);
                 applicationStore.setIsLoading(false);
                 loadOperatorValidators({ page: 1, perPage: 5 });
@@ -55,7 +55,8 @@ const SingleOperator = () => {
     const loadOperatorValidators = async (props: { page: number, perPage: number }) => {
         // eslint-disable-next-line react/prop-types
         const { page, perPage } = props;
-        const response = await Operator.getInstance().getOperatorValidators({ operatorId: operator_id, page, perPage });
+        // @ts-ignore
+        const response = await Operator.getInstance().getOperatorValidators({ operatorId: operatorStore.processOperatorId, page, perPage });
         setOperatorsValidators(response.validators);
         setOperatorsValidatorsPagination(response.pagination);
     };
@@ -87,7 +88,7 @@ const SingleOperator = () => {
     };
 
     const moveToUpdateFee = () => {
-        history.push(`/dashboard/operator/${operator_id}/update-fee`);
+        history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
     };
 
     const openBeaconcha = (publicKey: string) => {
@@ -209,11 +210,11 @@ const SingleOperator = () => {
     return (
       <Grid container item>
         <WhiteWrapper
-          backButtonRedirect={config.routes.MY_ACCOUNT.DASHBOARD}
+          backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
           withSettings={{
                   text: 'Remove Operator',
                   onClick: () => {
-                      history.push(`/dashboard/operator/${operator_id}/remove`);
+                      history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
                   },
               }}
           header={'Operator Details'}

@@ -25,14 +25,22 @@ const EnableAccount = () => {
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const [validators, setValidators] = useState([]);
-    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee);
     const [ownerAddressCost, setOwnerAddressCost] = useState(0);
+    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 16);
     const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost);
     const liquidationCollateral = multiplyNumber(
         addNumber(ssvStore.networkFee, ownerAddressCost),
         ssvStore.liquidationCollateral,
     );
     const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
+
+    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
+    console.log(ssvStore.networkFee);
+    console.log(allOperatorsFee);
+    console.log(liquidationCollateral);
+    console.log(totalFee);
+    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
+
     const summaryFields = [
         { name: 'Operators yearly fee', value: allOperatorsFee },
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees), toolTipText: <>Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. <LinkText text={'Read more on fees'} link={'TODO'} /></> },
@@ -56,7 +64,7 @@ const EnableAccount = () => {
 
     const enableAccount = async (fee: any) => {
        const response = await ssvStore.activateValidator(fee);
-       if (response) history.push(config.routes.MY_ACCOUNT.DASHBOARD);
+       if (response) history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     };
 
     return (

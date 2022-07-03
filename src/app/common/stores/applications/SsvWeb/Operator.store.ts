@@ -304,6 +304,25 @@ class OperatorStore extends BaseStore {
     }
 
     /**
+     * Get operator by publicKey
+     * @param publicKey
+     */
+    @action.bound
+    async getOperatorByPublicKey(publicKey: string): Promise<any> {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        try {
+            const contractInstance = walletStore.getContract;
+            const result = await contractInstance.methods.getOperatorByPublicKey(publicKey).call({ from: walletStore.accountAddress });
+
+            console.log(result);
+            return result[1] !== '0x0000000000000000000000000000000000000000';
+        } catch (e) {
+            console.error('Exception from operator existence check:', e);
+            return false;
+        }
+    }
+
+    /**
      * Get operator revenue
      */
     @action.bound

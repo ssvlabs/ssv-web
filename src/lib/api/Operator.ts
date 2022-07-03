@@ -94,6 +94,7 @@ class Operator {
             return null;
         }
     }
+
     /**
      * Get operator validators
      */

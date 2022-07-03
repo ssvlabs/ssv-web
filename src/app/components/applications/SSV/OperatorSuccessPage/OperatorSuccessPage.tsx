@@ -1,5 +1,4 @@
-import React from 'react';
-import { sha256 } from 'js-sha256';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -8,9 +7,8 @@ import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import ImageDiv from '~app/components/common/ImageDiv';
 import { useStyles } from './OperatorSuccessPage.styles';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
+// import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -22,13 +20,20 @@ const SetOperatorFee = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const walletStore: WalletStore = stores.Wallet;
+    // const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
+    const [operatorId, setOperatorId] = useState('');
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
+    
+    useEffect(() => {
+        operatorStore.getOperatorByPublicKey(operatorStore.newOperatorKeys.pubKey).then(() => {
+            setOperatorId('8');
+        });
+    }, []);
 
-    const copyPublicKey = () => {
-        navigator.clipboard.writeText(sha256(walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey)));
+    const copyOperatorId = () => {
+        navigator.clipboard.writeText(operatorId);
         notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
 
@@ -53,18 +58,10 @@ const SetOperatorFee = () => {
               subtitle={'Congrats, your operator is live and could now be discoverable by all the network validators.'}
             />
             <Grid container item style={{ marginBottom: 16 }}>
-              <Typography className={classes.Text}>Your network identifier is the following address:</Typography>
+              <Typography className={classes.Text}>Your network identifier is the following:</Typography>
             </Grid>
-            <Grid container item style={{ gap: 8 }}>
-              <Typography className={classes.LightText}>Operator address</Typography>
-              <Grid container className={classes.OperatorAddressWrapper}>
-                <Grid item xs={11} style={{ overflow: 'scroll' }}>
-                  0x{sha256(walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey))}
-                </Grid>
-                <Grid item>
-                  <ImageDiv image={'copy'} onClick={copyPublicKey} width={24} height={24} />
-                </Grid>
-              </Grid>
+            <Grid onClick={copyOperatorId}>
+              {operatorId}
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>
               <Grid className={classes.Text}>

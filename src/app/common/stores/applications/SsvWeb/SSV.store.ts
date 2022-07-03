@@ -99,7 +99,7 @@ class SsvStore extends BaseStore {
     async initUser() {
         clearInterval(this.accountInterval);
         this.userSyncInterval();
-        this.accountInterval = setInterval(this.userSyncInterval, 10000);
+        this.accountInterval = setInterval(this.userSyncInterval, 2000);
     }
 
     @action.bound

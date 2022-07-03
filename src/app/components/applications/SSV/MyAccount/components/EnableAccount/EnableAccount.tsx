@@ -26,20 +26,14 @@ const EnableAccount = () => {
     const walletStore: WalletStore = stores.Wallet;
     const [validators, setValidators] = useState([]);
     const [ownerAddressCost, setOwnerAddressCost] = useState(0);
-    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 16);
+    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
+    console.log(ssvStore.networkFee);
     const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost);
     const liquidationCollateral = multiplyNumber(
         addNumber(ssvStore.networkFee, ownerAddressCost),
         ssvStore.liquidationCollateral,
     );
     const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
-
-    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
-    console.log(ssvStore.networkFee);
-    console.log(allOperatorsFee);
-    console.log(liquidationCollateral);
-    console.log(totalFee);
-    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
 
     const summaryFields = [
         { name: 'Operators yearly fee', value: allOperatorsFee },

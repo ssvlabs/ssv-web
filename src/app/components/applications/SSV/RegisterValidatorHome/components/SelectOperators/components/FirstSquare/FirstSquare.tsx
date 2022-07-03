@@ -54,7 +54,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             { type: '', displayName: '' },
             { type: 'name', displayName: 'Name' },
             { type: 'validators_count', displayName: 'Validators' },
-            { type: 'performance', displayName: '30d performance' },
+            { type: 'performance.30d', displayName: '30d performance' },
             { type: 'fee', displayName: 'Yearly Fee' },
             { type: '', displayName: '' },
         ];
@@ -72,6 +72,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             type: filterBy,
             search: searchInput,
         };
+
+        console.log(payload);
 
         const response = await Operator.getInstance().getOperators(payload);
 

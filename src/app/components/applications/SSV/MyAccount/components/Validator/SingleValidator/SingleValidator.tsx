@@ -80,7 +80,8 @@ const SingleValidator = () => {
             // @ts-ignore
             return validator?.operators?.map((operator: any) => {
                 // eslint-disable-next-line no-param-reassign
-                operator.performance = operator.performance['30d'] || '0%';
+                operator.performance = (operator.performance['30d'] && Number(operator.performance['30d']).toFixed(2)) || 0;
+
                 const {
                     fee,
                     name,
@@ -99,7 +100,7 @@ const SingleValidator = () => {
                         fee,
                     }} />,
                     status: <Status status={status} />,
-                    performance: <Typography className={classes.PerformanceHeader}>{performance}</Typography>,
+                    performance: <Typography className={classes.PerformanceHeader}>{performance}%</Typography>,
                     fee: <Grid item container justify={'space-between'}>
                       <Grid item>
                         <SsvAndSubTitle leftTextAlign ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />

@@ -150,7 +150,7 @@ const ImportValidatorConfirmation = () => {
         <Grid container>
           <Button
             withAllowance
-            disable={false}
+            disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance}
             text={actionButtonText}
             testId={'confirm-button'}
             onClick={onRegisterValidatorClick}

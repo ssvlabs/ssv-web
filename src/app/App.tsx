@@ -49,6 +49,16 @@ const App = () => {
             history.push(applicationStore.strategyRedirect);
         }
     }, [walletStore.accountDataLoaded]);
+    //
+    // const bla = () => {
+    //     // @ts-ignore
+    //     window.dataLayer.push({
+    //         'event': 'customEvent',
+    //         'bookCategory': 'fiction',
+    //         'bookTitle': 'Cien años de soledad',
+    //         'bookAuthor': 'Gabriel García Márquez',
+    //     });
+    // };
 
     return (
       <MuiThemeProvider theme={applicationStore.theme}>
@@ -58,6 +68,7 @@ const App = () => {
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
         )}
+        {/* <a href="#" onClick={bla}>Book details</a> */}
         <BarMessage />
         {/* <AppBar /> */}
         <BrowserView>

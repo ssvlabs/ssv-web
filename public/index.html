@@ -5,21 +5,19 @@
     window.dataLayer = window.dataLayer || [];
   </script>
   <script>
-    if(window.location.hash === '#protected'){
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          'gtm.start':
-                  new Date().getTime(), event: 'gtm.js'
-        });
-        var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src =
-                "%REACT_APP_GOOGLE_TAG_URL%" + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', "%REACT_APP_GOOGLE_TAG_SECRET%");
-    }
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start':
+                new Date().getTime(), event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+              j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src =
+              "%REACT_APP_GOOGLE_TAG_URL%" + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', "%REACT_APP_GOOGLE_TAG_SECRET%");
   </script>
   <meta http-equiv="Cache-Control" content="max-age=0">
   <meta http-equiv="Cache-Control" content="no-cache">
@@ -80,7 +78,7 @@
                          https://cdn.freelogovectors.net/wp-content/uploads/2021/12/mexc_logo-freelogovectors.net_.png;
                      manifest-src 'self';
                      script-src-elem 'self' 'unsafe-inline' http://www.googletagmanager.com/ http://www.google-analytics.com/analytics.js;
-                     script-src 'self' 'unsafe-inline' data: https://ssl.google-analytics.com/ https://www.google-analytics.com/;
+                     script-src 'self' 'unsafe-eval' 'unsafe-inline' data: https://ssl.google-analytics.com/ https://www.google-analytics.com/;
                      font-src *.gstatic.com;
                      style-src-elem 'unsafe-inline' https://fonts.googleapis.com/;
                      style-src 'unsafe-inline';"
@@ -90,7 +88,7 @@
   <link href="%PUBLIC_URL%/logo192.png" rel="apple-touch-icon"/>
   <link href="%PUBLIC_URL%/manifest.json" rel="manifest"/>
 </head>
-<body style="padding: 0; margin: 0" >
+<body style="padding: 0; margin: 0">
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root" />
 <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>

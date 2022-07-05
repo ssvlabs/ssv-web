@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import { useStyles } from './OperatorSuccessPage.styles';
-// import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 
 const SetOperatorFee = () => {
     const stores = useStores();
@@ -22,18 +22,11 @@ const SetOperatorFee = () => {
     const history = useHistory();
     // const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
-    const [operatorId, setOperatorId] = useState('');
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    
-    useEffect(() => {
-        operatorStore.getOperatorByPublicKey(operatorStore.newOperatorKeys.pubKey).then(() => {
-            setOperatorId('8');
-        });
-    }, []);
 
     const copyOperatorId = () => {
-        navigator.clipboard.writeText(operatorId);
+        navigator.clipboard.writeText(String(operatorStore.newOperatorKeys.id));
         notificationsStore.showMessage('Copied to clipboard.', 'success');
     };
 
@@ -61,7 +54,7 @@ const SetOperatorFee = () => {
               <Typography className={classes.Text}>Your network identifier is the following:</Typography>
             </Grid>
             <Grid onClick={copyOperatorId}>
-              {operatorId}
+              <OperatorId successPage id={operatorStore.newOperatorKeys.id} />
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>
               <Grid className={classes.Text}>

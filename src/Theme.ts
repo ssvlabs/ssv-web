@@ -37,7 +37,7 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             gray40: '#97a5ba',
             gray60: isDarkMode ? '#cbd3e5' : '#63768b',
             gray80: isDarkMode ? '#e6eaf7' : '#34455a',
-            gray90: isDarkMode ? '#fdfefe' : '#0b2a3c',
+            gray90: isDarkMode ? '#fdfefe' : '#0b2a3c', // should be gray 70
             gray100: isDarkMode ? '#f9fbfc' : '#062031',
             black: isDarkMode ? '#f4f7fa' : '#011627',
             white: isDarkMode ? '#0b2a3c' : '#fdfefe',

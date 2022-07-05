@@ -8,12 +8,14 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { useStyles } from './OperatorId.styles';
 
 type Props = {
- id: string
+    id: string,
+    successPage?: boolean,
 };
 
 const OperatorId = (props: Props) => {
     const stores = useStores();
-    const classes = useStyles();
+    const { id, successPage } = props;
+    const classes = useStyles({ successPage });
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     const copyToClipboard = () => {
@@ -23,7 +25,7 @@ const OperatorId = (props: Props) => {
 
     return (
       <Grid item container className={classes.Wrapper}>
-        <Typography className={classes.OperatorId}>Operator ID: {props.id}</Typography>
+        <Typography className={classes.OperatorId}>{successPage ? 'ID' : 'Operator ID'}: {id}</Typography>
         <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
         <ImageDiv image={'explorer'} width={24} height={24} />
       </Grid>

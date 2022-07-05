@@ -78,6 +78,7 @@ const GenerateOperatorKeys = () => {
 
         const operatorKeys: NewOperator = {
             fee: 0,
+            id: '0',
             name: inputsData.name,
             address: walletStore.accountAddress,
             pubKey: walletStore.encodeKey(inputsData.publicKey),

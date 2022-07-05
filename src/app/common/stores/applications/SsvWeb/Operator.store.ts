@@ -11,8 +11,9 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 export interface NewOperator {
-    name: string,
+    id: string,
     fee: number,
+    name: string,
     pubKey: string,
     address: string,
 }
@@ -73,9 +74,7 @@ class OperatorStore extends BaseStore {
     @observable approveOperatorFeePeriod: null | number = null;
     @observable operatorApprovalBeginTime: null | number = null;
     
-    @observable newOperatorReceipt: any = null;
-
-    @observable newOperatorKeys: NewOperator = { name: '', pubKey: '', address: '', fee: 0 };
+    @observable newOperatorKeys: NewOperator = { name: '', pubKey: '', address: '', fee: 0, id: '0' };
     @observable newOperatorRegisterSuccessfully: string = '';
 
     @observable estimationGas: number = 0;
@@ -245,10 +244,11 @@ class OperatorStore extends BaseStore {
     @action.bound
     clearOperatorData() {
         this.newOperatorKeys = {
-            pubKey: '',
-            name: '',
-            address: '',
             fee: 0,
+            id: '0',
+            name: '',
+            pubKey: '',
+            address: '',
         };
         this.newOperatorRegisterSuccessfully = '';
     }
@@ -481,7 +481,6 @@ class OperatorStore extends BaseStore {
                 const address: string = this.newOperatorKeys.address;
                 const transaction: NewOperator = this.newOperatorKeys;
                 const gasEstimation: PriceEstimation = new PriceEstimation();
-                this.newOperatorReceipt = null;
 
                 const fee = new Decimal(transaction.fee);
 
@@ -517,10 +516,10 @@ class OperatorStore extends BaseStore {
                         .send({ from: address })
                         .on('receipt', async (receipt: any) => {
                             // eslint-disable-next-line no-prototype-builtins
-                            const event: boolean = receipt.hasOwnProperty('events');
-                            if (event) {
+                            const events: boolean = receipt.hasOwnProperty('events');
+                            if (events) {
                                 console.debug('Contract Receipt', receipt);
-                                this.newOperatorReceipt = receipt;
+                                this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
                                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                                 resolve(true);
                             }

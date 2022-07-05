@@ -167,7 +167,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getContract;
         this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
-        const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
+        const response = await contract.methods.getOperatorDeclareFee(operatorId).call();
         this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
         this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
         this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
@@ -198,7 +198,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contract: Contract = walletStore.getContract;
-                contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+                contract.methods.cancelDeclareOperatorFee(operatorId).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
@@ -350,7 +350,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contractInstance = walletStore.getContract;
-                const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+                const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toString();
                 await contractInstance.methods.declareOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins

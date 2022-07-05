@@ -27,7 +27,6 @@ const EnableAccount = () => {
     const [validators, setValidators] = useState([]);
     const [ownerAddressCost, setOwnerAddressCost] = useState(0);
     const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
-    console.log(ssvStore.networkFee);
     const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost);
     const liquidationCollateral = multiplyNumber(
         addNumber(ssvStore.networkFee, ownerAddressCost),

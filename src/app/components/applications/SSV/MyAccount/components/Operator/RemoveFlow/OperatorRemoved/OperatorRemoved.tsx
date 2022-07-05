@@ -1,18 +1,17 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
-import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved/OperatorRemoved.styles';
+import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId/OperatorId';
 
 const OperatorRemoved = () => {
     const stores = useStores();
@@ -21,7 +20,6 @@ const OperatorRemoved = () => {
     const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
     const applicationStore: ApplicationStore = stores.Application;
-    const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
@@ -42,24 +40,15 @@ const OperatorRemoved = () => {
         }, 5000);
     };
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(address);
-        notificationsStore.showMessage('Copied to clipboard.', 'success');
-    };
-
     // @ts-ignore
-    const { address } = operator || {};
+    const { id } = operator || {};
 
     if (!operator) return null;
 
     return (
       <Grid container item>
         <WhiteWrapper withBackButton={false} header={'Remove Operator'}>
-          <Grid item container className={classes.HeaderWrapper}>
-            <Typography className={classes.Address}>{address}</Typography>
-            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
-            <ImageDiv image={'explorer'} width={24} height={24} />
-          </Grid>
+          <OperatorId id={id} />
         </WhiteWrapper>
         <Grid item container className={classes.Wrapper}>
           <Grid item className={classes.BackgroundImage} />

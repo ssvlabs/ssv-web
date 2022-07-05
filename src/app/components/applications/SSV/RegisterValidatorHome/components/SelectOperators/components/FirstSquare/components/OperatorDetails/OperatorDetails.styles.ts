@@ -32,10 +32,10 @@ export const useStyles = makeStyles((theme) => ({
         marginLeft: 8,
         alignSelf: 'flex-start',
     },
-    Address: {
-        fontSize: 12,
+    Id: {
+        fontSize: 14,
         fontWeight: 500,
-        lineHeight: 1.5,
+        lineHeight: 1.62,
         color: 'rgb(161, 172, 190)',
     },
 }));

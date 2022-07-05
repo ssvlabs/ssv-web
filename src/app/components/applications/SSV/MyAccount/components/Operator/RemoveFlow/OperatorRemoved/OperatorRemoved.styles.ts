@@ -1,16 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-    HeaderWrapper: {
-        gap: 8,
-        paddingBottom: 52,
-    },
-    Address: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.62,
-        color: theme.colors.gray80,
-    },
     Wrapper: {
         width: 648,
         height: 245,

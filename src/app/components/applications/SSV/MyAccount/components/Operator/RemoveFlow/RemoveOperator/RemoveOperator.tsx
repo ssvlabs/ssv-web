@@ -10,13 +10,12 @@ import CheckBox from '~app/components/common/CheckBox';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
-import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator/RemoveOperator.styles';
+import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 
 const RemoveOperator = () => {
     const stores = useStores();
@@ -28,7 +27,6 @@ const RemoveOperator = () => {
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
     const classes = useStyles({ leavingReason, isLoading: applicationStore.isLoading });
-    const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
         applicationStore.setIsLoading(true);
@@ -119,25 +117,15 @@ const RemoveOperator = () => {
         if (isRemoved) history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS);
     };
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(address);
-        notificationsStore.showMessage('Copied to clipboard.', 'success');
-    };
-
     // @ts-ignore
-    const { address } = operator || {};
+    const { id } = operator || {};
 
     if (!operator) return null;
 
     return (
       <Grid container item>
         <WhiteWrapper header={'Remove Operator'}>
-          <Grid item container className={classes.HeaderWrapper}>
-            <Typography className={classes.Address}>{address}</Typography>
-            <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
-            <ImageDiv image={'explorer'} width={24} height={24} />
-            <ImageDiv image={'beacon'} width={24} height={24} />
-          </Grid>
+          <OperatorId id={id} />
         </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>
           <BorderScreen

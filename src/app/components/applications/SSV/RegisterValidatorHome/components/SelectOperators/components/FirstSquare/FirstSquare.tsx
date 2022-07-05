@@ -73,8 +73,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             search: searchInput,
         };
 
-        console.log(payload);
-
         const response = await Operator.getInstance().getOperators(payload);
 
         if (response?.pagination?.page > 1) {

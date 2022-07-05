@@ -5,9 +5,10 @@ import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
+import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
+import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 import CancelUpdateFee from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/CancelUpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/UpdateFee.styles';
 import DeclareFee from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/DeclareFee';
@@ -35,14 +36,6 @@ const UpdateFee = () => {
             }
         });
     }, []);
-
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         console.log('now!');
-    //         getCurrentState(undefined);
-    //     }, 5000);
-    //     return () => clearInterval(interval);
-    // }, []);
 
     const getCurrentState = async (forceState?: number) => {
         if (typeof forceState === 'number') {
@@ -78,7 +71,7 @@ const UpdateFee = () => {
     };
 
     // @ts-ignore
-    const { logo, address } = operator || {};
+    const { logo, id } = operator || {};
     const classes = useStyles({ operatorLogo: logo });
 
     const renderBody = () => {
@@ -108,7 +101,9 @@ const UpdateFee = () => {
 
     return (
       <Grid container item>
-        <ValidatorWhiteHeader withBackButton address={address} text={'Update Operator Fee'} withoutBeaconcha />
+        <WhiteWrapper header={'Update Operator Fee'}>
+          <OperatorId id={id} />
+        </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>
           {renderBody()}
           <CancelUpdateFee getCurrentState={getCurrentState} />

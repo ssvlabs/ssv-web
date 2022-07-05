@@ -11,6 +11,8 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorDetails
+    from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 type Props = {
     index: number,
@@ -46,10 +48,7 @@ const ValidatorDropDownMenu = (props: Props) => {
                         return (
                           <Grid key={operatorIndex} item container xs={12} className={classes.OperatorWrapper}>
                             <Grid item>
-                              <NameAndAddress
-                                name={operator.name}
-                                address={`0x${longStringShorten(operator.address, 4)}`}
-                              />
+                              <OperatorDetails operator={operator} />
                             </Grid>
                             <Grid item xs>
                               <SsvAndSubTitle ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} subText={'/year'} />

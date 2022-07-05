@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
+  <script>
     if(window.location.hash === '#protected'){
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -76,8 +79,8 @@
                          https://upload.wikimedia.org/
                          https://cdn.freelogovectors.net/wp-content/uploads/2021/12/mexc_logo-freelogovectors.net_.png;
                      manifest-src 'self';
-                     script-src-elem 'self' 'unsafe-inline' http://www.googletagmanager.com http://www.google-analytics.com/analytics.js;
-                     script-src 'self' 'unsafe-eval' data: https://ssl.google-analytics.com https://www.google-analytics.com;
+                     script-src-elem 'self' 'unsafe-inline' http://www.googletagmanager.com/ http://www.google-analytics.com/analytics.js;
+                     script-src 'self' 'unsafe-inline' data: https://ssl.google-analytics.com/ https://www.google-analytics.com/;
                      font-src *.gstatic.com;
                      style-src-elem 'unsafe-inline' https://fonts.googleapis.com/;
                      style-src 'unsafe-inline';"
@@ -89,6 +92,11 @@
 </head>
 <body style="padding: 0; margin: 0" >
 <noscript>You need to enable JavaScript to run this app.</noscript>
+<a href="#" onclick="dataLayer.push({
+    'bookCategory': 'fiction',
+    'bookTitle': 'Cien años de soledad',
+    'bookAuthor': 'Gabriel García Márquez'
+});">Book details</a>
 <div id="root" />
 <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
 <noscript>

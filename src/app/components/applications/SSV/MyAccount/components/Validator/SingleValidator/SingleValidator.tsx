@@ -83,22 +83,13 @@ const SingleValidator = () => {
                 operator.performance = (operator.performance['30d'] && Number(operator.performance['30d']).toFixed(2)) || 0;
 
                 const {
-                    fee,
-                    name,
-                    type,
                     status,
                     address,
                     performance,
                 } = operator;
 
                 return {
-                    public_key: <OperatorDetails operator={{
-                        status,
-                        name,
-                        type,
-                        address,
-                        fee,
-                    }} />,
+                    public_key: <OperatorDetails operator={operator} />,
                     status: <Status status={status} />,
                     performance: <Typography className={classes.PerformanceHeader}>{performance}%</Typography>,
                     fee: <Grid item container justify={'space-between'}>

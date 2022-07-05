@@ -14,13 +14,13 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import OperatorType from '~app/components/common/OperatorType';
+import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
@@ -111,7 +111,7 @@ const SingleOperator = () => {
                   <Typography
                     className={classes.TableValueText}>{`0x${longStringShorten(address, 4, 4)}`}</Typography>
                   <ImageDiv onClick={() => copyToClipboard(address)} image={'copy'} width={24} height={24} />
-                  <ImageDiv onClick={() => openExplorer(`operators/${address}`)} image={'explorer'} width={24}
+                  <ImageDiv onClick={() => openExplorer(address)} image={'explorer'} width={24}
                     height={24} />
                 </Grid>,
             },

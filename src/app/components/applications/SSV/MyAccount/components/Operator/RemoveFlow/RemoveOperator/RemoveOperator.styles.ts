@@ -5,7 +5,7 @@ export const useStyles = makeStyles((theme) => ({
         gap: 8,
         paddingBottom: 52,
     },
-    Address: {
+    OperatorId: {
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,

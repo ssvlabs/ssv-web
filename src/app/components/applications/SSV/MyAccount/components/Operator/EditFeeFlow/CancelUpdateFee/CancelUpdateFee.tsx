@@ -2,8 +2,8 @@ import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
+import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -13,7 +13,6 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-// import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './CancelUpdateFee.styles';
 
 type Props = {
@@ -25,8 +24,6 @@ const CancelUpdateFee = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    // @ts-ignore
-    const { operator_id } = useParams();
     const [successPage, showSuccessPage] = useState(false);
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
@@ -35,7 +32,8 @@ const CancelUpdateFee = (props: Props) => {
 
     const cancelUpdateProcess = async () => {
         applicationStore.setIsLoading(true);
-        const response = await operatorStore.cancelChangeFeeProcess(operator_id);
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId);
         if (response) {
             showSuccessPage(true);
         }
@@ -43,7 +41,7 @@ const CancelUpdateFee = (props: Props) => {
     };
 
     const backToMyAccount = () => {
-        history.push(`/dashboard/operator/${operator_id}`);
+        history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
         operatorStore.switchCancelDialog();
     };
 

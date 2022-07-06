@@ -136,6 +136,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/explorer/gray.svg)',
+        backgroundImage: `url(/images/explorer/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
 }));

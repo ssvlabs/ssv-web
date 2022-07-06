@@ -86,6 +86,7 @@ export const useStyles = makeStyles((theme) => ({
     NotVerifiedText: {
         cursor: 'pointer',
         fontWeight: 'bold',
+        display: 'inline-block',
         textDecoration: 'underline',
         color: theme.colors.primaryBlue,
     },

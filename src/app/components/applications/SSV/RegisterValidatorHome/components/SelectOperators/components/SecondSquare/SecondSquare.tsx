@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
@@ -108,7 +108,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
             {!allSelectedOperatorsVerified && (
               <Grid container item xs={12} className={classes.WarningMessage}>
                 <Grid item xs={12} className={classes.WarningHeader}>
-                  You have selected one or more operators that are <Grid className={classes.NotVerifiedText} onClick={linkToNotVerified}>not verified.</Grid>
+                  You have selected one or more operators that are <Typography className={classes.NotVerifiedText} onClick={linkToNotVerified}>not verified.</Typography>
                 </Grid>
                 <Grid item xs={12}>
                   Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to your validators’ performance.

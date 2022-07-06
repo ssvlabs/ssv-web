@@ -87,7 +87,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: `url(/images/three_dots/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        backgroundImage: `url(/images/kebab/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     SettingsWrapper: {
         top: 60,

@@ -1020,7 +1020,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'cancelDeclareOperatorFee',
+                    'name': 'cancelDeclaredOperatorFee',
                     'outputs': [
 
                     ],
@@ -1124,7 +1124,7 @@ const config = {
                     'inputs': [
 
                     ],
-                    'name': 'getDeclareOperatorFeePeriod',
+                    'name': 'getDeclaredOperatorFeePeriod',
                     'outputs': [
                         {
                             'internalType': 'uint256',
@@ -1169,7 +1169,7 @@ const config = {
                     'inputs': [
 
                     ],
-                    'name': 'getNetworkFee',
+                    'name': 'getNetworkEarnings',
                     'outputs': [
                         {
                             'internalType': 'uint256',
@@ -1184,7 +1184,7 @@ const config = {
                     'inputs': [
 
                     ],
-                    'name': 'getNetworkTreasury',
+                    'name': 'getNetworkFee',
                     'outputs': [
                         {
                             'internalType': 'uint256',
@@ -1301,7 +1301,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'getOperatorDeclareFee',
+                    'name': 'getOperatorDeclaredFee',
                     'outputs': [
                         {
                             'internalType': 'uint256',

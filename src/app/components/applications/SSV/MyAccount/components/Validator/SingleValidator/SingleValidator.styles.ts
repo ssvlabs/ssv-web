@@ -39,7 +39,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundRepeat: 'no-repeat',
         marginRight: theme.spacing(2),
         marginLeft: theme.spacing(2),
-        backgroundImage: `url(/images/three_dots/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+        backgroundImage: `url(/images/kebab/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     FieldsWrapper: {
         gap: 100,

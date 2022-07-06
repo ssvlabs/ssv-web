@@ -12,9 +12,9 @@ import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import MobileNotSupported from '~app/components/common/MobileNotSupported';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import MobileNotSupported from '~app/components/common/MobileNotSupported';
 
 declare global {
     interface Window {
@@ -49,16 +49,6 @@ const App = () => {
             history.push(applicationStore.strategyRedirect);
         }
     }, [walletStore.accountDataLoaded]);
-    //
-    // const bla = () => {
-    //     // @ts-ignore
-    //     window.dataLayer.push({
-    //         'event': 'customEvent',
-    //         'bookCategory': 'fiction',
-    //         'bookTitle': 'Cien años de soledad',
-    //         'bookAuthor': 'Gabriel García Márquez',
-    //     });
-    // };
 
     return (
       <MuiThemeProvider theme={applicationStore.theme}>
@@ -68,7 +58,6 @@ const App = () => {
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
         )}
-        {/* <a href="#" onClick={bla}>Book details</a> */}
         <BarMessage />
         {/* <AppBar /> */}
         <BrowserView>

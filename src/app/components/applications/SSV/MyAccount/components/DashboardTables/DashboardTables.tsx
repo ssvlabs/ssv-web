@@ -1,4 +1,3 @@
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -21,6 +20,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/DashboardTables/DashboardTables.styles';
+import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 
 type LoadItemsParams = {
     type: string;
@@ -226,17 +226,12 @@ const DashboardTables = () => {
 
     // return validator operators mapped with additional fields fee and performance
     const operatorsData = operators?.map((operator: any) => {
-        const { public_key, name, address, status, revenue, validators_count } = operator;
+        const { id, name, address, status, revenue, validators_count } = operator;
 
         return {
             public_key: <Grid container item>
               <Grid item xs={12} className={classes.Name}>{name}</Grid>
-              <Grid container item className={classes.Name}>
-                <Grid>{longStringShorten(sha256(public_key), 4, 4)}</Grid>
-                <Grid className={classes.copyImage} onClick={() => {
-                        copyToClipboard(address);
-                    }} />
-              </Grid>
+              <OperatorId text={'ID: '} id={id} />
             </Grid>,
             status: <Status status={status} />,
             revenue: <Grid container item>

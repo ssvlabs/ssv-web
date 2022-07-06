@@ -12,10 +12,11 @@ import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator/RemoveOperator.styles';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator/RemoveOperator.styles';
 
 const RemoveOperator = () => {
     const stores = useStores();
@@ -24,6 +25,7 @@ const RemoveOperator = () => {
     const [checkbox, setCheckBox] = useState(false);
     const [leavingReason, setLeavingReason] = useState(0);
     const [userTextReason, setUserTextReason] = useState('');
+    const eventStore: EventStore = stores.Event;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
     const classes = useStyles({ leavingReason, isLoading: applicationStore.isLoading });
@@ -53,17 +55,23 @@ const RemoveOperator = () => {
         setUserTextReason(userInput);
     };
 
+    const sendAnalytics = (link: string) => {
+        eventStore.send({ category: 'validator_register', action: 'link', label: link });
+    };
+
+    const outDocumentationLink = 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations';
+
     const ShareWithUsText = () => {
         switch (leavingReason) {
             case 1:
                 return (
                   <Grid item className={classes.ShareWithUsBulletsPoints}>
                     <ul>
-                      <li>Visit <LinkText text={'our documentation'} link={'blat'} /> for common node
+                      <li>Visit <LinkText onClick={() => sendAnalytics(outDocumentationLink)} text={'our documentation'} link={outDocumentationLink} /> for common node
                         troubleshooting.
                       </li>
-                      <li>Consult with other experiences operators in our <LinkText
-                        text={'discord developer community'} link={'blat'} />.
+                      <li>Consult with other experiences operators in our <LinkText onClick={() => sendAnalytics('blat')}
+                        text={'discord developer community'} link={'https://discord.gg/AbYHBfjkDY'} />.
                       </li>
                     </ul>
                   </Grid>
@@ -73,7 +81,7 @@ const RemoveOperator = () => {
                   <Grid item className={classes.ShareWithUsBulletsPoints}>
                     <ul>
                       <li>Business is slow? Increase your traction and reputation by <LinkText
-                        text={'becoming a verified operator.'} link={'blat'} />
+                        text={'becoming a verified operator.'} link={'https://forum.ssv.network/t/dao-curated-node-registry-verified-operators/129'} />
                       </li>
                       <li>Costs are too high? See our guides on how to <LinkText text={'optimize hosting costs.'}
                         link={'blat'} />
@@ -109,7 +117,9 @@ const RemoveOperator = () => {
     };
 
     const submitForm = async () => {
-        // TODO: sit with product to understand how to send data to backend
+        const reasons = { 1: 'Technical Issues', 2: 'Low profitability', 3: 'Other' };
+        // @ts-ignore
+        eventStore.send({ category: 'remove_feedback', action: reasons[leavingReason], label: userTextReason });
         applicationStore.setIsLoading(true);
         // @ts-ignore
         const isRemoved = await operatorStore.removeOperator(operatorStore.processOperatorId);
@@ -124,7 +134,7 @@ const RemoveOperator = () => {
 
     return (
       <Grid container item>
-        <WhiteWrapper header={'Remove Operator'}>
+        <WhiteWrapper backButtonCallBack={() => { eventStore.send({ category: 'remove', action: 'back', label: '' }); }} header={'Remove Operator'}>
           <OperatorId id={id} />
         </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>

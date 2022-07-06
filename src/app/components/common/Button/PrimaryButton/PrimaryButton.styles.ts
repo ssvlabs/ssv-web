@@ -23,6 +23,7 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.colors.shade40,
         },
         '&:disabled': {
+            border: 'none',
             color: theme.colors.gray40,
             backgroundColor: theme.colors.gray20,
         },

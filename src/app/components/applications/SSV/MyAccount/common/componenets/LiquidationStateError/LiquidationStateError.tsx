@@ -62,7 +62,7 @@ const LiquidationStateError = (props: Props) => {
         </Grid>
         {errorType !== 4 && errorType !== 5 && (
           <Grid item className={classes.LinkText}>
-            <LinkText text={'Read more on liquidations'} link={''} />
+            <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />
           </Grid>
           )}
       </Grid>

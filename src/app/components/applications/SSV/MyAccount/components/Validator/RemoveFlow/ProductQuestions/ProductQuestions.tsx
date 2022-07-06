@@ -1,51 +1,65 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
+import Dialog from '@material-ui/core/Dialog';
 import { useHistory } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
+import { getImage } from '~lib/utils/filePath';
+import { useStores } from '~app/hooks/useStores';
 import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import { useStyles } from './ProductQuestions.styles';
 
 const checkBoxTypes: any = {
-    'fees': 1,
-    'performance': 2,
-    'maintenance': 3,
-    'other': 4,
+    1: 'fees',
+    2: 'performance',
+    3: 'maintenance',
+    4: 'other',
 };
 
 const ProductQuestions = () => {
+    const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const [inputValue, setInputValue] = React.useState(false);
+    const eventStore: EventStore = stores.Event;
+    const [inputValue, setInputValue] = React.useState('');
     const [textFieldOpen, setTextFieldOpen] = React.useState(false);
+    const [thankYouDialog, openThankYouDialog] = React.useState(false);
     const [selectedCheckbox, setSelectedCheckbox] = React.useState(0);
 
     const openTextField = () => {
         setTextFieldOpen(!textFieldOpen);
     };
 
-    const checkBoxCallBack = (type: string) => {
-        if (checkBoxTypes[type] === 4) {
+    const checkBoxCallBack = (type: number) => {
+        if (type === 4) {
             openTextField();
         }
-        if (checkBoxTypes[type] === selectedCheckbox) {
+
+        if (type === selectedCheckbox) {
             setSelectedCheckbox(0);
         } else {
-            setSelectedCheckbox(checkBoxTypes[type]);
+            setSelectedCheckbox(type);
         }
     };
 
     const submitAnswer = () => {
-        console.log(inputValue);
+        openThankYouDialog(true);
+        eventStore.send({ category: 'remove', action: checkBoxTypes[selectedCheckbox], label: inputValue });
+        setTimeout(() => {
+            openThankYouDialog(false);
+        }, 3000);
     };
 
     const backToMyAccount = () => {
+        eventStore.send({ category: 'navigate', action: 'my_account', label: '' });
         history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     };
 
@@ -71,10 +85,10 @@ const ProductQuestions = () => {
                 />
               </Grid>
               <Grid item>
-                <Checkbox disable={isDisabled(checkBoxTypes.fees)} grayBackGround text={'I am looking for lower fees'} onClickCallBack={() => checkBoxCallBack('fees')} />
-                <Checkbox disable={isDisabled(checkBoxTypes.performance)} grayBackGround text={'I am not happy  with the validators performance'} onClickCallBack={() => checkBoxCallBack('performance')} />
-                <Checkbox disable={isDisabled(checkBoxTypes.maintenance)} grayBackGround text={'Validator monitoring and/or maintenance is a struggle'} onClickCallBack={() => checkBoxCallBack('maintenance')} />
-                <Checkbox disable={isDisabled(checkBoxTypes.other)} grayBackGround text={'Other'} onClickCallBack={() => checkBoxCallBack('other')} />
+                <Checkbox disable={isDisabled(1)} grayBackGround text={'I am looking for lower fees'} onClickCallBack={() => checkBoxCallBack(1)} />
+                <Checkbox disable={isDisabled(2)} grayBackGround text={'I am not happy  with the validators performance'} onClickCallBack={() => checkBoxCallBack(2)} />
+                <Checkbox disable={isDisabled(3)} grayBackGround text={'Validator monitoring and/or maintenance is a struggle'} onClickCallBack={() => checkBoxCallBack(3)} />
+                <Checkbox disable={isDisabled(4)} grayBackGround text={'Other'} onClickCallBack={() => checkBoxCallBack(4)} />
               </Grid>
               {textFieldOpen && (
                 <Grid container item className={classes.TextFieldWrapper}>
@@ -92,6 +106,18 @@ const ProductQuestions = () => {
             </Grid>,
           ]}
         />
+        <Dialog
+          open={thankYouDialog}
+          className={classes.DialogWrapper}
+          PaperProps={{
+                  style: { width: 424, height: 318, borderRadius: 16, padding: 32 },
+              }}
+          >
+          <HeaderSubHeader subtitle={<Typography>You are being redirected to <b>My Account</b></Typography>} title={'Thank you for your feedback!'} />
+          <Grid>
+            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+          </Grid>
+        </Dialog>
       </Grid>
     );
 };

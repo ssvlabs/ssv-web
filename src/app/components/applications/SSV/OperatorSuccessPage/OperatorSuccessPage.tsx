@@ -59,8 +59,8 @@ const SetOperatorFee = () => {
             <Grid container item style={{ marginBottom: 24 }}>
               <Grid className={classes.Text}>
                 Jump into our documentation to learn more about how to <LinkText text={'monitor'}
-                  link={'monitor'} /> <br />
-                and <LinkText text={'troubleshoot'} link={'troubleshoot'} /> your node.</Grid>
+                  link={'https://app-v2.stage.ssv.network/operator/monitor'} /> <br />
+                and <LinkText text={'troubleshoot'} link={'https://app-v2.stage.ssv.network/operator/troubleshoot'} /> your node.</Grid>
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>
               <Typography className={classes.Text}>To manage your account and operator enter your account

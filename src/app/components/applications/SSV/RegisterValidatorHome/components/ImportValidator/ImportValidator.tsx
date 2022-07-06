@@ -15,6 +15,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import MessageDiv from '~app/components/common/MessageDiv/MessageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
@@ -25,6 +26,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const history = useHistory();
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
+    const eventStore: EventStore = stores.Event;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -180,12 +182,15 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
                 history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
             } else if (deposited) {
                 operatorStore.unselectAllOperators();
+                eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'success' });
                 history.push(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
             } else {
+                eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'error' });
                 history.push(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
             }
         } catch (error: any) {
             console.log(error.message);
+            eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'error' });
             if (error.message === 'Invalid password') {
                 setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
             } else {

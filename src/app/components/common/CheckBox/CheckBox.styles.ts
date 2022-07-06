@@ -30,7 +30,7 @@ export const useStyles = makeStyles((theme) => ({
             return '1px solid #5b6c84';
         },
         backgroundImage: (props: any) => {
-            if (props.checked) return `url(/images/v/${theme.darkMode ? 'dark' : 'light'}.svg)`;
+            if (props.checked) return 'url(/images/v/light.svg)';
             return 'none';
         },
     },

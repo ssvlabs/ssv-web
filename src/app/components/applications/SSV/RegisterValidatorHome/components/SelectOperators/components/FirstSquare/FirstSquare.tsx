@@ -24,6 +24,7 @@ import Filters from '~app/components/applications/SSV/RegisterValidatorHome/comp
 import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -31,6 +32,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const [loading, setLoading] = useState(false);
     const classes = useStyles({ loading });
     const wrapperRef = useRef(null);
+    const eventStore: EventStore = stores.Event;
     const scrollRef: any = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
     const [sortBy, setSortBy] = useState('');
@@ -114,8 +116,9 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             setSortBy('');
             setSortOrder('desc');
         } else if (sortBy === sortType && sortOrder === 'desc') {
-            setSortOrder('asc');
+                setSortOrder('asc');
         } else {
+            eventStore.send({ category: 'validator_register', action: 'filter', label: sortType });
             setSortBy(sortType);
             setSortOrder('desc');
         }
@@ -224,7 +227,10 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const inputHandler = debounce((e: any) => {
         const userInput = e.target.value.trim();
-        if (userInput.length >= 3 || userInput.length === 0) setSearchInput(e.target.value.trim());
+        if (userInput.length >= 3 || userInput.length === 0) {
+            eventStore.send({ category: 'validator_register', action: 'search', label: userInput });
+            setSearchInput(e.target.value.trim());
+        }
     }, 1000);
 
     const rows: any = dataRows();

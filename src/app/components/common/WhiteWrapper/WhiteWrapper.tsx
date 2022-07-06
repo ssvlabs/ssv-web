@@ -17,6 +17,7 @@ type Props = {
     header: any,
     children: any,
     withCancel?: boolean,
+    backButtonCallBack?: any,
     withBackButton?: boolean,
     backButtonRedirect?: string,
     withSettings?: SettingsProps,
@@ -31,7 +32,7 @@ const WhiteWrapper = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const { header, children, withCancel, withSettings, backButtonRedirect, withBackButton = true } = props;
+    const { header, children, withCancel, withSettings, backButtonCallBack, backButtonRedirect, withBackButton = true } = props;
     const applicationStore: ApplicationStore = stores.Application;
     const settingsRef = useRef(null);
 
@@ -82,7 +83,7 @@ const WhiteWrapper = (props: Props) => {
             <Grid container item xs={12} alignItems={'center'}>
               {withBackButton && (
               <Grid item xs={12} className={classes.BackButtonWrapper}>
-                <BackNavigation backButtonRedirect={backButtonRedirect} />
+                <BackNavigation onClick={backButtonCallBack} backButtonRedirect={backButtonRedirect} />
               </Grid>
             )}
               <Grid item container xs className={classes.HeaderWrapper}>

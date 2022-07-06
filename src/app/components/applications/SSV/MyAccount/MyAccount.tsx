@@ -5,8 +5,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import config from '~app/common/config';
 import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
-import MyBalance from '~app/components/applications/SSV/MyAccount/components/MyBalance';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
+import MyBalance from '~app/components/applications/SSV/MyAccount/components/MyBalance';
 import DashboardTables from '~app/components/applications/SSV/MyAccount/components/DashboardTables';
 import { useStyles } from './MyAccount.styles';
 
@@ -15,9 +16,18 @@ const MyAccount = () => {
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
     const wrapperRef = useRef(null);
+    const eventStore: EventStore = stores.Event;
     const { redirectUrl, history } = useUserFlow();
     const [dropDownMenu, displayDropDownMenu] = useState(false);
     const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+
+    const addMethod = (isOperator?: boolean) => {
+        eventStore.send({ category: 'my_account', action: 'add', label: isOperator ? 'operator' : 'validator' });
+        if (isOperator) {
+            history.push(config.routes.SSV.OPERATOR.HOME);
+        }
+        else if (!isOperator && !liquidated) history.push(config.routes.SSV.VALIDATOR.HOME);
+    };
 
     useEffect(() => {
         redirectUrl && history.push(redirectUrl);
@@ -58,10 +68,10 @@ const MyAccount = () => {
                 <Grid container className={classes.AddButtonDropDown}>
                   <Grid item xs={12}
                     className={`${classes.AddButtonDropDownItem} ${liquidated ? classes.Disable : ''}`}
-                    onClick={() => { !liquidated && history.push(config.routes.SSV.VALIDATOR.HOME); }}>Run Validator</Grid>
+                    onClick={() => { addMethod(false); }}>Run Validator</Grid>
                   <Grid item xs={12}
                     className={classes.AddButtonDropDownItem}
-                    onClick={() => { history.push(config.routes.SSV.OPERATOR.HOME); }}>
+                    onClick={() => { addMethod(true); }}>
                     Register Operator
                   </Grid>
                 </Grid>

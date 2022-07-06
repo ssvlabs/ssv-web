@@ -4,17 +4,17 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
-import { addNumber, formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
+import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import MessageDiv from '~app/components/common/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { addNumber, formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
@@ -140,7 +140,7 @@ const ImportValidatorConfirmation = () => {
             Insufficient SSV balance. There is not enough SSV in your wallet.
           </Grid>
           <Grid item>
-            <LinkText text={'Need SSV?'} link={'https://discord.gg/5DZ7Sm9D4W'} />
+            <LinkText text={'Need SSV?'} link={'https://faucet.ssv.network'} />
           </Grid>
         </Grid>
         )}

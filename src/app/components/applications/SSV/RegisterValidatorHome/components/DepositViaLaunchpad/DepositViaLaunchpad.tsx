@@ -2,14 +2,19 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 
 const DepositViaLaunchpad = () => {
+    const stores = useStores();
     const classes = useStyles();
+    const eventStore: EventStore = stores.Event;
 
     const redirectToLaunchpad = async () => {
+        eventStore.send({ category: 'validator_register', action: 'link', label: config.links.LAUNCHPAD_LINK });
         window.open(config.links.LAUNCHPAD_LINK);
     };
 

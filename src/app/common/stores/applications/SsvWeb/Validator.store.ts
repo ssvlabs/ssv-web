@@ -13,6 +13,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Decimal from 'decimal.js';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
@@ -148,6 +149,7 @@ class ValidatorStore extends BaseStore {
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve) => {
           const payload: any = await this.createPayLoad();
+          const eventStore: EventStore = this.getStore('Event');
           const walletStore: WalletStore = this.getStore('Wallet');
           const applicationStore: ApplicationStore = this.getStore('Application');
           const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -194,6 +196,7 @@ class ValidatorStore extends BaseStore {
                       if (event) {
                           this.keyStoreFile = null;
                           this.newValidatorReceipt = payload[1];
+                          eventStore.send({ category: 'validator_register', action: 'register_tx', label: 'sent' });
                           applicationStore.setIsLoading(false);
                           console.debug('Contract Receipt', receipt);
                           resolve(true);
@@ -204,6 +207,9 @@ class ValidatorStore extends BaseStore {
                       applicationStore.showTransactionPendingPopUp(true);
                   })
                   .on('error', (error: any) => {
+                      // eslint-disable-next-line no-prototype-builtins
+                      const isRejected: boolean = error.hasOwnProperty('code');
+                      eventStore.send({ category: 'validator_register', action: 'register_tx', label: isRejected ? 'rejected' : 'error' });
                       console.debug('Contract Error', error.message);
                       applicationStore.setIsLoading(false);
                       resolve(false);

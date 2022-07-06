@@ -47,6 +47,7 @@ class Operator {
      * Get operators by owner Address
      */
     async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
+        if (!this.ownerAddress) return { operators: [], pagination: {} };
         if (!force && this.ownerAddressPagination?.page === page && this.ownerAddressPagination.per_page === perPage) {
             return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
         }

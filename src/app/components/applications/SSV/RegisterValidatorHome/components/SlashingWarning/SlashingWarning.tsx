@@ -4,11 +4,11 @@ import { useHistory } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
+import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 
 const SlashingWarning = () => {
@@ -28,8 +28,7 @@ const SlashingWarning = () => {
         header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
         body={[
           <Grid container>
-            <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon
-              chain:</Grid>
+            <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon chain:</Grid>
             <Grid item xs={12} className={classes.PublicKey}>
               <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.keyStorePublicKey} />
             </Grid>
@@ -41,8 +40,8 @@ const SlashingWarning = () => {
               run with our network.
             </Grid>
             <Checkbox
-              text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
               onClickCallBack={setUserAgreed}
+              text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
             />
             <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
               submitFunction={goToConfirmation}

@@ -70,7 +70,7 @@ const EnableAccount = () => {
                 <Grid container>
                   <Grid item container className={classes.WarningWrapper}>
                     <Grid item>
-                      Your account has been <LinkText text={'liquidated'} link={'www.google.com'} /> due to insufficient balance
+                      Your account has been <LinkText text={'liquidated'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /> due to insufficient balance
                       for
                       its maintenance. If you would like to resume its operations, you must deposit sufficient
                       balance required for reactivation.

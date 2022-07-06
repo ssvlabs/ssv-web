@@ -7,11 +7,12 @@ import Typography from '@material-ui/core/Typography';
 type MessageDivProps ={
     text: string
     link?: string
+    onClick?: any;
     routePush?: boolean;
     withoutUnderline?: boolean
 };
 
-const LinkText = ({ text, link, routePush, withoutUnderline }: MessageDivProps) => {
+const LinkText = ({ text, onClick, link, routePush, withoutUnderline }: MessageDivProps) => {
     const history = useHistory();
     const classes = useStyles({ withoutUnderline });
 
@@ -21,6 +22,9 @@ const LinkText = ({ text, link, routePush, withoutUnderline }: MessageDivProps) 
                 history.push(link);
             } else {
                 window.open(link);
+            }
+            if (typeof onClick === 'function') {
+                onClick();
             }
         }
     };

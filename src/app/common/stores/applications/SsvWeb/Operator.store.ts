@@ -8,6 +8,7 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 export interface NewOperator {
@@ -139,7 +140,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getContract;
         this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
-        this.approveOperatorFeePeriod = await contract.methods.getDeclareOperatorFeePeriod().call();
+        this.approveOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
         this.maxFeeIncrease = await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call();
     }
 
@@ -166,7 +167,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getContract;
         this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
-        const response = await contract.methods.getOperatorDeclareFee(operatorId).call();
+        const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
         this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
         this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
         this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
@@ -470,6 +471,7 @@ class OperatorStore extends BaseStore {
     @action.bound
     // eslint-disable-next-line no-unused-vars
     async addNewOperator(getGasEstimation: boolean = false) {
+        const eventStore: EventStore = this.getStore('Event');
         const applicationStore: ApplicationStore = this.getStore('Application');
         const notificationsStore: NotificationsStore = this.getStore('Notifications');
         // eslint-disable-next-line no-async-promise-executor
@@ -519,6 +521,7 @@ class OperatorStore extends BaseStore {
                             const events: boolean = receipt.hasOwnProperty('events');
                             if (events) {
                                 console.debug('Contract Receipt', receipt);
+                                eventStore.send({ category: 'operator_register', action: 'register_tx', label: 'sent' });
                                 this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
                                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                                 resolve(true);
@@ -529,13 +532,16 @@ class OperatorStore extends BaseStore {
                             applicationStore.showTransactionPendingPopUp(true);
                         })
                         .on('error', (error: any) => {
+                            // eslint-disable-next-line no-prototype-builtins
+                            const isRejected: boolean = error.hasOwnProperty('code');
+                            eventStore.send({ category: 'operator_register', action: 'register_tx', label: isRejected ? 'rejected' : 'error' });
                             applicationStore.setIsLoading(false);
                             applicationStore.showTransactionPendingPopUp(false);
                             notificationsStore.showMessage(error.message, 'error');
                             resolve(false);
                         });
                 }
-            } catch {
+            } catch (e) {
                 // eslint-disable-next-line prefer-promise-reject-errors
                 reject(false);
             }

@@ -10,6 +10,7 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -24,17 +25,18 @@ const CancelUpdateFee = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const [successPage, showSuccessPage] = useState(false);
+    const eventStore: EventStore = stores.Event;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
-    // const notificationsStore: NotificationsStore = stores.Notifications;
+    const [successPage, showSuccessPage] = useState(false);
 
     const cancelUpdateProcess = async () => {
         applicationStore.setIsLoading(true);
         if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId);
         if (response) {
+            eventStore.send({ category: 'cancel', action: 'click', label: '' });
             showSuccessPage(true);
         }
         applicationStore.setIsLoading(false);

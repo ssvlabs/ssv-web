@@ -136,7 +136,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         color: theme.colors.gray40,
-        padding: '24px 277px 9px 23px',
+        padding: '24px 10px 9px 23px',
         backgroundColor: theme.colors.white,
     },
     ShareWithUsBulletsPoints: {

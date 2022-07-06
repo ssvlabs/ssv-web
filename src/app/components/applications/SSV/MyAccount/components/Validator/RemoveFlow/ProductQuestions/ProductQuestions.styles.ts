@@ -1,7 +1,14 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-
+    DialogWrapper: {
+        padding: 32,
+        alignItems: 'center',
+    },
+    Loader: {
+        height: 100,
+        margin: 'auto',
+    },
     ProductQuestionsWrapper: {
         marginTop: 24,
     },

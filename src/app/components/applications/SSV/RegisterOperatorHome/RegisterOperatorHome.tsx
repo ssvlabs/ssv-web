@@ -22,7 +22,7 @@ const RegisterOperatorHome = () => {
           <Grid container item justify={'space-evenly'}>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Run SSV Node'} submitFunction={() => { window.open(config.links.LINK_SSV_DEV_DOCS); }} />
+                <SecondaryButton text={'Run SSV Node'} submitFunction={() => { window.open('https://docs.ssv.network/run-a-node/operator-node/installation'); }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
                 See our developer documentation

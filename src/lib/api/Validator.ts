@@ -51,6 +51,7 @@ class Validator {
     }
 
     async getValidatorsByOwnerAddress(props: GetValidatorsByOwnerAddress): Promise<any> {
+        if (!this.ownerAddress) return { validators: [], pagination: {} };
         const { page, perPage, ownerAddress, extendData = true, withOperators, force } = props;
         if (!force && this.pagination?.page === page && this.pagination.per_page === perPage) {
             return { pagination: this.pagination, validators: this.validators };

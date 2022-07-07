@@ -58,8 +58,7 @@ const SetOperatorFee = () => {
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>
               <Grid className={classes.Text}>
-                Jump into our documentation to learn more about how to <LinkText text={'monitor'}
-                  link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> <br />
+                Jump into our documentation to learn more about how to <LinkText text={'monitor'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> <br />
                 and <LinkText text={'troubleshoot'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> your node.</Grid>
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>

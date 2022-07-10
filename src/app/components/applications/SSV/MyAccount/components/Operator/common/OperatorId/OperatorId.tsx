@@ -12,11 +12,12 @@ type Props = {
     id: string,
     text?: string,
     successPage?: boolean,
+    withoutExplorer?: boolean,
 };
 
 const OperatorId = (props: Props) => {
     const stores = useStores();
-    const { id, text, successPage } = props;
+    const { id, text, successPage, withoutExplorer } = props;
     const classes = useStyles({ successPage });
     const notificationsStore: NotificationsStore = stores.Notifications;
 
@@ -33,7 +34,7 @@ const OperatorId = (props: Props) => {
       <Grid item container className={classes.Wrapper}>
         <Typography className={classes.OperatorId}>{text ?? successPage ? 'ID' : 'Operator ID'}: {id}</Typography>
         <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
-        <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />
+        {!withoutExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />}
       </Grid>
     );
 };

@@ -7,9 +7,10 @@ import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -26,6 +27,7 @@ const WaitingPeriod = (props: Props) => {
     const stores = useStores();
     const history = useHistory();
     const classes = useStyles({});
+    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
@@ -51,11 +53,10 @@ const WaitingPeriod = (props: Props) => {
     const endDay = operatorEndApprovalTime.getUTCDate();
     const today = new Date();
     const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });
-
     // @ts-ignore
-    const currentOperatorFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorCurrentFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
     // @ts-ignore
-    const operatorFutureFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorFutureFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
 
     // @ts-ignore
 

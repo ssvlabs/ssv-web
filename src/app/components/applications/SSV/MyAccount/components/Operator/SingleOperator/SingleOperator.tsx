@@ -13,7 +13,6 @@ import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
-import OperatorType from '~app/components/common/OperatorType';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -24,6 +23,8 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
+import OperatorDetails
+    from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const SingleOperator = () => {
     const stores = useStores();
@@ -74,7 +75,7 @@ const SingleOperator = () => {
     const { page, pages, per_page, total } = operatorsValidatorsPagination || {};
 
     // @ts-ignore
-    const { name, logo, type, status, address, validators_count, fee } = operator || {};
+    const { logo, status, validators_count, fee } = operator || {};
     const yearlyFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(fee)));
     const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
@@ -100,21 +101,19 @@ const SingleOperator = () => {
             {
                 key: <Typography>Name</Typography>,
                 value: <Grid item container className={classes.ItemWrapper} xs={12}>
-                  <Grid item className={classes.OperatorLogo} />
-                  <Typography className={classes.TableValueText}>{name}</Typography>
-                  <OperatorType type={type} />
+                  <OperatorDetails operator={operator} />
                 </Grid>,
             },
-            {
-                key: <Typography>Address</Typography>,
-                value: <Grid item container className={classes.ItemWrapper} xs={12}>
-                  <Typography
-                    className={classes.TableValueText}>{`0x${longStringShorten(address, 4, 4)}`}</Typography>
-                  <ImageDiv onClick={() => copyToClipboard(address)} image={'copy'} width={24} height={24} />
-                  <ImageDiv onClick={() => openExplorer(address)} image={'explorer'} width={24}
-                    height={24} />
-                </Grid>,
-            },
+            // {
+            //     key: <Typography>Address</Typography>,
+            //     value: <Grid item container className={classes.ItemWrapper} xs={12}>
+            //       <Typography
+            //         className={classes.TableValueText}>{`0x${longStringShorten(address, 4, 4)}`}</Typography>
+            //       <ImageDiv onClick={() => copyToClipboard(address)} image={'copy'} width={24} height={24} />
+            //       <ImageDiv onClick={() => openExplorer(address)} image={'explorer'} width={24}
+            //         height={24} />
+            //     </Grid>,
+            // },
             {
                 key: <Grid container item alignItems={'center'}>
                   <Grid item style={{ marginTop: 1, marginRight: 4 }}>

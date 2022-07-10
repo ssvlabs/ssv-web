@@ -55,6 +55,7 @@ const ProductQuestions = () => {
         eventStore.send({ category: 'remove', action: checkBoxTypes[selectedCheckbox], label: inputValue });
         setTimeout(() => {
             openThankYouDialog(false);
+            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }, 3000);
     };
 
@@ -108,13 +109,13 @@ const ProductQuestions = () => {
         />
         <Dialog
           open={thankYouDialog}
-          className={classes.DialogWrapper}
           PaperProps={{
-                  style: { width: 424, height: 318, borderRadius: 16, padding: 32 },
-              }}
-          >
+                className: classes.DialogWrapper,
+                style: { width: 424, height: 318, borderRadius: 16, padding: 32 },
+            }}
+        >
           <HeaderSubHeader subtitle={<Typography>You are being redirected to <b>My Account</b></Typography>} title={'Thank you for your feedback!'} />
-          <Grid>
+          <Grid style={{ alignSelf: 'center' }}>
             <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
           </Grid>
         </Dialog>

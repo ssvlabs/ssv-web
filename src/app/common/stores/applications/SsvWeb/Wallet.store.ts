@@ -15,6 +15,7 @@ import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 class WalletStore extends BaseStore implements Wallet {
     @observable web3: any = null;
@@ -144,6 +145,7 @@ class WalletStore extends BaseStore implements Wallet {
     async addressHandler(address: string) {
         this.setAccountDataLoaded(false);
         const applicationStore: Application = this.getStore('Application');
+        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         if (address === undefined || !this.wallet?.name) {
             await this.resetUser();
         } else {
@@ -152,9 +154,10 @@ class WalletStore extends BaseStore implements Wallet {
             ApiParams.cleanStorage();
             await this.initializeUserInfo();
             if (process.env.REACT_APP_NEW_STAGE) {
-                const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
-                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: 1, perPage: 5, ownerAddress: address, force: true });
+                const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
+                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: 1, extendData: false, perPage: 5, ownerAddress: address });
                 applicationStore.strategyRedirect = operatorsResponse.operators.length || validatorsResponse.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
+                if (!operatorsResponse.operators.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
             }
         }
         this.setAccountDataLoaded(true);

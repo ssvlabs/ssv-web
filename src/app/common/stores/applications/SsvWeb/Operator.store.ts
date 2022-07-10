@@ -198,7 +198,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contract: Contract = walletStore.getContract;
-                contract.methods.cancelDeclareOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+                contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
@@ -287,43 +287,6 @@ class OperatorStore extends BaseStore {
     }
 
     /**
-     * Check if operator already exists in the contract
-     * @param publicKey
-     * @param contract
-     */
-    @action.bound
-    async checkIfOperatorExists(operatorId: string): Promise<boolean> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        try {
-            const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.getOperatorByPublicKey(operatorId).call({ from: this.newOperatorKeys.address });
-            return result[1] !== '0x0000000000000000000000000000000000000000';
-        } catch (e) {
-            console.error('Exception from operator existence check:', e);
-            return false;
-        }
-    }
-
-    /**
-     * Get operator by publicKey
-     * @param publicKey
-     */
-    @action.bound
-    async getOperatorByPublicKey(publicKey: string): Promise<any> {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        try {
-            const contractInstance = walletStore.getContract;
-            const result = await contractInstance.methods.getOperatorByPublicKey(publicKey).call({ from: walletStore.accountAddress });
-
-            console.log(result);
-            return result[1] !== '0x0000000000000000000000000000000000000000';
-        } catch (e) {
-            console.error('Exception from operator existence check:', e);
-            return false;
-        }
-    }
-
-    /**
      * Get operator revenue
      */
     @action.bound
@@ -351,7 +314,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contractInstance = walletStore.getContract;
-                const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toString();
+                const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
                 await contractInstance.methods.declareOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
@@ -484,14 +447,12 @@ class OperatorStore extends BaseStore {
                 const transaction: NewOperator = this.newOperatorKeys;
                 const gasEstimation: PriceEstimation = new PriceEstimation();
 
-                const fee = new Decimal(transaction.fee);
-
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.toWei(fee.dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()),
+                        walletStore.toWei(new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()),
                     );
                 } else {
                     payload.push(

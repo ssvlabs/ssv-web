@@ -4,7 +4,7 @@ class ApiParams {
     page: 1,
     pages: 1,
     total: 0,
-    per_page: ApiParams.PER_PAGE,
+    perPage: ApiParams.PER_PAGE,
   };
 
   /**

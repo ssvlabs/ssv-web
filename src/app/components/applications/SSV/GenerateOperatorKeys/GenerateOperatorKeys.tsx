@@ -23,6 +23,8 @@ import {
     validateAddressInput,
 } from '~lib/utils/validatesInputs';
 import Button from '~app/components/common/Button';
+import Operator from '~lib/api/Operator';
+import { sha256 } from 'js-sha256';
 
 const GenerateOperatorKeys = () => {
     const stores = useStores();
@@ -39,9 +41,9 @@ const GenerateOperatorKeys = () => {
     // const [userAgreement, setUserAgreement] = useState(false);
     const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
     // const [feeError, setFeeError] = useState({ shouldDisplay: false, errorMessage: '' });
+    const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
     const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
     const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
-    const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
     const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
 
     // Inputs validation
@@ -84,7 +86,7 @@ const GenerateOperatorKeys = () => {
             pubKey: walletStore.encodeKey(inputsData.publicKey),
         };
         operatorStore.setOperatorKeys(operatorKeys);
-        const isExists = await operatorStore.checkIfOperatorExists(operatorKeys.pubKey);
+        const isExists = await Operator.getInstance().getOperator(sha256(walletStore.decodeKey(operatorKeys.pubKey)));
         setOperatorExist(isExists);
         if (!isExists) history.push(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
         applicationStore.setIsLoading(false);

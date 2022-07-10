@@ -4,9 +4,7 @@ import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
-import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -14,13 +12,13 @@ import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import { ReactTable } from '~app/components/common/ReactTable';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/DashboardTables/DashboardTables.styles';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/DashboardTables/DashboardTables.styles';
 
 type LoadItemsParams = {
     type: string;
@@ -32,37 +30,23 @@ const DashboardTables = () => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const defaultOperators: any[] = [];
-    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
-    const [operators, setOperators] = useState(defaultOperators);
-    const [validators, setValidators] = useState(defaultOperators);
+    const myAccountStore: MyAccountStore = stores.MyAccount;
     const notificationsStore: NotificationsStore = stores.Notifications;
     const [loadingOperators, setLoadingOperators] = useState(true);
     const [loadingValidators, setLoadingValidators] = useState(true);
-    const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
-    const [validatorsPagination, setValidatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
+    const operatorsPagination = myAccountStore?.ownerAddressOperatorsPagination;
+    const validatorsPagination = myAccountStore?.ownerAddressValidatorsPagination;
 
     // @ts-ignore
     useEffect(async () => {
         if (walletStore.accountAddress) {
-            await loadItems({ type: 'validators', forcePerPage: Operator.getInstance().noOperatorsForOwnerAddress ? 10 : undefined });
-            await loadItems({ type: 'operators', forcePerPage: Validator.getInstance().noValidatorsForOwnerAddress ? 10 : undefined });
+            await loadItems({ type: 'validators' });
+            await loadItems({ type: 'operators' });
         }
     }, [walletStore.accountAddress]);
-
-    const getOperatorRevenue = async (operator: any) => {
-        const revenue = await operatorStore.getOperatorRevenue(operator.id);
-        // eslint-disable-next-line no-param-reassign
-        operator.revenue = revenue;
-        return operator;
-    };
-
-    const getOperatorsRevenue = async (operatorsList: any) => {
-        return Promise.all(operatorsList.map((operator: any) => getOperatorRevenue(operator)));
-    };
 
     /**
      * Loading operators by page
@@ -76,17 +60,11 @@ const DashboardTables = () => {
 
         if (type === 'operators') {
             setLoadingOperators(true);
-            const result = await Operator.getInstance().getOperatorsByOwnerAddress(paginationPage, forcePerPage ?? operatorsPagination.per_page, walletStore.accountAddress);
-            const operatorsList = await getOperatorsRevenue(result.operators);
-            setOperators(operatorsList);
-            setOperatorsPagination(result.pagination);
+            await myAccountStore.getOwnerAddressOperators({ forcePage: paginationPage, forcePerPage });
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            const result = await Validator.getInstance().getValidatorsByOwnerAddress({ page: paginationPage ?? 1, perPage: forcePerPage ?? operatorsPagination.per_page, ownerAddress: walletStore.accountAddress });
-            if (result?.validators?.length > 0) ssvStore.userState = 'validator';
-            setValidators(result.validators);
-            setValidatorsPagination(result.pagination);
+            await Validator.getInstance().getValidatorsByOwnerAddress({ page: paginationPage ?? 1, perPage: forcePerPage ?? 5, ownerAddress: walletStore.accountAddress });
             setLoadingValidators(false);
         }
     }
@@ -190,7 +168,7 @@ const DashboardTables = () => {
     ];
 
     // return validator operators mapped with additional fields fee and performance
-    const validatorsData = validators?.map((validator: any) => {
+    const validatorsData = myAccountStore?.ownerAddressValidators?.map((validator: any) => {
         const { public_key, status, balance, apr } = validator;
 
         return {
@@ -225,7 +203,7 @@ const DashboardTables = () => {
     });
 
     // return validator operators mapped with additional fields fee and performance
-    const operatorsData = operators?.map((operator: any) => {
+    const operatorsData = myAccountStore?.ownerAddressOperators?.map((operator: any) => {
         const { id, name, address, status, revenue, validators_count } = operator;
 
         return {
@@ -262,7 +240,7 @@ const DashboardTables = () => {
 
     return (
       <Grid container item className={classes.Table}>
-        {validators.length > 0 && (
+        {myAccountStore?.ownerAddressValidators?.length > 0 && (
         <Grid item xs={12} style={{ marginBottom: 20 }}>
           <ReactTable
             data={validatorsData}
@@ -274,13 +252,13 @@ const DashboardTables = () => {
                     onChangePage: loadItems,
                     totalPages: validatorsPagination.pages,
                     currentPage: validatorsPagination.page,
-                    perPage: validatorsPagination.per_page,
+                    perPage: validatorsPagination.perPage,
                     totalAmountOfItems: validatorsPagination.total,
                 }}
             />
         </Grid>
         )}
-        {operators.length > 0 && (
+        {myAccountStore?.ownerAddressOperators.length > 0 && (
         <Grid item xs style={{ marginBottom: 20 }}>
           <ReactTable
             data={operatorsData}

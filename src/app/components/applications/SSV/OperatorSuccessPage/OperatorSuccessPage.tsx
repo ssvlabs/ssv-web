@@ -4,7 +4,6 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import { useStyles } from './OperatorSuccessPage.styles';
@@ -32,7 +31,6 @@ const SetOperatorFee = () => {
 
     const moveToMyAccount = async () => {
         applicationStore.setIsLoading(true);
-        Operator.getInstance().clearOperatorsCache();
         setTimeout(() => {
             applicationStore.setIsLoading(false);
             history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);

@@ -4,6 +4,7 @@ export const useStyles = makeStyles((theme) => ({
     DialogWrapper: {
         padding: 32,
         alignItems: 'center',
+        backgroundColor: theme.colors.white,
     },
     Loader: {
         height: 100,

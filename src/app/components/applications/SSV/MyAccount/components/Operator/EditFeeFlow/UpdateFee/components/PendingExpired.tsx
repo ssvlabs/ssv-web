@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useParams } from 'react-router-dom';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -19,20 +19,18 @@ import { useStyles } from './index.styles';
 const PendingExpired = () => {
     const stores = useStores();
     const history = useHistory();
-    // @ts-ignore
-    const { operator_id } = useParams();
     const [operator, setOperator] = useState(null);
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
+        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         // @ts-ignore
         const savedOperator = JSON.parse(localStorage.getItem('expired_operators')) ?? [];
-        if (savedOperator && !savedOperator.includes(operator_id)) savedOperator.push(operator_id);
+        if (savedOperator && !savedOperator.includes(operatorStore.processOperatorId)) savedOperator.push(operatorStore.processOperatorId);
         localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
         applicationStore.setIsLoading(true);
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);

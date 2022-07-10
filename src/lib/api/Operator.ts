@@ -17,15 +17,12 @@ type OperatorValidatorListQuery = {
 
 class Operator {
     ownerAddress: string = '';
-    ownerAddressOperators: any = null;
-    ownerAddressPagination: any = null;
     noOperatorsForOwnerAddress: boolean = false;
     private static instance: Operator;
     private readonly baseUrl: string = '';
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
-        setInterval(this.clearOperatorsCache.bind(this), 8000);
     }
 
     static getInstance(): Operator {
@@ -39,28 +36,15 @@ class Operator {
         return 'prater';
     }
 
-    clearOperatorsCache() {
-        if (!this.ownerAddress) return;
-        this.getOperatorsByOwnerAddress(this.ownerAddressPagination?.page, this.ownerAddressPagination?.per_page, this.ownerAddress, true);
-    }
-
     /**
      * Get operators by owner Address
      */
-    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
-        if (!force && this.ownerAddressPagination?.page === page && this.ownerAddressPagination.per_page === perPage) {
-            return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
-        }
+    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
         const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true`;
         try {
             this.ownerAddress = ownerAddress;
-            const response: any = await axios.get(operatorsEndpointUrl);
-            if (!response.data.operators) this.noOperatorsForOwnerAddress = true;
-            this.ownerAddressOperators = response.data.operators;
-            this.ownerAddressPagination = response.data.pagination;
-            return response.data;
+            return (await axios.get(operatorsEndpointUrl)).data;
         } catch (e) {
-            this.noOperatorsForOwnerAddress = true;
             return { operators: [], pagination: {} };
         }
     }
@@ -87,7 +71,7 @@ class Operator {
     /**
      * Get operator
      */
-    async getOperator(operatorId: number) {
+    async getOperator(operatorId: number | string) {
         const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true`;
         try {
             return (await axios.get(operatorEndpointUrl)).data;

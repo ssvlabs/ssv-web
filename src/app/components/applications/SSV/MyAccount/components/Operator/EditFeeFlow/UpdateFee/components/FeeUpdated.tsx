@@ -36,7 +36,6 @@ const FeeUpdated = () => {
     }, []);
 
     const backToMyAccount = async () => {
-        Operator.getInstance().clearOperatorsCache();
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);

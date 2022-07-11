@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.colors.white,
     },
     BackgroundImage: {
-        top: -19,
+        top: -30,
         right: -25,
         width: 200,
         height: 345,

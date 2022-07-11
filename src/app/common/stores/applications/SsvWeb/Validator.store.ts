@@ -234,7 +234,10 @@ class ValidatorStore extends BaseStore {
       const ssvStore: SsvStore = this.getStore('SSV');
       const walletStore: WalletStore = this.getStore('Wallet');
       const operatorStore: OperatorStore = this.getStore('Operator');
-      const thresholdResult: any = await threshold.create(this.keyStorePrivateKey);
+      const operatorIds: number[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+          return operator.id;
+      });
+      const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
       let totalAmountOfSsv = '0';
       if (process.env.REACT_APP_NEW_STAGE) {
           const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
@@ -258,9 +261,6 @@ class ValidatorStore extends BaseStore {
                 return share.publicKey;
             });
 
-            const operatorIds: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-                return operator.id;
-            });
             const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
             // Collect all private keys from shares
             const encryptedKeys: string[] = encryptedShares.map((share: any) => {
@@ -269,7 +269,7 @@ class ValidatorStore extends BaseStore {
 
             const payLoad = [
                 `0x${this.keyStorePublicKey}`,
-                operatorIds,
+                operatorIds.map(String),
                 sharePublicKeys,
                 encryptedKeys,
             ];

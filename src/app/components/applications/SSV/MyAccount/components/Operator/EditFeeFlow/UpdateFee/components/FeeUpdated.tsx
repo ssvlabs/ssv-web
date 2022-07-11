@@ -6,10 +6,11 @@ import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -20,6 +21,7 @@ const FeeUpdated = () => {
     const stores = useStores();
     const history = useHistory();
     const [operator, setOperator] = useState(null);
+    const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -49,9 +51,9 @@ const FeeUpdated = () => {
     if (!operator) return null;
 
     // @ts-ignore
-    const currentOperatorFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorCurrentFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
     // @ts-ignore
-    const operatorFutureFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorFutureFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
 
     return (
       <BorderScreen

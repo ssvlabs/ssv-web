@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles(() => ({
     LinkButtonWrapper: {
         width: 280,
         display: 'flex',
@@ -20,7 +20,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        opacity: theme.darkMode ? 0.5 : 0.05,
-        backgroundImage: `url(/images/logo/${theme.darkMode ? 'small_light' : 'small_light'}.svg)`,
+        backgroundImage: 'url(/images/backgroundIcon/light.svg)',
     },
 }));

@@ -188,7 +188,7 @@ const DashboardTables = () => {
             apr: <Grid container item>
               <Grid item xs={12} className={classes.ValidatorApr}>{apr}%</Grid>
             </Grid>,
-            extra_buttons: <Grid container item justify={'flex-end'}>
+            extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
               <Grid className={classes.BeaconImage} onClick={() => {
                     window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`);
                 }} />
@@ -227,7 +227,7 @@ const DashboardTables = () => {
             //         window.open(`${config.links.LINK_EXPLORER}/operators/${public_key}`);
             //     }} />
             // </Grid>,
-            extra_buttons: <Grid container item justify={'flex-end'}>
+            extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
               <Grid className={classes.ExplorerImage} onClick={() => {
                     window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
                 }} />

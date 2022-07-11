@@ -4,10 +4,9 @@ export const useStyles = makeStyles((theme) => ({
     CheckBoxWrapper: {
         fontSize: 16,
         fontWeight: 500,
-        alignItems: 'center',
         lineHeight: 1.62,
         cursor: 'pointer',
-        // alignItems: 'center',
+        alignItems: 'center',
         color: theme.colors.gray80,
         marginBottom: theme.spacing(5),
     },
@@ -25,7 +24,7 @@ export const useStyles = makeStyles((theme) => ({
             return 'transparent';
         },
         border: (props: any) => {
-            if (props.grayBackGround) return `1px solid ${theme.colors.gray40}`;
+            if (props.grayBackGround && !theme.darkMode) return `1px solid ${theme.colors.gray40}`;
             if (props.checked) return 'none';
             return '1px solid #5b6c84';
         },

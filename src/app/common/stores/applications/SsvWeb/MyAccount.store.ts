@@ -67,10 +67,12 @@ class MyAccountStore extends BaseStore {
                 perPage: this.forceBigList ? 10 : (forcePerPage ?? perPage),
             },
         );
-        if (response?.validators?.length > 0) ssvStore.userState = 'validator';
-        response.pagination.perPage = response.pagination.per_page;
-        this.ownerAddressValidatorsPagination = response.pagination;
-        this.ownerAddressValidators = response.validators;
+        if (response?.validators?.length > 0) {
+            ssvStore.userState = 'validator';
+            response.pagination.perPage = response.pagination.per_page;
+            this.ownerAddressValidatorsPagination = response.pagination;
+            this.ownerAddressValidators = response.validators;
+        }
     }
 }
 

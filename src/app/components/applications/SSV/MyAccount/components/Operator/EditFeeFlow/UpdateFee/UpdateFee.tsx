@@ -31,9 +31,9 @@ const UpdateFee = () => {
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
-                applicationStore.setIsLoading(false);
                 getCurrentState();
             }
+            applicationStore.setIsLoading(false);
         });
     }, []);
 

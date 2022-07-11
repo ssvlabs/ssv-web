@@ -7570,7 +7570,7 @@ colorette@^1.2.2:
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.2.2.tgz#cbcc79d5e99caea2dbf10eb3a26fd8b3e6acfa94"
   integrity sha512-MKGMzyfeuutC/ZJ1cba9NqcNpfeqMUcYmyF1ZFY6/Cn7CNSAKx6a+s48sqLqyAiZuaP2TcqMhoo+dlwFnVxT9w==
 
-colors@^1.1.2:
+colors@^1.1.2, colors@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
@@ -14628,6 +14628,11 @@ minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
 
+minimist@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
+  integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
+
 minipass-collect@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/minipass-collect/-/minipass-collect-1.0.2.tgz#22b813bf745dc6edba2576b940022ad6edc8c617"
@@ -14780,6 +14785,11 @@ mock-fs@^4.1.0:
   version "4.14.0"
   resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-4.14.0.tgz#ce5124d2c601421255985e6e94da80a7357b1b18"
   integrity sha512-qYvlv/exQ4+svI3UOvPUpLDF0OMX5euvUH0Ny4N5QyRyhNdgAgUrVH3iUINSzEPLvx0kbo/Bp28GJKIqvE7URw==
+
+moment@^2.29.3:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
 moo@^0.5.0:
   version "0.5.1"
@@ -18626,9 +18636,9 @@ ssri@^8.0.0:
   dependencies:
     minipass "^3.1.1"
 
-"ssv-keys@https://github.com/bloxapp/ssv-keys.git":
-  version "0.0.1"
-  resolved "https://github.com/bloxapp/ssv-keys.git#64b6c05b8cf3396bf8a68781d42c1e3f8dedfd5b"
+"ssv-keys@https://github.com/bloxapp/ssv-keys.git#v2":
+  version "0.0.2"
+  resolved "https://github.com/bloxapp/ssv-keys.git#b13a7cc0073cfe4b1d074faf2fd3299d936cb9b9"
   dependencies:
     argparse "^2.0.1"
     assert "^2.0.0"
@@ -18636,6 +18646,7 @@ ssri@^8.0.0:
     bls-eth-wasm "^1.0.4"
     bls-signatures "^0.2.5"
     btoa "^1.2.1"
+    colors "^1.4.0"
     crypto "^1.0.1"
     eth2-keystore-js "^1.0.8"
     ethereumjs-util "^7.0.10"
@@ -18643,6 +18654,8 @@ ssri@^8.0.0:
     events "^3.3.0"
     js-base64 "^3.7.2"
     jsencrypt "^3.2.1"
+    minimist "^1.2.6"
+    moment "^2.29.3"
     node-jsencrypt "^1.0.0"
     prompts "^2.4.2"
     scrypt-js "^3.0.1"

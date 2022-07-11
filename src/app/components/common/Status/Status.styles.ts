@@ -26,6 +26,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     Inactive: {
         width: 65,
+        height: 26,
         color: theme.colors.primaryError,
         backgroundColor: theme.colors.primaryErrorRegular,
     },

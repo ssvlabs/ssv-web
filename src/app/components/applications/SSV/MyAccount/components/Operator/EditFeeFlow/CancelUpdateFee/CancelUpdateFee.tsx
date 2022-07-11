@@ -6,9 +6,10 @@ import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import { formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -25,6 +26,7 @@ const CancelUpdateFee = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
+    const ssvStore: SsvStore = stores.SSV;
     const eventStore: EventStore = stores.Event;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
@@ -53,9 +55,9 @@ const CancelUpdateFee = (props: Props) => {
     };
 
     // @ts-ignore
-    const currentOperatorFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorCurrentFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
     // @ts-ignore
-    const operatorFutureFee = formatNumberToUi(multiplyNumber(walletStore.fromWei(operatorStore.operatorFutureFee), config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
 
     if (successPage) {
         return (
@@ -94,7 +96,7 @@ const CancelUpdateFee = (props: Props) => {
       <Dialog className={classes.DialogWrapper} PaperProps={{ style: { borderRadius: 16 } }} open={operatorStore.openCancelDialog}>
         <Grid className={classes.CloseDialog} onClick={operatorStore.switchCancelDialog} />
         <Grid className={classes.GridWrapper} container>
-          <HeaderSubHeader title={'Sending Transaction'} />
+          <HeaderSubHeader title={'Cancel Update Fee'} />
           <Grid className={classes.Text}>
             <b>Canceling</b> the fee update process will notify <br />
             your managed validators and your <b>current fee <br />

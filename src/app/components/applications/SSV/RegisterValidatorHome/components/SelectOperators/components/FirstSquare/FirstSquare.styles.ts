@@ -25,7 +25,7 @@ export const useStyles = makeStyles((theme) => ({
     },
 
     OperatorsTable: {
-        height: 480,
+        height: 524,
         borderRadius: 16,
         cursor: 'pointer',
         marginTop: theme.spacing(5),

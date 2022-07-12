@@ -209,7 +209,7 @@ const DashboardTables = () => {
         return {
             public_key: <Grid container item>
               <Grid item xs={12} className={classes.Name}>{name}</Grid>
-              <OperatorId text={'ID: '} id={id} />
+              <OperatorId withoutExplorer text={'ID: '} id={id} />
             </Grid>,
             status: <Status status={status} />,
             revenue: <Grid container item>

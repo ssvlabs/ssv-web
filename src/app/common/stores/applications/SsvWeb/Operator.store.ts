@@ -72,7 +72,7 @@ class OperatorStore extends BaseStore {
     @observable operatorFutureFee: null | number = null;
     @observable getSetOperatorFeePeriod: null | number = null;
     @observable operatorApprovalEndTime: null | number = null;
-    @observable approveOperatorFeePeriod: null | number = null;
+    @observable declaredOperatorFeePeriod: null | number = null;
     @observable operatorApprovalBeginTime: null | number = null;
     
     @observable newOperatorKeys: NewOperator = { name: '', pubKey: '', address: '', fee: 0, id: '0' };
@@ -140,7 +140,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getContract;
         this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
-        this.approveOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
+        this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
         this.maxFeeIncrease = await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call();
     }
 
@@ -154,7 +154,7 @@ class OperatorStore extends BaseStore {
         this.operatorCurrentFee = null;
         this.getSetOperatorFeePeriod = null;
         this.operatorApprovalEndTime = null;
-        this.approveOperatorFeePeriod = null;
+        this.declaredOperatorFeePeriod = null;
         this.operatorApprovalBeginTime = null;
         this.clearOperatorData();
     }

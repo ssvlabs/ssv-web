@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     Stepper: {
+        marginTop: 24,
         marginBottom: 40,
     },
     Line: {
@@ -252,7 +253,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     FeesChangeWrapper: {
         gap: 12,
-        marginBottom: (props: any) => props.lastStep ? 24 : 40,
+        marginBottom: (props: any) => props.page === 3 ? 24 : 40,
     },
     NegativeArrow: {
         width: 29,
@@ -285,39 +286,39 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         border: (props: any) => {
-            if (props.expiredStep) {
+            if (props.step === 4) {
                 return `1px solid ${theme.colors.primaryError}`;
             }
-            if (props.lastStep) {
+            if (props.step === 3) {
                 if (theme.darkMode) return `1px solid ${theme.colors.primaryBlue}`;
             }
-            if (props.step3) {
+            if (props.step === 2) {
                 return `1px solid ${theme.colors.tint20}`;
             }
             return `1px solid ${theme.colors.tint20}`;
         },
         color: (props: any) => {
-            if (props.expiredStep) {
+            if (props.step === 4) {
                 return theme.colors.primaryError;
             }
-            if (props.lastStep) {
+            if (props.step === 3) {
                 if (theme.darkMode) return theme.colors.primaryBlue;
                 return theme.colors.white;
             }
-            if (props.step3) {
+            if (props.step === 2) {
                 return theme.colors.primaryBlue;
             }
             return theme.colors.primaryBlue;
         },
         backgroundColor: (props: any) => {
-            if (props.expiredStep) {
+            if (props.step === 4) {
                 return theme.colors.primaryErrorRegular;
             }
-            if (props.lastStep) {
+            if (props.step === 3) {
                 if (theme.darkMode) return 'transparent';
                 return theme.colors.primaryBlue;
             }
-            if (props.step3) {
+            if (props.step === 2) {
                 return theme.colors.tint90;
             }
             return theme.colors.tint90;
@@ -331,8 +332,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     HeaderWrapper: {
         gap: 8,
-        marginBottom: 24,
-        alignItems: 'center',
     },
     StepperWrapper: {
         padding: 0,

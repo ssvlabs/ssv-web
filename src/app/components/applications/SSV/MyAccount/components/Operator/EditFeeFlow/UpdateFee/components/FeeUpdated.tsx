@@ -32,8 +32,8 @@ const FeeUpdated = () => {
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
-                applicationStore.setIsLoading(false);
             }
+            applicationStore.setIsLoading(false);
         });
     }, []);
 
@@ -46,7 +46,7 @@ const FeeUpdated = () => {
     };
 
     // @ts-ignore
-    const classes = useStyles({ lastStep: true });
+    const classes = useStyles({ step: 3 });
 
     if (!operator) return null;
 

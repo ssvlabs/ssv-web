@@ -81,6 +81,20 @@ const DeclareFee = (props: Props) => {
         day: 'numeric', hour: '2-digit', minute: '2-digit',
     };
 
+    const secondsToDhms = (seconds: any) => {
+        // eslint-disable-next-line no-param-reassign
+        seconds = Number(seconds);
+        const d = Math.floor(seconds / (3600 * 24));
+        // eslint-disable-next-line no-mixed-operators
+        const h = Math.floor(seconds % (3600 * 24) / 3600);
+        // eslint-disable-next-line no-mixed-operators
+        const m = Math.floor(seconds % 3600 / 60);
+        if (d > 0) return d + (d === 1 ? ' day' : ' days');
+        if (h > 0) return h + (h === 1 ? ' hour' : ' hours');
+        if (m > 0) return m + (m === 1 ? ' minute' : ' minutes');
+        return '0 day';
+    };
+
     return (
       <BorderScreen
         blackHeader
@@ -107,7 +121,7 @@ const DeclareFee = (props: Props) => {
               </Grid>
               <Grid item>
                 <Typography>Process starts by declaring a new fee, which is followed by <br />
-                  a <b>3 day waiting period</b> in which your managed validators are notified. <br />
+                  a <b>{secondsToDhms(operatorStore.declaredOperatorFeePeriod)} waiting period</b> in which your managed validators are notified. <br />
                   Once the waiting period has past you could finalize your new fee by <br /> executing it.</Typography>
               </Grid>
             </Grid>
@@ -127,9 +141,10 @@ const DeclareFee = (props: Props) => {
                   placeHolder={'0.0'}
                   showError={error.shouldDisplay}
                   dataTestId={'edit-operator-fee'}
-                  onChangeCallback={(e: any) => setUserInput(e.target.value)}
-                  onBlurCallBack={(event: any) => { // @ts-ignore
-                      validateFeeUpdate(operatorFee, event.target.value, operatorStore.maxFeeIncrease, setError);
+                  onChangeCallback={(e: any) => {
+                      setUserInput(e.target.value);
+                      // @ts-ignore
+                      validateFeeUpdate(operatorFee, e.target.value, operatorStore.maxFeeIncrease, setError);
                   }}
                 />
                 {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}

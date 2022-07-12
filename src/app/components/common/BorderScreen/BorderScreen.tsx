@@ -7,6 +7,7 @@ type Props = {
     body: any,
     bottom?: any,
     header?: string,
+    SideHeader?: any,
     gray80?: boolean,
     wrapperClass?: any,
     sectionClass?: any,
@@ -20,7 +21,7 @@ type Props = {
 const BorderScreen = (props: Props) => {
     const [coins] = useState(['SSV', 'USD']);
     const [currency, setCurrency] = useState('SSV');
-    const { wrapperClass, borderRadius, gray80, withoutNavigation, blackHeader, header, withConversion, bottomWrapper, body, sectionClass, bottom } = props;
+    const { wrapperClass, borderRadius, SideHeader, gray80, withoutNavigation, blackHeader, header, withConversion, bottomWrapper, body, sectionClass, bottom } = props;
     const classes = useStyles({ gray80, blackHeader });
 
     const switchCurrency = (selectedCurrency: string) => {
@@ -36,10 +37,11 @@ const BorderScreen = (props: Props) => {
           )}
         <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
           {(header || withConversion) && (
-            <Grid container item className={classes.HeaderSection}>
+            <Grid container item className={classes.HeaderSection} justify={'space-between'}>
               <Grid item className={classes.Header}>
                 {header}
               </Grid>
+                {SideHeader && !withConversion && <Grid item><SideHeader /></Grid>}
               {withConversion && process.env.REACT_APP_NEW_STAGE && (
               <Grid item xs={5}>
                 <Grid container item className={classes.Conversion}>

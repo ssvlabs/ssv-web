@@ -48,7 +48,7 @@ const OperatorRemoved = () => {
     return (
       <Grid container item>
         <WhiteWrapper withBackButton={false} header={'Remove Operator'}>
-          <OperatorId id={id} />
+          <OperatorId withoutExplorer id={id} />
         </WhiteWrapper>
         <Grid item container className={classes.Wrapper}>
           <Grid item className={classes.BackgroundImage} />

@@ -25,6 +25,8 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
 import OperatorDetails
     from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import UpdateFeeState
+    from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 
 const SingleOperator = () => {
     const stores = useStores();
@@ -268,8 +270,10 @@ const SingleOperator = () => {
             <BorderScreen
               withoutNavigation
               header={'Annual Fee'}
+              SideHeader={UpdateFeeState}
+              sectionClass={classes.AnnualSection}
               body={[
-                <Grid container item style={{ gap: 20 }}>
+                <Grid container item>
                   <Grid item xs={12}>
                     <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign />
                   </Grid>

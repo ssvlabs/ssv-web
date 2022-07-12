@@ -39,13 +39,13 @@ const PendingExecution = (props: Props) => {
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);
-                applicationStore.setIsLoading(false);
             }
+            applicationStore.setIsLoading(false);
         });
     }, []);
 
     // @ts-ignore
-    const classes = useStyles({ Step3: true });
+    const classes = useStyles({ step: 2 });
 
     const submitFeeChange = async () => {
         applicationStore.setIsLoading(true);

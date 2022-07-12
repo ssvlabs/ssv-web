@@ -81,6 +81,9 @@ export const useStyles = makeStyles((theme) => ({
             marginBottom: 24,
         },
     },
+    AnnualSection: {
+      padding: '0 32px 32px 32px',
+    },
     ButtonSection: {
         height: 'fit-content',
         padding: theme.spacing(8),

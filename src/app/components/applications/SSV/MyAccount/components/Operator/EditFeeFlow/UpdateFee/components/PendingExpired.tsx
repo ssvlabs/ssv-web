@@ -46,7 +46,7 @@ const PendingExpired = () => {
     };
 
     // @ts-ignore
-    const classes = useStyles({ expiredStep: true });
+    const classes = useStyles({ step: 4 });
 
     if (!operator) return null;
 

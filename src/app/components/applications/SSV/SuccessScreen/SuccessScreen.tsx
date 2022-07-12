@@ -26,6 +26,7 @@ const SuccessScreen = () => {
                 history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
             }, 7000);
         } else {
+            applicationStore.setIsLoading(false);
             const linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
             window.open(linkToExplorer);
         }

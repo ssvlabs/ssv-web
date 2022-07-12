@@ -126,9 +126,10 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                 <Grid item>
                   <SsvAndSubTitle
                     bold
+                    fontSize={16}
                     subTextCenter={false}
                     ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
-                  />
+                    />
                 </Grid>
               </Grid>
               )}

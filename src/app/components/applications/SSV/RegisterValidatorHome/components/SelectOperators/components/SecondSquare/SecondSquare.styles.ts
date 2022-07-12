@@ -84,6 +84,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
     },
     NotVerifiedText: {
+        fontSize: 14,
         cursor: 'pointer',
         fontWeight: 'bold',
         display: 'inline-block',

@@ -8,11 +8,12 @@ type Props = {
     fade?: boolean,
     subText?: string,
     gray80?: boolean,
+    fontSize?: number,
     subTextCenter?: boolean,
     leftTextAlign?: boolean,
 };
 const SsvAndSubTitle = (props: Props) => {
-    const { ssv, subText, gray80, bold, fade, subTextCenter } = props;
+    const { ssv, subText, gray80, fontSize, bold, fade, subTextCenter } = props;
     const classes = useStyles({ bold, gray80, fade });
     let textAlign: any = 'right';
     if (subTextCenter) {
@@ -20,10 +21,10 @@ const SsvAndSubTitle = (props: Props) => {
     } else if (props.leftTextAlign) {
         textAlign = 'left';
     }
-
+    
     return (
       <Grid container item style={{ textAlign, flexDirection: 'column' }}>
-        <Grid item xs className={classes.Balance}>{ssv} SSV</Grid>
+        <Grid item xs style={{ fontSize }} className={classes.Balance}>{ssv} SSV</Grid>
         {subText && <Grid item className={classes.DollarBalance}>{subText}</Grid>}
       </Grid>
     );

@@ -18,32 +18,37 @@ const UpdateFeeState = () => {
 
     useEffect(() => {
         if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-        operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId).then(() => {
-            if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
-                const todayDate = new Date();
-                const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
-                const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
-                const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
-
-                // @ts-ignore
-                const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-                
-                if (isInPendingState) {
-                    setProcessState(2);
-                } else if (startPendingStateTime > todayDate) {
-                    setProcessState(1);
-                } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
-                    // @ts-ignore
-                    const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-                    if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
-                        setProcessState(0);
-                        return;
-                    }
-                    setProcessState(4);
-                }
-            }
-        });
+        getState();
+        setInterval(getState, 2000);
     }, []);
+
+    const getState = async () => {
+        // @ts-ignore
+        await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
+        if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
+            const todayDate = new Date();
+            const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
+            const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
+            const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
+
+            // @ts-ignore
+            const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
+
+            if (isInPendingState) {
+                setProcessState(2);
+            } else if (startPendingStateTime > todayDate) {
+                setProcessState(1);
+            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
+                // @ts-ignore
+                const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+                if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
+                    setProcessState(0);
+                    return;
+                }
+                setProcessState(4);
+            }
+        }
+    };
 
     const State = () => {
         if (processState === 0) return null;
@@ -68,7 +73,7 @@ const UpdateFeeState = () => {
         if (processState === 1) {
             text = `${timeDiffCalc(operatorBeginApprovalTime, today)} Left`;
             return (
-              <Typography className={classes.WaitingPeriod}>
+              <Typography style={{ alignSelf: 'center' }} className={classes.WaitingPeriod}>
                 {text}
               </Typography>
             );
@@ -78,7 +83,7 @@ const UpdateFeeState = () => {
             const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
             text = `Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`;
             return (
-              <Typography className={classes.ExpiresIn}>
+              <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
                 {text}
               </Typography>
             );
@@ -90,12 +95,11 @@ const UpdateFeeState = () => {
         const expiredYear = expiredOn.getFullYear();
         text = `on ${`${expiredDay}.${expiredMonth}.${expiredYear}`}`;
         return (
-          <Typography className={classes.ExpiresIn}>
+          <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
             {text}
           </Typography>
         );
     };
-    console.log(processState);
 
     return (
       <Grid container item className={classes.HeaderWrapper} alignItems={'flex-end'} direction={'column'}>

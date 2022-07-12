@@ -70,7 +70,7 @@ const ProductQuestions = () => {
 
     return (
       <Grid container item>
-        <ValidatorWhiteHeader withoutExplorer withCancel={false} text={'Remove Validator'} />
+        <ValidatorWhiteHeader withBackButton={false} withoutExplorer withCancel={false} text={'Remove Validator'} />
         <BorderScreen
           blackHeader
           withoutNavigation

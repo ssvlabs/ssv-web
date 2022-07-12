@@ -66,7 +66,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         try {
             const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
             const response: any = (await axios.get(beaconChaValidatorUrl)).data;
-            const conditionalDataExtraction = Array.isArray(response.data) ? response[0]?.data : response.data;
+            const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
             return conditionalDataExtraction?.valid_signature;
         } catch (e) {
             return true;

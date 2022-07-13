@@ -39,8 +39,8 @@ const SingleValidator = () => {
     const validatorPublicKey = validator?.public_key;
 
     useEffect(() => {
-        applicationStore.setIsLoading(true);
         if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
                 response.public_key = longStringShorten(response.public_key, 6, 4);

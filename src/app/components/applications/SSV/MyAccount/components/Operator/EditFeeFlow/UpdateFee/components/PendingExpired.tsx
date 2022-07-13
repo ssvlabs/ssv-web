@@ -27,7 +27,7 @@ const PendingExpired = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         // @ts-ignore
         const savedOperator = JSON.parse(localStorage.getItem('expired_operators')) ?? [];
         if (savedOperator && !savedOperator.includes(operatorStore.processOperatorId)) savedOperator.push(operatorStore.processOperatorId);

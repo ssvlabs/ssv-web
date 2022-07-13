@@ -295,7 +295,7 @@ export const useStyles = makeStyles((theme) => ({
             if (props.step === 2) {
                 return `1px solid ${theme.colors.tint20}`;
             }
-            return `1px solid ${theme.colors.tint20}`;
+            return `1px solid ${theme.colors.tint90}`;
         },
         color: (props: any) => {
             if (props.step === 4) {

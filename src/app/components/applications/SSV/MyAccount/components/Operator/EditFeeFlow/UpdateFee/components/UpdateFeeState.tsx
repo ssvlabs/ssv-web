@@ -2,22 +2,23 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from './index.styles';
 import { timeDiffCalc } from '~lib/utils/time';
 import Typography from '@material-ui/core/Typography';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 const UpdateFeeState = () => {
     const stores = useStores();
     const history = useHistory();
     const operatorStore: OperatorStore = stores.Operator;
+    const applicationStore: ApplicationStore = stores.Application;
     const [processState, setProcessState] = useState(0);
     const classes = useStyles({ step: processState });
 
     useEffect(() => {
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         getState();
         setInterval(getState, 2000);
     }, []);

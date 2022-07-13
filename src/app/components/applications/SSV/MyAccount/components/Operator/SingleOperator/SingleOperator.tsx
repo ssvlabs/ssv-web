@@ -42,16 +42,16 @@ const SingleOperator = () => {
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     useEffect(() => {
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 // @ts-ignore
                 response.revenue = await operatorStore.getOperatorRevenue(operatorStore.processOperatorId);
                 setOperator(response);
-                applicationStore.setIsLoading(false);
                 loadOperatorValidators({ page: 1, perPage: 5 });
             }
+            applicationStore.setIsLoading(false);
         });
     }, []);
 

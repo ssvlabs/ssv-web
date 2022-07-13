@@ -12,8 +12,8 @@ const SsvAppBar = () => {
     const location = useLocation();
     const applicationStore: ApplicationStore = stores.Application;
     const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
-    const backgroundColor = location.pathname.includes('/dashboard/validator')
-    || location.pathname.includes('/dashboard/operator')
+    const backgroundColor = location.pathname.includes(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT)
+    || location.pathname.includes(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT)
         ? applicationStore.theme.colors.white
         : '';
 

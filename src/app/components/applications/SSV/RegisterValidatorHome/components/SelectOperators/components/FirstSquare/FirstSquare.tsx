@@ -12,19 +12,20 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/components/common/ToolTip';
-import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
+import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
+import BorderScreen from '~app/components/common/BorderScreen';
+import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
 import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -137,7 +138,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         //     ));
         // }
         // if (loading) return [];
-        
+
         if (operatorsData?.length === 0 && !loading) {
             return (
               <TableRow hover>
@@ -162,8 +163,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
                 onClick={(e) => { !disabled && selectOperator(e, operator); }}
               >
-                <StyledCell style={{ width: 60 }}>
-                  <Grid item className={`${classes.Checkbox} ${isSelected ? classes.Checked : ''}`} />
+                <StyledCell style={{ paddingLeft: 20, width: 60 }}>
+                  <Checkbox grayBackGround text={''} isChecked={isSelected} />
                 </StyledCell>
                 <StyledCell>
                   <OperatorDetails operator={operator} />

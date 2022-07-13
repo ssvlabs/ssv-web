@@ -150,10 +150,10 @@ const ImportValidatorConfirmation = () => {
         <Grid container>
           <Button
             withAllowance
-            disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance}
             text={actionButtonText}
             testId={'confirm-button'}
             onClick={onRegisterValidatorClick}
+            disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance}
           />
           {/* <CTAButton */}
           {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}

@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         cursor: 'pointer',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         color: theme.colors.gray80,
         marginBottom: theme.spacing(5),
     },
@@ -15,9 +15,10 @@ export const useStyles = makeStyles((theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        marginRight: theme.spacing(4),
+        alignSelf: (props: any) => props.align ?? '',
         width: (props: any) => props.width ? props.width : 18,
         height: (props: any) => props.height ? props.height : 18,
+        marginRight: (props: any) => props.marginRight ?? theme.spacing(4),
         backgroundColor: (props: any) => {
             if (props.grayBackGround && !props.checked) return theme.colors.gray10;
             if (props.checked) return theme.colors.primaryBlue;

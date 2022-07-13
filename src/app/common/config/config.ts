@@ -14,56 +14,56 @@ const config = {
         SSV: {
             ROOT: '/join',
             MY_ACCOUNT: {
-                DASHBOARD: '/dashboard',
-                DEPOSIT: '/dashboard/deposit',
-                WITHDRAW: '/dashboard/withdraw',
-                ENABLE_ACCOUNT: '/dashboard/reactivate',
+                DASHBOARD: '/my-account',
+                DEPOSIT: '/my-account/deposit',
+                WITHDRAW: '/my-account/withdraw',
+                ENABLE_ACCOUNT: '/my-account/reactivate',
                 OPERATOR: {
-                    ROOT: '/dashboard/operator',
+                    ROOT: '/my-account/operator',
                     REMOVE: {
-                        ROOT: '/dashboard/operator/remove',
-                        SUCCESS: '/dashboard/operator/remove/success',
+                        ROOT: '/my-account/operator/remove',
+                        SUCCESS: '/my-account/operator/remove/success',
                     },
                     UPDATE_FEE: {
-                        START: '/dashboard/operator/start',
+                        START: '/my-account/operator/fee-update',
                     },
                 },
                 VALIDATOR: {
-                    ROOT: '/dashboard/validator',
+                    ROOT: '/my-account/validator',
                     VALIDATOR_UPDATE: {
-                        ROOT: '/dashboard/validator/update',
-                        ENTER_KEYSTORE: '/dashboard/validator/update/enter-key',
-                        CHOOSE_OPERATORS: '/dashboard/validator/update/choose-operators',
-                        CONFIRM_TRANSACTION: '/dashboard/validator/update/confirm-transaction',
+                        ROOT: '/my-account/validator/update',
+                        ENTER_KEYSTORE: '/my-account/validator/update/enter-key',
+                        CHOOSE_OPERATORS: '/my-account/validator/update/choose-operators',
+                        CONFIRM_TRANSACTION: '/my-account/validator/update/confirm-transaction',
                     },
                     VALIDATOR_REMOVE: {
-                        ROOT: '/dashboard/validator/remove',
-                        REMOVED: '/dashboard/validator/removed',
+                        ROOT: '/my-account/validator/remove',
+                        REMOVED: '/my-account/validator/removed',
                     },
                 },
-                // EDIT_VALIDATOR: '/dashboard/validator/:public_key/edit',
-                REMOVE_VALIDATOR: '/dashboard/validator/:public_key/remove',
-                VALIDATOR_REMOVED: '/dashboard/validator/:public_key/removed',
-                CONFIRM_OPERATORS: '/dashboard/validator/:public_key/confirm',
-                UPLOAD_KEY_STORE: '/dashboard/validator/:public_key/upload_key_store',
+                // EDIT_VALIDATOR: '/my-account/validator/:public_key/edit',
+                REMOVE_VALIDATOR: '/my-account/validator/:public_key/remove',
+                VALIDATOR_REMOVED: '/my-account/validator/:public_key/removed',
+                CONFIRM_OPERATORS: '/my-account/validator/:public_key/confirm',
+                UPLOAD_KEY_STORE: '/my-account/validator/:public_key/upload_key_store',
             },
             OPERATOR: {
-                HOME: '/operator',
-                GENERATE_KEYS: '/operator/register',
-                SET_FEE_PAGE: '/operator/register-fee',
-                CONFIRMATION_PAGE: '/operator/confirm-transaction',
-                SUCCESS_PAGE: '/operator/success',
+                HOME: '/join/operator',
+                GENERATE_KEYS: '/join/operator/register',
+                SET_FEE_PAGE: '/join/operator/register-fee',
+                CONFIRMATION_PAGE: '/join/operator/confirm-transaction',
+                SUCCESS_PAGE: '/join/operator/success',
             },
             VALIDATOR: {
-                HOME: '/validator',
-                IMPORT: '/validator/enter-key',
-                CREATE: '/validator/launchpad',
-                SUCCESS_PAGE: '/validator/success',
-                SELECT_OPERATORS: '/validator/choose-operators',
-                SLASHING_WARNING: '/validator/slashing-warning',
-                DEPOSIT_VALIDATOR: '/validator/deposit-validator',
-                CONFIRMATION_PAGE: '/validator/confirm-transaction',
-                ACCOUNT_BALANCE_AND_FEE: '/validator/balance-warning',
+                HOME: '/join/validator',
+                IMPORT: '/join/validator/enter-key',
+                CREATE: '/join/validator/launchpad',
+                SUCCESS_PAGE: '/join/validator/success',
+                SELECT_OPERATORS: '/join/validator/choose-operators',
+                SLASHING_WARNING: '/join/validator/slashing-warning',
+                DEPOSIT_VALIDATOR: '/join/validator/deposit-validator',
+                CONFIRMATION_PAGE: '/join/validator/confirm-transaction',
+                ACCOUNT_BALANCE_AND_FEE: '/join/validator/balance-warning',
             },
         },
     },
@@ -490,6 +490,104 @@ const config = {
             ADDRESS: String(process.env.REACT_APP_NETWORK_CONTRACT_ADDRESS),
             ABI: [
                 {
+                    'inputs': [
+
+                    ],
+                    'name': 'AccountAlreadyEnabled',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'ApprovalNotWithinTimeframe',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'BelowMinimumBlockPeriod',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'BurnRatePositive',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'CallerNotOperatorOwner',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'CallerNotValidatorOwner',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'ExceedManagingOperatorsPerAccountLimit',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'FeeExceedsIncreaseLimit',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'FeeTooLow',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'NegativeBalance',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'NoPendingFeeChangeRequest',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'NotEnoughBalance',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'OperatorWithPublicKeyNotExist',
+                    'type': 'error',
+                },
+                {
+                    'inputs': [
+
+                    ],
+                    'name': 'ValidatorWithPublicKeyNotExist',
+                    'type': 'error',
+                },
+                {
                     'anonymous': false,
                     'inputs': [
                         {
@@ -499,7 +597,7 @@ const config = {
                             'type': 'address',
                         },
                     ],
-                    'name': 'AccountEnabled',
+                    'name': 'AccountEnable',
                     'type': 'event',
                 },
                 {
@@ -512,7 +610,7 @@ const config = {
                             'type': 'address',
                         },
                     ],
-                    'name': 'AccountLiquidated',
+                    'name': 'AccountLiquidation',
                     'type': 'event',
                 },
                 {
@@ -525,7 +623,26 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'DeclareOperatorFeePeriodUpdated',
+                    'name': 'DeclareOperatorFeePeriodUpdate',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': true,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint32',
+                            'name': 'operatorId',
+                            'type': 'uint32',
+                        },
+                    ],
+                    'name': 'DeclaredOperatorFeeCancelation',
                     'type': 'event',
                 },
                 {
@@ -538,7 +655,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'ExecuteOperatorFeePeriodUpdated',
+                    'name': 'ExecuteOperatorFeePeriodUpdate',
                     'type': 'event',
                 },
                 {
@@ -563,7 +680,7 @@ const config = {
                             'type': 'address',
                         },
                     ],
-                    'name': 'FundsDeposited',
+                    'name': 'FundsDeposit',
                     'type': 'event',
                 },
                 {
@@ -582,7 +699,20 @@ const config = {
                             'type': 'address',
                         },
                     ],
-                    'name': 'FundsWithdrawn',
+                    'name': 'FundsWithdrawal',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint8',
+                            'name': 'version',
+                            'type': 'uint8',
+                        },
+                    ],
+                    'name': 'Initialized',
                     'type': 'event',
                 },
                 {
@@ -595,7 +725,20 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'LiquidationThresholdPeriodUpdated',
+                    'name': 'LiquidationThresholdPeriodUpdate',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'MinimumBlocksBeforeLiquidationUpdate',
                     'type': 'event',
                 },
                 {
@@ -614,7 +757,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'NetworkFeeUpdated',
+                    'name': 'NetworkFeeUpdate',
                     'type': 'event',
                 },
                 {
@@ -633,7 +776,7 @@ const config = {
                             'type': 'address',
                         },
                     ],
-                    'name': 'NetworkFeesWithdrawn',
+                    'name': 'NetworkFeesWithdrawal',
                     'type': 'event',
                 },
                 {
@@ -646,13 +789,25 @@ const config = {
                             'type': 'address',
                         },
                         {
-                            'indexed': true,
-                            'internalType': 'uint256',
+                            'indexed': false,
+                            'internalType': 'uint32',
                             'name': 'operatorId',
+                            'type': 'uint32',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'blockNumber',
+                            'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'fee',
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'OperatorActivated',
+                    'name': 'OperatorFeeDeclaration',
                     'type': 'event',
                 },
                 {
@@ -660,9 +815,66 @@ const config = {
                     'inputs': [
                         {
                             'indexed': true,
+                            'internalType': 'address',
+                            'name': 'ownerAddress',
+                            'type': 'address',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint32',
+                            'name': 'operatorId',
+                            'type': 'uint32',
+                        },
+                        {
+                            'indexed': false,
                             'internalType': 'uint256',
-                            'name': 'id',
+                            'name': 'blockNumber',
                             'type': 'uint256',
+                        },
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'fee',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'OperatorFeeExecution',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'OperatorFeeIncreaseLimitUpdate',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': false,
+                            'internalType': 'uint256',
+                            'name': 'value',
+                            'type': 'uint256',
+                        },
+                    ],
+                    'name': 'OperatorMaxFeeIncreaseUpdate',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
+                        {
+                            'indexed': true,
+                            'internalType': 'uint32',
+                            'name': 'id',
+                            'type': 'uint32',
                         },
                         {
                             'indexed': false,
@@ -689,57 +901,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'OperatorAdded',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
-                        {
-                            'indexed': true,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': true,
-                            'internalType': 'uint256',
-                            'name': 'operatorId',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'OperatorDeactivated',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
-                        {
-                            'indexed': true,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': true,
-                            'internalType': 'uint256',
-                            'name': 'operatorId',
-                            'type': 'uint256',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'uint256',
-                            'name': 'blockNumber',
-                            'type': 'uint256',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'uint256',
-                            'name': 'fee',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'OperatorFeeApproved',
+                    'name': 'OperatorRegistration',
                     'type': 'event',
                 },
                 {
@@ -747,97 +909,34 @@ const config = {
                     'inputs': [
                         {
                             'indexed': false,
-                            'internalType': 'uint256',
-                            'name': 'value',
-                            'type': 'uint256',
+                            'internalType': 'uint32',
+                            'name': 'operatorId',
+                            'type': 'uint32',
                         },
-                    ],
-                    'name': 'OperatorFeeIncreaseLimitUpdated',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
                         {
                             'indexed': true,
                             'internalType': 'address',
                             'name': 'ownerAddress',
                             'type': 'address',
                         },
-                        {
-                            'indexed': true,
-                            'internalType': 'uint256',
-                            'name': 'operatorId',
-                            'type': 'uint256',
-                        },
+                    ],
+                    'name': 'OperatorRemoval',
+                    'type': 'event',
+                },
+                {
+                    'anonymous': false,
+                    'inputs': [
                         {
                             'indexed': false,
-                            'internalType': 'uint256',
-                            'name': 'blockNumber',
-                            'type': 'uint256',
+                            'internalType': 'uint32',
+                            'name': 'operatorId',
+                            'type': 'uint32',
                         },
-                        {
-                            'indexed': false,
-                            'internalType': 'uint256',
-                            'name': 'fee',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'OperatorFeeSet',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
                         {
                             'indexed': true,
                             'internalType': 'address',
                             'name': 'ownerAddress',
                             'type': 'address',
-                        },
-                        {
-                            'indexed': true,
-                            'internalType': 'uint256',
-                            'name': 'operatorId',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'OperatorFeeSetCanceled',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
-                        {
-                            'indexed': true,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': true,
-                            'internalType': 'uint256',
-                            'name': 'operatorId',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'OperatorRemoved',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
-                        {
-                            'indexed': true,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': true,
-                            'internalType': 'uint256',
-                            'name': 'operatorId',
-                            'type': 'uint256',
                         },
                         {
                             'indexed': false,
@@ -852,7 +951,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'OperatorScoreUpdated',
+                    'name': 'OperatorScoreUpdate',
                     'type': 'event',
                 },
                 {
@@ -884,7 +983,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'RegisteredOperatorsPerAccountLimitUpdated',
+                    'name': 'RegisteredOperatorsPerAccountLimitUpdate',
                     'type': 'event',
                 },
                 {
@@ -904,9 +1003,9 @@ const config = {
                         },
                         {
                             'indexed': false,
-                            'internalType': 'uint256[]',
+                            'internalType': 'uint32[]',
                             'name': 'operatorIds',
-                            'type': 'uint256[]',
+                            'type': 'uint32[]',
                         },
                         {
                             'indexed': false,
@@ -921,7 +1020,7 @@ const config = {
                             'type': 'bytes[]',
                         },
                     ],
-                    'name': 'ValidatorAdded',
+                    'name': 'ValidatorRegistration',
                     'type': 'event',
                 },
                 {
@@ -940,44 +1039,7 @@ const config = {
                             'type': 'bytes',
                         },
                     ],
-                    'name': 'ValidatorRemoved',
-                    'type': 'event',
-                },
-                {
-                    'anonymous': false,
-                    'inputs': [
-                        {
-                            'indexed': true,
-                            'internalType': 'address',
-                            'name': 'ownerAddress',
-                            'type': 'address',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'bytes',
-                            'name': 'publicKey',
-                            'type': 'bytes',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'uint256[]',
-                            'name': 'operatorIds',
-                            'type': 'uint256[]',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'bytes[]',
-                            'name': 'sharesPublicKeys',
-                            'type': 'bytes[]',
-                        },
-                        {
-                            'indexed': false,
-                            'internalType': 'bytes[]',
-                            'name': 'encryptedKeys',
-                            'type': 'bytes[]',
-                        },
-                    ],
-                    'name': 'ValidatorUpdated',
+                    'name': 'ValidatorRemoval',
                     'type': 'event',
                 },
                 {
@@ -990,7 +1052,7 @@ const config = {
                             'type': 'uint256',
                         },
                     ],
-                    'name': 'ValidatorsPerOperatorLimitUpdated',
+                    'name': 'ValidatorsPerOperatorLimitUpdate',
                     'type': 'event',
                 },
                 {
@@ -1015,9 +1077,9 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'cancelDeclaredOperatorFee',
@@ -1030,13 +1092,13 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                         {
                             'internalType': 'uint256',
-                            'name': 'fee',
+                            'name': 'operatorFee',
                             'type': 'uint256',
                         },
                     ],
@@ -1056,7 +1118,7 @@ const config = {
                         },
                         {
                             'internalType': 'uint256',
-                            'name': 'tokenAmount',
+                            'name': 'amount',
                             'type': 'uint256',
                         },
                     ],
@@ -1070,9 +1132,9 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'executeOperatorFee',
@@ -1198,9 +1260,9 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'getOperatorById',
@@ -1296,9 +1358,9 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'getOperatorDeclaredFee',
@@ -1325,9 +1387,9 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'getOperatorFee',
@@ -1367,24 +1429,9 @@ const config = {
                     'name': 'getOperatorsByValidator',
                     'outputs': [
                         {
-                            'internalType': 'uint256[]',
+                            'internalType': 'uint32[]',
                             'name': '',
-                            'type': 'uint256[]',
-                        },
-                    ],
-                    'stateMutability': 'view',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-
-                    ],
-                    'name': 'getRegisteredOperatorsPerAccountLimit',
-                    'outputs': [
-                        {
-                            'internalType': 'uint256',
-                            'name': '',
-                            'type': 'uint256',
+                            'type': 'uint32[]',
                         },
                     ],
                     'stateMutability': 'view',
@@ -1404,21 +1451,6 @@ const config = {
                             'internalType': 'bytes[]',
                             'name': '',
                             'type': 'bytes[]',
-                        },
-                    ],
-                    'stateMutability': 'view',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-
-                    ],
-                    'name': 'getValidatorsPerOperatorLimit',
-                    'outputs': [
-                        {
-                            'internalType': 'uint256',
-                            'name': '',
-                            'type': 'uint256',
                         },
                     ],
                     'stateMutability': 'view',
@@ -1454,16 +1486,6 @@ const config = {
                         {
                             'internalType': 'uint256',
                             'name': 'executeOperatorFeePeriod_',
-                            'type': 'uint256',
-                        },
-                        {
-                            'internalType': 'uint256',
-                            'name': 'validatorsPerOperatorLimit_',
-                            'type': 'uint256',
-                        },
-                        {
-                            'internalType': 'uint256',
-                            'name': 'registeredOperatorsPerAccountLimit_',
                             'type': 'uint256',
                         },
                     ],
@@ -1546,7 +1568,7 @@ const config = {
                     'inputs': [
                         {
                             'internalType': 'uint256',
-                            'name': 'tokenAmount',
+                            'name': 'amount',
                             'type': 'uint256',
                         },
                     ],
@@ -1578,9 +1600,9 @@ const config = {
                     'name': 'registerOperator',
                     'outputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'stateMutability': 'nonpayable',
@@ -1594,9 +1616,9 @@ const config = {
                             'type': 'bytes',
                         },
                         {
-                            'internalType': 'uint256[]',
+                            'internalType': 'uint32[]',
                             'name': 'operatorIds',
-                            'type': 'uint256[]',
+                            'type': 'uint32[]',
                         },
                         {
                             'internalType': 'bytes[]',
@@ -1605,12 +1627,12 @@ const config = {
                         },
                         {
                             'internalType': 'bytes[]',
-                            'name': 'encryptedKeys',
+                            'name': 'sharesEncrypted',
                             'type': 'bytes[]',
                         },
                         {
                             'internalType': 'uint256',
-                            'name': 'tokenAmount',
+                            'name': 'amount',
                             'type': 'uint256',
                         },
                     ],
@@ -1624,9 +1646,9 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'removeOperator',
@@ -1711,7 +1733,7 @@ const config = {
                     'inputs': [
                         {
                             'internalType': 'uint256',
-                            'name': 'newMinimumBlocksBeforeLiquidation',
+                            'name': 'blocks',
                             'type': 'uint256',
                         },
                     ],
@@ -1755,32 +1777,17 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'operatorId',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': 'score',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'updateOperatorScore',
-                    'outputs': [
-
-                    ],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
-                            'internalType': 'uint256',
-                            'name': 'registeredOperatorsPerAccountLimit_',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'updateRegisteredOperatorsPerAccountLimit',
                     'outputs': [
 
                     ],
@@ -1795,9 +1802,9 @@ const config = {
                             'type': 'bytes',
                         },
                         {
-                            'internalType': 'uint256[]',
+                            'internalType': 'uint32[]',
                             'name': 'operatorIds',
-                            'type': 'uint256[]',
+                            'type': 'uint32[]',
                         },
                         {
                             'internalType': 'bytes[]',
@@ -1806,12 +1813,12 @@ const config = {
                         },
                         {
                             'internalType': 'bytes[]',
-                            'name': 'encryptedKeys',
+                            'name': 'sharesEncrypted',
                             'type': 'bytes[]',
                         },
                         {
                             'internalType': 'uint256',
-                            'name': 'tokenAmount',
+                            'name': 'amount',
                             'type': 'uint256',
                         },
                     ],
@@ -1825,32 +1832,17 @@ const config = {
                 {
                     'inputs': [
                         {
-                            'internalType': 'uint256',
-                            'name': 'validatorsPerOperatorLimit_',
-                            'type': 'uint256',
-                        },
-                    ],
-                    'name': 'updateValidatorsPerOperatorLimit',
-                    'outputs': [
-
-                    ],
-                    'stateMutability': 'nonpayable',
-                    'type': 'function',
-                },
-                {
-                    'inputs': [
-                        {
-                            'internalType': 'uint256',
-                            'name': 'operatorId_',
-                            'type': 'uint256',
+                            'internalType': 'uint32',
+                            'name': 'operatorId',
+                            'type': 'uint32',
                         },
                     ],
                     'name': 'validatorsPerOperatorCount',
                     'outputs': [
                         {
-                            'internalType': 'uint256',
+                            'internalType': 'uint32',
                             'name': '',
-                            'type': 'uint256',
+                            'type': 'uint32',
                         },
                     ],
                     'stateMutability': 'view',
@@ -1858,9 +1850,24 @@ const config = {
                 },
                 {
                     'inputs': [
+
+                    ],
+                    'name': 'version',
+                    'outputs': [
+                        {
+                            'internalType': 'uint32',
+                            'name': '',
+                            'type': 'uint32',
+                        },
+                    ],
+                    'stateMutability': 'pure',
+                    'type': 'function',
+                },
+                {
+                    'inputs': [
                         {
                             'internalType': 'uint256',
-                            'name': 'tokenAmount',
+                            'name': 'amount',
                             'type': 'uint256',
                         },
                     ],

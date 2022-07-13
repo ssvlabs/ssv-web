@@ -27,8 +27,8 @@ const FeeUpdated = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);

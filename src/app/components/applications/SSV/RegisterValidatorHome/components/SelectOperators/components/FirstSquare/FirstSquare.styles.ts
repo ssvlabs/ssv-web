@@ -106,25 +106,9 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.colors.gray10,
         },
     },
-    Checkbox: {
-        width: 24,
-        height: 24,
-        marginLeft: 20,
-        marginRight: 20,
-        // borderRadius: 8,
-        cursor: 'pointer',
-        backgroundColor: theme.colors.white,
-        border: `1px solid ${theme.colors.gray40}`,
-    },
     Hint: {
       width: 10,
       height: 10,
-    },
-    Checked: {
-        width: 24,
-        height: 24,
-        border: 'none',
-        backgroundImage: `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     ChartIcon: {
         width: 24,

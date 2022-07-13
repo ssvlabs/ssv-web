@@ -2,7 +2,6 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
@@ -26,8 +25,8 @@ const UpdateFee = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);

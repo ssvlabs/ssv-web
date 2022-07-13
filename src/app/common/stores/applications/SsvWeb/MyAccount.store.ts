@@ -35,6 +35,7 @@ class MyAccountStore extends BaseStore {
     async getOwnerAddressOperators({ forcePage, forcePerPage } : { forcePage?: number, forcePerPage?: number }): Promise<void> {
         const { page, perPage } = this.ownerAddressOperatorsPagination;
         const walletStore: WalletStore = this.getStore('Wallet');
+        if (!walletStore.accountAddress) return;
         const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? perPage, walletStore.accountAddress);
         response.pagination.perPage = response.pagination.per_page;
         this.ownerAddressOperatorsPagination = response.pagination;
@@ -60,6 +61,7 @@ class MyAccountStore extends BaseStore {
         const ssvStore: SSVStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const { page, perPage } = this.ownerAddressValidatorsPagination;
+        if (!walletStore.accountAddress) return;
         const response = await Validator.getInstance().getValidatorsByOwnerAddress(
             {
                 page: forcePage ?? page,

@@ -142,6 +142,7 @@ class OperatorStore extends BaseStore {
         this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
         this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
         this.maxFeeIncrease = await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call();
+        console.log(this.maxFeeIncrease);
     }
 
     /**
@@ -178,14 +179,15 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     async validatorsPerOperatorLimit(): Promise<any> {
-        return new Promise((resolve) => {
-            const walletStore: WalletStore = this.getStore('Wallet');
-            const contract: Contract = walletStore.getContract;
-            contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
-                this.operatorValidatorsLimit = parseInt(response, 10);
-                resolve(true);
-            }).catch(() => resolve(true));
-        });
+        this.operatorValidatorsLimit = 2000;
+        // return new Promise((resolve) => {
+        //     const walletStore: WalletStore = this.getStore('Wallet');
+        //     const contract: Contract = walletStore.getContract;
+        //     contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
+        //         this.operatorValidatorsLimit = parseInt(response, 10);
+        //         resolve(true);
+        //     }).catch(() => resolve(true));
+        // });
     }
 
     /**
@@ -483,7 +485,7 @@ class OperatorStore extends BaseStore {
                             if (events) {
                                 console.debug('Contract Receipt', receipt);
                                 eventStore.send({ category: 'operator_register', action: 'register_tx', label: 'sent' });
-                                this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
+                                this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
                                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                                 resolve(true);
                             }

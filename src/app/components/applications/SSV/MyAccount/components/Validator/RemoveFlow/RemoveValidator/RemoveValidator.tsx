@@ -24,8 +24,8 @@ const RemoveValidator = () => {
     const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
     
     useEffect(() => {
-        applicationStore.setIsLoading(true);
         if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
                 setValidator(response);

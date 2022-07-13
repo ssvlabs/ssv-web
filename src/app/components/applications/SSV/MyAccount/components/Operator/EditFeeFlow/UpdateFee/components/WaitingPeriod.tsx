@@ -3,7 +3,6 @@ import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
@@ -35,8 +34,8 @@ const WaitingPeriod = (props: Props) => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
                 setOperator(response);

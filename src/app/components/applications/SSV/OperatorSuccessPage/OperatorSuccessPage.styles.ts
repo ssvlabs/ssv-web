@@ -17,6 +17,7 @@ export const useStyles = makeStyles((theme) => ({
         backgroundImage: 'url(/images/backgroundIcon/light.svg)',
     },
     Text: {
+        zIndex: 1,
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,

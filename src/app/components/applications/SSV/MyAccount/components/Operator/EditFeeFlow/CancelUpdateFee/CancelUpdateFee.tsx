@@ -34,8 +34,8 @@ const CancelUpdateFee = (props: Props) => {
     const [successPage, showSuccessPage] = useState(false);
 
     const cancelUpdateProcess = async () => {
+        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
-        if (!operatorStore.processOperatorId) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId);
         if (response) {
             eventStore.send({ category: 'cancel', action: 'click', label: '' });

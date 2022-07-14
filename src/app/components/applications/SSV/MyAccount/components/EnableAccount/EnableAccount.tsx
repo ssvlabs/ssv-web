@@ -37,7 +37,7 @@ const EnableAccount = () => {
     const summaryFields = [
         { name: 'Operators yearly fee', value: allOperatorsFee },
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees), toolTipText: <>Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. <LinkText text={'Read more on fees'} link={'TODO'} /></> },
-        { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral.toString()), toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account insolvency. <LinkText text={'Read more on liquidations'} link={'TODO'} /></> },
+        { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral.toString()), toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account insolvency. <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></> },
     ];
 
     useEffect(() => {

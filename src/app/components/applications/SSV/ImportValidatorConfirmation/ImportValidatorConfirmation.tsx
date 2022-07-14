@@ -19,6 +19,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
+import Decimal from 'decimal.js';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();
@@ -40,7 +41,7 @@ const ImportValidatorConfirmation = () => {
         yearlyNetworkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
         totalOperatorsYearlyFee = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
         liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
-        totalAmountOfSsv = formatNumberToUi(addNumber(addNumber(totalOperatorsYearlyFee, yearlyNetworkFee), liquidationCollateral));
+        totalAmountOfSsv = formatNumberToUi(new Decimal(addNumber(addNumber(totalOperatorsYearlyFee, yearlyNetworkFee), liquidationCollateral)).toFixed().toString());
     }
 
     const onRegisterValidatorClick = async () => {

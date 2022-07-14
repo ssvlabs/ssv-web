@@ -286,15 +286,20 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         border: (props: any) => {
-            if (props.step === 4) {
+            if (props.step === 4 && theme.darkMode) {
                 return `1px solid ${theme.colors.primaryError}`;
             }
-            if (props.step === 3) {
-                if (theme.darkMode) return `1px solid ${theme.colors.primaryBlue}`;
+            if (props.step === 3 && theme.darkMode) {
+                return `1px solid ${theme.colors.primaryBlue}`;
             }
-            if (props.step === 2) {
-                return `1px solid ${theme.colors.tint20}`;
+            if (props.step === 2 && theme.darkMode) {
+                return `1px solid ${theme.colors.shade20}`;
             }
+
+            if (theme.darkMode) {
+                return `1px solid ${theme.colors.shade40}`;
+            }
+
             return `1px solid ${theme.colors.tint90}`;
         },
         color: (props: any) => {
@@ -306,20 +311,22 @@ export const useStyles = makeStyles((theme) => ({
                 return theme.colors.white;
             }
             if (props.step === 2) {
-                return theme.colors.primaryBlue;
+                if (theme.darkMode) return theme.colors.shade20;
+                return theme.colors.white;
             }
+            if (theme.darkMode) return theme.colors.shade40;
             return theme.colors.primaryBlue;
         },
         backgroundColor: (props: any) => {
+            if (theme.darkMode) return 'transparent';
             if (props.step === 4) {
                 return theme.colors.primaryErrorRegular;
             }
             if (props.step === 3) {
-                if (theme.darkMode) return 'transparent';
                 return theme.colors.primaryBlue;
             }
             if (props.step === 2) {
-                return theme.colors.tint90;
+                return '#60bffa';
             }
             return theme.colors.tint90;
         },

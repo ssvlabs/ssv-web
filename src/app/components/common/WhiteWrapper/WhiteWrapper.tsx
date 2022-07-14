@@ -12,11 +12,14 @@ import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './WhiteWrapper.styles';
 import config from '~app/common/config';
+import ImageDiv from '~app/components/common/ImageDiv';
 
 type Props = {
     header: any,
     children: any,
+    explorerLink?: any,
     withCancel?: boolean,
+    withExplorer?: boolean,
     backButtonCallBack?: any,
     withBackButton?: boolean,
     backButtonRedirect?: string,
@@ -32,7 +35,7 @@ const WhiteWrapper = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const history = useHistory();
-    const { header, children, withCancel, withSettings, backButtonCallBack, backButtonRedirect, withBackButton = true } = props;
+    const { header, children, withExplorer, explorerLink, withCancel, withSettings, backButtonCallBack, backButtonRedirect, withBackButton = true } = props;
     const applicationStore: ApplicationStore = stores.Application;
     const settingsRef = useRef(null);
 
@@ -56,6 +59,10 @@ const WhiteWrapper = (props: Props) => {
             <Grid item className={classes.Button} onClick={onClick}>{text}</Grid>
           </Grid>
         );
+    };
+
+    const openExplorer = () => {
+            window.open(`${config.links.LINK_EXPLORER}/operators/${explorerLink}`, '_blank');
     };
 
     useEffect(() => {
@@ -87,8 +94,9 @@ const WhiteWrapper = (props: Props) => {
               </Grid>
             )}
               <Grid item container xs className={classes.HeaderWrapper}>
-                <Grid item xs={6}>
+                <Grid item container xs={6} style={{ alignItems: 'center', gap: 11 }}>
                   <Typography>{header}</Typography>
+                  {withExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={21} height={21} />}
                 </Grid>
                 {withCancel && (
                   <Grid item xs={6}>

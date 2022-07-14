@@ -12,7 +12,6 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 
 const SetOperatorFee = () => {
@@ -22,12 +21,6 @@ const SetOperatorFee = () => {
     // const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
-    const notificationsStore: NotificationsStore = stores.Notifications;
-
-    const copyOperatorId = () => {
-        navigator.clipboard.writeText(String(operatorStore.newOperatorKeys.id));
-        notificationsStore.showMessage('Copied to clipboard.', 'success');
-    };
 
     const moveToMyAccount = async () => {
         applicationStore.setIsLoading(true);
@@ -51,13 +44,13 @@ const SetOperatorFee = () => {
             <Grid container item style={{ marginBottom: 16 }}>
               <Typography className={classes.Text}>Your network identifier is the following:</Typography>
             </Grid>
-            <Grid onClick={copyOperatorId}>
+            <Grid>
               <OperatorId successPage id={operatorStore.newOperatorKeys.id} />
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>
               <Grid className={classes.Text}>
                 Jump into our documentation to learn more about how to <LinkText text={'monitor'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> <br />
-                and <LinkText text={'troubleshoot'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> your node.</Grid>
+                and <LinkText text={'troubleshoot'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/troubleshooting'} /> your node.</Grid>
             </Grid>
             <Grid container item style={{ marginBottom: 24 }}>
               <Typography className={classes.Text}>To manage your account and operator enter your account

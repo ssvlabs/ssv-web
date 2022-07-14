@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         cursor: 'pointer',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         color: theme.colors.gray80,
         marginBottom: theme.spacing(5),
     },

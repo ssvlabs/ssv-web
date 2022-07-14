@@ -22,7 +22,7 @@ const SsvAppBar = () => {
         if (process.env.REACT_APP_NEW_STAGE && hasOperatorsOrValidators) {
             // @ts-ignore
             applicationStore.whiteNavBarBackground = false;
-            history.push('/dashboard');
+            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }
     };
     const openDocs = () => {

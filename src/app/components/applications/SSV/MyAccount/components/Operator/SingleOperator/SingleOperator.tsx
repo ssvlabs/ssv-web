@@ -103,7 +103,7 @@ const SingleOperator = () => {
             {
                 key: <Typography>Name</Typography>,
                 value: <Grid item container className={classes.ItemWrapper} xs={12}>
-                  <OperatorDetails operator={operator} />
+                  <OperatorDetails withCopy operator={operator} />
                 </Grid>,
             },
             // {
@@ -218,6 +218,9 @@ const SingleOperator = () => {
                       history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
                   },
               }}
+          withExplorer
+            // @ts-ignore
+          explorerLink={operator?.id}
           header={'Operator Details'}
           >
           <Grid item container className={classes.ItemsWrapper}>

@@ -2,11 +2,22 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     Wrapper: {
-        alignItems: 'center',
+        alignItems: 'flex-start',
     },
     TextWrapper: {
         marginLeft: 16,
         flexDirection: 'column',
+    },
+    Copy: {
+        width: 14,
+        height: 14,
+        cursor: 'pointer',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        backgroundImage: `url(/images/copy/${theme.darkMode ? 'dark' : 'gray'}.svg)`,
     },
     OperatorLogo: {
         width: 40,
@@ -36,6 +47,7 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 14,
         fontWeight: 500,
         lineHeight: 1.62,
+        alignItems: 'center',
         color: 'rgb(161, 172, 190)',
     },
 }));

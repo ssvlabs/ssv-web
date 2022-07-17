@@ -315,7 +315,7 @@ class OperatorStore extends BaseStore {
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contractInstance = walletStore.getContract;
-                const formattedFee = new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+                const formattedFee = new Decimal(walletStore.toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())).dividedBy(10000000).floor().mul(10000000).toString();
                 await contractInstance.methods.declareOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
@@ -453,7 +453,7 @@ class OperatorStore extends BaseStore {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        walletStore.toWei(new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()),
+                        new Decimal(walletStore.toWei(new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())).dividedBy(10000000).floor().mul(10000000).toString(),
                     );
                 } else {
                     payload.push(

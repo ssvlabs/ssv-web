@@ -274,7 +274,7 @@ class ValidatorStore extends BaseStore {
                 encryptedKeys,
             ];
             if (process.env.REACT_APP_NEW_STAGE) {
-                payLoad.push(walletStore.toWei(update ? 0 : totalAmountOfSsv));
+                payLoad.push(new Decimal(walletStore.toWei(update ? 0 : totalAmountOfSsv)).dividedBy(10000000).floor().mul(10000000).toString());
             } else {
                 payLoad.unshift(walletStore.accountAddress);
             }

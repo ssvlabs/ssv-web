@@ -148,7 +148,7 @@ class SsvStore extends BaseStore {
     async deposit(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const ssvAmount = walletStore.toWei(amount);
+            const ssvAmount = new Decimal(walletStore.toWei(amount)).dividedBy(10000000).floor().mul(10000000).toString();
             walletStore.getContract.methods
                 .deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
@@ -226,8 +226,8 @@ class SsvStore extends BaseStore {
     async withdrawSsv(validatorState: boolean, amount: string, withdrawAll: boolean = false) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const ssvAmount = walletStore.toWei(amount);
             let contractFunction = null;
+            const ssvAmount = new Decimal(walletStore.toWei(amount)).dividedBy(10000000).floor().mul(10000000).toString();
             if (withdrawAll && !validatorState) contractFunction = walletStore.getContract.methods.withdrawAll();
             else if (withdrawAll && validatorState) contractFunction = walletStore.getContract.methods.liquidate([this.accountAddress]);
             else if (!withdrawAll) contractFunction = walletStore.getContract.methods.withdraw(ssvAmount);
@@ -255,7 +255,7 @@ class SsvStore extends BaseStore {
             const walletStore: WalletStore = this.getStore('Wallet');
             const applicationStore: ApplicationStore = this.getStore('Application');
             applicationStore.setIsLoading(true);
-            const ssvAmount = walletStore.toWei(amount.toString());
+            const ssvAmount = new Decimal(walletStore.toWei(amount)).dividedBy(10000000).floor().mul(10000000).toString();
             walletStore.getContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     applicationStore.setIsLoading(false);

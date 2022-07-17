@@ -142,7 +142,6 @@ class OperatorStore extends BaseStore {
         this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
         this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
         this.maxFeeIncrease = await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call();
-        console.log(this.maxFeeIncrease);
     }
 
     /**

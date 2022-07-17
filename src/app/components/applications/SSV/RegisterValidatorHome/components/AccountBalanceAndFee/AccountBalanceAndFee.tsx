@@ -38,6 +38,7 @@ const AccountBalanceAndFee = () => {
                             );
                         })}
             </Grid>
+
             <Grid item container className={classes.ErrorTextWrapper}>
               <Grid className={classes.ErrorText}>
                 Accounts with insufficient balance are at risk of being <LinkText onClick={() => sendAnalytics('Todo')} text={'liquidated'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />,

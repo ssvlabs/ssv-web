@@ -189,7 +189,6 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
                 history.push(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
             }
         } catch (error: any) {
-            console.log(error.message);
             eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'error' });
             if (error.message === 'Invalid password') {
                 setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);

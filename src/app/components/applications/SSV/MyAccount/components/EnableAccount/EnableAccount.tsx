@@ -17,6 +17,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { addNumber, formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import ValidatorDropDownMenu from '~app/components/applications/SSV/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
 import { useStyles } from './EnableAccount.styles';
+import Decimal from 'decimal.js';
 
 const EnableAccount = () => {
     const stores = useStores();
@@ -27,7 +28,7 @@ const EnableAccount = () => {
     const [validators, setValidators] = useState([]);
     const [ownerAddressCost, setOwnerAddressCost] = useState(0);
     const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
-    const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost);
+    const allOperatorsFee = new Decimal(ssvStore.newGetFeeForYear(ownerAddressCost, 18)).toFixed().toString();
     const liquidationCollateral = multiplyNumber(
         addNumber(ssvStore.networkFee, ownerAddressCost),
         ssvStore.liquidationCollateral,
@@ -35,12 +36,13 @@ const EnableAccount = () => {
     const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
 
     const summaryFields = [
-        { name: 'Operators yearly fee', value: allOperatorsFee },
+        { name: 'Operators yearly fee', value: formatNumberToUi(allOperatorsFee) },
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees), toolTipText: <>Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. <LinkText text={'Read more on fees'} link={'TODO'} /></> },
         { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral.toString()), toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account insolvency. <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></> },
     ];
 
     useEffect(() => {
+        if (!walletStore.accountAddress) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         Validator.getInstance().getValidatorsByOwnerAddress({
             page: 1,
             perPage: 100,

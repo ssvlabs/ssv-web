@@ -5,8 +5,8 @@ import { useStyles } from './LinkText.styles';
 import Typography from '@material-ui/core/Typography';
 
 type MessageDivProps ={
-    text: string
-    link?: string
+    text: string;
+    link?: string;
     onClick?: any;
     routePush?: boolean;
     withoutUnderline?: boolean

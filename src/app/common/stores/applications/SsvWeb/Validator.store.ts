@@ -240,12 +240,12 @@ class ValidatorStore extends BaseStore {
       const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
       let totalAmountOfSsv = '0';
       if (process.env.REACT_APP_NEW_STAGE) {
-          const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee);
+          const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 16);
           const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
           if (new Decimal(liquidationCollateral).isZero()) {
               totalAmountOfSsv = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
           } else {
-              totalAmountOfSsv = addNumber(addNumber(liquidationCollateral, ssvStore.newGetFeeForYear(ssvStore.networkFee, 11)), operatorsFees);
+              totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, ssvStore.newGetFeeForYear(ssvStore.networkFee, 11)), operatorsFees)).toFixed();
           }
       }
 

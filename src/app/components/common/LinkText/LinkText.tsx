@@ -5,6 +5,7 @@ import { useStyles } from './LinkText.styles';
 import Typography from '@material-ui/core/Typography';
 
 type MessageDivProps ={
+    style?: any;
     text: string;
     link?: string;
     onClick?: any;
@@ -12,7 +13,7 @@ type MessageDivProps ={
     withoutUnderline?: boolean
 };
 
-const LinkText = ({ text, onClick, link, routePush, withoutUnderline }: MessageDivProps) => {
+const LinkText = ({ style, text, onClick, link, routePush, withoutUnderline }: MessageDivProps) => {
     const history = useHistory();
     const classes = useStyles({ withoutUnderline });
 
@@ -30,7 +31,7 @@ const LinkText = ({ text, onClick, link, routePush, withoutUnderline }: MessageD
     };
 
     return (
-      <Typography className={classes.Link} onClick={openLink}>{text}</Typography>
+      <Typography style={style} className={classes.Link} onClick={openLink}>{text}</Typography>
     );
 };
 

@@ -41,9 +41,9 @@ const AccountBalanceAndFee = () => {
 
             <Grid item container className={classes.ErrorTextWrapper}>
               <Grid className={classes.ErrorText}>
-                Accounts with insufficient balance are at risk of being <LinkText onClick={() => sendAnalytics('Todo')} text={'liquidated'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />,
+                Accounts with insufficient balance are at risk of being <LinkText style={{ fontSize: 14 }} onClick={() => sendAnalytics('Todo')} text={'liquidated'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />,
                 which will result in inactivation
-                (<LinkText onClick={() => sendAnalytics('Todo')} text={'penalties on the beacon chain'} link={'https://docs.ssv.network/learn/glossary#staking'} />)
+                (<LinkText style={{ fontSize: 14 }} onClick={() => sendAnalytics('Todo')} text={'penalties on the beacon chain'} link={'https://docs.ssv.network/learn/glossary#staking'} />)
                 of their validators, as they will no longer be operated by the network.
               </Grid>
             </Grid>

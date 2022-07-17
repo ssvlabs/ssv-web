@@ -73,7 +73,7 @@ const ImportValidatorConfirmation = () => {
     };
 
     const fields = [
-        { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
+        { key: 'Operators yearly fee', value: formatNumberToUi(new Decimal(totalOperatorsYearlyFee).toFixed(2).toString()) },
         { key: 'Network yearly fee', value: formatNumberToUi(yearlyNetworkFee) },
         { key: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral) },
     ];

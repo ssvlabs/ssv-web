@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
     Link: {
-        fontSize: 14,
+        fontSize: 16,
         cursor: 'pointer',
         display: 'inline-block',
         overflowWrap: 'break-word',

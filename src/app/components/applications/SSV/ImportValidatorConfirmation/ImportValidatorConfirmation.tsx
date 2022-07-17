@@ -1,6 +1,7 @@
+import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import React, { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
@@ -19,7 +20,6 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useStyles } from './ImportValidatorConfirmation.styles';
-import Decimal from 'decimal.js';
 
 const ImportValidatorConfirmation = () => {
     const stores = useStores();

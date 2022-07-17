@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -17,7 +18,6 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { addNumber, formatNumberToUi, multiplyNumber } from '~lib/utils/numbers';
 import ValidatorDropDownMenu from '~app/components/applications/SSV/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
 import { useStyles } from './EnableAccount.styles';
-import Decimal from 'decimal.js';
 
 const EnableAccount = () => {
     const stores = useStores();
@@ -36,7 +36,7 @@ const EnableAccount = () => {
     const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
 
     const summaryFields = [
-        { name: 'Operators yearly fee', value: formatNumberToUi(allOperatorsFee) },
+        { name: 'Operators yearly fee', value: formatNumberToUi(new Decimal(allOperatorsFee).toFixed(2).toString()) },
         { name: 'Network yearly fee', value: formatNumberToUi(networkYearlyFees), toolTipText: <>Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. <LinkText text={'Read more on fees'} link={'TODO'} /></> },
         { name: 'Liquidation collateral', value: formatNumberToUi(liquidationCollateral.toString()), toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account insolvency. <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></> },
     ];

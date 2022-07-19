@@ -139,6 +139,14 @@ class SsvStore extends BaseStore {
         // @ts-ignore
         return config.CONTRACTS[contractType].ADDRESS;
     }
+    /**
+     * amount in wei
+     * @param amountInWei
+     */
+    @action.bound
+    prepareSsvAmountToTransfer(amountInWei: string): string {
+        return new Decimal(amountInWei).dividedBy(10000000).floor().mul(10000000).toFixed().toString();
+    }
 
     /**
      * Deposit ssv
@@ -148,7 +156,7 @@ class SsvStore extends BaseStore {
     async deposit(amount: string) {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const ssvAmount = new Decimal(walletStore.toWei(amount)).dividedBy(10000000).floor().mul(10000000).toString();
+            const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
             walletStore.getContract.methods
                 .deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
@@ -227,7 +235,7 @@ class SsvStore extends BaseStore {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             let contractFunction = null;
-            const ssvAmount = new Decimal(walletStore.toWei(amount)).dividedBy(10000000).floor().mul(10000000).toString();
+            const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
             if (withdrawAll && !validatorState) contractFunction = walletStore.getContract.methods.withdrawAll();
             else if (withdrawAll && validatorState) contractFunction = walletStore.getContract.methods.liquidate([this.accountAddress]);
             else if (!withdrawAll) contractFunction = walletStore.getContract.methods.withdraw(ssvAmount);
@@ -255,7 +263,7 @@ class SsvStore extends BaseStore {
             const walletStore: WalletStore = this.getStore('Wallet');
             const applicationStore: ApplicationStore = this.getStore('Application');
             applicationStore.setIsLoading(true);
-            const ssvAmount = new Decimal(walletStore.toWei(amount)).dividedBy(10000000).floor().mul(10000000).toString();
+            const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
             walletStore.getContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     applicationStore.setIsLoading(false);

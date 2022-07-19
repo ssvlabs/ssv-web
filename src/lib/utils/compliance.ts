@@ -5,14 +5,18 @@ let restrictedCountries: any = null;
  * Get the list of restricted countries from blox.
  */
 const getRestrictedCountriesList = async () => {
-  if (restrictedCountries) {
-    return restrictedCountries;
+  try {
+    if (restrictedCountries) {
+      return restrictedCountries;
+    }
+    const response = await fetch(String(config.links.COMPLIANCE_URL)).then(res => res.json());
+    if (restrictedCountries === null) {
+      restrictedCountries = response.countries;
+    }
+    return response;
+  } catch (e) {
+    return ['Israel'];
   }
-  const response = await fetch(String(config.links.COMPLIANCE_URL)).then(res => res.json());
-  if (restrictedCountries === null) {
-    restrictedCountries = response.countries;
-  }
-  return response;
 };
 
 /**

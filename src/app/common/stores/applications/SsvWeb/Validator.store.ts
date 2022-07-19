@@ -1,19 +1,19 @@
+import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
 import { action, observable, computed } from 'mobx';
+import { EthereumKeyStore, Encryption, Threshold } from 'ssv-keys';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
-import { addNumber, multiplyNumber } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import { addNumber, multiplyNumber } from '~lib/utils/numbers';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { EthereumKeyStore, Encryption, Threshold } from 'ssv-keys';
+import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import Decimal from 'decimal.js';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 
 class ValidatorStore extends BaseStore {
   @observable estimationGas: number = 0;
@@ -240,12 +240,13 @@ class ValidatorStore extends BaseStore {
       const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
       let totalAmountOfSsv = '0';
       if (process.env.REACT_APP_NEW_STAGE) {
+          const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
           const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 16);
           const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
           if (new Decimal(liquidationCollateral).isZero()) {
-              totalAmountOfSsv = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
+              totalAmountOfSsv = networkFeeForYear;
           } else {
-              totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, ssvStore.newGetFeeForYear(ssvStore.networkFee, 11)), operatorsFees)).toFixed();
+              totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, networkFeeForYear), operatorsFees)).toFixed();
           }
       }
 
@@ -274,7 +275,7 @@ class ValidatorStore extends BaseStore {
                 encryptedKeys,
             ];
             if (process.env.REACT_APP_NEW_STAGE) {
-                payLoad.push(new Decimal(walletStore.toWei(update ? 0 : totalAmountOfSsv)).dividedBy(10000000).floor().mul(10000000).toString());
+                payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
             } else {
                 payLoad.unshift(walletStore.accountAddress);
             }

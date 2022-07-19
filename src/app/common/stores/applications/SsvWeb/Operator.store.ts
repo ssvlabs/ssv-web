@@ -10,6 +10,7 @@ import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 
 export interface NewOperator {
     id: string,
@@ -312,11 +313,12 @@ class OperatorStore extends BaseStore {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
             try {
+                const ssvStore: SsvStore = this.getStore('SSV');
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const applicationStore: ApplicationStore = this.getStore('Application');
                 const contractInstance = walletStore.getContract;
-                const formattedFee = new Decimal(walletStore.toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())).dividedBy(10000000).floor().mul(10000000).toString();
-                await contractInstance.methods.declareOperatorFee(operatorId, walletStore.toWei(formattedFee)).send({ from: walletStore.accountAddress })
+                const formattedFee = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
+                await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress })
                     .on('receipt', (receipt: any) => {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
@@ -442,6 +444,7 @@ class OperatorStore extends BaseStore {
         return new Promise(async (resolve, reject) => {
             try {
                 const payload: any[] = [];
+                const ssvStore: SsvStore = this.getStore('SSV');
                 const walletStore: WalletStore = this.getStore('Wallet');
                 const contract: Contract = walletStore.getContract;
                 const address: string = this.newOperatorKeys.address;
@@ -453,7 +456,7 @@ class OperatorStore extends BaseStore {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        new Decimal(walletStore.toWei(new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())).dividedBy(10000000).floor().mul(10000000).toString(),
+                        ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())),
                     );
                 } else {
                     payload.push(

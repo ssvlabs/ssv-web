@@ -56,9 +56,6 @@ const WaitingPeriod = (props: Props) => {
     const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
     // @ts-ignore
     const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
-
-    // @ts-ignore
-
     if (!operator) return null;
 
     return (

@@ -100,9 +100,9 @@ const WhiteWrapper = (props: Props) => {
                 </Grid>
                 {withCancel && (
                   <Grid item xs={6}>
-                    <Grid container item className={classes.CancelWrapper} onClick={dialogHandler}>
-                      <Typography>Cancel</Typography>
-                      <Grid item className={classes.CancelImage} />
+                    <Grid container item className={classes.CancelWrapper}>
+                      <Typography onClick={dialogHandler}>Cancel</Typography>
+                      <Grid item className={classes.CancelImage} onClick={dialogHandler} />
                     </Grid>
                   </Grid>
                 )}

@@ -84,7 +84,7 @@ class OperatorStore extends BaseStore {
 
     @observable loadingOperators: boolean = false;
 
-    @observable operatorValidatorsLimit: number = 0;
+    @observable operatorValidatorsLimit: number = 2000;
 
     @computed
     get getSelectedOperatorsFee(): number {
@@ -142,7 +142,7 @@ class OperatorStore extends BaseStore {
         const contract: Contract = walletStore.getContract;
         this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
         this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
-        this.maxFeeIncrease = await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call();
+        this.maxFeeIncrease = Number(await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call()) / 100;
     }
 
     /**
@@ -179,7 +179,6 @@ class OperatorStore extends BaseStore {
      */
     @action.bound
     async validatorsPerOperatorLimit(): Promise<any> {
-        this.operatorValidatorsLimit = 2000;
         // return new Promise((resolve) => {
         //     const walletStore: WalletStore = this.getStore('Wallet');
         //     const contract: Contract = walletStore.getContract;

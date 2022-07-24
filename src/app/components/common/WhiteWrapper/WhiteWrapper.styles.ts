@@ -60,13 +60,13 @@ export const useStyles = makeStyles((theme) => ({
         color: theme.colors.primaryError,
     },
     CancelWrapper: {
-        cursor: 'pointer',
         justifyContent: 'flex-end',
         gap: 8,
         '& p': {
             fontSize: 16,
             fontWeight: 600,
             lineHeight: 1.25,
+            cursor: 'pointer',
             color: theme.colors.gray40,
         },
     },

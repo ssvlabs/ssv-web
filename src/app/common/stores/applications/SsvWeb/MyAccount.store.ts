@@ -11,6 +11,8 @@ import SSVStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 class MyAccountStore extends BaseStore {
     // GLOBAL
     @observable forceBigList: boolean = false;
+    @observable operatorsInterval: any = null;
+    @observable validatorsInterval: any = null;
 
     // OPERATOR
     @observable ownerAddressOperators: any = [];
@@ -20,13 +22,23 @@ class MyAccountStore extends BaseStore {
     @observable ownerAddressValidators: any = [];
     @observable ownerAddressValidatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
 
-    constructor() {
-        super();
-        setInterval(() => {
+    @action.bound
+    clearIntervals() {
+        clearInterval(this.operatorsInterval);
+        clearInterval(this.validatorsInterval);
+        this.ownerAddressOperators = [];
+        this.ownerAddressValidators = [];
+        this.ownerAddressOperatorsPagination = ApiParams.DEFAULT_PAGINATION;
+        this.ownerAddressValidatorsPagination = ApiParams.DEFAULT_PAGINATION;
+    }
+
+    @action.bound
+    setIntervals() {
+        this.validatorsInterval = setInterval(() => {
             this.getOwnerAddressValidators({});
         }, 5000);
 
-        setInterval(() => {
+        this.operatorsInterval = setInterval(() => {
             this.getOwnerAddressOperators({});
         }, 5000);
     }

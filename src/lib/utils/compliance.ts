@@ -1,4 +1,5 @@
 import config from '~app/common/config';
+import axios from 'axios';
 
 let restrictedCountries: any = null;
 /**
@@ -9,13 +10,14 @@ const getRestrictedCountriesList = async () => {
     if (restrictedCountries) {
       return restrictedCountries;
     }
-    const response = await fetch(String(config.links.COMPLIANCE_URL)).then(res => res.json());
+    const response = (await axios.get(String(config.links.COMPLIANCE_URL), { timeout: 2000 })).data;
     if (restrictedCountries === null) {
+      // @ts-ignore
       restrictedCountries = response.countries;
     }
     return response;
   } catch (e) {
-    return ['Israel'];
+    return [];
   }
 };
 
@@ -24,15 +26,14 @@ const getRestrictedCountriesList = async () => {
  */
 const getCurrentUserCountry = async (): Promise<string | null> => {
   const fetchCountry = async (requestUri: string, getCountryCallback: any) => {
-    return fetch(requestUri)
-      .then(res => res.json())
-      .then(getCountryCallback);
+    return axios.get(requestUri, { timeout: 2000 }).then(getCountryCallback);
   };
+
   const countryGetters = [
     {
       url: 'https://geolocation-db.com/json/',
       callback: (response: any) => {
-        return response.country_name;
+        return response.data.country_name;
       },
     },
   ];
@@ -54,6 +55,7 @@ const getCurrentUserCountry = async (): Promise<string | null> => {
       //
     }
   }
+  // @ts-ignore
   return detectedCountry;
 };
 

@@ -43,7 +43,6 @@ const SingleValidator = () => {
         applicationStore.setIsLoading(true);
         Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
-                response.public_key = longStringShorten(response.public_key, 6, 4);
                 response.total_operators_fee = ssvStore.newGetFeeForYear(response.operators.reduce(
                     (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
                     0,

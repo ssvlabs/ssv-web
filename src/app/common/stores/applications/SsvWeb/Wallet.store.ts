@@ -74,7 +74,7 @@ class WalletStore extends BaseStore implements Wallet {
     @action.bound
     async initializeUserInfo() {
         try {
-            await this.operatorStore.validatorsPerOperatorLimit();
+            // await this.operatorStore.validatorsPerOperatorLimit();
             if (process.env.REACT_APP_NEW_STAGE) {
                 await this.ssvStore.initUser();
                 await this.operatorStore.initUser();
@@ -150,6 +150,7 @@ class WalletStore extends BaseStore implements Wallet {
             await this.resetUser();
         } else {
             this.ssvStore.clearSettings();
+            myAccountStore.clearIntervals();
             this.accountAddress = address;
             ApiParams.cleanStorage();
             await this.initializeUserInfo();
@@ -160,6 +161,7 @@ class WalletStore extends BaseStore implements Wallet {
                 if (!operatorsResponse?.operators?.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
                 await myAccountStore.getOwnerAddressValidators({});
                 await myAccountStore.getOwnerAddressOperators({});
+                myAccountStore.setIntervals();
             }
         }
         this.setAccountDataLoaded(true);

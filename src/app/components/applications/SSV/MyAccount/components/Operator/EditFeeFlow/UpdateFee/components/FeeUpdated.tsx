@@ -17,7 +17,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/Stepper';
 import { useStyles } from './index.styles';
 
-const FeeUpdated = () => {
+const FeeUpdated = ({ previousFee }: { previousFee: string }) => {
     const stores = useStores();
     const history = useHistory();
     const [operator, setOperator] = useState(null);
@@ -51,9 +51,9 @@ const FeeUpdated = () => {
     if (!operator) return null;
 
     // @ts-ignore
-    const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
+    const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(previousFee)));
     // @ts-ignore
-    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
+    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
 
     return (
       <BorderScreen

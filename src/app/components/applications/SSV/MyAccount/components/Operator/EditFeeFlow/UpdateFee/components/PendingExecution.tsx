@@ -19,6 +19,7 @@ import ReactStepper from '~app/components/applications/SSV/MyAccount/components/
 import { useStyles } from './index.styles';
 
 type Props = {
+    setPreviousFee: any
     // eslint-disable-next-line no-unused-vars
     getCurrentState: (forceState?: number) => void,
 };
@@ -51,6 +52,7 @@ const PendingExecution = (props: Props) => {
         // @ts-ignore
         const response = await operatorStore.approveOperatorFee(operatorStore.processOperatorId);
         if (response) {
+            props.setPreviousFee(operatorStore.operatorCurrentFee);
             await props.getCurrentState(3);
         }
         applicationStore.setIsLoading(false);

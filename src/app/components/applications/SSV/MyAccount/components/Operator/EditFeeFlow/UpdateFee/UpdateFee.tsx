@@ -22,6 +22,7 @@ const UpdateFee = () => {
     const operatorStore: OperatorStore = stores.Operator;
     const [operator, setOperator] = useState(null);
     const [processState, setProcessState] = useState(0);
+    const [previousFee, setPreviousFee] = useState('');
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
@@ -84,10 +85,10 @@ const UpdateFee = () => {
                 return <WaitingPeriod getCurrentState={getCurrentState} />;
             // @ts-ignore
             case 2:
-                return <PendingExecution getCurrentState={getCurrentState} />;
+                return <PendingExecution setPreviousFee={setPreviousFee} getCurrentState={getCurrentState} />;
             // @ts-ignore
             case 3:
-                return <FeeUpdated />;
+                return <FeeUpdated previousFee={previousFee} />;
             // @ts-ignore
             case 4:
                 return <PendingExpired />;

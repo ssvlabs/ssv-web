@@ -94,6 +94,7 @@ const GenerateOperatorKeys = () => {
 
     return (
       <BorderScreen
+        overFlow={'visible'}
         body={[
           <Grid container>
             <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}

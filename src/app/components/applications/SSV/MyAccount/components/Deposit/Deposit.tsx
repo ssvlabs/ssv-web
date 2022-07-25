@@ -29,7 +29,7 @@ const Deposit = () => {
         let value = e.target.value;
         if (value === '') value = '0.0';
         if (value > ssvStore.walletSsvBalance) value = ssvStore.walletSsvBalance;
-        setInputValue(`${+value}`);
+        setInputValue(value);
     }
 
     function maxDeposit() {
@@ -49,7 +49,7 @@ const Deposit = () => {
                           <Grid item container xs={12}>
                             <Grid item xs={6}>
                               <IntegerInput
-                                min="0"
+                                min={'0'}
                                 type="number"
                                 value={inputValue}
                                 placeholder={'0.0'}

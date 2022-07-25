@@ -4,6 +4,9 @@ export const useStyles = makeStyles((theme) => ({
     ScreenWrapper: {
         width: '100%',
     },
+    Inactive: {
+        color: theme.colors.primaryError,
+    },
     Loading: {
         color: theme.colors.tint20,
     },

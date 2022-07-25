@@ -26,6 +26,7 @@ import Filters from '~app/components/applications/SSV/RegisterValidatorHome/comp
 import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import Status from '~app/components/common/Status';
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const stores = useStores();
@@ -156,6 +157,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         return operatorsData.map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.address);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
+            const isInactive = operator.status.toLowerCase() === 'inactive';
 
             return (
               <TableRow
@@ -181,12 +183,12 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 </StyledCell>
                 <StyledCell>
                   <Grid container>
-                    <Grid item>{roundNumber(operator.performance['30d'], 2)}</Grid>
-                    {disabled && (
-                      <Grid item style={{ alignSelf: 'center' }}>
-                        <ToolTip text={'Operator reached  maximum amount of validators'} />
-                      </Grid>
-                    )}
+                    <Grid item className={isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
+                    {isInactive && (
+                    <Grid item xs={12}>
+                      <Status status={operator.status} />
+                    </Grid>
+                     )}
                   </Grid>
                 </StyledCell>
                 {process.env.REACT_APP_NEW_STAGE && (

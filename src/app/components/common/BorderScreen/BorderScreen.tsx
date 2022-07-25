@@ -8,6 +8,7 @@ type Props = {
     bottom?: any,
     header?: string,
     SideHeader?: any,
+    overFlow?: string,
     gray80?: boolean,
     wrapperClass?: any,
     sectionClass?: any,
@@ -21,13 +22,13 @@ type Props = {
 const BorderScreen = (props: Props) => {
     const [coins] = useState(['SSV', 'USD']);
     const [currency, setCurrency] = useState('SSV');
-    const { wrapperClass, borderRadius, SideHeader, gray80, withoutNavigation, blackHeader, header, withConversion, bottomWrapper, body, sectionClass, bottom } = props;
-    const classes = useStyles({ gray80, blackHeader });
+    const { wrapperClass, borderRadius, overFlow, SideHeader, gray80, withoutNavigation, blackHeader, header, withConversion, bottomWrapper, body, sectionClass, bottom } = props;
+    const classes = useStyles({ overFlow, gray80, blackHeader });
 
     const switchCurrency = (selectedCurrency: string) => {
         setCurrency(selectedCurrency);
     };
-
+    
     return (
       <Grid container className={`${classes.BorderScreenWrapper} ${wrapperClass || ''}`}>
         {!withoutNavigation && (

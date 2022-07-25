@@ -157,8 +157,7 @@ class SsvStore extends BaseStore {
         return new Promise<boolean>((resolve) => {
             const walletStore: WalletStore = this.getStore('Wallet');
             const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-            walletStore.getContract.methods
-                .deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
+            walletStore.getContract.methods.deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
                 .on('receipt', async () => {
                     resolve(true);
                 })

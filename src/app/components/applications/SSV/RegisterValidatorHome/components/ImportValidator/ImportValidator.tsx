@@ -112,11 +112,11 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             keyStorePublicKey?.toLowerCase() !== validatorPublicKey.replace('0x', '')?.toLowerCase()
         ) {
             fileClass += ` ${classes.Fail}`;
-        } else if (!reUpload && validatorStore.validatorPublicKeyExist) {
-            fileClass += ` ${classes.Fail}`;
         } else if (validatorStore.isJsonFile) {
             fileClass += ` ${classes.Success}`;
         } else if (!validatorStore.isJsonFile && validatorStore.keyStoreFile) {
+            fileClass += ` ${classes.Fail}`;
+        } else if (!reUpload && validatorStore.validatorPublicKeyExist) {
             fileClass += ` ${classes.Fail}`;
         }
         return <Grid item className={fileClass} />;

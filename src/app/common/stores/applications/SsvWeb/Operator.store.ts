@@ -449,13 +449,14 @@ class OperatorStore extends BaseStore {
                 const address: string = this.newOperatorKeys.address;
                 const transaction: NewOperator = this.newOperatorKeys;
                 const gasEstimation: PriceEstimation = new PriceEstimation();
+                const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
                 // Send add operator transaction
                 if (process.env.REACT_APP_NEW_STAGE) {
                     payload.push(
                         transaction.name,
                         transaction.pubKey,
-                        ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())),
+                        ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(feePerBlock)),
                     );
                 } else {
                     payload.push(

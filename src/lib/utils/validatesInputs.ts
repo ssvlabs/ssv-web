@@ -58,7 +58,7 @@ export const validateFeeInput = (value: string, callback: any) :void => {
     // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
     const response = { shouldDisplay: false, errorMessage: '' };
     // eslint-disable-next-line radix
-    if (10 ** (-14) > (Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)) {
+    if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(10 ** (-14))) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a greater fee amount.';
     } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {

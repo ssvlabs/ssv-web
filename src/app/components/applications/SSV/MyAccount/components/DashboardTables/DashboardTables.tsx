@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -55,8 +54,6 @@ const DashboardTables = () => {
     async function loadItems(props: LoadItemsParams) {
         // eslint-disable-next-line react/prop-types
         const { type, forcePerPage, paginationPage } = props;
-        // const operatorsExist = Operator.getInstance()?.ownerAddressOperators?.length > 0;
-        // const validatorsExist = Validator.getInstance()?.validators?.length > 0;
 
         if (type === 'operators') {
             setLoadingOperators(true);
@@ -64,7 +61,7 @@ const DashboardTables = () => {
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            await Validator.getInstance().getValidatorsByOwnerAddress({ page: paginationPage ?? 1, perPage: forcePerPage ?? 5, ownerAddress: walletStore.accountAddress });
+            await myAccountStore.getOwnerAddressValidators({ forcePage: paginationPage ?? 1, forcePerPage: forcePerPage ?? 5 });
             setLoadingValidators(false);
         }
     }
@@ -252,7 +249,7 @@ const DashboardTables = () => {
                     onChangePage: loadItems,
                     totalPages: validatorsPagination.pages,
                     currentPage: validatorsPagination.page,
-                    perPage: validatorsPagination.perPage,
+                    perPage: validatorsPagination.per_page,
                     totalAmountOfItems: validatorsPagination.total,
                 }}
             />

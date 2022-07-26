@@ -36,11 +36,11 @@ class MyAccountStore extends BaseStore {
     setIntervals() {
         this.validatorsInterval = setInterval(() => {
             this.getOwnerAddressValidators({});
-        }, 5000);
+        }, 6000);
 
         this.operatorsInterval = setInterval(() => {
             this.getOwnerAddressOperators({});
-        }, 5000);
+        }, 6000);
     }
 
     @action.bound

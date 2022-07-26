@@ -58,7 +58,7 @@ export const validateFeeInput = (value: string, callback: any) :void => {
     // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
     const response = { shouldDisplay: false, errorMessage: '' };
     // eslint-disable-next-line radix
-    if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(10 ** (-14))) {
+    if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a greater fee amount.';
     } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
@@ -85,7 +85,7 @@ export const validateFeeUpdate = (previousValue: number, newValue: string, maxFe
         response.errorMessage = `You can only increase your fee up to ${new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01).toFixed().toString()}`;
     }
     // eslint-disable-next-line radix
-    else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(10 ** (-14))) {
+    else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a greater fee amount.';
     } else {

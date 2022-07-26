@@ -94,6 +94,7 @@ const config = {
         OPERATORS_PER_PAGE: 50,
         BLOCKS_PER_YEAR: 2398050,
         NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
+        MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
     },
     ONBOARD: {
         API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

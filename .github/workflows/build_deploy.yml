@@ -190,7 +190,7 @@ jobs:
         env:
           PROD_CLAIM_PAGE: ""
           NEW_STAGE: "true"
-          EXPLORER_URL: "https://explorer-v2.ssv.network"
+          EXPLORER_URL: "app.shifu.ssv.network"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}

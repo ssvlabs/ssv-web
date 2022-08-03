@@ -74,8 +74,8 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: ""
-          EXPLORER_URL: "app.shifu.ssv.network"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
@@ -158,8 +158,8 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: "true"
-          EXPLORER_URL: "app.shifu.ssv.network"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
@@ -190,8 +190,8 @@ jobs:
         env:
           PROD_CLAIM_PAGE: ""
           NEW_STAGE: "true"
-          EXPLORER_URL: "app.shifu.ssv.network"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}

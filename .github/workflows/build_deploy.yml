@@ -46,6 +46,7 @@ jobs:
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
+          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
 
       - name: Run stageV2 build
         if: github.ref == 'refs/heads/stageV2'
@@ -63,6 +64,7 @@ jobs:
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
+          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
 
 
       - name: Run prod build
@@ -79,6 +81,7 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
+          RESTRICTED_URL: 'https://api.bloxstaking.com/compliance/countries/restricted'
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
 
       - name: Deploy staging
@@ -134,6 +137,7 @@ jobs:
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
+          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
 
       - name: Deploy stagingV2 claim page
         if: github.ref == 'refs/heads/stageV2'
@@ -161,6 +165,7 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
+          RESTRICTED_URL: 'https://api.bloxstaking.com/compliance/countries/restricted'
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
 
 
@@ -192,6 +197,7 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_V2_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS_V2 }}
+          RESTRICTED_URL: 'https://api.bloxstaking.com/compliance/countries/restricted'
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
           
           

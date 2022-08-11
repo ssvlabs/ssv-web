@@ -157,6 +157,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         return operatorsData.map((operator) => {
             const isSelected = operatorStore.isOperatorSelected(operator.address);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
+            const disableCheckBoxes = operatorStore.selectedEnoughOperators;
             const isInactive = operator.status.toLowerCase() === 'inactive';
 
             return (
@@ -166,7 +167,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                 onClick={(e) => { !disabled && selectOperator(e, operator); }}
               >
                 <StyledCell style={{ paddingLeft: 20, width: 60 }}>
-                  <Checkbox grayBackGround text={''} isChecked={isSelected} />
+                  <Checkbox disable={disableCheckBoxes && !isSelected} grayBackGround text={''} isChecked={isSelected} />
                 </StyledCell>
                 <StyledCell>
                   <OperatorDetails operator={operator} />

@@ -20,7 +20,6 @@ class ValidatorStore extends BaseStore {
   @observable dollarEstimationGas: number = 0;
   @observable newValidatorReceipt: any = null;
   @observable keyStoreFile: File | null = null;
-  @observable createValidatorPayLoad: (string | string[])[] | undefined = undefined;
 
   // Key Stores keys
   @observable keyStorePublicKey: string = '';
@@ -38,7 +37,6 @@ class ValidatorStore extends BaseStore {
     this.keyStorePrivateKey = '';
     this.newValidatorReceipt = null;
     this.validatorPublicKeyExist = false;
-    this.createValidatorPayLoad = undefined;
   }
 
   @action.bound
@@ -229,7 +227,6 @@ class ValidatorStore extends BaseStore {
 
   @action.bound
   async createPayLoad(update: boolean = false): Promise<any> {
-      if (this.createValidatorPayLoad) return this.createValidatorPayLoad;
       const threshold: Threshold = new Threshold();
       const ssvStore: SsvStore = this.getStore('SSV');
       const walletStore: WalletStore = this.getStore('Wallet');
@@ -240,8 +237,8 @@ class ValidatorStore extends BaseStore {
       const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
       let totalAmountOfSsv = '0';
       if (process.env.REACT_APP_NEW_STAGE) {
-          const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
-          const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 16);
+          const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
+          const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
           const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
           if (new Decimal(liquidationCollateral).isZero()) {
               totalAmountOfSsv = networkFeeForYear;
@@ -279,7 +276,6 @@ class ValidatorStore extends BaseStore {
             } else {
                 payLoad.unshift(walletStore.accountAddress);
             }
-            this.createValidatorPayLoad = payLoad;
             resolve(payLoad);
         } catch (e) {
             console.log(e.message);

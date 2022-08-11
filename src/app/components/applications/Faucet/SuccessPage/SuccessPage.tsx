@@ -22,8 +22,8 @@ const SuccessPage = () => {
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(config.routes.FAUCET.DEPLETED);
-        }, 2000);
+            history.push(config.routes.FAUCET.ROOT);
+        }, 300);
     };
 
     return (

@@ -79,7 +79,6 @@ const config = {
         },
     },
     links: {
-        COMPLIANCE_URL: process.env.REACT_APP_COMPLIANCE_URL,
         ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
         LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
         LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
@@ -87,6 +86,7 @@ const config = {
         EXPLORER_CENTER: String(process.env.REACT_APP_OPERATORS_ENDPOINT),
         TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
         GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
+        COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
         LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
     },
     GLOBAL_VARIABLE: {

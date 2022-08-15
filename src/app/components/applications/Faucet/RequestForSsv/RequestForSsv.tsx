@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
@@ -35,6 +35,12 @@ const RequestForSsv = () => {
         // @ts-ignore
         captchaRef.current.execute();
     };
+
+    useEffect(() => {
+        setError('');
+        setDisabled(true);
+        setButtonText('Request');
+    }, [walletStore.accountAddress]);
 
     const requestForSSV = async () => {
         setButtonText('Requesting...');
@@ -83,7 +89,7 @@ const RequestForSsv = () => {
               onVerify={() => setDisabled(false)}
               sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
             />
-            <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV} disable={disabled || reachedMaxTransactionPerDay}
+            <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV} disable={false && (disabled || reachedMaxTransactionPerDay)}
               withVerifyConnection={false} />
           </Grid>,
         ]}

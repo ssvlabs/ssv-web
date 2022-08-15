@@ -23,6 +23,7 @@ export const useStyles = makeStyles((theme) => ({
     ErrorText: {
         height: 47,
         borderRadius: 2,
+        color: theme.colors.gray90,
         padding: theme.spacing(3, 4),
         background: 'rgb(236, 28, 38, 0.08);',
         border: `solid 1px ${theme.colors.primaryError}`,

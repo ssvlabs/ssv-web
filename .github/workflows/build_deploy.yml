@@ -32,7 +32,7 @@ jobs:
       - name: Run test
         run: yarn test
 
-      - name: Run faucet build
+      - name: Run stage faucet build
         if: github.ref == 'refs/heads/faucet'
         run: >
           OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
@@ -124,6 +124,18 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
 
+      - name: Deploy stage faucet
+        if: github.ref == 'refs/heads/faucet'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          SOURCE_DIR: 'build/'
+          AWS_REGION: 'us-west-2'
+          AWS_S3_BUCKET: ${{ secrets.STAGE_FAUCET_AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+          
       - name: Deploy prod
         if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0

@@ -76,7 +76,7 @@ const RequestForSsv = () => {
                 wrapperClass={classes.AmountInput}
               />
             </Grid>
-            {error && <Grid item xs className={classes.ErrorText}>{error}</Grid>}
+            {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
             <HCaptcha
               onLoad={onLoad}
               ref={captchaRef}

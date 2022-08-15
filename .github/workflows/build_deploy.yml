@@ -41,12 +41,12 @@ jobs:
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
-          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
 
       - name: Run stage build
         if: github.ref == 'refs/heads/stage'
@@ -57,12 +57,12 @@ jobs:
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
-          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
 
       - name: Run stageV2 build
         if: github.ref == 'refs/heads/stageV2'
@@ -75,12 +75,12 @@ jobs:
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
-          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
 
 
       - name: Run prod build
@@ -90,6 +90,7 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: ""
+          BLOX_INFRA_API: 'https://api.bloxstaking.com'
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
@@ -97,7 +98,6 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
-          RESTRICTED_URL: 'https://api.bloxstaking.com/compliance/countries/restricted'
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
 
       - name: Deploy staging
@@ -147,13 +147,14 @@ jobs:
           NEW_STAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
+          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
-          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
+
 
       - name: Deploy stagingV2 claim page
         if: github.ref == 'refs/heads/stageV2'
@@ -174,6 +175,7 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: "true"
+          BLOX_INFRA_API: 'https://api.bloxstaking.com'
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
@@ -181,7 +183,6 @@ jobs:
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
-          RESTRICTED_URL: 'https://api.bloxstaking.com/compliance/countries/restricted'
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
 
 
@@ -209,11 +210,11 @@ jobs:
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_V2_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS_V2 }}
-          RESTRICTED_URL: 'https://api.stage.bloxstaking.com/compliance/countries/restricted'
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
           
           

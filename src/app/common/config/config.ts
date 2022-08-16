@@ -105,7 +105,7 @@ const config = {
     },
     CONTRACTS: {
         SSV_TOKEN: {
-            ADDRESS: String(process.env.REACT_APP_REGISTRY_CONTRACT_ADDRESS),
+            ADDRESS: String(process.env.REACT_APP_SSV_CONTRACT_ADDRESS),
             ABI: [
                 {
                     'anonymous': false,

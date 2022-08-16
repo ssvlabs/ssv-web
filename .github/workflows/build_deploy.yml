@@ -40,15 +40,12 @@ jobs:
         env:
           REACT_APP_FAUCET_PAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.stage.ssv.network"
+          EXPLORER_URL: "https://explorer.stage.ssv.network/"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
-          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
-          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
-          OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
+          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com/'
+          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_PROD }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
-          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 
       - name: Run stage build
         if: github.ref == 'refs/heads/stage'
@@ -157,8 +154,8 @@ jobs:
           OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" STAGE_CLAIM_PAGE="$STAGE_CLAIM_PAGE" yarn build
         env:
-          STAGE_CLAIM_PAGE: "true"
           NEW_STAGE: "true"
+          STAGE_CLAIM_PAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
           BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'

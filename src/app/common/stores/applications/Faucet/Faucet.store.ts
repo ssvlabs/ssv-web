@@ -12,7 +12,6 @@ class FaucetStore extends BaseStore {
     async registerNewTransaction() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            // const faucetUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/faucet`;
             const faucetUrl = `${process.env.REACT_APP_BLOX_API}/faucet`;
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
             return true;

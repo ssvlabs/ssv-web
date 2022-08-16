@@ -27,7 +27,7 @@ const EnableAccount = () => {
     const walletStore: WalletStore = stores.Wallet;
     const [validators, setValidators] = useState([]);
     const [ownerAddressCost, setOwnerAddressCost] = useState(0);
-    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
+    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
     const allOperatorsFee = new Decimal(ssvStore.newGetFeeForYear(ownerAddressCost, 18)).toFixed().toString();
     const liquidationCollateral = multiplyNumber(
         addNumber(ssvStore.networkFee, ownerAddressCost),

@@ -54,10 +54,10 @@ const SingleValidator = () => {
     }, []);
 
     const fields = [
-        { key: 'status', value: 'Status' },
-        { key: 'balance', value: 'Balance' },
-        { key: 'apr', value: 'Est. APR' },
-        { key: 'total_operators_fee', value: 'Total Operators Fee' },
+        { key: 'status', value: 'Status', adjustFunction: undefined },
+        { key: 'balance', value: 'Balance', adjustFunction: undefined },
+        { key: 'apr', value: 'Est. APR', adjustFunction: undefined },
+        { key: 'total_operators_fee', value: 'Total Operators Fee', adjustFunction: (value: string) => formatNumberToUi(value) },
     ];
 
     const openBeaconcha = () => {
@@ -175,9 +175,9 @@ const SingleValidator = () => {
                 <ImageDiv onClick={openBeaconcha} image={'beacon'} width={24} height={24} />
               </Grid>
             </Grid>
-            {fields.map((field: { key: string, value: string }, index: number) => {
+            {fields.map((field: { key: string, value: string, adjustFunction: any }, index: number) => {
                       // @ts-ignore
-                      const fieldKey = validator[field.key];
+                      const fieldKey = field.adjustFunction ? field.adjustFunction(validator[field.key]) : validator[field.key];
                       return (
                         <Grid key={index} item>
                           <Grid className={classes.DetailsHeader}>

@@ -1,8 +1,38 @@
-import BaseStore from '~app/common/stores/BaseStore';
-import { action } from 'mobx';
+import axios from 'axios';
+import { action, observable } from 'mobx';
 import config from '~app/common/config';
+import BaseStore from '~app/common/stores/BaseStore';
+import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 
 class FaucetStore extends BaseStore {
+    @observable addressTransactions: any;
+    @observable pendingTransaction: any;
+
+    @action.bound
+    async registerNewTransaction() {
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            // const faucetUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/faucet`;
+            const faucetUrl = `${process.env.REACT_APP_BLOX_API}/faucet`;
+            this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    @action.bound
+    async getLatestTransactions() {
+        try {
+            const walletStore: WalletStore = this.getStore('Wallet');
+            const faucetUrl = `${process.env.REACT_APP_BLOX_API}/faucet`;
+            this.pendingTransaction = await axios.get(faucetUrl, { params: { owner_address: walletStore.accountAddress } });
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    
     /**
      * @url https://docs.metamask.io/guide/registering-your-token.html
      */

@@ -112,18 +112,17 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             keyStorePublicKey?.toLowerCase() !== validatorPublicKey.replace('0x', '')?.toLowerCase()
         ) {
             fileClass += ` ${classes.Fail}`;
-        } else if (validatorStore.isJsonFile) {
+        } else if (!reUpload && validatorStore.validatorPublicKeyExist) {
+            fileClass += ` ${classes.Fail}`;
+        }
+        else if (validatorStore.isJsonFile) {
             fileClass += ` ${classes.Success}`;
         } else if (!validatorStore.isJsonFile && validatorStore.keyStoreFile) {
-            fileClass += ` ${classes.Fail}`;
-        } else if (!reUpload && validatorStore.validatorPublicKeyExist) {
             fileClass += ` ${classes.Fail}`;
         }
         return <Grid item className={fileClass} />;
     };
-
-    const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
-
+    
     const renderFileText = () => {
         if (!validatorStore.keyStoreFile) {
             return (
@@ -145,14 +144,14 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
               </Grid>
             );
         }
-        if (!reUpload && validatorStore.validatorPublicKeyExist) {
-           return (
-             <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-               Validator is already registered to the network, <br />
-               please try a different keystore file.
-               <RemoveButton />
-             </Grid>
-);
+        if (!reUpload && validatorStore.isJsonFile && validatorStore.validatorPublicKeyExist) {
+            return (
+              <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+                Validator is already registered to the network, <br />
+                please try a different keystore file.
+                <RemoveButton />
+              </Grid>
+            );
         }
         if (!validatorStore.isJsonFile) {
             return (
@@ -172,6 +171,8 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
             );
         }
     };
+
+    const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
 
     const submitHandler = async () => {
         applicationStore.setIsLoading(true);

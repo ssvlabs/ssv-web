@@ -32,6 +32,10 @@ const App = () => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
+        document.title = applicationStore.appTitle;
+    });
+
+    useEffect(() => {
         checkUserCountryRestriction().then((res: any) => {
             if (res.restricted) {
                 walletStore.accountDataLoaded = true;

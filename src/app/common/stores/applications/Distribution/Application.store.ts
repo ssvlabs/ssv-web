@@ -23,6 +23,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable walletConnectivity: boolean = false;
   @observable strategyName: string = 'distribution';
   @observable transactionPendingPopUp: boolean = false;
+  @observable appTitle: string = 'SSV Network Testnet Distribution';
   @observable strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
 
   constructor() {

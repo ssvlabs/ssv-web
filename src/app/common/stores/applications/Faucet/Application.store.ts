@@ -23,6 +23,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable isShowingLoading: boolean = false;
   @observable walletConnectivity: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
+  @observable appTitle: string = 'SSV Network Testnet Faucet';
   @observable strategyRedirect: string = config.routes.FAUCET.ROOT;
 
   constructor() {

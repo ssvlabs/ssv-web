@@ -73,7 +73,7 @@ jobs:
           EXPLORER_URL: "https://explorer.stage.ssv.network/"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
-          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_PROD }}
+          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
           SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
 

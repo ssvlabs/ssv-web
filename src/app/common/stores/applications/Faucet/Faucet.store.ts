@@ -14,9 +14,10 @@ class FaucetStore extends BaseStore {
             const walletStore: WalletStore = this.getStore('Wallet');
             const faucetUrl = `${process.env.REACT_APP_BLOX_API}/faucet`;
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
-            return true;
+            return { status: true };
         } catch (e) {
-            return false;
+            console.log(e.response.data.message);
+            return { status: false, type: e.response.data.message === 'Reached max transactions per day' ? 1 : 2 };
         }
     }
 

@@ -43,14 +43,20 @@ const RequestForSsv = () => {
     }, [walletStore.accountAddress]);
 
     const requestForSSV = async () => {
+        setError('');
         setButtonText('Requesting...');
         applicationStore.setIsLoading(true);
         const response = await faucetStore.registerNewTransaction();
-        if (!response) {
-            setError('Reached Max Transactions Per Day');
-            setReachedMaxTransactionPerDay(true);
-            applicationStore.setIsLoading(false);
-            setButtonText('Request');
+        if (!response.status) {
+            if (response.type === 2) {
+                applicationStore.setIsLoading(false);
+                history.push(config.routes.FAUCET.DEPLETED);
+            } else {
+                setError('Reached Max Transactions Per Day');
+                setReachedMaxTransactionPerDay(true);
+                applicationStore.setIsLoading(false);
+                setButtonText('Request');
+            }
             return;
         }
         applicationStore.setIsLoading(false);
@@ -89,7 +95,7 @@ const RequestForSsv = () => {
               onVerify={() => setDisabled(false)}
               sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
             />
-            <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV} disable={false && (disabled || reachedMaxTransactionPerDay)}
+            <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV} disable={disabled || reachedMaxTransactionPerDay}
               withVerifyConnection={false} />
           </Grid>,
         ]}

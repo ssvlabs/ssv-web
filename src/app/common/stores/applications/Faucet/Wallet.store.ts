@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import axios from 'axios';
 import Notify from 'bnc-notify';
 import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
@@ -7,6 +8,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
+import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
@@ -66,7 +68,15 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async initializeUserInfo() {
-
+      try {
+          const applicationStore: Application = this.getStore('Application');
+          const faucetUrl = `${process.env.REACT_APP_BLOX_API}/faucet/config`;
+          const response = (await axios.get(faucetUrl)).data;
+          // eslint-disable-next-line no-constant-condition
+          applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+      } catch {
+          console.log('[ERROR]: fail to fetch faucet config');
+      }
   }
 
     @action.bound
@@ -123,6 +133,7 @@ class WalletStore extends BaseStore implements Wallet {
             window.localStorage.removeItem('selectedWallet');
         } else {
             this.accountAddress = address;
+            await this.initializeUserInfo();
             // await this.distributionStore.eligibleForReward();
             // await this.distributionStore.checkIfClaimed();
         }

@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import LinkText from '~app/components/common/LinkText';
@@ -18,7 +17,8 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
+ import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
 const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const stores = useStores();
@@ -29,6 +29,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const eventStore: EventStore = stores.Event;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
+    const myAccountStore: MyAccountStore = stores.MyAccount;
     const applicationStore: ApplicationStore = stores.Application;
     const [validatorPublicKey, setValidatorPublicKey] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -38,7 +39,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     useEffect(() => {
         if (reUpload) {
             if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-            Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
+            myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
                 setValidatorPublicKey(validator.public_key);
             });
             validatorStore.keyStoreFile = null;

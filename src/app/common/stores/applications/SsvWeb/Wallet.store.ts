@@ -155,11 +155,12 @@ class WalletStore extends BaseStore implements Wallet {
             ApiParams.cleanStorage();
             await this.initializeUserInfo();
             if (process.env.REACT_APP_NEW_STAGE) {
+                const validatorsQuery = `?search=${address}&page=1&perPage=5`;
+                const validatorsResponse = await Validator.getInstance().validatorsByOwnerAddress(validatorsQuery);
                 const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
-                const validatorsResponse = await Validator.getInstance().getValidatorsByOwnerAddress({ page: 1, extendData: false, perPage: 5, ownerAddress: address });
                 applicationStore.strategyRedirect = operatorsResponse?.operators?.length || validatorsResponse?.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
                 if (!operatorsResponse?.operators?.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
-                await myAccountStore.getOwnerAddressValidators({});
+                await myAccountStore.getOwnerAddressValidators({ reFetchBeaconData: true });
                 await myAccountStore.getOwnerAddressOperators({});
                 myAccountStore.setIntervals();
             }

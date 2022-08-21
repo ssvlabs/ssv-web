@@ -23,6 +23,7 @@ type LoadItemsParams = {
     type: string;
     forcePerPage?: number;
     paginationPage?: number;
+    reFetchBeaconData?: boolean;
 };
 
 const DashboardTables = () => {
@@ -42,7 +43,7 @@ const DashboardTables = () => {
     // @ts-ignore
     useEffect(async () => {
         if (walletStore.accountAddress) {
-            await loadItems({ type: 'validators' });
+            await loadItems({ type: 'validators', reFetchBeaconData: true });
             await loadItems({ type: 'operators' });
         }
     }, [walletStore.accountAddress]);
@@ -53,7 +54,7 @@ const DashboardTables = () => {
      */
     async function loadItems(props: LoadItemsParams) {
         // eslint-disable-next-line react/prop-types
-        const { type, forcePerPage, paginationPage } = props;
+        const { type, forcePerPage, paginationPage, reFetchBeaconData } = props;
 
         if (type === 'operators') {
             setLoadingOperators(true);
@@ -61,7 +62,7 @@ const DashboardTables = () => {
             setLoadingOperators(false);
         } else {
             setLoadingValidators(true);
-            await myAccountStore.getOwnerAddressValidators({ forcePage: paginationPage ?? 1, forcePerPage: forcePerPage ?? 5 });
+            await myAccountStore.getOwnerAddressValidators({ forcePage: paginationPage ?? 1, forcePerPage: forcePerPage ?? 5, reFetchBeaconData });
             setLoadingValidators(false);
         }
     }
@@ -72,8 +73,11 @@ const DashboardTables = () => {
      * @param perPage
      */
     function onChangeRowsPerPage(type: string, perPage: number) {
-        // ApiParams.saveInStorage(type, 'perPage', perPage);
-        loadItems({ type, paginationPage: 1, forcePerPage: perPage });
+        loadItems({ type, paginationPage: 1, forcePerPage: perPage, reFetchBeaconData: true });
+    }
+
+    function onChangePage(props: LoadItemsParams) {
+        loadItems({ ...props, reFetchBeaconData: true });
     }
 
     const openSingleValidator = (publicKey: string) => {
@@ -244,15 +248,15 @@ const DashboardTables = () => {
             cols={validatorsColumns}
             loading={loadingValidators}
             actionProps={{
-                    type: 'validators',
-                    onChangeRowsPerPage,
-                    onChangePage: loadItems,
-                    totalPages: validatorsPagination.pages,
-                    currentPage: validatorsPagination.page,
-                    perPage: validatorsPagination.per_page,
-                    totalAmountOfItems: validatorsPagination.total,
-                }}
-            />
+                onChangePage,
+                type: 'validators',
+                onChangeRowsPerPage,
+                totalPages: validatorsPagination.pages,
+                currentPage: validatorsPagination.page,
+                perPage: validatorsPagination.per_page,
+                totalAmountOfItems: validatorsPagination.total,
+            }}
+          />
         </Grid>
         )}
         {myAccountStore?.ownerAddressOperators.length > 0 && (

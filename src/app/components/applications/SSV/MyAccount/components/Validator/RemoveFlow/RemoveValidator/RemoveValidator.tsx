@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
@@ -20,13 +20,14 @@ const RemoveValidator = () => {
     const history = useHistory();
     const validatorStore: ValidatorStore = stores.Validator;
     const [validator, setValidator] = useState(null);
+    const myAccountStore: MyAccountStore = stores.MyAccount;
     const applicationStore: ApplicationStore = stores.Application;
     const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
     
     useEffect(() => {
         if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         applicationStore.setIsLoading(true);
-        Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
+        myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
             if (response) {
                 setValidator(response);
                 applicationStore.setIsLoading(false);

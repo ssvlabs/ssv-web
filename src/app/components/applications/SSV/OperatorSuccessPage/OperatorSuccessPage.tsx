@@ -27,7 +27,7 @@ const SetOperatorFee = () => {
         setTimeout(() => {
             applicationStore.setIsLoading(false);
             history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-        }, 7000);
+        }, 5000);
     };
 
     return (

@@ -27,15 +27,6 @@ const RequestForSsv = () => {
     const [buttonText, setButtonText] = useState('Request');
     const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
 
-    const onLoad = () => {
-        // this reaches out to the hCaptcha JS API and runs the
-        // execute function on it. you can use other functions as
-        // documented here:
-        // https://docs.hcaptcha.com/configuration#jsapi
-        // @ts-ignore
-        captchaRef.current.execute();
-    };
-
     useEffect(() => {
         setError('');
         setDisabled(true);
@@ -90,7 +81,6 @@ const RequestForSsv = () => {
             </Grid>
             {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
             <HCaptcha
-              onLoad={onLoad}
               ref={captchaRef}
               onVerify={() => setDisabled(false)}
               sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}

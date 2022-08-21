@@ -1,9 +1,8 @@
 import { observer } from 'mobx-react';
-import { Grid, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { Grid, Typography } from '@material-ui/core';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -13,6 +12,7 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
@@ -25,6 +25,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
+    const myAccountStore: MyAccountStore = stores.MyAccount;
     const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
     const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
     const boxes = [1, 2, 3, 4];
@@ -32,7 +33,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     useEffect(() => {
         if (editPage) {
             if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-            Validator.getInstance().getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
+            myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
                 if (validator?.operators) {
                     // @ts-ignore
                     setPreviousOperatorsIds(validator.operators.map(({ id }) => id));

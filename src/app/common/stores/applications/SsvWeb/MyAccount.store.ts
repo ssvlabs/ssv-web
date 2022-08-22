@@ -12,11 +12,15 @@ import SSVStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 
+const INTERVAL_TIME = 12000;
+
 class MyAccountStore extends BaseStore {
     // GLOBAL
     @observable forceBigList: boolean = false;
     @observable operatorsInterval: any = null;
     @observable validatorsInterval: any = null;
+    @observable lastUpdateOperators: number | undefined;
+    @observable lastUpdateValidators: number | undefined;
 
     // OPERATOR
     @observable ownerAddressOperators: any = [];
@@ -43,12 +47,18 @@ class MyAccountStore extends BaseStore {
     @action.bound
     setIntervals() {
         this.validatorsInterval = setInterval(() => {
+            // @ts-ignore
+            const diffTime = Date.now() - this.lastUpdateValidators;
+            if (Math.floor((diffTime / 1000) % 60) < INTERVAL_TIME) return;
             this.getOwnerAddressValidators({});
-        }, 6000);
+        }, INTERVAL_TIME);
 
         this.operatorsInterval = setInterval(() => {
+            // @ts-ignore
+            const diffTime = Date.now() - this.lastUpdateOperators;
+            if (Math.floor((diffTime / 1000) % 60) < INTERVAL_TIME) return;
             this.getOwnerAddressOperators({});
-        }, 6000);
+        }, INTERVAL_TIME);
     }
 
     @action.bound
@@ -60,6 +70,7 @@ class MyAccountStore extends BaseStore {
         response.pagination.perPage = response.pagination.per_page;
         this.ownerAddressOperatorsPagination = response.pagination;
         this.ownerAddressOperators = await this.getOperatorsRevenue(response.operators);
+        this.lastUpdateOperators = Date.now();
     }
 
     @action.bound
@@ -100,7 +111,7 @@ class MyAccountStore extends BaseStore {
         if (!walletStore.accountAddress) return;
         const ssvStore: SSVStore = this.getStore('SSV');
         const { page, perPage } = this.ownerAddressValidatorsPagination;
-        const query = `?search=${walletStore.accountAddress}&status=true&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
+        const query = `?search=${walletStore.accountAddress}&ordering=status:desc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
         const response = await Validator.getInstance().validatorsByOwnerAddress(query);
 
         if (reFetchBeaconData) {
@@ -130,6 +141,7 @@ class MyAccountStore extends BaseStore {
             response.pagination.perPage = response.pagination.per_page;
             this.ownerAddressValidatorsPagination = response.pagination;
             this.ownerAddressValidators = extendedValidators;
+            this.lastUpdateValidators = Date.now();
         }
     }
 

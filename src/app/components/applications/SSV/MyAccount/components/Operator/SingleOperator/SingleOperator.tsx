@@ -87,7 +87,7 @@ const SingleOperator = () => {
     };
 
     const openExplorer = (key: string) => {
-        window.open(`${config.links.LINK_EXPLORER}/operators/${key}`, '_blank');
+        window.open(`${config.links.LINK_EXPLORER}/${key}`, '_blank');
     };
 
     const moveToUpdateFee = () => {
@@ -134,15 +134,15 @@ const SingleOperator = () => {
                   <Typography className={classes.TableValueText}>{validators_count}</Typography>
                 </Grid>,
             },
-            {
-                key: <Typography>Revenue</Typography>,
-                value: <Grid item container className={classes.ItemWrapper} xs={12}>
-                  <SsvAndSubTitle leftTextAlign ssv={
-                      // @ts-ignore
-                      operator?.revenue
-                  } />
-                </Grid>,
-            },
+            // {
+            //     key: <Typography>Revenue</Typography>,
+            //     value: <Grid item container className={classes.ItemWrapper} xs={12}>
+            //       <SsvAndSubTitle leftTextAlign ssv={
+            //           // @ts-ignore
+            //           operator?.revenue
+            //       } />
+            //     </Grid>,
+            // },
         ], [operator, applicationStore.darkMode],
     );
 

@@ -31,6 +31,7 @@ const CancelUpdateFee = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
+    const [futureFee, setFutureFee] = useState(0);
     const [successPage, showSuccessPage] = useState(false);
 
     const cancelUpdateProcess = async () => {
@@ -38,6 +39,8 @@ const CancelUpdateFee = (props: Props) => {
         applicationStore.setIsLoading(true);
         const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId);
         if (response) {
+            // @ts-ignore
+            setFutureFee(operatorStore.operatorFutureFee);
             eventStore.send({ category: 'cancel', action: 'click', label: '' });
             showSuccessPage(true);
         }
@@ -57,7 +60,7 @@ const CancelUpdateFee = (props: Props) => {
     // @ts-ignore
     const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
     // @ts-ignore
-    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
+    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(futureFee)));
 
     if (successPage) {
         return (

@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-import { formatNumberToUi } from '~lib/utils/numbers';
+// import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
@@ -43,7 +43,7 @@ const DashboardTables = () => {
     // @ts-ignore
     useEffect(async () => {
         if (walletStore.accountAddress) {
-            await loadItems({ type: 'validators', reFetchBeaconData: true });
+            await loadItems({ type: 'validators' });
             await loadItems({ type: 'operators' });
         }
     }, [walletStore.accountAddress]);
@@ -152,10 +152,10 @@ const DashboardTables = () => {
                     </Grid>,
                     accessor: 'status',
                 },
-                {
-                    Header: 'Revenue',
-                    accessor: 'revenue',
-                },
+                // {
+                //     Header: 'Revenue',
+                //     accessor: 'revenue',
+                // },
                 {
                     Header: 'Validators',
                     accessor: 'validators_count',
@@ -205,7 +205,7 @@ const DashboardTables = () => {
 
     // return validator operators mapped with additional fields fee and performance
     const operatorsData = myAccountStore?.ownerAddressOperators?.map((operator: any) => {
-        const { id, name, address, status, revenue, validators_count } = operator;
+        const { id, name, address, status, /* revenue, */ validators_count } = operator;
 
         return {
             public_key: <Grid container item>
@@ -213,9 +213,9 @@ const DashboardTables = () => {
               <OperatorId withoutExplorer text={'ID: '} id={id} />
             </Grid>,
             status: <Status status={status} />,
-            revenue: <Grid container item>
-              <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(walletStore.fromWei(revenue))} SSV</Grid>
-            </Grid>,
+            // revenue: <Grid container item>
+            //   <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(walletStore.fromWei(revenue))} SSV</Grid>
+            // </Grid>,
             validators_count: <Grid item className={classes.ValidatorApr}>{validators_count}</Grid>,
             // fee: <Grid item container justify={'space-between'}>
             //   <Grid item container xs>

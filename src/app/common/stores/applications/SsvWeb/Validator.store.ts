@@ -199,9 +199,11 @@ class ValidatorStore extends BaseStore {
                           this.keyStoreFile = null;
                           this.newValidatorReceipt = payload[1];
                           eventStore.send({ category: 'validator_register', action: 'register_tx', label: 'sent' });
-                          applicationStore.setIsLoading(false);
                           console.debug('Contract Receipt', receipt);
-                          resolve(true);
+                          setTimeout(() => {
+                              applicationStore.setIsLoading(false);
+                              resolve(true);
+                          }, 60000);
                       }
                   })
                   .on('transactionHash', (txHash: string) => {

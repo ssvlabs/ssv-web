@@ -261,6 +261,7 @@ jobs:
           REACT_APP_FAUCET_PAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.ssv.network/"
+          BLOX_INFRA_API: 'https://api.bloxstaking.com'
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}

@@ -569,10 +569,10 @@ class OperatorStore extends BaseStore {
      * @param publicKey
      */
     @action.bound
-    isOperatorSelected(publicKey: string): boolean {
+    isOperatorSelected(id: string): boolean {
         let exist = false;
         Object.values(this.selectedOperators).forEach((operator: IOperator) => {
-            if (operator.address === publicKey) exist = true;
+            if (operator.id === id) exist = true;
         });
 
         return exist;

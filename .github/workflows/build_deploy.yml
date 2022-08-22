@@ -228,7 +228,7 @@ jobs:
           PROD_CLAIM_PAGE: ""
           NEW_STAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.shifu.ssv.network"
+          EXPLORER_URL: "https://explorer.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}

@@ -74,7 +74,7 @@ const RequestForSsv = () => {
               <InputLabel title="Request Amount" />
               <TextInput
                 disable
-                value={'10 SSV'}
+                value={`${faucetStore.amountToTransfer ?? 10} SSV`}
                 data-testid="request-amount"
                 wrapperClass={classes.AmountInput}
               />

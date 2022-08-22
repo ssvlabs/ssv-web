@@ -5,8 +5,9 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 
 class FaucetStore extends BaseStore {
-    @observable addressTransactions: any;
+    @observable amountToTransfer: any;
     @observable pendingTransaction: any;
+    @observable addressTransactions: any;
 
     @action.bound
     async registerNewTransaction() {

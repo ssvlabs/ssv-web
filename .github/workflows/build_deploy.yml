@@ -266,7 +266,7 @@ jobs:
           REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
           OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
+          SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_V2_SSV_CONTRACT_ADDRESS }}
 
       - name: Deploy prod faucet
         if: github.ref == 'refs/heads/prod-faucet'

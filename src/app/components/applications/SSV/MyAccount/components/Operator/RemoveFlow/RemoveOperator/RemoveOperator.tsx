@@ -70,7 +70,7 @@ const RemoveOperator = () => {
                       <li>Visit <LinkText onClick={() => sendAnalytics(outDocumentationLink)} text={'our documentation'} link={outDocumentationLink} /> for common node
                         troubleshooting.
                       </li>
-                      <li>Consult with other experiences operators in our <LinkText onClick={() => sendAnalytics('blat')}
+                      <li>Consult with other experiences operators in our <LinkText onClick={() => sendAnalytics('https://discord.gg/AbYHBfjkDY')}
                         text={'discord developer community'} link={'https://discord.gg/AbYHBfjkDY'} />.
                       </li>
                     </ul>
@@ -83,9 +83,8 @@ const RemoveOperator = () => {
                       <li>Business is slow? Increase your traction and reputation by <LinkText
                         text={'becoming a verified operator.'} link={'https://forum.ssv.network/t/dao-curated-node-registry-verified-operators/129'} />
                       </li>
-                      <li>Costs are too high? See our guides on how to <LinkText text={'optimize hosting costs.'}
-                        link={'blat'} />
-                      </li>
+                      {/* <li>Costs are too high? See our guides on how to <LinkText text={'optimize hosting costs.'} link={'blat'} /> */}
+                      {/* </li> */}
                     </ul>
                   </Grid>
                 );

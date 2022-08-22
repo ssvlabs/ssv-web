@@ -76,8 +76,10 @@ class ValidatorStore extends BaseStore {
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
-            resolve(true);
+              setTimeout(() => {
+                  applicationStore.showTransactionPendingPopUp(false);
+                  resolve(true);
+              }, 60000);
           })
           .on('transactionHash', (txHash: string) => {
             applicationStore.txHash = txHash;
@@ -118,8 +120,10 @@ class ValidatorStore extends BaseStore {
                       this.keyStoreFile = null;
                       this.newValidatorReceipt = payload[1];
                       applicationStore.setIsLoading(false);
-                      applicationStore.showTransactionPendingPopUp(false);
-                      resolve(true);
+                      setTimeout(() => {
+                          applicationStore.showTransactionPendingPopUp(false);
+                          resolve(true);
+                      }, 60000);
                   }
               })
               .on('transactionHash', (txHash: string) => {

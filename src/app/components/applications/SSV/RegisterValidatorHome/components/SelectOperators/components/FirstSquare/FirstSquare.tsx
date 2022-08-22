@@ -120,7 +120,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         } else if (sortBy === sortType && sortOrder === 'desc') {
                 setSortOrder('asc');
         } else {
-            eventStore.send({ category: 'validator_register', action: 'filter', label: sortType });
+            eventStore.send({ category: 'validator_register', action: 'sort', label: sortType });
             setSortBy(sortType);
             setSortOrder('desc');
         }

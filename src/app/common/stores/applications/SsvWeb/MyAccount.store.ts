@@ -111,7 +111,7 @@ class MyAccountStore extends BaseStore {
         if (!walletStore.accountAddress) return;
         const ssvStore: SSVStore = this.getStore('SSV');
         const { page, perPage } = this.ownerAddressValidatorsPagination;
-        const query = `?search=${walletStore.accountAddress}&ordering=status:desc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
+        const query = `?search=${walletStore.accountAddress}&ordering=public_key:asc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
         const response = await Validator.getInstance().validatorsByOwnerAddress(query);
 
         if (reFetchBeaconData) {

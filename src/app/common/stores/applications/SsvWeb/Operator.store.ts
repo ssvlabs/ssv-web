@@ -207,8 +207,10 @@ class OperatorStore extends BaseStore {
                             ApiParams.initStorage(true);
                             applicationStore.setIsLoading(false);
                             console.debug('Contract Receipt', receipt);
-                            applicationStore.showTransactionPendingPopUp(false);
-                            resolve(true);
+                            setTimeout(() => {
+                                applicationStore.showTransactionPendingPopUp(false);
+                                resolve(true);
+                            }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -323,8 +325,10 @@ class OperatorStore extends BaseStore {
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
                             applicationStore.setIsLoading(false);
-                            applicationStore.showTransactionPendingPopUp(false);
-                            resolve(true);
+                            setTimeout(() => {
+                                applicationStore.showTransactionPendingPopUp(false);
+                                resolve(true);
+                            }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -363,8 +367,10 @@ class OperatorStore extends BaseStore {
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
                             applicationStore.setIsLoading(false);
-                            applicationStore.showTransactionPendingPopUp(false);
-                            resolve(true);
+                            setTimeout(() => {
+                                applicationStore.showTransactionPendingPopUp(false);
+                                resolve(true);
+                            }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -407,8 +413,10 @@ class OperatorStore extends BaseStore {
                             ApiParams.initStorage(true);
                             applicationStore.setIsLoading(false);
                             console.debug('Contract Receipt', receipt);
-                            applicationStore.showTransactionPendingPopUp(false);
-                            resolve(true);
+                            setTimeout(() => {
+                                applicationStore.showTransactionPendingPopUp(false);
+                                resolve(true);
+                            }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {

@@ -92,7 +92,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         // @ts-ignore
         if (wrapperRef.current?.isEqualNode(e.target)) return;
 
-        if (operatorStore.isOperatorSelected(operator.address)) {
+        if (operatorStore.isOperatorSelected(operator.id)) {
             operatorStore.unselectOperatorByPublicKey(operator.address);
           return;
         }
@@ -155,7 +155,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         }
 
         return operatorsData.map((operator) => {
-            const isSelected = operatorStore.isOperatorSelected(operator.address);
+            const isSelected = operatorStore.isOperatorSelected(operator.id);
             const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
             const disableCheckBoxes = operatorStore.selectedEnoughOperators;
             const isInactive = operator.status.toLowerCase() === 'inactive';

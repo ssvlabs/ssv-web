@@ -75,8 +75,8 @@ class ValidatorStore extends BaseStore {
       await contract.methods.removeValidator(publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`).send({ from: ownerAddress })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
-            applicationStore.setIsLoading(false);
               setTimeout(() => {
+                  applicationStore.setIsLoading(false);
                   applicationStore.showTransactionPendingPopUp(false);
                   resolve(true);
               }, 60000);
@@ -119,8 +119,8 @@ class ValidatorStore extends BaseStore {
                   if (event) {
                       this.keyStoreFile = null;
                       this.newValidatorReceipt = payload[1];
-                      applicationStore.setIsLoading(false);
                       setTimeout(() => {
+                          applicationStore.setIsLoading(false);
                           applicationStore.showTransactionPendingPopUp(false);
                           resolve(true);
                       }, 60000);

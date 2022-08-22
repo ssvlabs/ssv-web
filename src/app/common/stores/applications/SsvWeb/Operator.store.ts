@@ -205,9 +205,9 @@ class OperatorStore extends BaseStore {
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
                             ApiParams.initStorage(true);
-                            applicationStore.setIsLoading(false);
                             console.debug('Contract Receipt', receipt);
                             setTimeout(() => {
+                                applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
                             }, 60000);
@@ -324,8 +324,8 @@ class OperatorStore extends BaseStore {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
-                            applicationStore.setIsLoading(false);
                             setTimeout(() => {
+                                applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
                             }, 60000);
@@ -366,8 +366,8 @@ class OperatorStore extends BaseStore {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
-                            applicationStore.setIsLoading(false);
                             setTimeout(() => {
+                                applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
                             }, 60000);
@@ -411,9 +411,9 @@ class OperatorStore extends BaseStore {
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
                             ApiParams.initStorage(true);
-                            applicationStore.setIsLoading(false);
                             console.debug('Contract Receipt', receipt);
                             setTimeout(() => {
+                                applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
                             }, 60000);
@@ -497,7 +497,10 @@ class OperatorStore extends BaseStore {
                                 eventStore.send({ category: 'operator_register', action: 'register_tx', label: 'sent' });
                                 this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
                                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
-                                resolve(true);
+                                setTimeout(() => {
+                                    applicationStore.showTransactionPendingPopUp(false);
+                                    resolve(true);
+                                }, 60000);
                             }
                         })
                         .on('transactionHash', (txHash: string) => {

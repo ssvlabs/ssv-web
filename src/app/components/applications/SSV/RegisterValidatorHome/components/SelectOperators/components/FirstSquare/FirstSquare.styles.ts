@@ -12,7 +12,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     FeeColumn: {
         maxWidth: 76.5,
-        overflow: 'scroll',
+        overflow: 'auto',
     },
     SearchIcon: {
         width: 24,

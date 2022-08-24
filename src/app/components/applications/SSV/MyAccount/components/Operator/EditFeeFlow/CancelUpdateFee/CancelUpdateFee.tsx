@@ -96,7 +96,7 @@ const CancelUpdateFee = (props: Props) => {
     }
 
     return (
-      <Dialog className={classes.DialogWrapper} PaperProps={{ style: { borderRadius: 16 } }} open={operatorStore.openCancelDialog}>
+      <Dialog className={classes.DialogWrapper} PaperProps={{ style: { overflow: 'unset', borderRadius: 16 } }} open={operatorStore.openCancelDialog}>
         <Grid className={classes.CloseDialog} onClick={operatorStore.switchCancelDialog} />
         <Grid className={classes.GridWrapper} container>
           <HeaderSubHeader title={'Cancel Update Fee'} />

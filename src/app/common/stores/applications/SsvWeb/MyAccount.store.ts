@@ -130,7 +130,7 @@ class MyAccountStore extends BaseStore {
             const validatorPublicKey = `0x${validator.public_key}`;
             const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
             // eslint-disable-next-line no-await-in-loop
-            const performance7days = this.beaconChaPerformances[validator.public_key] ? formatNumberFromBeaconcha(this.beaconChaPerformances[validator.public_key].performance7d) : 0;
+            const performance7days = this.beaconChaPerformances[validator.public_key] ? formatNumberFromBeaconcha(this.beaconChaPerformances[validator.public_key]?.performance7d) : 0;
             // @ts-ignore
             const apr = formatNumberToUi(((performance7days / 32) * 100) * config.GLOBAL_VARIABLE.NUMBERS_OF_WEEKS_IN_YEAR);
             extendedValidators.push({ public_key: validator.public_key, status: validator.status, balance: validatorBalance, apr });

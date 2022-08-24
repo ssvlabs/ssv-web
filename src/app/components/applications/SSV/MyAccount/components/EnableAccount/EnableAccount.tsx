@@ -27,10 +27,10 @@ const EnableAccount = () => {
     const walletStore: WalletStore = stores.Wallet;
     const [validators, setValidators] = useState([]);
     const [ownerAddressCost, setOwnerAddressCost] = useState(0);
-    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
-    const allOperatorsFee = new Decimal(ssvStore.newGetFeeForYear(ownerAddressCost, 18)).toFixed().toString();
+    const networkYearlyFees = ssvStore.newGetFeeForYear(ssvStore.networkFee * validators.length, 18);
+    const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost, 18);
     const liquidationCollateral = multiplyNumber(
-        addNumber(ssvStore.networkFee, ownerAddressCost),
+        addNumber(ssvStore.networkFee * validators.length, ownerAddressCost),
         ssvStore.liquidationCollateral,
     );
     const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
@@ -52,8 +52,8 @@ const EnableAccount = () => {
         });
     }, []);
 
-    const enableAccount = async (fee: any) => {
-       const response = await ssvStore.activateValidator(fee);
+    const enableAccount = async () => {
+       const response = await ssvStore.activateValidator(totalFee);
        if (response) history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     };
 
@@ -129,7 +129,7 @@ const EnableAccount = () => {
                 <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} />
               </Grid>
               <Grid item xs={12}>
-                <Button text={'Enable Account'} disable={validators.length === 0} onClick={() => { enableAccount(totalFee); }} withAllowance />
+                <Button text={'Enable Account'} disable={validators.length === 0} onClick={enableAccount} withAllowance />
               </Grid>
             </Grid>
           )}

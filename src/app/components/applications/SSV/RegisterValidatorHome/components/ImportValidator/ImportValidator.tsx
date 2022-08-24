@@ -83,7 +83,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         try {
             const response: any = (await axios.get(beaconChaValidatorUrl, { timeout: 5000 })).data;
             const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
-            return conditionalDataExtraction?.valid_signature;
+            return !(response.status === 'OK' && conditionalDataExtraction?.valid_signature === undefined);
         } catch (e: any) {
             console.log(e.message);
             return true;

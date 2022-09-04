@@ -412,11 +412,11 @@ class OperatorStore extends BaseStore {
                         if (event) {
                             ApiParams.initStorage(true);
                             console.debug('Contract Receipt', receipt);
-                            setTimeout(() => {
+                            // setTimeout(() => {
                                 applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
-                            }, 60000);
+                            // }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -497,10 +497,10 @@ class OperatorStore extends BaseStore {
                                 eventStore.send({ category: 'operator_register', action: 'register_tx', label: 'sent' });
                                 this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
                                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
-                                setTimeout(() => {
+                                // setTimeout(() => {
                                     applicationStore.showTransactionPendingPopUp(false);
                                     resolve(true);
-                                }, 60000);
+                                // }, 60000);
                             }
                         })
                         .on('transactionHash', (txHash: string) => {

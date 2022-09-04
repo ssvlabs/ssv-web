@@ -75,11 +75,11 @@ class ValidatorStore extends BaseStore {
       await contract.methods.removeValidator(publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`).send({ from: ownerAddress })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
-              setTimeout(() => {
+              // setTimeout(() => {
                   applicationStore.setIsLoading(false);
                   applicationStore.showTransactionPendingPopUp(false);
                   resolve(true);
-              }, 60000);
+              // }, 60000);
           })
           .on('transactionHash', (txHash: string) => {
             applicationStore.txHash = txHash;
@@ -200,10 +200,10 @@ class ValidatorStore extends BaseStore {
                           this.newValidatorReceipt = payload[1];
                           eventStore.send({ category: 'validator_register', action: 'register_tx', label: 'sent' });
                           console.debug('Contract Receipt', receipt);
-                          setTimeout(() => {
+                          // setTimeout(() => {
                               applicationStore.setIsLoading(false);
                               resolve(true);
-                          }, 60000);
+                          // }, 60000);
                       }
                   })
                   .on('transactionHash', (txHash: string) => {

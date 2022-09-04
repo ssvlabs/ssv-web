@@ -119,11 +119,11 @@ class ValidatorStore extends BaseStore {
                   if (event) {
                       this.keyStoreFile = null;
                       this.newValidatorReceipt = payload[1];
-                      setTimeout(() => {
+                      // setTimeout(() => {
                           applicationStore.setIsLoading(false);
                           applicationStore.showTransactionPendingPopUp(false);
                           resolve(true);
-                      }, 60000);
+                      // }, 60000);
                   }
               })
               .on('transactionHash', (txHash: string) => {

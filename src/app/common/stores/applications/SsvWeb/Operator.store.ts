@@ -206,11 +206,11 @@ class OperatorStore extends BaseStore {
                         if (event) {
                             ApiParams.initStorage(true);
                             console.debug('Contract Receipt', receipt);
-                            setTimeout(() => {
+                            // setTimeout(() => {
                                 applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
-                            }, 60000);
+                            // }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -324,11 +324,11 @@ class OperatorStore extends BaseStore {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
-                            setTimeout(() => {
+                            // setTimeout(() => {
                                 applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
-                            }, 60000);
+                            // }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -366,11 +366,11 @@ class OperatorStore extends BaseStore {
                         // eslint-disable-next-line no-prototype-builtins
                         const event: boolean = receipt.hasOwnProperty('events');
                         if (event) {
-                            setTimeout(() => {
+                            // setTimeout(() => {
                                 applicationStore.setIsLoading(false);
                                 applicationStore.showTransactionPendingPopUp(false);
                                 resolve(true);
-                            }, 60000);
+                            // }, 60000);
                         }
                     })
                     .on('transactionHash', (txHash: string) => {

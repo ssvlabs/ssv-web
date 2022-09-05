@@ -112,7 +112,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
           </Grid>
           {editPage ? (
             <Grid container item xs={12} className={classes.AlertMessage}>
-              <Grid item xs={12} className={classes.WarningHeader}>
+              <Grid item xs={12}>
                 Updating operators is experimental and could result in slashing, please proceed at your own discretion.
               </Grid>
             </Grid>

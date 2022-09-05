@@ -7,7 +7,6 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
@@ -246,7 +245,7 @@ class OperatorStore extends BaseStore {
               ApiParams.initStorage(true);
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
-              while (true) {
+              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
                 if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
@@ -403,7 +402,7 @@ class OperatorStore extends BaseStore {
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               let iterations = 0;
-              while (true) {
+              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
                 if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
@@ -479,7 +478,7 @@ class OperatorStore extends BaseStore {
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               let iterations = 0;
-              while (true) {
+              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
                 if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
@@ -552,7 +551,7 @@ class OperatorStore extends BaseStore {
               ApiParams.initStorage(true);
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
-              while (true) {
+              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
                 if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
@@ -610,7 +609,7 @@ class OperatorStore extends BaseStore {
         const contract: Contract = walletStore.getContract;
         const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
-        const gasEstimation: PriceEstimation = new PriceEstimation();
+        // const gasEstimation: PriceEstimation = new PriceEstimation();
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
@@ -633,8 +632,8 @@ class OperatorStore extends BaseStore {
           const gasAmount = await this.conditionalContractFunction(contract, payload).estimateGas({ from: walletStore.accountAddress });
           this.estimationGas = gasAmount * 0.000000001;
           if (config.FEATURE.DOLLAR_CALCULATION) {
-            const rate = await gasEstimation.estimateGasInUSD(this.estimationGas);
-            this.dollarEstimationGas = this.estimationGas * rate * 0;
+            // const rate = await gasEstimation.estimateGasInUSD(this.estimationGas);
+            // this.dollarEstimationGas = this.estimationGas * rate * 0;
             resolve(true);
           } else {
             this.dollarEstimationGas = 0;
@@ -652,7 +651,7 @@ class OperatorStore extends BaseStore {
                 this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                 let iterations = 0;
-                while (true) {
+                while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // Reached maximum iterations
                   if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                     // eslint-disable-next-line no-await-in-loop
@@ -708,8 +707,7 @@ class OperatorStore extends BaseStore {
   }
 
   /**
-   * Unselect operator by pubkey
-   * @param index
+   * Unselect operator by public_key
    */
   @action.bound
   unselectOperatorByPublicKey(public_key: string) {
@@ -751,7 +749,7 @@ class OperatorStore extends BaseStore {
 
   /**
    * Check if operator selected
-   * @param publicKey
+   * @param id
    */
   @action.bound
   isOperatorSelected(id: string): boolean {

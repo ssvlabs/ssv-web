@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   BeaconImage: {
     width: 24,
     height: 24,
-    marginLeft: theme.spacing(3),
+    marginLeft: theme.spacing(2),
     cursor: 'pointer',
     backgroundSize: 'contain',
     backgroundPosition: 'center',

@@ -393,7 +393,7 @@ class ValidatorStore extends BaseStore {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;
       this.keyStorePublicKey = await this.getKeyStorePublicKey();
-      this.validatorPublicKeyExist = !!await Validator.getInstance().getValidator(this.keyStorePublicKey);
+      this.validatorPublicKeyExist = !!await Validator.getInstance().getValidator(this.keyStorePublicKey, true);
     } catch (e: any) {
       console.log(e.message);
     }

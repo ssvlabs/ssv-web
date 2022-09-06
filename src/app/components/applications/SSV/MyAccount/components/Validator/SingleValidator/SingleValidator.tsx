@@ -46,7 +46,6 @@ const SingleValidator = () => {
     if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     applicationStore.setIsLoading(true);
     myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
-      console.log(response);
       if (response) {
         response.total_operators_fee = ssvStore.newGetFeeForYear(response.operators.reduce(
           (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
@@ -199,9 +198,9 @@ const SingleValidator = () => {
                 <Grid className={classes.DetailsHeader}>
                   {field.value}
                   {field.key === 'status' && (
-                  <ToolTip
-                    text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'} />
-)}
+                    <ToolTip
+                      text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'} />
+                  )}
                 </Grid>
                 <Grid className={classes.DetailsBody}>
                   {field.key === 'status' ? <Status status={fieldKey} /> : suffixField}

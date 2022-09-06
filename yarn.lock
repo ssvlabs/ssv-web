@@ -19904,6 +19904,11 @@ typeforce@^1.11.5:
   resolved "https://registry.yarnpkg.com/typeforce/-/typeforce-1.18.0.tgz#d7416a2c5845e085034d70fcc5b6cc4a90edbfdc"
   integrity sha512-7uc1O8h1M1g0rArakJdf0uLRSSgFcYexrVoKo+bzJd32gd4gDy2L/Z+8/FjPnU9ydY3pEnVPtr9FyscYY60K1g==
 
+typescript-retry-decorator@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/typescript-retry-decorator/-/typescript-retry-decorator-2.0.6.tgz#1787bfec0be80f87d4e53fb54046eb4aa217c2d1"
+  integrity sha512-I7RmxBqNhFjO69tKrbt4UzpVnH9Nphpi0VHes6bb/rDOWXEym7ubBdpVog7mCvg0BbwdCAGbUuqqUjdn1yA5/A==
+
 typescript@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.2.tgz#399ab18aac45802d6f2498de5054fcbbe716a805"

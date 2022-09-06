@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
 
 type OperatorsListQuery = {
@@ -17,7 +18,6 @@ type OperatorValidatorListQuery = {
 
 class Operator {
   ownerAddress: string = '';
-  noOperatorsForOwnerAddress: boolean = false;
   private static instance: Operator;
   private readonly baseUrl: string = '';
 
@@ -39,11 +39,11 @@ class Operator {
   /**
    * Get operators by owner Address
    */
-  async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string) {
-    const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
+  async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, skipRetry?: boolean) {
+    const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
     try {
       this.ownerAddress = ownerAddress;
-      return (await axios.get(operatorsEndpointUrl)).data;
+      return await this.getData(url, skipRetry);
     } catch (e) {
       return { operators: [], pagination: {} };
     }
@@ -52,18 +52,18 @@ class Operator {
   /**
    * Get operators
    */
-  async getOperators(props: OperatorsListQuery) {
+  async getOperators(props: OperatorsListQuery, skipRetry?: boolean) {
     const { page, perPage, type, ordering, search } = props;
-    let operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators?`;
-    if (search) operatorsEndpointUrl += `search=${search}&`;
-    if (ordering) operatorsEndpointUrl += `ordering=${ordering}&`;
-    if (page) operatorsEndpointUrl += `page=${page}&`;
-    if (perPage) operatorsEndpointUrl += `perPage=${perPage}&`;
-    if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
-    operatorsEndpointUrl += `ts=${new Date().getTime()}`;
+    let url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators?`;
+    if (search) url += `search=${search}&`;
+    if (ordering) url += `ordering=${ordering}&`;
+    if (page) url += `page=${page}&`;
+    if (perPage) url += `perPage=${perPage}&`;
+    if (type) url += `type=${type.join(',')}`;
+    url += `ts=${new Date().getTime()}`;
 
     try {
-      return (await axios.get(operatorsEndpointUrl)).data;
+      return await this.getData(url, skipRetry);
     } catch (e) {
       return { operators: [], pagination: {} };
     }
@@ -72,10 +72,10 @@ class Operator {
   /**
    * Get operator
    */
-  async getOperator(operatorId: number | string) {
-    const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
+  async getOperator(operatorId: number | string, skipRetry?: boolean) {
+    const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
     try {
-      return (await axios.get(operatorEndpointUrl)).data;
+      return await this.getData(url, skipRetry);
     } catch (e) {
       return null;
     }
@@ -84,13 +84,30 @@ class Operator {
   /**
    * Get operator validators
    */
-  async getOperatorValidators(props: OperatorValidatorListQuery) {
+  async getOperatorValidators(props: OperatorValidatorListQuery, skipRetry?: boolean) {
     const { page, perPage, operatorId } = props;
-    const operatorEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+    const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
     try {
-      return (await axios.get(operatorEndpointUrl)).data;
+      return await this.getData(url, skipRetry);
     } catch (e) {
       return { validators: [], pagination: {} };
+    }
+  }
+
+  /**
+   * Retry few times to get the data
+   * @param url
+   * @param skipRetry
+   */
+  @Retryable(config.retry.default)
+  async getData(url: string, skipRetry?: boolean) {
+    try {
+      return (await axios.get(url)).data;
+    } catch (e) {
+      if (skipRetry) {
+        return null;
+      }
+      throw e;
     }
   }
 }

@@ -53,24 +53,28 @@ class MyAccountStore extends BaseStore {
    * @param currentValue
    */
   async checkEntityInAccount(entity: string, identifierName: string, currentValue: any): Promise<boolean> {
-    let method: any;
-    switch (entity) {
-      case 'validator':
-        method = 'getOwnerAddressValidators';
-        break;
-      case 'operator':
-        method = 'getOwnerAddressOperators';
-        break;
-      default:
-        throw new Error(`MyAccountStore::checkEntityInAccount: "${entity}" entity is not supported`);
+    try {
+      let method: any;
+      switch (entity) {
+        case 'validator':
+          method = 'getOwnerAddressValidators';
+          break;
+        case 'operator':
+          method = 'getOwnerAddressOperators';
+          break;
+        default:
+          // @ts-ignore
+          throw new Error(`MyAccountStore::checkEntityInAccount: "${entity}" entity is not supported`);
+      }
+      // @ts-ignore
+      const entities: any = await this[method]({});
+      return (entities || []).filter((e: any) => {
+        return currentValue === e[identifierName];
+      }).length > 0;
+    } catch (e) {
+      console.error('MyAccountStore::checkEntityInAccount Error:', e);
+      return false;
     }
-    // @ts-ignore
-    const entities: any = await this[method]({});
-    return (entities || []).filter((e: any) => {
-      console.log('currentValue:', currentValue);
-      console.log('e[identifierName]:', e[identifierName]);
-      return currentValue === e[identifierName];
-    }).length > 0;
   }
 
   /**
@@ -132,9 +136,8 @@ class MyAccountStore extends BaseStore {
   @action.bound
   async getOperatorRevenue(operator: any) {
     const operatorStore: OperatorStore = this.getStore('Operator');
-    const revenue = await operatorStore.getOperatorRevenue(operator.id);
     // eslint-disable-next-line no-param-reassign
-    operator.revenue = revenue;
+    operator.revenue = await operatorStore.getOperatorRevenue(operator.id);
     return operator;
   }
 
@@ -144,8 +147,8 @@ class MyAccountStore extends BaseStore {
   }
 
   @action.bound
-  async getValidator(publicKey: string): Promise<any> {
-    const validator = await Validator.getInstance().getValidator(publicKey);
+  async getValidator(publicKey: string, skipRetry?: boolean): Promise<any> {
+    const validator = await Validator.getInstance().getValidator(publicKey, skipRetry);
     const validatorPublicKey = `0x${validator.public_key}`;
     const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
     // eslint-disable-next-line no-await-in-loop

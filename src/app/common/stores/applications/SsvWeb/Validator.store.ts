@@ -109,9 +109,9 @@ class ValidatorStore extends BaseStore {
         .on('receipt', async () => {
           ApiParams.initStorage(true);
           let iterations = 0;
-          while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+          while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
             // Reached maximum iterations
-            if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+            if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
               // eslint-disable-next-line no-await-in-loop
               await this.refreshOperatorsAndValidators(resolve, true);
               break;
@@ -171,9 +171,9 @@ class ValidatorStore extends BaseStore {
             this.newValidatorReceipt = payload[1];
             console.debug('Contract Receipt', receipt);
             let iterations = 0;
-            while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
               // Reached maximum iterations
-              if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // eslint-disable-next-line no-await-in-loop
                 await this.refreshOperatorsAndValidators(resolve, true);
                 break;
@@ -273,9 +273,9 @@ class ValidatorStore extends BaseStore {
               eventStore.send({ category: 'validator_register', action: 'register_tx', label: 'sent' });
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
-              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
-                if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndValidators(resolve, true);
                   break;

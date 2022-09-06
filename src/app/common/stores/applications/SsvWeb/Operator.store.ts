@@ -245,9 +245,9 @@ class OperatorStore extends BaseStore {
               ApiParams.initStorage(true);
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
-              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
-                if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndValidators(resolve, true);
                   break;
@@ -402,9 +402,9 @@ class OperatorStore extends BaseStore {
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               let iterations = 0;
-              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
-                if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndValidators(resolve, true);
                   break;
@@ -478,9 +478,9 @@ class OperatorStore extends BaseStore {
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               let iterations = 0;
-              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
-                if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndValidators(resolve, true);
                   break;
@@ -551,9 +551,9 @@ class OperatorStore extends BaseStore {
               ApiParams.initStorage(true);
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
-              while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // Reached maximum iterations
-                if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndValidators(resolve, true);
                   break;
@@ -651,9 +651,9 @@ class OperatorStore extends BaseStore {
                 this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                 let iterations = 0;
-                while (iterations < MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // Reached maximum iterations
-                  if (iterations > MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                     // eslint-disable-next-line no-await-in-loop
                     await this.refreshOperatorsAndValidators(resolve, true);
                     break;

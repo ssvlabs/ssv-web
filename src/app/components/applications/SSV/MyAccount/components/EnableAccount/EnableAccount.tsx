@@ -9,6 +9,7 @@ import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import ToolTip from '~app/components/common/ToolTip';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import NameAndAddress from '~app/components/common/NameAndAddress';
@@ -75,6 +76,12 @@ const EnableAccount = () => {
       <BorderScreen
         header={'Enable Account'}
         sectionClass={classes.Section}
+        onBackButtonClick={() => {
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'my_account',
+            action: 'deposit_back',
+          });
+        }}
         body={[
           (
             <Grid container>

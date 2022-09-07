@@ -10,11 +10,11 @@ import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/components/common/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import MessageDiv from '~app/components/common/MessageDiv/MessageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -28,7 +28,6 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
   const history = useHistory();
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
-  const eventStore: EventStore = stores.Event;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -187,17 +186,34 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
         history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
       } else if (deposited) {
         operatorStore.unselectAllOperators();
-        eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'success' });
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'validator_register',
+          action: 'upload_file',
+          label: 'success',
+        });
         history.push(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
       } else {
-        eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'error' });
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'validator_register',
+          action: 'upload_file',
+          label: 'not_deposited',
+        });
         history.push(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
       }
     } catch (error: any) {
-      eventStore.send({ category: 'validator_register', action: 'upload_file', label: 'error' });
       if (error.message === 'Invalid password') {
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'validator_register',
+          action: 'upload_file',
+          label: 'invalid_password',
+        });
         setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
       } else {
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'validator_register',
+          action: 'upload_file',
+          label: 'invalid_file',
+        });
         setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
       }
     }

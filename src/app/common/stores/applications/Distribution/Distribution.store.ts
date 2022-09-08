@@ -152,7 +152,7 @@ class DistributionStore extends BaseStore {
   @computed
   get userRewardAmount() {
     const walletStore: WalletStore = this.getStore('Wallet');
-    return walletStore.fromWei(String(this.rewardAmount));
+    return walletStore.fromWei(walletStore.BN(this.rewardAmount).toString());
   }
 }
 

@@ -339,7 +339,7 @@ class SsvStore extends BaseStore {
         return methodCall
           .estimateGas({ from: this.accountAddress })
           .then((gasAmount: number) => {
-            const floatString = this.getStore('Wallet').web3.utils.fromWei(String(gasAmount), 'ether');
+            const floatString = this.getStore('Wallet').web3.utils.fromWei(walletStore.BN(gasAmount).toString(), 'ether');
             return parseFloat(floatString);
           });
       }

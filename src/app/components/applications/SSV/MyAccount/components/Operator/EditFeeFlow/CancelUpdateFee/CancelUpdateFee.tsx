@@ -17,12 +17,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './CancelUpdateFee.styles';
 
-type Props = {
-  // eslint-disable-next-line no-unused-vars
-  getCurrentState: (forceState?: number) => void,
-};
-
-const CancelUpdateFee = (props: Props) => {
+const CancelUpdateFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const history = useHistory();
@@ -55,7 +50,7 @@ const CancelUpdateFee = (props: Props) => {
   };
 
   const declareNewFee = async () => {
-    await props.getCurrentState(0);
+    history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
     operatorStore.switchCancelDialog();
   };
 

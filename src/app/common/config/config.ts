@@ -42,7 +42,12 @@ const config = {
             SUCCESS: '/my-account/operator/remove/success',
           },
           UPDATE_FEE: {
-            START: '/my-account/operator/fee-update',
+            ROOT: '/my-account/operator/fee-update',
+            START: '/my-account/operator/fee-update/start',
+            UPDATE: '/my-account/operator/fee-update/update',
+            PENDING: '/my-account/operator/fee-update/pending',
+            SUCCESS: '/my-account/operator/fee-update/success',
+            EXPIRED: '/my-account/operator/fee-update/expired',
           },
         },
         VALIDATOR: {

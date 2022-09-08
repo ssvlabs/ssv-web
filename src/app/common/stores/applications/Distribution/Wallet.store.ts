@@ -11,26 +11,30 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 class WalletStore extends BaseStore implements Wallet {
-    @observable web3: any = null;
-    @observable wallet: any = null;
-    @observable ssvBalance: any = 0;
-    @observable notifySdk: any = null;
-    @observable onboardSdk: any = null;
-    @observable accountAddress: string = '';
-    @observable wrongNetwork: boolean = false;
-    @observable networkId: number | null = null;
-    @observable accountDataLoaded: boolean = false;
+  @observable web3: any = null;
+  @observable wallet: any = null;
+  @observable ssvBalance: any = 0;
+  @observable notifySdk: any = null;
+  @observable onboardSdk: any = null;
+  @observable accountAddress: string = '';
+  @observable wrongNetwork: boolean = false;
+  @observable networkId: number | null = null;
+  @observable accountDataLoaded: boolean = false;
 
-    private contract: Contract | undefined;
-    private distributionStore: DistributionStore = this.getStore('Distribution');
-    private notificationsStore: NotificationsStore = this.getStore('Notifications');
+  private contract: Contract | undefined;
+  private distributionStore: DistributionStore = this.getStore('Distribution');
+  private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
-    constructor() {
-        super();
-        this.initWalletHooks();
-    }
+  constructor() {
+    super();
+    this.initWalletHooks();
+  }
 
-    /**
+  BN(s: any) {
+    return new this.web3.utils.BN(s);
+  }
+
+  /**
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
@@ -68,17 +72,17 @@ class WalletStore extends BaseStore implements Wallet {
 
   }
 
-    @action.bound
-    fromWei(amount?: string): number {
-        if (!amount) return 0;
-        return this.web3.utils.fromWei(amount, 'ether');
-    }
+  @action.bound
+  fromWei(amount?: string): number {
+    if (!amount) return 0;
+    return this.web3.utils.fromWei(amount, 'ether');
+  }
 
-    @action.bound
-    toWei(amount?: number): string {
-        if (!amount) return '0';
-        return this.web3.utils.toWei(amount.toString(), 'ether');
-    }
+  @action.bound
+  toWei(amount?: number): string {
+    if (!amount) return '0';
+    return this.web3.utils.toWei(amount.toString(), 'ether');
+  }
 
   /**
    * Check wallet cache and connect
@@ -111,22 +115,22 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-    /**
-     * User address handler
-     * @param address: string
-     */
-    @action.bound
-    async addressHandler(address: string) {
-        this.setAccountDataLoaded(false);
-        if (address === undefined) {
-            window.localStorage.removeItem('selectedWallet');
-        } else {
-            this.accountAddress = address;
-            await this.distributionStore.eligibleForReward();
-            await this.distributionStore.checkIfClaimed();
-        }
-        this.setAccountDataLoaded(true);
+  /**
+   * User address handler
+   * @param address: string
+   */
+  @action.bound
+  async addressHandler(address: string) {
+    this.setAccountDataLoaded(false);
+    if (address === undefined) {
+      window.localStorage.removeItem('selectedWallet');
+    } else {
+      this.accountAddress = address;
+      await this.distributionStore.eligibleForReward();
+      await this.distributionStore.checkIfClaimed();
     }
+    this.setAccountDataLoaded(true);
+  }
 
   /**
    * Callback for connected wallet

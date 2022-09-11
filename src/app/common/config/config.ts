@@ -57,6 +57,7 @@ const config = {
             ENTER_KEYSTORE: '/my-account/validator/update/enter-key',
             CHOOSE_OPERATORS: '/my-account/validator/update/choose-operators',
             CONFIRM_TRANSACTION: '/my-account/validator/update/confirm-transaction',
+            SUCCESS: '/my-account/validator/update/success',
           },
           VALIDATOR_REMOVE: {
             ROOT: '/my-account/validator/remove',

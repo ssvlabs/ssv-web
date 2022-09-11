@@ -1,0 +1,51 @@
+export type GTMEvent = {
+  event?: string,
+  label?: string,
+  action: string,
+  category: string,
+};
+
+class GoogleTagManager {
+  protected defaultEventName = 'customEvent';
+  protected static instance: GoogleTagManager | undefined;
+
+  /**
+   * Getting single instance
+   */
+  static getInstance(): GoogleTagManager {
+    if (!this.instance) {
+      this.instance = new GoogleTagManager();
+    }
+    return this.instance;
+  }
+
+  /**
+   * Sending event
+   * @param event
+   */
+  sendEvent(event: GTMEvent) {
+    const eventData: any = {
+      'event': event.event || this.defaultEventName,
+      'action': event.action,
+      'category': event.category,
+    };
+    if (event.label) {
+      eventData.label = event.label;
+    }
+    this.push(eventData);
+  }
+
+  /**
+   * Low-level event pushing to window data layer of GTM
+   * @param event
+   * @protected
+   */
+  protected push(event: GTMEvent) {
+    // @ts-ignore
+    window.dataLayer = window.dataLayer || {};
+    // @ts-ignore
+    window.dataLayer.push({ ...event });
+  }
+}
+
+export default GoogleTagManager;

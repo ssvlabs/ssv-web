@@ -5,9 +5,9 @@ import { Link, Typography } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import {
   useStyles,
@@ -16,11 +16,14 @@ import {
 const DepositViaLaunchpad = () => {
   const stores = useStores();
   const classes = useStyles();
-  const eventStore: EventStore = stores.Event;
   const validatorStore: ValidatorStore = stores.Validator;
 
   const redirectToLaunchpad = async () => {
-    eventStore.send({ category: 'validator_register', action: 'link', label: config.links.LAUNCHPAD_LINK });
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'validator_register',
+      action: 'link',
+      label: config.links.LAUNCHPAD_LINK,
+    });
     window.open(config.links.LAUNCHPAD_LINK);
   };
 

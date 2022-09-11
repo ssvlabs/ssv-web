@@ -9,7 +9,9 @@ import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
+import {
+    useStyles,
+} from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
 
 type Props = {
     text: string,
@@ -18,6 +20,7 @@ type Props = {
     withBackButton?: boolean,
     withoutExplorer?: boolean,
     withoutBeaconcha?: boolean,
+    onCancelButtonClick?: () => void | null | undefined;
 };
 
 const ValidatorWhiteHeader = (props: Props) => {
@@ -46,7 +49,12 @@ const ValidatorWhiteHeader = (props: Props) => {
     // console.log(props.withBackButton);
 
     return (
-      <WhiteWrapper withCancel={!!props.withCancel} withBackButton={props.withBackButton} header={props.text}>
+      <WhiteWrapper
+        withCancel={!!props.withCancel}
+        withBackButton={props.withBackButton}
+        header={props.text}
+        backButtonCallBack={props.onCancelButtonClick}
+      >
         <Grid item container className={classes.SubHeaderWrapper}>
           <Typography>{props.address ?? validatorStore.processValidatorPublicKey}</Typography>
           <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />

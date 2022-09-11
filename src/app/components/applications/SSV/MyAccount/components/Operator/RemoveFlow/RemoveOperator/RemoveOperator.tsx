@@ -9,10 +9,10 @@ import { useStores } from '~app/hooks/useStores';
 import CheckBox from '~app/components/common/CheckBox';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
@@ -27,7 +27,6 @@ const RemoveOperator = () => {
   const [checkbox, setCheckBox] = useState(false);
   const [leavingReason, setLeavingReason] = useState(0);
   const [userTextReason, setUserTextReason] = useState('');
-  const eventStore: EventStore = stores.Event;
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles({ leavingReason, isLoading: applicationStore.isLoading });
@@ -57,8 +56,12 @@ const RemoveOperator = () => {
     setUserTextReason(userInput);
   };
 
-  const sendAnalytics = (link: string) => {
-    eventStore.send({ category: 'validator_register', action: 'link', label: link });
+  const sendLinkClickedAnalytics = (link: string) => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'validator_register',
+      action: 'link',
+      label: link,
+    });
   };
 
   const outDocumentationLink = 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations';
@@ -69,12 +72,13 @@ const RemoveOperator = () => {
         return (
           <Grid item className={classes.ShareWithUsBulletsPoints}>
             <ul>
-              <li>Visit <LinkText onClick={() => sendAnalytics(outDocumentationLink)} text={'our documentation'}
+              <li>Visit <LinkText onClick={() => sendLinkClickedAnalytics(outDocumentationLink)}
+                text={'our documentation'}
                 link={outDocumentationLink} /> for common node
                 troubleshooting.
               </li>
               <li>Consult with other experiences operators in our <LinkText
-                onClick={() => sendAnalytics('https://discord.gg/AbYHBfjkDY')}
+                onClick={() => sendLinkClickedAnalytics('https://discord.gg/AbYHBfjkDY')}
                 text={'discord developer community'} link={'https://discord.gg/AbYHBfjkDY'} />.
               </li>
             </ul>
@@ -121,12 +125,14 @@ const RemoveOperator = () => {
   };
 
   const submitForm = async () => {
-    const reasons = { 1: 'Technical Issues', 2: 'Low profitability', 3: 'Other' };
-    // @ts-ignore
-    eventStore.send({ category: 'remove_feedback', action: reasons[leavingReason], label: userTextReason });
+    const reasons: any = { 1: 'Technical Issues', 2: 'Low profitability', 3: 'Other' };
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'remove_feedback',
+      action: reasons[leavingReason],
+      label: userTextReason,
+    });
     applicationStore.setIsLoading(true);
-    // @ts-ignore
-    const isRemoved = await operatorStore.removeOperator(operatorStore.processOperatorId);
+    const isRemoved = await operatorStore.removeOperator(Number(operatorStore.processOperatorId));
     applicationStore.setIsLoading(false);
     if (isRemoved) history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS);
   };
@@ -139,7 +145,10 @@ const RemoveOperator = () => {
   return (
     <Grid container item>
       <WhiteWrapper backButtonCallBack={() => {
-        eventStore.send({ category: 'remove', action: 'back', label: '' });
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'remove',
+          action: 'back',
+        });
       }} header={'Remove Operator'}>
         <OperatorId id={id} />
       </WhiteWrapper>

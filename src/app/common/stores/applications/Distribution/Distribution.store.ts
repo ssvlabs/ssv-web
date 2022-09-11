@@ -109,7 +109,7 @@ class DistributionStore extends BaseStore {
                 params: {
                     type: 'ERC20',
                     options: {
-                        address: config.CONTRACTS.SSV_TOKEN.ADDRESS,
+                        address: config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
                         symbol: 'SSV',
                         decimals: 18,
                     },

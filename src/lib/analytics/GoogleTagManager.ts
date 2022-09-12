@@ -32,19 +32,9 @@ class GoogleTagManager {
     if (event.label) {
       eventData.label = event.label;
     }
-    this.push(eventData);
-  }
-
-  /**
-   * Low-level event pushing to window data layer of GTM
-   * @param event
-   * @protected
-   */
-  protected push(event: GTMEvent) {
+    console.debug('Sending event:', eventData);
     // @ts-ignore
-    window.dataLayer = window.dataLayer || {};
-    // @ts-ignore
-    window.dataLayer.push({ ...event });
+    window.dataLayer.push(eventData);
   }
 }
 

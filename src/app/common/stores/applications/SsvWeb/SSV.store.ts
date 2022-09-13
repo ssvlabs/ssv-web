@@ -281,11 +281,6 @@ class SsvStore extends BaseStore {
       walletStore.getContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
         .on('receipt', async () => {
           applicationStore.setIsLoading(false);
-          GoogleTagManager.getInstance().sendEvent({
-            category: 'my_account',
-            action: 'deposit_tx',
-            label: 'success',
-          });
           resolve(true);
         })
         .on('transactionHash', (txHash: string) => {
@@ -293,11 +288,6 @@ class SsvStore extends BaseStore {
         })
         .on('error', () => {
           applicationStore.setIsLoading(false);
-          GoogleTagManager.getInstance().sendEvent({
-            category: 'my_account',
-            action: 'deposit_tx',
-            label: 'error',
-          });
           resolve(false);
         });
     });

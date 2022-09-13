@@ -20,19 +20,9 @@ const Filters = (props: Props) => {
     const filters = [];
     if (verifySelected) {
       filters.push('verified_operator');
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'validator_register',
-        action: 'filter',
-        label: 'verified_operator',
-      });
     }
     if (dappNodeSelected) {
       filters.push('dapp_node');
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'validator_register',
-        action: 'filter',
-        label: 'dapp_node',
-      });
     }
     props.setFilterBy(filters);
   }, [verifySelected, dappNodeSelected]);
@@ -70,14 +60,28 @@ const Filters = (props: Props) => {
             width={24}
             height={24}
             isChecked={verifySelected}
-            onClickCallBack={() => selectVerify(!verifySelected)}
+            onClickCallBack={() => {
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'validator_register',
+                action: 'filter',
+                label: 'verified_operator',
+              });
+              selectVerify(!verifySelected);
+            }}
             text={<Grid item className={classes.Text}>Verified</Grid>}
           />
           <CheckBox
             width={24}
             height={24}
             isChecked={dappNodeSelected}
-            onClickCallBack={() => selectDappNode(!dappNodeSelected)}
+            onClickCallBack={() => {
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'validator_register',
+                action: 'filter',
+                label: 'dapp_node',
+              });
+              selectDappNode(!dappNodeSelected);
+            }}
             text={<Grid item className={classes.Text}>DappNode</Grid>}
           />
           {/* <Grid item className={`${classes.Checkbox} ${verifySelected ? classes.Checked : ''}`} /> */}

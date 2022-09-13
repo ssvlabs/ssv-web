@@ -32,7 +32,7 @@ class GoogleTagManager {
     if (event.label) {
       eventData.label = event.label;
     }
-    console.debug('Sending event:', eventData);
+    console.debug('[GTM] Sending event:', eventData);
     // @ts-ignore
     window.dataLayer.push(eventData);
   }

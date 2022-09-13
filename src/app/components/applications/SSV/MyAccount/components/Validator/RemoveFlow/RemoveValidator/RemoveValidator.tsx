@@ -45,7 +45,9 @@ const RemoveValidator = () => {
   const removeValidator = async () => {
     if (validatorStore.processValidatorPublicKey) {
       const response = await validatorStore.removeValidator(validatorStore.processValidatorPublicKey);
-      if (response) history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
+      if (response) {
+        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
+      }
     }
   };
 

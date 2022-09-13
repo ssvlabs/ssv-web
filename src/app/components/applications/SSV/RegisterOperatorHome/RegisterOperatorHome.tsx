@@ -3,8 +3,9 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import config from '~app/common/config';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/RegisterOperatorHome/RegisterOperatorHome.styles';
 
@@ -22,7 +23,14 @@ const RegisterOperatorHome = () => {
           <Grid container item justify={'space-evenly'}>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Run SSV Node'} submitFunction={() => { window.open('https://docs.ssv.network/run-a-node/operator-node/installation'); }} />
+                <SecondaryButton text={'Run SSV Node'} submitFunction={() => {
+                  GoogleTagManager.getInstance().sendEvent({
+                    category: 'external_link',
+                    action: 'click',
+                    label: 'Run SSV Node',
+                  });
+                  window.open('https://docs.ssv.network/run-a-node/operator-node/installation');
+                }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
                 See our developer documentation
@@ -30,7 +38,9 @@ const RegisterOperatorHome = () => {
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Register Operator'} submitFunction={() => { history.push(config.routes.SSV.OPERATOR.GENERATE_KEYS); }} />
+                <SecondaryButton text={'Register Operator'} submitFunction={() => {
+                  history.push(config.routes.SSV.OPERATOR.GENERATE_KEYS);
+                }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
                 Sign up as one of the network operators

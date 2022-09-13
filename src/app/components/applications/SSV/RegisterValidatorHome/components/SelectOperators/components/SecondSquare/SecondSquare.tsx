@@ -6,6 +6,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -60,6 +61,11 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   };
 
   const linkToNotVerified = () => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'external_link',
+      action: 'click',
+      label: 'not verified',
+    });
     window.open('https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH');
   };
 
@@ -120,9 +126,12 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
           {!allSelectedOperatorsVerified && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>
-                You have selected one or more operators that are <Typography className={classes.NotVerifiedText}
-                  onClick={linkToNotVerified}>not
-                  verified.</Typography>
+                You have selected one or more operators that are
+                <Typography
+                  className={classes.NotVerifiedText}
+                  onClick={linkToNotVerified}>
+                  not verified.
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to

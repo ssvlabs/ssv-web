@@ -14,6 +14,7 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -92,7 +93,12 @@ const SingleOperator = () => {
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 
-  const openExplorer = (key: string) => {
+  const openExplorer = (key: string, linkType: string) => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'explorer_link',
+      action: 'click',
+      label: linkType,
+    });
     window.open(`${config.links.LINK_EXPLORER}/${key}`, '_blank');
   };
 
@@ -101,6 +107,11 @@ const SingleOperator = () => {
   };
 
   const openBeaconcha = (publicKey: string) => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'external_link',
+      action: 'click',
+      label: 'Open Beaconcha',
+    });
     window.open(`${beaconchaBaseUrl}/validator/${publicKey}`, '_blank');
   };
 
@@ -169,7 +180,7 @@ const SingleOperator = () => {
           extra_buttons: <Grid item container className={classes.ExtraButtonWrapper}>
             <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={20}
               height={20} />
-            <ImageDiv onClick={() => openExplorer(`validators/${validator.public_key}`)} image={'explorer'}
+            <ImageDiv onClick={() => openExplorer(`validators/${validator.public_key}`, 'validator')} image={'explorer'}
               width={20} height={20} />
             <ImageDiv onClick={() => openBeaconcha(`0x${validator.public_key}`)} image={'beacon'} width={20}
               height={20} />

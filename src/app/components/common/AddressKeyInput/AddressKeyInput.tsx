@@ -2,10 +2,11 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import { getBaseBeaconchaUrl, getEtherScanUrl } from '~lib/utils/beaconcha';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './AddressKeyInput.styles';
-import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 
 type ValidatorPrivateKeyInputProps = {
     address: string,
@@ -29,10 +30,20 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
     };
 
     const openBeaconcha = () => {
+        GoogleTagManager.getInstance().sendEvent({
+            category: 'external_link',
+            action: 'click',
+            label: 'Open Beaconcha',
+        });
         window.open(`${beaconchaBaseUrl}/validator/${address}`);
     };
 
     const openEtherScan = () => {
+        GoogleTagManager.getInstance().sendEvent({
+            category: 'external_link',
+            action: 'click',
+            label: 'Open Etherscan',
+        });
         window.open(`${etherScan}/address/${address}`);
     };
 
@@ -41,7 +52,7 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
         container
         className={`${classes.Wrapper} ${whiteBackgroundColor ? classes.WhiteBackGround : ''}`}
         data-testid="validator-private-key-slashing-input"
-        >
+      >
         <Grid item xs className={classes.PublicKey}>{address}</Grid>
         {withCopy && <ImageDiv image={'copy'} width={24} height={24} onClick={copyToClipboard} />}
         {withEtherScan && <Grid item className={classes.EtherScanImage} onClick={openEtherScan} />}

@@ -114,6 +114,11 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   };
 
   const redirectTo = (pubKey: string) => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'explorer_link',
+      action: 'click',
+      label: 'operator',
+    });
     window.open(`${config.links.LINK_EXPLORER}/operators/${pubKey}`, '_blank');
   };
 

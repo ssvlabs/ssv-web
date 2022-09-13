@@ -60,9 +60,8 @@ const ProductQuestions = () => {
 
   const backToMyAccount = () => {
     GoogleTagManager.getInstance().sendEvent({
-      category: 'navigate',
+      category: 'remove',
       action: 'my_account',
-      label: '',
     });
     history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };

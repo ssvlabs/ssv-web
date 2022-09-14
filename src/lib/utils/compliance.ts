@@ -1,11 +1,11 @@
-import config from '~app/common/config';
 import axios from 'axios';
+import config from '~app/common/config';
 
 let restrictedCountries: any = null;
 /**
  * Get the list of restricted countries from blox.
  */
-const getRestrictedCountriesList = async () => {
+const getRestrictedLocations = async () => {
   try {
     if (restrictedCountries) {
       return restrictedCountries;
@@ -24,47 +24,58 @@ const getRestrictedCountriesList = async () => {
 /**
  * Fetches current user country using third party services until this country is fetched.
  */
-const getCurrentUserCountry = async (): Promise<string | null> => {
-  const fetchCountry = async (requestUri: string, getCountryCallback: any) => {
-    return axios.get(requestUri, { timeout: 2000 }).then(getCountryCallback);
+const getCurrentLocation = async (): Promise<string[]> => {
+  const fetchLocation = async (requestUri: string, getCountryCallback: any) => {
+    return getCountryCallback(await axios.get(requestUri, { timeout: 2000 }));
   };
 
   const countryGetters = [
     {
-      url: 'https://geolocation-db.com/json/',
-      callback: (response: any) => {
-        return response.data.country_name;
+      url: 'http://ip-api.com/json',
+      callback: ({ data }: { data: any }): string[] => {
+        return [data.country, data.regionName];
+      },
+    },
+    {
+      url: 'http://geolocation-db.com/json/',
+      callback: ({ data }: { data: any }): string[] => {
+        return [data.country_name, data.city];
       },
     },
   ];
 
-  let detectedCountry = null;
   for (let i = 0; i < countryGetters.length; i += 1) {
     const countryGetter = countryGetters[i];
     try {
       // eslint-disable-next-line no-await-in-loop
-      const currentCountry = await fetchCountry(
+      const currentLocation = await fetchLocation(
         countryGetter.url,
         countryGetter.callback,
       );
-      if (currentCountry) {
-        detectedCountry = currentCountry;
-        break;
+      if (currentLocation) {
+        return currentLocation;
       }
     } catch (error) {
-      //
+      console.error('Detecting location failed using:', countryGetter.url);
     }
   }
-  // @ts-ignore
-  return detectedCountry;
+  return [];
 };
 
 /**
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
-  const userCountry = await getCurrentUserCountry();
-  const countries = await getRestrictedCountriesList();
-  const restricted = countries.indexOf(userCountry) !== -1 && process.env.NODE_ENV !== 'development';
-  return { restricted, userGeo: userCountry };
+  const userLocation = await getCurrentLocation();
+  const restrictedLocations = await getRestrictedLocations();
+  // eslint-disable-next-line no-restricted-syntax
+  for (const location of userLocation) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const restrictedLocation of restrictedLocations) {
+      if (restrictedLocation.indexOf(location) !== -1) {
+        return { restricted: true, userGeo: userLocation[0] || '' };
+      }
+    }
+  }
+  return { restricted: false, userGeo: userLocation[0] || '' };
 };

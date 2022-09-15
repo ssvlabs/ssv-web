@@ -67,7 +67,7 @@ const getCurrentLocation = async (): Promise<string[]> => {
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
   const userLocation = await getCurrentLocation();
-  if (config.DEBUG) {
+  if (config.DEBUG || window.location.host.indexOf('stage.') !== -1) {
     return { restricted: false, userGeo: userLocation[0] || '' };
   }
   const restrictedLocations = await getRestrictedLocations();

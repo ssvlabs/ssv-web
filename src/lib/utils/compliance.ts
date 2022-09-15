@@ -31,7 +31,7 @@ const getCurrentLocation = async (): Promise<string[]> => {
 
   const countryGetters = [
     {
-      url: 'https://ip-api.com/json',
+      url: 'http://ip-api.com/json',
       callback: ({ data }: { data: any }): string[] => {
         return [data.country, data.regionName];
       },

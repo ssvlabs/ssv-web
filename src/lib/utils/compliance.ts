@@ -31,13 +31,13 @@ const getCurrentLocation = async (): Promise<string[]> => {
 
   const countryGetters = [
     {
-      url: 'http://ip-api.com/json',
+      url: 'https://ip-api.com/json',
       callback: ({ data }: { data: any }): string[] => {
         return [data.country, data.regionName];
       },
     },
     {
-      url: 'http://geolocation-db.com/json/',
+      url: 'https://geolocation-db.com/json/',
       callback: ({ data }: { data: any }): string[] => {
         return [data.country_name, data.city];
       },

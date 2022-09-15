@@ -72,7 +72,7 @@ export const checkUserCountryRestriction = async (): Promise<any> => {
   for (const location of userLocation) {
     // eslint-disable-next-line no-restricted-syntax
     for (const restrictedLocation of restrictedLocations) {
-      if (restrictedLocation.indexOf(location) !== -1) {
+      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1) {
         return { restricted: true, userGeo: userLocation[0] || '' };
       }
     }

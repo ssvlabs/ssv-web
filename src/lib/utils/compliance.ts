@@ -67,6 +67,9 @@ const getCurrentLocation = async (): Promise<string[]> => {
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
   const userLocation = await getCurrentLocation();
+  if (config.DEBUG) {
+    return { restricted: false, userGeo: userLocation[0] || '' };
+  }
   const restrictedLocations = await getRestrictedLocations();
   // eslint-disable-next-line no-restricted-syntax
   for (const location of userLocation) {

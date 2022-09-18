@@ -103,7 +103,6 @@ const SingleValidator = () => {
 
         const {
           status,
-          address,
           performance,
         } = operator;
 
@@ -129,7 +128,7 @@ const SingleValidator = () => {
                 action: 'click',
                 label: 'operator',
               });
-              window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
+              window.open(`${config.links.LINK_EXPLORER}/operators/${operator.id}`);
             }} />
           </Grid>,
         };

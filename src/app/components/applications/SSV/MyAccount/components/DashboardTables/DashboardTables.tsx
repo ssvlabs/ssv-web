@@ -222,7 +222,7 @@ const DashboardTables = () => {
 
   // return validator operators mapped with additional fields fee and performance
   const operatorsData = myAccountStore?.ownerAddressOperators?.map((operator: any) => {
-    const { id, name, address, status, /* revenue, */ validators_count } = operator;
+    const { id, name, status, /* revenue, */ validators_count } = operator;
 
     return {
       public_key: <Grid container item>
@@ -257,10 +257,10 @@ const DashboardTables = () => {
             action: 'click',
             label: 'operator',
           });
-          window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
+          window.open(`${config.links.LINK_EXPLORER}/operators/${id}`);
         }} />
         <Grid className={classes.SettingsImage} onClick={() => {
-          openSingleOperator(operator.id);
+          openSingleOperator(id);
         }} />
       </Grid>,
     };

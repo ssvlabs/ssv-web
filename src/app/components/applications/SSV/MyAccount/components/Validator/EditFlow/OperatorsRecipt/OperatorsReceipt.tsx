@@ -20,6 +20,7 @@ import RemainingDays from '~app/components/applications/SSV/MyAccount/common/com
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
+import LinkText from '~app/components/common/LinkText/LinkText';
 
 type Props = {
   operators: any,
@@ -106,7 +107,18 @@ const OperatorsReceipt = (props: Props) => {
             <Typography className={classes.NetworkYearlyFee} style={{ marginRight: 8 }} component={'span'}>Network yearly
               fees</Typography>
             <Tooltip
-              text={'Fees charged for using the network. Fees are determined by the DAO and are used for network growth and expansion. Read more on fees'} />
+              text={(
+                <>
+                  Fees charged for using the network.
+                  Fees are determined by the DAO and are used for network growth
+                  and expansion.&nbsp;
+                  <LinkText
+                    text={'Read more'}
+                    link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees'}
+                  /> on fees.
+                </>
+              )}
+            />
           </Grid>
           <Grid item>
             <Typography className={classes.NetworkYearlyFee}>{formatNumberToUi(networkFee)} SSV</Typography>

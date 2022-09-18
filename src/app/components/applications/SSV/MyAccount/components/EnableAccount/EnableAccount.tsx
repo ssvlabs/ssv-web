@@ -1,4 +1,3 @@
-import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -38,17 +37,17 @@ const EnableAccount = () => {
   const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
 
   const summaryFields = [
-    { name: 'Operators yearly fee', value: formatNumberToUi(new Decimal(allOperatorsFee).toFixed(2).toString()) },
+    { name: 'Operators yearly fee', value: formatNumberToUi(allOperatorsFee) },
     {
       name: 'Network yearly fee',
-      value: formatNumberToUi(new Decimal(networkYearlyFees).toFixed(2).toString()),
+      value: formatNumberToUi(networkYearlyFees),
       toolTipText: <>Fees charged for using the network. Fees are determined by the DAO and are used for network growth
         and expansion. <LinkText text={'Read more on fees'}
           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#network-fees'} /></>,
     },
     {
       name: 'Liquidation collateral',
-      value: formatNumberToUi(new Decimal(liquidationCollateral).toFixed(2).toString()),
+      value: formatNumberToUi(liquidationCollateral),
       toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account
         insolvency. <LinkText text={'Read more on liquidations'}
           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></>,
@@ -95,7 +94,8 @@ const EnableAccount = () => {
                   balance required for reactivation.
                 </Grid>
                 <Grid item>
-                  <LinkText text={'Read more on account reactivation'} link={'www.bla.com'} />
+                  <LinkText text={'Read more on account reactivation'}
+                    link={'https://docs.ssv.network/learn/accounts/reactivation'} />
                 </Grid>
               </Grid>
               <Grid item container>

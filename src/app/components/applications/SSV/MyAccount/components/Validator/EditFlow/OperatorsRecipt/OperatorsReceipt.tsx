@@ -12,7 +12,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { addNumber, formatNumberToUi, toFixed } from '~lib/utils/numbers';
+import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -120,7 +120,7 @@ const OperatorsReceipt = (props: Props) => {
       </Grid>
       <Grid item>
         <SsvAndSubTitle bold gray80={currentOperators}
-          ssv={formatNumberToUi(toFixed(addNumber(networkFee, operatorsYearlyFee)))} />
+          ssv={formatNumberToUi(addNumber(networkFee, operatorsYearlyFee).toFixed())} />
       </Grid>
     </Grid>,
     <Grid container item>

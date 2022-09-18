@@ -34,21 +34,21 @@ const EnableAccount = () => {
   const liquidationCollateral = multiplyNumber(
     addNumber(ssvStore.networkFee * validators.length, ownerAddressCost),
     ssvStore.liquidationCollateral,
-  );
+  ).toFixed().toString();
   const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
 
   const summaryFields = [
     { name: 'Operators yearly fee', value: formatNumberToUi(new Decimal(allOperatorsFee).toFixed(2).toString()) },
     {
       name: 'Network yearly fee',
-      value: formatNumberToUi(networkYearlyFees),
+      value: formatNumberToUi(new Decimal(networkYearlyFees).toFixed(2).toString()),
       toolTipText: <>Fees charged for using the network. Fees are determined by the DAO and are used for network growth
         and expansion. <LinkText text={'Read more on fees'}
           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#network-fees'} /></>,
     },
     {
       name: 'Liquidation collateral',
-      value: formatNumberToUi(liquidationCollateral.toString()),
+      value: formatNumberToUi(new Decimal(liquidationCollateral).toFixed(2).toString()),
       toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account
         insolvency. <LinkText text={'Read more on liquidations'}
           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></>,
@@ -67,7 +67,7 @@ const EnableAccount = () => {
   }, []);
 
   const enableAccount = async () => {
-    const response = await ssvStore.activateValidator(totalFee);
+    const response = await ssvStore.activateValidator(totalFee.toFixed());
     if (response) history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };
 
@@ -148,7 +148,7 @@ const EnableAccount = () => {
               <NameAndAddress name={'Total'} />
             </Grid>
             <Grid item className={classes.AlignRight}>
-              <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} />
+              <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee.toFixed())} />
             </Grid>
             <Grid item xs={12}>
               <Button text={'Enable Account'} disable={validators.length === 0} onClick={enableAccount} withAllowance />

@@ -345,7 +345,13 @@ class ValidatorStore extends BaseStore {
     if (process.env.REACT_APP_NEW_STAGE) {
       const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
       const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
-      const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
+      const liquidationCollateral = multiplyNumber(
+        addNumber(
+          ssvStore.networkFee,
+          operatorStore.getSelectedOperatorsFee,
+        ),
+        ssvStore.liquidationCollateral,
+      ).toFixed().toString();
       if (new Decimal(liquidationCollateral).isZero()) {
         totalAmountOfSsv = networkFeeForYear;
       } else {

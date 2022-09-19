@@ -7,10 +7,10 @@ import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import { addNumber, multiplyNumber } from '~lib/utils/numbers';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -222,7 +222,6 @@ class ValidatorStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const payload: any = await this.createPayLoad();
-      const eventStore: EventStore = this.getStore('Event');
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -270,7 +269,11 @@ class ValidatorStore extends BaseStore {
             if (event) {
               this.keyStoreFile = null;
               this.newValidatorReceipt = payload[1];
-              eventStore.send({ category: 'validator_register', action: 'register_tx', label: 'sent' });
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'validator_register',
+                action: 'register_tx',
+                label: 'success',
+              });
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
@@ -301,7 +304,7 @@ class ValidatorStore extends BaseStore {
           .on('error', (error: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const isRejected: boolean = error.hasOwnProperty('code');
-            eventStore.send({
+            GoogleTagManager.getInstance().sendEvent({
               category: 'validator_register',
               action: 'register_tx',
               label: isRejected ? 'rejected' : 'error',
@@ -314,6 +317,11 @@ class ValidatorStore extends BaseStore {
             applicationStore.setIsLoading(false);
             if (error) {
               notificationsStore.showMessage(error.message, 'error');
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'validator_register',
+                action: 'register_tx',
+                label: 'error',
+              });
               resolve(false);
             }
             console.debug('Contract Error', error);
@@ -337,7 +345,13 @@ class ValidatorStore extends BaseStore {
     if (process.env.REACT_APP_NEW_STAGE) {
       const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
       const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
-      const liquidationCollateral = multiplyNumber(addNumber(ssvStore.networkFee, operatorStore.getSelectedOperatorsFee), ssvStore.liquidationCollateral);
+      const liquidationCollateral = multiplyNumber(
+        addNumber(
+          ssvStore.networkFee,
+          operatorStore.getSelectedOperatorsFee,
+        ),
+        ssvStore.liquidationCollateral,
+      ).toFixed().toString();
       if (new Decimal(liquidationCollateral).isZero()) {
         totalAmountOfSsv = networkFeeForYear;
       } else {

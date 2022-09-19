@@ -9,13 +9,13 @@
       w[l] = w[l] || [];
       w[l].push({
         'gtm.start':
-                new Date().getTime(), event: 'gtm.js'
+          new Date().getTime(), event: 'gtm.js'
       });
       var f = d.getElementsByTagName(s)[0],
-              j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+        j = d.createElement(s), dl = l !== 'dataLayer' ? '&l=' + l : '';
       j.async = true;
       j.src =
-              "%REACT_APP_GOOGLE_TAG_URL%" + i + dl;
+        "%REACT_APP_GOOGLE_TAG_URL%" + i + dl;
       f.parentNode.insertBefore(j, f);
     })(window, document, 'script', 'dataLayer', "%REACT_APP_GOOGLE_TAG_SECRET%");
   </script>
@@ -26,7 +26,6 @@
   <meta http-equiv="Pragma" content="no-cache">
 
 
-
   <meta charset="utf-8"/>
   <title>SSV Network</title>
   <meta
@@ -34,9 +33,10 @@
     name="viewport"
   />
 
-<!--  <link rel="preconnect" href="https://fonts.googleapis.com">-->
-<!--  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!--  <link rel="preconnect" href="https://fonts.googleapis.com">-->
+  <!--  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <link href="%PUBLIC_URL%/favicon.ico" rel="icon"/>
@@ -51,12 +51,13 @@
                         https://api.stage.bloxstaking.com/
                         https://api.bloxstaking.com/
                         http://localhost:3000
-                        https://geolocation-db.com/json/
+                        http://geolocation-db.com
+                        https://geolocation-db.com
                         https://newassets.hcaptcha.com/
-                        https://extreme-ip-lookup.com
                         https://api.ssv.network/
                         https://api.stage.ssv.network/
                         http://ip-api.com
+                        https://ip-api.com
                         https://explorer.stage.ssv.network/
                         http://localhost:8000
                         https://rest.coinapi.io
@@ -95,7 +96,7 @@
 </head>
 <body style="padding: 0; margin: 0">
 <noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="root" />
+<div id="root"></div>
 <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
 <noscript>
   <iframe height="0"

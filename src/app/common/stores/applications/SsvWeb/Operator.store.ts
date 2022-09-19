@@ -7,9 +7,9 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
@@ -596,7 +596,6 @@ class OperatorStore extends BaseStore {
   @action.bound
   // eslint-disable-next-line no-unused-vars
   async addNewOperator(getGasEstimation: boolean = false) {
-    const eventStore: EventStore = this.getStore('Event');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -647,7 +646,11 @@ class OperatorStore extends BaseStore {
               const events: boolean = receipt.hasOwnProperty('events');
               if (events) {
                 console.debug('Contract Receipt', receipt);
-                eventStore.send({ category: 'operator_register', action: 'register_tx', label: 'sent' });
+                GoogleTagManager.getInstance().sendEvent({
+                  category: 'operator_register',
+                  action: 'register_tx',
+                  label: 'success',
+                });
                 this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                 let iterations = 0;
@@ -679,7 +682,7 @@ class OperatorStore extends BaseStore {
             .on('error', (error: any) => {
               // eslint-disable-next-line no-prototype-builtins
               const isRejected: boolean = error.hasOwnProperty('code');
-              eventStore.send({
+              GoogleTagManager.getInstance().sendEvent({
                 category: 'operator_register',
                 action: 'register_tx',
                 label: isRejected ? 'rejected' : 'error',
@@ -688,6 +691,21 @@ class OperatorStore extends BaseStore {
               applicationStore.showTransactionPendingPopUp(false);
               notificationsStore.showMessage(error.message, 'error');
               resolve(false);
+            })
+            .catch((error: any) => {
+              applicationStore.setIsLoading(false);
+              applicationStore.showTransactionPendingPopUp(false);
+              if (error) {
+                notificationsStore.showMessage(error.message, 'error');
+                GoogleTagManager.getInstance().sendEvent({
+                  category: 'operator_register',
+                  action: 'register_tx',
+                  label: 'error',
+                });
+                resolve(false);
+              }
+              console.debug('Contract Error', error);
+              resolve(true);
             });
         }
       } catch (e) {

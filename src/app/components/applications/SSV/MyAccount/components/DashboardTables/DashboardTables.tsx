@@ -11,6 +11,7 @@ import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import { ReactTable } from '~app/components/common/ReactTable';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -197,9 +198,19 @@ const DashboardTables = () => {
       </Grid>,
       extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
         <Grid className={classes.BeaconImage} onClick={() => {
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'external_link',
+            action: 'click',
+            label: 'Open Beaconcha',
+          });
           window.open(`${getBaseBeaconchaUrl()}/validator/${public_key}`);
         }} />
         <Grid className={classes.ExplorerImage} onClick={() => {
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'explorer_link',
+            action: 'click',
+            label: 'validator',
+          });
           window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`);
         }} />
         <Grid className={classes.SettingsImage} onClick={() => {
@@ -211,7 +222,7 @@ const DashboardTables = () => {
 
   // return validator operators mapped with additional fields fee and performance
   const operatorsData = myAccountStore?.ownerAddressOperators?.map((operator: any) => {
-    const { id, name, address, status, /* revenue, */ validators_count } = operator;
+    const { id, name, status, /* revenue, */ validators_count } = operator;
 
     return {
       public_key: <Grid container item>
@@ -231,15 +242,25 @@ const DashboardTables = () => {
       //     <Grid item>~$757.5</Grid>
       //   </Grid>
       //   <Grid className={classes.ExplorerImage} onClick={() => {
-      //         window.open(`${config.links.LINK_EXPLORER}/operators/${public_key}`);
+      //          GoogleTagManager.getInstance().sendEvent({
+      //            category: 'explorer_link',
+      //            action: 'click',
+      //            label: 'operator',
+      //          });
+      //          window.open(`${config.links.LINK_EXPLORER}/operators/${public_key}`);
       //     }} />
       // </Grid>,
       extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
         <Grid className={classes.ExplorerImage} onClick={() => {
-          window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'explorer_link',
+            action: 'click',
+            label: 'operator',
+          });
+          window.open(`${config.links.LINK_EXPLORER}/operators/${id}`);
         }} />
         <Grid className={classes.SettingsImage} onClick={() => {
-          openSingleOperator(operator.id);
+          openSingleOperator(id);
         }} />
       </Grid>,
     };

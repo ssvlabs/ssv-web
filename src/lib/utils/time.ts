@@ -21,7 +21,7 @@ export const timeDiffCalc = (dateFuture: any, dateNow: any) => {
     } else if (minutes >= 1) {
         difference += minutes === 1 ? `${minutes} minute ` : `${minutes} minutes`;
     } else {
-        difference += 'less then a minute';
+        difference += 'less than a minute';
     }
     return difference;
 };

@@ -1,10 +1,10 @@
 import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
-import config from '~app/common/config';
 
 /**
  * Base store provides singe source of true
@@ -25,6 +25,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable transactionPendingPopUp: boolean = false;
   @observable appTitle: string = 'SSV Network Testnet Distribution';
   @observable strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();
@@ -39,7 +40,7 @@ class ApplicationStore extends BaseStore implements Application {
       this.switchDarkMode(false);
     }
   }
-  
+
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;

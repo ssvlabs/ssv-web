@@ -27,6 +27,7 @@ import {
 } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator/SingleValidator.styles';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 
 const SingleValidator = () => {
   const stores = useStores();
@@ -70,6 +71,11 @@ const SingleValidator = () => {
   ];
 
   const openBeaconcha = () => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'external_link',
+      action: 'click',
+      label: 'Open Beaconcha',
+    });
     window.open(`${getBaseBeaconchaUrl()}/validator/${validatorPublicKey}`, '_blank');
   };
 
@@ -79,6 +85,11 @@ const SingleValidator = () => {
   };
 
   const openExplorer = () => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'explorer_link',
+      action: 'click',
+      label: 'validator',
+    });
     window.open(`${config.links.LINK_EXPLORER}/validators/${validatorPublicKey.replace('0x', '')}`, '_blank');
   };
 
@@ -92,7 +103,6 @@ const SingleValidator = () => {
 
         const {
           status,
-          address,
           performance,
         } = operator;
 
@@ -113,7 +123,12 @@ const SingleValidator = () => {
             {/*  <Grid item>~$757.5</Grid> */}
             {/* </Grid> */}
             <Grid item className={classes.ExplorerImage} onClick={() => {
-              window.open(`${config.links.LINK_EXPLORER}/operators/${address}`);
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'explorer_link',
+                action: 'click',
+                label: 'operator',
+              });
+              window.open(`${config.links.LINK_EXPLORER}/operators/${operator.id}`);
             }} />
           </Grid>,
         };

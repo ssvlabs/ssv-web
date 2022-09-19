@@ -5,9 +5,9 @@ import { Link, Typography } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import EventStore from '~app/common/stores/applications/SsvWeb/Event.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import {
   useStyles,
@@ -16,11 +16,14 @@ import {
 const DepositViaLaunchpad = () => {
   const stores = useStores();
   const classes = useStyles();
-  const eventStore: EventStore = stores.Event;
   const validatorStore: ValidatorStore = stores.Validator;
 
   const redirectToLaunchpad = async () => {
-    eventStore.send({ category: 'validator_register', action: 'link', label: config.links.LAUNCHPAD_LINK });
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'external_link',
+      action: 'click',
+      label: 'Visit Ethereum Launchpad',
+    });
     window.open(config.links.LAUNCHPAD_LINK);
   };
 
@@ -39,7 +42,17 @@ const DepositViaLaunchpad = () => {
           </Grid>
           <Grid item className={classes.Text} xs={12}>
             You can keep track on the status of your validator activation on:
-            <Link href={`${getBaseBeaconchaUrl()}/validator/${validatorStore.keyStorePublicKey}`} target="_blank">
+            <Link
+              href={`${getBaseBeaconchaUrl()}/validator/${validatorStore.keyStorePublicKey}`}
+              target="_blank"
+              onClick={() => {
+                GoogleTagManager.getInstance().sendEvent({
+                  category: 'external_link',
+                  action: 'click',
+                  label: 'Open Beaconcha',
+                });
+              }}
+            >
               <Typography noWrap>
                 {`${getBaseBeaconchaUrl()}/validator/${validatorStore.keyStorePublicKey}`}
               </Typography>

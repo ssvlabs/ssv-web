@@ -34,7 +34,7 @@ const BackNavigationImage = styled.div<Record<string, any>>`
 
 type BackNavigationProps = {
   color?: string
-  onClick?: () => void,
+  onClick?: () => void | null | undefined,
   backButtonRedirect?: string,
 };
 
@@ -45,16 +45,21 @@ const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationPr
   const usedColor = color || defaultColor;
   const applicationStore: ApplicationStore = stores.Application;
 
-  const onNavigationClicked = () => {
-    if (applicationStore.isLoading) return;
-    if (backButtonRedirect) {
-      history.push(backButtonRedirect);
-    } else {
-      history.goBack(); 
-    }
+  const onNavigationClicked = async () => {
+    let clickHandler = () => {
+    };
     if (typeof onClick === 'function') {
-      onClick();
+      clickHandler = onClick;
     }
+    await clickHandler();
+    setTimeout(() => {
+      if (applicationStore.isLoading) return;
+      if (backButtonRedirect) {
+        history.push(backButtonRedirect);
+      } else {
+        history.goBack();
+      }
+    }, 100);
   };
 
   return (

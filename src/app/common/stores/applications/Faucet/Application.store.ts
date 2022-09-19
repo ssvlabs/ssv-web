@@ -25,6 +25,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable transactionPendingPopUp: boolean = false;
   @observable appTitle: string = 'SSV Network Testnet Faucet';
   @observable strategyRedirect: string = config.routes.FAUCET.ROOT;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();
@@ -39,7 +40,7 @@ class ApplicationStore extends BaseStore implements Application {
       this.switchDarkMode(false);
     }
   }
-  
+
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;

@@ -1,4 +1,3 @@
-import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -9,6 +8,7 @@ import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import ToolTip from '~app/components/common/ToolTip';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import NameAndAddress from '~app/components/common/NameAndAddress';
@@ -33,11 +33,11 @@ const EnableAccount = () => {
   const liquidationCollateral = multiplyNumber(
     addNumber(ssvStore.networkFee * validators.length, ownerAddressCost),
     ssvStore.liquidationCollateral,
-  );
+  ).toFixed().toString();
   const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
 
   const summaryFields = [
-    { name: 'Operators yearly fee', value: formatNumberToUi(new Decimal(allOperatorsFee).toFixed(2).toString()) },
+    { name: 'Operators yearly fee', value: formatNumberToUi(allOperatorsFee) },
     {
       name: 'Network yearly fee',
       value: formatNumberToUi(networkYearlyFees),
@@ -47,7 +47,7 @@ const EnableAccount = () => {
     },
     {
       name: 'Liquidation collateral',
-      value: formatNumberToUi(liquidationCollateral.toString()),
+      value: formatNumberToUi(liquidationCollateral),
       toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account
         insolvency. <LinkText text={'Read more on liquidations'}
           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></>,
@@ -66,7 +66,7 @@ const EnableAccount = () => {
   }, []);
 
   const enableAccount = async () => {
-    const response = await ssvStore.activateValidator(totalFee);
+    const response = await ssvStore.activateValidator(totalFee.toFixed());
     if (response) history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };
 
@@ -75,6 +75,12 @@ const EnableAccount = () => {
       <BorderScreen
         header={'Enable Account'}
         sectionClass={classes.Section}
+        onBackButtonClick={() => {
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'my_account',
+            action: 'deposit_back',
+          });
+        }}
         body={[
           (
             <Grid container>
@@ -88,7 +94,8 @@ const EnableAccount = () => {
                   balance required for reactivation.
                 </Grid>
                 <Grid item>
-                  <LinkText text={'Read more on account reactivation'} link={'www.bla.com'} />
+                  <LinkText text={'Read more on account reactivation'}
+                    link={'https://docs.ssv.network/learn/accounts/reactivation'} />
                 </Grid>
               </Grid>
               <Grid item container>
@@ -141,7 +148,7 @@ const EnableAccount = () => {
               <NameAndAddress name={'Total'} />
             </Grid>
             <Grid item className={classes.AlignRight}>
-              <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee)} />
+              <SsvAndSubTitle bold ssv={formatNumberToUi(totalFee.toFixed())} />
             </Grid>
             <Grid item xs={12}>
               <Button text={'Enable Account'} disable={validators.length === 0} onClick={enableAccount} withAllowance />

@@ -13,32 +13,36 @@ import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 class WalletStore extends BaseStore implements Wallet {
-    @observable web3: any = null;
-    @observable wallet: any = null;
-    @observable ssvBalance: any = 0;
-    @observable notifySdk: any = null;
-    @observable onboardSdk: any = null;
-    @observable accountAddress: string = '';
-    @observable wrongNetwork: boolean = false;
-    @observable networkId: number | null = null;
-    @observable accountDataLoaded: boolean = false;
+  @observable web3: any = null;
+  @observable wallet: any = null;
+  @observable ssvBalance: any = 0;
+  @observable notifySdk: any = null;
+  @observable onboardSdk: any = null;
+  @observable accountAddress: string = '';
+  @observable wrongNetwork: boolean = false;
+  @observable networkId: number | null = null;
+  @observable accountDataLoaded: boolean = false;
 
-    private contract: Contract | undefined;
-    private faucetStore: FaucetStore = this.getStore('Faucet');
-    private notificationsStore: NotificationsStore = this.getStore('Notifications');
+  private contract: Contract | undefined;
+  private faucetStore: FaucetStore = this.getStore('Faucet');
+  private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
-    constructor() {
-        super();
-        this.initWalletHooks();
-    }
+  constructor() {
+    super();
+    this.initWalletHooks();
+  }
 
-    /**
+  BN(s: any) {
+    return new this.web3.utils.BN(s);
+  }
+
+  /**
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
   @action.bound
   initWalletHooks() {
-        this.faucetStore;
+    this.faucetStore;
     if (this.onboardSdk) return;
     const connectionConfig = {
       dappId: config.ONBOARD.API_KEY,
@@ -68,30 +72,30 @@ class WalletStore extends BaseStore implements Wallet {
    */
   @action.bound
   async initializeUserInfo() {
-      try {
-          const applicationStore: Application = this.getStore('Application');
-          const faucetStore: FaucetStore = this.getStore('Faucet');
-          const faucetUrl = `${process.env.REACT_APP_OPERATORS_ENDPOINT}/faucet/config`;
-          const response = (await axios.get(faucetUrl)).data;
-          faucetStore.amountToTransfer = response[0].amount_to_transfer;
-          // eslint-disable-next-line no-constant-condition
-          applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
-      } catch {
-          console.log('[ERROR]: fail to fetch faucet config');
-      }
+    try {
+      const applicationStore: Application = this.getStore('Application');
+      const faucetStore: FaucetStore = this.getStore('Faucet');
+      const faucetUrl = `${process.env.REACT_APP_OPERATORS_ENDPOINT}/faucet/config`;
+      const response = (await axios.get(faucetUrl)).data;
+      faucetStore.amountToTransfer = response[0].amount_to_transfer;
+      // eslint-disable-next-line no-constant-condition
+      applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+    } catch {
+      console.log('[ERROR]: fail to fetch faucet config');
+    }
   }
 
-    @action.bound
-    fromWei(amount?: string): number {
-        if (!amount) return 0;
-        return this.web3.utils.fromWei(amount, 'ether');
-    }
+  @action.bound
+  fromWei(amount?: string): number {
+    if (!amount) return 0;
+    return this.web3.utils.fromWei(amount, 'ether');
+  }
 
-    @action.bound
-    toWei(amount?: number): string {
-        if (!amount) return '0';
-        return this.web3.utils.toWei(amount.toString(), 'ether');
-    }
+  @action.bound
+  toWei(amount?: number): string {
+    if (!amount) return '0';
+    return this.web3.utils.toWei(amount.toString(), 'ether');
+  }
 
   /**
    * Check wallet cache and connect
@@ -124,23 +128,23 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-    /**
-     * User address handler
-     * @param address: string
-     */
-    @action.bound
-    async addressHandler(address: string) {
-        this.setAccountDataLoaded(false);
-        if (address === undefined) {
-            window.localStorage.removeItem('selectedWallet');
-        } else {
-            this.accountAddress = address;
-            await this.initializeUserInfo();
-            // await this.distributionStore.eligibleForReward();
-            // await this.distributionStore.checkIfClaimed();
-        }
-        this.setAccountDataLoaded(true);
+  /**
+   * User address handler
+   * @param address: string
+   */
+  @action.bound
+  async addressHandler(address: string) {
+    this.setAccountDataLoaded(false);
+    if (address === undefined) {
+      window.localStorage.removeItem('selectedWallet');
+    } else {
+      this.accountAddress = address;
+      await this.initializeUserInfo();
+      // await this.distributionStore.eligibleForReward();
+      // await this.distributionStore.checkIfClaimed();
     }
+    this.setAccountDataLoaded(true);
+  }
 
   /**
    * Callback for connected wallet

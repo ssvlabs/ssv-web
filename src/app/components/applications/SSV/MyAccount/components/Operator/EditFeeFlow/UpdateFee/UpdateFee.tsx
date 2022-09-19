@@ -66,7 +66,8 @@ const UpdateFee = () => {
       } else if (startPendingStateTime > todayDate) {
         history.replace(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.UPDATE);
       } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
-        const savedOperator = JSON.parse(String(localStorage.getItem('expired_operators') || []));
+        // @ts-ignore
+        const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
         if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
           history.replace(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
         } else {

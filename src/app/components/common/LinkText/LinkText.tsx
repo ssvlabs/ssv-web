@@ -26,7 +26,7 @@ const LinkText = ({ style, text, onClick, link, routePush, withoutUnderline }: M
         GoogleTagManager.getInstance().sendEvent({
           category: 'external_link',
           action: 'click',
-          label: 'text',
+          label: text,
         });
         window.open(link);
       }

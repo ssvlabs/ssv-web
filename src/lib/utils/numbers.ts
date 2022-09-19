@@ -67,15 +67,16 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
 export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean) => {
   // eslint-disable-next-line eqeqeq
   if (!num || num == 0 || Number.isNaN(num)) return days ? '0' : '0.0';
-  let splitNumber = new Decimal(num).toFixed().split('.');
-  if (splitNumber[1] && splitNumber[1].indexOf('9999') !== -1) {
-    let precision = '';
-    for (let i = 0; i < splitNumber[1].indexOf('9999') + 3; i += 1) {
-      precision += '0';
-    }
-    precision = `0.${precision}1`;
-    splitNumber = new Decimal(num).add(precision).toFixed(splitNumber[1].indexOf('9999') + 4).split('.');
-  }
+  // let splitNumber = new Decimal(num).toFixed().split('.');
+  // if (splitNumber[1] && splitNumber[1].indexOf('9999') !== -1) {
+  //   let precision = '';
+  //   for (let i = 0; i < splitNumber[1].indexOf('9999') + 3; i += 1) {
+  //     precision += '0';
+  //   }
+  //   precision = `0.${precision}1`;
+  //   splitNumber = new Decimal(num).add(precision).toFixed(splitNumber[1].indexOf('9999') + 4).split('.');
+  // }
+  const splitNumber = num.toString().split('.');
   if (splitNumber[1] && !days) {
     const number = splitNumber[0];
     let decimal = splitNumber[1];
@@ -96,16 +97,25 @@ export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean
         indexLoop += 1;
       }
     }
-    decimal = decimal.slice(0, deleteFromIndex);
-    if (decimal.replace(/0+$/, '') === '') {
-      decimal = '';
-    } else {
-      decimal = `.${decimal}`;
+    if (decimal && decimal[deleteFromIndex - 1] === '0') {
+      deleteFromIndex -= 1;
     }
-    const final = `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${decimal}`;
-    return new Decimal(final).toFixed(Math.max(decimal.length - 1, 0)).toString();
+    decimal = decimal.slice(0, deleteFromIndex);
+    return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${decimal.replace(/^0+/, '') !== '' ? `.${decimal}` : ''}`;
   }
   return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+  //   decimal = decimal.slice(0, deleteFromIndex);
+  //   if (decimal.replace(/0+$/, '') === '') {
+  //     decimal = '';
+  //   } else {
+  //     decimal = `.${decimal}`;
+  //   }
+  //   let final: any = `${number.toString()}${decimal}`;
+  //   final = new Decimal(final).toFixed(Math.max(decimal.length - 1, 0)).toString();
+  //   final = final.split('.');
+  //   return `${final[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${final[1] ? `.${final[1]}` : ''}`;
+  // }
+  // return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
 };
 
 export const roundCryptoValueString = (desiredNumber: number, decimalPlaces: number = 18) => {

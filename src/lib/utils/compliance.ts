@@ -29,17 +29,42 @@ const getCurrentLocation = async (): Promise<string[]> => {
     return getCountryCallback(await axios.get(requestUri, { timeout: 2000 }));
   };
 
+  const filterEmpty = (name: undefined | null | string) => {
+    return !!name;
+  };
+
   const countryGetters = [
     {
-      url: 'http://ip-api.com/json',
+      url: 'https://api.ipregistry.co/?key=szh9vdbsf64ez2bk',
       callback: ({ data }: { data: any }): string[] => {
-        return [data.country, data.regionName];
+        return [
+          data.location?.country?.name,
+          data.location?.region?.name,
+          data.location?.city,
+        ].filter(filterEmpty);
+      },
+    },
+    {
+      url: 'https://api.bigdatacloud.net/data/country-by-ip?key=bdc_daa2e4e3f8fb49eaad6f68f0f6732d38',
+      callback: ({ data }: { data: any }): string[] => {
+        return [
+          data.country?.name,
+          data.country?.isoName,
+          data.location?.city,
+          data.location?.localityName,
+        ].filter(filterEmpty);
+      },
+    },
+    {
+      url: 'https://ipapi.co/json/',
+      callback: ({ data }: { data: any }): string[] => {
+        return [data?.country_name, data?.region, data?.city].filter(filterEmpty);
       },
     },
     {
       url: 'https://geolocation-db.com/json/',
       callback: ({ data }: { data: any }): string[] => {
-        return [data.country_name, data.city];
+        return [data?.country_name, data?.city].filter(filterEmpty);
       },
     },
   ];
@@ -66,11 +91,13 @@ const getCurrentLocation = async (): Promise<string[]> => {
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
-  const userLocation = await getCurrentLocation();
   if (config.DEBUG || window.location.host.indexOf('stage.') !== -1) {
-    return { restricted: false, userGeo: userLocation[0] || '' };
+    return { restricted: false, userGeo: 'Development' };
   }
+  const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
+  console.debug('🚫 Restricted locations:', restrictedLocations);
+  console.debug('🌐 User location:', userLocation);
   // eslint-disable-next-line no-restricted-syntax
   for (const location of userLocation) {
     // eslint-disable-next-line no-restricted-syntax

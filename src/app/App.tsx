@@ -36,10 +36,10 @@ const App = () => {
   });
 
   useEffect(() => {
-    if (!applicationStore.locationRestrictionEnabled) {
-      walletStore.connectWalletFromCache();
-      return;
-    }
+    // if (!applicationStore.locationRestrictionEnabled) {
+    //   walletStore.connectWalletFromCache();
+    //   return;
+    // }
     checkUserCountryRestriction().then((res: any) => {
       if (res.restricted) {
         walletStore.accountDataLoaded = true;

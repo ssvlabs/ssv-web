@@ -91,13 +91,14 @@ const getCurrentLocation = async (): Promise<string[]> => {
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
-  if (config.DEBUG || window.location.host.indexOf('stage.') !== -1) {
-    return { restricted: false, userGeo: 'Development' };
-  }
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
+  if (config.DEBUG || window.location.host.indexOf('stage.') !== -1) {
+    console.debug('Skipping location restriction functionality due to stage environment.');
+    return { restricted: false, userGeo: 'Development' };
+  }
   // eslint-disable-next-line no-restricted-syntax
   for (const location of userLocation) {
     // eslint-disable-next-line no-restricted-syntax

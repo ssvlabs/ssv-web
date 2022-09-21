@@ -126,7 +126,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
           {!allSelectedOperatorsVerified && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>
-                You have selected one or more operators that are
+                You have selected one or more operators that are&nbsp;
                 <Typography
                   className={classes.NotVerifiedText}
                   onClick={linkToNotVerified}>

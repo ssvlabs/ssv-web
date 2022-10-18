@@ -181,9 +181,9 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     applicationStore.setIsLoading(true);
     try {
       await validatorStore.extractKeyStoreData(keyStorePassword);
-      // temporary removed deposited restriction
+      // remove deposit check restriction temporary
       isDeposited;
-      const deposited = true;// await isDeposited();
+      const deposited = true; // await isDeposited();
       if (reUpload) {
         history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
       } else if (deposited) {

@@ -32,8 +32,6 @@ import UploadKeyStore from '~app/components/applications/SSV/MyAccount/component
 import RemoveOperator from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator';
 import DepositViaLaunchpad from '~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad';
 import OperatorRemoved from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved';
-import EditValidatorSuccess
-  from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/SuccessScreen';
 import RemoveValidator
   from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator';
 import AccountBalanceAndFee
@@ -63,7 +61,7 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, component: ProductQuestions },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE, component: UploadKeyStore },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS, component: EditValidator },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, component: EditValidatorSuccess },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, component: ConfirmOperatorsChange },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, component: ConfirmOperatorsChange },
   ];
 

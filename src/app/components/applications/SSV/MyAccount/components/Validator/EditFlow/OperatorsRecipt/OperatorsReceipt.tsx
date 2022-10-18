@@ -1,16 +1,20 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import { useHistory, useLocation } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
+import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import Button from '~app/components/common/Button';
+import LinkText from '~app/components/common/LinkText';
 import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -20,7 +24,6 @@ import RemainingDays from '~app/components/applications/SSV/MyAccount/common/com
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './OperatorsReceipt.style';
-import LinkText from '~app/components/common/LinkText/LinkText';
 
 type Props = {
   operators: any,
@@ -31,6 +34,7 @@ type Props = {
 const OperatorsReceipt = (props: Props) => {
   const stores = useStores();
   const history = useHistory();
+  const location: any = useLocation();
   const { operators, header, previousOperators, currentOperators } = props;
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
@@ -38,6 +42,15 @@ const OperatorsReceipt = (props: Props) => {
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles({ currentOperators });
   const [checked, setChecked] = React.useState(false);
+  const [openRedirect, setOpenRedirect] = React.useState(false);
+
+  if (location.state?.success) {
+    location.state = null;
+    setOpenRedirect(true);
+    setTimeout(() => {
+      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+    }, 10000);
+  }
 
   const oldOperatorsFee = previousOperators?.reduce(
     (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
@@ -78,13 +91,30 @@ const OperatorsReceipt = (props: Props) => {
     applicationStore.setIsLoading(true);
     const response = await validatorStore.updateValidator();
     if (response) {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS);
+      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, { success: true });
+      setTimeout(() => {
+        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+      }, 10000);
     }
   };
 
   const body = [
     <Grid container item>
       <Grid container item className={classes.OperatorsWrapper}>
+        <Dialog
+          open={openRedirect}
+          PaperProps={{
+            style: { borderRadius: 16, backgroundColor: 'transparent' },
+          }}
+        >
+          <Grid className={classes.DialogWrapper}>
+            <HeaderSubHeader
+              title={'Your Validator Has been Updated'}
+              subtitle={'You are being redirected to your validator'}
+            />
+            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+          </Grid>
+        </Dialog>
         {operators.map((operator: any, index: number) => {
           return (
             <Grid key={index} container item xs={12} className={classes.OperatorsDetails}>

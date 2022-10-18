@@ -7,7 +7,6 @@ import config, { translations } from '~app/common/config';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/SuccessScreen/SuccessScreen.styles';
 
@@ -15,36 +14,21 @@ const SuccessScreen = () => {
   const stores = useStores();
   const classes = useStyles();
   const history = useHistory();
-  const validatorStore: ValidatorStore = stores.Validator;
+  const buttonText = 'Manage Validator';
   const applicationStore: ApplicationStore = stores.Application;
-  const buttonText = process.env.REACT_APP_NEW_STAGE ? 'Manage Validator' : 'View Validator';
 
   const redirectTo = async () => {
     applicationStore.setIsLoading(true);
-    if (process.env.REACT_APP_NEW_STAGE) {
-      setTimeout(() => {
-        applicationStore.setIsLoading(false);
-        history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-      }, 5000);
-    } else {
+    setTimeout(() => {
       applicationStore.setIsLoading(false);
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'explorer_link',
-        action: 'click',
-        label: 'validator',
-      });
-      const linkToExplorer: string = `${config.links.LINK_EXPLORER}/validators/${validatorStore.newValidatorReceipt.replace('0x', '')}`;
-      window.open(linkToExplorer);
-    }
+      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    }, 5000);
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'explorer_link',
+      action: 'click',
+      label: 'validator',
+    });
   };
-  // const linkToExchange = (url: string, label: string) => {
-  //       GoogleTagManager.getInstance().sendEvent({
-  //         category: 'external_link',
-  //         action: 'click',
-  //         label,
-  //       });
-  //     window.open(url);
-  // };
 
   return (
     <>

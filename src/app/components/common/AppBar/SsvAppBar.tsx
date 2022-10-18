@@ -23,9 +23,9 @@ const SsvAppBar = () => {
   const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
 
   const classes = useStyles({
+    isDistribution,
     // @ts-ignore
     whiteBackGround: applicationStore.whiteNavBarBackground,
-    isNewStage: process.env.REACT_APP_NEW_STAGE, isDistribution,
   });
 
   // Add event listener on screen size change
@@ -86,7 +86,7 @@ const SsvAppBar = () => {
 
   const moveToDashboard = () => {
     if (applicationStore.isLoading) return;
-    if (process.env.REACT_APP_NEW_STAGE && hasOperatorsOrValidators) {
+    if (hasOperatorsOrValidators) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
       history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
@@ -121,7 +121,6 @@ const SsvAppBar = () => {
     if (isDistribution || !menuBar) return null;
     return (
       <Grid item container className={classes.MobileMenuBar} ref={buttonsRef}>
-        {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.MenuButton}>Join</Grid>}
         <DashboardButton className={classes.MenuButton} />
         <ExplorerButton className={classes.MenuButton} />
         <DocsButton className={classes.MenuButton} />
@@ -156,7 +155,6 @@ const SsvAppBar = () => {
     if (showMobileBar) return null;
     return (
       <Grid item container className={classes.Linkbuttons}>
-        {!process.env.REACT_APP_NEW_STAGE && <Grid item className={classes.LinkButton}>Join</Grid>}
         <DashboardButton className={classes.LinkButton} />
         <ExplorerButton className={classes.LinkButton} />
         <DocsButton className={classes.LinkButton} />

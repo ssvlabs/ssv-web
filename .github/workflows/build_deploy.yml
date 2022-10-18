@@ -99,7 +99,6 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" STAGE_CLAIM_PAGE="$STAGE_CLAIM_PAGE" yarn build
         env:
           STAGE_CLAIM_PAGE: ""
-          NEW_STAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
@@ -130,7 +129,6 @@ jobs:
           OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" STAGE_CLAIM_PAGE="$STAGE_CLAIM_PAGE" yarn build
         env:
-          NEW_STAGE: "true"
           STAGE_CLAIM_PAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.stage.ssv.network"
@@ -226,7 +224,6 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: ""
-          NEW_STAGE: "true"
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}

@@ -211,7 +211,7 @@ class WalletStore extends BaseStore implements Wallet {
   @computed
   get getContract(): Contract {
     if (!this.contract) {
-      const abi: any = process.env.REACT_APP_NEW_STAGE ? config.CONTRACTS.SSV_NETWORK.ABI : config.CONTRACTS.SSV_NETWORK.OLD_ABI;
+      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, contractAddress);
     }

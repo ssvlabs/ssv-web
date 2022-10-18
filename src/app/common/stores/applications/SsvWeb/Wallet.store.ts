@@ -79,10 +79,8 @@ class WalletStore extends BaseStore implements Wallet {
   async initializeUserInfo() {
     try {
       // await this.operatorStore.validatorsPerOperatorLimit();
-      if (process.env.REACT_APP_NEW_STAGE) {
-        await this.ssvStore.initUser();
-        await this.operatorStore.initUser();
-      }
+      await this.ssvStore.initUser();
+      await this.operatorStore.initUser();
     } catch (e) {
       console.log(e.message);
     }
@@ -158,16 +156,14 @@ class WalletStore extends BaseStore implements Wallet {
       this.accountAddress = address;
       ApiParams.cleanStorage();
       await this.initializeUserInfo();
-      if (process.env.REACT_APP_NEW_STAGE) {
-        const validatorsQuery = `?search=${address}&page=1&perPage=5`;
-        const validatorsResponse = await Validator.getInstance().validatorsByOwnerAddress(validatorsQuery);
-        const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
-        applicationStore.strategyRedirect = operatorsResponse?.operators?.length || validatorsResponse?.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
-        if (!operatorsResponse?.operators?.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
-        await myAccountStore.getOwnerAddressValidators({ reFetchBeaconData: true });
-        await myAccountStore.getOwnerAddressOperators({});
-        myAccountStore.setIntervals();
-      }
+      const validatorsQuery = `?search=${address}&page=1&perPage=5`;
+      const validatorsResponse = await Validator.getInstance().validatorsByOwnerAddress(validatorsQuery);
+      const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
+      applicationStore.strategyRedirect = operatorsResponse?.operators?.length || validatorsResponse?.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
+      if (!operatorsResponse?.operators?.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
+      await myAccountStore.getOwnerAddressValidators({ reFetchBeaconData: true });
+      await myAccountStore.getOwnerAddressOperators({});
+      myAccountStore.setIntervals();
     }
     this.setAccountDataLoaded(true);
   }
@@ -261,7 +257,7 @@ class WalletStore extends BaseStore implements Wallet {
   @computed
   get getContract(): Contract {
     if (!this.contract) {
-      const abi: any = process.env.REACT_APP_NEW_STAGE ? config.CONTRACTS.SSV_NETWORK.ABI : config.CONTRACTS.SSV_NETWORK.OLD_ABI;
+      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, contractAddress);
     }

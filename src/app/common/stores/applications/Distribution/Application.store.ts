@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
@@ -13,14 +14,18 @@ import Application from '~app/common/stores/Abstracts/Application';
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
   @observable theme: Theme;
+  @observable txHash: string = '';
+  @observable userGeo: string = '';
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;
   @observable isShowingLoading: boolean = false;
-  @observable strategyRedirect: string = '/claim';
   @observable walletConnectivity: boolean = false;
   @observable strategyName: string = 'distribution';
   @observable transactionPendingPopUp: boolean = false;
+  @observable appTitle: string = 'SSV Network Testnet Distribution';
+  @observable strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();
@@ -35,7 +40,7 @@ class ApplicationStore extends BaseStore implements Application {
       this.switchDarkMode(false);
     }
   }
-  
+
   @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;

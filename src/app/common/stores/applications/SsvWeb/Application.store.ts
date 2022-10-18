@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
@@ -14,6 +15,8 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
   @observable theme: Theme;
+  @observable txHash: string = '';
+  @observable userGeo: string = '';
   @observable darkMode: boolean = false;
   @observable toolBarMenu: boolean = false;
   @observable walletPopUp: boolean = false;
@@ -23,7 +26,9 @@ class ApplicationStore extends BaseStore implements Application {
   @observable walletConnectivity: boolean = false;
   @observable whiteNavBarBackground: boolean = false;
   @observable transactionPendingPopUp: boolean = false;
-  @observable strategyRedirect: string = process.env.REACT_APP_NEW_STAGE ? '/dashboard' : '/';
+  @observable appTitle: string = 'SSV Network Testnet';
+  @observable strategyRedirect: string = process.env.REACT_APP_NEW_STAGE ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
+  locationRestrictionEnabled: boolean = false;
 
   constructor() {
     super();
@@ -42,6 +47,16 @@ class ApplicationStore extends BaseStore implements Application {
   @action.bound
   setApplicationProcess(process: string) {
     this.runningProcess = process;
+  }
+
+  @action.bound
+  setTransactionHash(txHash: string) {
+    this.txHash = txHash;
+  }
+
+  @action.bound
+  showTransactionPendingPopUp(status: boolean) {
+    this.transactionPendingPopUp = status;
   }
 
   @action.bound
@@ -73,11 +88,6 @@ class ApplicationStore extends BaseStore implements Application {
   @action.bound
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
-  }
-
-  @action.bound
-  showTransactionPendingPopUp(status: boolean) {
-    this.transactionPendingPopUp = status;
   }
 
   @action.bound

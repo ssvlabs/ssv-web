@@ -1,4 +1,5 @@
 export const longStringShorten = (key: string, firstFriction: number = 10, secondFriction: number = firstFriction) => {
+  if (!key) return '';
   return `${key.substr(0, firstFriction)}...${key.substr(key.length - secondFriction, secondFriction)}`;
 };
 

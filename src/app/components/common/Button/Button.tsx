@@ -118,7 +118,7 @@ const Button = (props: ButtonParams) => {
                   </Grid>
                 );
             })}
-        {isApprovalProcess && process.env.REACT_APP_NEW_STAGE ? userNeedApproval() : regularButton()}
+        {isApprovalProcess ? userNeedApproval() : regularButton()}
       </Grid>
     );
 };

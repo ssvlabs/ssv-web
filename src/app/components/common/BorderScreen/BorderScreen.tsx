@@ -58,7 +58,7 @@ const BorderScreen = (props: Props) => {
               {header}
             </Grid>
             {SideHeader && !withConversion && <Grid item><SideHeader /></Grid>}
-            {withConversion && process.env.REACT_APP_NEW_STAGE && (
+            {withConversion && (
               <Grid item xs={5}>
                 <Grid container item className={classes.Conversion}>
                   {coins.map((coin: string, index: number) => {

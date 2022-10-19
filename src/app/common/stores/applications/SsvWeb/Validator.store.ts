@@ -238,7 +238,7 @@ class ValidatorStore extends BaseStore {
 
       if (getGasEstimation) {
         // Send add operator transaction
-        this.conditionalContractFunction(contract, payload)
+        contract.methods.registerValidator(...payload)
           .estimateGas({ from: ownerAddress })
           .then((gasAmount: any) => {
             this.estimationGas = gasAmount * 0.000000001;
@@ -262,7 +262,7 @@ class ValidatorStore extends BaseStore {
           });
       } else {
         // Send add operator transaction
-        this.conditionalContractFunction(contract, payload).send({ from: ownerAddress })
+        contract.methods.registerValidator(...payload).send({ from: ownerAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -342,21 +342,19 @@ class ValidatorStore extends BaseStore {
     });
     const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
     let totalAmountOfSsv = '0';
-    if (process.env.REACT_APP_NEW_STAGE) {
-      const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
-      const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
-      const liquidationCollateral = multiplyNumber(
+    const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
+    const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
+    const liquidationCollateral = multiplyNumber(
         addNumber(
-          ssvStore.networkFee,
-          operatorStore.getSelectedOperatorsFee,
+            ssvStore.networkFee,
+            operatorStore.getSelectedOperatorsFee,
         ),
         ssvStore.liquidationCollateral,
-      ).toFixed().toString();
-      if (new Decimal(liquidationCollateral).isZero()) {
-        totalAmountOfSsv = networkFeeForYear;
-      } else {
-        totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, networkFeeForYear), operatorsFees)).toFixed();
-      }
+    ).toFixed().toString();
+    if (new Decimal(liquidationCollateral).isZero()) {
+      totalAmountOfSsv = networkFeeForYear;
+    } else {
+      totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, networkFeeForYear), operatorsFees)).toFixed();
     }
 
     return new Promise((resolve) => {
@@ -383,11 +381,7 @@ class ValidatorStore extends BaseStore {
           sharePublicKeys,
           encryptedKeys,
         ];
-        if (process.env.REACT_APP_NEW_STAGE) {
-          payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
-        } else {
-          payLoad.unshift(walletStore.accountAddress);
-        }
+        payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
         resolve(payLoad);
       } catch (e) {
         console.log(e.message);
@@ -417,11 +411,6 @@ class ValidatorStore extends BaseStore {
   @computed
   get isJsonFile(): boolean {
     return this.keyStoreFile?.type === 'application/json';
-  }
-
-  conditionalContractFunction(contract: any, payload: any[]) {
-    if (process.env.REACT_APP_NEW_STAGE) return contract.methods.registerValidator(...payload);
-    return contract.methods.addValidator(...payload);
   }
 }
 

@@ -57,17 +57,15 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   ];
   // const skeletons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  if (process.env.REACT_APP_NEW_STAGE) {
-    headers = [
-      { type: '', displayName: '' },
-      { type: 'name', displayName: 'Name' },
-      { type: 'validators_count', displayName: 'Validators' },
-      { type: 'performance.30d', displayName: '30d performance' },
-      { type: 'fee', displayName: 'Yearly Fee' },
-      { type: '', displayName: '' },
-    ];
-    // skeletons = [0, 1, 2, 3, 4, 5, 6];
-  }
+  headers = [
+    { type: '', displayName: '' },
+    { type: 'name', displayName: 'Name' },
+    { type: 'validators_count', displayName: 'Validators' },
+    { type: 'performance.30d', displayName: '30d performance' },
+    { type: 'fee', displayName: 'Yearly Fee' },
+    { type: '', displayName: '' },
+  ];
+  // skeletons = [0, 1, 2, 3, 4, 5, 6];
 
   const getOperators = async (page: number) => {
     if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
@@ -208,19 +206,17 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
               )}
             </Grid>
           </StyledCell>
-          {process.env.REACT_APP_NEW_STAGE && (
-            <StyledCell>
-              <Grid container>
-                <Grid item
-                  className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
-                {disabled && (
-                  <Grid item style={{ alignSelf: 'center' }}>
-                    <ToolTip text={'Operator reached  maximum amount of validators'} />
-                  </Grid>
-                )}
+          <StyledCell>
+            <Grid container>
+              <Grid item
+                className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
+              {disabled && (
+              <Grid item style={{ alignSelf: 'center' }}>
+                <ToolTip text={'Operator reached  maximum amount of validators'} />
               </Grid>
-            </StyledCell>
-          )}
+                )}
+            </Grid>
+          </StyledCell>
           <StyledCell>
             <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
               redirectTo(operator.address);

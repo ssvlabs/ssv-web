@@ -49,14 +49,10 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   };
 
   const onSelectOperatorsClick = async () => {
-    if (process.env.REACT_APP_NEW_STAGE) {
-      if (editPage) {
-        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
-      } else {
-        history.push(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
-      }
+    if (editPage) {
+      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      history.push(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
+      history.push(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
     }
   };
 
@@ -142,21 +138,19 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           )}
-          {process.env.REACT_APP_NEW_STAGE && (
-            <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
-              <Grid item className={classes.TotalFeesHeader}>
-                {editPage ? 'New total Operators Yearly Fee' : 'Total Operators Yearly Fee'}
-              </Grid>
-              <Grid item>
-                <SsvAndSubTitle
-                  bold
-                  fontSize={16}
-                  subTextCenter={false}
-                  ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
-                />
-              </Grid>
+          <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
+            <Grid item className={classes.TotalFeesHeader}>
+              {editPage ? 'New total Operators Yearly Fee' : 'Total Operators Yearly Fee'}
             </Grid>
-          )}
+            <Grid item>
+              <SsvAndSubTitle
+                bold
+                fontSize={16}
+                subTextCenter={false}
+                ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
+                />
+            </Grid>
+          </Grid>
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
             submitFunction={onSelectOperatorsClick} />
         </Grid>,

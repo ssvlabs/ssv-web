@@ -265,7 +265,7 @@ jobs:
           SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_V2_SSV_CONTRACT_ADDRESS }}
 
       - name: Deploy prod faucet
-        if: github.ref == 'refs/heads/prod-faucet'
+        if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete

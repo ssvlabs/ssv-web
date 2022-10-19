@@ -32,6 +32,7 @@ const App = () => {
   const applicationStore: ApplicationStore = stores.Application;
 
   useEffect(() => {
+    console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
     document.title = applicationStore.appTitle;
   });
 

@@ -37,23 +37,21 @@ const ImportValidatorConfirmation = () => {
   let yearlyNetworkFee = '0';
   let liquidationCollateral: any = '0';
   let totalOperatorsYearlyFee = '0';
-  if (process.env.REACT_APP_NEW_STAGE) {
-    yearlyNetworkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
-    totalOperatorsYearlyFee = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
-    liquidationCollateral = multiplyNumber(
+  yearlyNetworkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
+  totalOperatorsYearlyFee = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
+  liquidationCollateral = multiplyNumber(
       addNumber(
-        ssvStore.networkFee,
-        operatorStore.getSelectedOperatorsFee,
+          ssvStore.networkFee,
+          operatorStore.getSelectedOperatorsFee,
       ),
       ssvStore.liquidationCollateral,
-    );
-    totalAmountOfSsv = formatNumberToUi(
+  );
+  totalAmountOfSsv = formatNumberToUi(
       addNumber(
-        addNumber(totalOperatorsYearlyFee, yearlyNetworkFee),
-        liquidationCollateral,
+          addNumber(totalOperatorsYearlyFee, yearlyNetworkFee),
+          liquidationCollateral,
       ),
-    );
-  }
+  );
 
   const onRegisterValidatorClick = async () => {
     applicationStore.setIsLoading(true);
@@ -103,25 +101,22 @@ const ImportValidatorConfirmation = () => {
               <Grid item>
                 <OperatorDetails operator={operator} />
               </Grid>
-              {process.env.REACT_APP_NEW_STAGE && (
-                <Grid item xs>
-                  <SsvAndSubTitle
-                    ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}
-                    subText={'/year'}
-                  />
-                </Grid>
-              )}
+              <Grid item xs>
+                <SsvAndSubTitle
+                  ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}
+                  subText={'/year'}
+                />
+              </Grid>
             </Grid>
           );
         })}
       </Grid>
     </Grid>,
   ];
-  if (process.env.REACT_APP_NEW_STAGE) {
-    components.push(
-      <Grid container>
-        <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
-        {fields.map((field) => {
+  components.push(
+    <Grid container>
+      <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
+      {fields.map((field) => {
           return (
             <Grid item container className={classes.Row} key={field.key}>
               <Grid item>
@@ -133,22 +128,17 @@ const ImportValidatorConfirmation = () => {
             </Grid>
           );
         })}
-      </Grid>,
-    );
-  }
+    </Grid>,
+  );
   components.push(
     <Grid container>
-      {process.env.REACT_APP_NEW_STAGE && (
-        <Grid item xs>
-          <NameAndAddress name={'Total'} />
-        </Grid>
-      )}
-      {process.env.REACT_APP_NEW_STAGE && (
-        <Grid item style={{ marginBottom: 20 }}>
-          <SsvAndSubTitle ssv={totalAmountOfSsv} bold />
-        </Grid>
-      )}
-      {process.env.REACT_APP_NEW_STAGE && Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
+      <Grid item xs>
+        <NameAndAddress name={'Total'} />
+      </Grid>
+      <Grid item style={{ marginBottom: 20 }}>
+        <SsvAndSubTitle ssv={totalAmountOfSsv} bold />
+      </Grid>
+      {Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
         <Grid container item className={classes.InsufficientBalanceWrapper}>
           <Grid item xs>
             Insufficient SSV balance. There is not enough SSV in your wallet.

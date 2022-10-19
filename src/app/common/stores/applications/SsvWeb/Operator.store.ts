@@ -612,23 +612,15 @@ class OperatorStore extends BaseStore {
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
-        if (process.env.REACT_APP_NEW_STAGE) {
-          payload.push(
+        payload.push(
             transaction.name,
             transaction.pubKey,
             ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(feePerBlock)),
-          );
-        } else {
-          payload.push(
-            transaction.name,
-            transaction.address,
-            transaction.pubKey,
-          );
-        }
+        );
 
         console.debug('Register Operator Transaction Data:', payload);
         if (getGasEstimation) {
-          const gasAmount = await this.conditionalContractFunction(contract, payload).estimateGas({ from: walletStore.accountAddress });
+          const gasAmount = await contract.methods.registerOperator(...payload).estimateGas({ from: walletStore.accountAddress });
           this.estimationGas = gasAmount * 0.000000001;
           if (config.FEATURE.DOLLAR_CALCULATION) {
             // const rate = await gasEstimation.estimateGasInUSD(this.estimationGas);
@@ -639,7 +631,7 @@ class OperatorStore extends BaseStore {
             resolve(true);
           }
         } else {
-          this.conditionalContractFunction(contract, payload)
+          contract.methods.registerOperator(...payload)
             .send({ from: address })
             .on('receipt', async (receipt: any) => {
               // eslint-disable-next-line no-prototype-builtins
@@ -782,11 +774,6 @@ class OperatorStore extends BaseStore {
   @action.bound
   unselectAllOperators() {
     this.selectedOperators = {};
-  }
-
-  conditionalContractFunction(contract: any, payload: any[]) {
-    if (process.env.REACT_APP_NEW_STAGE) return contract.methods.registerOperator(...payload);
-    return contract.methods.addOperator(...payload);
   }
 }
 

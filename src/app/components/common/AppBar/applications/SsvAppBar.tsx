@@ -20,7 +20,7 @@ const SsvAppBar = () => {
 
   const moveToDashboard = () => {
     if (applicationStore.isLoading) return;
-    if (process.env.REACT_APP_NEW_STAGE && hasOperatorsOrValidators) {
+    if (hasOperatorsOrValidators) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
       GoogleTagManager.getInstance().sendEvent({

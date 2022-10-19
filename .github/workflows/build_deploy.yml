@@ -117,7 +117,7 @@ jobs:
         env:
           SOURCE_DIR: 'build/'
           AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_CLAIM }}
+          AWS_S3_BUCKET: ${{ secrets.STAGE_V2_AWS_S3_BUCKET_CLAIM }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -212,7 +212,7 @@ jobs:
         env:
           SOURCE_DIR: 'build/'
           AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.PROD_V2_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

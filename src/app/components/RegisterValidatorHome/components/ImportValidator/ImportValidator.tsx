@@ -4,18 +4,18 @@ import Grid from '@material-ui/core/Grid';
 import React, { useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import LinkText from '~app/common/components/LinkText';
-import TextInput from '~app/common/components/TextInput';
+import LinkText from '~app/components/common/LinkText';
+import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
-import InputLabel from '~app/common/components/InputLabel';
+import InputLabel from '~app/components/common/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import PrimaryButton from '~app/common/components/Buttons/PrimaryButton';
-import MessageDiv from '~app/common/components/MessageDiv/MessageDiv';
+import MessageDiv from '~app/components/common/MessageDiv';
+import BorderScreen from '~app/components/common/BorderScreen';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import { useStyles } from '~app/components/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
 const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     const stores = useStores();

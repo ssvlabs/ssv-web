@@ -2,12 +2,12 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
-import LinkText from '~app/common/components/LinkText';
-import HeaderSubHeader from '~app/common/components/HeaderSubHeader';
-import SecondaryButton from '~app/common/components/SecondaryButton';
-import BorderScreen from '~app/components/MyAccount/common/componenets/BorderScreen';
-import { useStyles } from '~app/components/CountryNotSupported/CountryNotSupported.styles';
+import LinkText from '~app/components/common/LinkText';
+import BorderScreen from '~app/components/common/BorderScreen';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import { useStyles } from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported.styles';
 
 const CountryNotSupported = () => {
     const stores = useStores();
@@ -35,7 +35,7 @@ const CountryNotSupported = () => {
               )}
             />
             <Grid container item className={classes.ImageWrapper} />
-            <SecondaryButton noCamelCase onClick={openMarketingSite} text={'Learn more about the SSV network'} />
+            <SecondaryButton noCamelCase submitFunction={openMarketingSite} text={'Learn more about the SSV network'} />
           </Grid>,
             ]}
         />

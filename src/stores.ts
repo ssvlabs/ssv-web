@@ -4,7 +4,10 @@ import BaseStore from '~app/common/stores/BaseStore';
 const stores = [
     'SSV',
     'Wallet',
+    'Event',
+    'Faucet',
     'Operator',
+    'MyAccount',
     'Validator',
     'Application',
     'Distribution',

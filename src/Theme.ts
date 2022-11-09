@@ -26,7 +26,6 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
     return {
         spacing: 4,
         darkMode: isDarkMode,
-        newStage: process.env.REACT_APP_NEW_STAGE,
         applicationBackgroundColor: isDarkMode ? '#011627' : '#f4f7fa',
         colors: {
             // @ts-ignore
@@ -37,7 +36,7 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             gray40: '#97a5ba',
             gray60: isDarkMode ? '#cbd3e5' : '#63768b',
             gray80: isDarkMode ? '#e6eaf7' : '#34455a',
-            gray90: isDarkMode ? '#fdfefe' : '#0b2a3c',
+            gray90: isDarkMode ? '#fdfefe' : '#0b2a3c', // should be gray 70
             gray100: isDarkMode ? '#f9fbfc' : '#062031',
             black: isDarkMode ? '#f4f7fa' : '#011627',
             white: isDarkMode ? '#0b2a3c' : '#fdfefe',
@@ -53,7 +52,7 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             tint80: isDarkMode ? '#034872' : '#d1edfe',
             tint90: isDarkMode ? '#033a5d' : '#e8f6fe',
             primarySuccessDark: isDarkMode ? '#08c858' : '#06b64f',
-            primaryWarningRegular: isDarkMode ? '#ffd20a' : '#ffd20a',
+            primaryWarningRegular: 'rgba(255, 210, 10, 0.2)',
             squareScreenBackground: isDarkMode ? '#0b2a3c' : '#fdfefe',
             primaryError: '#ec1c26',
             primarySuccess: '#ec1c26',

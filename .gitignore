@@ -28,3 +28,4 @@ cypress/plugins/MetaMask/metamask-chrome-9.5.0/*
 cypress/plugins/ssv-network
 tmp
 tmp/*
+validator_keys

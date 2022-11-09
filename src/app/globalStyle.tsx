@@ -13,7 +13,6 @@ export const globalStyle = () => {
       * {
         font-family: 'Manrope', sans-serif !important;
       },
-
       .bn-onboard-custom {
         z-index: 999;
 

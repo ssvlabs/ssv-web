@@ -1,92 +1,115 @@
-import config from '~app/common/config';
 import axios from 'axios';
+import { Retryable } from 'typescript-retry-decorator';
+import config from '~app/common/config';
 
 type OperatorsListQuery = {
-    page?: number,
-    search?: string,
-    type?: string[],
-    perPage?: number
-    status?: boolean,
-    withFee?: boolean,
-    ordering?: string,
-    validatorsCount?: boolean,
+  page?: number,
+  search?: string,
+  type?: string[],
+  perPage?: number
+  ordering?: string,
+};
+
+type OperatorValidatorListQuery = {
+  page?: number,
+  perPage?: number
+  operatorId: number,
 };
 
 class Operator {
-    operators: any = null;
-    operatorsQuery: any = null;
-    operatorsPagination: any = null;
-    ownerAddressOperators: any = null;
-    ownerAddressPagination: any = null;
-    private static instance: Operator;
-    private readonly baseUrl: string = '';
+  ownerAddress: string = '';
+  private static instance: Operator;
+  private readonly baseUrl: string = '';
 
-    constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
-        setInterval(this.clearOperatorsCache.bind(this), 600000);
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  static getInstance(): Operator {
+    if (!Operator.instance) {
+      Operator.instance = new Operator(config.links.EXPLORER_CENTER);
     }
+    return Operator.instance;
+  }
 
-    static getInstance(): Operator {
-        if (!Operator.instance) {
-            Operator.instance = new Operator(config.links.EXPLORER_CENTER);
-        }
-        return Operator.instance;
+  static get NETWORK() {
+    return 'prater';
+  }
+
+  /**
+   * Get operators by owner Address
+   */
+  async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, skipRetry?: boolean) {
+    const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
+    try {
+      this.ownerAddress = ownerAddress;
+      return await this.getData(url, skipRetry);
+    } catch (e) {
+      return { operators: [], pagination: {} };
     }
+  }
 
-    static get NETWORK() {
-        return 'prater';
+  /**
+   * Get operators
+   */
+  async getOperators(props: OperatorsListQuery, skipRetry?: boolean) {
+    const { page, perPage, type, ordering, search } = props;
+    let url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators?`;
+    if (search) url += `search=${search}&`;
+    if (ordering) url += `ordering=${ordering}&`;
+    if (page) url += `page=${page}&`;
+    if (perPage) url += `perPage=${perPage}&`;
+    if (type) url += `type=${type.join(',')}`;
+    url += `ts=${new Date().getTime()}`;
+
+    try {
+      return await this.getData(url, skipRetry);
+    } catch (e) {
+      return { operators: [], pagination: {} };
     }
+  }
 
-    clearOperatorsCache() {
-        this.operators = null;
-        this.operatorsPagination = null;
-        this.ownerAddressOperators = null;
-        this.ownerAddressPagination = null;
+  /**
+   * Get operator
+   */
+  async getOperator(operatorId: number | string, skipRetry?: boolean) {
+    const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
+    try {
+      return await this.getData(url, skipRetry);
+    } catch (e) {
+      return null;
     }
+  }
 
-    /**
-     * Get operators by owner Address
-     */
-    async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, force?: boolean) {
-        if (!force && this.ownerAddressPagination?.page === page && this.ownerAddressPagination.per_page === perPage) {
-            return { pagination: this.ownerAddressPagination, operators: this.ownerAddressOperators };
-        }
-        const operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}`;
-        const response: any = await axios.get(operatorsEndpointUrl);
-        this.ownerAddressPagination = response.data.pagination;
-        this.ownerAddressOperators = response.data.operators;
-        return response.data;
+  /**
+   * Get operator validators
+   */
+  async getOperatorValidators(props: OperatorValidatorListQuery, skipRetry?: boolean) {
+    const { page, perPage, operatorId } = props;
+    const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+    try {
+      return await this.getData(url, skipRetry);
+    } catch (e) {
+      return { validators: [], pagination: {} };
     }
+  }
 
-    /**
-     * Get operators
-     */
-    async getOperators(props: OperatorsListQuery) {
-        const { page, perPage, type, ordering, status, search, withFee, validatorsCount } = props;
-        let operatorsEndpointUrl = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/operators?`;
-        if (validatorsCount) operatorsEndpointUrl += 'validatorsCount=true&';
-        if (search) operatorsEndpointUrl += `search=${search}&`;
-        if (ordering) operatorsEndpointUrl += `ordering=${ordering}&`;
-        if (status) operatorsEndpointUrl += 'status=true&';
-        if (page) operatorsEndpointUrl += `page=${page}&`;
-        if (perPage) operatorsEndpointUrl += `perPage=${perPage}&`;
-        if (withFee) operatorsEndpointUrl += 'withFee=true&';
-        if (type) operatorsEndpointUrl += `type=${type.join(',')}`;
-
-        if (this.operatorsQuery === operatorsEndpointUrl) {
-            return { operators: this.operators, pagination: this.operatorsPagination };
-        }
-
-        const response: any = await axios.get(operatorsEndpointUrl);
-
-        if (response.data.operators) {
-            this.operators = response.data.operators;
-            this.operatorsQuery = operatorsEndpointUrl;
-            this.operatorsPagination = response.data.pagination;
-        }
-
-        return response.data;
+  /**
+   * Retry few times to get the data
+   * @param url
+   * @param skipRetry
+   */
+  @Retryable(config.retry.default)
+  async getData(url: string, skipRetry?: boolean) {
+    try {
+      return (await axios.get(url)).data;
+    } catch (e) {
+      if (skipRetry) {
+        return null;
+      }
+      throw e;
     }
+  }
 }
 
 export default Operator;

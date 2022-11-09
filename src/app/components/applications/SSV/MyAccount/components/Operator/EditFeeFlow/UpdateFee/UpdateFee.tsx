@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -55,11 +55,8 @@ const UpdateFee = () => {
       const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
 
-      const daysFromEndPendingStateTime = Math.ceil(
-        Math.abs(
-          todayDate.getTime() - endPendingStateTime.getTime(),
-        ) / (1000 * 3600 * 24),
-      );
+      // @ts-ignore
+      const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
 
       if (isInPendingState) {
         history.replace(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.PENDING);
@@ -73,8 +70,6 @@ const UpdateFee = () => {
         } else {
           history.replace(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.EXPIRED);
         }
-      } else {
-        history.replace(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS);
       }
     }
   };
@@ -93,9 +88,9 @@ const UpdateFee = () => {
       <Grid className={classes.BodyWrapper}>
         <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT}>
           <Switch>
-            <Route exact path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT}>
-              <Redirect to={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START} />
-            </Route>
+            {/* <Route exact path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT}> */}
+            {/*  <Redirect to={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START} /> */}
+            {/* </Route> */}
             <Route exact path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START} component={() => {
               return <DeclareFee getCurrentState={getCurrentState} />;
             }} />

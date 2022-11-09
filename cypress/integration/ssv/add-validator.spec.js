@@ -13,15 +13,15 @@ context('Add Validator', () => {
   });
 
   it('should navigate to validator screen', () => {
-    cy.get(`[data-testid="${config.routes.VALIDATOR.HOME}"]`).click();
+    cy.get(`[data-testid="${config.routes.SSV.VALIDATOR.HOME}"]`).click();
 
     cy.get('[data-testid=header-title]')
       .should('contain.text', translations.VALIDATOR.HOME.TITLE);
 
     cy.location().should((location) => {
       expect(location.hash).to.be.empty;
-      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.VALIDATOR.HOME}`);
-      expect(location.pathname).to.eq(config.routes.VALIDATOR.HOME);
+      expect(location.href).to.eq(`${Cypress.config('baseUrl')}${config.routes.SSV.VALIDATOR.HOME}`);
+      expect(location.pathname).to.eq(config.routes.SSV.VALIDATOR.HOME);
       expect(location.search).to.be.empty;
     });
   });

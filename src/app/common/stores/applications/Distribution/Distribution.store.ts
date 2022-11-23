@@ -152,7 +152,8 @@ class DistributionStore extends BaseStore {
   @computed
   get userRewardAmount() {
     const walletStore: WalletStore = this.getStore('Wallet');
-    return walletStore.fromWei(walletStore.BN(this.rewardAmount).toString());
+    // eslint-disable-next-line radix
+    return walletStore.fromWei(parseInt(String(this.rewardAmount)).toString());
   }
 }
 

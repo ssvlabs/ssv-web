@@ -114,7 +114,7 @@ const config = {
     LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
   },
   GLOBAL_VARIABLE: {
-    BLOCKS_PER_DAY: 6570,
+    BLOCKS_PER_DAY: 7160,
     OPERATORS_PER_PAGE: 50,
     BLOCKS_PER_YEAR: 2398050,
     NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,

@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3, 3, 3, 3),
     },
     Header: {
-        marginBottom: '20px',
+        marginBottom: 20,
     },
     HeaderText: {
         fontSize: 28,

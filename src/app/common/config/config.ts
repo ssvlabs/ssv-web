@@ -1,11 +1,8 @@
-import { BackOffPolicy } from 'typescript-retry-decorator';
-
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
   retry: {
     default: {
       maxAttempts: 5,
-      backOffPolicy: BackOffPolicy.ExponentialBackOffPolicy,
       backOff: 500,
       exponentialOption: {
         maxInterval: 5000,

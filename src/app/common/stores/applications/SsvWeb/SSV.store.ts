@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -181,12 +181,14 @@ class SsvStore extends BaseStore {
    */
   @action.bound
   async checkIfLiquidated(): Promise<void> {
-    try {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      this.userLiquidated = await walletStore.getContract.methods.isLiquidated(this.accountAddress).call();
-    } catch (e) {
-      this.userLiquidated = false;
-    }
+    await runInAction(async () => {
+      try {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        this.userLiquidated = await walletStore.getContract.methods.isLiquidated(this.accountAddress).call();
+      } catch (e) {
+        this.userLiquidated = false;
+      }
+    });
   }
 
   /**
@@ -194,14 +196,16 @@ class SsvStore extends BaseStore {
    */
   @action.bound
   clearSettings() {
-    this.networkFee = 0;
-    this.accountBurnRate = 0;
-    this.walletSsvBalance = 0;
-    this.userLiquidated = false;
-    this.userState = 'operator';
-    this.userGaveAllowance = false;
-    this.liquidationCollateral = 0;
-    this.contractDepositSsvBalance = 0;
+    runInAction(() => {
+      this.networkFee = 0;
+      this.accountBurnRate = 0;
+      this.walletSsvBalance = 0;
+      this.userLiquidated = false;
+      this.userState = 'operator';
+      this.userGaveAllowance = false;
+      this.liquidationCollateral = 0;
+      this.contractDepositSsvBalance = 0;
+    });
   }
 
   /**
@@ -222,7 +226,9 @@ class SsvStore extends BaseStore {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
       const balance = await walletStore.getContract.methods.getAddressBalance(this.accountAddress).call();
-      this.contractDepositSsvBalance = walletStore.fromWei(balance);
+      runInAction(() => {
+        this.contractDepositSsvBalance = walletStore.fromWei(balance);
+      });
     } catch (e) {
       // TODO: handle error
       console.log(e.message);

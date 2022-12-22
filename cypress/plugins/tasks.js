@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { ethers, upgrades } from 'hardhat';
-import { execSync, spawn } from "child_process";
 
 const getKeyStoreData = () => {
   const validatorKeysFolder = path.join(
@@ -17,7 +16,7 @@ const getKeyStoreData = () => {
 
 const cleanup = () => {
 
-}
+};
 
 async function deployContract() {
   const Contract = await ethers.getContractFactory(require('./SSVNetwork.json'));

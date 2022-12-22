@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -20,7 +20,7 @@ import { useStyles } from './index.styles';
 
 const PendingExpired = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [operator, setOperator] = useState(null);
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
@@ -28,7 +28,7 @@ const PendingExpired = () => {
   const applicationStore: ApplicationStore = stores.Application;
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
+    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
     // @ts-ignore
     const savedOperator = JSON.parse(localStorage.getItem('expired_operators')) ?? [];
     if (savedOperator && !savedOperator.includes(operatorStore.processOperatorId)) savedOperator.push(operatorStore.processOperatorId);
@@ -43,7 +43,7 @@ const PendingExpired = () => {
   }, []);
 
   const backToMyAccount = () => {
-    history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };
 
   // @ts-ignore

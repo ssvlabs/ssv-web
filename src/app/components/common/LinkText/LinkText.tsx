@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStyles } from './LinkText.styles';
 import Typography from '@material-ui/core/Typography';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
@@ -15,13 +15,13 @@ type MessageDivProps = {
 };
 
 const LinkText = ({ style, text, onClick, link, routePush, withoutUnderline }: MessageDivProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles({ withoutUnderline });
 
   const openLink = () => {
     if (link) {
       if (routePush) {
-        history.push(link);
+        navigate(link);
       } else {
         GoogleTagManager.getInstance().sendEvent({
           category: 'external_link',

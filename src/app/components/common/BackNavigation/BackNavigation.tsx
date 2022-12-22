@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 // import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
@@ -40,7 +40,7 @@ type BackNavigationProps = {
 
 const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationProps) => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
   const applicationStore: ApplicationStore = stores.Application;
@@ -55,9 +55,9 @@ const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationPr
     setTimeout(() => {
       if (applicationStore.isLoading) return;
       if (backButtonRedirect) {
-        history.push(backButtonRedirect);
+        navigate(backButtonRedirect);
       } else {
-        history.goBack();
+        navigate(-1);
       }
     }, 100);
   };

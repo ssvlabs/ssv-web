@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
@@ -24,7 +24,7 @@ import { useStyles } from './ImportValidatorConfirmation.styles';
 const ImportValidatorConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
@@ -73,7 +73,7 @@ const ImportValidatorConfirmation = () => {
     if (response) {
       operatorStore.unselectAllOperators();
       applicationStore.showTransactionPendingPopUp(false);
-      history.push(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
+      navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
     } else {
       applicationStore.showTransactionPendingPopUp(false);
       setActionButtonText('Run validator');

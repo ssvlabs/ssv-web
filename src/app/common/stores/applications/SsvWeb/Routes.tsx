@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { observer } from 'mobx-react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Layout from '~app/components/common/Layout';
@@ -48,88 +48,78 @@ const Routes: any = () => {
   if (!walletStore.accountDataLoaded) return <div>Loading...</div>;
 
   const dashboardRoutes: any = [
-    { path: ssvRoutes.MY_ACCOUNT.DEPOSIT, component: Deposit },
-    { path: ssvRoutes.MY_ACCOUNT.WITHDRAW, component: Withdraw },
-    { path: ssvRoutes.MY_ACCOUNT.DASHBOARD, component: MyAccount },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, component: SingleOperator },
-    { path: ssvRoutes.MY_ACCOUNT.ENABLE_ACCOUNT, component: EnableAccount },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ROOT, component: SingleValidator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, component: RemoveOperator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, component: OperatorRemoved },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, component: RemoveValidator },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, component: ProductQuestions },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, component: UpdateFee, startsWith: true },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE, component: UploadKeyStore },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS, component: EditValidator },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, component: ConfirmOperatorsChange },
-    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, component: ConfirmOperatorsChange },
+    { path: ssvRoutes.MY_ACCOUNT.DEPOSIT, Component: Deposit },
+    { path: ssvRoutes.MY_ACCOUNT.WITHDRAW, Component: Withdraw },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
+    { path: ssvRoutes.MY_ACCOUNT.ENABLE_ACCOUNT, Component: EnableAccount },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ROOT, Component: SingleValidator },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, Component: OperatorRemoved },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, Component: ProductQuestions },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, startsWith: true },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE, Component: UploadKeyStore },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS, Component: EditValidator },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, Component: ConfirmOperatorsChange },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, Component: ConfirmOperatorsChange },
   ];
 
   const operatorRoutes = [
-    { path: ssvRoutes.OPERATOR.HOME, component: RegisterOperatorHome },
-    { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, component: SetOperatorFee },
-    { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, component: OperatorSuccessPage },
-    { path: ssvRoutes.OPERATOR.GENERATE_KEYS, component: GenerateOperatorKeys },
-    { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, component: OperatorTransactionConfirmation },
+    { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, Component: SetOperatorFee },
+    { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, Component: OperatorSuccessPage },
+    { path: ssvRoutes.OPERATOR.GENERATE_KEYS, Component: GenerateOperatorKeys },
+    { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation },
   ];
 
   const validatorsRoutes = [
-    { path: ssvRoutes.VALIDATOR.CREATE, component: CreateValidator },
-    { path: ssvRoutes.VALIDATOR.IMPORT, component: ImportValidator },
-    { path: ssvRoutes.VALIDATOR.HOME, component: RegisterValidatorHome },
-    { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, component: SuccessScreen },
-    { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, component: SelectOperators },
-    { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, component: SlashingWarning },
-    { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, component: DepositViaLaunchpad },
-    { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, component: AccountBalanceAndFee },
-    { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, component: ValidatorTransactionConfirmation },
+    { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
+    { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportValidator },
+    { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: SuccessScreen },
+    { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
+    { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, Component: SlashingWarning },
+    { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, Component: DepositViaLaunchpad },
+    { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
+    { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
   ];
 
   return (
     <Layout>
       <SsvAppBar />
-      <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-      <Route exact path={ssvRoutes.ROOT} component={Welcome} />
-      <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
-        <Switch>
-          {dashboardRoutes.map((route: any, index: number) => {
+      <Wrapper>
+        <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
+        <Route path={ssvRoutes.ROOT} element={<Welcome />} /> 
+        <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
+          <Route index element={<MyAccount />} />
+          {dashboardRoutes.map((route: any, index: number) => { 
             return (
-              <Route key={index} exact={!route.startsWith} path={route.path}>
-                <Suspense fallback={<></>}>
-                  <route.component />
-                </Suspense>
-              </Route>
-            );
-          })}
-        </Switch>
-      </Route>
-      <Route path={ssvRoutes.OPERATOR.HOME}>
-        <Switch>
+              <Suspense key={index} fallback={<></>}> 
+                <Route path={route.path} element={<route.Component />} /> 
+              </Suspense> 
+            ); 
+           })} 
+        </Route>
+        <Route path={ssvRoutes.OPERATOR.HOME}>
+          <Route index element={<RegisterOperatorHome />} />
           {operatorRoutes.map((route, index: number) => {
             return (
-              <Route key={index} exact path={route.path}>
-                <Suspense fallback={<></>}>
-                  <route.component />
-                </Suspense>
-              </Route>
+              <Suspense key={index} fallback={<></>}>
+                <Route path={route.path} element={<route.Component />} />
+              </Suspense>
             );
           })}
-        </Switch>
-      </Route>
+        </Route>
 
-      <Route path={ssvRoutes.VALIDATOR.HOME}>
-        <Switch>
+        <Route path={ssvRoutes.VALIDATOR.HOME}>
+          <Route index element={<RegisterValidatorHome />} />
           {validatorsRoutes.map((route, index: number) => {
             return (
-              <Route key={index} exact path={route.path}>
-                <Suspense fallback={<></>}>
-                  <route.component />
-                </Suspense>
-              </Route>
+              <Suspense key={index} fallback={<></>}>
+                <Route path={route.path} element={<route.Component />} />
+              </Suspense>
             );
           })}
-        </Switch>
-      </Route>
+        </Route>
+      </Wrapper>
     </Layout>
   );
 };

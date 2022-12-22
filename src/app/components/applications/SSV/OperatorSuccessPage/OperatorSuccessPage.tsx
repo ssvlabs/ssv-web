@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -17,7 +17,7 @@ import OperatorId from '~app/components/applications/SSV/MyAccount/components/Op
 const SetOperatorFee = () => {
     const stores = useStores();
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     // const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -26,7 +26,7 @@ const SetOperatorFee = () => {
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+            navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }, 5000);
     };
 

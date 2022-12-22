@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
@@ -25,7 +25,7 @@ const checkBoxTypes: any = {
 
 const ProductQuestions = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = React.useState('');
   const [textFieldOpen, setTextFieldOpen] = React.useState(false);
   const [thankYouDialog, openThankYouDialog] = React.useState(false);
@@ -54,7 +54,7 @@ const ProductQuestions = () => {
       .sendEvent({ category: 'remove', action: checkBoxTypes[selectedCheckbox], label: inputValue });
     setTimeout(() => {
       openThankYouDialog(false);
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     }, 3000);
   };
 
@@ -63,7 +63,7 @@ const ProductQuestions = () => {
       category: 'remove',
       action: 'my_account',
     });
-    history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };
 
   const isDisabled = (type: number) => {

@@ -2,7 +2,7 @@ import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -20,7 +20,7 @@ import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation
 const OperatorConfirmation = () => {
     const stores = useStores();
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     const operatorStore: OperatorStore = stores.Operator;
     const walletStore: WalletStore = stores.Wallet;
     // const [checked, setCheckBox] = useState(false);
@@ -32,7 +32,7 @@ const OperatorConfirmation = () => {
             applicationStore.setIsLoading(true);
             setActionButtonText('Waiting for confirmation...');
             const operatorAdded = await operatorStore.addNewOperator(false);
-            if (operatorAdded) history.push(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+            if (operatorAdded) navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
             setActionButtonText('Register Operator');
         } catch {
             setActionButtonText('Register Operator');

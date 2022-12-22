@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -17,7 +17,7 @@ import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/Req
 const RequestForSsv = () => {
     const stores = useStores();
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     const captchaRef = useRef(null);
     const faucetStore: FaucetStore = stores.Faucet;
     const walletStore: WalletStore = stores.Wallet;
@@ -41,7 +41,7 @@ const RequestForSsv = () => {
         if (!response.status) {
             if (response.type === 2) {
                 applicationStore.setIsLoading(false);
-                history.push(config.routes.FAUCET.DEPLETED);
+                navigate(config.routes.FAUCET.DEPLETED);
             } else {
                 setError('Reached Max Transactions Per Day');
                 setReachedMaxTransactionPerDay(true);
@@ -51,7 +51,7 @@ const RequestForSsv = () => {
             return;
         }
         applicationStore.setIsLoading(false);
-        history.push(config.routes.FAUCET.SUCCESS);
+        navigate(config.routes.FAUCET.SUCCESS);
         setButtonText('Request');
     };
 

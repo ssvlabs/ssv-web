@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -30,7 +30,7 @@ type LoadItemsParams = {
 const DashboardTables = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -41,12 +41,13 @@ const DashboardTables = () => {
   const operatorsPagination = myAccountStore?.ownerAddressOperatorsPagination;
   const validatorsPagination = myAccountStore?.ownerAddressValidatorsPagination;
 
-  // @ts-ignore
-  useEffect(async () => {
-    if (walletStore.accountAddress) {
+  useEffect(() => {
+    const loadData = async () => {
       await loadItems({ type: 'validators' });
       await loadItems({ type: 'operators' });
-    }
+    };
+
+    loadData();
   }, [walletStore.accountAddress]);
 
   /**
@@ -87,11 +88,11 @@ const DashboardTables = () => {
 
   const openSingleValidator = (publicKey: string) => {
     validatorStore.processValidatorPublicKey = publicKey;
-    history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
   };
   const openSingleOperator = (operatorId: number) => {
     operatorStore.processOperatorId = operatorId;
-    history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 
   const copyToClipboard = (publicKey: string) => {

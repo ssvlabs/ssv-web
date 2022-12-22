@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -23,7 +23,7 @@ import ValidatorDropDownMenu
 const EnableAccount = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const [validators, setValidators] = useState([]);
@@ -55,7 +55,7 @@ const EnableAccount = () => {
   ];
 
   useEffect(() => {
-    if (!walletStore.accountAddress) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!walletStore.accountAddress) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     const query = `?search=${walletStore.accountAddress}&status=true&page=1&perPage=100&operators=true`;
     Validator.getInstance().validatorsByOwnerAddress(query).then(async (res) => {
       const response = await Validator.getInstance().getOwnerAddressCost(walletStore.accountAddress);
@@ -67,7 +67,7 @@ const EnableAccount = () => {
 
   const enableAccount = async () => {
     const response = await ssvStore.activateValidator(totalFee.toFixed());
-    if (response) history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (response) navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };
 
   return (

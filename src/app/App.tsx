@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Grid, MuiThemeProvider } from '@material-ui/core';
 import { BrowserView, MobileView } from 'react-device-detect';
@@ -26,7 +26,7 @@ declare global {
 const App = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const GlobalStyle = globalStyle();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
@@ -39,23 +39,23 @@ const App = () => {
     if (!applicationStore.locationRestrictionEnabled) {
       console.debug('Skipping location restriction functionality in this app.');
       walletStore.connectWalletFromCache();
-      return;
+    } else {
+      checkUserCountryRestriction().then((res: any) => {
+        if (res.restricted) {
+          walletStore.accountDataLoaded = true;
+          applicationStore.userGeo = res.userGeo;
+          applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+        } else {
+          walletStore.connectWalletFromCache();
+        }
+      });
     }
-    checkUserCountryRestriction().then((res: any) => {
-      if (res.restricted) {
-        walletStore.accountDataLoaded = true;
-        applicationStore.userGeo = res.userGeo;
-        applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-        history.push(config.routes.COUNTRY_NOT_SUPPORTED);
-      } else {
-        walletStore.connectWalletFromCache();
-      }
-    });
   }, []);
 
   useEffect(() => {
     if (walletStore.accountDataLoaded) {
-      history.push(applicationStore.strategyRedirect);
+      navigate(applicationStore.strategyRedirect);
     }
   }, [walletStore.accountDataLoaded]);
 
@@ -68,7 +68,6 @@ const App = () => {
         </Grid>
       )}
       <BarMessage />
-      {/* <AppBar /> */}
       <BrowserView>
         {walletStore.accountDataLoaded && <Routes />}
       </BrowserView>

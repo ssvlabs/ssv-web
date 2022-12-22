@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 // import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -151,9 +151,9 @@ const getUserFlow = () => {
 };
 
 const useUserFlow = () => {
-    const history = useHistory();
-    const currentRoute = useRouteMatch();
-    const requiredFlow = dispatchUserFlow(userFlows, currentRoute.path);
+    const navigate = useNavigate();
+    // @ts-ignore
+    const requiredFlow = dispatchUserFlow(userFlows, useLocation().pathname);
 
     let redirectUrl;
     if (requiredFlow) {
@@ -166,8 +166,8 @@ const useUserFlow = () => {
         setUserFlow,
         getUserFlow,
         routes,
-        history,
-        path: currentRoute.path,
+        navigate,
+        path: useLocation().pathname,
         flows: userFlows,
         requiredFlow,
         redirectUrl,

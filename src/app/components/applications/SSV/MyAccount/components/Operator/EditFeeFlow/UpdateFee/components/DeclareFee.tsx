@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Operator from '~lib/api/Operator';
@@ -22,7 +22,7 @@ type Props = {
 
 const DeclareFee = (props: Props) => {
     const stores = useStores();
-    const history = useHistory();
+    const navigate = useNavigate();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
@@ -33,7 +33,7 @@ const DeclareFee = (props: Props) => {
     const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
 
     useEffect(() => {
-        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
+        if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {

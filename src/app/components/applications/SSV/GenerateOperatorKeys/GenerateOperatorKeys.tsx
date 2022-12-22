@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
@@ -25,7 +25,7 @@ import { sha256 } from 'js-sha256';
 const GenerateOperatorKeys = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
@@ -87,7 +87,7 @@ const GenerateOperatorKeys = () => {
       true,
     );
     setOperatorExist(isExists);
-    if (!isExists) history.push(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
+    if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
     applicationStore.setIsLoading(false);
   };
 

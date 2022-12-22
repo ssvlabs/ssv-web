@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -13,7 +13,7 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 const RegisterValidatorHome = () => {
   const classes = useStyles();
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const validatorStore: ValidatorStore = stores.Validator;
 
   useEffect(() => {
@@ -30,12 +30,12 @@ const RegisterValidatorHome = () => {
           <Grid container item justify={'space-evenly'}>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Create Validator'} submitFunction={() => { history.push(config.routes.SSV.VALIDATOR.CREATE); }} />
+                <SecondaryButton text={'Create Validator'} submitFunction={() => { navigate(config.routes.SSV.VALIDATOR.CREATE); }} />
               </Grid>
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Import Validator'} submitFunction={() => { validatorStore.keyStoreFile = null; history.push(config.routes.SSV.VALIDATOR.IMPORT); }} />
+                <SecondaryButton text={'Import Validator'} submitFunction={() => { validatorStore.keyStoreFile = null; navigate(config.routes.SSV.VALIDATOR.IMPORT); }} />
               </Grid>
             </Grid>
           </Grid>

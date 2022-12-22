@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -35,7 +35,7 @@ type SettingsProps = {
 const WhiteWrapper = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const {
     header,
     children,
@@ -59,7 +59,7 @@ const WhiteWrapper = (props: Props) => {
       category: 'cancel',
       action: 'click',
     });
-    history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
   };
 
   const dialogHandler = () => {

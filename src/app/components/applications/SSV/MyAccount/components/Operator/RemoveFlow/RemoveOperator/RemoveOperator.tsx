@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -22,7 +22,7 @@ import {
 
 const RemoveOperator = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [operator, setOperator] = useState(null);
   const [checkbox, setCheckBox] = useState(false);
   const [leavingReason, setLeavingReason] = useState(0);
@@ -32,7 +32,7 @@ const RemoveOperator = () => {
   const classes = useStyles({ leavingReason, isLoading: applicationStore.isLoading });
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
+    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
     applicationStore.setIsLoading(true);
     Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
@@ -134,7 +134,7 @@ const RemoveOperator = () => {
     applicationStore.setIsLoading(true);
     const isRemoved = await operatorStore.removeOperator(Number(operatorStore.processOperatorId));
     applicationStore.setIsLoading(false);
-    if (isRemoved) history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS);
+    if (isRemoved) navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS);
   };
 
   // @ts-ignore

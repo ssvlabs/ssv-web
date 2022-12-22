@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
-// import { useHistory } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -14,7 +14,7 @@ import { useStyles } from '~app/components/applications/SSV/ConnectivityPopUp/Co
 const ConnectivityPopUp = () => {
     const stores = useStores();
     const classes = useStyles();
-    // const history = useHistory();
+    // const navigate = useNavigate();
     const applicationStore: ApplicationStore = stores.Application;
     // const walletStore: WalletStore = stores.Wallet;
     const registerButtonStyle = { width: '100%', marginTop: 30, height: '50px', backgroundColor: 'black', color: 'white' };

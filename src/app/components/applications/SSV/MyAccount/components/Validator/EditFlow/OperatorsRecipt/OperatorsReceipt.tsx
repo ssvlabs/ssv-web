@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
@@ -33,7 +33,7 @@ type Props = {
 };
 const OperatorsReceipt = (props: Props) => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location: any = useLocation();
   const { operators, header, previousOperators, currentOperators } = props;
   const ssvStore: SsvStore = stores.SSV;
@@ -48,7 +48,7 @@ const OperatorsReceipt = (props: Props) => {
     location.state = null;
     setOpenRedirect(true);
     setTimeout(() => {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+      navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
     }, 10000);
   }
 
@@ -91,9 +91,9 @@ const OperatorsReceipt = (props: Props) => {
     applicationStore.setIsLoading(true);
     const response = await validatorStore.updateValidator();
     if (response) {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, { success: true });
+      navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS);
       setTimeout(() => {
-        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+        navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
       }, 10000);
     }
   };

@@ -19,11 +19,13 @@ const Routes: any = () => {
 
     return (
       <Layout>
-        <DistributionAppBar />
-        <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-        {walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.ROOT} component={Claim} />}
-        {!walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.ROOT} component={DistributionWelcome} />}
-        {distributionStore.userWithdrawRewards && <Route exact path={config.routes.DISTRIBUTION.SUCCESS} component={Success} />}
+        <Routes>
+          <DistributionAppBar />
+          <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
+          {walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<Claim />} />}
+          {!walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<DistributionWelcome />} />}
+          {distributionStore.userWithdrawRewards && <Route path={config.routes.DISTRIBUTION.SUCCESS} element={<Success />} />}
+        </Routes>
       </Layout>
     );
 };

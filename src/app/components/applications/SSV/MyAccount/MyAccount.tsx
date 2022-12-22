@@ -16,7 +16,7 @@ const MyAccount = () => {
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const wrapperRef = useRef(null);
-  const { redirectUrl, history } = useUserFlow();
+  const { redirectUrl, navigate } = useUserFlow();
   const [dropDownMenu, displayDropDownMenu] = useState(false);
   const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
 
@@ -27,12 +27,12 @@ const MyAccount = () => {
       label: isOperator ? 'operator' : 'validator',
     });
     if (isOperator) {
-      history.push(config.routes.SSV.OPERATOR.HOME);
-    } else if (!isOperator && !liquidated) history.push(config.routes.SSV.VALIDATOR.HOME);
+      navigate(config.routes.SSV.OPERATOR.HOME);
+    } else if (!isOperator && !liquidated) navigate(config.routes.SSV.VALIDATOR.HOME);
   };
 
   useEffect(() => {
-    redirectUrl && history.push(redirectUrl);
+    redirectUrl && navigate(redirectUrl);
   }, [redirectUrl]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -17,7 +17,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 const SetOperatorFee = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
   const [userInput, setUserInput] = useState(0);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
@@ -35,7 +35,7 @@ const SetOperatorFee = () => {
     const operatorWithFee = operatorStore.newOperatorKeys;
     operatorWithFee.fee = userInput;
     operatorStore.setOperatorKeys(operatorWithFee);
-    history.push(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
+    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
   };
 
   return (

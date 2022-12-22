@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
@@ -14,7 +14,7 @@ import {
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [firstCheckBox, setFirstCheckBox] = useState(false);
   const [secondCheckBox, setSecondCheckBox] = useState(false);
 
@@ -70,7 +70,7 @@ const AccountBalanceAndFee = () => {
             disable={!firstCheckBox || !secondCheckBox}
             text={'Next'}
             submitFunction={() => {
-              history.push(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
+              navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
             }}
           />
         </Grid>,

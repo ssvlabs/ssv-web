@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
@@ -13,7 +13,7 @@ import { useStyles } from '~app/components/applications/SSV/SuccessScreen/Succes
 const SuccessScreen = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const buttonText = 'Manage Validator';
   const applicationStore: ApplicationStore = stores.Application;
 
@@ -21,7 +21,7 @@ const SuccessScreen = () => {
     applicationStore.setIsLoading(true);
     setTimeout(() => {
       applicationStore.setIsLoading(false);
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     }, 5000);
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',

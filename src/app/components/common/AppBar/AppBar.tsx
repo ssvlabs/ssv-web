@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -17,7 +17,7 @@ type Button = {
 
 const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundColor?: string }) => {
     const stores = useStores();
-    const history = useHistory();
+    const navigate = useNavigate();
     const wrapperRef = useRef(null);
     const buttonsRef = useRef(null);
     const [menuBar, openMenuBar] = useState(false);
@@ -50,7 +50,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
-        history.push(applicationStore.strategyRedirect);
+        navigate(applicationStore.strategyRedirect);
     };
 
     const Buttons = () => {

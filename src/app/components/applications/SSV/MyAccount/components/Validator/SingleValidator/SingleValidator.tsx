@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -32,7 +32,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 const SingleValidator = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -44,7 +44,7 @@ const SingleValidator = () => {
   const validatorPublicKey = validator?.public_key;
 
   useEffect(() => {
-    if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     applicationStore.setIsLoading(true);
     myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
       if (response) {
@@ -138,7 +138,7 @@ const SingleValidator = () => {
   );
 
   const editValidator = () => {
-    history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS);
+    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS);
   };
 
   const columns = React.useMemo(
@@ -187,7 +187,7 @@ const SingleValidator = () => {
         withSettings={{
           text: 'Remove Validator',
           onClick: () => {
-            history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT);
+            navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT);
           },
         }}
         header={'Validator Details'}

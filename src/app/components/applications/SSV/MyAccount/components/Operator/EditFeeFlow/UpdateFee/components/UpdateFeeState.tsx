@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
@@ -19,7 +19,7 @@ const PROCESS_STATE_EXPIRED = 4;
 
 const UpdateFeeState = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const [processState, setProcessState] = useState(0);
@@ -27,7 +27,7 @@ const UpdateFeeState = () => {
 
   useEffect(() => {
     if (!operatorStore.processOperatorId) {
-      history.push(applicationStore.strategyRedirect);
+      navigate(applicationStore.strategyRedirect);
       return;
     }
     setInterval(getState, 2000);

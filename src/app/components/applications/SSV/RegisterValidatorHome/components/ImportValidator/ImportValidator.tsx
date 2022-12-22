@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
@@ -25,7 +25,7 @@ import {
 const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const operatorStore: OperatorStore = stores.Operator;
@@ -39,7 +39,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
   useEffect(() => {
     if (reUpload) {
-      if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
       myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
         setValidatorPublicKey(validator.public_key);
       });
@@ -185,7 +185,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
       isDeposited;
       const deposited = true; // await isDeposited();
       if (reUpload) {
-        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
+        navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
       } else if (deposited) {
         operatorStore.unselectAllOperators();
         GoogleTagManager.getInstance().sendEvent({
@@ -193,14 +193,14 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
           action: 'upload_file',
           label: 'success',
         });
-        history.push(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
+        navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
       } else {
         GoogleTagManager.getInstance().sendEvent({
           category: 'validator_register',
           action: 'upload_file',
           label: 'not_deposited',
         });
-        history.push(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
+        navigate(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
       }
     } catch (error: any) {
       if (error.message === 'Invalid password') {

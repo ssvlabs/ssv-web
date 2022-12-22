@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -14,7 +14,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 
 const OperatorRemoved = () => {
     const stores = useStores();
-    const history = useHistory();
+    const navigate = useNavigate();
     const classes = useStyles({});
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
@@ -23,7 +23,7 @@ const OperatorRemoved = () => {
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+            navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }, 5000);
     };
 

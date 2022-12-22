@@ -18,12 +18,14 @@ const Routes: any = () => {
 
     return (
       <Layout>
-        <FaucetAppBar />
-        <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-        {!walletStore.connected && <Route exact path={config.routes.FAUCET.ROOT} component={ConnectWallet} />}
-        {walletStore.connected && <Route exact path={config.routes.FAUCET.ROOT} component={RequestForSsv} />}
-        {walletStore.connected && <Route exact path={config.routes.FAUCET.DEPLETED} component={FaucetDepleted} />}
-        {walletStore.connected && <Route exact path={config.routes.FAUCET.SUCCESS} component={SuccessPage} />}
+        <Routes>
+          <FaucetAppBar />
+          <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
+          {walletStore.connected && <Route path={config.routes.FAUCET.ROOT} element={<RequestForSsv />} />}
+          {walletStore.connected && <Route path={config.routes.FAUCET.SUCCESS} element={<SuccessPage />} />}
+          {!walletStore.connected && <Route path={config.routes.FAUCET.ROOT} element={<ConnectWallet />} />}
+          {walletStore.connected && <Route path={config.routes.FAUCET.DEPLETED} element={<FaucetDepleted />} />}
+        </Routes>
       </Layout>
     );
 };

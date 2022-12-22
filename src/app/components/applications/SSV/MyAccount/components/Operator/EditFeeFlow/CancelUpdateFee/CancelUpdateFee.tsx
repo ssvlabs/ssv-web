@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -20,7 +20,7 @@ import { useStyles } from './CancelUpdateFee.styles';
 const CancelUpdateFee = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
@@ -29,7 +29,7 @@ const CancelUpdateFee = () => {
   const [successPage, showSuccessPage] = useState(false);
 
   const cancelUpdateProcess = async () => {
-    if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
+    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
     applicationStore.setIsLoading(true);
     const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId);
     if (response) {
@@ -45,12 +45,12 @@ const CancelUpdateFee = () => {
   };
 
   const backToMyAccount = () => {
-    history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
     operatorStore.switchCancelDialog();
   };
 
   const declareNewFee = async () => {
-    history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
     operatorStore.switchCancelDialog();
   };
 

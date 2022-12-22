@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
@@ -16,12 +16,12 @@ import {
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const validatorStore: ValidatorStore = stores.Validator;
   const [userAgreed, setUserAgreed] = useState(false);
 
   const goToConfirmation = () => {
-    history.push(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
+    navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
   };
 
   return (

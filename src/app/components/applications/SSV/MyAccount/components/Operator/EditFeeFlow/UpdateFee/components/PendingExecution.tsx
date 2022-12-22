@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -26,7 +26,7 @@ type Props = {
 
 const PendingExecution = (props: Props) => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvRoutes = config.routes.SSV;
   const ssvStore: SsvStore = stores.SSV;
   const classes = useStyles({ step: 2 });
@@ -37,15 +37,16 @@ const PendingExecution = (props: Props) => {
 
   useEffect(() => {
     if (!operatorStore.processOperatorId) {
-      return history.push(applicationStore.strategyRedirect);
+      navigate(applicationStore.strategyRedirect);
+    } else {
+      applicationStore.setIsLoading(true);
+      Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
+        if (response) {
+          setOperator(response);
+        }
+        applicationStore.setIsLoading(false);
+      });
     }
-    applicationStore.setIsLoading(true);
-    Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
-      if (response) {
-        setOperator(response);
-      }
-      applicationStore.setIsLoading(false);
-    });
   }, []);
 
   const submitFeeChange = async () => {
@@ -53,7 +54,7 @@ const PendingExecution = (props: Props) => {
     const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
     if (response) {
       props.setPreviousFee(operatorStore.operatorCurrentFee);
-      history.push(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS);
+      navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS);
     }
     applicationStore.setIsLoading(false);
   };

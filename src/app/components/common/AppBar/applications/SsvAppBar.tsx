@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/components/common/AppBar/AppBar';
@@ -9,7 +9,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 
 const SsvAppBar = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const applicationStore: ApplicationStore = stores.Application;
   const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
@@ -28,7 +28,7 @@ const SsvAppBar = () => {
         action: 'click',
         label: 'My Account',
       });
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     }
   };
   const openDocs = () => {

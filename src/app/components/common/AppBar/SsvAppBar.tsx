@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -12,7 +12,7 @@ import { useStyles } from './AppBar.styles';
 
 const SsvAppBar = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const wrapperRef = useRef(null);
   const buttonsRef = useRef(null);
   const [width, setWidth] = useState(window.innerWidth);
@@ -89,7 +89,7 @@ const SsvAppBar = () => {
     if (hasOperatorsOrValidators) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     }
   };
 
@@ -148,7 +148,7 @@ const SsvAppBar = () => {
     if (applicationStore.isLoading) return;
     // @ts-ignore
     applicationStore.whiteNavBarBackground = false;
-    history.push(config.routes.SSV.ROOT);
+    navigate(config.routes.SSV.ROOT);
   };
 
   const MobileButtons = () => {

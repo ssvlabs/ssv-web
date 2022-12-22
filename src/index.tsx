@@ -1,19 +1,21 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Provider } from 'mobx-react';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from '~app/App';
 import { rootStore } from '~root/stores';
 import * as serviceWorker from '~root/serviceWorker';
 // eslint-disable-next-line no-prototype-builtins
 
-ReactDOM.render(
+const container = document.getElementById('root');
+// @ts-ignore
+const root = createRoot(container);
+root.render(
   <Provider stores={rootStore}>
     <BrowserRouter>
       <App />
     </BrowserRouter>
   </Provider>,
-    document.getElementById('root'),
 );
 
 // If you want your app to work offline and load faster, you can change

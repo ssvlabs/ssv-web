@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
@@ -20,7 +20,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 const RemoveValidator = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const validatorStore: ValidatorStore = stores.Validator;
   const [validator, setValidator] = useState(null);
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -28,7 +28,7 @@ const RemoveValidator = () => {
   const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
 
   useEffect(() => {
-    if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     applicationStore.setIsLoading(true);
     myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
       if (response) {
@@ -46,7 +46,7 @@ const RemoveValidator = () => {
     if (validatorStore.processValidatorPublicKey) {
       const response = await validatorStore.removeValidator(validatorStore.processValidatorPublicKey);
       if (response) {
-        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
+        navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
       }
     }
   };

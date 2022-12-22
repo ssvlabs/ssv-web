@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -11,7 +11,7 @@ import { useStyles } from '~app/components/applications/SSV/RegisterOperatorHome
 
 const RegisterOperatorHome = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <BorderScreen
@@ -39,7 +39,7 @@ const RegisterOperatorHome = () => {
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
                 <SecondaryButton text={'Register Operator'} submitFunction={() => {
-                      history.push(config.routes.SSV.OPERATOR.GENERATE_KEYS);
+                      navigate(config.routes.SSV.OPERATOR.GENERATE_KEYS);
                     }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>

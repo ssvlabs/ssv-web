@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -33,7 +33,7 @@ import OperatorDetails
 
 const SingleOperator = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
   const [operator, setOperator] = useState(null);
   const [operatorsValidators, setOperatorsValidators] = useState([]);
@@ -45,7 +45,7 @@ const SingleOperator = () => {
   const notificationsStore: NotificationsStore = stores.Notifications;
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
+    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
     applicationStore.setIsLoading(true);
     Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
@@ -103,7 +103,7 @@ const SingleOperator = () => {
   };
 
   const moveToUpdateFee = () => {
-    history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
   };
 
   const openBeaconcha = (publicKey: string) => {
@@ -232,7 +232,7 @@ const SingleOperator = () => {
         withSettings={{
           text: 'Remove Operator',
           onClick: () => {
-            history.push(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
+            navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
           },
         }}
         withExplorer

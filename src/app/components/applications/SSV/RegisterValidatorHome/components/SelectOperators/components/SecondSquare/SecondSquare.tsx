@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import config from '~app/common/config';
@@ -22,7 +22,7 @@ import { useStyles } from './SecondSquare.styles';
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const stores = useStores();
   const classes = useStyles({ editPage });
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
@@ -34,7 +34,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
   useEffect(() => {
     if (editPage) {
-      if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
       myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
         if (validator?.operators) {
           // @ts-ignore
@@ -50,9 +50,9 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
   const onSelectOperatorsClick = async () => {
     if (editPage) {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
+      navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      history.push(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+      navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
     }
   };
 

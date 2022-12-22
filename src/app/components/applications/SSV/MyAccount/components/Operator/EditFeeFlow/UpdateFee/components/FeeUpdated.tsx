@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
@@ -19,7 +19,7 @@ import { useStyles } from './index.styles';
 
 const FeeUpdated = ({ previousFee }: { previousFee: string }) => {
     const stores = useStores();
-    const history = useHistory();
+    const navigate = useNavigate();
     const [operator, setOperator] = useState(null);
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
@@ -27,7 +27,7 @@ const FeeUpdated = ({ previousFee }: { previousFee: string }) => {
     const applicationStore: ApplicationStore = stores.Application;
 
     useEffect(() => {
-        if (!operatorStore.processOperatorId) return history.push(applicationStore.strategyRedirect);
+        if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
         applicationStore.setIsLoading(true);
         Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
             if (response) {
@@ -41,7 +41,7 @@ const FeeUpdated = ({ previousFee }: { previousFee: string }) => {
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+            navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
         }, 5000);
     };
 

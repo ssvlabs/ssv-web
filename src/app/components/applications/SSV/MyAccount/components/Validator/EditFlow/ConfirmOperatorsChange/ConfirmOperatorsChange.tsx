@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -16,14 +16,14 @@ import { useStyles } from './ConfirmOperatorsChange.styles';
 const ConfirmOperatorsChange = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [operators, setOperators] = useState(null);
 
   useEffect(() => {
-    if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
       setOperators(validator.operators);
     });

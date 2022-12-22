@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import config from '~app/common/config';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -16,7 +16,7 @@ import { useStyles } from './MyBalance.styles';
 const MyBalance = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
 
@@ -29,15 +29,15 @@ const MyBalance = () => {
   };
 
   function moveToEnableAccount() {
-    return history.push(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
+    return navigate(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
   }
 
   function moveToDeposit() {
-    return history.push(config.routes.SSV.MY_ACCOUNT.DEPOSIT);
+    return navigate(config.routes.SSV.MY_ACCOUNT.DEPOSIT);
   }
 
   function moveToWithdraw() {
-    return history.push(config.routes.SSV.MY_ACCOUNT.WITHDRAW);
+    return navigate(config.routes.SSV.MY_ACCOUNT.WITHDRAW);
   }
 
   const renderCtaActions = () => {

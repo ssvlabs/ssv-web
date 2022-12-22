@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import Notify from 'bnc-notify';
 import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
@@ -34,6 +34,7 @@ class WalletStore extends BaseStore implements Wallet {
 
   constructor() {
     super();
+    makeObservable(this);
     this.initWalletHooks();
   }
 

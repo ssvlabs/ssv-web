@@ -1,8 +1,7 @@
 import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-// import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
@@ -31,6 +30,10 @@ class SsvStore extends BaseStore {
   // Contracts
   @observable ssvContractInstance: Contract | null = null;
 
+  constructor() {
+    super();
+    makeObservable(this);
+  }
   /**
    * Returns instance of SSV contract
    */

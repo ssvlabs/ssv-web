@@ -1,5 +1,5 @@
-import { action, computed, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -32,6 +32,7 @@ class ApplicationStore extends BaseStore implements Application {
 
   constructor() {
     super();
+    makeObservable(this);
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     if (darkModeSaved) {

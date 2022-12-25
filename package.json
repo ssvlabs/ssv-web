@@ -78,7 +78,7 @@
     "react-dev-utils": "^11.0.3",
     "react-device-detect": "^2.1.2",
     "react-dom": "^18.0.0",
-    "react-refresh": "^0.8.3",
+    "react-refresh": "0.14.0",
     "react-router": "^6.0.0",
     "react-router-dom": "6.0.0",
     "react-table": "^7.7.0",

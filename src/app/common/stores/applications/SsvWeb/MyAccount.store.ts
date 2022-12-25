@@ -208,7 +208,7 @@ class MyAccountStore extends BaseStore {
       return this.ownerAddressValidators;
     }
 
-    ssvStore.userState = 'validator';
+    ssvStore.setUserState('validator');
     response.pagination.perPage = response.pagination.per_page;
     this.ownerAddressValidatorsPagination = response.pagination;
     this.ownerAddressValidators = extendedValidators;

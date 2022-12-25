@@ -179,33 +179,41 @@ class SsvStore extends BaseStore {
   /**
    * Check Account status
    */
-  @action.bound
   async checkIfLiquidated(): Promise<void> {
-    await runInAction(async () => {
-      try {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        this.userLiquidated = await walletStore.getContract.methods.isLiquidated(this.accountAddress).call();
-      } catch (e) {
-        this.userLiquidated = false;
-      }
-    });
+    try {
+      const walletStore: WalletStore = this.getStore('Wallet');
+      this.setIsLiquidated(await walletStore.getContract.methods.isLiquidated(this.accountAddress).call());
+    } catch (e) {
+      this.setIsLiquidated(false);
+    }
   }
+
+  @action.bound
+  setIsLiquidated = (status: boolean) => {
+    runInAction(() => {
+      this.userLiquidated = status;
+    });
+  };
+
+  setUserState = (status: string) => {
+    runInAction(() => {
+      this.userState = status;
+    });
+  };
 
   /**
    * Init settings
    */
   @action.bound
   clearSettings() {
-    runInAction(() => {
-      this.networkFee = 0;
-      this.accountBurnRate = 0;
-      this.walletSsvBalance = 0;
-      this.userLiquidated = false;
-      this.userState = 'operator';
-      this.userGaveAllowance = false;
-      this.liquidationCollateral = 0;
-      this.contractDepositSsvBalance = 0;
-    });
+    this.networkFee = 0;
+    this.accountBurnRate = 0;
+    this.walletSsvBalance = 0;
+    this.setIsLiquidated(false);
+    this.setUserState('operator');
+    this.userGaveAllowance = false;
+    this.liquidationCollateral = 0;
+    this.contractDepositSsvBalance = 0;
   }
 
   /**

@@ -45,23 +45,23 @@ export const useStyles = makeStyles((theme) => ({
         '@media only screen and (max-width: 768px)': {
             display: 'none',
         },
-        '&:nth-of-type(1)': {
-            position: !theme.newStage ? 'relative' : '',
-            '&:hover': {
-                color: theme.colors.primaryBlue,
-                '&::after': !theme.newStage ? {
-                    left: 20,
-                    width: 150,
-                    padding: 10,
-                    borderRadius: 8,
-                    display: 'block',
-                    position: 'absolute',
-                    color: theme.colors.white,
-                    content: '"Coming Soon..."',
-                    backgroundColor: theme.colors.primaryBlue,
-                } : {},
-            },
-        },
+        // '&:nth-of-type(1)': {
+        //     position: !theme.newStage ? 'relative' : '',
+        //     '&:hover': {
+        //         color: theme.colors.primaryBlue,
+        //         '&::after': !theme.newStage ? {
+        //             left: 20,
+        //             width: 150,
+        //             padding: 10,
+        //             borderRadius: 8,
+        //             display: 'block',
+        //             position: 'absolute',
+        //             color: theme.colors.white,
+        //             content: '"Coming Soon..."',
+        //             backgroundColor: theme.colors.primaryBlue,
+        //         } : {},
+        //     },
+        // },
     },
     DarkModeWrapper: {
         '@media only screen and (max-width: 768px)': {
@@ -137,23 +137,23 @@ export const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(4),
         justifyContent: 'flex-start',
         '-webkit-tap-highlight-color': 'transparent',
-        '&:nth-of-type(1)': {
-            position: !theme.newStage ? 'relative' : '',
-            '&:hover': {
-                color: theme.colors.primaryBlue,
-                '&::after': !theme.newStage ? {
-                    left: 20,
-                    width: 150,
-                    padding: 10,
-                    borderRadius: 8,
-                    display: 'block',
-                    position: 'absolute',
-                    color: theme.colors.white,
-                    content: '"Coming Soon..."',
-                    backgroundColor: theme.colors.primaryBlue,
-                } : {},
-            },
-        },
+        // '&:nth-of-type(1)': {
+        //     position: !theme.newStage ? 'relative' : '',
+        //     '&:hover': {
+        //         color: theme.colors.primaryBlue,
+        //         '&::after': !theme.newStage ? {
+        //             left: 20,
+        //             width: 150,
+        //             padding: 10,
+        //             borderRadius: 8,
+        //             display: 'block',
+        //             position: 'absolute',
+        //             color: theme.colors.white,
+        //             content: '"Coming Soon..."',
+        //             backgroundColor: theme.colors.primaryBlue,
+        //         } : {},
+        //     },
+        // },
         '&:first-child': {
             margin: theme.spacing(4, 4, 0),
         },

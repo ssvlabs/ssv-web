@@ -6,7 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-// import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';

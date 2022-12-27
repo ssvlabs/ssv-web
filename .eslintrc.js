@@ -5,6 +5,11 @@ module.exports = {
     'jsx-a11y',
     'import',
   ],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
   rules: {
     'prettier/prettier': 0,
     // A temporary hack related to IDE not resolving correct package.json

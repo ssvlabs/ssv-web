@@ -5,11 +5,6 @@ module.exports = {
     'jsx-a11y',
     'import',
   ],
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
   rules: {
     'prettier/prettier': 0,
     // A temporary hack related to IDE not resolving correct package.json
@@ -121,6 +116,9 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
         moduleDirectory: ['node_modules', 'app/'],
       },
+    },
+    react: {
+      version: 'detect',
     },
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],

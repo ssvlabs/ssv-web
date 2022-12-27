@@ -237,7 +237,7 @@ class SsvStore extends BaseStore {
       runInAction(() => {
         this.contractDepositSsvBalance = walletStore.fromWei(balance);
       });
-    } catch (e) {
+    } catch (e: any) {
       // TODO: handle error
       console.log(e.message);
     }
@@ -392,7 +392,7 @@ class SsvStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       const burnRate = await walletStore.getContract.methods.getAddressBurnRate(this.accountAddress).call();
       this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
-    } catch (e) {
+    } catch (e: any) {
       // TODO: handle error
       console.log(e.message);
     }

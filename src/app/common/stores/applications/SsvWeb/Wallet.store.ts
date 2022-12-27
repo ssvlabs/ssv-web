@@ -82,7 +82,7 @@ class WalletStore extends BaseStore implements Wallet {
       // await this.operatorStore.validatorsPerOperatorLimit();
       await this.ssvStore.initUser();
       await this.operatorStore.initUser();
-    } catch (e) {
+    } catch (e: any) {
       console.log(e.message);
     }
   }

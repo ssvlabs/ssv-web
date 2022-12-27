@@ -445,7 +445,7 @@ class OperatorStore extends BaseStore {
             applicationStore.showTransactionPendingPopUp(false);
             resolve(false);
           });
-      } catch (e) {
+      } catch (e: any) {
         console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
         console.log(e.message);
         resolve(false);
@@ -521,7 +521,7 @@ class OperatorStore extends BaseStore {
             applicationStore.showTransactionPendingPopUp(false);
             resolve(false);
           });
-      } catch (e) {
+      } catch (e: any) {
         console.log(e.message);
         resolve(false);
       }
@@ -583,7 +583,7 @@ class OperatorStore extends BaseStore {
             resolve(false);
           });
       });
-    } catch (e) {
+    } catch (e: any) {
       notificationsStore.showMessage(e.message, 'error');
       return false;
     }

@@ -383,7 +383,7 @@ class ValidatorStore extends BaseStore {
         ];
         payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
         resolve(payLoad);
-      } catch (e) {
+      } catch (e: any) {
         console.log(e.message);
         resolve(false);
       }

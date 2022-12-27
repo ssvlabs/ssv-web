@@ -93,7 +93,7 @@ class ApplicationStore extends BaseStore implements Application {
 
   @action.bound
   applicationRoutes() {
-    return require('~app/common/stores/applications/SsvWeb/Routes.tsx').default;
+    return require('~app/common/stores/applications/SsvWeb/Routes').default;
   }
 
   @action.bound

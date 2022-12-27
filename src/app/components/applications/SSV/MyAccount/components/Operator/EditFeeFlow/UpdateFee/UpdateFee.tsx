@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -81,28 +81,25 @@ const UpdateFee = () => {
   if (!operator) return null;
 
   return (
-    <Grid container item>
-      <WhiteWrapper header={'Update Operator Fee'}>
-        <OperatorId id={id} />
-      </WhiteWrapper>
-      <Grid className={classes.BodyWrapper}>
-        <Routes>
-          <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT}>
-            <Routes>
-              {/* <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT}> */}
-              {/*  <Redirect to={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START} /> */}
-              {/* </Route> */}
-              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START} element={<DeclareFee getCurrentState={getCurrentState} />} />
-              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.UPDATE} element={<WaitingPeriod getCurrentState={getCurrentState} />} />
-              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.PENDING} element={<PendingExecution setPreviousFee={setPreviousFee} />} />
-              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS} element={<FeeUpdated previousFee={previousFee} />} />
-              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.EXPIRED} element={<PendingExpired />} />
-            </Routes>
-          </Route>
-        </Routes>
-        <CancelUpdateFee />
+      <Grid container item>
+        <WhiteWrapper header={'Update Operator Fee'}>
+          <OperatorId id={id}/>
+        </WhiteWrapper>
+        <Grid className={classes.BodyWrapper}>
+          <Routes>
+              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START}
+                     element={<DeclareFee getCurrentState={getCurrentState}/>}/>
+              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.UPDATE}
+                     element={<WaitingPeriod getCurrentState={getCurrentState}/>}/>
+              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.PENDING}
+                     element={<PendingExecution setPreviousFee={setPreviousFee}/>}/>
+              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS}
+                     element={<FeeUpdated previousFee={previousFee}/>}/>
+              <Route path={ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.EXPIRED} element={<PendingExpired/>}/>
+          </Routes>
+          <CancelUpdateFee/>
+        </Grid>
       </Grid>
-    </Grid>
   );
 };
 

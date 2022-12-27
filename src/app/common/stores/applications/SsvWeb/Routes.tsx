@@ -57,7 +57,7 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, Component: OperatorRemoved },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, Component: ProductQuestions },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, startsWith: true },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE, Component: UploadKeyStore },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS, Component: EditValidator },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, Component: ConfirmOperatorsChange },

@@ -1,5 +1,10 @@
 module.exports = {
   extends: 'airbnb-typescript',
+  plugins: [
+    'react',
+    'jsx-a11y',
+    'import',
+  ],
   rules: {
     'prettier/prettier': 0,
     // A temporary hack related to IDE not resolving correct package.json

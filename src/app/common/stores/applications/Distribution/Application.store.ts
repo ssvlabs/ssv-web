@@ -62,7 +62,7 @@ class ApplicationStore extends BaseStore implements Application {
 
   @action.bound
   applicationRoutes() {
-    return require('~app/common/stores/applications/Distribution/Routes.tsx').default;
+    return require('~app/common/stores/applications/Distribution/Routes').default;
   }
 
   @action.bound

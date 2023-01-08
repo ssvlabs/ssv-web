@@ -83,11 +83,13 @@ const BorderScreen = (props: Props) => {
             </Grid>
           );
         })}
-        {bottom && (
-          <Grid item container className={bottomWrapper ?? classes.Section}>
-            {bottom}
-          </Grid>
-        )}
+        {bottom?.map((section: any, index: number) => {
+          return (
+              <Grid key={index} item container className={bottomWrapper ?? classes.Section}>
+                {section}
+              </Grid>
+          );
+        })}
       </Grid>
     </Grid>
   );

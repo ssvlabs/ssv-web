@@ -1,7 +1,6 @@
 import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
-import { Encryption, EthereumKeyStore, Threshold } from 'ssv-keys';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
@@ -10,6 +9,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import { addNumber, multiplyNumber } from '~lib/utils/numbers';
 import PriceEstimation from '~lib/utils/contract/PriceEstimation';
+// import { Encryption, EthereumKeyStore, Threshold } from 'ssv-keys';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -54,10 +54,12 @@ class ValidatorStore extends BaseStore {
   @action.bound
   async extractKeyStoreData(keyStorePassword: string): Promise<any> {
     const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
+    fileTextPlain;
+    keyStorePassword;
     // @ts-ignore
-    const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
-    this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
-    this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
+    // const ethereumKeyStore = //new EthereumKeyStore(fileTextPlain);
+    // this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
+    // this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
   }
 
   /**
@@ -333,14 +335,16 @@ class ValidatorStore extends BaseStore {
 
   @action.bound
   async createPayLoad(update: boolean = false): Promise<any> {
-    const threshold: Threshold = new Threshold();
+    // const threshold: Threshold = new Threshold();
+    const threshold = null;
+    threshold;
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const operatorIds: number[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
       return operator.id;
     });
-    const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
+    const thresholdResult: any = [];// await threshold.create(this.keyStorePrivateKey, operatorIds);
     let totalAmountOfSsv = '0';
     const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
     const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
@@ -363,13 +367,14 @@ class ValidatorStore extends BaseStore {
         const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
           return operator.public_key;
         });
+        operatorPublicKeys;
 
         // Collect all public keys from shares
         const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
           return share.publicKey;
         });
 
-        const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
+        const encryptedShares: any[] = [];//new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
         // Collect all private keys from shares
         const encryptedKeys: string[] = encryptedShares.map((share: any) => {
           return walletStore.encodeKey(share.privateKey);

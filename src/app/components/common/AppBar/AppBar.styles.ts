@@ -5,8 +5,9 @@ import screenSizes from '~lib/utils/screenSizes';
 export const useStyles = makeStyles((theme) => ({
     AppBarWrapper: {
         height: 80,
+        marginBottom: 32,
         alignItems: 'center',
-        padding: theme.spacing(4, 0, 4, 6),
+        padding: theme.spacing(0, 6, 0, 6),
         backgroundColor: (props: any) => props.backgroundColor ? props.backgroundColor : '',
     },
     AppBarIcon: {

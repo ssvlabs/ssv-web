@@ -23,7 +23,7 @@ const operatorConfirmation: IUserFlow = {
     condition: () => {
         const stores = useStores();
         const operatorStore: OperatorStore = stores.Operator;
-        return !!operatorStore.newOperatorKeys.pubKey && !!operatorStore.newOperatorKeys.name;
+        return !!operatorStore.newOperatorKeys.pubKey;
     },
 };
 

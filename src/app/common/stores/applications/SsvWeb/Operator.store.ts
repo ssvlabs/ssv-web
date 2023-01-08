@@ -16,7 +16,6 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 export interface NewOperator {
   id: string,
   fee: number,
-  name: string,
   pubKey: string,
   address: string,
 }
@@ -56,8 +55,6 @@ interface SelectedOperators {
 }
 
 class OperatorStore extends BaseStore {
-  public static OPERATORS_SELECTION_GAP = 66.66;
-
   // Process data
   @observable processOperatorId: number | undefined;
 
@@ -77,7 +74,7 @@ class OperatorStore extends BaseStore {
   @observable declaredOperatorFeePeriod: null | number = null;
   @observable operatorApprovalBeginTime: null | number = null;
 
-  @observable newOperatorKeys: NewOperator = { name: '', pubKey: '', address: '', fee: 0, id: '0' };
+  @observable newOperatorKeys: NewOperator = { pubKey: '', address: '', fee: 0, id: '0' };
   @observable newOperatorRegisterSuccessfully: string = '';
 
   @observable estimationGas: number = 0;
@@ -315,7 +312,6 @@ class OperatorStore extends BaseStore {
     this.newOperatorKeys = {
       fee: 0,
       id: '0',
-      name: '',
       pubKey: '',
       address: '',
     };
@@ -608,12 +604,10 @@ class OperatorStore extends BaseStore {
         const contract: Contract = walletStore.getContract;
         const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
-        // const gasEstimation: PriceEstimation = new PriceEstimation();
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
         payload.push(
-            transaction.name,
             transaction.pubKey,
             ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(feePerBlock)),
         );
@@ -623,8 +617,6 @@ class OperatorStore extends BaseStore {
           const gasAmount = await contract.methods.registerOperator(...payload).estimateGas({ from: walletStore.accountAddress });
           this.estimationGas = gasAmount * 0.000000001;
           if (config.FEATURE.DOLLAR_CALCULATION) {
-            // const rate = await gasEstimation.estimateGasInUSD(this.estimationGas);
-            // this.dollarEstimationGas = this.estimationGas * rate * 0;
             resolve(true);
           } else {
             this.dollarEstimationGas = 0;
@@ -643,7 +635,8 @@ class OperatorStore extends BaseStore {
                   action: 'register_tx',
                   label: 'success',
                 });
-                this.newOperatorKeys.id = receipt.events.OperatorRegistration.returnValues[0];
+                console.log(receipt.events);
+                this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                 let iterations = 0;
                 while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {

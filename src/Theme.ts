@@ -58,6 +58,7 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             primarySuccess: '#ec1c26',
             primaryErrorRegular: isDarkMode ? 'rgba(236, 28, 38, 0.32)' : 'rgba(236, 28, 38, 0.12)',
             primarySuccessRegularOpacity: isDarkMode ? 'rgba(8, 200, 88, 0.32)' : 'rgba(8, 200, 88, 0.16)',
+            warning: '#ffd20a',
         },
         opacity: {
             lowPriority: 1,

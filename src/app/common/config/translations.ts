@@ -88,7 +88,7 @@ const translations = {
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
     },
     CONFIRMATION: {
-      TITLE: 'Confirm Transaction',
+      TITLE: 'Transaction Details',
       DESCRIPTION: '',
     },
 

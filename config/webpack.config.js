@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
 const webpack = require('webpack');
-const resolve = require('resolve');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -12,11 +11,10 @@ const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const postcssNormalize = require('postcss-normalize');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
-const ManifestPlugin = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -30,6 +28,7 @@ const reactRefreshOverlayEntry = require.resolve('react-dev-utils/refreshOverlay
 
 const swSrc = paths.swSrc;
 const useTypeScript = fs.existsSync(paths.appTsConfig);
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 const emitErrorsAsWarnings = process.env.ESLINT_NO_DEV_ERRORS === 'true';
 const disableESLintPlugin = process.env.DISABLE_ESLINT_PLUGIN === 'true';
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
@@ -312,7 +311,7 @@ module.exports = function (webpackEnv) {
               // its runtime that would otherwise be processed through "file" loader.
               // Also exclude `html` and `json` extensions so they get processed
               // by webpacks internal loaders.
-              exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+              exclude: [/\.(js|mjs|jsx|ts|tsx|cjs)$/, /\.html$/, /\.json$/],
               options: {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
@@ -348,6 +347,7 @@ module.exports = function (webpackEnv) {
           .map(ext => `.${ext}`)
           .filter(ext => useTypeScript || !ext.includes('ts')),
       alias: {
+        process: 'process/browser',
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         'react-native': 'react-native-web',
@@ -438,7 +438,7 @@ module.exports = function (webpackEnv) {
       //   `index.html`
       // - "entrypoints" key: Array of files which are included in `index.html`,
       //   can be used to reconstruct the HTML if necessary
-      new ManifestPlugin({
+      new WebpackManifestPlugin({
         fileName: 'asset-manifest.json',
         publicPath: paths.publicUrlOrPath,
         generate: (seed, files, entrypoints) => {
@@ -479,11 +479,11 @@ module.exports = function (webpackEnv) {
       // TypeScript type checking
       useTypeScript &&
       new ForkTsCheckerWebpackPlugin({
-        typescript: {
-          configFile: resolve.sync('typescript', {
-            basedir: paths.appNodeModules,
-          }),
-        },
+        // typescript: {
+        //   configFile: resolve.sync('typescript', {
+        //     basedir: paths.appNodeModules,
+        //   }),
+        // },
         async: isEnvDevelopment,
         // checkSyntacticErrors: true,
         // resolveModuleNameModule: process.versions.pnp
@@ -492,7 +492,6 @@ module.exports = function (webpackEnv) {
         // resolveTypeReferenceDirectiveModule: process.versions.pnp
         //   ? `${__dirname}/pnpTs.js`
         //   : undefined,
-        // tsconfig: paths.appTsConfig,
         // reportFiles: [
         //   // This one is specifically to match during CI tests,
         //   // as micromatch doesn't match
@@ -544,7 +543,7 @@ module.exports = function (webpackEnv) {
       // In development, it does not produce real files.
       filename: isEnvProduction
           ? 'static/js/[name].[contenthash:8].js'
-          : isEnvDevelopment && 'static/js/bundle.js',
+          : isEnvDevelopment && 'static/js/[name].js',
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
           ? 'static/js/[name].[contenthash:8].chunk.js'

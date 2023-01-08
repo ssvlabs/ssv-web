@@ -19,26 +19,7 @@ export const useStyles = makeStyles((theme) => ({
             borderBottom: 'none',
         },
     },
-    RowWrapper: {
-        marginBottom: theme.spacing(2),
-    },
-    MarginButton: {
-        marginBottom: theme.spacing(10),
-    },
     AlignRight: {
         textAlign: 'right',
-    },
-    YearText: {
-        width: '73px',
-        height: '18px',
-        fontSize: '12px',
-        fontWeight: 500,
-        lineHeight: 1.5,
-        color: '#a1acbe',
-    },
-    UnderLine: {
-        marginTop: '15.5px',
-        height: '1px',
-        border: 'solid 1px #e1e5ec',
     },
 }));

@@ -513,11 +513,6 @@ const config = {
       ABI: [
         {
           'inputs': [],
-          'name': 'AccountAlreadyEnabled',
-          'type': 'error',
-        },
-        {
-          'inputs': [],
           'name': 'ApprovalNotWithinTimeframe',
           'type': 'error',
         },
@@ -533,17 +528,7 @@ const config = {
         },
         {
           'inputs': [],
-          'name': 'CallerNotOperatorOwner',
-          'type': 'error',
-        },
-        {
-          'inputs': [],
-          'name': 'CallerNotValidatorOwner',
-          'type': 'error',
-        },
-        {
-          'inputs': [],
-          'name': 'ExceedManagingOperatorsPerAccountLimit',
+          'name': 'CallerNotOwner',
           'type': 'error',
         },
         {
@@ -554,6 +539,11 @@ const config = {
         {
           'inputs': [],
           'name': 'FeeTooLow',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'InvalidPublicKeyLength',
           'type': 'error',
         },
         {
@@ -573,48 +563,82 @@ const config = {
         },
         {
           'inputs': [],
+          'name': 'OperatorDoesNotExist',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'OperatorIdsStructureInvalid',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'OperatorNotFound',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
           'name': 'OperatorWithPublicKeyNotExist',
           'type': 'error',
         },
         {
           'inputs': [],
-          'name': 'ValidatorWithPublicKeyNotExist',
+          'name': 'OperatorsListDoesNotSorted',
           'type': 'error',
         },
         {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-          ],
-          'name': 'AccountEnable',
-          'type': 'event',
+          'inputs': [],
+          'name': 'ParametersMismatch',
+          'type': 'error',
         },
         {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-          ],
-          'name': 'AccountLiquidation',
-          'type': 'event',
+          'inputs': [],
+          'name': 'PodAlreadyEnabled',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'PodDataIsBroken',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'PodIsLiquidated',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'PodLiquidatable',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'PodNotExists',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'PodNotLiquidatable',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'ValidatorAlreadyExists',
+          'type': 'error',
+        },
+        {
+          'inputs': [],
+          'name': 'ValidatorNotOwned',
+          'type': 'error',
         },
         {
           'anonymous': false,
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': 'value',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'name': 'DeclareOperatorFeePeriodUpdate',
@@ -631,9 +655,9 @@ const config = {
             },
             {
               'indexed': false,
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
           ],
           'name': 'DeclaredOperatorFeeCancelation',
@@ -644,9 +668,9 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': 'value',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'name': 'ExecuteOperatorFeePeriodUpdate',
@@ -657,24 +681,18 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
-            },
-            {
-              'indexed': true,
               'internalType': 'address',
               'name': 'ownerAddress',
               'type': 'address',
             },
             {
-              'indexed': true,
+              'indexed': false,
               'internalType': 'address',
-              'name': 'senderAddress',
+              'name': 'recipientAddress',
               'type': 'address',
             },
           ],
-          'name': 'FundsDeposit',
+          'name': 'FeeRecipientAddressAdded',
           'type': 'event',
         },
         {
@@ -687,13 +705,19 @@ const config = {
               'type': 'uint256',
             },
             {
-              'indexed': true,
+              'indexed': false,
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'indexed': false,
               'internalType': 'address',
-              'name': 'ownerAddress',
+              'name': 'owner',
               'type': 'address',
             },
           ],
-          'name': 'FundsWithdrawal',
+          'name': 'FundsDeposit',
           'type': 'event',
         },
         {
@@ -714,9 +738,9 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': 'value',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'name': 'LiquidationThresholdPeriodUpdate',
@@ -731,8 +755,14 @@ const config = {
               'name': 'value',
               'type': 'uint256',
             },
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'recipient',
+              'type': 'address',
+            },
           ],
-          'name': 'MinimumBlocksBeforeLiquidationUpdate',
+          'name': 'NetworkEarningsWithdrawal',
           'type': 'event',
         },
         {
@@ -759,18 +789,30 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
+              'internalType': 'uint64',
+              'name': 'id',
+              'type': 'uint64',
+            },
+            {
+              'indexed': true,
+              'internalType': 'address',
+              'name': 'owner',
+              'type': 'address',
             },
             {
               'indexed': false,
-              'internalType': 'address',
-              'name': 'recipient',
-              'type': 'address',
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint256',
+              'name': 'fee',
+              'type': 'uint256',
             },
           ],
-          'name': 'NetworkFeesWithdrawal',
+          'name': 'OperatorAdded',
           'type': 'event',
         },
         {
@@ -784,9 +826,9 @@ const config = {
             },
             {
               'indexed': false,
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
             {
               'indexed': false,
@@ -815,9 +857,9 @@ const config = {
             },
             {
               'indexed': false,
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
             {
               'indexed': false,
@@ -840,9 +882,9 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': 'value',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'name': 'OperatorFeeIncreaseLimitUpdate',
@@ -853,99 +895,56 @@ const config = {
           'inputs': [
             {
               'indexed': false,
+              'internalType': 'uint64',
+              'name': 'id',
+              'type': 'uint64',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint64',
+              'name': 'fee',
+              'type': 'uint64',
+            },
+          ],
+          'name': 'OperatorFeeSet',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
               'internalType': 'uint256',
               'name': 'value',
               'type': 'uint256',
             },
+            {
+              'indexed': false,
+              'internalType': 'uint64',
+              'name': 'operatorId',
+              'type': 'uint64',
+            },
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
           ],
-          'name': 'OperatorMaxFeeIncreaseUpdate',
+          'name': 'OperatorFundsWithdrawal',
           'type': 'event',
         },
         {
           'anonymous': false,
           'inputs': [
             {
-              'indexed': true,
-              'internalType': 'uint32',
+              'indexed': false,
+              'internalType': 'uint64',
               'name': 'id',
-              'type': 'uint32',
-            },
-            {
-              'indexed': false,
-              'internalType': 'string',
-              'name': 'name',
-              'type': 'string',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-            {
-              'indexed': false,
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'fee',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
-          'name': 'OperatorRegistration',
-          'type': 'event',
-        },
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': false,
-              'internalType': 'uint32',
-              'name': 'operatorId',
-              'type': 'uint32',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-          ],
-          'name': 'OperatorRemoval',
-          'type': 'event',
-        },
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': false,
-              'internalType': 'uint32',
-              'name': 'operatorId',
-              'type': 'uint32',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'blockNumber',
-              'type': 'uint256',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'score',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'OperatorScoreUpdate',
+          'name': 'OperatorRemoved',
           'type': 'event',
         },
         {
@@ -972,59 +971,249 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'RegisteredOperatorsPerAccountLimitUpdate',
-          'type': 'event',
-        },
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
               'internalType': 'address',
               'name': 'ownerAddress',
               'type': 'address',
             },
             {
               'indexed': false,
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint32[]',
+              'internalType': 'uint64[]',
               'name': 'operatorIds',
-              'type': 'uint32[]',
+              'type': 'uint64[]',
             },
             {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
               'indexed': false,
-              'internalType': 'bytes[]',
-              'name': 'sharesPublicKeys',
-              'type': 'bytes[]',
-            },
-            {
-              'indexed': false,
-              'internalType': 'bytes[]',
-              'name': 'encryptedKeys',
-              'type': 'bytes[]',
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
-          'name': 'ValidatorRegistration',
+          'name': 'PodDeposited',
           'type': 'event',
         },
         {
           'anonymous': false,
           'inputs': [
             {
-              'indexed': true,
+              'indexed': false,
               'internalType': 'address',
               'name': 'ownerAddress',
               'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
+          ],
+          'name': 'PodEnabled',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint256',
+              'name': 'value',
+              'type': 'uint256',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
+          ],
+          'name': 'PodFundsWithdrawal',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
+          ],
+          'name': 'PodLiquidated',
+          'type': 'event',
+        },
+        {
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
             },
             {
               'indexed': false,
@@ -1032,8 +1221,52 @@ const config = {
               'name': 'publicKey',
               'type': 'bytes',
             },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'shares',
+              'type': 'bytes',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
           ],
-          'name': 'ValidatorRemoval',
+          'name': 'ValidatorAdded',
           'type': 'event',
         },
         {
@@ -1041,39 +1274,70 @@ const config = {
           'inputs': [
             {
               'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
+              'internalType': 'address',
+              'name': 'ownerAddress',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'indexed': false,
+              'internalType': 'bytes',
+              'name': 'publicKey',
+              'type': 'bytes',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'indexed': false,
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
-          'name': 'ValidatorsPerOperatorLimitUpdate',
+          'name': 'ValidatorRemoved',
           'type': 'event',
         },
         {
           'inputs': [
             {
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-          ],
-          'name': 'addressNetworkFee',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
           ],
           'name': 'cancelDeclaredOperatorFee',
@@ -1084,13 +1348,13 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
             {
               'internalType': 'uint256',
-              'name': 'operatorFee',
+              'name': 'fee',
               'type': 'uint256',
             },
           ],
@@ -1103,13 +1367,55 @@ const config = {
           'inputs': [
             {
               'internalType': 'address',
-              'name': 'ownerAddress',
+              'name': 'owner',
               'type': 'address',
+            },
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
             },
             {
               'internalType': 'uint256',
               'name': 'amount',
               'type': 'uint256',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
           'name': 'deposit',
@@ -1120,9 +1426,64 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint32',
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'amount',
+              'type': 'uint256',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
+          ],
+          'name': 'deposit',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
           ],
           'name': 'executeOperatorFee',
@@ -1134,38 +1495,13 @@ const config = {
           'inputs': [
             {
               'internalType': 'address',
-              'name': 'ownerAddress',
+              'name': 'recipientAddress',
               'type': 'address',
             },
           ],
-          'name': 'getAddressBalance',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-          ],
-          'name': 'getAddressBurnRate',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
+          'name': 'feeRecipientAddress',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
           'type': 'function',
         },
         {
@@ -1173,9 +1509,9 @@ const config = {
           'name': 'getDeclaredOperatorFeePeriod',
           'outputs': [
             {
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': '',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'stateMutability': 'view',
@@ -1186,9 +1522,9 @@ const config = {
           'name': 'getExecuteOperatorFeePeriod',
           'outputs': [
             {
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': '',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'stateMutability': 'view',
@@ -1199,9 +1535,9 @@ const config = {
           'name': 'getLiquidationThresholdPeriod',
           'outputs': [
             {
-              'internalType': 'uint256',
+              'internalType': 'uint64',
               'name': '',
-              'type': 'uint256',
+              'type': 'uint64',
             },
           ],
           'stateMutability': 'view',
@@ -1236,107 +1572,38 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
           ],
           'name': 'getOperatorById',
           'outputs': [
             {
-              'internalType': 'string',
-              'name': '',
-              'type': 'string',
-            },
-            {
               'internalType': 'address',
-              'name': '',
+              'name': 'owner',
               'type': 'address',
             },
             {
-              'internalType': 'bytes',
-              'name': '',
-              'type': 'bytes',
-            },
-            {
               'internalType': 'uint256',
-              'name': '',
+              'name': 'fee',
               'type': 'uint256',
             },
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-          ],
-          'name': 'getOperatorByPublicKey',
-          'outputs': [
-            {
-              'internalType': 'string',
-              'name': '',
-              'type': 'string',
-            },
-            {
-              'internalType': 'address',
-              'name': '',
-              'type': 'address',
-            },
-            {
-              'internalType': 'bytes',
-              'name': '',
-              'type': 'bytes',
-            },
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
             {
               'internalType': 'uint32',
-              'name': 'operatorId',
+              'name': 'validatorCount',
               'type': 'uint32',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64',
+              'name': 'operatorId',
+              'type': 'uint64',
             },
           ],
           'name': 'getOperatorDeclaredFee',
@@ -1363,9 +1630,9 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
           ],
           'name': 'getOperatorFee',
@@ -1384,6 +1651,25 @@ const config = {
           'name': 'getOperatorFeeIncreaseLimit',
           'outputs': [
             {
+              'internalType': 'uint64',
+              'name': '',
+              'type': 'uint64',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+          ],
+          'name': 'getPodBurnRate',
+          'outputs': [
+            {
               'internalType': 'uint256',
               'name': '',
               'type': 'uint256',
@@ -1395,57 +1681,9 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-          ],
-          'name': 'getOperatorsByValidator',
-          'outputs': [
-            {
-              'internalType': 'uint32[]',
-              'name': '',
-              'type': 'uint32[]',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'ownerAddress',
-              'type': 'address',
-            },
-          ],
-          'name': 'getValidatorsByOwnerAddress',
-          'outputs': [
-            {
-              'internalType': 'bytes[]',
-              'name': '',
-              'type': 'bytes[]',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'contract ISSVRegistry',
-              'name': 'registryAddress_',
-              'type': 'address',
-            },
-            {
               'internalType': 'contract IERC20',
               'name': 'token_',
               'type': 'address',
-            },
-            {
-              'internalType': 'uint64',
-              'name': 'minimumBlocksBeforeLiquidation_',
-              'type': 'uint64',
             },
             {
               'internalType': 'uint64',
@@ -1462,6 +1700,11 @@ const config = {
               'name': 'executeOperatorFeePeriod_',
               'type': 'uint64',
             },
+            {
+              'internalType': 'uint64',
+              'name': 'minimumBlocksBeforeLiquidation_',
+              'type': 'uint64',
+            },
           ],
           'name': 'initialize',
           'outputs': [],
@@ -1472,8 +1715,50 @@ const config = {
           'inputs': [
             {
               'internalType': 'address',
-              'name': 'ownerAddress',
+              'name': 'owner',
               'type': 'address',
+            },
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
           'name': 'isLiquidatable',
@@ -1491,8 +1776,50 @@ const config = {
           'inputs': [
             {
               'internalType': 'address',
-              'name': 'ownerAddress',
+              'name': 'owner',
               'type': 'address',
+            },
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
           'name': 'isLiquidated',
@@ -1509,14 +1836,85 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'address[]',
-              'name': 'ownerAddresses',
-              'type': 'address[]',
+              'internalType': 'address',
+              'name': 'owner',
+              'type': 'address',
+            },
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
-          'name': 'liquidate',
+          'name': 'liquidatePod',
           'outputs': [],
           'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64',
+              'name': 'id',
+              'type': 'uint64',
+            },
+          ],
+          'name': 'operatorSnapshot',
+          'outputs': [
+            {
+              'internalType': 'uint64',
+              'name': 'currentBlock',
+              'type': 'uint64',
+            },
+            {
+              'internalType': 'uint64',
+              'name': 'index',
+              'type': 'uint64',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'balance',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
           'type': 'function',
         },
         {
@@ -1535,12 +1933,115 @@ const config = {
         {
           'inputs': [
             {
+              'internalType': 'address',
+              'name': 'owner',
+              'type': 'address',
+            },
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
+          ],
+          'name': 'podBalanceOf',
+          'outputs': [
+            {
+              'internalType': 'uint256',
+              'name': '',
+              'type': 'uint256',
+            },
+          ],
+          'stateMutability': 'view',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
               'internalType': 'uint256',
               'name': 'amount',
               'type': 'uint256',
             },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
           ],
-          'name': 'reactivateAccount',
+          'name': 'reactivatePod',
           'outputs': [],
           'stateMutability': 'nonpayable',
           'type': 'function',
@@ -1548,13 +2049,8 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'string',
-              'name': 'name',
-              'type': 'string',
-            },
-            {
               'internalType': 'bytes',
-              'name': 'publicKey',
+              'name': 'encryptionPK',
               'type': 'bytes',
             },
             {
@@ -1566,9 +2062,9 @@ const config = {
           'name': 'registerOperator',
           'outputs': [
             {
-              'internalType': 'uint32',
-              'name': 'operatorId',
-              'type': 'uint32',
+              'internalType': 'uint64',
+              'name': 'id',
+              'type': 'uint64',
             },
           ],
           'stateMutability': 'nonpayable',
@@ -1582,24 +2078,56 @@ const config = {
               'type': 'bytes',
             },
             {
-              'internalType': 'uint32[]',
+              'internalType': 'uint64[]',
               'name': 'operatorIds',
-              'type': 'uint32[]',
+              'type': 'uint64[]',
             },
             {
-              'internalType': 'bytes[]',
-              'name': 'sharesPublicKeys',
-              'type': 'bytes[]',
-            },
-            {
-              'internalType': 'bytes[]',
-              'name': 'sharesEncrypted',
-              'type': 'bytes[]',
+              'internalType': 'bytes',
+              'name': 'shares',
+              'type': 'bytes',
             },
             {
               'internalType': 'uint256',
               'name': 'amount',
               'type': 'uint256',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
           'name': 'registerValidator',
@@ -1610,9 +2138,9 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint32',
+              'internalType': 'uint64',
               'name': 'operatorId',
-              'type': 'uint32',
+              'type': 'uint64',
             },
           ],
           'name': 'removeOperator',
@@ -1626,6 +2154,48 @@ const config = {
               'internalType': 'bytes',
               'name': 'publicKey',
               'type': 'bytes',
+            },
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
             },
           ],
           'name': 'removeValidator',
@@ -1721,109 +2291,6 @@ const config = {
         {
           'inputs': [
             {
-              'internalType': 'uint32',
-              'name': 'operatorId',
-              'type': 'uint32',
-            },
-            {
-              'internalType': 'uint32',
-              'name': 'score',
-              'type': 'uint32',
-            },
-          ],
-          'name': 'updateOperatorScore',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'bytes',
-              'name': 'publicKey',
-              'type': 'bytes',
-            },
-            {
-              'internalType': 'uint32[]',
-              'name': 'operatorIds',
-              'type': 'uint32[]',
-            },
-            {
-              'internalType': 'bytes[]',
-              'name': 'sharesPublicKeys',
-              'type': 'bytes[]',
-            },
-            {
-              'internalType': 'bytes[]',
-              'name': 'sharesEncrypted',
-              'type': 'bytes[]',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'updateValidator',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'uint32',
-              'name': 'operatorId',
-              'type': 'uint32',
-            },
-          ],
-          'name': 'validatorsPerOperatorCount',
-          'outputs': [
-            {
-              'internalType': 'uint32',
-              'name': '',
-              'type': 'uint32',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'version',
-          'outputs': [
-            {
-              'internalType': 'uint32',
-              'name': '',
-              'type': 'uint32',
-            },
-          ],
-          'stateMutability': 'pure',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'withdraw',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'withdrawAll',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
               'internalType': 'uint256',
               'name': 'amount',
               'type': 'uint256',
@@ -1834,9 +2301,94 @@ const config = {
           'stateMutability': 'nonpayable',
           'type': 'function',
         },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64',
+              'name': 'operatorId',
+              'type': 'uint64',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'amount',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'withdrawOperatorBalance',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64',
+              'name': 'operatorId',
+              'type': 'uint64',
+            },
+          ],
+          'name': 'withdrawOperatorBalance',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
+        {
+          'inputs': [
+            {
+              'internalType': 'uint64[]',
+              'name': 'operatorIds',
+              'type': 'uint64[]',
+            },
+            {
+              'internalType': 'uint256',
+              'name': 'amount',
+              'type': 'uint256',
+            },
+            {
+              'components': [
+                {
+                  'internalType': 'uint32',
+                  'name': 'validatorCount',
+                  'type': 'uint32',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFee',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'networkFeeIndex',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'index',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'uint64',
+                  'name': 'balance',
+                  'type': 'uint64',
+                },
+                {
+                  'internalType': 'bool',
+                  'name': 'disabled',
+                  'type': 'bool',
+                },
+              ],
+              'internalType': 'struct ISSVNetwork.Pod',
+              'name': 'pod',
+              'type': 'tuple',
+            },
+          ],
+          'name': 'withdrawPodBalance',
+          'outputs': [],
+          'stateMutability': 'nonpayable',
+          'type': 'function',
+        },
       ],
     },
-
     SSV_DISTRIBUTION: {
       ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),
       ABI: [

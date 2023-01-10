@@ -10,10 +10,10 @@ import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
-import MessageDiv from '~app/components/common/MessageDiv';
 import InputLabel from '~app/components/common/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -126,7 +126,7 @@ const GenerateOperatorKeys = () => {
               {publicKeyError.shouldDisplay &&
                 <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
             </Grid>
-            {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
+            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST} />}
           </Grid>
           <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
         </Grid>,

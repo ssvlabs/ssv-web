@@ -52,7 +52,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     if (editPage) {
       navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+      navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
     }
   };
 

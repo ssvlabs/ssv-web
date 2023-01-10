@@ -728,6 +728,7 @@ class OperatorStore extends BaseStore {
    */
   @action.bound
   selectOperator(operator: IOperator, selectedIndex: number) {
+    console.log('<<<<<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>>>>>');
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax
     for (const index of [1, 2, 3, 4]) {
@@ -736,6 +737,9 @@ class OperatorStore extends BaseStore {
       }
     }
     if (!operatorExist) this.selectedOperators[selectedIndex] = operator;
+    console.log('<<<<<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>>>>>');
+    console.log(this.selectedOperators);
+    console.log('<<<<<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>>>>>');
   }
 
   /**

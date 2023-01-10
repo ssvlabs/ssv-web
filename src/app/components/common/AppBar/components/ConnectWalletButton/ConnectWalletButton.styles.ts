@@ -15,6 +15,7 @@ export const useStyles = makeStyles((theme) => ({
         fontFamily: 'Manrope',
         justifyContent: 'center',
         padding: theme.spacing(3, 4, 3, 4),
+        border: `solid 1px ${theme.colors.gray20}`,
         width: (props: any) => props.walletConnected ? 189 : 171,
         backgroundColor: (props: any) => {
             if (props.whiteAppBar) {

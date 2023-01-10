@@ -33,13 +33,13 @@ const Welcome = () => {
         <Grid container>
           <HeaderSubHeader
             title={'Join the SSV Network'}
-            subtitle={'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators'}
+            subtitle={'Distribute your validator to run on the SSV network or help maintain it as one of its operators.'}
           />
           <Grid container item className={classes.LinkButtonsWrapper}>
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
                 withVerifyConnection
-                text={'Run Validator'}
+                text={'Distribute Validator'}
                 submitFunction={() => {
                   walletStore.connected && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}

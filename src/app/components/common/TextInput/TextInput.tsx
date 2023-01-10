@@ -6,17 +6,19 @@ type InputProps = {
     value?: any,
     sideIcon?: any,
     disable?: boolean,
+    sideText?: string,
     withLock?: boolean,
     showError?: boolean,
     dataTestId?: string,
     placeHolder?: string,
     onBlurCallBack?: any,
+    extendClass?: string,
     wrapperClass?: string,
     withSideText?: boolean,
     onChangeCallback?: any,
 };
 
-const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withLock, disable, showError, wrapperClass, dataTestId, withSideText, sideIcon }: InputProps) => {
+const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withLock, disable, showError, extendClass, wrapperClass, dataTestId, withSideText, sideText, sideIcon }: InputProps) => {
     const classes = useStyles({ showError, disable });
     const [password, showPassword] = useState(false);
 
@@ -30,7 +32,7 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
       <Grid container
           // @ts-ignore
         justify={withLock && 'space-between'}
-        className={wrapperClass ?? classes.Wrapper}>
+        className={wrapperClass ?? `${classes.Wrapper} ${extendClass}`}>
         {withLock && <Grid item className={`${classes.Lock} ${disable ? classes.LockDisable : ''}`} onClick={() => { !disable && showPassword(!password); }} />}
         <Grid item xs>
           <input
@@ -47,7 +49,7 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
         </Grid>
         {withSideText && (
         <Grid item className={classes.Text}>
-            {sideIcon ?? 'SSV'}
+            {sideIcon ?? sideText ?? 'SSV'}
         </Grid>
         )}
       </Grid>

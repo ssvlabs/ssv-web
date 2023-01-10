@@ -21,6 +21,7 @@ import EnableAccount from '~app/components/applications/SSV/MyAccount/components
 import OperatorTransactionConfirmation from '~app/components/applications/SSV/OperatorConfirmation';
 import SingleOperator from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator';
 import ValidatorTransactionConfirmation from '~app/components/applications/SSV/ImportValidatorConfirmation';
+import FundingPeriod from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod';
 import UpdateFee from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee';
 import SingleValidator from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator';
 import ImportValidator from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator';
@@ -29,6 +30,7 @@ import SlashingWarning from '~app/components/applications/SSV/RegisterValidatorH
 import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
 import EditValidator from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator';
 import UploadKeyStore from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore';
+// import FundingNewValidator from '~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator';
 import RemoveOperator from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator';
 import DepositViaLaunchpad from '~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad';
 import OperatorRemoved from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved';
@@ -55,6 +57,7 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ROOT, Component: SingleValidator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, Component: OperatorRemoved },
+    // { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, Component: ProductQuestions },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
@@ -77,6 +80,7 @@ const Routes: any = () => {
     { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: SuccessScreen },
     { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
     { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, Component: SlashingWarning },
+    { path: ssvRoutes.VALIDATOR.FUNDING_PERIOD_PAGE, Component: FundingPeriod },
     { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, Component: DepositViaLaunchpad },
     { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
     { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },

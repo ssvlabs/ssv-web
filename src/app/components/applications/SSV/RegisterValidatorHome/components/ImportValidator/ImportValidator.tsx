@@ -12,7 +12,7 @@ import InputLabel from '~app/components/common/InputLabel';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
-import MessageDiv from '~app/components/common/MessageDiv/MessageDiv';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -268,7 +268,7 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
                 onChangeCallback={handlePassword} />
             </Grid>
             <Grid item xs={12} className={classes.ErrorWrapper}>
-              {errorMessage && <MessageDiv text={errorMessage} />}
+              {errorMessage && <ErrorMessage text={errorMessage} />}
             </Grid>
             <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions} />
           </Grid>

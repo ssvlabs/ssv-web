@@ -50,6 +50,7 @@ const config = {
         },
         VALIDATOR: {
           ROOT: '/my-account/validator',
+          ADD_VALIDATOR: '/my-account/validator/add',
           VALIDATOR_UPDATE: {
             ROOT: '/my-account/validator/update',
             ENTER_KEYSTORE: '/my-account/validator/update/enter-key',
@@ -80,6 +81,7 @@ const config = {
         IMPORT: '/join/validator/enter-key',
         CREATE: '/join/validator/launchpad',
         SUCCESS_PAGE: '/join/validator/success',
+        FUNDING_PERIOD_PAGE: '/join/validator/funding',
         SELECT_OPERATORS: '/join/validator/choose-operators',
         SLASHING_WARNING: '/join/validator/slashing-warning',
         DEPOSIT_VALIDATOR: '/join/validator/deposit-validator',

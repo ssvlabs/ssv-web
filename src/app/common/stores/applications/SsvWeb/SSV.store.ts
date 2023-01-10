@@ -90,11 +90,11 @@ class SsvStore extends BaseStore {
   @action.bound
   async userSyncInterval() {
     await this.checkAllowance();
-    await this.getNetworkFees();
-    await this.checkIfLiquidated();
+    // await this.getNetworkFees();
+    // await this.checkIfLiquidated();
     // await this.getAccountBurnRate();
     await this.getBalanceFromSsvContract();
-    await this.getBalanceFromDepositContract();
+    // await this.getBalanceFromDepositContract();
   }
 
   /**

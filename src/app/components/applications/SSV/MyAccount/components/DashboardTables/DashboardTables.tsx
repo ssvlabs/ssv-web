@@ -15,6 +15,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import TestStore from '~app/common/stores/applications/SsvWeb/Test.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/DashboardTables/DashboardTables.styles';
@@ -31,6 +32,7 @@ const DashboardTables = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
+  const testStore: TestStore = stores.Test;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -268,6 +270,7 @@ const DashboardTables = () => {
 
   return (
     <Grid container item className={classes.Table}>
+      <Grid onClick={()=>{testStore.setPrice(testStore.price + 1);}}>{testStore.price}</Grid>
       {myAccountStore?.ownerAddressValidators?.length > 0 && (
         <Grid item xs={12} style={{ marginBottom: 20 }}>
           <ReactTable

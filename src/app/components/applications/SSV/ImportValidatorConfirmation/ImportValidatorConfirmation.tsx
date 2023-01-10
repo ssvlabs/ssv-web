@@ -6,9 +6,9 @@ import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import MessageDiv from '~app/components/common/MessageDiv/MessageDiv';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -149,7 +149,7 @@ const ImportValidatorConfirmation = () => {
         </Grid>
       )}
 
-      {errorMessage && <MessageDiv text={errorMessage} />}
+      {errorMessage && <ErrorMessage text={errorMessage} />}
 
       <Grid container>
         <Button

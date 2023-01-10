@@ -54,12 +54,12 @@ const BorderScreen = (props: Props) => {
       <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
         {(header || withConversion) && (
           <Grid container item className={classes.HeaderSection} justify={'space-between'}>
-            <Grid item className={classes.Header}>
+            <Grid item className={classes.Header} xs>
               {header}
             </Grid>
             {SideHeader && !withConversion && <Grid item><SideHeader /></Grid>}
             {withConversion && (
-              <Grid item xs={5}>
+              <Grid item>
                 <Grid container item className={classes.Conversion}>
                   {coins.map((coin: string, index: number) => {
                     return (

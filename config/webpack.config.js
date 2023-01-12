@@ -329,6 +329,7 @@ module.exports = function (webpackEnv) {
         https: require.resolve('https-browserify'),
         os: require.resolve('os-browserify/browser'),
         crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
       },
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"

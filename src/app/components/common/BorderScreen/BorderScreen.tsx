@@ -24,19 +24,19 @@ const BorderScreen = (props: Props) => {
   const [coins] = useState(['SSV', 'USD']);
   const [currency, setCurrency] = useState('SSV');
   const {
-    wrapperClass,
-    borderRadius,
+    body,
+    gray80,
+    header,
+    bottom,
     overFlow,
     SideHeader,
-    gray80,
-    withoutNavigation,
     blackHeader,
-    header,
-    withConversion,
-    bottomWrapper,
-    body,
+    wrapperClass,
+    borderRadius,
     sectionClass,
-    bottom,
+    bottomWrapper,
+    withConversion,
+    withoutNavigation,
   } = props;
   const classes = useStyles({ overFlow, gray80, blackHeader });
 

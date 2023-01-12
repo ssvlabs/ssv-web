@@ -11,15 +11,15 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 class WalletStore extends BaseStore implements Wallet {
-  @observable web3: any = null;
-  @observable wallet: any = null;
-  @observable ssvBalance: any = 0;
-  @observable notifySdk: any = null;
-  @observable onboardSdk: any = null;
-  @observable accountAddress: string = '';
-  @observable wrongNetwork: boolean = false;
-  @observable networkId: number | null = null;
-  @observable accountDataLoaded: boolean = false;
+  web3: any = null;
+  wallet: any = null;
+  ssvBalance: any = 0;
+  notifySdk: any = null;
+  onboardSdk: any = null;
+  accountAddress: string = '';
+  wrongNetwork: boolean = false;
+  networkId: number | null = null;
+  accountDataLoaded: boolean = false;
 
   private contract: Contract | undefined;
   private distributionStore: DistributionStore = this.getStore('Distribution');
@@ -27,6 +27,34 @@ class WalletStore extends BaseStore implements Wallet {
 
   constructor() {
     super();
+
+    makeObservable(this, {
+      web3: observable,
+      wallet: observable,
+      ssvBalance: observable,
+      notifySdk: observable,
+      onboardSdk: observable,
+      accountAddress: observable,
+      wrongNetwork: observable,
+      networkId: observable,
+      accountDataLoaded: observable,
+      initWalletHooks: action.bound,
+      initializeUserInfo: action.bound,
+      fromWei: action.bound,
+      toWei: action.bound,
+      connectWalletFromCache: action.bound,
+      connect: action.bound,
+      addressHandler: action.bound,
+      walletHandler: action.bound,
+      networkHandler: action.bound,
+      encodeKey: action.bound,
+      decodeKey: action.bound,
+      setAccountDataLoaded: action.bound,
+      connected: computed,
+      isWrongNetwork: computed,
+      getContract: computed,
+    });
+
     makeObservable(this);
     this.initWalletHooks();
   }
@@ -39,7 +67,6 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
-  @action.bound
   initWalletHooks() {
     if (this.onboardSdk) return;
     const connectionConfig = {
@@ -68,18 +95,15 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Initialize Account data from contract
    */
-  @action.bound
   async initializeUserInfo() {
 
   }
 
-  @action.bound
   fromWei(amount?: string): number {
     if (!amount) return 0;
     return this.web3.utils.fromWei(amount, 'ether');
   }
 
-  @action.bound
   toWei(amount?: number): string {
     if (!amount) return '0';
     return this.web3.utils.toWei(amount.toString(), 'ether');
@@ -88,7 +112,6 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Check wallet cache and connect
    */
-  @action.bound
   async connectWalletFromCache() {
     const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
     if (selectedWallet && selectedWallet !== 'undefined') {
@@ -102,7 +125,6 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Connect wallet
    */
-  @action.bound
   async connect() {
     try {
       console.debug('Connecting wallet..');
@@ -120,7 +142,6 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param address: string
    */
-  @action.bound
   async addressHandler(address: string) {
     this.setAccountDataLoaded(false);
     if (address === undefined) {
@@ -137,7 +158,6 @@ class WalletStore extends BaseStore implements Wallet {
    * Callback for connected wallet
    * @param wallet: any
    */
-  @action.bound
   async walletHandler(wallet: any) {
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
@@ -149,7 +169,6 @@ class WalletStore extends BaseStore implements Wallet {
    * User Network handler
    * @param networkId: any
    */
-  @action.bound
   async networkHandler(networkId: any) {
     console.log('networkId: ', networkId);
     this.networkId = networkId;
@@ -160,7 +179,6 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param operatorKey: string
    */
-  @action.bound
   encodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
     return this.web3.eth.abi.encodeParameter('string', operatorKey);
@@ -170,7 +188,6 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param operatorKey: string
    */
-  @action.bound
   decodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
     return this.web3?.eth.abi.decodeParameter('string', operatorKey);
@@ -180,22 +197,18 @@ class WalletStore extends BaseStore implements Wallet {
    * Set Account loaded
    * @param status: boolean
    */
-  @action.bound
   setAccountDataLoaded = (status: boolean): void => {
     this.accountDataLoaded = status;
   };
 
-  @computed
   get connected() {
     return this.accountAddress;
   }
 
-  @computed
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
   }
 
-  @computed
   get getContract(): Contract {
     if (!this.contract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;

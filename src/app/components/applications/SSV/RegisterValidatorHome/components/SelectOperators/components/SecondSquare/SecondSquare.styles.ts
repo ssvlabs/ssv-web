@@ -4,10 +4,10 @@ export const useStyles = makeStyles((theme) => ({
   ScreenWrapper: {
     width: '100%',
     marginBottom: 100,
-    marginTop: (props: any) => props.editPage ? '' : 28,
+    marginTop: (props: any) => props.editPage ? '' : 52,
     '@media only screen and (max-width: 1400px)': {
-      marginTop: 24,
       marginBottom: 24,
+      marginTop: '8px !important',
     },
   },
   DeleteOperator: {

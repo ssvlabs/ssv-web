@@ -1,28 +1,41 @@
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
 
 class NotificationsStore extends BaseStore {
-  @observable autoHideDuration: number = 0;
-  @observable message: string = '';
-  @observable showSnackBar = false;
-  @observable messageSeverity: string = '';
+  autoHideDuration: number = 0;
+  message: string = '';
+  showSnackBar = false;
+  messageSeverity: string = '';
 
-  @action.bound
+  constructor() {
+    // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
+    super();
+
+    makeObservable(this, {
+      message: observable,
+      showSnackBar: observable,
+      setMessage: action.bound,
+      showMessage: action.bound,
+      messageSeverity: observable,
+      autoHideDuration: observable,
+      setShowSnackBar: action.bound,
+      setMessageSeverity: action.bound,
+      setAutoHideDuration: action.bound,
+    });
+  }
+
   setShowSnackBar(status: boolean) {
     this.showSnackBar = status;
   }
 
-  @action.bound
   setMessage(text: string) {
     this.message = text;
   }
 
-  @action.bound
   setMessageSeverity(text: string) {
     this.messageSeverity = text;
   }
 
-  @action.bound
   showMessage(message: string, severity: string, autoHideDuration?: number) {
     this.setShowSnackBar(true);
     this.setMessage(message);
@@ -32,7 +45,6 @@ class NotificationsStore extends BaseStore {
     }
   }
 
-  @action.bound
   setAutoHideDuration(autoHideDuration: number) {
     this.autoHideDuration = autoHideDuration;
   }

@@ -18,7 +18,6 @@ export const useStyles = makeStyles((theme) => ({
     LinkWrapper: {
         height: 20,
         minWidth: 17,
-        marginTop: 3,
         marginBottom: 32,
     },
     ScreenWrapper: {

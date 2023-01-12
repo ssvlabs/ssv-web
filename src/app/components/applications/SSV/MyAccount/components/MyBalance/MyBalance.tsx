@@ -37,7 +37,7 @@ const MyBalance = () => {
   }
 
   function moveToWithdraw() {
-    return navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ADD_VALIDATOR);
+    return navigate(config.routes.SSV.VALIDATOR.IMPORT);
     // return navigate(config.routes.SSV.MY_ACCOUNT.WITHDRAW);
   }
 

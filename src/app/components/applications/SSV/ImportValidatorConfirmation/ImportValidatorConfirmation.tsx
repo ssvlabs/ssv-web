@@ -8,7 +8,9 @@ import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import BorderScreen from '~app/components/common/BorderScreen';
+import { useStyles } from './ImportValidatorConfirmation.styles';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import FundingSummary from '~app/components/common/FundingSummary';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -19,7 +21,6 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
-import { useStyles } from './ImportValidatorConfirmation.styles';
 
 const ImportValidatorConfirmation = () => {
   const stores = useStores();
@@ -69,7 +70,7 @@ const ImportValidatorConfirmation = () => {
       }
     }
 
-    const response = await validatorStore.addNewValidator(false);
+    const response = await validatorStore.addNewValidator();
     if (response) {
       operatorStore.unselectAllOperators();
       applicationStore.showTransactionPendingPopUp(false);
@@ -79,15 +80,6 @@ const ImportValidatorConfirmation = () => {
       setActionButtonText('Run validator');
     }
   };
-
-  const fields = [
-    { key: 'Operators yearly fee', value: formatNumberToUi(totalOperatorsYearlyFee) },
-    { key: 'Network yearly fee', value: formatNumberToUi(yearlyNetworkFee) },
-    {
-      key: 'Liquidation collateral',
-      value: formatNumberToUi(liquidationCollateral),
-    },
-  ];
 
   const components = [
     <Grid container>
@@ -113,23 +105,7 @@ const ImportValidatorConfirmation = () => {
       </Grid>
     </Grid>,
   ];
-  components.push(
-    <Grid container>
-      <Grid item xs={12} className={classes.SubHeader}>Transaction Summary</Grid>
-      {fields.map((field) => {
-          return (
-            <Grid item container className={classes.Row} key={field.key}>
-              <Grid item>
-                <NameAndAddress name={field.key} />
-              </Grid>
-              <Grid item xs>
-                <SsvAndSubTitle ssv={field.value} />
-              </Grid>
-            </Grid>
-          );
-        })}
-    </Grid>,
-  );
+  components.push(<FundingSummary />);
   components.push(
     <Grid container>
       <Grid item xs>

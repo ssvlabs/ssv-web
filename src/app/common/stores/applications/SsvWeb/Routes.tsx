@@ -19,15 +19,16 @@ import RegisterOperatorHome from '~app/components/applications/SSV/RegisterOpera
 import RegisterValidatorHome from '~app/components/applications/SSV/RegisterValidatorHome';
 import EnableAccount from '~app/components/applications/SSV/MyAccount/components/EnableAccount';
 import OperatorTransactionConfirmation from '~app/components/applications/SSV/OperatorConfirmation';
+import ImportFile from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile';
 import SingleOperator from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator';
 import ValidatorTransactionConfirmation from '~app/components/applications/SSV/ImportValidatorConfirmation';
 import FundingPeriod from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod';
 import UpdateFee from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee';
 import SingleValidator from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator';
-import ImportValidator from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator';
 import CreateValidator from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning';
 import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
+import GenerateKeyShares from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares';
 import EditValidator from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator';
 import UploadKeyStore from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore';
 // import FundingNewValidator from '~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator';
@@ -42,6 +43,8 @@ import ProductQuestions
   from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions';
 import ConfirmOperatorsChange
   from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange';
+import OfflineKeyShareGeneration
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration';
 
 const Routes: any = () => {
   const stores = useStores();
@@ -75,15 +78,18 @@ const Routes: any = () => {
   ];
 
   const validatorsRoutes = [
+    { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportFile },
     { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
-    { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportValidator },
     { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: SuccessScreen },
     { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
     { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, Component: SlashingWarning },
     { path: ssvRoutes.VALIDATOR.FUNDING_PERIOD_PAGE, Component: FundingPeriod },
     { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, Component: DepositViaLaunchpad },
+    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.START, Component: GenerateKeyShares },
     { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
     { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
+    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
+    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
   ];
 
   return (
@@ -118,7 +124,7 @@ const Routes: any = () => {
           {validatorsRoutes.map((route, index: number) => {
             return (
               <Suspense key={index} fallback={<></>}>
-                <Route path={route.path} element={<route.Component />} />
+                {!route.keyShares ? <Route path={route.path} element={<route.Component/>} /> : <Route path={route.path} element={<route.Component keyShares />} />}
               </Suspense>
             );
           })}

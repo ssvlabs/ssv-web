@@ -1,15 +1,28 @@
 import axios from 'axios';
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 
 class FaucetStore extends BaseStore {
-    @observable amountToTransfer: any;
-    @observable pendingTransaction: any;
-    @observable addressTransactions: any;
+    amountToTransfer: any;
+    pendingTransaction: any;
+    addressTransactions: any;
 
-    @action.bound
+    constructor() {
+        // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
+        super();
+
+        makeObservable(this, {
+            amountToTransfer: observable,
+            pendingTransaction: observable,
+            addressTransactions: observable,
+            getLatestTransactions: action.bound,
+            registerNewTransaction: action.bound,
+            registerSSVTokenInMetamask: action.bound,
+        });
+    }
+
     async registerNewTransaction() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
@@ -21,7 +34,6 @@ class FaucetStore extends BaseStore {
         }
     }
 
-    @action.bound
     async getLatestTransactions() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
@@ -32,11 +44,10 @@ class FaucetStore extends BaseStore {
             return false;
         }
     }
-    
+
     /**
      * @url https://docs.metamask.io/guide/registering-your-token.html
      */
-    @action.bound
     registerSSVTokenInMetamask() {
         return new Promise((resolve, reject) => {
             return this.getStore('Wallet').web3.currentProvider.send({

@@ -9,7 +9,7 @@ const ErrorType = {
     Withdraw: 1,
     Liquidated: 2,
     WithdrawAll: 3,
-} as const;
+};
 
 type Props = {
     errorType: number,

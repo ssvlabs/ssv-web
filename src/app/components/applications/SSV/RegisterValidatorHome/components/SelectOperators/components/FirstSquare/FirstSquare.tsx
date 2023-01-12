@@ -11,6 +11,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
+import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
 import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
@@ -18,7 +19,6 @@ import config, { translations } from '~app/common/config';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -31,7 +31,6 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import Status from '~app/components/common/Status';
 
 const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   const stores = useStores();
@@ -153,15 +152,15 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     if (operatorsData?.length === 0 && !loading) {
       return (
-        <TableRow hover>
-          <StyledCell className={classes.NoRecordsWrapper}>
-            <Grid container>
-              <Grid item xs={12} className={classes.NoRecordImage} />
-              <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
-              <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
-            </Grid>
-          </StyledCell>
-        </TableRow>
+          <TableRow hover>
+            <StyledCell className={classes.NoRecordsWrapper}>
+              <Grid container>
+                <Grid item xs={12} className={classes.NoRecordImage}/>
+                <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
+                <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
+              </Grid>
+            </StyledCell>
+          </TableRow>
       );
     }
 
@@ -172,57 +171,57 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       const isInactive = operator.status.toLowerCase() === 'inactive';
 
       return (
-        <TableRow
-          key={Math.floor(Math.random() * 10000000)}
-          className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
-          onClick={(e) => {
-            !disabled && selectOperator(e, operator);
-          }}
-        >
-          <StyledCell style={{ paddingLeft: 20, width: 60 }}>
-            <Checkbox disable={disableCheckBoxes && !isSelected} grayBackGround text={''} isChecked={isSelected} />
-          </StyledCell>
-          <StyledCell>
-            <OperatorDetails operator={operator} />
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <Grid item>{operator.validators_count}</Grid>
-              {disabled && (
-                <Grid item style={{ marginLeft: 4 }}>
-                  <ToolTip text={'Operator reached  maximum amount of validators'} />
-                </Grid>
-              )}
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <Grid item
-                className={isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
-              {isInactive && (
-                <Grid item xs={12}>
-                  <Status status={operator.status} />
-                </Grid>
-              )}
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <Grid item
-                className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
-              {disabled && (
-              <Grid item style={{ alignSelf: 'center' }}>
-                <ToolTip text={'Operator reached  maximum amount of validators'} />
-              </Grid>
+          <TableRow
+              key={Math.floor(Math.random() * 10000000)}
+              className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
+              onClick={(e) => {
+                !disabled && selectOperator(e, operator);
+              }}
+          >
+            <StyledCell style={{ paddingLeft: 20, width: 60 }}>
+              <Checkbox disable={disableCheckBoxes && !isSelected} grayBackGround text={''} isChecked={isSelected}/>
+            </StyledCell>
+            <StyledCell>
+              <OperatorDetails operator={operator}/>
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <Grid item>{operator.validators_count}</Grid>
+                {disabled && (
+                    <Grid item style={{ marginLeft: 4 }}>
+                      <ToolTip text={'Operator reached  maximum amount of validators'}/>
+                    </Grid>
                 )}
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
-              redirectTo(operator.address);
-            }} />
-          </StyledCell>
-        </TableRow>
+              </Grid>
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <Grid item
+                      className={isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
+                {isInactive && (
+                    <Grid item xs={12}>
+                      <Status status={operator.status}/>
+                    </Grid>
+                )}
+              </Grid>
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <Grid item
+                      className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
+                {disabled && (
+                    <Grid item style={{ alignSelf: 'center' }}>
+                      <ToolTip text={'Operator reached  maximum amount of validators'}/>
+                    </Grid>
+                )}
+              </Grid>
+            </StyledCell>
+            <StyledCell>
+              <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
+                redirectTo(operator.address);
+              }}/>
+            </StyledCell>
+          </TableRow>
       );
     });
   };
@@ -273,63 +272,65 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   }, [operatorsPagination.page]);
 
   return (
-    <BorderScreen
-      withoutNavigation={editPage}
-      wrapperClass={classes.ScreenWrapper}
-      body={[
-        <Grid container>
-          <HeaderSubHeader title={translations.VALIDATOR.SELECT_OPERATORS.TITLE} />
-          <Grid item container>
-            <Grid item xs className={classes.SearchInputWrapper}>
-              <TextInput
-                withSideText
-                placeHolder={'Search...'}
-                onChangeCallback={inputHandler}
-                sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> :
-                <div className={classes.SearchIcon} />}
-              />
-            </Grid>
-            <Filters setFilterBy={setFilterBy} />
-          </Grid>
-          <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {rows.length > 0 && headers.map((header: any, index: number) => {
-                    const sortByType = sortBy === header.type;
-                    const ascending = sortOrder === 'asc';
-                    const descending = sortOrder === 'desc';
-                    let headerClasses = classes.SortArrow;
+      <BorderScreen
+          blackHeader
+          withConversion
+          withoutNavigation={editPage}
+          header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
+          wrapperClass={classes.ScreenWrapper}
+          body={[
+            <Grid container>
+              <Grid item container>
+                <Grid item xs className={classes.SearchInputWrapper}>
+                  <TextInput
+                      withSideText
+                      placeHolder={'Search...'}
+                      onChangeCallback={inputHandler}
+                      sideIcon={loading ? <CircularProgress size={25} className={classes.Loading}/> :
+                          <div className={classes.SearchIcon}/>}
+                  />
+                </Grid>
+                <Filters setFilterBy={setFilterBy}/>
+              </Grid>
+              <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      {rows.length > 0 && headers.map((header: any, index: number) => {
+                        const sortByType = sortBy === header.type;
+                        const ascending = sortOrder === 'asc';
+                        const descending = sortOrder === 'desc';
+                        let headerClasses = classes.SortArrow;
 
-                    if (sortByType) {
-                      if (ascending) headerClasses += ` ${classes.ArrowDown}`;
-                      if (descending) headerClasses += ` ${classes.ArrowUp}`;
-                    }
+                        if (sortByType) {
+                          if (ascending) headerClasses += ` ${classes.ArrowDown}`;
+                          if (descending) headerClasses += ` ${classes.ArrowUp}`;
+                        }
 
-                    return (
-                      <StyledCell key={index} className={classes.HeaderWrapper}>
-                        <Grid container onClick={() => sortHandler(header.type)}>
-                          <Grid item>{header.displayName}</Grid>
-                          {header.displayName !== '' && (
-                            <Grid
-                              item
-                              className={headerClasses}
-                            />
-                          )}
-                        </Grid>
-                      </StyledCell>
-                    );
-                  })}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>,
-      ]}
-    />
+                        return (
+                            <StyledCell key={index} className={classes.HeaderWrapper}>
+                              <Grid container onClick={() => sortHandler(header.type)}>
+                                <Grid item>{header.displayName}</Grid>
+                                {header.displayName !== '' && (
+                                    <Grid
+                                        item
+                                        className={headerClasses}
+                                    />
+                                )}
+                              </Grid>
+                            </StyledCell>
+                        );
+                      })}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>,
+          ]}
+      />
   );
 };
 

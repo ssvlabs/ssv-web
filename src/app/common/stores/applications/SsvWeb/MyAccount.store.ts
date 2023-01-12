@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 // import Validator from '~lib/api/Validator';
@@ -18,25 +18,50 @@ class MyAccountStore extends BaseStore {
   static CHECK_UPDATES_MAX_ITERATIONS = 60;
 
   // GLOBAL
-  @observable forceBigList: boolean = false;
-  @observable operatorsInterval: any = null;
-  @observable validatorsInterval: any = null;
-  @observable lastUpdateOperators: number | undefined;
-  @observable lastUpdateValidators: number | undefined;
+  forceBigList: boolean = false;
+  operatorsInterval: any = null;
+  validatorsInterval: any = null;
+  lastUpdateOperators: number | undefined;
+  lastUpdateValidators: number | undefined;
 
   // OPERATOR
-  @observable ownerAddressOperators: any = [];
-  @observable ownerAddressOperatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressOperators: any = [];
+  ownerAddressOperatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
 
   // VALIDATOR
-  @observable ownerAddressValidators: any = [];
-  @observable ownerAddressValidatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressValidators: any = [];
+  ownerAddressValidatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
 
   // BEACONCHAIN
-  @observable beaconChaBalances: any = {};
-  @observable beaconChaPerformances: any = {};
+  beaconChaBalances: any = {};
+  beaconChaPerformances: any = {};
 
-  @action.bound
+  constructor() {
+    // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
+    super();
+
+    makeObservable(this, {
+      forceBigList: observable,
+      setIntervals: action.bound,
+      getValidator: action.bound,
+      clearIntervals: action.bound,
+      beaconChaBalances: observable,
+      operatorsInterval: observable,
+      validatorsInterval: observable,
+      lastUpdateOperators: observable,
+      lastUpdateValidators: observable,
+      getOperatorRevenue: action.bound,
+      ownerAddressOperators: observable,
+      getOperatorsRevenue: action.bound,
+      beaconChaPerformances: observable,
+      ownerAddressValidators: observable,
+      getOwnerAddressOperators: action.bound,
+      getOwnerAddressValidators: action.bound,
+      ownerAddressOperatorsPagination: observable,
+      ownerAddressValidatorsPagination: observable,
+    });
+  }
+
   clearIntervals() {
     clearInterval(this.operatorsInterval);
     clearInterval(this.validatorsInterval);
@@ -100,7 +125,6 @@ class MyAccountStore extends BaseStore {
     return new Promise((r) => setTimeout(() => r(true), ms || 1000));
   }
 
-  @action.bound
   setIntervals() {
     this.validatorsInterval = setInterval(() => {
       // @ts-ignore
@@ -117,11 +141,12 @@ class MyAccountStore extends BaseStore {
     }, INTERVAL_TIME);
   }
 
-  @action.bound
-  async getOwnerAddressOperators({
-                                   forcePage,
-                                   forcePerPage,
-                                 }: { forcePage?: number, forcePerPage?: number }): Promise<void> {
+  async getOwnerAddressOperators(
+    {
+                                     forcePage,
+                                     forcePerPage,
+                                   }: { forcePage?: number, forcePerPage?: number },
+  ): Promise<void> {
     const { page, perPage } = this.ownerAddressOperatorsPagination;
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return;
@@ -133,7 +158,6 @@ class MyAccountStore extends BaseStore {
     return this.ownerAddressOperators;
   }
 
-  @action.bound
   async getOperatorRevenue(operator: any) {
     const operatorStore: OperatorStore = this.getStore('Operator');
     // eslint-disable-next-line no-param-reassign
@@ -141,12 +165,10 @@ class MyAccountStore extends BaseStore {
     return operator;
   }
 
-  @action.bound
   async getOperatorsRevenue(operatorsList: any) {
     return Promise.all(operatorsList.map((operator: any) => this.getOperatorRevenue(operator)));
   }
 
-  @action.bound
   async getValidator(publicKey: string, skipRetry?: boolean): Promise<any> {
     const validator = await Validator.getInstance().getValidator(publicKey, skipRetry);
     const validatorPublicKey = `0x${validator.public_key}`;
@@ -164,12 +186,13 @@ class MyAccountStore extends BaseStore {
     };
   }
 
-  @action.bound
-  async getOwnerAddressValidators({
-                                    forcePage,
-                                    forcePerPage,
-                                    reFetchBeaconData,
-                                  }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean }): Promise<any[]> {
+  async getOwnerAddressValidators(
+    {
+                                      forcePage,
+                                      forcePerPage,
+                                      reFetchBeaconData,
+                                    }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean },
+  ): Promise<any[]> {
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return [];
     const ssvStore: SSVStore = this.getStore('SSV');

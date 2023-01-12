@@ -11,7 +11,7 @@ class TestStore extends BaseStore {
       price: observable,
       amount: observable,
       total: computed,
-      setPrice: action,
+      setPrice: action.bound,
     });
     this.price = price;
   }
@@ -21,7 +21,7 @@ class TestStore extends BaseStore {
     return this.price * this.amount;
   }
 
-  set setPrice(price: number) {
+  setPrice(price: number) {
     this.price = price;
   }
 }

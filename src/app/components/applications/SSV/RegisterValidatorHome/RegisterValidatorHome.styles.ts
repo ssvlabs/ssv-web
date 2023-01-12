@@ -25,9 +25,12 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.colors.gray90,
   },
   GreenV: {
-    width: 9,
-    height: 6,
-    border: 'solid 1.6px #08c858',
+    width: 13.3,
+    height: 13.7,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(/images/v/green.svg)',
   },
   Text: {
     fontSize: 16,

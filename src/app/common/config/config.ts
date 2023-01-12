@@ -78,9 +78,14 @@ const config = {
       },
       VALIDATOR: {
         HOME: '/join/validator',
-        IMPORT: '/join/validator/enter-key',
         CREATE: '/join/validator/launchpad',
         SUCCESS_PAGE: '/join/validator/success',
+        IMPORT: '/join/validator/upload-keystore',
+        DISTRIBUTION_METHOD: {
+          START: '/join/validator/distribution-method',
+          DISTRIBUTE_OFFLINE: '/join/validator/distribute-offline',
+          UPLOAD_KEYSHARES: '/join/validator/upload-keyshares',
+        },
         FUNDING_PERIOD_PAGE: '/join/validator/funding',
         SELECT_OPERATORS: '/join/validator/choose-operators',
         SLASHING_WARNING: '/join/validator/slashing-warning',

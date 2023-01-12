@@ -6,6 +6,10 @@ class BaseStore {
   protected static stores: Record<string, any> = {};
   protected static instance: BaseStore | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+  }
+
   /**
    * Return stores registry to use it in provider and context
    */
@@ -66,7 +70,6 @@ class BaseStore {
    * @param stores
    */
   preloadStores(stores: string[]): Record<string, any> {
-    console.log(stores);
     stores.map((store: string) => {
       return this.getStore(store);
     });

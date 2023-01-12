@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
+import { useStyles } from './ImportFile.styles';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import LinkText from '~app/components/common/LinkText';
@@ -15,20 +16,15 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportValidator/ImportValidator.styles';
 
-const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
+const ImportFile = ({ reUpload, keyShares }: { reUpload?: boolean, keyShares?: boolean }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
-  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
@@ -180,20 +176,25 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
   const submitHandler = async () => {
     applicationStore.setIsLoading(true);
     try {
-      await validatorStore.extractKeyStoreData(keyStorePassword);
+      if (keyShares) {
+        await validatorStore.extractKeySharesData(keyStorePassword);
+        navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
+        applicationStore.setIsLoading(false);
+        return;
+      }
+      else await validatorStore.extractKeyStoreData(keyStorePassword);
       // remove deposit check restriction temporary
       isDeposited;
       const deposited = true; // await isDeposited();
       if (reUpload) {
         navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CONFIRM_TRANSACTION);
       } else if (deposited) {
-        operatorStore.unselectAllOperators();
         GoogleTagManager.getInstance().sendEvent({
           category: 'validator_register',
           action: 'upload_file',
           label: 'success',
         });
-        navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
+        navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
       } else {
         GoogleTagManager.getInstance().sendEvent({
           category: 'validator_register',
@@ -222,10 +223,8 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
     applicationStore.setIsLoading(false);
   };
 
-  const buttonDisableConditions = !validatorStore.isJsonFile
-    || !keyStorePassword
-    || !!errorMessage
-    || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== validatorPublicKey?.replace('0x', '')?.toLowerCase())
+
+  const buttonDisableConditions = !validatorStore.isJsonFile || (!keyShares && !keyStorePassword) || !!errorMessage || (reUpload && validatorStore.keyStorePublicKey?.toLowerCase() !== validatorPublicKey?.replace('0x', '')?.toLowerCase())
     || (!reUpload && validatorStore.validatorPublicKeyExist);
 
   const inputDisableConditions = !validatorStore.isJsonFile
@@ -262,14 +261,15 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
 
           </Grid>
           <Grid container item xs={12}>
-            <InputLabel title="Keystore Password" />
-            <Grid item xs={12} className={classes.ItemWrapper}>
-              <TextInput withLock disable={inputDisableConditions} value={keyStorePassword}
-                onChangeCallback={handlePassword} />
-            </Grid>
-            <Grid item xs={12} className={classes.ErrorWrapper}>
-              {errorMessage && <ErrorMessage text={errorMessage} />}
-            </Grid>
+            {!keyShares && <><InputLabel title="Keystore Password"/>
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput withLock disable={inputDisableConditions} value={keyStorePassword}
+                           onChangeCallback={handlePassword}/>
+              </Grid>
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <ErrorMessage text={errorMessage}/>}
+              </Grid></>
+            }
             <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions} />
           </Grid>
         </Grid>,
@@ -278,4 +278,4 @@ const ImportValidator = ({ reUpload }: { reUpload?: boolean }) => {
   );
 };
 
-export default observer(ImportValidator);
+export default observer(ImportFile);

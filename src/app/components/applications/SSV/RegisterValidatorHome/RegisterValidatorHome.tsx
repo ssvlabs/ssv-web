@@ -2,15 +2,15 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import BorderScreen from '~app/components/common/BorderScreen';
-import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
-import Typography from '@material-ui/core/Typography';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import LinkText from '~app/components/common/LinkText';
+import BorderScreen from '~app/components/common/BorderScreen';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
@@ -46,7 +46,7 @@ const RegisterValidatorHome = () => {
           <PrimaryButton text={'Next'} submitFunction={()=> navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS)} withoutLoader/>
           <Grid container item style={{ marginTop: 16, gap: 4 }}>
             <Typography className={`${classes.GrayText} ${classes.Gray90Text}`}>Don't have a validator?</Typography>
-            <LinkText text={'Create via Ethereum Launchpad'}/>
+            <LinkText text={'Create via Ethereum Launchpad'} link={config.routes.SSV.VALIDATOR.CREATE} routePush />
           </Grid>
         </Grid>,
       ]}

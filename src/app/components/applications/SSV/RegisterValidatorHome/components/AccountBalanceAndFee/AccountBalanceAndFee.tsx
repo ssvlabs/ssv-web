@@ -64,13 +64,13 @@ const AccountBalanceAndFee = () => {
           <Checkbox
             grayBackGround
             onClickCallBack={setSecondCheckBox}
-            text={'I understand the risks of having my account liquidated'}
+            text={'I understand the risks of having my cluster liquidated'}
           />
           <PrimaryButton
             disable={!firstCheckBox || !secondCheckBox}
             text={'Next'}
             submitFunction={() => {
-              navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
+              navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START);
             }}
           />
         </Grid>,

@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
@@ -9,71 +9,96 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 class WalletTestStore extends BaseStore implements Wallet {
   private contract: Contract | undefined;
 
-  @observable notifySdk: any;
-  @observable web3: any = null;
-  @observable wallet: any = null;
-  @observable ssvBalance: number = 0;
-  @observable onboardSdk: any = null;
-  @observable ready: boolean = false;
-  @observable accountAddress: string = '';
-  @observable wrongNetwork: boolean = false;
-  @observable networkId: number | null = null;
-  @observable isAccountLoaded: boolean = false;
-  @observable accountDataLoaded: boolean = true;
+  notifySdk: any;
+  web3: any = null;
+  wallet: any = null;
+  ssvBalance: number = 0;
+  onboardSdk: any = null;
+  ready: boolean = false;
+  accountAddress: string = '';
+  wrongNetwork: boolean = false;
+  networkId: number | null = null;
+  isAccountLoaded: boolean = false;
+  accountDataLoaded: boolean = true;
+
+  constructor() {
+    // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
+    super();
+
+    makeObservable(this, {
+      notifySdk: observable,
+      web3: observable,
+      wallet: observable,
+      ssvBalance: observable,
+      onboardSdk: observable,
+      ready: observable,
+      accountAddress: observable,
+      wrongNetwork: observable,
+      networkId: observable,
+      isAccountLoaded: observable,
+      accountDataLoaded: observable,
+      initWalletHooks: action.bound,
+      initializeUserInfo: action.bound,
+      fromWei: action.bound,
+      toWei: action.bound,
+      buildContract: action.bound,
+      encodeKey: action.bound,
+      decodeKey: action.bound,
+      clean: action.bound,
+      disconnect: action.bound,
+      connect: action.bound,
+      connected: computed,
+      selectWalletAndCheckIfReady: action.bound,
+      connectWalletFromCache: action.bound,
+      setAccountLoaded: action.bound,
+      isWrongNetwork: computed,
+      getContract: computed,
+    });
+  }
 
   BN(s: any) {
     return new this.web3.utils.BN(s);
   }
 
-  @action.bound
   initWalletHooks(): void {
   }
 
-  @action.bound
   initializeUserInfo(): void {
   }
 
-  @action.bound
   fromWei(amount?: string): number {
     if (!amount) return 0;
     return this.web3?.utils.fromWei(amount, 'ether');
   }
 
-  @action.bound
   toWei(amount?: number): string {
     if (!amount) return '0';
     return this.web3?.utils.toWei(amount.toString(), 'ether');
   }
 
-  @action.bound
   buildContract(address: string) {
     const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
     return new this.web3.eth.Contract(abi, address);
   }
 
-  @action.bound
   encodeKey(operatorKey?: string) {
     return this.web3.eth.abi.encodeParameter('string', operatorKey);
   }
 
-  @action.bound
   decodeKey(operatorKey?: string) {
     return this.web3.eth.abi.decodeParameter('string', operatorKey);
   }
 
-  @action.bound
   clean() {
     this.accountAddress = '';
   }
 
-  @action.bound
   async disconnect() {
     if (this.connected) {
       this.accountAddress = '';
     }
   }
 
-  @action.bound
   async connect() {
     try {
       console.debug('Connecting wallet..');
@@ -86,7 +111,6 @@ class WalletTestStore extends BaseStore implements Wallet {
     }
   }
 
-  @computed
   get connected() {
     return this.accountAddress;
   }
@@ -94,7 +118,6 @@ class WalletTestStore extends BaseStore implements Wallet {
   /**
    * Check wallet is ready to transact
    */
-  @action.bound
   async selectWalletAndCheckIfReady() {
     if (this.connected) {
       return;
@@ -120,7 +143,6 @@ class WalletTestStore extends BaseStore implements Wallet {
   /**
    * Check wallet cache and connect
    */
-  @action.bound
   async connectWalletFromCache() {
     const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
     if (selectedWallet) {
@@ -131,12 +153,10 @@ class WalletTestStore extends BaseStore implements Wallet {
     }
   }
 
-  @action.bound
   setAccountLoaded = (status: boolean): void => {
     this.isAccountLoaded = status;
   };
 
-  @computed
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
   }
@@ -144,7 +164,6 @@ class WalletTestStore extends BaseStore implements Wallet {
   /**
    * Get smart contract instance
    */
-  @computed
   get getContract(): Contract {
     if (!this.contract && this.connected) {
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;

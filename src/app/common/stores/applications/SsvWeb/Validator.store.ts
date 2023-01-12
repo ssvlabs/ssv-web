@@ -1,14 +1,12 @@
 import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, observable } from 'mobx';
-import config from '~app/common/config';
+import { action, computed, makeObservable, observable } from 'mobx';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import { addNumber, multiplyNumber } from '~lib/utils/numbers';
-import PriceEstimation from '~lib/utils/contract/PriceEstimation';
 // import { Encryption, EthereumKeyStore, Threshold } from 'ssv-keys';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -16,23 +14,52 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
+const annotations = {
+  isJsonFile: computed,
+  keyStoreFile: observable,
+  keyShareFile: observable,
+  setKeyStore: action.bound,
+  fundingPeriod: observable,
+  createPayLoad: action.bound,
+  removeValidator: action.bound,
+  updateValidator: action.bound,
+  addNewValidator: action.bound,
+  keyStorePublicKey: observable,
+  keyStorePrivateKey: observable,
+  newValidatorReceipt: observable,
+  clearValidatorData: action.bound,
+  extractKeyStoreData: action.bound,
+  extractKeySharesData: action.bound,
+  getKeyStorePublicKey: action.bound,
+  validatorPublicKeyExist: observable,
+  processValidatorPublicKey: observable,
+};
+
 class ValidatorStore extends BaseStore {
-  @observable estimationGas: number = 0;
-  @observable dollarEstimationGas: number = 0;
-  @observable newValidatorReceipt: any = null;
-  @observable keyStoreFile: File | null = null;
+  // general
+  fundingPeriod: any = null;
+  newValidatorReceipt: any = null;
 
-  // Key Stores keys
-  @observable keyStorePublicKey: string = '';
-  @observable keyStorePrivateKey: string = '';
-  @observable validatorPublicKeyExist: boolean = false;
+  // Key Stores flow
+  keyStorePublicKey: string = '';
+  keyStorePrivateKey: string = '';
+  keyStoreFile: File | null = null;
+  validatorPublicKeyExist: boolean = false;
 
-  // process data
-  @observable processValidatorPublicKey: string = '';
+  // key shares flow
+  keyShareFile: File | null = null;
 
-  public static OPERATORS_SELECTION_GAP = 66.66;
+  // process data (single validator flow)
+  processValidatorPublicKey: string = '';
 
-  @action.bound
+
+
+
+  constructor() {
+    super();
+    makeObservable(this, annotations);
+  }
+
   clearValidatorData() {
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
@@ -40,18 +67,6 @@ class ValidatorStore extends BaseStore {
     this.validatorPublicKeyExist = false;
   }
 
-  @action.bound
-  async getKeyStorePublicKey(): Promise<string> {
-    try {
-      const fileJson = await this.keyStoreFile?.text();
-      // @ts-ignore
-      return JSON.parse(fileJson).pubkey;
-    } catch (e: any) {
-      return '';
-    }
-  }
-
-  @action.bound
   async extractKeyStoreData(keyStorePassword: string): Promise<any> {
     const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
     fileTextPlain;
@@ -62,39 +77,19 @@ class ValidatorStore extends BaseStore {
     // this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
   }
 
-  /**
-   * Updating operators and validators data
-   * @param resolve
-   * @param showError
-   */
-  async refreshOperatorsAndValidators(resolve: any, showError?: boolean) {
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-
-    return Promise.all([
-      myAccountStore.getOwnerAddressValidators({}),
-      myAccountStore.getOwnerAddressOperators({}),
-    ])
-      .then(() => {
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
-        resolve(true);
-      })
-      .catch((error) => {
-        applicationStore.setIsLoading(false);
-        if (showError) {
-          notificationsStore.showMessage(error.message, 'error');
-        }
-        applicationStore.showTransactionPendingPopUp(false);
-        resolve(false);
-      });
+  async extractKeySharesData(keyStorePassword: string): Promise<any> {
+    const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
+    fileTextPlain;
+    keyStorePassword;
+    // @ts-ignore
+    // const ethereumKeyStore = //new EthereumKeyStore(fileTextPlain);
+    // this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
+    // this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
   }
 
   /**
    * Add new validator
    */
-  @action.bound
   async removeValidator(publicKey: string): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const applicationStore: ApplicationStore = this.getStore('Application');
@@ -147,7 +142,6 @@ class ValidatorStore extends BaseStore {
   /**
    * Update validator
    */
-  @action.bound
   async updateValidator() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
@@ -214,20 +208,13 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  /**
-   * Add new validator
-   * @param getGasEstimation
-   */
-  @action.bound
-  // eslint-disable-next-line no-unused-vars
-  async addNewValidator(getGasEstimation?: boolean) {
+  async addNewValidator() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const payload: any = await this.createPayLoad();
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      const gasEstimation: PriceEstimation = new PriceEstimation();
       const contract: Contract = walletStore.getContract;
       const ownerAddress: string = walletStore.accountAddress;
 
@@ -238,31 +225,6 @@ class ValidatorStore extends BaseStore {
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       console.debug('Add Validator Payload: ', payload);
 
-      if (getGasEstimation) {
-        // Send add operator transaction
-        contract.methods.registerValidator(...payload)
-          .estimateGas({ from: ownerAddress })
-          .then((gasAmount: any) => {
-            this.estimationGas = gasAmount * 0.000000001;
-            if (config.FEATURE.DOLLAR_CALCULATION) {
-              gasEstimation
-                .estimateGasInUSD(this.estimationGas)
-                .then(() => {
-                  // this.dollarEstimationGas = this.estimationGas * rate * 0;
-                  resolve(true);
-                })
-                .catch(() => {
-                  resolve(true);
-                });
-            } else {
-              this.dollarEstimationGas = 0;
-              resolve(true);
-            }
-          })
-          .catch((error: any) => {
-            resolve(error);
-          });
-      } else {
         // Send add operator transaction
         contract.methods.registerValidator(...payload).send({ from: ownerAddress })
           .on('receipt', async (receipt: any) => {
@@ -329,11 +291,9 @@ class ValidatorStore extends BaseStore {
             console.debug('Contract Error', error);
             resolve(true);
           });
-      }
     });
   }
 
-  @action.bound
   async createPayLoad(update: boolean = false): Promise<any> {
     // const threshold: Threshold = new Threshold();
     const threshold = null;
@@ -400,20 +360,57 @@ class ValidatorStore extends BaseStore {
    * @param keyStore
    * @param callBack
    */
-  @action.bound
   async setKeyStore(keyStore: any, callBack?: any) {
     try {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;
       this.keyStorePublicKey = await this.getKeyStorePublicKey();
-      this.validatorPublicKeyExist = !!await Validator.getInstance().getValidator(this.keyStorePublicKey, true);
+      this.validatorPublicKeyExist = !!(await Validator.getInstance().getValidator(this.keyStorePublicKey, true));
     } catch (e: any) {
       console.log(e.message);
     }
     !!callBack && callBack();
   }
 
-  @computed
+  /**
+   * Updating operators and validators data
+   * @param resolve
+   * @param showError
+   */
+  async refreshOperatorsAndValidators(resolve: any, showError?: boolean) {
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+
+    return Promise.all([
+      myAccountStore.getOwnerAddressValidators({}),
+      myAccountStore.getOwnerAddressOperators({}),
+    ])
+        .then(() => {
+          applicationStore.setIsLoading(false);
+          applicationStore.showTransactionPendingPopUp(false);
+          resolve(true);
+        })
+        .catch((error) => {
+          applicationStore.setIsLoading(false);
+          if (showError) {
+            notificationsStore.showMessage(error.message, 'error');
+          }
+          applicationStore.showTransactionPendingPopUp(false);
+          resolve(false);
+        });
+  }
+
+  async getKeyStorePublicKey(): Promise<string> {
+    try {
+      const fileJson = await this.keyStoreFile?.text();
+      // @ts-ignore
+      return JSON.parse(fileJson).pubkey;
+    } catch (e: any) {
+      return '';
+    }
+  }
+
   get isJsonFile(): boolean {
     return this.keyStoreFile?.type === 'application/json';
   }

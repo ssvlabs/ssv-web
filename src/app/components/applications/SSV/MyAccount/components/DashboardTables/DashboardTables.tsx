@@ -11,11 +11,11 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import { ReactTable } from '~app/components/common/ReactTable';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import TestStore from '~app/common/stores/applications/SsvWeb/Test.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import TestStore from '~app/common/stores/applications/SsvWeb/Test.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/DashboardTables/DashboardTables.styles';
@@ -270,7 +270,7 @@ const DashboardTables = () => {
 
   return (
     <Grid container item className={classes.Table}>
-      <Grid onClick={()=>{testStore.setPrice(testStore.price + 1);}}>{testStore.price}</Grid>
+      <Grid onClick={console.log}>{testStore.price}</Grid>
       {myAccountStore?.ownerAddressValidators?.length > 0 && (
         <Grid item xs={12} style={{ marginBottom: 20 }}>
           <ReactTable

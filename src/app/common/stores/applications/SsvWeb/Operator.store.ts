@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
@@ -56,33 +56,84 @@ interface SelectedOperators {
 
 class OperatorStore extends BaseStore {
   // Process data
-  @observable processOperatorId: number | undefined;
+  processOperatorId: number | undefined;
 
   // Cancel dialog switcher
-  @observable openCancelDialog: boolean = false;
+  openCancelDialog: boolean = false;
 
-  @observable operators: IOperator[] = [];
-  @observable operatorsFees: OperatorsFees = {};
-  @observable selectedOperators: SelectedOperators = {};
+  operators: IOperator[] = [];
+  operatorsFees: OperatorsFees = {};
+  selectedOperators: SelectedOperators = {};
 
   // Operator update fee process
-  @observable maxFeeIncrease: number = 0;
-  @observable operatorCurrentFee: null | number = null;
-  @observable operatorFutureFee: null | number = null;
-  @observable getSetOperatorFeePeriod: null | number = null;
-  @observable operatorApprovalEndTime: null | number = null;
-  @observable declaredOperatorFeePeriod: null | number = null;
-  @observable operatorApprovalBeginTime: null | number = null;
+  maxFeeIncrease: number = 0;
+  operatorCurrentFee: null | number = null;
+  operatorFutureFee: null | number = null;
+  getSetOperatorFeePeriod: null | number = null;
+  operatorApprovalEndTime: null | number = null;
+  declaredOperatorFeePeriod: null | number = null;
+  operatorApprovalBeginTime: null | number = null;
 
-  @observable newOperatorKeys: NewOperator = { pubKey: '', address: '', fee: 0, id: '0' };
-  @observable newOperatorRegisterSuccessfully: string = '';
+  newOperatorKeys: NewOperator = { pubKey: '', address: '', fee: 0, id: '0' };
+  newOperatorRegisterSuccessfully: string = '';
 
-  @observable estimationGas: number = 0;
-  @observable dollarEstimationGas: number = 0;
+  estimationGas: number = 0;
+  dollarEstimationGas: number = 0;
 
-  @observable loadingOperators: boolean = false;
+  loadingOperators: boolean = false;
 
-  @observable operatorValidatorsLimit: number = 2000;
+  operatorValidatorsLimit: number = 2000;
+
+  constructor() {
+    // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
+    super();
+
+    makeObservable(this, {
+      stats: computed,
+      initUser: action.bound,
+      operators: observable,
+      operatorsFees: observable,
+      estimationGas: observable,
+      maxFeeIncrease: observable,
+      newOperatorKeys: observable,
+      clearSettings: action.bound,
+      openCancelDialog: observable,
+      getOperatorFee: action.bound,
+      removeOperator: action.bound,
+      loadingOperators: observable,
+      addNewOperator: action.bound,
+      selectOperator: action.bound,
+      processOperatorId: observable,
+      selectedOperators: observable,
+      setOperatorKeys: action.bound,
+      operatorFutureFee: observable,
+      selectOperators: action.bound,
+      operatorCurrentFee: observable,
+      unselectOperator: action.bound,
+      clearOperatorData: action.bound,
+      dollarEstimationGas: observable,
+      updateOperatorFee: action.bound,
+      getOperatorRevenue: action.bound,
+      approveOperatorFee: action.bound,
+      switchCancelDialog: action.bound,
+      getOperatorFeeInfo: action.bound,
+      isOperatorSelected: action.bound,
+      getSelectedOperatorsFee: computed,
+      selectedEnoughOperators: computed,
+      unselectAllOperators: action.bound,
+      isOperatorRegistrable: action.bound,
+      operatorValidatorsLimit: observable,
+      getSetOperatorFeePeriod: observable,
+      operatorApprovalEndTime: observable,
+      cancelChangeFeeProcess: action.bound,
+      declaredOperatorFeePeriod: observable,
+      operatorApprovalBeginTime: observable,
+      validatorsPerOperatorLimit: action.bound,
+      getOperatorValidatorsCount: action.bound,
+      unselectOperatorByPublicKey: action.bound,
+      newOperatorRegisterSuccessfully: observable,
+    });
+  }
 
   /**
    * Updating operators and validators data
@@ -113,7 +164,6 @@ class OperatorStore extends BaseStore {
       });
   }
 
-  @computed
   get getSelectedOperatorsFee(): number {
     const walletStore: WalletStore = this.getStore('Wallet');
     return Object.values(this.selectedOperators).reduce(
@@ -125,7 +175,6 @@ class OperatorStore extends BaseStore {
   /**
    * Check if selected necessary minimum of operators
    */
-  @computed
   get selectedEnoughOperators(): boolean {
     return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
   }
@@ -133,7 +182,6 @@ class OperatorStore extends BaseStore {
   /**
    * Get selection stats
    */
-  @computed
   get stats(): { total: number, selected: number, selectedPercents: number } {
     const selected = Object.values(this.selectedOperators).length;
     return {
@@ -146,7 +194,6 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  @action.bound
   isOperatorRegistrable(validatorsRegisteredCount: number) {
     // eslint-disable-next-line radix
     return this.operatorValidatorsLimit > validatorsRegisteredCount;
@@ -155,7 +202,6 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  @action.bound
   switchCancelDialog() {
     this.openCancelDialog = !this.openCancelDialog;
   }
@@ -163,7 +209,6 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  @action.bound
   async initUser() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getContract;
@@ -175,7 +220,6 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  @action.bound
   clearSettings() {
     this.maxFeeIncrease = 0;
     this.operatorFutureFee = null;
@@ -190,7 +234,6 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  @action.bound
   async getOperatorFeeInfo(operatorId: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getContract;
@@ -204,7 +247,6 @@ class OperatorStore extends BaseStore {
   /**
    * get validators per operator limit
    */
-  @action.bound
   async validatorsPerOperatorLimit(): Promise<any> {
     // return new Promise((resolve) => {
     //     const walletStore: WalletStore = this.getStore('Wallet');
@@ -219,7 +261,6 @@ class OperatorStore extends BaseStore {
   /**
    * Cancel change fee process for operator
    */
-  @action.bound
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     let operatorBefore = await Operator.getInstance().getOperator(operatorId);
@@ -293,7 +334,6 @@ class OperatorStore extends BaseStore {
   /**
    * get validators of operator
    */
-  @action.bound
   async getOperatorValidatorsCount(operatorId: number): Promise<any> {
     return new Promise((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
@@ -307,7 +347,6 @@ class OperatorStore extends BaseStore {
   /**
    * clear operator store
    */
-  @action.bound
   clearOperatorData() {
     this.newOperatorKeys = {
       fee: 0,
@@ -322,7 +361,6 @@ class OperatorStore extends BaseStore {
    * Set operator keys
    * @param publicKey
    */
-  @action.bound
   async getOperatorFee(publicKey: string): Promise<any> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
@@ -345,7 +383,6 @@ class OperatorStore extends BaseStore {
    * Set operator keys
    * @param transaction
    */
-  @action.bound
   setOperatorKeys(transaction: NewOperator) {
     this.newOperatorKeys = transaction;
   }
@@ -353,7 +390,6 @@ class OperatorStore extends BaseStore {
   /**
    * Get operator revenue
    */
-  @action.bound
   async getOperatorRevenue(operatorId: number): Promise<any> {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
@@ -370,7 +406,6 @@ class OperatorStore extends BaseStore {
    * @param operatorId
    * @param newFee
    */
-  @action.bound
   async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // eslint-disable-next-line no-async-promise-executor
@@ -453,7 +488,6 @@ class OperatorStore extends BaseStore {
    * Check if operator already exists in the contract
    * @param operatorId
    */
-  @action.bound
   async approveOperatorFee(operatorId: number): Promise<boolean> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
@@ -528,7 +562,6 @@ class OperatorStore extends BaseStore {
    * Remove Operator
    * @param operatorId
    */
-  @action.bound
   async removeOperator(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
@@ -589,8 +622,6 @@ class OperatorStore extends BaseStore {
    * Add new operator
    * @param getGasEstimation
    */
-  @action.bound
-  // eslint-disable-next-line no-unused-vars
   async addNewOperator(getGasEstimation: boolean = false) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
@@ -704,7 +735,6 @@ class OperatorStore extends BaseStore {
    * Unselect operator
    * @param index
    */
-  @action.bound
   unselectOperator(index: number) {
     delete this.selectedOperators[index];
   }
@@ -712,7 +742,6 @@ class OperatorStore extends BaseStore {
   /**
    * Unselect operator by public_key
    */
-  @action.bound
   unselectOperatorByPublicKey(public_key: string) {
     Object.keys(this.selectedOperators).forEach((index) => {
       if (this.selectedOperators[index].address === public_key) {
@@ -726,9 +755,7 @@ class OperatorStore extends BaseStore {
    * @param operator
    * @param selectedIndex
    */
-  @action.bound
   selectOperator(operator: IOperator, selectedIndex: number) {
-    console.log('<<<<<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>>>>>');
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax
     for (const index of [1, 2, 3, 4]) {
@@ -737,16 +764,12 @@ class OperatorStore extends BaseStore {
       }
     }
     if (!operatorExist) this.selectedOperators[selectedIndex] = operator;
-    console.log('<<<<<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>>>>>');
-    console.log(this.selectedOperators);
-    console.log('<<<<<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>>>>>');
   }
 
   /**
    * Select operator
    * @param operators
    */
-  @action.bound
   selectOperators(operators: IOperator[]) {
     // eslint-disable-next-line no-restricted-syntax
     for (const index of [1, 2, 3, 4]) {
@@ -758,7 +781,6 @@ class OperatorStore extends BaseStore {
    * Check if operator selected
    * @param id
    */
-  @action.bound
   isOperatorSelected(id: string): boolean {
     let exist = false;
     Object.values(this.selectedOperators).forEach((operator: IOperator) => {
@@ -768,7 +790,6 @@ class OperatorStore extends BaseStore {
     return exist;
   }
 
-  @action.bound
   unselectAllOperators() {
     this.selectedOperators = {};
   }

@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
@@ -13,22 +13,48 @@ import Application from '~app/common/stores/Abstracts/Application';
 
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
-  @observable theme: Theme;
-  @observable txHash: string = '';
-  @observable userGeo: string = '';
-  @observable darkMode: boolean = false;
-  @observable toolBarMenu: boolean = false;
-  @observable walletPopUp: boolean = false;
-  @observable strategyName: string = 'faucet';
-  @observable isShowingLoading: boolean = false;
-  @observable walletConnectivity: boolean = false;
-  @observable transactionPendingPopUp: boolean = false;
-  @observable appTitle: string = 'SSV Network Testnet Faucet';
-  @observable strategyRedirect: string = config.routes.FAUCET.ROOT;
+  theme: Theme;
+  txHash: string = '';
+  userGeo: string = '';
+  darkMode: boolean = false;
+  toolBarMenu: boolean = false;
+  walletPopUp: boolean = false;
+  strategyName: string = 'faucet';
+  isShowingLoading: boolean = false;
+  walletConnectivity: boolean = false;
+  transactionPendingPopUp: boolean = false;
+  appTitle: string = 'SSV Network Testnet Faucet';
+  strategyRedirect: string = config.routes.FAUCET.ROOT;
   locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();
+
+    makeObservable(this, {
+      theme: observable,
+      txHash: observable,
+      userGeo: observable,
+      darkMode: observable,
+      appTitle: observable,
+      isLoading: computed,
+      isDarkMode: computed,
+      localStorage: computed,
+      toolBarMenu: observable,
+      walletPopUp: observable,
+      strategyName: observable,
+      setIsLoading: action.bound,
+      switchDarkMode: action.bound,
+      isShowingLoading: observable,
+      strategyRedirect: observable,
+      showWalletPopUp: action.bound,
+      walletConnectivity: observable,
+      applicationRoutes: action.bound,
+      displayToolBarMenu: action.bound,
+      transactionPendingPopUp: observable,
+      setWalletConnectivity: action.bound,
+      showTransactionPendingPopUp: action.bound,
+    });
+
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     if (darkModeSaved) {
@@ -41,12 +67,10 @@ class ApplicationStore extends BaseStore implements Application {
     }
   }
 
-  @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
   }
 
-  @action.bound
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const walletStore: WalletStore = this.getStore('Wallet');
@@ -55,32 +79,26 @@ class ApplicationStore extends BaseStore implements Application {
     this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  @action.bound
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
   }
 
-  @action.bound
   applicationRoutes() {
     return require('~app/common/stores/applications/Faucet/Routes').default;
   }
 
-  @action.bound
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
   }
 
-  @action.bound
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
   }
 
-  @action.bound
   setWalletConnectivity(show: boolean) {
     this.walletConnectivity = show;
   }
 
-  @computed
   get localStorage() {
     try {
       return localStorage;
@@ -99,12 +117,10 @@ class ApplicationStore extends BaseStore implements Application {
     }
   }
 
-  @computed
   get isLoading() {
     return this.isShowingLoading;
   }
 
-  @computed
   get isDarkMode() {
     return this.darkMode;
   }

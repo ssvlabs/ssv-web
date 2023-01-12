@@ -25,12 +25,12 @@ const translations = {
     },
     BALANCE_AND_FEE: {
       NAVIGATION_TEXT: 'select operators',
-      TITLE: 'Account Balances and Fees',
+      TITLE: 'Cluster Balances and Fees',
       SUB_TITLE: '',
       DESCRIPTION: '',
       BODY_TEXT: [
         'Fees are presented as annual payments but are paid to operators continuously as an on-going process. They are set by each operator and could change according to their decision.',
-        'When you register a new validator to the network you are required to deposit sufficient balance for a year, but it\'s under your sole responsibility to make sure your account always holds enough balance for it\'s operation.',
+        // 'When you register a new validator to the network you are required to deposit sufficient balance for a year, but it\'s under your sole responsibility to make sure your account always holds enough balance for it\'s operation.',
       ],
     },
     IMPORT: {

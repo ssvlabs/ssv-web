@@ -229,6 +229,7 @@
     "jest-environment-node": "^26.6.2",
     "jest-environment-uint8array": "^1.0.0",
     "jest-html-reporter": "^3.3.0",
+    "jest-watch-typeahead": "^2.2.1",
     "jsdom": "^16.5.3",
     "jsdom-global": "^3.0.2",
     "pinst": "^2.1.6",

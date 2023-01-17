@@ -32,7 +32,7 @@ const EnableAccount = () => {
   const allOperatorsFee = ssvStore.newGetFeeForYear(ownerAddressCost, 18);
   const liquidationCollateral = multiplyNumber(
     addNumber(ssvStore.networkFee * validators.length, ownerAddressCost),
-    ssvStore.liquidationCollateral,
+    ssvStore.liquidationCollateralPeriod,
   ).toFixed().toString();
   const totalFee = addNumber(addNumber(allOperatorsFee, networkYearlyFees), liquidationCollateral);
 

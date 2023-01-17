@@ -2,11 +2,11 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
@@ -28,22 +28,18 @@ const FundingSummary = (props: Props) => {
     { id: 3, name: 'Liquidation collateral' },
   ];
 
-  const propertyCostByPeriod = (property: number, days: number): number => {
-    return property * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY * (days || 1);
-  };
-
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
-  const liquidationCollateralCost = propertyCostByPeriod(ssvStore.liquidationCollateral, daysPeriod);
+  const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
 
   const paymentsValue = (paymentId: number): string => {
     switch (paymentId) {
       case 1:
-        return String(operatorsCost);
+        return formatNumberToUi(operatorsCost);
       case 2:
-        return String(networkCost);
+        return formatNumberToUi(networkCost);
       case 3:
-        return String(liquidationCollateralCost);
+        return formatNumberToUi(liquidationCollateralCost);
       default:
         return '';
     }

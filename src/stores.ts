@@ -8,7 +8,6 @@ const stores = [
   'Faucet',
   'Operator',
   'Validator',
-  'Test',
   'MyAccount',
   'Application',
   'Distribution',

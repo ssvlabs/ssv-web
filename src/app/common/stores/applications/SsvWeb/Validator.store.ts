@@ -1,37 +1,47 @@
-import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
+import { Threshold } from 'ssv-keys';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-import { addNumber, multiplyNumber } from '~lib/utils/numbers';
-// import { Encryption, EthereumKeyStore, Threshold } from 'ssv-keys';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+
+const th = new Threshold();
+console.log(th);
+
+type KeySharePayload = {
+  share: string,
+  ssvAmount: number,
+  operatorIds: string,
+  validatorPublicKey: string,
+};
 
 const annotations = {
-  isJsonFile: computed,
+  isJsonFile: action.bound,
   keyStoreFile: observable,
   keyShareFile: observable,
   setKeyStore: action.bound,
   fundingPeriod: observable,
+  setKeyShare: action.bound,
   createPayLoad: action.bound,
-  removeValidator: action.bound,
   updateValidator: action.bound,
   addNewValidator: action.bound,
   keyStorePublicKey: observable,
+  keySharePublicKey: observable,
+  removeValidator: action.bound,
+  validateKeyShare: action.bound,
   keyStorePrivateKey: observable,
   newValidatorReceipt: observable,
-  clearValidatorData: action.bound,
   extractKeyStoreData: action.bound,
-  extractKeySharesData: action.bound,
   getKeyStorePublicKey: action.bound,
+  clearKeyShareFlowData: action.bound,
+  clearKeyStoreFlowData: action.bound,
   validatorPublicKeyExist: observable,
+  extractKeySharePayload: action.bound,
   processValidatorPublicKey: observable,
 };
 
@@ -48,11 +58,11 @@ class ValidatorStore extends BaseStore {
 
   // key shares flow
   keyShareFile: File | null = null;
+  keySharePublicKey: string = '';
+  keySharePayload: any;
 
   // process data (single validator flow)
   processValidatorPublicKey: string = '';
-
-
 
 
   constructor() {
@@ -60,24 +70,20 @@ class ValidatorStore extends BaseStore {
     makeObservable(this, annotations);
   }
 
-  clearValidatorData() {
+  clearKeyStoreFlowData() {
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
     this.newValidatorReceipt = null;
     this.validatorPublicKeyExist = false;
   }
 
-  async extractKeyStoreData(keyStorePassword: string): Promise<any> {
-    const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
-    fileTextPlain;
-    keyStorePassword;
-    // @ts-ignore
-    // const ethereumKeyStore = //new EthereumKeyStore(fileTextPlain);
-    // this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
-    // this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
+  clearKeyShareFlowData() {
+    this.keyShareFile = null;
+    this.keySharePublicKey = '';
+    this.validatorPublicKeyExist = false;
   }
 
-  async extractKeySharesData(keyStorePassword: string): Promise<any> {
+  async extractKeyStoreData(keyStorePassword: string): Promise<any> {
     const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
     fileTextPlain;
     keyStorePassword;
@@ -103,39 +109,39 @@ class ValidatorStore extends BaseStore {
       // eslint-disable-next-line no-param-reassign
       publicKey = publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
       await contract.methods.removeValidator(publicKey).send({ from: ownerAddress })
-        .on('receipt', async () => {
-          ApiParams.initStorage(true);
-          let iterations = 0;
-          while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-            // Reached maximum iterations
-            if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+          .on('receipt', async () => {
+            ApiParams.initStorage(true);
+            let iterations = 0;
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // Reached maximum iterations
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndValidators(resolve, true);
+                break;
+              }
+              iterations += 1;
               // eslint-disable-next-line no-await-in-loop
-              await this.refreshOperatorsAndValidators(resolve, true);
-              break;
-            }
-            iterations += 1;
-            // eslint-disable-next-line no-await-in-loop
-            if (!(await myAccountStore.checkEntityInAccount('validator', 'public_key', publicKey.replace(/^(0x)/gi, '')))) {
+              if (!(await myAccountStore.checkEntityInAccount('validator', 'public_key', publicKey.replace(/^(0x)/gi, '')))) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndValidators(resolve, true);
+                break;
+              } else {
+                console.log('Validator is still in API..');
+              }
               // eslint-disable-next-line no-await-in-loop
-              await this.refreshOperatorsAndValidators(resolve, true);
-              break;
-            } else {
-              console.log('Validator is still in API..');
+              await myAccountStore.delay();
             }
-            // eslint-disable-next-line no-await-in-loop
-            await myAccountStore.delay();
-          }
-        })
-        .on('transactionHash', (txHash: string) => {
-          applicationStore.txHash = txHash;
-          applicationStore.showTransactionPendingPopUp(true);
-        })
-        .on('error', (error: any) => {
-          applicationStore.setIsLoading(false);
-          notificationsStore.showMessage(error.message, 'error');
-          applicationStore.showTransactionPendingPopUp(false);
-          resolve(false);
-        });
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            applicationStore.setIsLoading(false);
+            notificationsStore.showMessage(error.message, 'error');
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(false);
+          });
     });
   }
 
@@ -159,51 +165,51 @@ class ValidatorStore extends BaseStore {
       const validatorBefore = await Validator.getInstance().getValidator(`0x${payload[0]}`);
 
       const response = await contract.methods.updateValidator(...payload).send({ from: walletStore.accountAddress })
-        .on('receipt', async (receipt: any) => {
-          // eslint-disable-next-line no-prototype-builtins
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            this.newValidatorReceipt = payload[1];
-            console.debug('Contract Receipt', receipt);
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+          .on('receipt', async (receipt: any) => {
+            // eslint-disable-next-line no-prototype-builtins
+            const event: boolean = receipt.hasOwnProperty('events');
+            if (event) {
+              this.keyStoreFile = null;
+              this.newValidatorReceipt = payload[1];
+              console.debug('Contract Receipt', receipt);
+              let iterations = 0;
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // Reached maximum iterations
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  // eslint-disable-next-line no-await-in-loop
+                  await this.refreshOperatorsAndValidators(resolve, true);
+                  break;
+                }
+                iterations += 1;
                 // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndValidators(resolve, true);
-                break;
-              }
-              iterations += 1;
-              // eslint-disable-next-line no-await-in-loop
-              const changed = await myAccountStore.checkEntityChangedInAccount(
-                async () => {
-                  return Validator.getInstance().getValidator(`0x${payload[0]}`);
-                },
-                validatorBefore,
-              );
-              if (changed) {
+                const changed = await myAccountStore.checkEntityChangedInAccount(
+                    async () => {
+                      return Validator.getInstance().getValidator(`0x${payload[0]}`);
+                    },
+                    validatorBefore,
+                );
+                if (changed) {
+                  // eslint-disable-next-line no-await-in-loop
+                  await this.refreshOperatorsAndValidators(resolve, true);
+                  break;
+                } else {
+                  console.log('Validator still not updated in API..');
+                }
                 // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndValidators(resolve, true);
-                break;
-              } else {
-                console.log('Validator still not updated in API..');
+                await myAccountStore.delay();
               }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
             }
-          }
-        })
-        .on('transactionHash', (txHash: string) => {
-          applicationStore.txHash = txHash;
-          applicationStore.showTransactionPendingPopUp(true);
-        })
-        .on('error', (error: any) => {
-          console.debug('Contract Error', error.message);
-          applicationStore.setIsLoading(false);
-          applicationStore.showTransactionPendingPopUp(false);
-          resolve(false);
-        });
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            console.debug('Contract Error', error.message);
+            applicationStore.setIsLoading(false);
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(false);
+          });
       console.log(response);
     });
   }
@@ -222,11 +228,14 @@ class ValidatorStore extends BaseStore {
 
       if (!payload) resolve(false);
 
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log(payload);
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>');
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       console.debug('Add Validator Payload: ', payload);
 
-        // Send add operator transaction
-        contract.methods.registerValidator(...payload).send({ from: ownerAddress })
+      // Send add operator transaction
+      contract.methods.registerValidator(...payload).send({ from: ownerAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -295,58 +304,23 @@ class ValidatorStore extends BaseStore {
   }
 
   async createPayLoad(update: boolean = false): Promise<any> {
-    // const threshold: Threshold = new Threshold();
-    const threshold = null;
-    threshold;
-    const ssvStore: SsvStore = this.getStore('SSV');
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const operatorStore: OperatorStore = this.getStore('Operator');
-    const operatorIds: number[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-      return operator.id;
-    });
-    const thresholdResult: any = [];// await threshold.create(this.keyStorePrivateKey, operatorIds);
-    let totalAmountOfSsv = '0';
-    const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
-    const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
-    const liquidationCollateral = multiplyNumber(
-        addNumber(
-            ssvStore.networkFee,
-            operatorStore.getSelectedOperatorsFee,
-        ),
-        ssvStore.liquidationCollateral,
-    ).toFixed().toString();
-    if (new Decimal(liquidationCollateral).isZero()) {
-      totalAmountOfSsv = networkFeeForYear;
-    } else {
-      totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, networkFeeForYear), operatorsFees)).toFixed();
-    }
-
+    update;
     return new Promise((resolve) => {
       try {
-        // Get list of selected operator's public keys
-        const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-          return operator.public_key;
-        });
-        operatorPublicKeys;
-
-        // Collect all public keys from shares
-        const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
-          return share.publicKey;
-        });
-
-        const encryptedShares: any[] = [];//new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
-        // Collect all private keys from shares
-        const encryptedKeys: string[] = encryptedShares.map((share: any) => {
-          return walletStore.encodeKey(share.privateKey);
-        });
-
         const payLoad = [
-          `0x${this.keyStorePublicKey}`,
-          operatorIds.map(String),
-          sharePublicKeys,
-          encryptedKeys,
+          this.keySharePublicKey,
+          this.keySharePayload?.operatorIds.split(','),
+          this.keySharePayload?.share,
+          `${this.keySharePayload?.ssvAmount}`,
+          {
+            validatorCount: 0,
+            networkFee: 0,
+            networkFeeIndex: 0,
+            index: 0,
+            balance: 0,
+            disabled: false,
+          },
         ];
-        payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
         resolve(payLoad);
       } catch (e: any) {
         console.log(e.message);
@@ -370,6 +344,34 @@ class ValidatorStore extends BaseStore {
       console.log(e.message);
     }
     !!callBack && callBack();
+  }
+
+  /**
+   * Set keystore file
+   * @param keyShare
+   * @param callBack
+   */
+  async setKeyShare(keyShare: any, callBack?: any) {
+    try {
+      this.keyShareFile = keyShare;
+      const payload = await this.extractKeySharePayload();
+      this.keySharePayload = payload;
+      this.keySharePublicKey = payload.validatorPublicKey;
+      this.validatorPublicKeyExist = !!(await Validator.getInstance().getValidator(this.keySharePublicKey, true));
+    } catch (e: any) {
+      console.log(e.message);
+    }
+    !!callBack && callBack();
+  }
+
+  async validateKeyShare(): Promise<boolean> {
+    return new Promise((resolve) => {
+      try {
+        resolve(true);
+      } catch (e: any) {
+        resolve(false);
+      }
+    });
   }
 
   /**
@@ -411,8 +413,18 @@ class ValidatorStore extends BaseStore {
     }
   }
 
-  get isJsonFile(): boolean {
-    return this.keyStoreFile?.type === 'application/json';
+  async extractKeySharePayload(): Promise<KeySharePayload | any> {
+    try {
+      const fileJson = await this.keyShareFile?.text();
+      // @ts-ignore
+      return JSON.parse(fileJson).payload.readable;
+    } catch (e: any) {
+      return {};
+    }
+  }
+
+  isJsonFile(file: any): boolean {
+    return file?.type === 'application/json';
   }
 }
 

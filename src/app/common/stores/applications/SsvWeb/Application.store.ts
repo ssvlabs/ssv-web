@@ -97,7 +97,7 @@ class ApplicationStore extends BaseStore implements Application {
 
   cancelProcess() {
     const validatorStore: ValidatorStore = this.getStore('Validator');
-    validatorStore.clearValidatorData();
+    validatorStore.clearKeyStoreFlowData();
     this.runningProcess = '';
   }
 

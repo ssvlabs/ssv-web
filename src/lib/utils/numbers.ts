@@ -1,5 +1,6 @@
 // new functionality
 import Decimal from 'decimal.js';
+import config from '~app/common/config';
 
 export const addNumber = (num1: any, num2: any): Decimal => {
   return new Decimal(num1).plus(num2);
@@ -133,4 +134,8 @@ export const roundNumber = (num: number, rlength: number) => {
 export const formatNumberFromBeaconcha = (num: number) => {
   // eslint-disable-next-line no-bitwise
   return formatNumberToUi(num * 10 ** -9);
+};
+
+export const propertyCostByPeriod = (value: number, days: number) => {
+  return value * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY * (days ?? 1);
 };

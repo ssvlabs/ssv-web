@@ -32,7 +32,7 @@ const SlashingWarning = () => {
         <Grid container>
           <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon chain:</Grid>
           <Grid item xs={12} className={classes.PublicKey}>
-            <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.keyStorePublicKey} />
+            <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey} />
           </Grid>
           <Grid item xs={12} className={classes.Text}>
             Running a validator simultaneously to the SSV network will cause slashing to your validator.

@@ -8,9 +8,9 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from '~app/components/applications/SSV/SuccessScreen/SuccessScreen.styles';
+import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
 
-const SuccessScreen = () => {
+const ValidatorSuccessScreen = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -86,4 +86,4 @@ const SuccessScreen = () => {
   );
 };
 
-export default observer(SuccessScreen);
+export default observer(ValidatorSuccessScreen);

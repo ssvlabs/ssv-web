@@ -11,7 +11,6 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import { ReactTable } from '~app/components/common/ReactTable';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-import TestStore from '~app/common/stores/applications/SsvWeb/Test.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -32,7 +31,6 @@ const DashboardTables = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
-  const testStore: TestStore = stores.Test;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -270,7 +268,6 @@ const DashboardTables = () => {
 
   return (
     <Grid container item className={classes.Table}>
-      <Grid onClick={console.log}>{testStore.price}</Grid>
       {myAccountStore?.ownerAddressValidators?.length > 0 && (
         <Grid item xs={12} style={{ marginBottom: 20 }}>
           <ReactTable

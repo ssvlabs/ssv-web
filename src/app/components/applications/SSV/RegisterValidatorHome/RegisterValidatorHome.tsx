@@ -24,7 +24,7 @@ const RegisterValidatorHome = () => {
   ];
 
   useEffect(() => {
-      validatorStore.clearValidatorData();
+      validatorStore.clearKeyStoreFlowData();
   });
 
   return (

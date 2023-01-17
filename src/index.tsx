@@ -7,6 +7,7 @@ import { rootStore } from '~root/stores';
 import * as serviceWorker from '~root/serviceWorker';
 // eslint-disable-next-line no-prototype-builtins
 
+
 const container = document.getElementById('root');
 // @ts-ignore
 const root = createRoot(container);

@@ -56,8 +56,6 @@ class WalletStore extends BaseStore implements Wallet {
       setAccountDataLoaded: action.bound,
       connectWalletFromCache: action.bound,
     });
-
-    makeObservable(this);
     this.initWalletHooks();
   }
 

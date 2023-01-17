@@ -35,6 +35,7 @@ const translations = {
     },
     IMPORT: {
       TITLE: 'Enter Validator Key',
+      KEY_SHARES_TITLE: 'Enter KeyShares File',
       DESCRIPTION: 'Your validator key is secured - it’s not stored anywhere and never sent to our servers.',
       FILE_ERRORS: {
         INVALID_FILE: 'Invalid file type.',

@@ -11,7 +11,7 @@ const UploadKeyStore = () => {
     return (
       <Grid container className={classes.Wrapper}>
         <ValidatorWhiteHeader withCancel withBackButton={false} text={'Update Operators for Validator'} />
-        <ImportFile reUpload />
+        <ImportFile type={1} />
       </Grid>
     );
 };

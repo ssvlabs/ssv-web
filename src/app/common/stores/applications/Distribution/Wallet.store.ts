@@ -54,8 +54,6 @@ class WalletStore extends BaseStore implements Wallet {
       isWrongNetwork: computed,
       getContract: computed,
     });
-
-    makeObservable(this);
     this.initWalletHooks();
   }
 

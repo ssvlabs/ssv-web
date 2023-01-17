@@ -8,7 +8,6 @@ import { SsvAppBar } from '~app/components/common/AppBar';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import MyAccount from '~app/components/applications/SSV/MyAccount';
 import Welcome from '~app/components/applications/SSV/Welcome/Welcome';
-import SuccessScreen from '~app/components/applications/SSV/SuccessScreen';
 import SetOperatorFee from '~app/components/applications/SSV/SetOperatorFee';
 import Deposit from '~app/components/applications/SSV/MyAccount/components/Deposit';
 import Withdraw from '~app/components/applications/SSV/MyAccount/components/Withdraw';
@@ -17,17 +16,18 @@ import OperatorSuccessPage from '~app/components/applications/SSV/OperatorSucces
 import GenerateOperatorKeys from '~app/components/applications/SSV/GenerateOperatorKeys';
 import RegisterOperatorHome from '~app/components/applications/SSV/RegisterOperatorHome';
 import RegisterValidatorHome from '~app/components/applications/SSV/RegisterValidatorHome';
+import ValidatorSuccessScreen from '~app/components/applications/SSV/ValidatorSuccessScreen';
 import EnableAccount from '~app/components/applications/SSV/MyAccount/components/EnableAccount';
 import OperatorTransactionConfirmation from '~app/components/applications/SSV/OperatorConfirmation';
 import ImportFile from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile';
 import SingleOperator from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator';
-import ValidatorTransactionConfirmation from '~app/components/applications/SSV/ImportValidatorConfirmation';
 import FundingPeriod from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod';
 import UpdateFee from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee';
 import SingleValidator from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator';
 import CreateValidator from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator';
 import SlashingWarning from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning';
 import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
+import ValidatorTransactionConfirmation from '~app/components/applications/SSV/ValidatorRegistrationConfirmation';
 import GenerateKeyShares from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares';
 import EditValidator from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator';
 import UploadKeyStore from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore';
@@ -77,13 +77,14 @@ const Routes: any = () => {
     { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation },
   ];
 
+
   const validatorsRoutes = [
     { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportFile },
     { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
-    { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: SuccessScreen },
     { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
     { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, Component: SlashingWarning },
     { path: ssvRoutes.VALIDATOR.FUNDING_PERIOD_PAGE, Component: FundingPeriod },
+    { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
     { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, Component: DepositViaLaunchpad },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.START, Component: GenerateKeyShares },
     { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
@@ -124,7 +125,7 @@ const Routes: any = () => {
           {validatorsRoutes.map((route, index: number) => {
             return (
               <Suspense key={index} fallback={<></>}>
-                {!route.keyShares ? <Route path={route.path} element={<route.Component/>} /> : <Route path={route.path} element={<route.Component keyShares />} />}
+                {!route.keyShares ? <Route path={route.path} element={<route.Component />} /> : <Route path={route.path} element={<route.Component type={2} />} />}
               </Suspense>
             );
           })}

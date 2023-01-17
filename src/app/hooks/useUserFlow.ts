@@ -64,7 +64,7 @@ const validatorConfirmationFlow: IUserFlow = {
     },
 };
 
-const successScreen: IUserFlow = {
+const successScreens: IUserFlow = {
     name: 'Success Screen',
     route: [
         routes.SSV.VALIDATOR.SUCCESS_PAGE,
@@ -101,7 +101,7 @@ const SingleValidatorScreen: IUserFlow = {
 };
 
 const userFlows: IUserFlow[] = [
-    successScreen,
+    successScreens,
     myAccountScreen,
     EnableAccountScreen,
     importValidatorFlow,

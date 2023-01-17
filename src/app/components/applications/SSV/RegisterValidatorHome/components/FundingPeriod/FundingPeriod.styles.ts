@@ -1,6 +1,20 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
+  Section: {
+    '&:nth-child(2)': {
+      padding: '13px 28px 23px 32px',
+      borderBottom: `solid 1px ${theme.colors.gray20}`,
+    },
+    '&:nth-child(3)': {
+      padding: '24px 32px 24px 32px',
+      borderBottom: `solid 1px ${theme.colors.gray20}`,
+    },
+    '&:nth-child(4)': {
+      padding: '24px 32px 24px 32px',
+    },
+
+  },
   Text: {
     fontSize: 16,
     fontWeight: 500,

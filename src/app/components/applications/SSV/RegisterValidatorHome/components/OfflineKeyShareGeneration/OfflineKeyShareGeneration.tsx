@@ -6,9 +6,13 @@ import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
+import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { useStyles } from './OfflineKeyShareGeneration.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
@@ -16,10 +20,18 @@ const OfflineKeyShareGeneration = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const ssvStore: SsvStore = stores.SSV;
+  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
+  const validatorStore: ValidatorStore = stores.Validator;
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
   const notificationsStore: NotificationsStore = stores.Notifications;
+
+
+  const networkCost = propertyCostByPeriod(ssvStore.networkFee, validatorStore.fundingPeriod);
+  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, validatorStore.fundingPeriod);
+  const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
 
   const isSelected = (id: number) => selectedBox === id;
   const goToNextPage = () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
@@ -33,14 +45,14 @@ const OfflineKeyShareGeneration = () => {
     operatorsIds: [],
     operatorsKeys: [],
   });
-  const cliCommand = `./ssv-keys-mac --operators-keys=${operatorsKeys.join(',')} --operators-ids=${operatorsIds.join(',')} --ssv-token-amount=312500000000000000000`;
+  const cliCommand = `--operators-keys=${operatorsKeys.join(',')} --operators-ids=${operatorsIds.join(',')} --ssv-token-amount=${walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost)}`;
 
   const instructions = [
     { id: 1, instructions: [
         <Grid>1. Download the <b>MacOS</b> executable from  <LinkText text={'SSV-Keys Github'} link={'https://github.com/bloxapp/ssv-keys'} /></Grid>,
         '2. Launch your terminal',
         '3. Navigate to the directory you downladed the CLI tool',
-        '4. Run the tool with  the following command:',
+        '4. Run the tool with the following arguments:',
       ],
     },
     { id: 2, instructions: [
@@ -64,7 +76,7 @@ const OfflineKeyShareGeneration = () => {
 
   const copyButton = () => {
     if (!textCopied) return <Grid item className={classes.CopyButton} onClick={copyToClipboard}>Copy</Grid>;
-    return <Grid container item className={classes.ButtonCopied}>
+    return <Grid onClick={copyToClipboard} container item className={classes.ButtonCopied}>
       <Typography className={classes.TextCopied}>Copied</Typography>
       <Grid className={classes.V} />
     </Grid>;

@@ -108,8 +108,6 @@ const KeyShareFlow = () => {
   const submitHandler = async () => {
     try {
       applicationStore.setIsLoading(true);
-      const response = await validatorStore.validateKeyShare();
-      console.log(response);
       navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
     } catch (error: any) {
       GoogleTagManager.getInstance().sendEvent({

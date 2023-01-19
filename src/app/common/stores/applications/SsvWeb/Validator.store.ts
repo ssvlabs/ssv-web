@@ -1,6 +1,6 @@
 import { Contract } from 'web3-eth-contract';
 import { action, makeObservable, observable } from 'mobx';
-// import { Threshold } from 'ssv-keys';
+import { EthereumKeyStore } from 'ssv-keys';
 import Operator from '~lib/api/Operator';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
@@ -34,7 +34,6 @@ const annotations = {
   keySharePublicKey: observable,
   removeValidator: action.bound,
   setKeyShareFile: action.bound,
-  validateKeyShare: action.bound,
   keyStorePrivateKey: observable,
   newValidatorReceipt: observable,
   extractKeyStoreData: action.bound,
@@ -86,12 +85,10 @@ class ValidatorStore extends BaseStore {
 
   async extractKeyStoreData(keyStorePassword: string): Promise<any> {
     const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
-    fileTextPlain;
-    keyStorePassword;
     // @ts-ignore
-    // const ethereumKeyStore = //new EthereumKeyStore(fileTextPlain);
-    // this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
-    // this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
+    const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
+    this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
+    this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
   }
 
   /**
@@ -229,9 +226,6 @@ class ValidatorStore extends BaseStore {
 
       if (!payload) resolve(false);
 
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log(payload);
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>');
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       console.debug('Add Validator Payload: ', payload);
 
@@ -311,7 +305,7 @@ class ValidatorStore extends BaseStore {
         const payLoad = [
           this.keySharePublicKey,
           this.keySharePayload?.operatorIds.split(','),
-          this.keySharePayload?.share,
+          `0x${this.keySharePayload?.shares}`,
           `${this.keySharePayload?.ssvAmount}`,
           {
             validatorCount: 0,
@@ -360,16 +354,6 @@ class ValidatorStore extends BaseStore {
       console.log(e.message);
     }
     !!callBack && callBack();
-  }
-
-  async validateKeyShare(): Promise<boolean> {
-    return new Promise((resolve) => {
-      try {
-        resolve(true);
-      } catch (e: any) {
-        resolve(false);
-      }
-    });
   }
 
   /**
@@ -433,10 +417,6 @@ class ValidatorStore extends BaseStore {
       operatorStore.selectOperators(selectedOperators);
       const burnRate = operatorStore.getSelectedOperatorsFee + ssvStore.networkFee;
       const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
-      console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
-      console.log(walletStore.fromWei(payload.ssvAmount));
-      console.log(walletStore.fromWei(payload.ssvAmount) - liquidationCollateralCost);
-      console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
       const runwayPeriod = (walletStore.fromWei(payload.ssvAmount) - liquidationCollateralCost) / burnRate / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
       this.fundingPeriod = runwayPeriod;
       if (runwayPeriod < 30) return liquidationWarningResponse;

@@ -1,19 +1,20 @@
 import { Contract } from 'web3-eth-contract';
 import { action, makeObservable, observable } from 'mobx';
-import { EthereumKeyStore } from 'ssv-keys';
+import { Encryption, EthereumKeyStore, Threshold } from 'ssv-keys';
 import Operator from '~lib/api/Operator';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
-import { propertyCostByPeriod } from '~lib/utils/numbers';
+import { addNumber, multiplyNumber, propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import Decimal from 'decimal.js';
 
 type KeyShareError = {
   id: number,
@@ -152,7 +153,7 @@ class ValidatorStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const contract: Contract = walletStore.getContract;
-      const payload: (string | string[])[] = await this.createPayLoad(true);
+      const payload: (string | string[])[] = await this.createKeystorePayload(true);
       if (!payload) {
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
@@ -212,10 +213,10 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async addNewValidator() {
+  async addNewValidator(keyShare?: boolean) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      const payload: any = await this.createPayLoad();
+      const payload: any = keyShare ? await this.createKeySharePayLoad() : await this.createKeystorePayload();
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -298,7 +299,65 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async createPayLoad(update: boolean = false): Promise<any> {
+  async createKeystorePayload(update: boolean = false): Promise<any> {
+    const threshold: Threshold = new Threshold();
+    const ssvStore: SsvStore = this.getStore('SSV');
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const operatorStore: OperatorStore = this.getStore('Operator');
+    const operatorIds: number[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+      return operator.id;
+    });
+    const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
+    let totalAmountOfSsv = '0';
+    const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
+    const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
+    const liquidationCollateral = multiplyNumber(
+        addNumber(
+            ssvStore.networkFee,
+            operatorStore.getSelectedOperatorsFee,
+        ),
+        1,
+    ).toFixed().toString();
+    if (new Decimal(liquidationCollateral).isZero()) {
+      totalAmountOfSsv = networkFeeForYear;
+    } else {
+      totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, networkFeeForYear), operatorsFees)).toFixed();
+    }
+
+    return new Promise((resolve) => {
+      try {
+        // Get list of selected operator's public keys
+        const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+          return operator.public_key;
+        });
+
+        // Collect all public keys from shares
+        const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
+          return share.publicKey;
+        });
+
+        const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
+        // Collect all private keys from shares
+        const encryptedKeys: string[] = encryptedShares.map((share: any) => {
+          return walletStore.encodeKey(share.privateKey);
+        });
+
+        const payLoad = [
+          `0x${this.keyStorePublicKey}`,
+          operatorIds.map(String),
+          sharePublicKeys,
+          encryptedKeys,
+        ];
+        payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
+        resolve(payLoad);
+      } catch (e: any) {
+        console.log(e.message);
+        resolve(false);
+      }
+    });
+  }
+
+  async createKeySharePayLoad(update: boolean = false): Promise<any> {
     update;
     return new Promise((resolve) => {
       try {

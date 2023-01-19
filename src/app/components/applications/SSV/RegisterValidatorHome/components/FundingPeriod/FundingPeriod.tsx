@@ -29,11 +29,11 @@ const FundingPeriod = () => {
   const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
-  const [checkedOption, setCheckedOption] = useState(options[0]);
   const [customPeriod, setCustomPeriod] = useState(1);
+  const [checkedOption, setCheckedOption] = useState(options[1]);
+  const [timePeriodNotValid, setTimePeriodNotValid] = useState(false);
 
   const checkBox = (option: any) => setCheckedOption(option);
-
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
@@ -41,6 +41,8 @@ const FundingPeriod = () => {
   const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
 
   const totalCost = operatorsCost + networkCost + liquidationCollateralCost;
+  const InsufficientBalance = totalCost > ssvStore.walletSsvBalance;
+  const showLiquidationError = isCustomPayment && !InsufficientBalance && timePeriodNotValid;
 
   const isChecked = (id: number) => checkedOption.id === id;
 
@@ -49,8 +51,11 @@ const FundingPeriod = () => {
     navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
 
-  const InsufficientBalance = totalCost > ssvStore.walletSsvBalance;
-  const riskOfLiquidation = periodOfTime < 30;
+  const checkTimePeriodValidity = () => {
+    if (customPeriod < 30) setTimePeriodNotValid(true);
+    else setTimePeriodNotValid(false);
+  };
+
 
   return (
       <BorderScreen
@@ -78,6 +83,7 @@ const FundingPeriod = () => {
                     <Grid item
                           className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
                     {isCustom && <TextInput value={customPeriod}
+                                            onBlurCallBack={checkTimePeriodValidity}
                                             onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
                                             extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
                   </Grid>;
@@ -93,7 +99,7 @@ const FundingPeriod = () => {
                   </Grid>
                 }
                 />}
-                {riskOfLiquidation && <ErrorMessage extendClasses={classes.ErrorBox} text={
+                {showLiquidationError && <ErrorMessage extendClasses={classes.ErrorBox} text={
                     <Grid>This funding period will put your validator at risk of liquidation. To avoid liquidation
                       please pick a bigger funding period. <LinkText text={'Read more on liquidations'}
                                           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>

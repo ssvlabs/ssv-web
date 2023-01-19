@@ -62,7 +62,7 @@ const FundingSummary = (props: Props) => {
                           insolvency. <LinkText text={'Read more on liquidations'}
                                                 link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/> :
                     <Typography
-                        className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {daysPeriod} Days</Typography>}
+                        className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {formatNumberToUi(daysPeriod, true)} Days</Typography>}
               </Grid>
             </Grid>
             <Grid item xs>

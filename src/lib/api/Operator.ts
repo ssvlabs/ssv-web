@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 type OperatorsListQuery = {
   page?: number,
@@ -80,6 +81,22 @@ class Operator {
       return null;
     }
   }
+
+  async getOperatorsByIds(operatorIds: number[]): Promise<IOperator[] | boolean> {
+    try {
+      const promises = operatorIds.map(operatorId => this.getOperator(operatorId, true));
+      const responses = await Promise.all(promises);
+      for (let response of responses) {
+        if (!response) {
+          return false;
+        }
+      }
+      return responses;
+    } catch (error) {
+      return false;
+    }
+  }
+
 
   /**
    * Get operator validators

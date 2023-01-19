@@ -325,8 +325,11 @@ module.exports = function (webpackEnv) {
     },
     resolve: {
       fallback: {
-        fs: false,
+        url: require.resolve('url'),
+        assert: require.resolve('assert'),
+        fs: require.resolve('browserify-fs'),
         http: require.resolve('stream-http'),
+        path: require.resolve('path-browserify'),
         https: require.resolve('https-browserify'),
         os: require.resolve('os-browserify/browser'),
         crypto: require.resolve('crypto-browserify'),
@@ -384,6 +387,12 @@ module.exports = function (webpackEnv) {
       ],
     },
     plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
       new CircularDependencyPlugin({
         // exclude detection of files based on a RegExp
         exclude: /a\.js|node_modules/,

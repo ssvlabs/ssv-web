@@ -87,7 +87,7 @@ const ValidatorRegistrationConfirmation = () => {
                     <Grid item xs>
                       <SsvAndSubTitle
                           ssv={formatNumberToUi(propertyCostByPeriod(walletStore.fromWei(operator.fee), validatorStore.fundingPeriod))}
-                          subText={`/${validatorStore.fundingPeriod} days`}
+                          subText={`/${formatNumberToUi(validatorStore.fundingPeriod, true)} days`}
                       />
                     </Grid>
                   </Grid>

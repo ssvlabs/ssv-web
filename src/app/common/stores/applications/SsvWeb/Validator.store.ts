@@ -1,23 +1,24 @@
 import { Contract } from 'web3-eth-contract';
 import { action, makeObservable, observable } from 'mobx';
-import { Threshold } from 'ssv-keys';
+// import { Threshold } from 'ssv-keys';
+import Operator from '~lib/api/Operator';
+import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
+import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
-const th = new Threshold();
-console.log(th);
-
-type KeySharePayload = {
-  share: string,
-  ssvAmount: number,
-  operatorIds: string,
-  validatorPublicKey: string,
+type KeyShareError = {
+  id: number,
+  name: string,
+  errorMessage: string,
 };
 
 const annotations = {
@@ -26,13 +27,13 @@ const annotations = {
   keyShareFile: observable,
   setKeyStore: action.bound,
   fundingPeriod: observable,
-  setKeyShare: action.bound,
   createPayLoad: action.bound,
   updateValidator: action.bound,
   addNewValidator: action.bound,
   keyStorePublicKey: observable,
   keySharePublicKey: observable,
   removeValidator: action.bound,
+  setKeyShareFile: action.bound,
   validateKeyShare: action.bound,
   keyStorePrivateKey: observable,
   newValidatorReceipt: observable,
@@ -41,7 +42,7 @@ const annotations = {
   clearKeyShareFlowData: action.bound,
   clearKeyStoreFlowData: action.bound,
   validatorPublicKeyExist: observable,
-  extractKeySharePayload: action.bound,
+  validateKeySharePayload: action.bound,
   processValidatorPublicKey: observable,
 };
 
@@ -57,9 +58,9 @@ class ValidatorStore extends BaseStore {
   validatorPublicKeyExist: boolean = false;
 
   // key shares flow
-  keyShareFile: File | null = null;
-  keySharePublicKey: string = '';
   keySharePayload: any;
+  keySharePublicKey: string = '';
+  keyShareFile: File | null = null;
 
   // process data (single validator flow)
   processValidatorPublicKey: string = '';
@@ -351,13 +352,10 @@ class ValidatorStore extends BaseStore {
    * @param keyShare
    * @param callBack
    */
-  async setKeyShare(keyShare: any, callBack?: any) {
+  async setKeyShareFile(keyShare: any, callBack?: any) {
     try {
       this.keyShareFile = keyShare;
-      const payload = await this.extractKeySharePayload();
-      this.keySharePayload = payload;
-      this.keySharePublicKey = payload.validatorPublicKey;
-      this.validatorPublicKeyExist = !!(await Validator.getInstance().getValidator(this.keySharePublicKey, true));
+      console.log(this.keyShareFile);
     } catch (e: any) {
       console.log(e.message);
     }
@@ -413,13 +411,39 @@ class ValidatorStore extends BaseStore {
     }
   }
 
-  async extractKeySharePayload(): Promise<KeySharePayload | any> {
+  async validateKeySharePayload(): Promise<KeyShareError> {
+    const okResponse = { id: 0, name: '', errorMessage: '' };
+    const validatorExistResponse = { id: 3, name: 'validator_not_exit', errorMessage: 'validator not exist' };
+    const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
+    const liquidationWarningResponse = { id: 2, name: 'liquidation_warning', errorMessage: 'make sure the amount of SSV in file does not put cluster into liquidation.' };
     try {
       const fileJson = await this.keyShareFile?.text();
+      const ssvStore: SsvStore = this.getStore('SSV');
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
-      return JSON.parse(fileJson).payload.readable;
+      const payload = JSON.parse(fileJson).payload.readable;
+      this.keySharePayload = payload;
+      this.keySharePublicKey = payload.validatorPublicKey;
+      const validatorExist = !!(await Validator.getInstance().getValidator(payload.validatorPublicKey, true));
+      const selectedOperators = await Operator.getInstance().getOperatorsByIds(payload.operatorIds.split(','));
+      if (validatorExist) return validatorExistResponse;
+      if (!selectedOperators) return operatorNotExistResponse;
+      // @ts-ignore
+      operatorStore.selectOperators(selectedOperators);
+      const burnRate = operatorStore.getSelectedOperatorsFee + ssvStore.networkFee;
+      const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
+      console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
+      console.log(walletStore.fromWei(payload.ssvAmount));
+      console.log(walletStore.fromWei(payload.ssvAmount) - liquidationCollateralCost);
+      console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
+      const runwayPeriod = (walletStore.fromWei(payload.ssvAmount) - liquidationCollateralCost) / burnRate / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+      this.fundingPeriod = runwayPeriod;
+      if (runwayPeriod < 30) return liquidationWarningResponse;
+      return okResponse;
+      // @ts-ignore
     } catch (e: any) {
-      return {};
+      return okResponse;
     }
   }
 

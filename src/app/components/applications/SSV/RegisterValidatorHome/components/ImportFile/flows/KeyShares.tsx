@@ -23,6 +23,7 @@ const KeyShareFlow = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const [processingFile, setProcessFile] = useState(false);
+  const [validationError, setValidationError] = useState({ id: 0, errorMessage: '' });
   const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
 
   useEffect(() => {
@@ -31,7 +32,9 @@ const KeyShareFlow = () => {
 
   const fileHandler = (file: any) => {
     setProcessFile(true);
-    validatorStore.setKeyShare(file, () => {
+    validatorStore.setKeyShareFile(file, async () => {
+      const response = await validatorStore.validateKeySharePayload();
+      setValidationError(response);
       setProcessFile(false);
     });
   };
@@ -39,6 +42,7 @@ const KeyShareFlow = () => {
   const removeFile = () => {
     setProcessFile(true);
     validatorStore.clearKeyShareFlowData();
+    setValidationError({ id: 0, errorMessage: '' });
     validatorStore.keyShareFile = null;
     setProcessFile(false);
 
@@ -52,7 +56,7 @@ const KeyShareFlow = () => {
 
   const renderFileImage = () => {
     let fileClass: any = classes.FileImage;
-    if (validatorStore.validatorPublicKeyExist) {
+    if (validationError.id !== 0) {
       fileClass += ` ${classes.Fail}`;
     } else if (keyShareFileIsJson) {
       fileClass += ` ${classes.Success}`;
@@ -71,19 +75,19 @@ const KeyShareFlow = () => {
       );
     }
 
-    if (keyShareFileIsJson && validatorStore.validatorPublicKeyExist) {
+    if (!keyShareFileIsJson) {
       return (
           <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-            Validator is already registered to the network, <br/>
-            please try a different keystore file.
+            Keyshares file must be in a JSON format.
             <RemoveButton/>
           </Grid>
       );
     }
-    if (!keyShareFileIsJson) {
+
+    if (validationError.id !== 0) {
       return (
           <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-            Invalid file format - only .json files are supported
+            {validationError.errorMessage}
             <RemoveButton/>
           </Grid>
       );
@@ -92,7 +96,7 @@ const KeyShareFlow = () => {
     if (keyShareFileIsJson) {
       return (
           <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
-            {validatorStore?.keyShareFile?.name}
+            {validatorStore.keyShareFile.name}
             <RemoveButton/>
           </Grid>
       );

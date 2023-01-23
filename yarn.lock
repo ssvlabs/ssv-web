@@ -5853,7 +5853,14 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@types/yargs@^17.0.12", "@types/yargs@^17.0.8":
+"@types/yargs@^17.0.12":
+  version "17.0.20"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.20.tgz#107f0fcc13bd4a524e352b41c49fe88aab5c54d5"
+  integrity sha512-eknWrTHofQuPk2iuqDm1waA7V6xPlbgBoaaXEgYkClhLOnB0TtbW+srJaOToAgawPxPlHQzwypFA2bhZaUGP5A==
+  dependencies:
+    "@types/yargs-parser" "*"
+
+"@types/yargs@^17.0.8":
   version "17.0.19"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.19.tgz#8dbecdc9ab48bee0cb74f6e3327de3fa0d0c98ae"
   integrity sha512-cAx3qamwaYX9R0fzOIZAlFpo4A+1uBVCxqpKz9D26uTF4srRXaGTTsikQmaotCtNdbhzyUH7ft6p9ktz9s6UNQ==
@@ -11351,7 +11358,7 @@ ethers@4.0.47:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.13, ethers@^5.4.7:
+ethers@^5.0.13, ethers@^5.4.7, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -20447,7 +20454,7 @@ ssri@^8.0.0:
 
 "ssv-keys@https://github.com/bloxapp/ssv-keys#main":
   version "0.0.7"
-  resolved "https://github.com/bloxapp/ssv-keys#df8316d4b6d481a35b1d4abea0144f3a0e1905d7"
+  resolved "https://github.com/bloxapp/ssv-keys#f33a82ba0cb6981a3e774f90dd4edb55cb151524"
   dependencies:
     "@types/figlet" "^1.5.4"
     "@types/underscore" "^1.11.4"
@@ -20464,6 +20471,7 @@ ssri@^8.0.0:
     eth2-keystore-js "^1.0.8"
     ethereumjs-util "^7.0.10"
     ethereumjs-wallet "^1.0.1"
+    ethers "^5.7.2"
     events "^3.3.0"
     figlet "^1.5.2"
     js-base64 "^3.7.2"

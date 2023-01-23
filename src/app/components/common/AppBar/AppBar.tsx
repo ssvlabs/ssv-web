@@ -8,6 +8,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
 import { useStyles } from './AppBar.styles';
+// import Typography from '@material-ui/core/Typography';
 
 type Button = {
   label: string;
@@ -98,22 +99,20 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
             className={classes.AppBarIcon}
           />
         </Grid>
-        <Grid item container xs className={classes.GridItem}>
-          <Grid item container justify={'center'}>
-            {buttons?.map((button, index) => {
-                    return (
-                      <Grid
-                        item
-                        key={index}
-                        onClick={button.onClick}
-                        className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
-                      >
-                        {button.label}
-                      </Grid>
-                    );
-                })}
-          </Grid>
-        </Grid>
+        <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }}>
+          {buttons?.map((button, index) => {
+            return (
+                <Grid
+                    item
+                    key={index}
+                    onClick={button.onClick}
+                    className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
+                >
+                  {button.label}
+                </Grid>
+            );
+          })}
+            </Grid>
 
         <Grid item className={classes.GridItem}>
           <Grid item container style={{ alignItems: 'center' }}>

@@ -139,6 +139,7 @@ const KeyStoreFlow = () => {
           action: 'upload_file',
           label: 'success',
         });
+        validatorStore.registrationMode = 1;
         navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
       } else {
         GoogleTagManager.getInstance().sendEvent({

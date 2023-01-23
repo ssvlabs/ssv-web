@@ -1,20 +1,19 @@
 import { Contract } from 'web3-eth-contract';
+import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
-import { Encryption, EthereumKeyStore, Threshold } from 'ssv-keys';
 import Operator from '~lib/api/Operator';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
-import { addNumber, multiplyNumber, propertyCostByPeriod } from '~lib/utils/numbers';
+import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import Decimal from 'decimal.js';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 type KeyShareError = {
   id: number,
@@ -22,13 +21,21 @@ type KeyShareError = {
   errorMessage: string,
 };
 
+// eslint-disable-next-line no-unused-vars
+enum Mode {
+  // eslint-disable-next-line no-unused-vars
+  KEYSHARE = 0,
+  // eslint-disable-next-line no-unused-vars
+  KEYSTORE = 1,
+}
+
 const annotations = {
   isJsonFile: action.bound,
   keyStoreFile: observable,
   keyShareFile: observable,
   setKeyStore: action.bound,
   fundingPeriod: observable,
-  createPayLoad: action.bound,
+  registrationMode: observable,
   updateValidator: action.bound,
   addNewValidator: action.bound,
   keyStorePublicKey: observable,
@@ -49,6 +56,7 @@ const annotations = {
 class ValidatorStore extends BaseStore {
   // general
   fundingPeriod: any = null;
+  registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
 
   // Key Stores flow
@@ -85,11 +93,21 @@ class ValidatorStore extends BaseStore {
   }
 
   async extractKeyStoreData(keyStorePassword: string): Promise<any> {
-    const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
-    // @ts-ignore
-    const ethereumKeyStore = new EthereumKeyStore(fileTextPlain);
-    this.keyStorePrivateKey = await ethereumKeyStore.getPrivateKey(keyStorePassword);
-    this.keyStorePublicKey = ethereumKeyStore.getPublicKey();
+    return new Promise(async (resolve, reject) => {
+      try {
+        const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
+        const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
+        // @ts-ignore
+        const response = await ssvKeys.getPrivateKeyFromKeystoreData(fileTextPlain, keyStorePassword);
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        if (typeof response === 'object') throw (response);
+        this.keyStorePrivateKey = response;
+        this.keyStorePublicKey = ssvKeys.validatorPublicKey;
+        resolve(true);
+      } catch (e: any) {
+        reject(e);
+      }
+    });
   }
 
   /**
@@ -213,10 +231,10 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async addNewValidator(keyShare?: boolean) {
+  async addNewValidator() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      const payload: any = keyShare ? await this.createKeySharePayLoad() : await this.createKeystorePayload();
+      const payload: any = this.registrationMode === 0 ? await this.createKeySharePayLoad() : await this.createKeystorePayload();
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -300,56 +318,53 @@ class ValidatorStore extends BaseStore {
   }
 
   async createKeystorePayload(update: boolean = false): Promise<any> {
-    const threshold: Threshold = new Threshold();
+    update;
+    const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorStore: OperatorStore = this.getStore('Operator');
-    const operatorIds: number[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-      return operator.id;
+    const {
+      operatorsIds,
+      publicKeys,
+    } = Object.values(operatorStore.selectedOperators).reduce((aggr, operator: IOperator) => {
+      // @ts-ignore
+      aggr.operatorsIds.push(operator.id);
+      // @ts-ignore
+      aggr.publicKeys.push(operator.public_key);
+      return aggr;
+    }, {
+      operatorsIds: [],
+      publicKeys: [],
     });
-    const thresholdResult: any = await threshold.create(this.keyStorePrivateKey, operatorIds);
-    let totalAmountOfSsv = '0';
-    const networkFeeForYear = ssvStore.newGetFeeForYear(ssvStore.networkFee, 18);
-    const operatorsFees = ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee, 18);
-    const liquidationCollateral = multiplyNumber(
-        addNumber(
-            ssvStore.networkFee,
-            operatorStore.getSelectedOperatorsFee,
-        ),
-        1,
-    ).toFixed().toString();
-    if (new Decimal(liquidationCollateral).isZero()) {
-      totalAmountOfSsv = networkFeeForYear;
-    } else {
-      totalAmountOfSsv = new Decimal(addNumber(addNumber(liquidationCollateral, networkFeeForYear), operatorsFees)).toFixed();
-    }
 
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       try {
-        // Get list of selected operator's public keys
-        const operatorPublicKeys: string[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-          return operator.public_key;
-        });
+        const threshold: ISharesKeyPairs = await ssvKeys.createThreshold(this.keyStorePrivateKey, operatorsIds);
+        const shares = await ssvKeys.encryptShares(publicKeys, threshold.shares);
+        const networkCost = propertyCostByPeriod(ssvStore.networkFee, this.fundingPeriod);
+        const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, this.fundingPeriod);
+        const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
 
-        // Collect all public keys from shares
-        const sharePublicKeys: string[] = thresholdResult.shares.map((share: any) => {
-          return share.publicKey;
-        });
-
-        const encryptedShares: any[] = new Encryption(operatorPublicKeys, thresholdResult.shares).encrypt();
-        // Collect all private keys from shares
-        const encryptedKeys: string[] = encryptedShares.map((share: any) => {
-          return walletStore.encodeKey(share.privateKey);
-        });
-
-        const payLoad = [
-          `0x${this.keyStorePublicKey}`,
-          operatorIds.map(String),
-          sharePublicKeys,
-          encryptedKeys,
-        ];
-        payLoad.push(ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(update ? 0 : totalAmountOfSsv)));
-        resolve(payLoad);
+        const { readable } = await ssvKeys.buildPayload(
+            threshold.validatorPublicKey,
+            operatorsIds,
+            shares,
+            walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost),
+        );
+        resolve([
+          this.keyStorePublicKey,
+          readable?.operatorIds.split(','),
+          readable.shares,
+          `${readable?.ssvAmount}`,
+          {
+            validatorCount: 0,
+            networkFee: 0,
+            networkFeeIndex: 0,
+            index: 0,
+            balance: 0,
+            disabled: false,
+          },
+        ]);
       } catch (e: any) {
         console.log(e.message);
         resolve(false);
@@ -364,7 +379,7 @@ class ValidatorStore extends BaseStore {
         const payLoad = [
           this.keySharePublicKey,
           this.keySharePayload?.operatorIds.split(','),
-          `0x${this.keySharePayload?.shares}`,
+          this.keySharePayload?.shares,
           `${this.keySharePayload?.ssvAmount}`,
           {
             validatorCount: 0,
@@ -408,7 +423,6 @@ class ValidatorStore extends BaseStore {
   async setKeyShareFile(keyShare: any, callBack?: any) {
     try {
       this.keyShareFile = keyShare;
-      console.log(this.keyShareFile);
     } catch (e: any) {
       console.log(e.message);
     }

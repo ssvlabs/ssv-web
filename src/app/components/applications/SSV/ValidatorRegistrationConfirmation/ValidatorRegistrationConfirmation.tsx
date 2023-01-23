@@ -56,6 +56,7 @@ const ValidatorRegistrationConfirmation = () => {
       // }
     }
 
+    console.log(`mode is: ${  validatorStore.registrationMode}`);
     const response = await validatorStore.addNewValidator();
     if (response) {
       operatorStore.unselectAllOperators();

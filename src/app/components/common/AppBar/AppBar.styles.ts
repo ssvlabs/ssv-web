@@ -11,8 +11,8 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: (props: any) => props.backgroundColor ? props.backgroundColor : '',
     },
     AppBarIcon: {
-        height: 48,
-        width: 160.2,
+        height: 40,
+        width: 133.5,
         cursor: 'pointer',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
@@ -26,43 +26,20 @@ export const useStyles = makeStyles((theme) => ({
 
     },
     GridItem: {
-        '&:nth-child(1)': {
-        },
-        '&:nth-child(2)': {
-            justifyContent: 'flex-end',
-        },
-        '&:nth-child(3)': {
-            justifyContent: 'flex-end',
-        },
+
     },
     Button: {
+        height: 80,
         fontSize: 16,
-        borderRadius: 8,
-        fontWeight: 600,
-        lineHeight: 1.25,
+        fontWeight: 500,
+        display: 'flex',
+        lineHeight: 1.62,
         cursor: 'pointer',
-        color: theme.colors.gray90,
-        margin: theme.spacing(0, '5%', 0, '5%'),
+        alignItems: 'center',
+        color: theme.colors.gray80,
         '@media only screen and (max-width: 768px)': {
             display: 'none',
         },
-        // '&:nth-of-type(1)': {
-        //     position: !theme.newStage ? 'relative' : '',
-        //     '&:hover': {
-        //         color: theme.colors.primaryBlue,
-        //         '&::after': !theme.newStage ? {
-        //             left: 20,
-        //             width: 150,
-        //             padding: 10,
-        //             borderRadius: 8,
-        //             display: 'block',
-        //             position: 'absolute',
-        //             color: theme.colors.white,
-        //             content: '"Coming Soon..."',
-        //             backgroundColor: theme.colors.primaryBlue,
-        //         } : {},
-        //     },
-        // },
     },
     DarkModeWrapper: {
         '@media only screen and (max-width: 768px)': {
@@ -120,7 +97,7 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     BlueLink: {
-        color: `${theme.colors.primaryBlue} !important`,
+        borderBottom: `2px solid ${theme.colors.primaryBlue} !important`,
     },
     MenuButton: {
         gap: 10,

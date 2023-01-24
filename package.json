@@ -2,10 +2,10 @@
   "name": "ssv-web",
   "description": "Webapp to interact with SSV",
   "version": "1.0.1",
-  "homepage": ".",
   "bin": {
     "ssv-cli": "bin/Cli/Cli.ts"
   },
+  "homepage": ".",
   "dependencies": {
     "@babel/core": "7.17.5",
     "@babel/helper-string-parser": "^7.19.4",

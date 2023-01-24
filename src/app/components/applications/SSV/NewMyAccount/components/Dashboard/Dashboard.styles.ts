@@ -8,7 +8,7 @@ export const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     justifyContent: 'space-between',
-    padding: '23px 442.5px 23px 31.5px',
+    padding: '22px 182px 23px 32px',
     backgroundColor: theme.colors.gray0,
     borderBottom: `solid 1px ${theme.colors.gray20}`,
   },
@@ -17,11 +17,12 @@ export const useStyles = makeStyles((theme) => ({
   },
   BodyRowWrapper: {
     gap: 124,
+    height: 80,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: '16px 0 16px 32px',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     borderBottom: `solid 1px ${theme.colors.gray20}`,
     '&:last-child': {
       borderBottom: 'none',

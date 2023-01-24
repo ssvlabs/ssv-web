@@ -12,6 +12,7 @@ type DashboardProps = {
 const Dashboard = (props: DashboardProps) => {
   const classes = useStyles();
   const { headers, body } = props;
+
   return (
       <Grid container>
         <Grid container item className={classes.HeadersWrapper}>
@@ -23,7 +24,12 @@ const Dashboard = (props: DashboardProps) => {
           })}
         </Grid>
         <Grid container item className={classes.BodyWrapper}>
-          {body.map((row: any) => Object.values(row))}
+          {body.map((row: any[], index: number) => {
+            return <Grid key={index} container item className={classes.BodyRowWrapper}>
+              {row.map((column) => column)}
+              <Grid item className={classes.SingleItemArrow} />
+            </Grid>;
+          })}
         </Grid>
       </Grid>
   );

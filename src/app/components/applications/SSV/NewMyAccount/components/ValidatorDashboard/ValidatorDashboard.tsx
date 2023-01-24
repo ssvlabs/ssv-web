@@ -32,7 +32,20 @@ const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
         </Grid>
       </Grid>
       <Dashboard
-          body={[{ name: 'test1' }, { name: 'test2', tooltip: 'dsa' }, { name: 'test3' }]}
+          body={[
+            [
+              <Grid item>bla</Grid>,
+              <Grid item>bla</Grid>,
+              <Grid item>bla</Grid>,
+              <Grid item>bla</Grid>,
+            ],
+            [
+              <Grid item>bla</Grid>,
+              <Grid item>bla</Grid>,
+              <Grid item>bla</Grid>,
+              <Grid item>bla</Grid>,
+            ],
+          ]}
           headers={[
             { name: 'Cluster ID', tooltip: 'asdad' },
             { name: 'Operators' },

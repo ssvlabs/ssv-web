@@ -1,12 +1,15 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
+import { useNavigate } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
+import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
 
@@ -15,6 +18,7 @@ const ValidatorSuccessScreen = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const buttonText = 'Manage Validator';
+  const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
 
   const redirectTo = async () => {
@@ -35,18 +39,25 @@ const ValidatorSuccessScreen = () => {
       <BorderScreen
         blackHeader
         withoutNavigation
-        borderRadius={'16px 16px 0px 0px'}
         header={translations.SUCCESS.TITLE}
-        sectionClass={classes.SectionWrapper}
+        sectionClass={classes.Section}
         body={[
           <Grid item container className={classes.Wrapper}>
-            <Grid item className={classes.BackgroundImage} />
-            <Grid item className={classes.Text}>Your validator is now running on the secured and distributed
-              infrastructure <br /> of our network.</Grid>
-            <Grid item className={classes.Text}>Your chosen operators have been notified and instantly started
-              their <br /> operation.</Grid>
-            <Grid item className={classes.Text}>To manage your account and validator enter your account
-              dashboard.</Grid>
+            <Grid item className={classes.Text}>Your new validator is managed by the following cluster:</Grid>
+            <Grid  container item className={classes.ClusterID}>
+              <Typography>Validator Cluster e3b0...j123</Typography>
+              <Tooltip text={'adsasd'} />
+            </Grid>
+            <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
+              {Object.values(operatorStore.selectedOperators).map(() => {
+                return <Grid container item className={classes.Operator}>
+                  <Grid item className={classes.OperatorImage} xs={12}/>
+                  <Grid item className={classes.OperatorName} xs>BloxMoon</Grid>
+                  <Grid item className={classes.OperatorId}>ID: 542</Grid>
+                </Grid>;
+              })}
+            </Grid>
+            <Grid item className={classes.Text}>Your cluster operators have been notified and will start your validator operation instantly.</Grid>
             <PrimaryButton text={buttonText} submitFunction={redirectTo} />
           </Grid>,
         ]}

@@ -33,6 +33,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
           <Status status={status}/>,
         </Grid>
     );
+    console.log(operatorsData);
 
     return {
       public_key: <Grid container item>
@@ -70,7 +71,24 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
           </Grid>
         </Grid>
         <Dashboard
-            body={operatorsData}
+            body={[
+              [
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+              ],
+              [
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+                <Grid>bla</Grid>,
+              ],
+            ]}
             headers={[
               { name: 'Operator Name' },
               { name: 'Status', tooltip: 'Performance' },

@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { Grid, Typography } from '@material-ui/core';
 import { useStyles } from './Dashboard.styles';
 import ToolTip from '~app/components/common/ToolTip';
+// import { ReactTable } from '~app/components/common/ReactTable';
 
 type DashboardProps = {
   body: any[],
@@ -12,7 +13,38 @@ type DashboardProps = {
 const Dashboard = (props: DashboardProps) => {
   const classes = useStyles();
   const { headers, body } = props;
-
+  // const validatorsData = [1]?.map(() => {
+  //   return {
+  //     public_key: <Grid container item>
+  //      sad
+  //     </Grid>,
+  //   };
+  // });
+  //
+  // const validatorsColumns = [
+  //   {
+  //     id: 'col14',
+  //     columns: [
+  //       {
+  //         Header: 'Public key',
+  //         accessor: 'public_key',
+  //         width: 60,
+  //       },
+  //     ],
+  //   },
+  // ];
+  //
+  // return (
+  //     <Grid container>
+  //       <Grid item xs={12} style={{ marginBottom: 20 }}>
+  //         <ReactTable
+  //             data={validatorsData}
+  //             cols={validatorsColumns}
+  //             loading={false}
+  //         />
+  //       </Grid>
+  //     </Grid>
+  // );
   return (
       <Grid container>
         <Grid container item className={classes.HeadersWrapper}>

@@ -36,7 +36,6 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
     // Render the UI for your table
     return (
       <Grid container className={classes.TableWrapper}>
-
         <TableContainer className={classes.CustomizeCss} style={{ overflowX: 'initial' }}>
           <MaUTable {...getTableProps()}>
             <TableHead>

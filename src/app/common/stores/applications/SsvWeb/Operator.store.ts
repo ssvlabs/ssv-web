@@ -624,6 +624,7 @@ class OperatorStore extends BaseStore {
    */
   async addNewOperator(getGasEstimation: boolean = false) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    myAccountStore;
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     // eslint-disable-next-line no-async-promise-executor
@@ -669,26 +670,27 @@ class OperatorStore extends BaseStore {
                 console.log(receipt.events);
                 this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
-                let iterations = 0;
-                while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // Reached maximum iterations
-                  if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                    // eslint-disable-next-line no-await-in-loop
-                    await this.refreshOperatorsAndValidators(resolve, true);
-                    break;
-                  }
-                  iterations += 1;
-                  // eslint-disable-next-line no-await-in-loop
-                  if (await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(this.newOperatorKeys.id), 10))) {
-                    // eslint-disable-next-line no-await-in-loop
-                    await this.refreshOperatorsAndValidators(resolve, true);
-                    break;
-                  } else {
-                    console.log('Operator is still not in API..');
-                  }
-                  // eslint-disable-next-line no-await-in-loop
-                  await myAccountStore.delay();
-                }
+                resolve(true);
+                // let iterations = 0;
+                // while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                //   // Reached maximum iterations
+                //   if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                //     // eslint-disable-next-line no-await-in-loop
+                //     await this.refreshOperatorsAndValidators(resolve, true);
+                //     break;
+                //   }
+                //   iterations += 1;
+                //   // eslint-disable-next-line no-await-in-loop
+                //   if (await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(this.newOperatorKeys.id), 10))) {
+                //     // eslint-disable-next-line no-await-in-loop
+                //     await this.refreshOperatorsAndValidators(resolve, true);
+                //     break;
+                //   } else {
+                //     console.log('Operator is still not in API..');
+                //   }
+                //   // eslint-disable-next-line no-await-in-loop
+                //   await myAccountStore.delay();
+                // }
               }
             })
             .on('transactionHash', (txHash: string) => {

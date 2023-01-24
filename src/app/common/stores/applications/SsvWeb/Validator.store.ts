@@ -246,6 +246,7 @@ class ValidatorStore extends BaseStore {
       if (!payload) resolve(false);
 
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+      myAccountStore;
       console.debug('Add Validator Payload: ', payload);
 
       // Send add operator transaction
@@ -262,26 +263,27 @@ class ValidatorStore extends BaseStore {
                 label: 'success',
               });
               console.debug('Contract Receipt', receipt);
-              let iterations = 0;
-              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
-                if (await myAccountStore.checkEntityInAccount('validator', 'public_key', payload[0].replace(/^(0x)/gi, ''))) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
-                  break;
-                } else {
-                  console.log('Validator is still not in API..');
-                }
-                // eslint-disable-next-line no-await-in-loop
-                await myAccountStore.delay();
-              }
+              resolve(true);
+              // let iterations = 0;
+              // while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              //   // Reached maximum iterations
+              //   if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              //     // eslint-disable-next-line no-await-in-loop
+              //     await this.refreshOperatorsAndValidators(resolve, true);
+              //     break;
+              //   }
+              //   iterations += 1;
+              //   // eslint-disable-next-line no-await-in-loop
+              //   if (await myAccountStore.checkEntityInAccount('validator', 'public_key', payload[0].replace(/^(0x)/gi, ''))) {
+              //     // eslint-disable-next-line no-await-in-loop
+              //     await this.refreshOperatorsAndValidators(resolve, true);
+              //     break;
+              //   } else {
+              //     console.log('Validator is still not in API..');
+              //   }
+              //   // eslint-disable-next-line no-await-in-loop
+              //   await myAccountStore.delay();
+              // }
             }
           })
           .on('transactionHash', (txHash: string) => {

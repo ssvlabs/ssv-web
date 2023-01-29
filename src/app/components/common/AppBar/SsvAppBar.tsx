@@ -72,7 +72,7 @@ const SsvAppBar = () => {
       action: 'click',
       label: 'Explorer',
     });
-    window.open(config.links.LINK_EXPLORER);
+    window.open(config.links.EXPLORER_URL);
   }
 
   function openDocs() {

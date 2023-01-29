@@ -116,7 +116,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.LINK_EXPLORER}/operators/${pubKey}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${pubKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
   const sortHandler = (sortType: string) => {

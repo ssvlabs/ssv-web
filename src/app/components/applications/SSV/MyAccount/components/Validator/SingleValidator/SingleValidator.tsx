@@ -90,7 +90,7 @@ const SingleValidator = () => {
       action: 'click',
       label: 'validator',
     });
-    window.open(`${config.links.LINK_EXPLORER}/validators/${validatorPublicKey.replace('0x', '')}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/validators/${validatorPublicKey.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
   const data = React.useMemo(
@@ -128,7 +128,7 @@ const SingleValidator = () => {
                 action: 'click',
                 label: 'operator',
               });
-              window.open(`${config.links.LINK_EXPLORER}/operators/${operator.id}`);
+              window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`);
             }} />
           </Grid>,
         };

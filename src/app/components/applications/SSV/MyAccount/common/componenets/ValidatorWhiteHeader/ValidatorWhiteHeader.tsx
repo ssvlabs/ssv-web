@@ -43,14 +43,14 @@ const ValidatorWhiteHeader = (props: Props) => {
         action: 'click',
         label: 'operator',
       });
-      window.open(`${config.links.LINK_EXPLORER}/operators/${props.address}`, '_blank');
+      window.open(`${config.links.EXPLORER_URL}/operators/${props.address}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
     } else {
       GoogleTagManager.getInstance().sendEvent({
         category: 'explorer_link',
         action: 'click',
         label: 'validator',
       });
-      window.open(`${config.links.LINK_EXPLORER}/validators/${validatorStore.processValidatorPublicKey.replace('0x', '')}`, '_blank');
+      window.open(`${config.links.EXPLORER_URL}/validators/${validatorStore.processValidatorPublicKey.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
     }
   };
 

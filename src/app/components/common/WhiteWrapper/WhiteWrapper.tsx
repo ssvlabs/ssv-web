@@ -82,7 +82,7 @@ const WhiteWrapper = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.LINK_EXPLORER}/operators/${explorerLink}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${explorerLink}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
   useEffect(() => {

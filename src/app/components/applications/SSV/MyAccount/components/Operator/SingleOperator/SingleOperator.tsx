@@ -99,7 +99,7 @@ const SingleOperator = () => {
       action: 'click',
       label: linkType,
     });
-    window.open(`${config.links.LINK_EXPLORER}/${key}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/${key}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
   const moveToUpdateFee = () => {
@@ -112,7 +112,7 @@ const SingleOperator = () => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${publicKey}`, '_blank');
+    window.open(`${beaconchaBaseUrl}/validator/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
   const operatorView = React.useMemo(

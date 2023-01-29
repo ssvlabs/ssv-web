@@ -115,7 +115,9 @@ const config = {
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
-    LINK_EXPLORER: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+    EXPLORER_URL: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+    EXPLORER_VERSION: process.env.REACT_APP_EXPLORER_VERSION || 'v2',
+    EXPLORER_NETWORK: process.env.REACT_APP_EXPLORER_NETWORK || 'prater',
   },
   GLOBAL_VARIABLE: {
     BLOCKS_PER_DAY: 7160,

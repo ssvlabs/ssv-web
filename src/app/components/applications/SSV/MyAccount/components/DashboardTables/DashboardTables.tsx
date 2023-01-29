@@ -211,7 +211,7 @@ const DashboardTables = () => {
             action: 'click',
             label: 'validator',
           });
-          window.open(`${config.links.LINK_EXPLORER}/validators/${public_key.replace('0x', '')}`);
+          window.open(`${config.links.EXPLORER_URL}/validators/${public_key.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`);
         }} />
         <Grid className={classes.SettingsImage} onClick={() => {
           openSingleValidator(public_key);
@@ -247,7 +247,7 @@ const DashboardTables = () => {
       //            action: 'click',
       //            label: 'operator',
       //          });
-      //          window.open(`${config.links.LINK_EXPLORER}/operators/${public_key}`);
+      //          window.open(`${config.links.EXPLORER_URL}/operators/${public_key}`);
       //     }} />
       // </Grid>,
       extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
@@ -257,7 +257,7 @@ const DashboardTables = () => {
             action: 'click',
             label: 'operator',
           });
-          window.open(`${config.links.LINK_EXPLORER}/operators/${id}`);
+          window.open(`${config.links.EXPLORER_URL}/operators/${id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`);
         }} />
         <Grid className={classes.SettingsImage} onClick={() => {
           openSingleOperator(id);

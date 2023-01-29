@@ -33,6 +33,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
           <Status status={status}/>,
         </Grid>
     );
+    /*
     console.log(operatorsData);
 
     return {
@@ -49,7 +50,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
             action: 'click',
             label: 'operator',
           });
-          window.open(`${config.links.LINK_EXPLORER}/operators/${id}`);
+          window.open(`${config.links.EXPLORER_URL}/operators/${id}`);
         }} />
         <Grid onClick={() => {
           console.log('here');
@@ -57,6 +58,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
         }} />
       </Grid>,
     };
+    */
   });
 
   return (

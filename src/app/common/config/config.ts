@@ -111,7 +111,7 @@ const config = {
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
-    STAGE_API_ENDPOINT: String(process.env.REACT_APP_STAGE_API_ENDPOINT),
+    STAGE_API_ENDPOINT: process.env.REACT_APP_STAGE_API_ENDPOINT,
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,

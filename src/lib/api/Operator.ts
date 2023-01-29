@@ -41,7 +41,7 @@ class Operator {
    * Get operators by owner Address
    */
   async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, skipRetry?: boolean) {
-    const url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
+    const url = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
     try {
       this.ownerAddress = ownerAddress;
       return await this.getData(url, skipRetry);

@@ -23,7 +23,7 @@ class Validator {
 
   async getOwnerAddressCost(ownerAddress: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/validators/owned_by/${ownerAddress}/cost`;
+      const url = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;

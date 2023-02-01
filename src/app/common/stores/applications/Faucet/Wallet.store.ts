@@ -185,6 +185,7 @@ class WalletStore extends BaseStore implements Wallet {
     console.log('networkId: ', networkId);
     this.networkId = networkId;
     this.wrongNetwork = networkId !== 5 && networkId !== undefined;
+    config.links.SSV_API_ENDPOINT = `${process.env.REACT_APP_SSV_API_ENDPOINT}/prater`;
   }
 
   /**

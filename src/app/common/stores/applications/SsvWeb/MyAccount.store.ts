@@ -198,10 +198,11 @@ class MyAccountStore extends BaseStore {
     const ssvStore: SSVStore = this.getStore('SSV');
     const { page, perPage } = this.ownerAddressValidatorsPagination;
     const query = `?search=${walletStore.accountAddress}&ordering=public_key:asc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
-    const response = await Validator.getInstance().validatorsByOwnerAddress(query);
+    const response = await Validator.getInstance().validatorsByOwnerAddress(query, true);
+    const responseValidators = response?.validators || [];
 
     if (reFetchBeaconData) {
-      const validatorsPublicKey = response.validators.map(({ public_key }: { public_key: string }) => public_key);
+      const validatorsPublicKey = responseValidators.map(({ public_key }: { public_key: string }) => public_key);
       await this.getValidatorsBalances(validatorsPublicKey);
       // eslint-disable-next-line no-restricted-syntax
       for (const publicKey of validatorsPublicKey) {
@@ -212,7 +213,7 @@ class MyAccountStore extends BaseStore {
     const extendedValidators = [];
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const validator of response.validators) {
+    for (const validator of responseValidators) {
       const validatorPublicKey = `0x${validator.public_key}`;
       const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
       // eslint-disable-next-line no-await-in-loop

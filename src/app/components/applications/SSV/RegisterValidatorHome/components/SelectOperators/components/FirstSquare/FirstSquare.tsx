@@ -276,8 +276,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
           blackHeader
           withConversion
           withoutNavigation={editPage}
-          header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
           wrapperClass={classes.ScreenWrapper}
+          header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
           body={[
             <Grid container>
               <Grid item container>

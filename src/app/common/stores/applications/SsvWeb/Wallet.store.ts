@@ -177,8 +177,8 @@ class WalletStore extends BaseStore implements Wallet {
       ApiParams.cleanStorage();
       await this.initializeUserInfo();
       const validatorsQuery = `?search=${address}&page=1&perPage=5`;
-      const validatorsResponse = await Validator.getInstance().validatorsByOwnerAddress(validatorsQuery);
-      const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
+      const validatorsResponse = await Validator.getInstance().validatorsByOwnerAddress(validatorsQuery, true);
+      const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
       applicationStore.strategyRedirect = operatorsResponse?.operators?.length || validatorsResponse?.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
       if (!operatorsResponse?.operators?.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
       await myAccountStore.getOwnerAddressValidators({ reFetchBeaconData: true });

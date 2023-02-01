@@ -26,7 +26,7 @@ class FaucetStore extends BaseStore {
     async registerNewTransaction() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/faucet`;
+            const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet`;
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
             return { status: true };
         } catch (e: any) {
@@ -37,7 +37,7 @@ class FaucetStore extends BaseStore {
     async getLatestTransactions() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/faucet`;
+            const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet`;
             this.pendingTransaction = await axios.get(faucetUrl, { params: { owner_address: walletStore.accountAddress } });
             return true;
         } catch (e) {

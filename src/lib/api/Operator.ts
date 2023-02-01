@@ -28,7 +28,7 @@ class Operator {
 
   static getInstance(): Operator {
     if (!Operator.instance) {
-      Operator.instance = new Operator(config.links.STAGE_API_ENDPOINT);
+      Operator.instance = new Operator(config.links.SSV_API_ENDPOINT);
     }
     return Operator.instance;
   }
@@ -41,7 +41,7 @@ class Operator {
    * Get operators by owner Address
    */
   async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, skipRetry?: boolean) {
-    const url = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
+    const url = `${config.links.SSV_API_ENDPOINT}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
     try {
       this.ownerAddress = ownerAddress;
       return await this.getData(url, skipRetry);
@@ -55,7 +55,7 @@ class Operator {
    */
   async getOperators(props: OperatorsListQuery, skipRetry?: boolean) {
     const { page, perPage, type, ordering, search } = props;
-    let url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/operators?`;
+    let url = `${String(config.links.SSV_API_ENDPOINT)}/operators?`;
     if (search) url += `search=${search}&`;
     if (ordering) url += `ordering=${ordering}&`;
     if (page) url += `page=${page}&`;
@@ -74,7 +74,7 @@ class Operator {
    * Get operator
    */
   async getOperator(operatorId: number | string, skipRetry?: boolean) {
-    const url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
     try {
       return await this.getData(url, skipRetry);
     } catch (e) {
@@ -103,7 +103,7 @@ class Operator {
    */
   async getOperatorValidators(props: OperatorValidatorListQuery, skipRetry?: boolean) {
     const { page, perPage, operatorId } = props;
-    const url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
     try {
       return await this.getData(url, skipRetry);
     } catch (e) {

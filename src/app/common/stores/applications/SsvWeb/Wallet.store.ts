@@ -227,6 +227,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {
+      config.links.SSV_API_ENDPOINT = `${process.env.REACT_APP_SSV_API_ENDPOINT}/prater`;
       this.wrongNetwork = false;
     }
   }

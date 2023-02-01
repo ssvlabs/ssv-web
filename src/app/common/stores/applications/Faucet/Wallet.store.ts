@@ -100,7 +100,7 @@ class WalletStore extends BaseStore implements Wallet {
     try {
       const applicationStore: Application = this.getStore('Application');
       const faucetStore: FaucetStore = this.getStore('Faucet');
-      const faucetUrl = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/faucet/config`;
+      const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet/config`;
       const response = (await axios.get(faucetUrl)).data;
       faucetStore.amountToTransfer = response[0].amount_to_transfer;
       // eslint-disable-next-line no-constant-condition

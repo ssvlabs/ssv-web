@@ -12,7 +12,7 @@ class Validator {
 
   static getInstance(): Validator {
     if (!Validator.instance) {
-      Validator.instance = new Validator(config.links.STAGE_API_ENDPOINT);
+      Validator.instance = new Validator(config.links.SSV_API_ENDPOINT);
     }
     return Validator.instance;
   }
@@ -23,7 +23,7 @@ class Validator {
 
   async getOwnerAddressCost(ownerAddress: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${process.env.REACT_APP_STAGE_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
+      const url = `${config.links.SSV_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;
@@ -32,7 +32,7 @@ class Validator {
 
   async validatorsByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/validators${query}&ts=${new Date().getTime()}`;
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators${query}&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return { validators: [], pagination: {} };
@@ -41,7 +41,7 @@ class Validator {
 
   async getValidator(publicKey: string, skipRetry?: boolean) {
     try {
-      const url = `${String(process.env.REACT_APP_STAGE_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;

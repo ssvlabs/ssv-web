@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
@@ -110,7 +109,7 @@ const SingleValidator = () => {
           public_key: <OperatorDetails operator={operator} />,
           status: <Status status={status} />,
           performance: <Typography className={classes.PerformanceHeader}>{performance}%</Typography>,
-          fee: <Grid item container justify={'space-between'}>
+          fee: <Grid item container style={{ justifyContent: 'space-between' }}>
             <Grid item>
               <SsvAndSubTitle leftTextAlign
                 ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />
@@ -145,7 +144,7 @@ const SingleValidator = () => {
     () => [
       {
         id: 'col13',
-        Header: <Grid container justify={'space-between'} alignItems={'center'}>
+        Header: <Grid container style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography>Operators</Typography>
           <SecondaryButton disable={ssvStore.userLiquidated} className={classes.Edit} submitFunction={editValidator}
             text={'Edit'} />

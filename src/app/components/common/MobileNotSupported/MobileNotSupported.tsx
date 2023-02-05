@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Typography } from '@mui/material';
 import { useStyles } from '~app/components/common/MobileNotSupported/MobileNotSupported.styles';
 
 const MobileNotSupported = () => {

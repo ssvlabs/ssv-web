@@ -1,7 +1,8 @@
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import screenSizes from '~lib/utils/screenSizes';
-import { makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     Header: {
         fontSize: 20,
         lineHeight: 1.4,

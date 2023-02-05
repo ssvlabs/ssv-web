@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import { Link, Typography } from '@material-ui/core';
+import { Link, Typography, Grid } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';

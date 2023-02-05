@@ -1,20 +1,45 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewMyAccount.styles';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard/Dashboard';
 
 const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  stores;
+  const validatorStore: ValidatorStore = stores.Validator;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
 
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
+  };
+
+  const createData = (
+      clusterID: string,
+      operators: string,
+      validators: number,
+      operational_runway: string,
+  ) => {
+    return { clusterID, operators, validators, operational_runway };
+  };
+
+  const rows = [
+    createData('e3b0...b855', '1,2,3,4', 12, '657 Days'),
+    createData('e3b0...b855', '1,2,3,4', 98, '876 Days'),
+    createData('e3b0...b855', '1,2,3,4', 4, '432 Days'),
+    createData('e3b0...b855', '1,2,3,4', 342, '654 Days'),
+    createData('e3b0...b855', '1,2,3,4', 675, '345 Days'),
+  ];
+
+  const openSingleValidator = (listIndex: string) => {
+    validatorStore.processValidatorPublicKey = myAccountStore.ownerAddressValidators[listIndex].public_key;
+    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
   };
 
   return (
@@ -32,21 +57,9 @@ const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
         </Grid>
       </Grid>
       <Dashboard
-          body={[
-            [
-              <Grid item>bla</Grid>,
-              <Grid item>bla</Grid>,
-              <Grid item>bla</Grid>,
-              <Grid item>bla</Grid>,
-            ],
-            [
-              <Grid item>bla</Grid>,
-              <Grid item>bla</Grid>,
-              <Grid item>bla</Grid>,
-              <Grid item>bla</Grid>,
-            ],
-          ]}
-          headers={[
+          rows={rows}
+          rowsAction={openSingleValidator}
+          columns={[
             { name: 'Cluster ID', tooltip: 'asdad' },
             { name: 'Operators' },
             { name: 'Validators' },

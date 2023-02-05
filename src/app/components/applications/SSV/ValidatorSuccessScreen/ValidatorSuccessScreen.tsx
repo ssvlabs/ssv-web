@@ -1,8 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Typography } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
@@ -78,7 +77,7 @@ const ValidatorSuccessScreen = () => {
       {/*        Validators who also <b>stake SSV</b> tokens are generating <b>over x5 more rewards</b> comparing to non staking validators. */}
       {/*      </Typography> */}
       {/*      <Typography className={classes.IncentivizedSmallHeader}>Get SSV tokens</Typography> */}
-      {/*      <Grid container item className={classes.IncentivizedLogos} justify={'space-between'}> */}
+      {/*      <Grid container item className={classes.IncentivizedLogos} justifyContent={'space-between'}> */}
       {/*        <Grid item onClick={() => { linkToExchange('https://coinmarketcap.com/currencies/ssv-network/', 'coinmarketcap'); }} /> */}
       {/*        <Grid item onClick={() => { linkToExchange('https://www.binance.com/en/trade/SSV_BTC', 'binance'); }} /> */}
       {/*        <Grid item onClick={() => { linkToExchange('https://www.gate.io/trade/SSV_USDT', 'gate'); }} /> */}

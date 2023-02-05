@@ -1,6 +1,6 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -18,7 +18,7 @@ const OperatorDetails = (props: Props) => {
     const notificationsStore: NotificationsStore = stores.Notifications;
     const classes = useStyles({ operatorLogo: operator.logo, gray80 });
     let operatorName = operator?.name;
-    if (operator.name.length > 14) operatorName = `${operator.name.slice(0, 13)}...`;
+    if (operator?.name?.length > 14) operatorName = `${operator.name.slice(0, 13)}...`;
 
     const copyId = () => {
         navigator.clipboard.writeText(operator?.id);
@@ -29,7 +29,7 @@ const OperatorDetails = (props: Props) => {
       <Grid container className={classes.Wrapper}>
         <Grid item className={classes.OperatorLogo} />
         <Grid item className={classes.TextWrapper}>
-          <Grid item className={classes.Name}>{operatorName}</Grid>
+          <Grid item className={classes.Name}>{operatorName ?? 'Unknown'}</Grid>
           <Grid item container className={classes.Id}>
             ID: {operator.id}
             {withCopy && <Grid className={classes.Copy} onClick={copyId} />}

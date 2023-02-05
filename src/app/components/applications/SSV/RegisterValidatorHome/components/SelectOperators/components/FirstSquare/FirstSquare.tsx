@@ -1,13 +1,8 @@
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
 import React, { useEffect, useRef, useState } from 'react';
-import { CircularProgress, Grid } from '@material-ui/core';
-import TableContainer from '@material-ui/core/TableContainer';
+import { TableContainer, Grid, Table, TableRow, TableHead, TableBody, CircularProgress } from '@mui/material';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';

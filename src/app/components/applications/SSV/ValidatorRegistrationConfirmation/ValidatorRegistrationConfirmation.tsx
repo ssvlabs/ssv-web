@@ -1,6 +1,6 @@
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';

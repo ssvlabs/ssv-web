@@ -1,8 +1,6 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
+import { Grid, Dialog, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
@@ -132,7 +130,7 @@ const OperatorsReceipt = (props: Props) => {
             </Grid>
           );
         })}
-        <Grid container item justify={'space-between'}>
+        <Grid container item style={{ justifyContent: 'space-between' }}>
           <Grid item xs>
             <Typography className={classes.NetworkYearlyFee} style={{ marginRight: 8 }} component={'span'}>Network yearly
               fees</Typography>
@@ -156,7 +154,7 @@ const OperatorsReceipt = (props: Props) => {
         </Grid>
       </Grid>
     </Grid>,
-    <Grid container item justify={'space-between'}>
+    <Grid container item style={{ justifyContent: 'space-between' }}>
       <Grid item>
         <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
       </Grid>

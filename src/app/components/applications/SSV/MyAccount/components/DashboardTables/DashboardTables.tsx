@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
@@ -102,7 +101,7 @@ const DashboardTables = () => {
   const validatorsColumns = [
     {
       id: 'col14',
-      Header: <Grid container justify={'space-between'} alignItems={'center'}>
+      Header: <Grid container style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography>Validators</Typography>
       </Grid>,
       columns: [
@@ -140,7 +139,7 @@ const DashboardTables = () => {
   const operatorsColumns = [
     {
       id: 'col13',
-      Header: <Grid container justify={'space-between'} alignItems={'center'}>
+      Header: <Grid container style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography>Operators</Typography>
       </Grid>,
       columns: [
@@ -196,7 +195,7 @@ const DashboardTables = () => {
       apr: <Grid container item>
         <Grid item xs={12} className={classes.ValidatorApr}>{apr}%</Grid>
       </Grid>,
-      extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
+      extra_buttons: <Grid container item style={{ gap: 7, justifyContent: 'flex-end' }}>
         <Grid className={classes.BeaconImage} onClick={() => {
           GoogleTagManager.getInstance().sendEvent({
             category: 'external_link',
@@ -234,7 +233,7 @@ const DashboardTables = () => {
       //   <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(walletStore.fromWei(revenue))} SSV</Grid>
       // </Grid>,
       validators_count: <Grid item className={classes.ValidatorApr}>{validators_count}</Grid>,
-      // fee: <Grid item container justify={'space-between'}>
+      // fee: <Grid item container justifyContent={'space-between'}>
       //   <Grid item container xs>
       //     <Grid item xs={12}>
       //       <Typography>{ssvStore.getFeeForYear(walletStore.fromWei(operator.fee))} asdSSV</Typography>
@@ -250,7 +249,7 @@ const DashboardTables = () => {
       //          window.open(`${config.links.EXPLORER_URL}/operators/${public_key}`);
       //     }} />
       // </Grid>,
-      extra_buttons: <Grid container item style={{ gap: 7 }} justify={'flex-end'}>
+      extra_buttons: <Grid container item style={{ gap: 7, justifyContent: 'flex-end' }}>
         <Grid className={classes.ExplorerImage} onClick={() => {
           GoogleTagManager.getInstance().sendEvent({
             category: 'explorer_link',

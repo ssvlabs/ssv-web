@@ -1,6 +1,6 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
@@ -20,7 +20,7 @@ const RegisterOperatorHome = () => {
           <HeaderSubHeader title={'Join the SSV Network Operators'}
             subtitle={'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.'}
               />
-          <Grid container item justify={'space-evenly'}>
+          <Grid container item>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
                 <SecondaryButton text={'Run SSV Node'} submitFunction={() => {

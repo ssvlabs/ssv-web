@@ -1,13 +1,7 @@
 import React from 'react';
 // @ts-ignore
 import { useTable } from 'react-table';
-import { Grid } from '@material-ui/core';
-import MaUTable from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableContainer from '@material-ui/core/TableContainer';
+import { Grid, Table as TTable, TableRow, TableBody, TableCell, TableHead, TableContainer } from '@mui/material';
 import PaginationActions from '~app/components/common/Table/PaginationActions';
 import { useStyles } from './Table.styles';
 
@@ -37,7 +31,7 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
     return (
       <Grid container className={classes.TableWrapper}>
         <TableContainer className={classes.CustomizeCss} style={{ overflowX: 'initial' }}>
-          <MaUTable {...getTableProps()}>
+          <TTable {...getTableProps()}>
             <TableHead>
               {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (
                 <TableRow key={headerGroupIndex} {...headerGroup.getHeaderGroupProps()}>
@@ -66,7 +60,7 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
                         );
                     })}
             </TableBody>
-          </MaUTable>
+          </TTable>
         </TableContainer>
         {!hideActions && actionProps && actionProps.totalPages > 1 && (
           <PaginationActions

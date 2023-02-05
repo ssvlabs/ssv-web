@@ -1,4 +1,4 @@
-declare module '@material-ui/core/styles/createMuiTheme' {
+declare module '@mui/material/styles' {
     interface Theme {
         colors?: any
         opacity?: any,

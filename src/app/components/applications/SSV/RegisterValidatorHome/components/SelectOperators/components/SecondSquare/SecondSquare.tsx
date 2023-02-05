@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Grid, Typography } from '@material-ui/core';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -138,7 +138,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           )}
-          <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
+          <Grid container item xs={12} className={classes.TotalFeesWrapper}>
             <Grid item className={classes.TotalFeesHeader}>
               {editPage ? 'New total Operators Yearly Fee' : 'Total Operators Yearly Fee'}
             </Grid>

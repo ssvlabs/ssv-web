@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
 import { observer } from 'mobx-react';
+import React, { Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -7,8 +7,8 @@ import Layout from '~app/components/common/Layout';
 import { SsvAppBar } from '~app/components/common/AppBar';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import MyAccount from '~app/components/applications/SSV/MyAccount';
-import NewMyAccount from '~app/components/applications/SSV/NewMyAccount';
 import Welcome from '~app/components/applications/SSV/Welcome/Welcome';
+import NewMyAccount from '~app/components/applications/SSV/NewMyAccount';
 import SetOperatorFee from '~app/components/applications/SSV/SetOperatorFee';
 import Deposit from '~app/components/applications/SSV/MyAccount/components/Deposit';
 import Withdraw from '~app/components/applications/SSV/MyAccount/components/Withdraw';
@@ -99,7 +99,7 @@ const Routes: any = () => {
       <SsvAppBar />
       <Wrapper>
         <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
-        <Route path={ssvRoutes.ROOT} element={<Welcome />} /> 
+        <Route path={ssvRoutes.ROOT} element={<Welcome />} />
         <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
           <Route index element={<NewMyAccount />} />
           {dashboardRoutes.map((route: any, index: number) => { 

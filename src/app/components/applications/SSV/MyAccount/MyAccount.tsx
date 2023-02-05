@@ -1,6 +1,5 @@
-import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+ import { observer } from 'mobx-react';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import useUserFlow from '~app/hooks/useUserFlow';
@@ -50,7 +49,7 @@ const MyAccount = () => {
 
   return (
     <Grid container className={classes.Wrapper}>
-      <Grid container item xs={12} className={classes.Header} justify={'space-between'}>
+      <Grid container item xs={12} className={classes.Header} justifyContent={'space-between'}>
         <Grid item container xs>
           <Grid item>
             <span className={classes.HeaderText}>

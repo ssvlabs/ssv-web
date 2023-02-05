@@ -1,8 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import screenSizes from '~lib/utils/screenSizes';
 
 // @ts-ignore
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: any) => ({
     AppBarWrapper: {
         height: 80,
         marginBottom: 24,

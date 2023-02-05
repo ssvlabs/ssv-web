@@ -1,9 +1,8 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';

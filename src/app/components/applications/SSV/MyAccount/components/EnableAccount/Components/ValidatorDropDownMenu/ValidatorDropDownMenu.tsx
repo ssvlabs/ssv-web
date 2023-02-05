@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import React, { useState } from 'react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';

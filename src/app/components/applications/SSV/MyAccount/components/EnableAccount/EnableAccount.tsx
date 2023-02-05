@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
@@ -143,7 +142,7 @@ const EnableAccount = () => {
           ),
         ]}
         bottom={(
-          <Grid container item justify={'space-between'}>
+          <Grid container item style={{ justifyContent: 'space-between' }}>
             <Grid item>
               <NameAndAddress name={'Total'} />
             </Grid>

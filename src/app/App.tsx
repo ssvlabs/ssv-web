@@ -1,16 +1,18 @@
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { Grid, MuiThemeProvider } from '@material-ui/core';
+import { Grid, ThemeProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { StyledEngineProvider } from '@mui/material/styles';
 import { BrowserView, MobileView } from 'react-device-detect';
+import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import Routes from '~app/Routes/Routes';
 import config from '~app/common/config';
 import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import BarMessage from '~app/components/common/BarMessage';
+// import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -60,22 +62,26 @@ const App = () => {
   }, [walletStore.accountDataLoaded]);
 
   return (
-    <MuiThemeProvider theme={applicationStore.theme}>
-      <GlobalStyle />
-      {!walletStore.accountDataLoaded && (
-        <Grid container className={classes.LoaderWrapper}>
-          <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
-        </Grid>
-      )}
-      <BarMessage />
-      <BrowserView>
-        {walletStore.accountDataLoaded && <Routes />}
-      </BrowserView>
-      <MobileView>
-        <MobileNotSupported />
-      </MobileView>
-      <CssBaseline />
-    </MuiThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={applicationStore.theme}>
+          <ThemeProviderLegacy theme={applicationStore.theme}>
+            <GlobalStyle/>
+            {!walletStore.accountDataLoaded && (
+                <Grid container className={classes.LoaderWrapper}>
+                  <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
+                </Grid>
+            )}
+            {/*<BarMessage/>*/}
+            <BrowserView>
+              {walletStore.accountDataLoaded && <Routes/>}
+            </BrowserView>
+            <MobileView>
+              <MobileNotSupported/>
+            </MobileView>
+            <CssBaseline/>
+          </ThemeProviderLegacy>
+        </ThemeProvider>
+      </StyledEngineProvider>
   );
 };
 

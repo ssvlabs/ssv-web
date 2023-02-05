@@ -1,7 +1,8 @@
-import TableCell from '@material-ui/core/TableCell';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import { TableCell } from '@mui/material';
+import { createStyles, withStyles } from '@mui/styles';
 
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+// @ts-ignore
 const StyledCell = withStyles((theme) => createStyles({
     head: {
         height: 36,

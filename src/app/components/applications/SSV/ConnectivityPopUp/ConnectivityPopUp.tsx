@@ -1,12 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
+import { Grid, Dialog, Button, Typography } from '@mui/material';
 // import { useNavigate } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 import { useStores } from '~app/hooks/useStores';
-import ClearIcon from '@material-ui/icons/Clear';
-import Typography from '@material-ui/core/Typography';
+import ClearIcon from '@mui/icons-material/Clear';
 // import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/ConnectivityPopUp/ConnectivityPopUp.styles';
@@ -40,12 +37,11 @@ const ConnectivityPopUp = () => {
             <Typography variant="subtitle2">We couldn&#39;t detect your wallet.</Typography>
             <Typography variant="subtitle2">Please connect to a wallet to proceed.</Typography>
             <Button
-              data-testid="connect-to-wallet-button"
               variant="contained"
-              color="default"
-              style={registerButtonStyle}
               onClick={connectToWallet}
-             >
+              style={registerButtonStyle}
+              data-testid="connect-to-wallet-button"
+            >
               Connect Wallet
             </Button>
           </Grid>

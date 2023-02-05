@@ -1,5 +1,5 @@
+import { Grid } from '@mui/material';
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
 import BackNavigation from '~app/components/common/BackNavigation';
 import { useStyles } from './BorderScreen.styles';
 
@@ -53,7 +53,7 @@ const BorderScreen = (props: Props) => {
       )}
       <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
         {(header || withConversion) && (
-          <Grid container item className={classes.HeaderSection} justify={'space-between'}>
+          <Grid container item className={classes.HeaderSection} justifyContent={'space-between'}>
             <Grid item className={classes.Header} xs>
               {header}
             </Grid>

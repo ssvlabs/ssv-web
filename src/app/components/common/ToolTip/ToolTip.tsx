@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
 import { useStyles } from './ToolTip.styles';
-import Typography from '@material-ui/core/Typography';
 
 type ToolTipProps = {
   text?: any,

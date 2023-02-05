@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   ScreenWrapper: {
     width: '100%',
     marginBottom: 100,
@@ -104,6 +105,7 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.colors.primaryBlue,
   },
   TotalFeesWrapper: {
+    justifyContent: 'space-between',
     marginBottom: theme.spacing(10),
   },
   TotalFeesHeader: {

@@ -1,4 +1,5 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 const text = {
   fontSize: 16,
@@ -11,7 +12,7 @@ const smallerText = {
   fontSize: 14,
 };
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   Box: {
     gap: 8,
     width: 280,

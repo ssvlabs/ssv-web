@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useStyles } from './LinkText.styles';
-import Typography from '@material-ui/core/Typography';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 
 type MessageDivProps = {

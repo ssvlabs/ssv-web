@@ -1,5 +1,5 @@
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';

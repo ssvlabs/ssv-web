@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Typography } from '@mui/material';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './FundingPeriod.styles';

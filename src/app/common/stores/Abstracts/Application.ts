@@ -1,4 +1,4 @@
-import { Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
 import config from '~app/common/config';
 
 export default abstract class Application {

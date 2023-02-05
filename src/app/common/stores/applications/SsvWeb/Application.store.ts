@@ -1,4 +1,5 @@
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
@@ -106,7 +107,7 @@ class ApplicationStore extends BaseStore implements Application {
     const walletStore: WalletStore = this.getStore('Wallet');
     walletStore.onboardSdk.config({ darkMode: isDarkMode });
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
-    this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
+    this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
   displayToolBarMenu(status: boolean) {
@@ -114,7 +115,13 @@ class ApplicationStore extends BaseStore implements Application {
   }
 
   applicationRoutes() {
-    return require('~app/common/stores/applications/SsvWeb/Routes').default;
+    try {
+      return require('~app/common/stores/applications/SsvWeb/Routes').default;
+    } catch (e: any) {
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log(e.message);
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    }
   }
 
   showWalletPopUp(status: boolean) {

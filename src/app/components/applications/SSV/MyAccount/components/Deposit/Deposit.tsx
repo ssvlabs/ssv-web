@@ -1,14 +1,14 @@
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
+import BorderScreen from '~app/components/common/BorderScreen';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import BorderScreen from '~app/components/common/BorderScreen';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
 import { useStyles } from './Deposit.styles';
 

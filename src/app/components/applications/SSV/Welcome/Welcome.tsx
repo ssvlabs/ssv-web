@@ -1,6 +1,6 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';

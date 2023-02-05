@@ -1,8 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
 import { useStyles } from './index.styles';
-import Typography from '@material-ui/core/Typography';
 
 type Props = {
     step: number,

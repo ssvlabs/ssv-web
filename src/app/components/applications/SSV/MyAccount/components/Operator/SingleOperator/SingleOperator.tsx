@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
 import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -195,7 +194,7 @@ const SingleOperator = () => {
     () => [
       {
         id: 'col13',
-        Header: <Grid item container justify={'space-between'} alignItems={'center'}>
+        Header: <Grid item container justifyContent={'space-between'} alignItems={'center'}>
           <Typography>Validators</Typography>
         </Grid>,
         columns: [

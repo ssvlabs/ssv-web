@@ -1,7 +1,7 @@
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';

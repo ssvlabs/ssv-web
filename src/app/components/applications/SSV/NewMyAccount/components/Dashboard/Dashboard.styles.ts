@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   HeadersWrapper: {
     height: 65,
     width: 1320,
@@ -12,8 +13,14 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors.gray0,
     borderBottom: `solid 1px ${theme.colors.gray20}`,
   },
-  SingleItemArrow: {
-
+  Arrow: {
+    width: 24,
+    height: 27,
+    float: 'right',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(/images/view_arrow/light.svg)',
   },
   BodyRowWrapper: {
     gap: 124,

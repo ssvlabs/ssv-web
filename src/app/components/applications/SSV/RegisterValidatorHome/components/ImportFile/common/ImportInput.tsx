@@ -1,5 +1,5 @@
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import React, { useRef } from 'react';
 import { useStyles } from '../ImportFile.styles';
 import Spinner from '~app/components/common/Spinner';

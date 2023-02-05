@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';

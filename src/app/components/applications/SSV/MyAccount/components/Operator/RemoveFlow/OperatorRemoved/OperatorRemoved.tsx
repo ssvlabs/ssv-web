@@ -1,8 +1,7 @@
-import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import { useNavigate } from 'react-router-dom';
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { observer } from 'mobx-react';
+import { useNavigate } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';

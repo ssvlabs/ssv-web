@@ -1,6 +1,6 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
 import { useStyles } from './ErrorMessage.styles';
 
 type MessageDivProps = {

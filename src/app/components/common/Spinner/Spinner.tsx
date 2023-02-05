@@ -1,5 +1,5 @@
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { CircularProgress } from '@mui/material';
 import { useStyles } from './Spinner.styles';
 
 const Spinner = ({ errorSpinner }: { errorSpinner?: boolean }) => {

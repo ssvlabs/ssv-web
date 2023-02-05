@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import React, { useEffect } from 'react';
+import { Grid, Button } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -52,18 +51,18 @@ const PrimaryButton = (props: Props) => {
     };
 
     return (
-      <Grid container item>
-        <Button
-          type="submit"
-          onClick={submitHandler}
-          data-testid={dataTestId}
-          disabled={disable || applicationStore.isLoading}
-          className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
-        >
-          {applicationStore.isLoading && !withoutLoader && <Spinner errorSpinner={errorButton} />}
-          {text}
-        </Button>
-      </Grid>
+        <Grid container item>
+            <Button
+                type="submit"
+                onClick={submitHandler}
+                data-testid={dataTestId}
+                disabled={disable || applicationStore.isLoading}
+                className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+            >
+                {applicationStore.isLoading && !withoutLoader && <Spinner errorSpinner={errorButton}/>}
+                {text}
+            </Button>
+        </Grid>
     );
 };
 

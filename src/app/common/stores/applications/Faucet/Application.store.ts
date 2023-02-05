@@ -1,5 +1,5 @@
+import { createTheme, Theme } from '@mui/material';
 import { action, computed, makeObservable, observable } from 'mobx';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -76,7 +76,7 @@ class ApplicationStore extends BaseStore implements Application {
     const walletStore: WalletStore = this.getStore('Wallet');
     walletStore.onboardSdk.config({ darkMode: isDarkMode });
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
-    this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
+    this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
   displayToolBarMenu(status: boolean) {

@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
-const conditionalBackgroundColor = (theme: any, props: any) => {
+const conditionalBackgroundColor = (theme: Theme, props: any) => {
     if (props.disable) {
         return theme.colors.gray20;
     }
@@ -18,7 +19,7 @@ const conditionalBorder = (theme: any, props: any) => {
     return `solid 1px ${theme.colors.gray30}`;
 };
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     Wrapper: {
         height: 50,
         fontSize: 16,

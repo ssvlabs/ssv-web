@@ -1,9 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Dialog, Typography } from '@mui/material';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import Checkbox from '~app/components/common/CheckBox';

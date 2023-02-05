@@ -1,9 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Dialog, Typography } from '@mui/material';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';

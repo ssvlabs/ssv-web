@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { useState, useRef, useEffect } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import config from '~app/common/config';
@@ -55,7 +55,7 @@ const RequestForSsv = () => {
         setButtonText('Request');
     };
 
-    return (
+  return (
       <BorderScreen
         blackHeader
         withoutNavigation

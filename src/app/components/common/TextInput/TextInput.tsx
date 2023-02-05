@@ -1,5 +1,5 @@
+import { Grid } from '@mui/material';
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
 import { useStyles } from './TextInput.styles';
 
 type InputProps = {
@@ -31,7 +31,7 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
     return (
       <Grid container
           // @ts-ignore
-        justify={withLock && 'space-between'}
+        justifyContent={withLock && 'space-between'}
         className={wrapperClass ?? `${classes.Wrapper} ${extendClass}`}>
         {withLock && <Grid item className={`${classes.Lock} ${disable ? classes.LockDisable : ''}`} onClick={() => { !disable && showPassword(!password); }} />}
         <Grid item xs>

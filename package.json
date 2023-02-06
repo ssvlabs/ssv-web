@@ -107,6 +107,7 @@
     "sass": "^1.32.11",
     "sass-loader": "^10.0.5",
     "semver": "7.3.2",
+    "source-map-explorer": "^2.5.3",
     "ssv-keys": "https://github.com/bloxapp/ssv-keys#main",
     "stream": "npm:stream-browserify",
     "stream-browserify": "^3.0.0",
@@ -127,6 +128,7 @@
     "workbox-webpack-plugin": "5.1.4"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "cross-env NODE_ENV=development INLINE_RUNTIME_CHUNK=false node scripts/start.js",
     "build": "cross-env INLINE_RUNTIME_CHUNK=false node --max_old_space_size=8192 scripts/build.js",
     "test": "cross-env NODE_ENV=test INLINE_RUNTIME_CHUNK=false node scripts/test.js --watchAll=false --verbose --detectOpenHandles --forceExit",

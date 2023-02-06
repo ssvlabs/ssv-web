@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';

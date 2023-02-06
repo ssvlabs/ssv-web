@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
 import config from '~app/common/config';
+import { Theme } from '@mui/material/styles';
 
 export default abstract class Application {
   theme: Theme;

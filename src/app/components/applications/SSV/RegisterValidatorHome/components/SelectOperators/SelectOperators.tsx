@@ -1,6 +1,6 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import { Grid } from '@mui/material';
+import { observer } from 'mobx-react';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/SelectOperators.styles';
 import SecondSquare from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/SecondSquare';
 import FirstSquare from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare';

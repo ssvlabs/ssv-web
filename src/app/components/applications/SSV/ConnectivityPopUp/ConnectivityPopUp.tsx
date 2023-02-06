@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import ClearIcon from '@mui/icons-material/Clear';
 import { Grid, Dialog, Button, Typography } from '@mui/material';
 // import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
-import ClearIcon from '@mui/icons-material/Clear';
 // import WalletStore from '~app/common/stores/Wallet/Wallet.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/ConnectivityPopUp/ConnectivityPopUp.styles';

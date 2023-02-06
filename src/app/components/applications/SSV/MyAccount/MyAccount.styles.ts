@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 // import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme: Theme) => ({

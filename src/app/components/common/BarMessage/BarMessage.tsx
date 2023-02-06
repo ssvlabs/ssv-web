@@ -1,7 +1,6 @@
 import React from 'react';
-import MuiAlert from '@mui/lab/Alert';
 import { observer } from 'mobx-react';
-import { Snackbar } from '@mui/material';
+import { Snackbar, Alert as MuiAlert } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './BarMessage.styles';

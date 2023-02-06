@@ -233,6 +233,9 @@ class MyAccountStore extends BaseStore {
     }
 
     ssvStore.setUserState('validator');
+    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    console.log(response);
+    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     response.pagination.perPage = response.pagination.per_page;
     this.ownerAddressValidatorsPagination = response.pagination;
     this.ownerAddressValidators = extendedValidators;

@@ -1,6 +1,6 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';

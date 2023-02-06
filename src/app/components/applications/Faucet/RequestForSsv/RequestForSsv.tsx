@@ -1,8 +1,8 @@
-import { observer } from 'mobx-react';
-import React, { useState, useRef, useEffect } from 'react';
 import { Grid } from '@mui/material';
+import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
+import React, { useState, useRef, useEffect } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';

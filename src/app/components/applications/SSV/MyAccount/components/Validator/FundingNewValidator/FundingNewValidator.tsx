@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { Grid, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 // import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 // import ErrorMessage from '~app/components/common/ErrorMessage';

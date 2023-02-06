@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useStyles } from '~app/components/common/ErrorText/ErrorText.styles';
 import LinkText from '~app/components/common/LinkText';

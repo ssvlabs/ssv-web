@@ -1,5 +1,5 @@
-import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';

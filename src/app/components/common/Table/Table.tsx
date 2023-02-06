@@ -1,7 +1,13 @@
 import React from 'react';
 // @ts-ignore
 import { useTable } from 'react-table';
-import { Grid, Table as TTable, TableRow, TableBody, TableCell, TableHead, TableContainer } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import TTable from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableContainer from '@mui/material/TableContainer';
 import PaginationActions from '~app/components/common/Table/PaginationActions';
 import { useStyles } from './Table.styles';
 

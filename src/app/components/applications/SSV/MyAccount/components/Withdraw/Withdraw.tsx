@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';

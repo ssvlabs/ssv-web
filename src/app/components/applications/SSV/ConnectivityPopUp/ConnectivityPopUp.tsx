@@ -1,7 +1,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import ClearIcon from '@mui/icons-material/Clear';
-import { Grid, Dialog, Button, Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 // import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 // import WalletStore from '~app/common/stores/Wallet/Wallet.store';

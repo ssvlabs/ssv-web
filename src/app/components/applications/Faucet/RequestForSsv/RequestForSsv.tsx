@@ -1,5 +1,5 @@
-import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import React, { useState, useRef, useEffect } from 'react';

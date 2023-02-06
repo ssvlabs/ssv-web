@@ -236,7 +236,7 @@ class MyAccountStore extends BaseStore {
     console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     console.log(response);
     console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    response.pagination.perPage = response.pagination.per_page;
+    response?.pagination?.perPage = response?.pagination?.per_page;
     this.ownerAddressValidatorsPagination = response.pagination;
     this.ownerAddressValidators = extendedValidators;
     this.lastUpdateValidators = Date.now();

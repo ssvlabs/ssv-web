@@ -1,5 +1,7 @@
 import React from 'react';
-import { Grid, Dialog, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
 import { useNavigate, useLocation } from 'react-router-dom';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';

@@ -1,6 +1,6 @@
-import { TableRow } from '@mui/material';
-import { createStyles, withStyles } from '@mui/styles';
+import TableRow from '@mui/material/TableRow';
 import BaseStore from '~app/common/stores/BaseStore';
+import { createStyles, withStyles } from '@mui/styles';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 const applicationStore: ApplicationStore = BaseStore.getInstance().getStore('Application');

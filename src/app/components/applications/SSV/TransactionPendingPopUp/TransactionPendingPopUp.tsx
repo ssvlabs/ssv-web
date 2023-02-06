@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid, Dialog } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';

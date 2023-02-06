@@ -1,7 +1,7 @@
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import { Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';

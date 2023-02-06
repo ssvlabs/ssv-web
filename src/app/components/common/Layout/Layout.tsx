@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import WalletPopUp from '~app/components/applications/SSV/WalletPopUp';
 import { useStyles } from '~app/components/common/Layout/Layout.styles';

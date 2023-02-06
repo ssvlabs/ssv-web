@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import BackNavigation from '~app/components/common/BackNavigation';
 import { useStyles } from './BorderScreen.styles';

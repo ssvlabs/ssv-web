@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';

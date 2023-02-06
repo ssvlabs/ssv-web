@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';

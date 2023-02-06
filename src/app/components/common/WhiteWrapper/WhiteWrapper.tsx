@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
-import { Grid, Typography, Dialog } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';

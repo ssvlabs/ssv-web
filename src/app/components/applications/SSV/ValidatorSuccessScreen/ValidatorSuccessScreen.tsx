@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import { Grid, Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';

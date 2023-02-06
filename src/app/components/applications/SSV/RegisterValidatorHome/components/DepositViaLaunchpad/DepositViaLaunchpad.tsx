@@ -1,7 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import { Link, Typography, Grid } from '@mui/material';
 import config, { translations } from '~app/common/config';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';

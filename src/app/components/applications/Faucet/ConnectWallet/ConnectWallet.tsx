@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
+import Typography from '@mui/material/Typography';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';

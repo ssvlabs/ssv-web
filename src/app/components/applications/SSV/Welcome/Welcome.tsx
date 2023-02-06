@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';

@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
+import Typography from '@mui/material/Typography';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';

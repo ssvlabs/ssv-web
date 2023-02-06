@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Button } from '@mui/material';
+import Button from '@mui/material/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';

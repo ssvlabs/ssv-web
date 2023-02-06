@@ -1,6 +1,6 @@
 import React from 'react';
-import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';

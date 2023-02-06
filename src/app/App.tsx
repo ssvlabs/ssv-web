@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useEffect } from 'react';
-import { ThemeProvider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';

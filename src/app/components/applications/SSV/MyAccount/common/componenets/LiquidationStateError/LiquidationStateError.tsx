@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError.styles';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Grid } from '@mui/material';
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';

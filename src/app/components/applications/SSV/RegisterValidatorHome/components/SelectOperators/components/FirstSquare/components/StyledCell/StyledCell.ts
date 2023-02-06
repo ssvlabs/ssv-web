@@ -1,4 +1,4 @@
-import { TableCell } from '@mui/material';
+import TableCell from '@mui/material/TableCell';
 import { createStyles, withStyles } from '@mui/styles';
 
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars

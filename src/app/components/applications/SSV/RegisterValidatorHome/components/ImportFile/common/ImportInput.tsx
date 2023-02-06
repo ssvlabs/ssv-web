@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import React, { useRef } from 'react';
 import { useStyles } from '../ImportFile.styles';

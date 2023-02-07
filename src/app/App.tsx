@@ -13,7 +13,7 @@ import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-// import BarMessage from '~app/components/common/BarMessage';
+import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -72,7 +72,7 @@ const App = () => {
                   <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
                 </Grid>
             )}
-            {/*<BarMessage/>*/}
+            <BarMessage/>
             <BrowserView>
               {walletStore.accountDataLoaded && <Routes/>}
             </BrowserView>

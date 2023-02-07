@@ -43,7 +43,7 @@ const SetOperatorFee = () => {
     <BorderScreen
       body={[
         <Grid container style={{ position: 'relative', gap: 0 }}>
-          <HeaderSubHeader title={'Set Operator Fees'} />
+          <HeaderSubHeader title={'Set Operator Fee'} />
           <Grid item container style={{ gap: 24 }}>
             <Typography className={classes.Text}>The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators.</Typography>
             <Typography className={classes.Text}>Operators set their own fees, denominated in SSV tokens, to be charged per each validator that selects them as one of their operators.</Typography>

@@ -9,7 +9,7 @@
     "@types/react": "17.0.2",
     "@types/react-dom": "17.0.2"
   },
-  "homepage": ".",
+  "homepage": "/",
   "dependencies": {
     "@babel/core": "7.17.5",
     "@babel/helper-string-parser": "^7.19.4",
@@ -29,7 +29,6 @@
     "@testing-library/user-event": "^7.1.2",
     "@types/lodash": "^4.14.178",
     "@types/react-dom": "^18.0.9",
-    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "5.14.0",
     "@typescript-eslint/parser": "5.14.0",
     "assert": "^2.0.0",

@@ -1,11 +1,12 @@
 import { action, makeObservable, observable } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
+import { AlertColor } from '@mui/material/Alert';
 
 class NotificationsStore extends BaseStore {
   autoHideDuration: number = 0;
   message: string = '';
   showSnackBar = false;
-  messageSeverity: string = '';
+  messageSeverity: AlertColor = 'info';
 
   constructor() {
     // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
@@ -32,11 +33,11 @@ class NotificationsStore extends BaseStore {
     this.message = text;
   }
 
-  setMessageSeverity(text: string) {
+  setMessageSeverity(text: AlertColor) {
     this.messageSeverity = text;
   }
 
-  showMessage(message: string, severity: string, autoHideDuration?: number) {
+  showMessage(message: string, severity: AlertColor, autoHideDuration?: number) {
     this.setShowSnackBar(true);
     this.setMessage(message);
     this.setMessageSeverity(severity);

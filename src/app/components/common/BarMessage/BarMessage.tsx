@@ -1,17 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import MuiAlert from '@mui/material/Alert';
+import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import { useStores } from '~app/hooks/useStores';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './BarMessage.styles';
 
-const Alert = (props: any) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-};
-
 const BarMessage = () => {
   const classes = useStyles();
+  classes;
   const stores = useStores();
   const notificationsStore: NotificationsStore = stores.Notifications;
   const snackbarAnchorOrigin: any = { vertical: 'top', horizontal: 'center' };

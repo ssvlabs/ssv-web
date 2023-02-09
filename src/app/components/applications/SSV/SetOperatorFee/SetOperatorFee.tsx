@@ -20,9 +20,10 @@ const SetOperatorFee = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const [userInput, setUserInput] = useState();
+  const [userInput, setUserInput] = useState(0);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const [zeroError, setZeroError] = useState(false);
 
   useEffect(() => {
     const isRegisterButtonEnabled = !userInput || error.shouldDisplay;
@@ -37,6 +38,23 @@ const SetOperatorFee = () => {
     operatorWithFee.fee = userInput || 0;
     operatorStore.setOperatorKeys(operatorWithFee);
     navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
+  };
+
+  const removeLeadingZeros = (num: number): number =>  {
+    let str = num.toString();
+    let stripped = str.replace(/^0+/, '');
+    return stripped === '' ? 0 : parseFloat(stripped);
+  };
+
+  const verifyFeeNumber = (value: number) => {
+    setUserInput(value);
+  };
+  
+  const checkIfNumberZero = (value: number) => {
+    validateFeeInput(String(value), setError);
+    setUserInput(removeLeadingZeros(userInput));
+    if (value === 0) setZeroError(true);
+    else setZeroError(false);
   };
 
   return (
@@ -63,11 +81,11 @@ const SetOperatorFee = () => {
                 value={userInput}
                 showError={error.shouldDisplay}
                 dataTestId={'edit-operator-fee'}
-                onChangeCallback={(e: any) => setUserInput(e.target.value)}
-                onBlurCallBack={(event: any) => { validateFeeInput(event.target.value, setError); }} />
+                onChangeCallback={(e: any) => verifyFeeNumber(e.target.value)}
+                onBlurCallBack={(event: any) => { checkIfNumberZero(event.target.value); }} />
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
-            {userInput === '0' && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'}/>}
+            {zeroError && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'}/>}
               <PrimaryButton text={'Next'} disable={!registerButtonEnabled} submitFunction={moveToSubmitConfirmation} />
           </Grid>
         </Grid>,

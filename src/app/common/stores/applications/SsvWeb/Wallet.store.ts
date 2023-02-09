@@ -168,8 +168,13 @@ class WalletStore extends BaseStore implements Wallet {
     this.setAccountDataLoaded(false);
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const ssvStore: SsvStore = this.getStore('SSV');
     if (address === undefined || !this.wallet?.name) {
+      ssvStore.clearUserSyncInterval();
       await this.resetUser();
+      setTimeout(() => {
+        this.setAccountDataLoaded(true);
+      }, 1000);
     } else {
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
@@ -184,16 +189,18 @@ class WalletStore extends BaseStore implements Wallet {
       await myAccountStore.getOwnerAddressValidators({ reFetchBeaconData: true });
       await myAccountStore.getOwnerAddressOperators({});
       myAccountStore.setIntervals();
+      this.setAccountDataLoaded(true);
     }
-    this.setAccountDataLoaded(true);
   }
 
   async resetUser() {
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
     this.onboardSdk.walletReset();
     this.ssvStore.clearSettings();
     this.operatorStore.clearSettings();
+    myAccountStore.clearIntervals();
     window.localStorage.removeItem('params');
     window.localStorage.removeItem('selectedWallet');
     applicationStore.strategyRedirect = config.routes.SSV.ROOT;

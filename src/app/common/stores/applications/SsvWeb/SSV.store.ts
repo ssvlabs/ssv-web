@@ -59,6 +59,7 @@ class SsvStore extends BaseStore {
       activateValidator: action.bound,
       getContractAddress: action.bound,
       getAccountBurnRate: action.bound,
+      clearUserSyncInterval: action.bound,
       getNewAccountBurnRate: action.bound,
       getValidatorOperators: action.bound,
       contractDepositSsvBalance: observable,
@@ -118,6 +119,7 @@ class SsvStore extends BaseStore {
    * Init User Interval
    */
   async userSyncInterval() {
+    if (!this.accountAddress) return;
     await this.checkAllowance();
     await this.getNetworkFees();
     // await this.checkIfLiquidated();
@@ -133,6 +135,10 @@ class SsvStore extends BaseStore {
     clearInterval(this.accountInterval);
     await this.userSyncInterval();
     this.accountInterval = setInterval(this.userSyncInterval, 2000);
+  }
+
+  clearUserSyncInterval() {
+    clearInterval(this.accountInterval);
   }
 
   newGetFeeForYear = (fee: number, decimalPlaces?: number): string => {

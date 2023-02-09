@@ -14,11 +14,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
         backgroundImage: (props: any) => `url(${props.logo ?? '/images/operator_default_background/light.svg'})`,
     },
     Wrapper: {
-        marginTop: 24,
     },
     ItemsWrapper: {
-        gap: 80,
-        marginBottom: 32,
+        gap: 90,
     },
     TableKey: {
         fontSize: 14,

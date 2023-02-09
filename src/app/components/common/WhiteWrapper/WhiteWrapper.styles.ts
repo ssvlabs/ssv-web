@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     WhiteWrapper: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.gray0,
     },
     Wrapper: {
         margin: 'auto',

@@ -6,6 +6,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     BorderScreenWrapper: {
         width: 648,
         margin: 'auto',
+        marginTop: 32,
         [screenSizes.xs]: {
             width: '100%',
         },

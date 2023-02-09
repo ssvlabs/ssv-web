@@ -18,7 +18,7 @@ const RegisterOperatorHome = () => {
       body={[
         <Grid container>
           <HeaderSubHeader title={'Join the SSV Network Operators'}
-            subtitle={'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.'}
+            subtitle={'To join as an network operator, you must run an SSV node. Start with your, node setup and return here to register your operator key.'}
               />
           <Grid container item>
             <Grid container item className={classes.LinkButtonWrapper}>
@@ -33,7 +33,7 @@ const RegisterOperatorHome = () => {
                     }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
-                See our developer documentation
+                follow our installation docs
               </Grid>
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
@@ -43,7 +43,7 @@ const RegisterOperatorHome = () => {
                     }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
-                Sign up as one of the network operators
+                Sign up with your operator key
               </Grid>
             </Grid>
           </Grid>

@@ -39,10 +39,10 @@ const SetOperatorFee = () => {
               <HeaderSubHeader
                   marginBottom={13}
                   title={'Welcome to the SSV Network!'}
-                  subtitle={'Congrats, your operator is live and is now part of the SSV network!'}
+                  subtitle={'Congrats, your operator is now part of the SSV network!'}
               />
               <Grid container item style={{ marginBottom: 16 }}>
-                <Typography className={classes.Text}>Your network identifier is the following:</Typography>
+                <Typography className={classes.Text}>Your network identifier is:</Typography>
               </Grid>
               <Grid>
                 <OperatorId successPage id={operatorStore.newOperatorKeys.id}/>
@@ -52,11 +52,11 @@ const SetOperatorFee = () => {
               <Typography className={classes.GreyHeader}>Things that will help you out:</Typography>
               <Grid container className={classes.BoxesWrapper}>
                 <Grid className={classes.BoxWrapper}>
-                  <LinkText text={'Submit detailed information'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> about you
-                  operator node on file drive to increase your chances of being selected by validators
+                  <LinkText text={'Provide metadata'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to increase your operator discoverability and
+                  chances of attracting other stakers.
                 </Grid>
                 <Grid className={classes.BoxWrapper}>
-                  <LinkText text={'Learn more about how to monitor your node'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> by reading our documentation. Monitoring your node is important for ensuring its uptime and performance
+                  <LinkText text={'Monitor your node'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to improve your operator performance and uptime.
                 </Grid>
               </Grid>
               <Typography className={classes.Text} style={{ marginTop: 24, marginBottom: 24 }}>To manage your operator enter your account dashboard.</Typography>

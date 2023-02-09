@@ -18,8 +18,8 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -84,7 +84,8 @@ const SingleOperator = () => {
   const { page, pages, per_page, total } = operatorsValidatorsPagination || {};
 
   // @ts-ignore
-  const { logo, status, validators_count, fee } = operator || {};
+  const { logo, status, validators_count, fee, performance } = operator || {};
+  const validator30dPerformance = operator ? performance['30d'] : 0;
   const yearlyFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(fee)));
   const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
@@ -116,200 +117,227 @@ const SingleOperator = () => {
   };
 
   const operatorView = React.useMemo(
-    () => [
-      {
-        key: <Typography>Name</Typography>,
-        value: <Grid item container className={classes.ItemWrapper} xs={12}>
-          <OperatorDetails withCopy operator={operator} />
-        </Grid>,
-      },
-      // {
-      //     key: <Typography>Address</Typography>,
-      //     value: <Grid item container className={classes.ItemWrapper} xs={12}>
-      //       <Typography
-      //         className={classes.TableValueText}>{`0x${longStringShorten(address, 4, 4)}`}</Typography>
-      //       <ImageDiv onClick={() => copyToClipboard(address)} image={'copy'} width={24} height={24} />
-      //       <ImageDiv onClick={() => openExplorer(address)} image={'explorer'} width={24}
-      //         height={24} />
-      //     </Grid>,
-      // },
-      {
-        key: <Grid container item alignItems={'center'}>
-          <Grid item style={{ marginTop: 1, marginRight: 4 }}>
-            Status
-          </Grid>
-          <ToolTip
-            text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
-        </Grid>,
-        value: <Grid item container className={classes.ItemWrapper} xs={12}>
-          <Status status={status} />
-        </Grid>,
-      },
-      {
-        key: <Typography>Validators</Typography>,
-        value: <Grid item container className={classes.ItemWrapper} xs={12}>
-          <Typography className={classes.TableValueText}>{validators_count}</Typography>
-        </Grid>,
-      },
-      // {
-      //     key: <Typography>Revenue</Typography>,
-      //     value: <Grid item container className={classes.ItemWrapper} xs={12}>
-      //       <SsvAndSubTitle leftTextAlign ssv={
-      //           // @ts-ignore
-      //           operator?.revenue
-      //       } />
-      //     </Grid>,
-      // },
-    ], [operator, applicationStore.darkMode],
+      () => [
+        {
+          key: <Typography>Name</Typography>,
+          value: <Grid item container className={classes.ItemWrapper} xs={12}>
+            <OperatorDetails withCopy operator={operator}/>
+          </Grid>,
+        },
+        {
+          key: <Grid container item alignItems={'center'}>
+            <Grid item style={{ marginTop: 1, marginRight: 4 }}>
+              Status
+            </Grid>
+            <ToolTip
+                text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'}/>
+          </Grid>,
+          value: <Grid item container className={classes.ItemWrapper} xs={12}>
+            <Status status={status}/>
+          </Grid>,
+        },
+        {
+          key: <Typography>Validators</Typography>,
+          value: <Grid item container className={classes.ItemWrapper} xs={12}>
+            <Typography className={classes.TableValueText}>{validators_count}</Typography>
+          </Grid>,
+        },
+        {
+          key: <Typography>30D Performance</Typography>,
+          value: <Grid item container className={classes.ItemWrapper} xs={12}>
+            <Typography className={classes.TableValueText}>{validator30dPerformance}</Typography>
+          </Grid>,
+        },
+      ], [operator, applicationStore.darkMode],
   );
 
   const data = React.useMemo(
-    () => {
-      // return validator operators mapped with additional fields fee and performance
-      // @ts-ignore
-      return operatorsValidators?.map((validator: any) => {
-        // eslint-disable-next-line no-param-reassign
-        const {
-          public_key,
-        } = validator;
+      () => {
+        // return validator operators mapped with additional fields fee and performance
+        // @ts-ignore
+        return operatorsValidators?.map((validator: any) => {
+          // eslint-disable-next-line no-param-reassign
+          const {
+            public_key,
+          } = validator;
 
-        return {
-          status: <Status status={'inactive'} />,
-          public_key: <Typography
-            className={classes.TableValueText}>{`0x${longStringShorten(public_key, 6, 4)}`}</Typography>,
-          extra_buttons: <Grid item container className={classes.ExtraButtonWrapper}>
-            <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={20}
-              height={20} />
-            <ImageDiv onClick={() => openExplorer(`validators/${validator.public_key}`, 'validator')} image={'explorer'}
-              width={20} height={20} />
-            <ImageDiv onClick={() => openBeaconcha(`0x${validator.public_key}`)} image={'beacon'} width={20}
-              height={20} />
-          </Grid>,
-        };
-      });
-    },
-    [operatorsValidators, applicationStore.darkMode],
+          return {
+            status: <Status status={'inactive'}/>,
+            public_key: <Typography
+                className={classes.TableValueText}>{`0x${longStringShorten(public_key, 6, 4)}`}</Typography>,
+            extra_buttons: <Grid item container className={classes.ExtraButtonWrapper}>
+              <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={20}
+                        height={20}/>
+              <ImageDiv onClick={() => openExplorer(`validators/${validator.public_key}`, 'validator')}
+                        image={'explorer'}
+                        width={20} height={20}/>
+              <ImageDiv onClick={() => openBeaconcha(`0x${validator.public_key}`)} image={'beacon'} width={20}
+                        height={20}/>
+            </Grid>,
+          };
+        });
+      },
+      [operatorsValidators, applicationStore.darkMode],
   );
 
   const columns = React.useMemo(
-    () => [
-      {
-        id: 'col13',
-        Header: <Grid item container justifyContent={'space-between'} alignItems={'center'}>
-          <Typography>Validators</Typography>
-        </Grid>,
-        columns: [
-          {
-            Header: 'Address',
-            accessor: 'public_key',
-          },
-          {
-            Header: <Grid container item alignItems={'center'}>
-              <Grid item style={{ marginRight: 4 }}>
-                Status
-              </Grid>
-              <ToolTip
-                text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
-            </Grid>,
-            accessor: 'status',
-          },
-          {
-            Header: '',
-            accessor: 'extra_buttons',
-          },
+      () => [
+        {
+          id: 'col13',
+          Header: <Grid item container justifyContent={'space-between'} alignItems={'center'}>
+            <Typography>Validators</Typography>
+          </Grid>,
+          columns: [
+            {
+              Header: 'Address',
+              accessor: 'public_key',
+            },
+            {
+              Header: <Grid container item alignItems={'center'}>
+                <Grid item style={{ marginRight: 4 }}>
+                  Status
+                </Grid>
+                <ToolTip
+                    text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'}/>
+              </Grid>,
+              accessor: 'status',
+            },
+            {
+              Header: '',
+              accessor: 'extra_buttons',
+            },
 
-        ],
-      },
-    ], [applicationStore.darkMode],
+          ],
+        },
+      ], [applicationStore.darkMode],
   );
 
   if (!operator) return null;
 
   return (
-    <Grid container item>
-      <WhiteWrapper
-        backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
-        withSettings={{
-          text: 'Remove Operator',
-          onClick: () => {
-            navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
-          },
-        }}
-        withExplorer
-        // @ts-ignore
-        explorerLink={operator?.id}
-        header={'Operator Details'}
-      >
-        <Grid item container className={classes.ItemsWrapper}>
-          {operatorView.map((item: any, index: number) => (
-            <Grid item key={index}>
-              <Grid item xs={12} className={classes.TableKey}>
-                {item.key}
-              </Grid>
-              {item.value}
-            </Grid>
-          ))}
-        </Grid>
-      </WhiteWrapper>
-      <Grid container item className={classes.SecondSectionWrapper}>
-        {operatorsValidators && operatorsValidators.length > 0 && (
-          <Grid item className={classes.OperatorsValidatorsTable}>
-            <Table
-              data={data}
-              columns={columns}
-              actionProps={{
-                onChangePage,
-                perPage: per_page,
-                type: 'operator',
-                currentPage: page,
-                totalPages: pages,
-                totalAmountOfItems: total,
-                onChangeRowsPerPage,
-              }}
+      <Grid container item style={{ gap: 26 }}>
+        <NewWhiteWrapper
+            type={1}
+            backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
+            withSettings={{
+              text: 'Remove Operator',
+              onClick: () => {
+                navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
+              },
+            }}
+            withExplorer
+            // @ts-ignore
+            explorerLink={operator?.id}
+            header={'Operator Details'}
+        >
+          <Grid item container className={classes.ItemsWrapper}>
+            {operatorView.map((item: any, index: number) => (
+                <Grid item key={index}>
+                  <Grid item xs={12} className={classes.TableKey}>
+                    {item.key}
+                  </Grid>
+                  {item.value}
+                </Grid>
+            ))}
+          </Grid>
+        </NewWhiteWrapper>
+      </Grid>
+  );
+  return (
+      <Grid container item>
+        <NewWhiteWrapper
+            type={1}
+            backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
+            withSettings={{
+              text: 'Remove Operator',
+              onClick: () => {
+                navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
+              },
+            }}
+            withExplorer
+            // @ts-ignore
+            explorerLink={operator?.id}
+            header={'Operator Details'}
+        >
+          <Grid item container className={classes.ItemsWrapper}>
+            {operatorView.map((item: any, index: number) => (
+                <Grid item key={index}>
+                  <Grid item xs={12} className={classes.TableKey}>
+                    {item.key}
+                  </Grid>
+                  {item.value}
+                </Grid>
+            ))}
+          </Grid>
+        </NewWhiteWrapper>
+        <Grid container item className={classes.SecondSectionWrapper}>
+          <Grid container item className={classes.AnnualWrapper}>
+            <BorderScreen
+                withoutNavigation
+                header={'Annual Fee'}
+                SideHeader={UpdateFeeState}
+                sectionClass={classes.AnnualSection}
+                body={[
+                  <Grid container item>
+                    <Grid item xs={12}>
+                      <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign/>
+                    </Grid>
+                  </Grid>,
+                ]}
+                bottom={[
+                  <Grid item xs>
+                    <Button disable={false} text={'Change Fee'} onClick={moveToUpdateFee}/>
+                  </Grid>,
+                ]}
+                bottomWrapper={classes.ButtonSection}
+                wrapperClass={classes.AnnualWrapper}
             />
           </Grid>
-        )}
-        {operatorsValidatorsPagination && operatorsValidators.length === 0 && (
-          <Grid item className={classes.OperatorsValidatorsTable}>
-            <Grid item xs={12} className={classes.NoRecordImage} />
-            <Grid item xs={12} className={classes.NoRecordsText}>No Validators</Grid>
-          </Grid>
-          //     <Grid hover>
-          //     <StyledCell className={classes.NoRecordsWrapper}>
-          //         <Grid container>
-          //             <Grid item xs={12} className={classes.NoRecordImage}/>
-          //             <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
-          //             <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or
-          //                 filter</Grid>
-          //         </Grid>
-          //     </StyledCell>
-          // </TableRow>
-        )}
-
-        <Grid item className={classes.AnnualWrapper}>
           <BorderScreen
-            withoutNavigation
-            header={'Annual Fee'}
-            SideHeader={UpdateFeeState}
-            sectionClass={classes.AnnualSection}
-            body={[
-              <Grid container item>
-                <Grid item xs={12}>
-                  <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign />
-                </Grid>
-              </Grid>,
-            ]}
-            bottom={[
-              <Grid item xs>
-                <Button disable={false} text={'Change Fee'} onClick={moveToUpdateFee} />
-              </Grid>,
-            ]}
-            bottomWrapper={classes.ButtonSection}
-            wrapperClass={classes.AnnualWrapper}
+              withoutNavigation
+              header={'Annual Fee'}
+              SideHeader={UpdateFeeState}
+              sectionClass={classes.AnnualSection}
+              body={[
+                <Grid container item>
+                  <Grid item xs={12}>
+                    <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign/>
+                  </Grid>
+                </Grid>,
+              ]}
+              bottom={[
+                <Grid item xs>
+                  <Button disable={false} text={'Change Fee'} onClick={moveToUpdateFee}/>
+                </Grid>,
+              ]}
+              bottomWrapper={classes.ButtonSection}
+              wrapperClass={classes.AnnualWrapper}
           />
+          {operatorsValidators && operatorsValidators.length > 0 && (
+              <Grid item className={classes.OperatorsValidatorsTable}>
+                <Table
+                    data={data}
+                    columns={columns}
+                    actionProps={{
+                      onChangePage,
+                      perPage: per_page,
+                      type: 'operator',
+                      currentPage: page,
+                      totalPages: pages,
+                      totalAmountOfItems: total,
+                      onChangeRowsPerPage,
+                    }}
+                />
+              </Grid>
+          )}
+          {false && operatorsValidatorsPagination && operatorsValidators.length === 0 && (
+              <Grid item className={classes.OperatorsValidatorsTable}>
+                <Grid item xs={12} className={classes.NoRecordImage}/>
+                <Grid item xs={12} className={classes.NoRecordsText}>No Validators</Grid>
+              </Grid>
+          )}
         </Grid>
       </Grid>
-    </Grid>
   );
 };
 

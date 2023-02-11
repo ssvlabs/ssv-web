@@ -176,13 +176,17 @@ const KeyStoreFlow = () => {
   return (
       <BorderScreen
           blackHeader
-          wrapperClass={classes.Wrapper}
           header={translations.VALIDATOR.IMPORT.TITLE}
           body={[
             <Grid item container>
               <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>
-              <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText} fileHandler={fileHandler}
-                           fileImage={renderFileImage}/>
+              <ImportInput
+                  fileText={renderFileText}
+                  fileHandler={fileHandler}
+                  fileImage={renderFileImage}
+                  removeButtons={removeButtons}
+                  processingFile={processingFile}
+              />
               <Grid container item xs={12}>
                 <><InputLabel title="Keystore Password"/>
                   <Grid item xs={12} className={classes.ItemWrapper}>

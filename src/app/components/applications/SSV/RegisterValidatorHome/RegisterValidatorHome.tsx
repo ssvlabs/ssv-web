@@ -10,12 +10,14 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
+  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
 
   const preRequisites = [
@@ -26,6 +28,11 @@ const RegisterValidatorHome = () => {
   useEffect(() => {
       validatorStore.clearKeyStoreFlowData();
   });
+
+  const moveToSelectOperators = () => {
+    operatorStore.unselectAllOperators();
+    navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
+  };
 
   return (
     <BorderScreen
@@ -43,7 +50,7 @@ const RegisterValidatorHome = () => {
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton text={'Next'} submitFunction={()=> navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS)} withoutLoader/>
+          <PrimaryButton text={'Next'} submitFunction={moveToSelectOperators} withoutLoader/>
           <Grid container item style={{ marginTop: 16, gap: 4 }}>
             <Typography className={`${classes.GrayText} ${classes.Gray90Text}`}>Don't have a validator?</Typography>
             <LinkText text={'Create via Ethereum Launchpad'} link={config.routes.SSV.VALIDATOR.CREATE} routePush />

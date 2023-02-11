@@ -127,7 +127,6 @@ const KeyShareFlow = () => {
   return (
       <BorderScreen
           blackHeader
-          wrapperClass={classes.Wrapper}
           header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
           body={[
             <Grid item container>

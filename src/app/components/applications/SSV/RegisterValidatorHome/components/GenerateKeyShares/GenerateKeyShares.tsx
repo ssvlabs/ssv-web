@@ -2,15 +2,19 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import { useNavigate } from 'react-router-dom';
 import { useStyles } from './GenerateKeyShares.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 const GenerateKeyShares = () => {
+  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const validatorStore: ValidatorStore = stores.Validator;
 
   return (
       <BorderScreen
@@ -35,6 +39,7 @@ const GenerateKeyShares = () => {
                       withVerifyConnection
                       text={'Online'}
                       submitFunction={() => {
+                        validatorStore.keyStoreFile = null;
                         navigate(config.routes.SSV.VALIDATOR.IMPORT);
                       }}
                   />
@@ -48,6 +53,7 @@ const GenerateKeyShares = () => {
                       withVerifyConnection
                       text={'Offline'}
                       submitFunction={() => {
+                        validatorStore.keyShareFile = null;
                         navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE);
                       }}
                   />

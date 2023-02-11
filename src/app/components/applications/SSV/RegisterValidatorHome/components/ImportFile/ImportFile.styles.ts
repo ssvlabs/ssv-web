@@ -2,9 +2,6 @@ import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
-    Wrapper: {
-        marginTop: 8,
-    },
     SubHeader: {
         fontSize: 16,
         fontWeight: 500,

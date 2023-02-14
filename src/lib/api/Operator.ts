@@ -41,7 +41,7 @@ class Operator {
    * Get operators by owner Address
    */
   async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 5, ownerAddress: string, skipRetry?: boolean) {
-    const url = `${config.links.SSV_API_ENDPOINT}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}`;
+    const url = `${config.links.SSV_API_ENDPOINT}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=ID`;
     try {
       this.ownerAddress = ownerAddress;
       return await this.getData(url, skipRetry);

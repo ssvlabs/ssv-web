@@ -357,7 +357,7 @@ class ValidatorStore extends BaseStore {
           this.keyStorePublicKey,
           readable?.operatorIds.split(','),
           readable.shares,
-          `${readable?.ssvAmount}`,
+          `${ssvStore.prepareSsvAmountToTransfer(readable?.ssvAmount)}`,
           {
             validatorCount: 0,
             networkFee: 0,
@@ -375,6 +375,7 @@ class ValidatorStore extends BaseStore {
   }
 
   async createKeySharePayLoad(update: boolean = false): Promise<any> {
+    const ssvStore: SsvStore = this.getStore('SSV');
     update;
     return new Promise((resolve) => {
       try {
@@ -382,7 +383,7 @@ class ValidatorStore extends BaseStore {
           this.keySharePublicKey,
           this.keySharePayload?.operatorIds.split(','),
           this.keySharePayload?.shares,
-          `${this.keySharePayload?.ssvAmount}`,
+          `${ssvStore.prepareSsvAmountToTransfer(this.keySharePayload?.ssvAmount)}`,
           {
             validatorCount: 0,
             networkFee: 0,

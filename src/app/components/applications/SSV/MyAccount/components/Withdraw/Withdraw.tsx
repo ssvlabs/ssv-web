@@ -125,7 +125,7 @@ const Withdraw = () => {
         withoutNavigation
         header={'Withdraw'}
         body={secondBorderScreen}
-        bottom={(
+        bottom={[(
           <Button
             text={buttonText}
             withAllowance={false}
@@ -135,7 +135,7 @@ const Withdraw = () => {
             checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
             disable={(ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
           />
-        )}
+        )]}
       />
     </>
   );

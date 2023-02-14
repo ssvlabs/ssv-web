@@ -18,44 +18,46 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+// import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
-import UpdateFeeState
-  from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/UpdateFeeState';
-import OperatorDetails
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
+import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/UpdateFeeState';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const SingleOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
-  const [operator, setOperator] = useState(null);
+  // const [operator, setOperator] = useState(null);
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
-  const operatorStore: OperatorStore = stores.Operator;
+  const processStore: ProcessStore = stores.Process;
+  // const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const notificationsStore: NotificationsStore = stores.Notifications;
+  const operator = processStore.process?.item;
+
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
-    applicationStore.setIsLoading(true);
-    Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
-      if (response) {
-        // @ts-ignore
-        response.revenue = await operatorStore.getOperatorRevenue(operatorStore.processOperatorId);
-        setOperator(response);
-        loadOperatorValidators({ page: 1, perPage: 5 });
-      }
-      applicationStore.setIsLoading(false);
-    });
+    if (!operator) return navigate(applicationStore.strategyRedirect);
+    // applicationStore.setIsLoading(true);
+    // Operator.getInstance().getOperator(operator?.id).then(async (response: any) => {
+    //   console.log('response ', response);
+    //   if (response) {
+    //     // @ts-ignore
+    //     response.revenue = await operatorStore.getOperatorRevenue(processStore.process?.itemId);
+    //     setOperator(response);
+    loadOperatorValidators({ page: 1, perPage: 5 });
+    //   }
+    //   applicationStore.setIsLoading(false);
+    // });
   }, []);
 
   const loadOperatorValidators = async (props: { page: number, perPage: number }) => {
@@ -63,7 +65,7 @@ const SingleOperator = () => {
     const { page, perPage } = props;
     const response = await Operator.getInstance().getOperatorValidators({
       // @ts-ignore
-      operatorId: operatorStore.processOperatorId,
+      operatorId: operator.id,
       page,
       perPage,
     });
@@ -105,6 +107,10 @@ const SingleOperator = () => {
 
   const moveToUpdateFee = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
+  };
+
+  const moveToWithdraw = () => {
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.WITHDRAW);
   };
 
   const openBeaconcha = (publicKey: string) => {
@@ -218,16 +224,7 @@ const SingleOperator = () => {
       <Grid container item style={{ gap: 26 }}>
         <NewWhiteWrapper
             type={1}
-            backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
-            withSettings={{
-              text: 'Remove Operator',
-              onClick: () => {
-                navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
-              },
-            }}
-            withExplorer
-            // @ts-ignore
-            explorerLink={operator?.id}
+            mainFlow
             header={'Operator Details'}
         >
           <Grid item container className={classes.ItemsWrapper}>
@@ -241,22 +238,86 @@ const SingleOperator = () => {
             ))}
           </Grid>
         </NewWhiteWrapper>
+        <Grid container item className={classes.BoxesWrapper}>
+          <Grid container item className={classes.BoxWrapper}>
+            <Grid item className={classes.Box}>
+              <BorderScreen
+                  withoutNavigation
+                  header={'Balance'}
+                  SideHeader={UpdateFeeState}
+                  sectionClass={classes.AnnualSection}
+                  body={[
+                    <Grid container item>
+                      <Grid item xs={12}>
+                        <SsvAndSubTitle ssv={formatNumberToUi(operator.balance) || 0} bold leftTextAlign/>
+                      </Grid>
+                    </Grid>,
+                  ]}
+                  bottom={[
+                    <Grid item xs>
+                      <Button disable={false} text={'Withdraw'} onClick={moveToWithdraw}/>
+                    </Grid>,
+                  ]}
+                  bottomWrapper={classes.ButtonSection}
+                  wrapperClass={classes.AnnualWrapper}
+              />
+            </Grid>
+            <Grid item className={classes.Box}>
+              <BorderScreen
+                  marginTop={0}
+                  withoutNavigation
+                  header={'Annual Fee'}
+                  SideHeader={UpdateFeeState}
+                  sectionClass={classes.AnnualSection}
+                  body={[
+                    <Grid container item>
+                      <Grid item xs={12}>
+                        <SsvAndSubTitle ssv={yearlyFee || 0} bold leftTextAlign/>
+                      </Grid>
+                    </Grid>,
+                  ]}
+                  bottom={[
+                    <Grid item xs>
+                      <SecondaryButton disable={false} text={'Update Fee'} submitFunction={moveToUpdateFee} />
+                    </Grid>,
+                  ]}
+                  bottomWrapper={classes.ButtonSection}
+                  wrapperClass={classes.AnnualWrapper}
+              />
+            </Grid>
+          </Grid>
+          {validators_count === 0 && <Grid container item className={classes.TableWrapper}>
+            <Grid container item className={classes.BigBox}>
+              <Grid item className={classes.NoValidatorImage} xs={12}/>
+              <Grid item xs={12}>
+                <Typography className={classes.NoValidatorText}>No Validators</Typography>
+              </Grid>
+            </Grid>
+          </Grid>}
+          {validators_count > 0 && (
+              <Grid item className={classes.OperatorsValidatorsTable}>
+                <Table
+                    data={data}
+                    columns={columns}
+                    actionProps={{
+                      onChangePage,
+                      perPage: per_page,
+                      type: 'operator',
+                      currentPage: page,
+                      totalPages: pages,
+                      totalAmountOfItems: total,
+                      onChangeRowsPerPage,
+                    }}
+                />
+              </Grid>
+          )}
+        </Grid>
       </Grid>
   );
   return (
       <Grid container item>
         <NewWhiteWrapper
             type={1}
-            backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
-            withSettings={{
-              text: 'Remove Operator',
-              onClick: () => {
-                navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
-              },
-            }}
-            withExplorer
-            // @ts-ignore
-            explorerLink={operator?.id}
             header={'Operator Details'}
         >
           <Grid item container className={classes.ItemsWrapper}>

@@ -179,7 +179,7 @@ const KeyStoreFlow = () => {
           header={translations.VALIDATOR.IMPORT.TITLE}
           body={[
             <Grid item container>
-              <Grid item xs={12} className={classes.SubHeader}>{translations.VALIDATOR.IMPORT.DESCRIPTION}</Grid>
+              <Grid item xs={12} className={classes.SubHeader}>Upload your validator <b>keystore</b> file below</Grid>
               <ImportInput
                   fileText={renderFileText}
                   fileHandler={fileHandler}

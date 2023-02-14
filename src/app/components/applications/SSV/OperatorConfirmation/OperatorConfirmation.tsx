@@ -78,7 +78,7 @@ const OperatorConfirmation = () => {
                   <Grid item xs={6} className={classes.AlignRight}>
                     <SsvAndSubTitle
                         ssv={formatNumberToUi(operatorStore.newOperatorKeys.fee)}
-                        subText={'/year'}
+                        subText={'/days'}
                     />
                   </Grid>
                 </Grid>

@@ -41,7 +41,7 @@ const RegisterValidatorHome = () => {
           <HeaderSubHeader title={'Run Validator with the SSV Network'}
             subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
           />
-          <Typography className={classes.GrayText}>PreRequisites</Typography>
+          <Typography className={classes.GrayText}>Prerequisites</Typography>
           <Grid container item style={{ gap: 8, marginBottom: 24 }}>
             {preRequisites.map((preRequisite: string, index: number)=>{
               return <Grid container item key={index} style={{ alignItems: 'center', gap: 14 }}>

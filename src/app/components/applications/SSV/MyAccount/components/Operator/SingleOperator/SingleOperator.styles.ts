@@ -2,6 +2,35 @@ import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
+    Box: {
+    },
+    BoxesWrapper: {
+        gap: 24,
+        width: 1320,
+        height: 604,
+        margin: 'auto',
+        '@media only screen and (max-width: 1400px)': {
+            width: '100%',
+            flexDirection: 'column',
+        },
+    },
+    BigBox: {
+        gap: 68,
+        width: 872,
+        borderRadius: 16,
+        backgroundColor: '#fdfefe',
+    },
+    BoxWrapper: {
+        gap: 24,
+        width: 424,
+        '@media only screen and (max-width: 1400px)': {
+            width: '100%',
+            flexDirection: 'column',
+        },
+    },
+    TableWrapper: {
+        width: 872,
+    },
     OperatorLogo: {
         height: 19,
         width: 16.5,
@@ -73,21 +102,34 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     AnnualWrapper: {
         width: 424,
-        height: 302,
-        flexDirection: 'column',
+        height: 290,
+        maxHeight: 290,
+        marginTop: 0,
         '@media only screen and (max-width: 1400px)': {
             width: '100%',
-            marginBottom: 24,
         },
     },
     AnnualSection: {
-      padding: '0 32px 32px 32px',
+        padding: '24px 32px 32px 32px',
     },
     ButtonSection: {
-        height: 'fit-content',
-        padding: theme.spacing(8),
         border: 'none',
+        padding: theme.spacing(8),
         borderTop: '1px solid rgba(230, 234, 247, 0.5)',
+    },
+    NoValidatorImage: {
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        margin: '191px auto 0px auto',
+        backgroundImage: 'url(/images/logo/no_validators.svg)',
+    },
+    NoValidatorText: {
+        fontSize: 16,
+        fontWeight: 500,
+        lineHeight: 1.62,
+        textAlign: 'center',
+        color: theme.colors.gray80,
     },
     TableValueText: {
         fontSize: 16,

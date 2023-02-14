@@ -55,8 +55,8 @@ const translations = {
       DESCRIPTION: 'Your validator is currently active on beacon chain:',
     },
     SELECT_OPERATORS: {
-      TITLE: 'Pick the team of network operators to run you validator',
-      DESCRIPTION: 'Pick the team of network operators to run your validator.',
+      TITLE: 'Pick the cluster of network operators to run you validator',
+      DESCRIPTION: 'Pick the cluster of network operators to run your validator.',
     },
     SUCCESS: {
       TITLE: 'Welcome to the SSV Network!',

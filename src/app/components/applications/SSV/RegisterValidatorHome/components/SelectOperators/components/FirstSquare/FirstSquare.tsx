@@ -166,8 +166,10 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     }
 
     return operatorsData.map((operator) => {
+      const isDeleted = operator.is_deleted;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
-      const disabled = !operatorStore.isOperatorRegistrable(operator.validators_count);
+      const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
+      const disabled = reachedMaxValidators || isDeleted;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.status.toLowerCase() === 'inactive';
 
@@ -188,7 +190,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             <StyledCell>
               <Grid container>
                 <Grid item>{operator.validators_count}</Grid>
-                {disabled && (
+                {reachedMaxValidators && (
                     <Grid item style={{ marginLeft: 4 }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'}/>
                     </Grid>
@@ -209,7 +211,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             <StyledCell>
               <Grid container>
                 <Grid item
-                      className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}</Grid>
+                      className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
                 {disabled && (
                     <Grid item style={{ alignSelf: 'center' }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'}/>

@@ -44,7 +44,7 @@ const AccountBalanceAndFee = () => {
 
           <Grid item container className={classes.ErrorTextWrapper}>
             <Grid className={classes.ErrorText}>
-              Accounts with insufficient balance are at risk of being <LinkText style={{ fontSize: 14 }}
+              Clusters with insufficient balance are at risk of being <LinkText style={{ fontSize: 14 }}
                 onClick={() => sendAnalytics('https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations')}
                 text={'liquidated'}
                 link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />,

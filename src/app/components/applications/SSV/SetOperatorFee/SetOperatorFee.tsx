@@ -15,18 +15,20 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 
+type UserInput = string;
+
 const SetOperatorFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const [userInput, setUserInput] = useState(0);
-  const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
+  const [userInput, setUserInput] = useState<UserInput | null>(null);
+  const [registerButtonEnabled, setRegisterButtonEnabled] = useState(true);
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [zeroError, setZeroError] = useState(false);
 
   useEffect(() => {
-    const isRegisterButtonEnabled = !userInput || error.shouldDisplay;
+    const isRegisterButtonEnabled = typeof userInput === 'object' || error.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
@@ -35,26 +37,28 @@ const SetOperatorFee = () => {
 
   const moveToSubmitConfirmation = () => {
     const operatorWithFee = operatorStore.newOperatorKeys;
-    operatorWithFee.fee = userInput || 0;
+    // @ts-ignore
+    operatorWithFee.fee = parseFloat(userInput) || 0;
     operatorStore.setOperatorKeys(operatorWithFee);
     navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
   };
 
-  const removeLeadingZeros = (num: number): number =>  {
-    let str = num.toString();
-    let stripped = str.replace(/^0+/, '');
-    return stripped === '' ? 0 : parseFloat(stripped);
+  const removeLeadingZeros = (num: string): string =>  {
+    let stripped = num.replace(/^0+/, '');
+    return stripped === '' ? '0' : stripped;
   };
 
-  const verifyFeeNumber = (value: number) => {
+  const verifyFeeNumber = (value: string) => {
     setUserInput(value);
   };
-  
-  const checkIfNumberZero = (value: number) => {
-    validateFeeInput(String(value), setError);
-    setUserInput(removeLeadingZeros(userInput));
-    if (value === 0) setZeroError(true);
-    else setZeroError(false);
+
+  const checkIfNumberZero = (value: string) => {
+    validateFeeInput(value, setError);
+    if (typeof userInput === 'string') {
+      setUserInput(removeLeadingZeros(userInput));
+      if (userInput === '0') setZeroError(true);
+      else setZeroError(false); 
+    }
   };
 
   return (
@@ -79,6 +83,7 @@ const SetOperatorFee = () => {
               <TextInput
                 withSideText
                 value={userInput}
+                placeHolder={'0.0'}
                 showError={error.shouldDisplay}
                 dataTestId={'edit-operator-fee'}
                 onChangeCallback={(e: any) => verifyFeeNumber(e.target.value)}

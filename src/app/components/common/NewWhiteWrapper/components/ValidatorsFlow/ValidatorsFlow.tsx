@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStyles } from './ValidatorsFlow.styles';
+import { useStyles } from '../../NewWhiteWrapper.styles';
 
 type Props = {
   header: string,
@@ -9,7 +9,7 @@ type Props = {
 
 const ValidatorsFlow = (props: Props) => {
   const { header } = props;
-  const classes = useStyles();
+  const classes = useStyles({ mainFlow: false });
 
 
   return (

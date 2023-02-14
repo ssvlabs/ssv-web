@@ -1,67 +1,58 @@
 import { observer } from 'mobx-react';
-import React, { Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import Layout from '~app/components/common/Layout';
 import { SsvAppBar } from '~app/components/common/AppBar';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 // import MyAccount from '~app/components/applications/SSV/MyAccount';
-import Welcome from '~app/components/applications/SSV/Welcome/Welcome';
-import NewMyAccount from '~app/components/applications/SSV/NewMyAccount';
-import SetOperatorFee from '~app/components/applications/SSV/SetOperatorFee';
-import Deposit from '~app/components/applications/SSV/MyAccount/components/Deposit';
-import Withdraw from '~app/components/applications/SSV/MyAccount/components/Withdraw';
-import CountryNotSupported from '~app/components/applications/SSV/CountryNotSupported';
-import OperatorSuccessPage from '~app/components/applications/SSV/OperatorSuccessPage';
-import GenerateOperatorKeys from '~app/components/applications/SSV/GenerateOperatorKeys';
-import RegisterOperatorHome from '~app/components/applications/SSV/RegisterOperatorHome';
-import RegisterValidatorHome from '~app/components/applications/SSV/RegisterValidatorHome';
-import ValidatorSuccessScreen from '~app/components/applications/SSV/ValidatorSuccessScreen';
-import EnableAccount from '~app/components/applications/SSV/MyAccount/components/EnableAccount';
-import OperatorTransactionConfirmation from '~app/components/applications/SSV/OperatorConfirmation';
-import ImportFile from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile';
-import SingleOperator from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator';
-import FundingPeriod from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod';
-import UpdateFee from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee';
-import SingleValidator from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator';
-import CreateValidator from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator';
-import SlashingWarning from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning';
-import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
-import ValidatorTransactionConfirmation from '~app/components/applications/SSV/ValidatorRegistrationConfirmation';
-import GenerateKeyShares from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares';
-import EditValidator from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator';
-import UploadKeyStore from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore';
+const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
+const NewMyAccount = lazy(() => import('~app/components/applications/SSV/NewMyAccount'));
+const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
+const Deposit = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Deposit'));
+const CountryNotSupported = lazy(() => import('~app/components/applications/SSV/CountryNotSupported'));
+const OperatorSuccessPage = lazy(() => import('~app/components/applications/SSV/OperatorSuccessPage'));
+const GenerateOperatorKeys = lazy(() => import('~app/components/applications/SSV/GenerateOperatorKeys'));
+const RegisterOperatorHome = lazy(() => import('~app/components/applications/SSV/RegisterOperatorHome'));
+const RegisterValidatorHome = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome'));
+const ValidatorSuccessScreen = lazy(() => import('~app/components/applications/SSV/ValidatorSuccessScreen'));
+const NewWithdraw = lazy(() => import('~app/components/applications/SSV/NewMyAccount/components/NewWithdraw'));
+const EnableAccount = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EnableAccount'));
+const OperatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/OperatorConfirmation'));
+const ImportFile = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile'));
+const SingleOperator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator'));
+const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
+const UpdateFee = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee'));
+const SingleValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator'));
+const CreateValidator = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator'));
+const SlashingWarning = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning'));
+const SelectOperators = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators'));
+const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
+const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
+const EditValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator'));
+const UploadKeyStore = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore'));
+const RemoveOperator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator'));
 // import FundingNewValidator from '~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator';
-import RemoveOperator from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator';
-import DepositViaLaunchpad from '~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad';
-import OperatorRemoved from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved';
-import RemoveValidator
-  from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator';
-import AccountBalanceAndFee
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee';
-import ProductQuestions
-  from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions';
-import ConfirmOperatorsChange
-  from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange';
-import OfflineKeyShareGeneration
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration';
+const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
+const OperatorRemoved = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved'));
+const RemoveValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator'));
+const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
+const ProductQuestions = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions'));
+const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
+const OfflineKeyShareGeneration = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration'));
 
 const Routes: any = () => {
-  const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
   const ssvRoutes = config.routes.SSV;
-  if (!walletStore.accountDataLoaded) return <div>Loading...</div>;
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.DEPOSIT, Component: Deposit },
-    { path: ssvRoutes.MY_ACCOUNT.WITHDRAW, Component: Withdraw },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     { path: ssvRoutes.MY_ACCOUNT.ENABLE_ACCOUNT, Component: EnableAccount },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ROOT, Component: SingleValidator },
+    { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, Component: OperatorRemoved },
     // { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.ADD_VALIDATOR, Component: FundingNewValidator },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, Component: OperatorRemoved },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED, Component: ProductQuestions },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
@@ -95,44 +86,34 @@ const Routes: any = () => {
   ];
 
   return (
-    <Layout>
-      <SsvAppBar />
-      <Wrapper>
-        <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
-        <Route path={ssvRoutes.ROOT} element={<Welcome />} />
-        <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
-          <Route index element={<NewMyAccount />} />
-          {dashboardRoutes.map((route: any, index: number) => { 
-            return (
-              <Suspense key={index} fallback={<></>}> 
-                <Route path={route.path} element={<route.Component />} /> 
-              </Suspense> 
-            ); 
-           })} 
-        </Route>
-        <Route path={ssvRoutes.OPERATOR.HOME}>
-          <Route index element={<RegisterOperatorHome />} />
-          {operatorRoutes.map((route, index: number) => {
-            return (
-              <Suspense key={index} fallback={<></>}>
-                <Route path={route.path} element={<route.Component />} />
-              </Suspense>
-            );
-          })}
-        </Route>
-
-        <Route path={ssvRoutes.VALIDATOR.HOME}>
-          <Route index element={<RegisterValidatorHome />} />
-          {validatorsRoutes.map((route, index: number) => {
-            return (
-              <Suspense key={index} fallback={<></>}>
-                {!route.keyShares ? <Route path={route.path} element={<route.Component />} /> : <Route path={route.path} element={<route.Component type={2} />} />}
-              </Suspense>
-            );
-          })}
-        </Route>
-      </Wrapper>
-    </Layout>
+      <Layout>
+        <SsvAppBar/>
+        <Suspense fallback={<div className="container"></div>}>
+          <Wrapper>
+            <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
+            <Route path={ssvRoutes.ROOT} element={<Welcome />} />
+            <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
+              <Route index element={<NewMyAccount/>}/>
+              {dashboardRoutes.map((route: any, index: number) => {
+                return <Route key={index} path={route.path} element={<route.Component/>}/>;
+              })}
+            </Route>
+            <Route path={ssvRoutes.OPERATOR.HOME}>
+              <Route index element={<RegisterOperatorHome/>}/>
+              {operatorRoutes.map((route, index: number) => {
+                return <Route key={index} path={route.path} element={<route.Component/>}/>;
+              })}
+            </Route>
+            <Route path={ssvRoutes.VALIDATOR.HOME}>
+              <Route index element={<RegisterValidatorHome/>}/>
+              {validatorsRoutes.map((route, index: number) => {
+                if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
+                return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
+              })}
+            </Route>
+          </Wrapper>
+        </Suspense>
+      </Layout>
   );
 };
 

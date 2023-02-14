@@ -2,13 +2,13 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewMyAccount.styles';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard/Dashboard';
+import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
+import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards';
 
 const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
@@ -46,10 +46,7 @@ const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
-        <Grid container item xs style={{ cursor: 'pointer' }}>
-          <Typography className={classes.Header} onClick={()=>changeState(2)}>Validator Cluster</Typography>
-          <Grid className={classes.Arrow} />
-        </Grid>
+        <ToggleDashboards changeState={changeState} title={'Validator Clusters'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           <Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`}>
             Fee Address

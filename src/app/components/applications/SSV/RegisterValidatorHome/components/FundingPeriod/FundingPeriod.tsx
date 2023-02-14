@@ -31,7 +31,7 @@ const FundingPeriod = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const [customPeriod, setCustomPeriod] = useState(1);
   const [checkedOption, setCheckedOption] = useState(options[1]);
-  const [timePeriodNotValid, setTimePeriodNotValid] = useState(false);
+  const timePeriodNotValid = customPeriod < 30;
 
   const checkBox = (option: any) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
@@ -42,6 +42,11 @@ const FundingPeriod = () => {
 
   const totalCost = operatorsCost + networkCost + liquidationCollateralCost;
   const InsufficientBalance = totalCost > ssvStore.walletSsvBalance;
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>');
+  console.log(totalCost);
+  console.log(ssvStore.walletSsvBalance);
+  console.log(InsufficientBalance);
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>>>');
   const showLiquidationError = isCustomPayment && !InsufficientBalance && timePeriodNotValid;
 
   const isChecked = (id: number) => checkedOption.id === id;
@@ -49,11 +54,6 @@ const FundingPeriod = () => {
   const moveToNextPage = () => {
     validatorStore.fundingPeriod = periodOfTime;
     navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
-  };
-
-  const checkTimePeriodValidity = () => {
-    if (customPeriod < 30) setTimePeriodNotValid(true);
-    else setTimePeriodNotValid(false);
   };
 
 
@@ -83,7 +83,6 @@ const FundingPeriod = () => {
                     <Grid item
                           className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
                     {isCustom && <TextInput value={customPeriod}
-                                            onBlurCallBack={checkTimePeriodValidity}
                                             onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
                                             extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
                   </Grid>;

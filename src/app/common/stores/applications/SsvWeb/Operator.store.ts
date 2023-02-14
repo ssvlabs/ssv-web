@@ -258,6 +258,15 @@ class OperatorStore extends BaseStore {
     // });
   }
 
+  async getOperatorBalance(id: number): Promise<any> {
+    return new Promise((resolve) => {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const contract: Contract = walletStore.getContract;
+        contract.methods.getOperatorEarnings(id).call().then((response: any) => {
+            resolve(walletStore.fromWei(response));
+        }).catch(() => resolve(true));
+    });
+  }
   /**
    * Cancel change fee process for operator
    */

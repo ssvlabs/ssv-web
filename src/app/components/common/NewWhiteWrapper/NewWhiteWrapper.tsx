@@ -8,19 +8,8 @@ import ValidatorsFlow from '~app/components/common/NewWhiteWrapper/components/Va
 type Props = {
   type: Type,
   header: any,
-  children: any,
-  explorerLink?: any,
-  withCancel?: boolean,
-  withExplorer?: boolean,
-  backButtonCallBack?: any,
-  withBackButton?: boolean,
-  backButtonRedirect?: string,
-  withSettings?: SettingsProps,
-};
-
-type SettingsProps = {
-  text: string,
-  onClick: () => void,
+  children?: any,
+  mainFlow?: boolean,
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -32,17 +21,19 @@ enum Type {
 }
 
 const NewWhiteWrapper = (props: Props) => {
-  const classes = useStyles();
   const {
     type,
     header,
     children,
+    mainFlow,
   } = props;
+  const classes = useStyles({ mainFlow });
+
 
   return (
       <Grid container item className={classes.WhiteWrapper}>
         <Grid item container className={classes.Wrapper}>
-          {type === Type.OPERATOR ? <OperatorsFlow header={header} /> : <ValidatorsFlow header={header}/>}
+          {type === Type.OPERATOR ? <OperatorsFlow header={header} mainFlow={mainFlow} /> : <ValidatorsFlow header={header} />}
           <Grid container item xs={12} className={classes.ChildWrapper}>
             {children}
           </Grid>

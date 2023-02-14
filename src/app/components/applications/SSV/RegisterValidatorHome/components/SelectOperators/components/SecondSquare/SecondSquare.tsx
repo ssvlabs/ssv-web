@@ -141,7 +141,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
           )}
           <Grid container item xs={12} className={classes.TotalFeesWrapper}>
             <Grid item className={classes.TotalFeesHeader}>
-              {editPage ? 'New total Operators Yearly Fee' : 'Total Operators Yearly Fee'}
+              {editPage ? 'New Operators Yearly Fee' : 'Operators Yearly Fee'}
             </Grid>
             <Grid item>
               <SsvAndSubTitle
@@ -149,7 +149,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                 fontSize={16}
                 subTextCenter={false}
                 ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
-                />
+              />
             </Grid>
           </Grid>
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}

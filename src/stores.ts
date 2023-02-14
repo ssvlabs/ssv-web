@@ -6,6 +6,7 @@ const stores = [
   'Event',
   'Wallet',
   'Faucet',
+  'Process',
   'Operator',
   'Validator',
   'MyAccount',

@@ -13,7 +13,6 @@ import { ReactTable } from '~app/components/common/ReactTable';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
@@ -32,7 +31,6 @@ const DashboardTables = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const [loadingOperators, setLoadingOperators] = useState(true);

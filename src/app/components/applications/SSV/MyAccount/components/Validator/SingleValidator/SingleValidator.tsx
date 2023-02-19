@@ -24,6 +24,8 @@ import {
 } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator/SingleValidator.styles';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import OperatorBox
+  from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator/components/OperatorBox';
 
 const SingleValidator = () => {
   const stores = useStores();
@@ -148,40 +150,12 @@ const SingleValidator = () => {
             type={0}
             header={'Cluster'}
         />
-        <Grid container item className={classes.OperatorsBoxesWrapper}>
-          {validator?.operators?.map((operator: any, index: number) => {
-            console.log(operator);
-            return <Grid key={index} item className={classes.OperatorBox}>
-              <Grid className={classes.FirstSectionOperatorBox}>
-                <OperatorDetails operator={operator} />
-              </Grid>
-              <Grid container item className={classes.SecondSectionOperatorBox}>
-                <Grid item>
-                  <Grid container item alignItems={'center'} style={{ gap: 6 }}>
-                    <Grid item>
-                      Status
-                    </Grid>
-                    <ToolTip text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
-                  </Grid>
-                  <Grid>sadas</Grid>
-                </Grid>
-                <Grid item>
-                  <Grid container item alignItems={'center'}>
-                    <Grid item>
-                      30D perform.
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Grid container item alignItems={'center'}>
-                    <Grid item>
-                      Yearly Fee
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>;
+        <Grid container item className={classes.Section}>
+          {(validator?.operators ?? [null, null, null, null]).map((operator: any, index: number) => {
+            return <OperatorBox key={index} operator={operator} />;
           })}
+        </Grid>
+        <Grid container item className={classes.Section}>
         </Grid>
         {false && <Grid item container className={classes.SecondSectionWrapper}>
           <Grid item className={classes.OperatorsWrapper}>

@@ -31,28 +31,28 @@ class WalletStore extends BaseStore implements Wallet {
     makeObservable(this, {
       web3: observable,
       wallet: observable,
-      ssvBalance: observable,
-      notifySdk: observable,
-      onboardSdk: observable,
-      accountAddress: observable,
-      wrongNetwork: observable,
-      networkId: observable,
-      accountDataLoaded: observable,
-      initWalletHooks: action.bound,
-      initializeUserInfo: action.bound,
-      fromWei: action.bound,
       toWei: action.bound,
-      connectWalletFromCache: action.bound,
-      connect: action.bound,
-      addressHandler: action.bound,
-      walletHandler: action.bound,
-      networkHandler: action.bound,
-      encodeKey: action.bound,
-      decodeKey: action.bound,
-      setAccountDataLoaded: action.bound,
       connected: computed,
+      notifySdk: observable,
+      networkId: observable,
+      fromWei: action.bound,
+      connect: action.bound,
+      ssvBalance: observable,
+      onboardSdk: observable,
+      decodeKey: action.bound,
+      encodeKey: action.bound,
+      wrongNetwork: observable,
       isWrongNetwork: computed,
-      getContract: computed,
+      getterContract: computed,
+      accountAddress: observable,
+      walletHandler: action.bound,
+      addressHandler: action.bound,
+      networkHandler: action.bound,
+      initWalletHooks: action.bound,
+      accountDataLoaded: observable,
+      initializeUserInfo: action.bound,
+      setAccountDataLoaded: action.bound,
+      connectWalletFromCache: action.bound,
     });
     this.initWalletHooks();
   }
@@ -207,7 +207,7 @@ class WalletStore extends BaseStore implements Wallet {
     return this.wrongNetwork;
   }
 
-  get getContract(): Contract {
+  get getterContract(): Contract {
     if (!this.contract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;

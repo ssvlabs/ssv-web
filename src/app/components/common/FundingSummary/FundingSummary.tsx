@@ -7,8 +7,8 @@ import LinkText from '~app/components/common/LinkText';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
+import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
 
 type Props = {
@@ -19,9 +19,10 @@ const FundingSummary = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
+  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
-  const daysPeriod = props.days ?? validatorStore.fundingPeriod;
+  const process: RegisterValidator = processStore.process as RegisterValidator;
+  const daysPeriod = props.days ?? process.fundingPeriod;
   const payments = [
     { id: 1, name: 'Operator fee' },
     { id: 2, name: 'Network fee' },
@@ -58,9 +59,9 @@ const FundingSummary = (props: Props) => {
               </Grid>
               <Grid item>
                 {isLast ? <Tooltip
-                        text={<Grid>Collateral in the form of SSV tokens to be paid to liquidators in case of account
-                          insolvency. <LinkText text={'Read more on liquidations'}
-                                                link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/> :
+                        text={<Grid>Collateral in the form of SSV tokens,
+                          which will be lost at the event of your cluster insolvency
+                          (inability to cover your validator&apos;s operational costs). <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/> :
                     <Typography
                         className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {formatNumberToUi(daysPeriod, true)} Days</Typography>}
               </Grid>

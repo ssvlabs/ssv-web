@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         color: theme.colors.gray80,
     },
     BodyWrapper: {
-        marginTop: 24,
+        marginTop: 32,
         margin: 'auto',
         marginBottom: 120,
         pointerEvents: (props: any) => props.isLoading ? 'none' : 'auto',
@@ -21,13 +21,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     BulletsWrapper: {
         fontSize: 16,
         fontWeight: 500,
-        lineHeight: 1.8,
+        lineHeight: 1.62,
         color: theme.colors.gray80,
-        '& li': {
-            marginBottom: 8,
-            '&:last-child': {
-                marginBottom: 0,
-            },
+        '& li:not(:last-child)': {
+            marginBottom: 20,
         },
     },
     Notice: {

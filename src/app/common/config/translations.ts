@@ -1,11 +1,10 @@
 const translations = {
   VALIDATOR: {
     HOME: {
-      TITLE: 'Run Validator with the SSV Network',
+      TITLE: 'Run a Distributed Validator',
       DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
     },
     CREATE: {
-      NAVIGATION_TEXT: 'Run Validator with the SSV Network',
       TITLE: 'Create Validator via Ethereum Launchpad',
       DESCRIPTION: '',
       BODY_TEXT: [
@@ -14,7 +13,6 @@ const translations = {
       ],
     },
     DEPOSIT: {
-      NAVIGATION_TEXT: 'Enter Validator Key',
       TITLE: 'Deposit Validator via Ethereum Launchpad',
       SUB_TITLE: 'You must deposit your validator before running it on the SSV network.',
       DESCRIPTION: '',
@@ -24,7 +22,6 @@ const translations = {
       ],
     },
     BALANCE_AND_FEE: {
-      NAVIGATION_TEXT: 'select operators',
       TITLE: 'Cluster Balances and Fees',
       SUB_TITLE: '',
       DESCRIPTION: '',

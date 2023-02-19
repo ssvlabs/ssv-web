@@ -20,11 +20,11 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 // import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
@@ -42,22 +42,13 @@ const SingleOperator = () => {
   // const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const notificationsStore: NotificationsStore = stores.Notifications;
-  const operator = processStore.process?.item;
+  const process: SingleOperatorProcess = processStore.getProcess;
+  const operator = process?.item;
 
 
   useEffect(() => {
     if (!operator) return navigate(applicationStore.strategyRedirect);
-    // applicationStore.setIsLoading(true);
-    // Operator.getInstance().getOperator(operator?.id).then(async (response: any) => {
-    //   console.log('response ', response);
-    //   if (response) {
-    //     // @ts-ignore
-    //     response.revenue = await operatorStore.getOperatorRevenue(processStore.process?.itemId);
-    //     setOperator(response);
     loadOperatorValidators({ page: 1, perPage: 5 });
-    //   }
-    //   applicationStore.setIsLoading(false);
-    // });
   }, []);
 
   const loadOperatorValidators = async (props: { page: number, perPage: number }) => {
@@ -217,8 +208,6 @@ const SingleOperator = () => {
         },
       ], [applicationStore.darkMode],
   );
-
-  if (!operator) return null;
 
   return (
       <Grid container item style={{ gap: 26 }}>

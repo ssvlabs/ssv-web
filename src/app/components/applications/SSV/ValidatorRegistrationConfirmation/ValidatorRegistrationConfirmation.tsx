@@ -19,6 +19,7 @@ import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 
@@ -28,15 +29,17 @@ const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
+  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   // const [checked, selectCheckBox] = useState(false);
+  const process: RegisterValidator = processStore.process as RegisterValidator;
   const [actionButtonText, setActionButtonText] = useState('Run validator');
 
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, validatorStore.fundingPeriod);
-  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, validatorStore.fundingPeriod);
+  const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
   const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
   const totalAmountOfSsv = formatNumberToUi(networkCost + operatorsCost + liquidationCollateralCost);
 
@@ -87,8 +90,8 @@ const ValidatorRegistrationConfirmation = () => {
                     </Grid>
                     <Grid item xs>
                       <SsvAndSubTitle
-                          ssv={formatNumberToUi(propertyCostByPeriod(walletStore.fromWei(operator.fee), validatorStore.fundingPeriod))}
-                          subText={`/${formatNumberToUi(validatorStore.fundingPeriod, true)} days`}
+                          ssv={formatNumberToUi(propertyCostByPeriod(walletStore.fromWei(operator.fee), process.fundingPeriod))}
+                          subText={`/${formatNumberToUi(process.fundingPeriod, true)} days`}
                       />
                     </Grid>
                   </Grid>

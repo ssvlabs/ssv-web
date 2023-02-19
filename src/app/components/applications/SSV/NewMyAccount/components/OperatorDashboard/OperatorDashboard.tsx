@@ -27,7 +27,6 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const myAccountStore: MyAccountStore = stores.MyAccount;
   
   useEffect(() => {
-    console.log('<<<<<<<<<<<<<<<<now>>>>>>>>>>>>>>>>');
     myAccountStore.ownerAddressOperators.forEach((operator: any, index: number) => {
       operatorStore.getOperatorBalance(operator.id).then((balance) => {
         operator.balance = balance;
@@ -55,7 +54,6 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   };
 
   const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
-    console.log('operatorBalance ', operator.balance);
     return createData(
         <OperatorDetails operator={operator}/>,
         <Status status={operator.status}/>,
@@ -68,15 +66,13 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
 
   const openSingleOperator = (listIndex: number) => {
     processStore.setProcess({
-      type: 1,
       processName: 'single_operator',
       item: myAccountStore.ownerAddressOperators[listIndex],
-    });
+    }, 1);
     operatorStore.processOperatorId = myAccountStore.ownerAddressOperators[listIndex].id;
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 
-  console.log('<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>');
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>

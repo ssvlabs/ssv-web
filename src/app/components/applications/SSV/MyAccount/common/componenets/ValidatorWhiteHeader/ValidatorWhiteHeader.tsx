@@ -8,8 +8,8 @@ import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
@@ -28,11 +28,13 @@ const ValidatorWhiteHeader = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
-  const validatorStore: ValidatorStore = stores.Validator;
+  const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
+  const process: SingleValidatorProcess = processStore.getProcess;
+  const validator = process?.item;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(props.address ?? validatorStore.processValidatorPublicKey);
+    navigator.clipboard.writeText(props.address ?? validator.public_key);
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 
@@ -50,7 +52,7 @@ const ValidatorWhiteHeader = (props: Props) => {
         action: 'click',
         label: 'validator',
       });
-      window.open(`${config.links.EXPLORER_URL}/validators/${validatorStore.processValidatorPublicKey.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+      window.open(`${config.links.EXPLORER_URL}/validators/${validator.public_key.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
     }
   };
 
@@ -60,7 +62,7 @@ const ValidatorWhiteHeader = (props: Props) => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${validatorStore.processValidatorPublicKey}`);
+    window.open(`${beaconchaBaseUrl}/validator/${validator.public_key}`);
   };
   // console.log(props.withBackButton);
 
@@ -72,7 +74,7 @@ const ValidatorWhiteHeader = (props: Props) => {
       backButtonCallBack={props.onCancelButtonClick}
     >
       <Grid item container className={classes.SubHeaderWrapper}>
-        <Typography>{props.address ?? validatorStore.processValidatorPublicKey}</Typography>
+        <Typography>{props.address ?? validator.public_key}</Typography>
         <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
         {!props.withoutExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />}
         {!props.withoutBeaconcha && <ImageDiv onClick={openBeaconcha} image={'beacon'} width={24} height={24} />}

@@ -13,30 +13,32 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
+  const boxes = [1, 2, 3, 4];
   const stores = useStores();
   const classes = useStyles({ editPage });
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
+  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
-  const boxes = [1, 2, 3, 4];
+  const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
+
 
   useEffect(() => {
+    const process: SingleValidatorProcess = processStore.getProcess;
     if (editPage) {
-      if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-      myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
+      if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      myAccountStore.getValidator(process.item.publicKey).then((validator: any) => {
         if (validator?.operators) {
           // @ts-ignore
           setPreviousOperatorsIds(validator.operators.map(({ id }) => id));

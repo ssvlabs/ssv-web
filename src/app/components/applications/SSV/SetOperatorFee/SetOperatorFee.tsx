@@ -22,10 +22,10 @@ const SetOperatorFee = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
+  const [zeroError, setZeroError] = useState(false);
   const [userInput, setUserInput] = useState<UserInput | null>(null);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(true);
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
-  const [zeroError, setZeroError] = useState(false);
 
   useEffect(() => {
     const isRegisterButtonEnabled = typeof userInput === 'object' || error.shouldDisplay;

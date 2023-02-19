@@ -211,10 +211,10 @@ class OperatorStore extends BaseStore {
    */
   async initUser() {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.getContract;
+    const contract: Contract = walletStore.getterContract;
     this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
     this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
-    this.maxFeeIncrease = Number(await walletStore.getContract.methods.getOperatorFeeIncreaseLimit().call()) / 100;
+    this.maxFeeIncrease = Number(await walletStore.getterContract.methods.getOperatorFeeIncreaseLimit().call()) / 100;
   }
 
   /**
@@ -236,7 +236,7 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorFeeInfo(operatorId: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.getContract;
+    const contract: Contract = walletStore.getterContract;
     this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
     const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
     this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
@@ -250,7 +250,7 @@ class OperatorStore extends BaseStore {
   async validatorsPerOperatorLimit(): Promise<any> {
     // return new Promise((resolve) => {
     //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const contract: Contract = walletStore.getContract;
+    //     const contract: Contract = walletStore.getterContract;
     //     contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
     //         this.operatorValidatorsLimit = parseInt(response, 10);
     //         resolve(true);
@@ -261,7 +261,7 @@ class OperatorStore extends BaseStore {
   async getOperatorBalance(id: number): Promise<any> {
     return new Promise((resolve) => {
         const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.getContract;
+        const contract: Contract = walletStore.getterContract;
         contract.methods.getOperatorEarnings(id).call().then((response: any) => {
             resolve(walletStore.fromWei(response));
         }).catch(() => resolve(true));
@@ -283,7 +283,7 @@ class OperatorStore extends BaseStore {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
-        const contract: Contract = walletStore.getContract;
+        const contract: Contract = walletStore.getterContract;
         contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
@@ -346,7 +346,7 @@ class OperatorStore extends BaseStore {
   async getOperatorValidatorsCount(operatorId: number): Promise<any> {
     return new Promise((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
-      const contract: Contract = walletStore.getContract;
+      const contract: Contract = walletStore.getterContract;
       contract.methods.validatorsPerOperatorCount(operatorId).call().then((response: any) => {
         resolve(response);
       });
@@ -375,7 +375,7 @@ class OperatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.getContract;
+        const contract: Contract = walletStore.getterContract;
         contract.methods.getOperatorFee(publicKey).call().then((response: any) => {
           const ssv = walletStore.fromWei(response);
           this.operatorsFees[publicKey] = { ssv, dollar: 0 };
@@ -402,7 +402,7 @@ class OperatorStore extends BaseStore {
   async getOperatorRevenue(operatorId: number): Promise<any> {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
-      const networkContract = walletStore.getContract;
+      const networkContract = walletStore.getterContract;
       const response = await networkContract.methods.totalEarningsOf(operatorId).call();
       return walletStore.fromWei(response.toString());
     } catch (e: any) {
@@ -423,7 +423,7 @@ class OperatorStore extends BaseStore {
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
-        const contractInstance = walletStore.getContract;
+        const contractInstance = walletStore.getterContract;
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           walletStore.toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
@@ -511,7 +511,7 @@ class OperatorStore extends BaseStore {
           previous_fee: operatorBefore.previous_fee,
         };
 
-        await walletStore.getContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+        await walletStore.getterContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -577,7 +577,7 @@ class OperatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
-      const contractInstance = walletStore.getContract;
+      const contractInstance = walletStore.getterContract;
 
       // eslint-disable-next-line no-async-promise-executor
       return await new Promise(async (resolve) => {
@@ -642,7 +642,7 @@ class OperatorStore extends BaseStore {
         const payload: any[] = [];
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.getContract;
+        const contract: Contract = walletStore.getterContract;
         const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();

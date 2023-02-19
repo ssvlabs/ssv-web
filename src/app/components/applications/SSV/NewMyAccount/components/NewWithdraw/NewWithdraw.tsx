@@ -3,19 +3,21 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './NewWithdraw.styles';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import ValidatorFlow from './components/ValidatorFlow';
 import BorderScreen from '~app/components/common/BorderScreen';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorFlow from '~app/components/applications/SSV/NewMyAccount/components/NewWithdraw/components/OperatorFlow';
-import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import OperatorFlow from '~app/components/applications/SSV/NewMyAccount/components/NewWithdraw/components/OperatorFlow';
 
 const NewWithdraw = () => {
   const stores = useStores();
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
+  const process: SingleOperatorProcess = processStore.getProcess;
+  const processItem = process?.item;
 
   return (
       <Grid container item style={{ gap: 32 }}>
@@ -30,8 +32,7 @@ const NewWithdraw = () => {
                 (
                     <Grid item container>
                       <Grid item xs={12} className={classes.currentBalance}>
-                        {formatNumberToUi(ssvStore.toDecimalNumber(Number(processStore.process?.item.balance)))} SSV
-                        100 SSV
+                        {formatNumberToUi(ssvStore.toDecimalNumber(Number(processItem.balance)))} SSV
                       </Grid>
                       <Grid item xs={12} className={classes.currentBalanceDollar}>
                         ~$2,449.53
@@ -40,7 +41,7 @@ const NewWithdraw = () => {
                 ),
               ]}
           />
-          {processStore.process?.type === ProcessType.Operator ? <OperatorFlow/> : <ValidatorFlow/>}
+          {processStore.isValidatorFlow ? <ValidatorFlow/> : <OperatorFlow/>}
         </Grid>
       </Grid>
   );

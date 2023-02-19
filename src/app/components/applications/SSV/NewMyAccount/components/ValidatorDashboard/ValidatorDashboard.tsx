@@ -5,16 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewMyAccount.styles';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const validatorStore: ValidatorStore = stores.Validator;
+  const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
 
   const moveToRegisterValidator = () => {
@@ -39,7 +39,10 @@ const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   ];
 
   const openSingleValidator = (listIndex: string) => {
-    validatorStore.processValidatorPublicKey = myAccountStore.ownerAddressValidators[listIndex].public_key;
+    processStore.setProcess({
+      processName: 'single_validator',
+      item: myAccountStore.ownerAddressValidators[listIndex],
+    }, 2);
     navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
   };
 

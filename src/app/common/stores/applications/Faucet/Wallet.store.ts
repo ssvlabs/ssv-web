@@ -39,13 +39,13 @@ class WalletStore extends BaseStore implements Wallet {
       connect: action.bound,
       fromWei: action.bound,
       networkId: observable,
-      getContract: computed,
       onboardSdk: observable,
       ssvBalance: observable,
       encodeKey: action.bound,
       decodeKey: action.bound,
       isWrongNetwork: computed,
       wrongNetwork: observable,
+      getterContract: computed,
       accountAddress: observable,
       walletHandler: action.bound,
       networkHandler: action.bound,
@@ -222,7 +222,7 @@ class WalletStore extends BaseStore implements Wallet {
     return this.wrongNetwork;
   }
 
-  get getContract(): Contract {
+  get getterContract(): Contract {
     if (!this.contract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;

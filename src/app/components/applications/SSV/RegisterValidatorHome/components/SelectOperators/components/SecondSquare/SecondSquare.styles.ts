@@ -5,7 +5,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   ScreenWrapper: {
     width: '100%',
     marginBottom: 100,
-    marginTop: (props: any) => props.editPage ? '' : 52,
+    marginTop: (props: any) => props.editPage ? '' : 82,
     '@media only screen and (max-width: 1400px)': {
       marginBottom: 24,
       marginTop: '8px !important',

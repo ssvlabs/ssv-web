@@ -86,7 +86,7 @@ const DashboardTables = () => {
   }
 
   const openSingleValidator = (publicKey: string) => {
-    validatorStore.processValidatorPublicKey = publicKey;
+    publicKey;
     navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
   };
   const openSingleOperator = (operatorId: number) => {

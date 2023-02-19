@@ -167,6 +167,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     return operatorsData.map((operator) => {
       const isDeleted = operator.is_deleted;
+      const hasValidators = operator.validators_count !== 0;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
       const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
       const disabled = reachedMaxValidators || isDeleted;
@@ -200,10 +201,10 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             <StyledCell>
               <Grid container>
                 <Grid item
-                      className={isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
+                      className={hasValidators && isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
                 {isInactive && (
                     <Grid item xs={12}>
-                      <Status status={operator.status}/>
+                      <Status status={!hasValidators ? 'No validators' : operator.status} />
                     </Grid>
                 )}
               </Grid>

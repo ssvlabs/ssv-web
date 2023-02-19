@@ -36,6 +36,7 @@ const KeyStoreFlow = () => {
   }, []);
 
   const fileHandler = (file: any) => {
+    setProcessFile(true);
     validatorStore.setKeyStore(file, () => {
       setProcessFile(false);
     });
@@ -133,14 +134,15 @@ const KeyStoreFlow = () => {
       // remove deposit check restriction temporary
       isDeposited;
       const deposited = true; // await isDeposited();
+      applicationStore.setIsLoading(false);
+      validatorStore.registrationMode = 1;
+      navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
       if (deposited) {
         GoogleTagManager.getInstance().sendEvent({
           category: 'validator_register',
           action: 'upload_file',
           label: 'success',
         });
-        validatorStore.registrationMode = 1;
-        navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
       } else {
         GoogleTagManager.getInstance().sendEvent({
           category: 'validator_register',
@@ -165,8 +167,8 @@ const KeyStoreFlow = () => {
         });
         setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
       }
+      applicationStore.setIsLoading(false);
     }
-    applicationStore.setIsLoading(false);
   };
 
 

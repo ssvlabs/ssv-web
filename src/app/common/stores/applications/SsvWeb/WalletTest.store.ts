@@ -22,37 +22,36 @@ class WalletTestStore extends BaseStore implements Wallet {
   accountDataLoaded: boolean = true;
 
   constructor() {
-    // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
     super();
 
     makeObservable(this, {
-      notifySdk: observable,
       web3: observable,
+      ready: observable,
       wallet: observable,
+      toWei: action.bound,
+      clean: action.bound,
+      connected: computed,
+      networkId: observable,
+      fromWei: action.bound,
+      notifySdk: observable,
+      connect: action.bound,
       ssvBalance: observable,
       onboardSdk: observable,
-      ready: observable,
-      accountAddress: observable,
+      encodeKey: action.bound,
+      decodeKey: action.bound,
+      isWrongNetwork: computed,
+      setterContract: computed,
+      getterContract: computed,
+      disconnect: action.bound,
       wrongNetwork: observable,
-      networkId: observable,
+      accountAddress: observable,
       isAccountLoaded: observable,
       accountDataLoaded: observable,
       initWalletHooks: action.bound,
-      initializeUserInfo: action.bound,
-      fromWei: action.bound,
-      toWei: action.bound,
-      buildContract: action.bound,
-      encodeKey: action.bound,
-      decodeKey: action.bound,
-      clean: action.bound,
-      disconnect: action.bound,
-      connect: action.bound,
-      connected: computed,
-      selectWalletAndCheckIfReady: action.bound,
-      connectWalletFromCache: action.bound,
       setAccountLoaded: action.bound,
-      isWrongNetwork: computed,
-      getContract: computed,
+      initializeUserInfo: action.bound,
+      connectWalletFromCache: action.bound,
+      selectWalletAndCheckIfReady: action.bound,
     });
   }
 
@@ -74,11 +73,6 @@ class WalletTestStore extends BaseStore implements Wallet {
   toWei(amount?: number): string {
     if (!amount) return '0';
     return this.web3?.utils.toWei(amount.toString(), 'ether');
-  }
-
-  buildContract(address: string) {
-    const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-    return new this.web3.eth.Contract(abi, address);
   }
 
   encodeKey(operatorKey?: string) {
@@ -164,10 +158,21 @@ class WalletTestStore extends BaseStore implements Wallet {
   /**
    * Get smart contract instance
    */
-  get getContract(): Contract {
-    if (!this.contract && this.connected) {
+  get getterContract(): Contract {
+    if (!this.contract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
-      this.contract = this.buildContract(contractAddress);
+      this.contract = new this.web3.eth.Contract(abi, contractAddress);
+    }
+    // @ts-ignore
+    return this.contract;
+  }
+
+  get setterContract(): Contract {
+    if (!this.contract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
+      this.contract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore
     return this.contract;

@@ -7,10 +7,11 @@ export default abstract class Wallet extends BaseStore {
   notifySdk: any;
   onboardSdk: any;
   connected: string;
-  getContract: Contract;
   accountAddress: string;
   isWrongNetwork: boolean;
   networkId: number | null;
+  getterContract: Contract;
+  setterContract?: Contract;
   accountDataLoaded: boolean;
 
   protected constructor(getContract: Contract) {
@@ -20,8 +21,9 @@ export default abstract class Wallet extends BaseStore {
     this.networkId = null;
     this.accountAddress = '';
     this.isWrongNetwork = false;
-    this.getContract = getContract;
     this.accountDataLoaded = false;
+    this.getterContract = getContract;
+    this.setterContract = getContract;
   }
 
   public abstract connect(): void;

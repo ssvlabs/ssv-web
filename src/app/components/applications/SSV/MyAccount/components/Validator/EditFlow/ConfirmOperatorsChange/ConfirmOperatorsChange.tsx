@@ -7,25 +7,27 @@ import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BackNavigation from '~app/components/common/BackNavigation';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import OperatorsReceipt from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt';
+import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
+import OperatorsReceipt from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt';
 import { useStyles } from './ConfirmOperatorsChange.styles';
 
 const ConfirmOperatorsChange = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [operators, setOperators] = useState(null);
-
+  const process: SingleValidatorProcess = processStore.getProcess;
+  const validator = process?.item;
+  
   useEffect(() => {
-    if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-    myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
-      setOperators(validator.operators);
+    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    myAccountStore.getValidator(validator.public_key).then((response: any) => {
+      setOperators(response.operators);
     });
   }, []);
 

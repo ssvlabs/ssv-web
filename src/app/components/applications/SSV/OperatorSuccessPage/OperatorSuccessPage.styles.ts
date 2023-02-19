@@ -15,6 +15,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   BoxesWrapper: {
     gap: 20,
+    marginBottom: 24,
   },
   BoxWrapper: {
     gap: 8,
@@ -22,8 +23,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: 16,
     fontSize: 16,
     fontWeight: 500,
-    lineHeight: 1.62,
     borderRadius: 8,
+    lineHeight: 1.62,
     backgroundColor: '#f8fcff',
     color: theme.colors.gray80,
     border: `solid 1px ${theme.colors.gray20}`,

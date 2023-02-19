@@ -41,9 +41,9 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
             disabled={disable}
             onBlur={onBlurCallBack}
             data-testid={dataTestId}
+            className={classes.Input}
             onChange={onChangeWrapper}
             placeholder={placeHolder ?? ''}
-            className={classes.Input}
             type={(!withLock || password) ? 'text' : 'password'}
           />
         </Grid>

@@ -2,32 +2,28 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import { longStringShorten } from '~lib/utils/strings';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
-import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleValidator/SingleValidator.styles';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 
 const SingleValidator = () => {
   const stores = useStores();
@@ -35,106 +31,74 @@ const SingleValidator = () => {
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
-  const validatorStore: ValidatorStore = stores.Validator;
+  const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const [validator, setValidator] = useState(null);
   const applicationStore: ApplicationStore = stores.Application;
-  const notificationsStore: NotificationsStore = stores.Notifications;
-  // @ts-ignore
+  const process: SingleValidatorProcess = processStore.getProcess;
+  const validator = process?.item;
   const validatorPublicKey = validator?.public_key;
 
   useEffect(() => {
-    if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     applicationStore.setIsLoading(true);
-    myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
+    myAccountStore.getValidator(validatorPublicKey).then((response: any) => {
+      console.log(response);
       if (response) {
         response.total_operators_fee = ssvStore.newGetFeeForYear(response.operators.reduce(
-          (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
-          0,
+            (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+            0,
         ));
-        setValidator(response);
+        processStore.setProcess({
+          processName: 'single_validator',
+          item: response,
+        }, 2);
         applicationStore.setIsLoading(false);
       }
     });
   }, []);
 
-  const fields = [
-    { key: 'status', value: 'Status', adjustFunction: undefined, suffix: '' },
-    { key: 'balance', value: 'Balance', adjustFunction: undefined, suffix: 'ETH' },
-    { key: 'apr', value: 'Est. APR', adjustFunction: undefined, suffix: '%' },
-    {
-      key: 'total_operators_fee',
-      value: 'Total Operators Fee',
-      adjustFunction: (value: string) => formatNumberToUi(value),
-      suffix: 'SSV',
-    },
-  ];
-
-  const openBeaconcha = () => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'external_link',
-      action: 'click',
-      label: 'Open Beaconcha',
-    });
-    window.open(`${getBaseBeaconchaUrl()}/validator/${validatorPublicKey}`, '_blank');
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(validatorPublicKey);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
-  };
-
-  const openExplorer = () => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'explorer_link',
-      action: 'click',
-      label: 'validator',
-    });
-    window.open(`${config.links.EXPLORER_URL}/validators/${validatorPublicKey.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
-  };
-
   const data = React.useMemo(
-    () => {
-      // return validator operators mapped with additional fields fee and performance
-      // @ts-ignore
-      return validator?.operators?.map((operator: any) => {
-        // eslint-disable-next-line no-param-reassign
-        operator.performance = (operator.performance['30d'] && Number(operator.performance['30d']).toFixed(2)) || 0;
+      () => {
+        // return validator operators mapped with additional fields fee and performance
+        // @ts-ignore
+        return validator?.operators?.map((operator: any) => {
+          // eslint-disable-next-line no-param-reassign
+          operator.performance = (operator.performance['30d'] && Number(operator.performance['30d']).toFixed(2)) || 0;
 
-        const {
-          status,
-          performance,
-        } = operator;
+          const {
+            status,
+            performance,
+          } = operator;
 
-        return {
-          public_key: <OperatorDetails operator={operator} />,
-          status: <Status status={status} />,
-          performance: <Typography className={classes.PerformanceHeader}>{performance}%</Typography>,
-          fee: <Grid item container style={{ justifyContent: 'space-between' }}>
-            <Grid item>
-              <SsvAndSubTitle leftTextAlign
-                ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />
-            </Grid>
+          return {
+            public_key: <OperatorDetails operator={operator}/>,
+            status: <Status status={status}/>,
+            performance: <Typography className={classes.PerformanceHeader}>{performance}%</Typography>,
+            fee: <Grid item container style={{ justifyContent: 'space-between' }}>
+              <Grid item>
+                <SsvAndSubTitle leftTextAlign
+                                ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}/>
+              </Grid>
 
-            {/* <Grid item container xs> */}
-            {/*  <Grid item xs={12}> */}
-            {/*    <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography> */}
-            {/*  </Grid> */}
-            {/*  <Grid item>~$757.5</Grid> */}
-            {/* </Grid> */}
-            <Grid item className={classes.ExplorerImage} onClick={() => {
-              GoogleTagManager.getInstance().sendEvent({
-                category: 'explorer_link',
-                action: 'click',
-                label: 'operator',
-              });
-              window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`);
-            }} />
-          </Grid>,
-        };
-      });
-    },
-    [validator, applicationStore.darkMode],
+              {/* <Grid item container xs> */}
+              {/*  <Grid item xs={12}> */}
+              {/*    <Typography>{operatorStore.getFeePerYear(walletStore.fromWei(operator.fee))} SSV</Typography> */}
+              {/*  </Grid> */}
+              {/*  <Grid item>~$757.5</Grid> */}
+              {/* </Grid> */}
+              <Grid item className={classes.ExplorerImage} onClick={() => {
+                GoogleTagManager.getInstance().sendEvent({
+                  category: 'explorer_link',
+                  action: 'click',
+                  label: 'operator',
+                });
+                window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`);
+              }}/>
+            </Grid>,
+          };
+        });
+      },
+      [validator, applicationStore.darkMode],
   );
 
   const editValidator = () => {
@@ -142,95 +106,89 @@ const SingleValidator = () => {
   };
 
   const columns = React.useMemo(
-    () => [
-      {
-        id: 'col13',
-        Header: <Grid container style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography>Operators</Typography>
-          <SecondaryButton disable={ssvStore.userLiquidated} className={classes.Edit} submitFunction={editValidator}
-            text={'Edit'} />
-        </Grid>,
-        columns: [
-          {
-            Header: 'Operator',
-            accessor: 'public_key',
-          },
-          {
-            Header: <Grid container item alignItems={'center'}>
-              <Grid item style={{ marginRight: 4 }}>
-                Status
-              </Grid>
-              <ToolTip
-                text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
-            </Grid>,
-            accessor: 'status',
-          },
-          {
-            Header: '30D Performance',
-            accessor: 'performance',
-          },
-          {
-            Header: 'Yearly Fee',
-            accessor: 'fee',
-          },
-        ],
-      },
-    ], [applicationStore.darkMode],
+      () => [
+        {
+          id: 'col13',
+          Header: <Grid container style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography>Operators</Typography>
+            <SecondaryButton disable={ssvStore.userLiquidated} className={classes.Edit} submitFunction={editValidator}
+                             text={'Edit'}/>
+          </Grid>,
+          columns: [
+            {
+              Header: 'Operator',
+              accessor: 'public_key',
+            },
+            {
+              Header: <Grid container item alignItems={'center'}>
+                <Grid item style={{ marginRight: 4 }}>
+                  Status
+                </Grid>
+                <ToolTip
+                    text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'}/>
+              </Grid>,
+              accessor: 'status',
+            },
+            {
+              Header: '30D Performance',
+              accessor: 'performance',
+            },
+            {
+              Header: 'Yearly Fee',
+              accessor: 'fee',
+            },
+          ],
+        },
+      ], [applicationStore.darkMode],
   );
 
-  if (!validator) return null;
-
   return (
-    <Grid container className={classes.SingleValidatorWrapper}>
-      <WhiteWrapper
-        backButtonRedirect={config.routes.SSV.MY_ACCOUNT.DASHBOARD}
-        withSettings={{
-          text: 'Remove Validator',
-          onClick: () => {
-            navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.ROOT);
-          },
-        }}
-        header={'Validator Details'}
-      >
-        <Grid item container className={classes.FieldsWrapper}>
-          <Grid item>
-            <Grid className={classes.DetailsHeader}>
-              Public Key
-            </Grid>
-            <Grid item container className={classes.SubHeaderWrapper}>
-              <Typography>{longStringShorten(validatorPublicKey, 6, 4)}</Typography>
-              <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
-              <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />
-              <ImageDiv onClick={openBeaconcha} image={'beacon'} width={24} height={24} />
-            </Grid>
-          </Grid>
-          {fields.map((field: { key: string, value: string, adjustFunction: any, suffix: string }, index: number) => {
-            // @ts-ignore
-            const fieldKey = field.adjustFunction ? field.adjustFunction(validator[field.key]) : validator[field.key];
-            const suffixField = field.suffix ? `${fieldKey} ${field.suffix}` : fieldKey;
-            return (
-              <Grid key={index} item>
-                <Grid className={classes.DetailsHeader}>
-                  {field.value}
-                  {field.key === 'status' && (
-                    <ToolTip
-                      text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'} />
-                  )}
+      <Grid container className={classes.SingleValidatorWrapper}>
+        <NewWhiteWrapper
+            type={0}
+            header={'Cluster'}
+        />
+        <Grid container item className={classes.OperatorsBoxesWrapper}>
+          {validator?.operators?.map((operator: any, index: number) => {
+            console.log(operator);
+            return <Grid key={index} item className={classes.OperatorBox}>
+              <Grid className={classes.FirstSectionOperatorBox}>
+                <OperatorDetails operator={operator} />
+              </Grid>
+              <Grid container item className={classes.SecondSectionOperatorBox}>
+                <Grid item>
+                  <Grid container item alignItems={'center'} style={{ gap: 6 }}>
+                    <Grid item>
+                      Status
+                    </Grid>
+                    <ToolTip text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
+                  </Grid>
+                  <Grid>sadas</Grid>
                 </Grid>
-                <Grid className={classes.DetailsBody}>
-                  {field.key === 'status' ? <Status status={fieldKey} /> : suffixField}
+                <Grid item>
+                  <Grid container item alignItems={'center'}>
+                    <Grid item>
+                      30D perform.
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item>
+                  <Grid container item alignItems={'center'}>
+                    <Grid item>
+                      Yearly Fee
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-            );
+            </Grid>;
           })}
         </Grid>
-      </WhiteWrapper>
-      <Grid item container className={classes.SecondSectionWrapper}>
-        <Grid item className={classes.OperatorsWrapper}>
-          <Table columns={columns} data={data} hideActions />
-        </Grid>
+        {false && <Grid item container className={classes.SecondSectionWrapper}>
+          <Grid item className={classes.OperatorsWrapper}>
+            {validator.operators && <Table columns={columns} data={data} hideActions/>}
+          </Grid>
+        </Grid>}
       </Grid>
-    </Grid>
   );
 };
 

@@ -48,8 +48,7 @@ const EnableAccount = () => {
     {
       name: 'Liquidation collateral',
       value: formatNumberToUi(liquidationCollateral),
-      toolTipText: <>Collateral in the form of SSV tokens to be paid to liquidators in case of account
-        insolvency. <LinkText text={'Read more on liquidations'}
+      toolTipText: <>Collateral in the form of SSV tokens, which will be lost at the event of your cluster insolvency (inability to cover your validator&apos;s operational costs). <LinkText text={'Read more on liquidations'}
           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} /></>,
     },
   ];

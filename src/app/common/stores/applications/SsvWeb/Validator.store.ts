@@ -2,7 +2,6 @@ import { Contract } from 'web3-eth-contract';
 import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
-import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -10,10 +9,12 @@ import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 
 type KeyShareError = {
   id: number,
@@ -34,7 +35,6 @@ const annotations = {
   keyStoreFile: observable,
   keyShareFile: observable,
   setKeyStore: action.bound,
-  fundingPeriod: observable,
   registrationMode: observable,
   updateValidator: action.bound,
   addNewValidator: action.bound,
@@ -50,12 +50,10 @@ const annotations = {
   clearKeyStoreFlowData: action.bound,
   validatorPublicKeyExist: observable,
   validateKeySharePayload: action.bound,
-  processValidatorPublicKey: observable,
 };
 
 class ValidatorStore extends BaseStore {
   // general
-  fundingPeriod: any = null;
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
 
@@ -69,10 +67,6 @@ class ValidatorStore extends BaseStore {
   keySharePayload: any;
   keySharePublicKey: string = '';
   keyShareFile: File | null = null;
-
-  // process data (single validator flow)
-  processValidatorPublicKey: string = '';
-
 
   constructor() {
     super();
@@ -117,7 +111,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const contract: Contract = walletStore.getContract;
+    const contract: Contract = walletStore.getterContract;
     const ownerAddress: string = walletStore.accountAddress;
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -170,7 +164,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const contract: Contract = walletStore.getContract;
+      const contract: Contract = walletStore.getterContract;
       const payload: (string | string[])[] = await this.createKeystorePayload(true);
       if (!payload) {
         applicationStore.setIsLoading(false);
@@ -238,7 +232,7 @@ class ValidatorStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      const contract: Contract = walletStore.getContract;
+      const contract: Contract = walletStore.getterContract;
       const ownerAddress: string = walletStore.accountAddress;
 
       this.newValidatorReceipt = null;
@@ -324,7 +318,9 @@ class ValidatorStore extends BaseStore {
     const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
+    const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
+    const process: RegisterValidator = <RegisterValidator>processStore.process;
     const {
       operatorsIds,
       publicKeys,
@@ -338,13 +334,16 @@ class ValidatorStore extends BaseStore {
       operatorsIds: [],
       publicKeys: [],
     });
+    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
+    console.log(operatorsIds);
+    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
 
     return new Promise(async (resolve) => {
       try {
         const threshold: ISharesKeyPairs = await ssvKeys.createThreshold(this.keyStorePrivateKey, operatorsIds);
         const shares = await ssvKeys.encryptShares(publicKeys, threshold.shares);
-        const networkCost = propertyCostByPeriod(ssvStore.networkFee, this.fundingPeriod);
-        const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, this.fundingPeriod);
+        const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+        const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
         const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
 
         const { readable } = await ssvKeys.buildPayload(
@@ -376,6 +375,9 @@ class ValidatorStore extends BaseStore {
 
   async createKeySharePayLoad(update: boolean = false): Promise<any> {
     const ssvStore: SsvStore = this.getStore('SSV');
+    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
+    console.log(this.keySharePayload?.operatorIds.split(','));
+    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
     update;
     return new Promise((resolve) => {
       try {
@@ -475,27 +477,19 @@ class ValidatorStore extends BaseStore {
     const okResponse = { id: 0, name: '', errorMessage: '' };
     const validatorExistResponse = { id: 3, name: 'validator_not_exit', errorMessage: 'validator not exist' };
     const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
-    const liquidationWarningResponse = { id: 2, name: 'liquidation_warning', errorMessage: 'make sure the amount of SSV in file does not put cluster into liquidation.' };
     try {
       const fileJson = await this.keyShareFile?.text();
-      const ssvStore: SsvStore = this.getStore('SSV');
-      const walletStore: WalletStore = this.getStore('Wallet');
       const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
       const payload = JSON.parse(fileJson).payload.readable;
       this.keySharePayload = payload;
-      this.keySharePublicKey = payload.validatorPublicKey;
-      const validatorExist = !!(await Validator.getInstance().getValidator(payload.validatorPublicKey, true));
+      this.keySharePublicKey = payload.publicKey;
+      const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       const selectedOperators = await Operator.getInstance().getOperatorsByIds(payload.operatorIds.split(','));
       if (validatorExist) return validatorExistResponse;
       if (!selectedOperators) return operatorNotExistResponse;
       // @ts-ignore
       operatorStore.selectOperators(selectedOperators);
-      const burnRate = operatorStore.getSelectedOperatorsFee + ssvStore.networkFee;
-      const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
-      const runwayPeriod = (walletStore.fromWei(payload.ssvAmount) - liquidationCollateralCost) / burnRate / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-      this.fundingPeriod = runwayPeriod;
-      if (runwayPeriod < 30) return liquidationWarningResponse;
       return okResponse;
       // @ts-ignore
     } catch (e: any) {

@@ -1,6 +1,6 @@
+import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
@@ -28,20 +28,20 @@ const PrimaryButton = (props: Props) => {
     const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
 
-    useEffect(() => {
-        const callback = (event: any) => {
-            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-                if (!disable && !applicationStore.isLoading) {
-                    submitHandler();
-                }
-            }
-        };
-
-        document.addEventListener('keydown', callback);
-        return () => {
-            document.removeEventListener('keydown', callback);
-        };
-    }, [applicationStore.isLoading, disable, submitFunction]);
+    // useEffect(() => {
+    //     const callback = (event: any) => {
+    //         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+    //             if (!disable && !applicationStore.isLoading) {
+    //                 submitHandler();
+    //             }
+    //         }
+    //     };
+    //
+    //     document.addEventListener('keydown', callback);
+    //     return () => {
+    //         document.removeEventListener('keydown', callback);
+    //     };
+    // }, [applicationStore.isLoading, disable, submitFunction]);
 
     const submitHandler = async () => {
         if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');

@@ -38,7 +38,7 @@ const SlashingWarning = () => {
             Running a validator simultaneously to the SSV network will cause slashing to your validator.
           </Grid>
           <Grid item xs={12} className={classes.Text}>
-            To avoid slashing, shut down your existing validator setup before importing your validator to
+            To avoid slashing, shut down your existing validator setup (if you have one) before importing your validator to
             run with our network.
           </Grid>
           <Checkbox

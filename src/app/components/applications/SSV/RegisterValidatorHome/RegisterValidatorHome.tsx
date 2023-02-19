@@ -9,14 +9,16 @@ import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
+  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
 
@@ -30,6 +32,10 @@ const RegisterValidatorHome = () => {
   });
 
   const moveToSelectOperators = () => {
+    processStore.setProcess({
+      item: null,
+      processName: 'register_validator',
+    }, 2);
     operatorStore.unselectAllOperators();
     navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
   };
@@ -38,7 +44,7 @@ const RegisterValidatorHome = () => {
     <BorderScreen
       body={[
         <Grid container>
-          <HeaderSubHeader title={'Run Validator with the SSV Network'}
+          <HeaderSubHeader title={'Run a Distibuted Validator'}
             subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
           />
           <Typography className={classes.GrayText}>Prerequisites</Typography>

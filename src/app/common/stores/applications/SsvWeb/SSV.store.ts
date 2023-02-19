@@ -5,6 +5,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 class SsvStore extends BaseStore {
@@ -157,7 +158,7 @@ class SsvStore extends BaseStore {
     return new Promise<boolean>((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       // const operatorStore: OperatorStore = this.getStore('Operator');
-      walletStore.getContract.methods.getOperatorsByValidator(publicKey).call().then((operators: any) => {
+      walletStore.getterContract.methods.getOperatorsByValidator(publicKey).call().then((operators: any) => {
         resolve(operators);
       });
     });
@@ -190,7 +191,7 @@ class SsvStore extends BaseStore {
     return new Promise<boolean>((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.getContract.methods.deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
+      walletStore.getterContract.methods.deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -209,7 +210,7 @@ class SsvStore extends BaseStore {
   async checkIfLiquidated(): Promise<void> {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
-      this.setIsLiquidated(await walletStore.getContract.methods.isLiquidated(this.accountAddress).call());
+      this.setIsLiquidated(await walletStore.getterContract.methods.isLiquidated(this.accountAddress).call());
     } catch (e) {
       this.setIsLiquidated(false);
     }
@@ -255,7 +256,7 @@ class SsvStore extends BaseStore {
   async getBalanceFromDepositContract(): Promise<any> {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
-      const balance = await walletStore.getContract.methods.getAddressBalance(this.accountAddress).call();
+      const balance = await walletStore.getterContract.methods.getAddressBalance(this.accountAddress).call();
       runInAction(() => {
         this.contractDepositSsvBalance = walletStore.fromWei(balance);
       });
@@ -273,35 +274,45 @@ class SsvStore extends BaseStore {
    */
   async withdrawSsv(validatorState: boolean, amount: string, withdrawAll: boolean = false) {
     return new Promise<boolean>((resolve) => {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      let contractFunction = null;
-      const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      if (withdrawAll && !validatorState) contractFunction = walletStore.getContract.methods.withdrawAll();
-      else if (withdrawAll && validatorState) contractFunction = walletStore.getContract.methods.liquidate([this.accountAddress]);
-      else if (!withdrawAll) contractFunction = walletStore.getContract.methods.withdraw(ssvAmount);
+      try {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const processStore: ProcessStore = this.getStore('Process');
+        const process: any = processStore.process;
+        let contractFunction = null;
+        const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
+        const operatorPayload = [process.operator?.id];
+        if (withdrawAll) operatorPayload.push(ssvAmount);
+        if (validatorState) contractFunction = walletStore.getterContract.methods.liquidate([this.accountAddress]);
+        else contractFunction = walletStore.getterContract.methods.withdrawOperatorEarnings(...operatorPayload);
 
-      if (!contractFunction) return;
+        if (!contractFunction) return;
 
-      contractFunction.send({ from: this.accountAddress })
-        .on('receipt', async () => {
-          GoogleTagManager.getInstance().sendEvent({
-            category: 'my_account',
-            action: 'withdraw_tx',
-            label: 'success',
-          });
-          resolve(true);
-        })
-        .on('transactionHash', (txHash: string) => {
-          walletStore.notifySdk.hash(txHash);
-        })
-        .on('error', () => {
-          GoogleTagManager.getInstance().sendEvent({
-            category: 'my_account',
-            action: 'withdraw_tx',
-            label: 'error',
-          });
-          resolve(false);
-        });
+        contractFunction.send({ from: this.accountAddress })
+            .on('receipt', async () => {
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'my_account',
+                action: 'withdraw_tx',
+                label: 'success',
+              });
+              resolve(true);
+            })
+            .on('transactionHash', (txHash: string) => {
+              walletStore.notifySdk.hash(txHash);
+            })
+            .on('error', () => {
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'my_account',
+                action: 'withdraw_tx',
+                label: 'error',
+              });
+              resolve(false);
+            });
+      } catch (e: any) {
+        console.log('<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>');
+        console.log(e.message);
+        console.log('<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>');
+        resolve(false);
+      }
     });
   }
 
@@ -315,7 +326,7 @@ class SsvStore extends BaseStore {
       const applicationStore: ApplicationStore = this.getStore('Application');
       applicationStore.setIsLoading(true);
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.getContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
+      walletStore.getterContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
         .on('receipt', async () => {
           applicationStore.setIsLoading(false);
           resolve(true);
@@ -391,7 +402,7 @@ class SsvStore extends BaseStore {
    */
   async getNetworkFees() {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const networkContract = walletStore.getContract;
+    const networkContract = walletStore.getterContract;
     const liquidationCollateral = await networkContract.methods.getLiquidationThresholdPeriod().call();
     const networkFee = await networkContract.methods.getNetworkFee().call();
     // hardcoded should be replaced
@@ -405,7 +416,7 @@ class SsvStore extends BaseStore {
   async getAccountBurnRate(): Promise<void> {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
-      const burnRate = await walletStore.getContract.methods.getAddressBurnRate(this.accountAddress).call();
+      const burnRate = await walletStore.getterContract.methods.getAddressBurnRate(this.accountAddress).call();
       this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
     } catch (e: any) {
       // TODO: handle error

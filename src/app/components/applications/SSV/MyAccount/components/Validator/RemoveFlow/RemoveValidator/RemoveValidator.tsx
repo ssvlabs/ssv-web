@@ -6,36 +6,28 @@ import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator/RemoveValidator.styles';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 
 const RemoveValidator = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const [validator, setValidator] = useState(null);
-  const myAccountStore: MyAccountStore = stores.MyAccount;
-  const applicationStore: ApplicationStore = stores.Application;
   const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
-
+  const process: SingleValidatorProcess = processStore.getProcess;
+  const validator = process?.item;
+  
   useEffect(() => {
-    if (!validatorStore.processValidatorPublicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-    applicationStore.setIsLoading(true);
-    myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((response: any) => {
-      if (response) {
-        setValidator(response);
-        applicationStore.setIsLoading(false);
-      }
-    });
+    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   }, []);
 
   const checkboxChange = () => {
@@ -43,8 +35,8 @@ const RemoveValidator = () => {
   };
 
   const removeValidator = async () => {
-    if (validatorStore.processValidatorPublicKey) {
-      const response = await validatorStore.removeValidator(validatorStore.processValidatorPublicKey);
+    if (validator.public_key) {
+      const response = await validatorStore.removeValidator(validator.public_key);
       if (response) {
         navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
       }

@@ -15,7 +15,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const FundingPeriod = () => {
   const options = [
@@ -27,11 +27,12 @@ const FundingPeriod = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
+  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
   const [customPeriod, setCustomPeriod] = useState(1);
   const [checkedOption, setCheckedOption] = useState(options[1]);
   const timePeriodNotValid = customPeriod < 30;
+  const process: RegisterValidator = processStore.process as RegisterValidator;
 
   const checkBox = (option: any) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
@@ -52,7 +53,7 @@ const FundingPeriod = () => {
   const isChecked = (id: number) => checkedOption.id === id;
 
   const moveToNextPage = () => {
-    validatorStore.fundingPeriod = periodOfTime;
+    process.fundingPeriod = periodOfTime;
     navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
 

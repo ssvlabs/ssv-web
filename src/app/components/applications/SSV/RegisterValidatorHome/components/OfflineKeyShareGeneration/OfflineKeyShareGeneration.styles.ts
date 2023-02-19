@@ -76,15 +76,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     ...text,
     color: theme.colors.gray90,
   },
-  CopyText: {
-    height: 22,
-    overflowX: 'scroll',
-    ...smallerText,
-    // overflow:'hidden',
-    whiteSpace: 'nowrap',
-    // textOverflow: 'ellipsis',
-    color: theme.colors.gray10,
-  },
   CopyButton: {
     width: 56,
     height: 28,
@@ -130,5 +121,18 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '0 16px 0 16px',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.gray80,
+  },
+  CopyText: {
+    height: 22,
+    overflowX: 'scroll',
+    overflowY: 'hidden',
+    ...smallerText,
+    // overflow:'hidden',
+    whiteSpace: 'nowrap',
+    // textOverflow: 'ellipsis',
+    color: theme.colors.gray10,
+    '&::-webkit-scrollbar': {
+      display: 'none',  /* Safari and Chrome */
+    },
   },
 }));

@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewWithdraw.styles';
 import Button from '~app/components/common/Button/Button';
@@ -9,36 +9,32 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const OperatorFlow = () => {
   const classes = useStyles();
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const [inputValue, setInputValue] = useState(0.0);
+  const processStore: ProcessStore = stores.Process;
   const applicationStore: ApplicationStore = stores.Application;
-  const [userAgree, setUserAgreement] = useState(false);
-  const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
-
-  useEffect(() => {
-    if (ssvStore.getRemainingDays({ newBalance }) > 30 && userAgree) {
-      setUserAgreement(false);
-    }
-    if (buttonColor.default === '#ec1c2640') {
-      setButtonColor({ userAgree: '', default: '' });
-    }
-  }, [inputValue]);
+  const process: SingleOperatorProcess = processStore.getProcess;
+  const operator = process?.item;
+  const operatorBalance = operator?.balance ?? 0;
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(ssvStore.isValidatorState, inputValue.toString(), new Decimal(inputValue).equals(ssvStore.contractDepositSsvBalance));
+    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<start>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    const success = await ssvStore.withdrawSsv(false, inputValue.toString(), new Decimal(inputValue).equals(operatorBalance));
+    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<end>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };
 
   function inputHandler(e: any) {
     const value = e.target.value;
-    if (value > ssvStore.contractDepositSsvBalance) {
-      setInputValue(ssvStore.contractDepositSsvBalance);
+    if (value > operatorBalance) {
+      setInputValue(operatorBalance);
     } else if (value < 0) {
       setInputValue(0);
     } else {
@@ -48,7 +44,7 @@ const OperatorFlow = () => {
 
   function maxValue() {
     // @ts-ignore
-    setInputValue(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)));
+    setInputValue(operatorBalance);
   }
 
   const secondBorderScreen = [(
@@ -77,12 +73,6 @@ const OperatorFlow = () => {
       </Grid>
   )];
 
-  const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
-  let buttonText = 'Withdraw';
-  if (inputValue === ssvStore.contractDepositSsvBalance) {
-    buttonText = 'Withdraw All';
-  }
-
   return (
       <BorderScreen
           marginTop={0}
@@ -92,10 +82,10 @@ const OperatorFlow = () => {
           body={secondBorderScreen}
           bottom={[(
               <Button
-                  text={buttonText}
+                  text={'Withdraw'}
                   withAllowance={false}
                   onClick={withdrawSsv}
-                  disable={(ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
+                  disable={Number(inputValue) === 0}
               />
           )]}
       />

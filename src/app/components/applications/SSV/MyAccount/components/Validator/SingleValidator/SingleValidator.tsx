@@ -18,6 +18,7 @@ import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import MyBalance from '~app/components/applications/SSV/MyAccount/components/MyBalance';
 import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
@@ -152,16 +153,17 @@ const SingleValidator = () => {
         />
         <Grid container item className={classes.Section}>
           {(validator?.operators ?? [null, null, null, null]).map((operator: any, index: number) => {
-            return <OperatorBox key={index} operator={operator} />;
+            return <OperatorBox key={index} operator={operator}/>;
           })}
         </Grid>
         <Grid container item className={classes.Section}>
-        </Grid>
-        {false && <Grid item container className={classes.SecondSectionWrapper}>
-          <Grid item className={classes.OperatorsWrapper}>
+          <Grid item>
+            <MyBalance />
+          </Grid>
+          <Grid item xs>
             {validator.operators && <Table columns={columns} data={data} hideActions/>}
           </Grid>
-        </Grid>}
+        </Grid>
       </Grid>
   );
 };

@@ -40,7 +40,7 @@ const translations = {
       },
     },
     CONFIRMATION: {
-      TITLE: 'Confirm Transaction',
+      TITLE: 'Transaction Details',
       DESCRIPTION: '',
     },
     SLASHING_WARNING: {

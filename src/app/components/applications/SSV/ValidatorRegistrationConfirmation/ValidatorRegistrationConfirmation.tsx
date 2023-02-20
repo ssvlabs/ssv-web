@@ -36,7 +36,7 @@ const ValidatorRegistrationConfirmation = () => {
   const [errorMessage, setErrorMessage] = useState('');
   // const [checked, selectCheckBox] = useState(false);
   const process: RegisterValidator = processStore.process as RegisterValidator;
-  const [actionButtonText, setActionButtonText] = useState('Run validator');
+  const [actionButtonText, setActionButtonText] = useState('Register Validator');
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
@@ -53,7 +53,7 @@ const ValidatorRegistrationConfirmation = () => {
       // const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
       // if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
       //   setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
-      //   setActionButtonText('Run validator');
+      //   setActionButtonText('Register Validator');
       //   applicationStore.setIsLoading(false);
       //   return;
       // }
@@ -67,7 +67,7 @@ const ValidatorRegistrationConfirmation = () => {
       navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
     } else {
       applicationStore.showTransactionPendingPopUp(false);
-      setActionButtonText('Run validator');
+      setActionButtonText('Register Validator');
     }
   };
 

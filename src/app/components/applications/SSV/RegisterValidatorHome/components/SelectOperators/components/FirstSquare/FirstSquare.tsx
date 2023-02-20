@@ -249,13 +249,14 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
   const inputHandler = debounce((e: any) => {
     const userInput = e.target.value.trim();
-    if (userInput.length >= 3 || userInput.length === 0) {
+    const newValue = userInput.replace(/[^0-9]/g, '').slice(0, 4);
+    if (newValue.length >= 1 || newValue.length === 0) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',
         action: 'search',
-        label: userInput,
+        label: newValue,
       });
-      setSearchInput(e.target.value.trim());
+      setSearchInput(newValue);
     }
   }, 1000);
 
@@ -266,9 +267,10 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
   useEffect(() => {
     setLoading(true);
-    getOperators(1);
-    setLoading(false);
-    scrollRef.current.scrollTop = 0;
+    getOperators(1).then(()=>{
+      setLoading(false);
+      scrollRef.current.scrollTop = 0;
+    });
   }, [searchInput, sortBy, sortOrder, filterBy]);
 
   useEffect(() => {

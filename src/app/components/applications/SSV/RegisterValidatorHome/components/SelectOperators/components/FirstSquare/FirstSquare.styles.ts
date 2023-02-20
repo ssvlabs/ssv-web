@@ -26,6 +26,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     SearchInputWrapper: {
         marginRight: theme.spacing(3),
+        opacity: (props: any) => props.loading ? 0.2 : '',
+        userSelect: (props: any) => props.loading ? 'none' : 'auto',
+        pointerEvents: (props: any) => props.loading ? 'none' : 'auto',
+        cursor: (props: any) => props.loading ? 'progress' : 'pointer',
     },
 
     OperatorsTable: {

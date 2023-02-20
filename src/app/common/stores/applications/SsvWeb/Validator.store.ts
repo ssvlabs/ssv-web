@@ -479,8 +479,8 @@ class ValidatorStore extends BaseStore {
     const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
     try {
       const fileJson = await this.keyShareFile?.text();
-      const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
-      console.log(ssvKeys.keyShares.fromJson(fileJson));
+      // const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
+      // console.log(ssvKeys.keyShares.fromJson(fileJson));
       const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
       const payload = JSON.parse(fileJson).payload.readable;

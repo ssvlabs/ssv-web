@@ -30,7 +30,7 @@ const SlashingWarning = () => {
       header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
       body={[
         <Grid container>
-          <Grid item className={classes.SubHeader}>Your validator is currently active on the beacon chain:</Grid>
+          <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
           <Grid item xs={12} className={classes.PublicKey}>
             <ValidatorKeyInput withBeaconcha withCopy address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey} />
           </Grid>

@@ -25,8 +25,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 500,
     borderRadius: 8,
     lineHeight: 1.62,
-    backgroundColor: '#f8fcff',
     color: theme.colors.gray80,
+    backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray20}`,
   },
   BackgroundImage: {

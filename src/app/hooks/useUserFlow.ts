@@ -93,7 +93,7 @@ const EnableAccountScreen: IUserFlow = {
 
 const SingleValidatorScreen: IUserFlow = {
     name: 'Single Validator',
-    route: routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT,
+    route: routes.SSV.MY_ACCOUNT.CLUSTER.ROOT,
     depends: [
         myAccountScreen,
     ],

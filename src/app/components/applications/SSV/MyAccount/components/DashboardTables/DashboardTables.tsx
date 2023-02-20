@@ -36,7 +36,7 @@ const DashboardTables = () => {
   const [loadingOperators, setLoadingOperators] = useState(true);
   const [loadingValidators, setLoadingValidators] = useState(true);
   const operatorsPagination = myAccountStore?.ownerAddressOperatorsPagination;
-  const validatorsPagination = myAccountStore?.ownerAddressValidatorsPagination;
+  const validatorsPagination = myAccountStore?.ownerAddressClustersPagination;
 
   useEffect(() => {
     const loadData = async () => {
@@ -61,7 +61,7 @@ const DashboardTables = () => {
       setLoadingOperators(false);
     } else {
       setLoadingValidators(true);
-      await myAccountStore.getOwnerAddressValidators({
+      await myAccountStore.getOwnerAddressClusters({
         forcePage: paginationPage ?? 1,
         forcePerPage: forcePerPage ?? 5,
         reFetchBeaconData,
@@ -85,7 +85,7 @@ const DashboardTables = () => {
 
   const openSingleValidator = (publicKey: string) => {
     publicKey;
-    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
   const openSingleOperator = (operatorId: number) => {
     operatorStore.processOperatorId = operatorId;
@@ -174,7 +174,7 @@ const DashboardTables = () => {
   ];
 
   // return validator operators mapped with additional fields fee and performance
-  const validatorsData = myAccountStore?.ownerAddressValidators?.map((validator: any) => {
+  const validatorsData = myAccountStore?.ownerAddressClusters?.map((validator: any) => {
     const { public_key, status, balance, apr } = validator;
 
     return {
@@ -266,7 +266,7 @@ const DashboardTables = () => {
 
   return (
     <Grid container item className={classes.Table}>
-      {myAccountStore?.ownerAddressValidators?.length > 0 && (
+      {myAccountStore?.ownerAddressClusters?.length > 0 && (
         <Grid item xs={12} style={{ marginBottom: 20 }}>
           <ReactTable
             data={validatorsData}

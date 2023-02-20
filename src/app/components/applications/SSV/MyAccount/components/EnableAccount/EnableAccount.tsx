@@ -55,8 +55,8 @@ const EnableAccount = () => {
 
   useEffect(() => {
     if (!walletStore.accountAddress) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-    const query = `?search=${walletStore.accountAddress}&status=true&page=1&perPage=100&operators=true`;
-    Validator.getInstance().validatorsByOwnerAddress(query).then(async (res) => {
+    const query = `${walletStore.accountAddress}?status=true&page=1&perPage=100&operators=true`;
+    Validator.getInstance().clustersByOwnerAddress(query).then(async (res) => {
       const response = await Validator.getInstance().getOwnerAddressCost(walletStore.accountAddress);
       setValidators(res.validators);
       // @ts-ignore

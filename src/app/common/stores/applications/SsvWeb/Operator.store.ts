@@ -146,7 +146,7 @@ class OperatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
 
     return Promise.all([
-      myAccountStore.getOwnerAddressValidators({}),
+      myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
     ])
       .then(() => {

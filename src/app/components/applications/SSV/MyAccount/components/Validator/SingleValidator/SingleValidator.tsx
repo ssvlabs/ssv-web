@@ -105,7 +105,7 @@ const SingleValidator = () => {
   );
 
   const editValidator = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.CHOOSE_OPERATORS);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CHOOSE_OPERATORS);
   };
 
   const columns = React.useMemo(

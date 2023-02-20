@@ -49,8 +49,8 @@ const config = {
             EXPIRED: '/my-account/operator/fee-update/expired',
           },
         },
-        VALIDATOR: {
-          ROOT: '/my-account/validator',
+        CLUSTER: {
+          ROOT: '/my-account/cluster',
           ADD_VALIDATOR: '/my-account/validator/add',
           WITHDRAW: '/my-account/validator/withdraw',
           VALIDATOR_UPDATE: {

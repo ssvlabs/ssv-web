@@ -11,12 +11,12 @@ const SsvAppBar = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const applicationStore: ApplicationStore = stores.Application;
-  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+  const hasOperatorsOrClusters = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
   const backgroundColor = applicationStore.theme.colors.white;
 
   const moveToDashboard = () => {
     if (applicationStore.isLoading) return;
-    if (hasOperatorsOrValidators) {
+    if (hasOperatorsOrClusters) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
       GoogleTagManager.getInstance().sendEvent({

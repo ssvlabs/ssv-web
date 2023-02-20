@@ -2,13 +2,11 @@ import axios from 'axios';
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
-// import Validator from '~lib/api/Validator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import SSVStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 
@@ -29,8 +27,8 @@ class MyAccountStore extends BaseStore {
   ownerAddressOperatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
 
   // VALIDATOR
-  ownerAddressValidators: any = [];
-  ownerAddressValidatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressClusters: any = [];
+  ownerAddressClustersPagination: any = ApiParams.DEFAULT_PAGINATION;
 
   // BEACONCHAIN
   beaconChaBalances: any = {};
@@ -54,11 +52,11 @@ class MyAccountStore extends BaseStore {
       ownerAddressOperators: observable,
       getOperatorsRevenue: action.bound,
       beaconChaPerformances: observable,
-      ownerAddressValidators: observable,
+      ownerAddressClusters: observable,
       getOwnerAddressOperators: action.bound,
-      getOwnerAddressValidators: action.bound,
+      getOwnerAddressClusters: action.bound,
       ownerAddressOperatorsPagination: observable,
-      ownerAddressValidatorsPagination: observable,
+      ownerAddressClustersPagination: observable,
     });
   }
 
@@ -66,9 +64,9 @@ class MyAccountStore extends BaseStore {
     clearInterval(this.operatorsInterval);
     clearInterval(this.validatorsInterval);
     this.ownerAddressOperators = [];
-    this.ownerAddressValidators = [];
+    this.ownerAddressClusters = [];
     this.ownerAddressOperatorsPagination = ApiParams.DEFAULT_PAGINATION;
-    this.ownerAddressValidatorsPagination = ApiParams.DEFAULT_PAGINATION;
+    this.ownerAddressClustersPagination = ApiParams.DEFAULT_PAGINATION;
   }
 
   /**
@@ -82,7 +80,7 @@ class MyAccountStore extends BaseStore {
       let method: any;
       switch (entity) {
         case 'validator':
-          method = 'getOwnerAddressValidators';
+          method = 'getOwnerAddressClusters';
           break;
         case 'operator':
           method = 'getOwnerAddressOperators';
@@ -130,7 +128,7 @@ class MyAccountStore extends BaseStore {
       // @ts-ignore
       const diffTime = Date.now() - this.lastUpdateValidators;
       if (Math.floor((diffTime / 1000) % 60) < INTERVAL_TIME) return;
-      this.getOwnerAddressValidators({});
+      this.getOwnerAddressClusters({});
     }, INTERVAL_TIME);
 
     this.operatorsInterval = setInterval(() => {
@@ -186,7 +184,7 @@ class MyAccountStore extends BaseStore {
     };
   }
 
-  async getOwnerAddressValidators(
+  async getOwnerAddressClusters(
     {
                                       forcePage,
                                       forcePerPage,
@@ -195,10 +193,9 @@ class MyAccountStore extends BaseStore {
   ): Promise<any[]> {
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return [];
-    const ssvStore: SSVStore = this.getStore('SSV');
-    const { page, perPage } = this.ownerAddressValidatorsPagination;
-    const query = `?search=${walletStore.accountAddress}&ordering=public_key:asc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
-    const response = await Validator.getInstance().validatorsByOwnerAddress(query, true);
+    const { page, perPage } = this.ownerAddressClustersPagination;
+    const query = `${walletStore.accountAddress}?ordering=public_key:asc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
+    const response = await Validator.getInstance().clustersByOwnerAddress(query, true);
     const responseValidators = response?.validators || [];
 
     if (reFetchBeaconData) {
@@ -229,15 +226,14 @@ class MyAccountStore extends BaseStore {
     }
 
     if (!response) {
-      return this.ownerAddressValidators;
+      return this.ownerAddressClusters;
     }
 
-    ssvStore.setUserState('validator');
     response.pagination.perPage = response?.pagination?.per_page;
-    this.ownerAddressValidatorsPagination = response.pagination;
-    this.ownerAddressValidators = extendedValidators;
+    this.ownerAddressClustersPagination = response.pagination;
+    this.ownerAddressClusters = extendedValidators;
     this.lastUpdateValidators = Date.now();
-    return this.ownerAddressValidators;
+    return this.ownerAddressClusters;
   }
 
   async getValidatorsBalances(publicKeys: string[]): Promise<void> {

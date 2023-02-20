@@ -10,13 +10,16 @@ import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/
 import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 
-const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
+const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
 
+  console.log('<<<<<<<<<<<<<<<<<<<<jere>>>>>>>>>>>>>>>>>>>>');
+  console.log(myAccountStore.ownerAddressClusters[0]);
+  console.log('<<<<<<<<<<<<<<<<<<<<jere>>>>>>>>>>>>>>>>>>>>');
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
   };
@@ -41,9 +44,9 @@ const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   const openSingleValidator = (listIndex: string) => {
     processStore.setProcess({
       processName: 'single_validator',
-      item: myAccountStore.ownerAddressValidators[listIndex],
+      item: myAccountStore.ownerAddressClusters[listIndex],
     }, 2);
-    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
   return (
@@ -71,4 +74,4 @@ const ValidatorDashboard = ({ changeState }: { changeState: any }) => {
   );
 };
 
-export default observer(ValidatorDashboard);
+export default observer(ClusterDashboard);

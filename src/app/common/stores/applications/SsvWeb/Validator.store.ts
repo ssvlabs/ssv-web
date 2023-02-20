@@ -445,7 +445,7 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
 
     return Promise.all([
-      myAccountStore.getOwnerAddressValidators({}),
+      myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
     ])
         .then(() => {
@@ -475,10 +475,12 @@ class ValidatorStore extends BaseStore {
 
   async validateKeySharePayload(): Promise<KeyShareError> {
     const okResponse = { id: 0, name: '', errorMessage: '' };
-    const validatorExistResponse = { id: 3, name: 'validator_not_exit', errorMessage: 'validator not exist' };
+    const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, <br/> please try a different keystore file.' };
     const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
     try {
       const fileJson = await this.keyShareFile?.text();
+      const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
+      console.log(ssvKeys.keyShares.fromJson(fileJson));
       const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
       const payload = JSON.parse(fileJson).payload.readable;

@@ -3,22 +3,24 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
+import { useStyles } from './MyBalance.styles';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
 import ErrorText
   from '~app/components/applications/SSV/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
-import { useStyles } from './MyBalance.styles';
 
 const MyBalance = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+  const processStore: ProcessStore = stores.Process;
+  const liquidated = ssvStore.userLiquidated && processStore.isValidatorFlow;
 
   const renderBalance = () => {
     return (
@@ -52,7 +54,7 @@ const MyBalance = () => {
 
     return (
       <Grid container item className={classes.ActionButtonWrapper}>
-        {ssvStore.isValidatorState && (
+        {processStore.isValidatorFlow && (
           <Grid item xs>
             <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit} />
           </Grid>
@@ -65,7 +67,7 @@ const MyBalance = () => {
   };
 
   const renderConditionalLine = () => {
-    if (!liquidated && ssvStore.isValidatorState) {
+    if (!liquidated && processStore.isValidatorFlow) {
       return <Grid item className={classes.SeparationLine} xs={12} />;
     }
   };
@@ -84,7 +86,7 @@ const MyBalance = () => {
         </Grid>
       </Grid>
       {renderConditionalLine()}
-      {ssvStore.isValidatorState && (
+      {processStore.isValidatorFlow && (
         <Grid container item className={classes.SectionWrapper}>
           {!ssvStore.userLiquidated && <RemainingDays />}
           {liquidated && (

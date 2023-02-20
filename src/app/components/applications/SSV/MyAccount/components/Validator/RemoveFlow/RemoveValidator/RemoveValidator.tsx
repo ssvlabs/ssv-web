@@ -38,7 +38,7 @@ const RemoveValidator = () => {
     if (validator.public_key) {
       const response = await validatorStore.removeValidator(validator.public_key);
       if (response) {
-        navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_REMOVE.REMOVED);
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.REMOVED);
       }
     }
   };

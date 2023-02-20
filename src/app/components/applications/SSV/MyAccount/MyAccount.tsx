@@ -18,7 +18,7 @@ const MyAccount = () => {
   const wrapperRef = useRef(null);
   const { redirectUrl, navigate } = useUserFlow();
   const [dropDownMenu, displayDropDownMenu] = useState(false);
-  const liquidated = ssvStore.userLiquidated && ssvStore.isValidatorState;
+  const liquidated = ssvStore.userLiquidated;
 
   const addMethod = (isOperator?: boolean) => {
     GoogleTagManager.getInstance().sendEvent({

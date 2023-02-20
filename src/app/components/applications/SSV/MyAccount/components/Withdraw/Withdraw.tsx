@@ -10,6 +10,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdrew.styles';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays/RemainingDays';
 
@@ -17,6 +18,7 @@ const Withdraw = () => {
   const classes = useStyles();
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
+  const processStore: ProcessStore = stores.Process;
   const [inputValue, setInputValue] = useState(0.0);
   const applicationStore: ApplicationStore = stores.Application;
   const [userAgree, setUserAgreement] = useState(false);
@@ -26,7 +28,7 @@ const Withdraw = () => {
     if (ssvStore.getRemainingDays({ newBalance }) > 30 && userAgree) {
       setUserAgreement(false);
     }
-    if (inputValue === ssvStore.contractDepositSsvBalance && ssvStore.isValidatorState) {
+    if (inputValue === ssvStore.contractDepositSsvBalance && processStore.isValidatorFlow ) {
       setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
     } else if (buttonColor.default === '#ec1c2640') {
       setButtonColor({ userAgree: '', default: '' });
@@ -35,7 +37,7 @@ const Withdraw = () => {
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(ssvStore.isValidatorState, inputValue.toString(), new Decimal(inputValue).equals(ssvStore.contractDepositSsvBalance));
+    const success = await ssvStore.withdrawSsv(processStore.isValidatorFlow , inputValue.toString(), new Decimal(inputValue).equals(ssvStore.contractDepositSsvBalance));
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };
@@ -83,8 +85,8 @@ const Withdraw = () => {
   )];
 
   const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
-  const errorButton = ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) === 0;
-  const showCheckBox = ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30;
+  const errorButton = processStore.isValidatorFlow  && ssvStore.getRemainingDays({ newBalance }) === 0;
+  const showCheckBox = processStore.isValidatorFlow  && ssvStore.getRemainingDays({ newBalance }) <= 30;
   const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my account.' : 'I understand the risks of having my account liquidated.';
   let buttonText = 'Withdraw';
   if (errorButton) {
@@ -93,7 +95,7 @@ const Withdraw = () => {
     buttonText = 'Withdraw All';
   }
 
-  if (ssvStore.isValidatorState) {
+  if (processStore.isValidatorFlow ) {
     secondBorderScreen.push((<RemainingDays newBalance={newBalance} />));
   }
 
@@ -133,7 +135,7 @@ const Withdraw = () => {
             errorButton={errorButton}
             checkboxesText={showCheckBox ? [checkBoxText] : []}
             checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-            disable={(ssvStore.isValidatorState && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
+            disable={(processStore.isValidatorFlow  && ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
           />
         )]}
       />

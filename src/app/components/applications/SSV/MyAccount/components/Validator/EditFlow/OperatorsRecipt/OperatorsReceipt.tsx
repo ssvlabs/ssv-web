@@ -48,7 +48,7 @@ const OperatorsReceipt = (props: Props) => {
     location.state = null;
     setOpenRedirect(true);
     setTimeout(() => {
-      navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
     }, 10000);
   }
 
@@ -91,9 +91,9 @@ const OperatorsReceipt = (props: Props) => {
     applicationStore.setIsLoading(true);
     const response = await validatorStore.updateValidator();
     if (response) {
-      navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS);
       setTimeout(() => {
-        navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
       }, 10000);
     }
   };

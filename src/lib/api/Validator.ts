@@ -30,9 +30,9 @@ class Validator {
     }
   }
 
-  async validatorsByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
+  async clustersByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators${query}&ts=${new Date().getTime()}`;
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return { validators: [], pagination: {} };

@@ -19,9 +19,6 @@ class SsvStore extends BaseStore {
   accountBurnRate: number = 0;
   liquidationCollateralPeriod: number = 0;
 
-  // User state
-  userState: string = 'operator';
-
   // Allowance
   userGaveAllowance: boolean = false;
 
@@ -35,13 +32,11 @@ class SsvStore extends BaseStore {
     super();
     makeObservable(this, {
       ssvContract: computed,
-      userState: observable,
       deposit: action.bound,
       initUser: action.bound,
       networkFee: observable,
       accountAddress: computed,
       withdrawSsv: action.bound,
-      isValidatorState: computed,
       clearSettings: action.bound,
       userLiquidated: observable,
       accountInterval: observable,
@@ -82,13 +77,6 @@ class SsvStore extends BaseStore {
       );
     }
     return <Contract> this.ssvContractInstance;
-  }
-
-  /**
-   * Check user state
-   */
-  get isValidatorState() {
-    return this.userState === 'validator';
   }
 
   /**
@@ -222,11 +210,6 @@ class SsvStore extends BaseStore {
     });
   };
 
-  setUserState = (status: string) => {
-    runInAction(() => {
-      this.userState = status;
-    });
-  };
   /**
    * Init settings
    */
@@ -235,7 +218,6 @@ class SsvStore extends BaseStore {
     this.accountBurnRate = 0;
     this.walletSsvBalance = 0;
     this.setIsLiquidated(false);
-    this.setUserState('operator');
     this.userGaveAllowance = false;
     this.contractDepositSsvBalance = 0;
     this.liquidationCollateralPeriod = 0;

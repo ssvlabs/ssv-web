@@ -59,7 +59,7 @@ const WhiteWrapper = (props: Props) => {
       category: 'cancel',
       action: 'click',
     });
-    navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
   const dialogHandler = () => {

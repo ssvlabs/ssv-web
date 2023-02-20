@@ -53,7 +53,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
   const onSelectOperatorsClick = async () => {
     if (editPage) {
-      navigate(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
       navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
     }

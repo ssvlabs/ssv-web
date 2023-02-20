@@ -131,7 +131,6 @@ const KeyStoreFlow = () => {
     applicationStore.setIsLoading(true);
     try {
       await validatorStore.extractKeyStoreData(keyStorePassword);
-      // remove deposit check restriction temporary
       isDeposited;
       const deposited = true; // await isDeposited();
       applicationStore.setIsLoading(false);

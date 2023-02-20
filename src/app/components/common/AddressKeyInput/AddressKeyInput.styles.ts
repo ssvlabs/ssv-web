@@ -16,11 +16,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontSize: 16,
     fontWeight: 500,
     lineHeight: 1.62,
-    overflow: 'hidden',
+    overflow: 'scroll',
     whiteSpace: 'nowrap',
     marginRight: 5,
-    textOverflow: 'ellipsis',
+    // textOverflow: 'ellipsis',
     color: theme.colors.gray60,
+    '&::-webkit-scrollbar': {
+      display: 'none',  /* Safari and Chrome */
+    },
   },
   CopyImage: {
     width: 24,

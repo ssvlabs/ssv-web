@@ -1,4 +1,3 @@
-import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
@@ -53,7 +52,7 @@ const OperatorConfirmation = () => {
               <Grid container style={{ gap: 34 }}>
                 <Grid container item>
                   <Grid item className={classes.SubHeader}>Operator Key</Grid>
-                  <AddressKeyInput address={sha256(walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey))}/>
+                  <AddressKeyInput address={walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey)}/>
                 </Grid>
                 <Grid container item>
                   <Grid item xs={6}>

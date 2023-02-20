@@ -6,33 +6,20 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { useStyles } from './OfflineKeyShareGeneration.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const OfflineKeyShareGeneration = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
-  const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
   const notificationsStore: NotificationsStore = stores.Notifications;
-  const process: RegisterValidator = processStore.getProcess as RegisterValidator;
-
-
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
-  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-  const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
 
   const isSelected = (id: number) => selectedBox === id;
   const goToNextPage = () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
@@ -46,7 +33,7 @@ const OfflineKeyShareGeneration = () => {
     operatorsIds: [],
     operatorsKeys: [],
   });
-  const cliCommand = `--operators-keys=${operatorsKeys.join(',')} --operators-ids=${operatorsIds.join(',')} --ssv-token-amount=${walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost)}`;
+  const cliCommand = `--operators-keys=${operatorsKeys.join(',')} --operators-ids=${operatorsIds.join(',')}`;
 
   const instructions = [
     { id: 1, instructions: [

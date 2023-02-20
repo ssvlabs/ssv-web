@@ -39,6 +39,15 @@ class Validator {
     }
   }
 
+  async getClusterData(clusterHash: string): Promise<any> {
+    try {
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+      return await this.getData(url, true);
+    } catch (e) {
+      return null;
+    }
+  }
+
   async getValidator(publicKey: string, skipRetry?: boolean) {
     try {
       const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;

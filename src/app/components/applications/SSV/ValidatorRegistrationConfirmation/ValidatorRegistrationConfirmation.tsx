@@ -47,17 +47,17 @@ const ValidatorRegistrationConfirmation = () => {
     applicationStore.setIsLoading(true);
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
-    const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
-    /* eslint-disable no-await-in-loop */
-    for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-      // const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
-      // if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
-      //   setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
-      //   setActionButtonText('Register Validator');
-      //   applicationStore.setIsLoading(false);
-      //   return;
-      // }
-    }
+    // const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
+    // /* eslint-disable no-await-in-loop */
+    // for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
+    //   const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
+    //   if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
+    //     setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
+    //     setActionButtonText('Register Validator');
+    //     applicationStore.setIsLoading(false);
+    //     return;
+    //   }
+    // }
 
     console.log(`mode is: ${  validatorStore.registrationMode}`);
     const response = await validatorStore.addNewValidator();

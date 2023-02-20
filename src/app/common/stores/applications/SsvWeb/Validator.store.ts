@@ -1,3 +1,4 @@
+import { keccak256 } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
@@ -313,6 +314,33 @@ class ValidatorStore extends BaseStore {
     });
   }
 
+  getClusterHash(operatorsIds: number[]) {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const ownerAddress: string = walletStore.accountAddress;
+    return keccak256(walletStore.web3.utils.encodePacked(ownerAddress, ...operatorsIds));
+  }
+
+  async getClusterData(clusterHash: string) {
+    const response = await Validator.getInstance().getClusterData(clusterHash);
+    const clusterData = response.data;
+    return {
+      validatorCount: clusterData.validatorCount,
+      networkFee: clusterData.networkFee,
+      networkFeeIndex: clusterData.networkFeeIndex,
+      index: clusterData.index,
+      balance: clusterData.balance,
+      disabled: clusterData.disabled,
+    };
+    // {
+    //   validatorCount: 0,
+    //       networkFee: 0,
+    //     networkFeeIndex: 0,
+    //     index: 0,
+    //     balance: 0,
+    //     disabled: false,
+    // }
+  }
+
   async createKeystorePayload(update: boolean = false): Promise<any> {
     update;
     const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
@@ -334,9 +362,6 @@ class ValidatorStore extends BaseStore {
       operatorsIds: [],
       publicKeys: [],
     });
-    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
-    console.log(operatorsIds);
-    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
 
     return new Promise(async (resolve) => {
       try {
@@ -354,17 +379,10 @@ class ValidatorStore extends BaseStore {
         );
         resolve([
           this.keyStorePublicKey,
-          readable?.operatorIds.split(','),
+          readable?.operatorIds.split(',').sort(),
           readable.shares,
           `${ssvStore.prepareSsvAmountToTransfer(readable?.ssvAmount)}`,
-          {
-            validatorCount: 0,
-            networkFee: 0,
-            networkFeeIndex: 0,
-            index: 0,
-            balance: 0,
-            disabled: false,
-          },
+          await this.getClusterData(this.getClusterHash(operatorsIds)),
         ]);
       } catch (e: any) {
         console.log(e.message);
@@ -375,25 +393,15 @@ class ValidatorStore extends BaseStore {
 
   async createKeySharePayLoad(update: boolean = false): Promise<any> {
     const ssvStore: SsvStore = this.getStore('SSV');
-    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
-    console.log(this.keySharePayload?.operatorIds.split(','));
-    console.log('<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>');
     update;
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       try {
         const payLoad = [
           this.keySharePublicKey,
-          this.keySharePayload?.operatorIds.split(','),
+          this.keySharePayload?.operatorIds.split(',').sort(),
           this.keySharePayload?.shares,
           `${ssvStore.prepareSsvAmountToTransfer(this.keySharePayload?.ssvAmount)}`,
-          {
-            validatorCount: 0,
-            networkFee: 0,
-            networkFeeIndex: 0,
-            index: 0,
-            balance: 0,
-            disabled: false,
-          },
+          await this.getClusterData(this.getClusterHash(this.keySharePayload?.operatorIds.split(',').sort())),
         ];
         resolve(payLoad);
       } catch (e: any) {

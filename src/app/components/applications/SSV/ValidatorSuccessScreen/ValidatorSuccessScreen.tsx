@@ -4,12 +4,14 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
+import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
 
@@ -19,7 +21,10 @@ const ValidatorSuccessScreen = () => {
   const navigate = useNavigate();
   const buttonText = 'Manage Validator';
   const operatorStore: OperatorStore = stores.Operator;
+  const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
+  const operators = Object.values(operatorStore.selectedOperators);
+  const clusterHash = validatorStore.getClusterHash(operators.map((operator) => operator.id).sort());
 
   const redirectTo = async () => {
     applicationStore.setIsLoading(true);
@@ -44,16 +49,16 @@ const ValidatorSuccessScreen = () => {
         body={[
           <Grid item container className={classes.Wrapper}>
             <Grid item className={classes.Text}>Your new validator is managed by the following cluster:</Grid>
-            <Grid  container item className={classes.ClusterID}>
-              <Typography>Validator Cluster e3b0...j123</Typography>
+            <Grid container item className={classes.ClusterID}>
+              <Typography>Validator Cluster {longStringShorten(clusterHash, 4)}</Typography>
               <Tooltip text={'adsasd'} />
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
-              {Object.values(operatorStore.selectedOperators).map(() => {
+              {Object.values(operatorStore.selectedOperators).map((operator: any) => {
                 return <Grid container item className={classes.Operator}>
                   <Grid item className={classes.OperatorImage} xs={12}/>
-                  <Grid item className={classes.OperatorName} xs>BloxMoon</Grid>
-                  <Grid item className={classes.OperatorId}>ID: 542</Grid>
+                  <Grid item className={classes.OperatorName} xs>Unknown</Grid>
+                  <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
                 </Grid>;
               })}
             </Grid>

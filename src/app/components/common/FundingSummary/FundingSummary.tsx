@@ -48,7 +48,7 @@ const FundingSummary = (props: Props) => {
 
   return (
       <Grid container>
-        <Typography className={classes.BigGreyHeader}>Transaction Summary</Typography>
+        <Typography className={classes.BigGreyHeader}>Funding Summary</Typography>
         {payments.map((payment: { id: number, name: string }, index: number) => {
           const paymentValue = paymentsValue(payment.id);
           const isLast = payment.id === 3;

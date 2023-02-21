@@ -52,7 +52,7 @@ const AccountBalanceAndFee = () => {
               (<LinkText style={{ fontSize: 14 }}
                 onClick={() => sendAnalytics('https://docs.ssv.network/learn/glossary#staking')}
                 text={'penalties on the beacon chain'}
-                link={'https://docs.ssv.network/learn/glossary#staking'} />)
+                link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />)
               of their validators, as they will no longer be operated by the network.
             </Grid>
           </Grid>

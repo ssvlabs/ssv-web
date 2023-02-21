@@ -14,6 +14,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 8,
   },
   ClusterID: {
+    alignItems: 'center',
     gap: 8,
     '& p': {
       fontSize: 14,

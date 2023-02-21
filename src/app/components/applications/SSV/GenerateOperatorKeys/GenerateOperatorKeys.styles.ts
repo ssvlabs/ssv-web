@@ -10,8 +10,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
     },
     TextError: {
-        color: 'red',
+        color: 'red !important',
         zIndex: 9123123,
         fontSize: '0.8rem',
+        '& p': {
+            zIndex: 9123123,
+            cursor: 'pointer',
+            fontSize: '0.8rem',
+            color: 'red !important',
+        },
     },
 }));

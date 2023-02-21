@@ -60,8 +60,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     ...smallerText,
     borderRadius: 2,
     padding: '12px 16px',
-    backgroundColor: '#f8fcff',
     color: theme.colors.gray90,
+    backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray30}`,
   },
   BlueText: {

@@ -50,8 +50,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
     padding: '18px 24px',
     flexDirection: 'column',
-    backgroundColor: '#f8fcff',
     justifyContent: 'space-between',
+    backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray30}`,
   },
   OptionBox: {

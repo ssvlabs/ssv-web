@@ -2,10 +2,12 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { compareNumbers } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import LinkText from '~app/components/common/LinkText/LinkText';
+import React from 'react';
 
 interface ErrorObject {
+    errorMessage: any,
     shouldDisplay: boolean,
-    errorMessage: string
 }
 
 export const validatePublicKeyInput = (value: string, callback: React.Dispatch<ErrorObject>): void => {
@@ -14,7 +16,7 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
     if (value.length === 0) {
         response.errorMessage = 'Please enter an operator key.';
     } else if (value.length !== config.FEATURE.OPERATORS.VALID_KEY_LENGTH) {
-        response.errorMessage = 'Invalid operator key - see our documentation to generate your key.';
+        response.errorMessage = <>Invalid operator key - see our <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'} /> to generate your key.</>;
     } else if (!regx.test(value)) {
         response.errorMessage = 'Operator key should contain only alphanumeric characters.';
     } else {

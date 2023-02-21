@@ -26,7 +26,7 @@ const LiquidationStateError = (props: Props) => {
 
     const renderText = () => {
         if (errorType === ErrorType.WithdrawAll) {
-            return <div>Withdrawing the requested amount will liquidate your account, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'https://docs.ssv.network/learn/glossary#staking'} />) of your validators, as they will no longer be operated by the network.</div>;
+            return <div>Withdrawing the requested amount will liquidate your account, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
             return 'Your account has been liquidated. Please reactivate your account in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {

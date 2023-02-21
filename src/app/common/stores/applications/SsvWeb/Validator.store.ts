@@ -392,16 +392,23 @@ class ValidatorStore extends BaseStore {
   }
 
   async createKeySharePayLoad(update: boolean = false): Promise<any> {
-    const ssvStore: SsvStore = this.getStore('SSV');
     update;
     return new Promise(async (resolve) => {
+      const ssvStore: SsvStore = this.getStore('SSV');
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const processStore: ProcessStore = this.getStore('Process');
+      const operatorStore: OperatorStore = this.getStore('Operator');
+      const process: RegisterValidator = <RegisterValidator>processStore.process;
+      const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+      const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
+      const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
       try {
         const payLoad = [
           this.keySharePublicKey,
-          this.keySharePayload?.operatorIds.split(',').sort(),
+          this.keySharePayload?.operatorIds.sort(),
           this.keySharePayload?.shares,
-          `${ssvStore.prepareSsvAmountToTransfer(this.keySharePayload?.ssvAmount)}`,
-          await this.getClusterData(this.getClusterHash(this.keySharePayload?.operatorIds.split(',').sort())),
+          `${ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost))}`,
+          await this.getClusterData(this.getClusterHash(this.keySharePayload?.operatorIds.sort())),
         ];
         resolve(payLoad);
       } catch (e: any) {

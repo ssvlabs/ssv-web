@@ -33,7 +33,7 @@ const OfflineKeyShareGeneration = () => {
     operatorsIds: [],
     operatorsKeys: [],
   });
-  const cliCommand = `--operator-key=${operatorsKeys.join(',')} --operator-id=${operatorsIds.join(',')}`;
+  const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')}`;
 
   const instructions = [
     { id: 1, instructions: [

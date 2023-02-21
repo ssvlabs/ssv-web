@@ -70,7 +70,7 @@ export default function AnchorElTooltips(props: ToolTipProps) {
   return (
       <LightTooltip
           title={title}
-          style={{ alignItems: 'center', display: 'flex' }}
+          // style={{ alignItems: alignItems ?? 'center', display: 'flex' }}
           placement={placement ?? 'top'}
           arrow
           PopperProps={{

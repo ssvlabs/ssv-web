@@ -283,7 +283,7 @@ class OperatorStore extends BaseStore {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
-        const contract: Contract = walletStore.getterContract;
+        const contract: Contract = walletStore.setterContract;
         contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
@@ -423,7 +423,7 @@ class OperatorStore extends BaseStore {
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
-        const contractInstance = walletStore.getterContract;
+        const contractInstance = walletStore.setterContract;
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           walletStore.toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
@@ -511,7 +511,7 @@ class OperatorStore extends BaseStore {
           previous_fee: operatorBefore.previous_fee,
         };
 
-        await walletStore.getterContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+        await walletStore.setterContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -577,7 +577,7 @@ class OperatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
-      const contractInstance = walletStore.getterContract;
+      const contractInstance = walletStore.setterContract;
 
       // eslint-disable-next-line no-async-promise-executor
       return await new Promise(async (resolve) => {
@@ -642,7 +642,7 @@ class OperatorStore extends BaseStore {
         const payload: any[] = [];
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.getterContract;
+        const contract: Contract = walletStore.setterContract;
         const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
@@ -664,6 +664,9 @@ class OperatorStore extends BaseStore {
             resolve(true);
           }
         } else {
+          console.log('<<<<<<<<<<<<here>>>>>>>>>>>>');
+          console.log(contract.methods);
+          console.log('<<<<<<<<<<<<here>>>>>>>>>>>>');
           contract.methods.registerOperator(...payload)
             .send({ from: address })
             .on('receipt', async (receipt: any) => {

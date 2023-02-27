@@ -3,10 +3,11 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStyles } from './Status.styles';
 
-const Status = ({ status }: { status: string }) => {
+const Status = ({ item }: { item: any }) => {
     const classes = useStyles();
-    const isActive = status?.toLowerCase() === 'active';
-    const noValidators = status === 'No validators';
+    const status = item.status.toLowerCase();
+    const isActive = status === 'active';
+    const noValidators = item.validators_count === 0;
     let classesStatus = classes.Status;
     if (isActive) classesStatus += ` ${classes.Active}`;
     if (noValidators) classesStatus += ` ${classes.NoValidators}`;
@@ -14,7 +15,7 @@ const Status = ({ status }: { status: string }) => {
 
     return (
       <Grid container item className={classesStatus}>
-        <Typography>{status}</Typography>
+        <Typography>{noValidators ? 'No Validators' : status}</Typography>
       </Grid>
     );
 };

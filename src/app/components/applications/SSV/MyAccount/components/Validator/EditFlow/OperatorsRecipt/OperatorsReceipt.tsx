@@ -122,7 +122,7 @@ const OperatorsReceipt = (props: Props) => {
                 <OperatorDetails operator={operator} gray80={currentOperators} />
               </Grid>
               <Grid item>
-                <Status status={operator.status} />
+                <Status item={operator} />
               </Grid>
               <Grid item xs>
                 <SsvAndSubTitle gray80={currentOperators}

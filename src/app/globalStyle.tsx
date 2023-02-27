@@ -8,9 +8,11 @@ export const globalStyle = () => {
 
   return createGlobalStyle`
     body {
-       height: 100%;
+      height: 100%;
       background-color: ${applicationStore.isDarkMode ? '#011627' : '#f4f7fa'} !important;
-       font-family: 'Manrope', sans-serif !important;
+      * {
+        font-family: 'Manrope', sans-serif !important; 
+      }
 
       .bn-onboard-custom {
         z-index: 999;

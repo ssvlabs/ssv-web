@@ -32,10 +32,10 @@ class Validator {
 
   async clustersByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&ts=${new Date().getTime()}`;
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
-      return { validators: [], pagination: {} };
+      return { clusters: [], pagination: {} };
     }
   }
 

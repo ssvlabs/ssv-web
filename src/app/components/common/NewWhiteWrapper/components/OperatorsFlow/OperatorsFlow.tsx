@@ -9,6 +9,7 @@ import { useStyles } from '../../NewWhiteWrapper.styles';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 type Props = {
@@ -22,7 +23,10 @@ const OperatorsFlow = (props: Props) => {
   const { header, mainFlow } = props;
   const settingsRef = useRef(null);
   const classes = useStyles({ mainFlow });
+  const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
+  const process: SingleOperatorProcess = processStore.getProcess;
+  const operator = process?.item;
 
   const [showSettings, setShowSettings] = useState(false);
 
@@ -52,7 +56,7 @@ const OperatorsFlow = (props: Props) => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText('place holder');
+    navigator.clipboard.writeText(operator.id);
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 
@@ -84,7 +88,7 @@ const OperatorsFlow = (props: Props) => {
           <Grid item className={classes.Line} />
           <Grid item container xs style={{ gap: 8, alignItems: 'center' }}>
             <Grid item>
-              <Typography className={classes.subHeaderText}>ID: 987</Typography>
+              <Typography className={classes.subHeaderText}>ID: {operator.id}</Typography>
             </Grid>
             <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
             <ImageDiv onClick={openExplorer} image={'explorer'} width={23} height={23} />

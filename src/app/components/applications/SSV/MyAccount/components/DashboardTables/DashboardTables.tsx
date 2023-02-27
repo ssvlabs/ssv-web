@@ -186,7 +186,7 @@ const DashboardTables = () => {
           }} />
         </Grid>
       </Grid>,
-      status: <Status status={status} />,
+      status: <Status item={validator} />,
       balance: <Grid container item>
         <Grid item xs={12} className={classes.Balance}>{balance} ETH</Grid>
         {/* <Grid item xs={12} className={classes.DollarBalance}>~$5.02</Grid> */}
@@ -227,7 +227,7 @@ const DashboardTables = () => {
         <Grid item xs={12} className={classes.Name}>{name}</Grid>
         <OperatorId withoutExplorer text={'ID: '} id={id} />
       </Grid>,
-      status: <Status status={status} />,
+      status: <Status item={operator} />,
       // revenue: <Grid container item>
       //   <Grid item xs={12} className={classes.Balance}>{formatNumberToUi(walletStore.fromWei(revenue))} SSV</Grid>
       // </Grid>,

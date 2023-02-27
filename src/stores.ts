@@ -7,6 +7,7 @@ const stores = [
   'Wallet',
   'Faucet',
   'Process',
+  'Cluster',
   'Operator',
   'Validator',
   'MyAccount',

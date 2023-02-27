@@ -44,6 +44,7 @@ class WalletStore extends BaseStore implements Wallet {
       wrongNetwork: observable,
       isWrongNetwork: computed,
       getterContract: computed,
+      setterContract: computed,
       accountAddress: observable,
       walletHandler: action.bound,
       addressHandler: action.bound,
@@ -209,8 +210,18 @@ class WalletStore extends BaseStore implements Wallet {
 
   get getterContract(): Contract {
     if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
+      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
+      this.contract = new this.web3.eth.Contract(abi, contractAddress);
+    }
+    // @ts-ignore
+    return this.contract;
+  }
+
+  get setterContract(): Contract {
+    if (!this.contract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore

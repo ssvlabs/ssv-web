@@ -6,7 +6,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import { useStyles } from './EditValidator.styles';
@@ -18,7 +18,7 @@ const EditValidator = () => {
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
-    const process: SingleValidatorProcess = processStore.getProcess;
+    const process: SingleClusterProcess = processStore.getProcess;
     const validator = process?.item;
 
     useEffect(() => {

@@ -60,7 +60,7 @@ const BorderScreen = (props: Props) => {
               {header}
             </Grid>
             {SideHeader && !withConversion && <Grid item><SideHeader /></Grid>}
-            {withConversion && (
+            {withConversion && false && (
               <Grid item>
                 <Grid container item className={classes.Conversion}>
                   {coins.map((coin: string, index: number) => {

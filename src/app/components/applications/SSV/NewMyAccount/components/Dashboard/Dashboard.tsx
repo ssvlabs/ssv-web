@@ -11,13 +11,16 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import { useStyles } from './Dashboard.styles';
 import ToolTip from '~app/components/common/ToolTip';
-import PaginationActions from '~app/components/common/Table/PaginationActions';
-// import { ReactTable } from '~app/components/common/ReactTable';
+import PaginationActions, { TablePaginationActionsProps } from '~app/components/common/Table/PaginationActions/PaginationActions';
 
 type DashboardProps = {
   rows: any[],
   columns: any[],
   rowsAction: any,
+  disable: boolean,
+  header?: JSX.Element,
+  extraActions?: JSX.Element,
+  paginationActions: TablePaginationActionsProps
 };
 
 const CustomizedTable = styled(Table)`
@@ -41,11 +44,17 @@ const CustomizedBasicRow = styled(TableRow)`
   padding: 40px;
 `;
 
+const ContainerHeader = styled(Grid)`
+  align-items: center;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  padding: 20px 26px 0px 32px;
+`;
+
 const CustomizedColumnRow = styled(CustomizedBasicRow)`
   height: 65px;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  background-color: ${props => props.theme.colors.gray0};
   border-bottom: solid 1px ${props => props.theme.colors.gray20};
 `;
 
@@ -64,17 +73,18 @@ const CustomizedBodyRow = styled(CustomizedBasicRow)`
 `;
 
 const Dashboard = (props: DashboardProps) => {
-  const classes = useStyles();
-  const { columns, rows, rowsAction } = props;
+  const { columns, rows, rowsAction, paginationActions, header, extraActions } = props;
+  const classes = useStyles({ header });
 
   return (
       <TableContainer>
+        {header && <ContainerHeader className={classes.HeaderColor}>{header}</ContainerHeader>}
         <CustomizedTable sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
-            <CustomizedColumnRow>
+            <CustomizedColumnRow className={classes.HeaderColor}>
               {columns.map((column: any, index: number) => {
                 return <CustomizedCellBasic key={index}>
-                  <Grid item className={`${classes.Header} ${classes.ToolTipWrapper}`}>
+                  <Grid container item className={`${classes.Header} ${classes.ToolTipWrapper}`}>
                     <Typography>{column.name}</Typography>
                     {column.tooltip && <ToolTip text={column.tooltip}/>}
                   </Grid>
@@ -95,44 +105,17 @@ const Dashboard = (props: DashboardProps) => {
                         {row[key]}
                       </CustomizedCellBasic>
                   ))}
-                  <CustomizedCellBasic align="right">
+                  {!extraActions && <CustomizedCellBasic align="right">
                     <Grid className={classes.Arrow}/>
-                  </CustomizedCellBasic>
+                  </CustomizedCellBasic>}
+                  {extraActions && extraActions}
                 </CustomizedBodyRow>
             ))}
           </TableBody>
         </CustomizedTable>
-        <PaginationActions
-            page={1}
-            rowsPerPage={5}
-            totalPages={10}
-            count={10}
-            onChangePage={console.log}
-            onChangeRowsPerPage={console.log}
-        />
+        <PaginationActions {...paginationActions} />
       </TableContainer>
   );
-
-  // return (
-  //     <Grid container>
-  //       <Grid container item className={classes.HeadersWrapper}>
-  //         {headers.map((header: any, index: number) => {
-  //           return <Grid key={index} item className={`${classes.Header} ${classes.ToolTipWrapper}`}>
-  //             <Typography>{header.name}</Typography>
-  //             {header.tooltip && <ToolTip text={header.tooltip}/>}
-  //           </Grid>;
-  //         })}
-  //       </Grid>
-  //       <Grid container item className={classes.BodyWrapper}>
-  //         {body.map((row: any[], index: number) => {
-  //           return <Grid key={index} container item className={classes.BodyRowWrapper}>
-  //             {row.map((column) => column)}
-  //             <Grid item className={classes.SingleItemArrow} />
-  //           </Grid>;
-  //         })}
-  //       </Grid>
-  //     </Grid>
-  // );
 };
 
 export default observer(Dashboard);

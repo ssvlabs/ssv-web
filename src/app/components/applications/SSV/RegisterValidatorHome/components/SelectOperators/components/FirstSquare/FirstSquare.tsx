@@ -204,7 +204,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                       className={hasValidators && isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
                 {isInactive && (
                     <Grid item xs={12}>
-                      <Status status={!hasValidators ? 'No validators' : operator.status} />
+                      <Status item={operator} />
                     </Grid>
                 )}
               </Grid>

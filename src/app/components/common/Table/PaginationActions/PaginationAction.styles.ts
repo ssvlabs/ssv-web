@@ -44,6 +44,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
         width: 36,
         height: 36,
         padding: 6,
+        cursor: 'pointer',
         '& div': {
             width: 24,
             height: 24,
@@ -57,6 +58,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
         width: 36,
         height: 36,
         padding: 6,
+        cursor: 'pointer',
         '& div': {
             width: 24,
             height: 24,
@@ -71,7 +73,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
         backgroundImage: (props: any) => {
             if (props.firstPage || theme.darkMode) {
                 return 'url(/images/page_arrows/single/disable.svg)';
-            } 
+            }
                 return 'url(/images/page_arrows/single/black.svg)';
         },
     },

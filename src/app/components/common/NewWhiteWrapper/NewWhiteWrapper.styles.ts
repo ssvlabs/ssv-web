@@ -135,15 +135,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   SettingsImage: {
-    backgroundImage: 'url(/images/operator_settings/settings.svg)',
+    backgroundImage: `url(/images/operator_settings/${theme.darkMode ? 'dark_' : ''}settings.svg)`,
     ...imageDefaultProperties,
   },
   MetadataImage: {
-    backgroundImage: 'url(/images/operator_settings/metadata.svg)',
+    backgroundImage: `url(/images/operator_settings/${theme.darkMode ? 'dark_' : ''}metadata.svg)`,
     ...imageDefaultProperties,
   },
   RemoveImage: {
-    backgroundImage: 'url(/images/operator_settings/metadata.svg)',
+    backgroundImage: 'url(/images/operator_settings/remove.svg)',
     ...imageDefaultProperties,
   },
   CompleteProfile: {

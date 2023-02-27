@@ -3,32 +3,28 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
-import { useStyles } from './MyBalance.styles';
+import { useStyles } from './Balance.styles';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import RemainingDays from '~app/components/applications/SSV/NewMyAccount/common/NewRemainingDays';
+import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ErrorText
   from '~app/components/applications/SSV/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 
-const MyBalance = () => {
+const Balance = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
+  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  const liquidated = ssvStore.userLiquidated && processStore.isValidatorFlow;
-
-  const renderBalance = () => {
-    return (
-      <Grid item xs={12} className={liquidated ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
-        {formatNumberToUi(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)))} SSV
-      </Grid>
-    );
-  };
+  const process: SingleClusterProcess = processStore.getProcess;
+  const cluster = process.item;
+  const liquidated = cluster.isLiquidated;
 
   function moveToEnableAccount() {
     return navigate(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
@@ -53,23 +49,15 @@ const MyBalance = () => {
     }
 
     return (
-      <Grid container item className={classes.ActionButtonWrapper}>
-        {processStore.isValidatorFlow && (
+        <Grid container item className={classes.ActionButtonWrapper}>
           <Grid item xs>
-            <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit} />
+            <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit}/>
           </Grid>
-        )}
-        <Grid item xs>
-          <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw} />
+          <Grid item xs>
+            <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw}/>
+          </Grid>
         </Grid>
-      </Grid>
     );
-  };
-
-  const renderConditionalLine = () => {
-    if (!liquidated && processStore.isValidatorFlow) {
-      return <Grid item className={classes.SeparationLine} xs={12} />;
-    }
   };
 
   return (
@@ -79,16 +67,17 @@ const MyBalance = () => {
           <span>Balance</span>
         </Grid>
         <Grid container item>
-          {renderBalance()}
+          <Grid item xs={12} className={liquidated ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
+            {formatNumberToUi(ssvStore.toDecimalNumber(walletStore.fromWei(cluster.balance)))} SSV
+          </Grid>
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
             {/* ~$449.52 */}
           </Grid>
         </Grid>
       </Grid>
-      {renderConditionalLine()}
-      {processStore.isValidatorFlow && (
+      <Grid item className={classes.SeparationLine} xs={12} />
         <Grid container item className={classes.SectionWrapper}>
-          {!ssvStore.userLiquidated && <RemainingDays />}
+          {!liquidated && <RemainingDays cluster={cluster} />}
           {liquidated && (
             <Grid className={classes.ErrorMessageWrapper}>
               <ErrorText
@@ -98,11 +87,10 @@ const MyBalance = () => {
             </Grid>
           )}
         </Grid>
-      )}
       <Grid item className={classes.SeparationLine} xs={12} />
       {renderCtaActions()}
     </Grid>
   );
 };
 
-export default observer(MyBalance);
+export default observer(Balance);

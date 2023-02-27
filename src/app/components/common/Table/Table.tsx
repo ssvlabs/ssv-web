@@ -21,9 +21,9 @@ type PaginationActionParams = {
     totalAmountOfItems: number;
 };
 
-export const Table = ({ columns, data, hideActions = false, actionProps }: { columns: any, data: any, hideActions?: boolean, actionProps?: PaginationActionParams }) => {
+export const Table = ({ columns, data, disable, hideActions = false, actionProps }: { columns: any, data: any, disable?: boolean, hideActions?: boolean, actionProps?: PaginationActionParams }) => {
     // console.log(actionProps?.onChangePage(5));
-    const classes = useStyles({ hideActions });
+    const classes = useStyles({ disable, hideActions });
 
     // Use the state and functions returned from useTable to build your UI
     const { getTableProps, headerGroups, rows, prepareRow } = useTable(

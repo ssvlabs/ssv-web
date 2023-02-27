@@ -11,7 +11,7 @@ export default abstract class Wallet extends BaseStore {
   isWrongNetwork: boolean;
   networkId: number | null;
   getterContract: Contract;
-  setterContract?: Contract;
+  setterContract: Contract;
   accountDataLoaded: boolean;
 
   protected constructor(getContract: Contract) {

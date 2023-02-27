@@ -6,14 +6,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: 312,
     height: 188,
     borderRadius: 16,
-    backgroundColor: '#fdfefe',
+    backgroundColor: theme.colors.squareScreenBackground,
   },
   FirstSectionOperatorBox: {
     padding: '24px 24px 15px',
     borderBottom: `1px solid ${theme.colors.gray20}`,
   },
   SecondSectionOperatorBox: {
-    gap: 32,
+    gap: 6,
     fontSize: 12,
     fontWeight: 500,
     lineHeight: 1.62,
@@ -21,8 +21,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '16px 22px 15px 24px',
   },
   ColumnWrapper: {
-    gap: 6,
     alignItems: 'flex-start',
     alignContent: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  BoldText: {
+    fontSize: 16,
+    fontWeight: 500,
+    lineHeight: 1.62,
+    color: theme.colors.gray90,
   },
 }));

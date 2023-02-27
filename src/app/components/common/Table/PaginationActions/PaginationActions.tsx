@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import IntegerInput from '~app/components/common/IntegerInput';
 import { useStyles } from '~app/components/common/Table/PaginationActions/PaginationAction.styles';
 
-interface TablePaginationActionsProps {
+export interface TablePaginationActionsProps {
     count: number;
     page: number;
     totalPages: number;

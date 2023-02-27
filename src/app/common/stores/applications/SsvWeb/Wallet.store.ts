@@ -4,8 +4,6 @@ import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable, makeObservable } from 'mobx';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
-import Validator from '~lib/api/Validator';
 import ApiParams from '~lib/api/ApiParams';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -27,7 +25,8 @@ class WalletStore extends BaseStore implements Wallet {
   networkId: number | null = null;
   accountDataLoaded: boolean = false;
 
-  private contract: Contract | undefined;
+  private viewContract: Contract | undefined;
+  private networkContract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -182,13 +181,10 @@ class WalletStore extends BaseStore implements Wallet {
       this.accountAddress = address;
       ApiParams.cleanStorage();
       await this.initializeUserInfo();
-      const validatorsQuery = `${address}?page=1&perPage=5`;
-      const validatorsResponse = await Validator.getInstance().clustersByOwnerAddress(validatorsQuery, true);
-      const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address, true);
-      applicationStore.strategyRedirect = operatorsResponse?.operators?.length || validatorsResponse?.validators?.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
-      if (!operatorsResponse?.operators?.length || !validatorsResponse?.validators?.length) myAccountStore.forceBigList = true;
-      await myAccountStore.getOwnerAddressClusters({ reFetchBeaconData: true });
+      await myAccountStore.getOwnerAddressClusters({});
       await myAccountStore.getOwnerAddressOperators({});
+      applicationStore.strategyRedirect = myAccountStore?.ownerAddressOperators?.length || myAccountStore?.ownerAddressClusters?.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
+      if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
       this.setAccountDataLoaded(true);
     }
@@ -275,23 +271,23 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get getterContract(): Contract {
-    if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
-      this.contract = new this.web3.eth.Contract(abi, contractAddress);
+    if (!this.viewContract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
+      this.viewContract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore
-    return this.contract;
+    return this.viewContract;
   }
 
   get setterContract(): Contract {
-    if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
-      this.contract = new this.web3.eth.Contract(abi, contractAddress);
+    if (!this.networkContract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
+      this.networkContract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore
-    return this.contract;
+    return this.networkContract;
   }
 }
 

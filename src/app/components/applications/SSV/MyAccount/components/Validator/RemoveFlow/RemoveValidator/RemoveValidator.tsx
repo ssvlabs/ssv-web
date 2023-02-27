@@ -10,7 +10,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import {
   useStyles,
@@ -23,7 +23,7 @@ const RemoveValidator = () => {
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
-  const process: SingleValidatorProcess = processStore.getProcess;
+  const process: SingleClusterProcess = processStore.getProcess;
   const validator = process?.item;
   
   useEffect(() => {

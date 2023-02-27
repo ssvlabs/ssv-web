@@ -7,7 +7,7 @@ import useUserFlow from '~app/hooks/useUserFlow';
 import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import MyBalance from '~app/components/applications/SSV/MyAccount/components/MyBalance';
+import MyBalance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import DashboardTables from '~app/components/applications/SSV/MyAccount/components/DashboardTables';
 import { useStyles } from './MyAccount.styles';
 

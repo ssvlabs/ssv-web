@@ -179,7 +179,7 @@ class SsvStore extends BaseStore {
     return new Promise<boolean>((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.getterContract.methods.deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
+      walletStore.setterContract.methods.deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -264,8 +264,8 @@ class SsvStore extends BaseStore {
         const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
         const operatorPayload = [process.operator?.id];
         if (withdrawAll) operatorPayload.push(ssvAmount);
-        if (validatorState) contractFunction = walletStore.getterContract.methods.liquidate([this.accountAddress]);
-        else contractFunction = walletStore.getterContract.methods.withdrawOperatorEarnings(...operatorPayload);
+        if (validatorState) contractFunction = walletStore.setterContract.methods.liquidate([this.accountAddress]);
+        else contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(...operatorPayload);
 
         if (!contractFunction) return;
 
@@ -308,7 +308,7 @@ class SsvStore extends BaseStore {
       const applicationStore: ApplicationStore = this.getStore('Application');
       applicationStore.setIsLoading(true);
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.getterContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
+      walletStore.setterContract.methods.reactivateAccount(ssvAmount).send({ from: this.accountAddress })
         .on('receipt', async () => {
           applicationStore.setIsLoading(false);
           resolve(true);
@@ -331,7 +331,7 @@ class SsvStore extends BaseStore {
       .methods
       .allowance(
         this.accountAddress,
-        this.getContractAddress('ssv_network'),
+        this.getContractAddress('ssv_network_setter'),
       ).call();
     this.userGaveAllowance = allowance !== '0';
   }
@@ -350,7 +350,7 @@ class SsvStore extends BaseStore {
 
       const methodCall = this.ssvContract
         .methods
-        .approve(this.getContractAddress('ssv_network'), weiValue);
+        .approve(this.getContractAddress('ssv_network_setter'), weiValue);
 
       if (estimate) {
         return methodCall

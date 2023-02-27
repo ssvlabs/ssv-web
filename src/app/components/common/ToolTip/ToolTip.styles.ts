@@ -9,7 +9,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
         alignItems:'center',
         position: 'relative',
         verticalAlign: 'middle',
-        display: 'inline-block',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

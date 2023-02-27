@@ -1,4 +1,3 @@
-import { keccak256 } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
@@ -10,6 +9,7 @@ import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -112,7 +112,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const contract: Contract = walletStore.getterContract;
+    const contract: Contract = walletStore.setterContract;
     const ownerAddress: string = walletStore.accountAddress;
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -165,7 +165,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const contract: Contract = walletStore.getterContract;
+      const contract: Contract = walletStore.setterContract;
       const payload: (string | string[])[] = await this.createKeystorePayload(true);
       if (!payload) {
         applicationStore.setIsLoading(false);
@@ -233,7 +233,7 @@ class ValidatorStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      const contract: Contract = walletStore.getterContract;
+      const contract: Contract = walletStore.setterContract;
       const ownerAddress: string = walletStore.accountAddress;
 
       this.newValidatorReceipt = null;
@@ -314,38 +314,12 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  getClusterHash(operatorsIds: number[]) {
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const ownerAddress: string = walletStore.accountAddress;
-    return keccak256(walletStore.web3.utils.encodePacked(ownerAddress, ...operatorsIds));
-  }
-
-  async getClusterData(clusterHash: string) {
-    const response = await Validator.getInstance().getClusterData(clusterHash);
-    const clusterData = response.data;
-    return {
-      validatorCount: clusterData.validatorCount,
-      networkFee: clusterData.networkFee,
-      networkFeeIndex: clusterData.networkFeeIndex,
-      index: clusterData.index,
-      balance: clusterData.balance,
-      disabled: clusterData.disabled,
-    };
-    // {
-    //   validatorCount: 0,
-    //       networkFee: 0,
-    //     networkFeeIndex: 0,
-    //     index: 0,
-    //     balance: 0,
-    //     disabled: false,
-    // }
-  }
-
   async createKeystorePayload(update: boolean = false): Promise<any> {
     update;
     const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
+    const clusterStore: ClusterStore = this.getStore('Cluster');
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const process: RegisterValidator = <RegisterValidator>processStore.process;
@@ -382,7 +356,7 @@ class ValidatorStore extends BaseStore {
           readable?.operatorIds.split(',').sort(),
           readable.shares,
           `${ssvStore.prepareSsvAmountToTransfer(readable?.ssvAmount)}`,
-          await this.getClusterData(this.getClusterHash(operatorsIds)),
+          await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),
         ]);
       } catch (e: any) {
         console.log(e.message);
@@ -396,6 +370,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       const ssvStore: SsvStore = this.getStore('SSV');
       const walletStore: WalletStore = this.getStore('Wallet');
+      const clusterStore: ClusterStore = this.getStore('Cluster');
       const processStore: ProcessStore = this.getStore('Process');
       const operatorStore: OperatorStore = this.getStore('Operator');
       const process: RegisterValidator = <RegisterValidator>processStore.process;
@@ -408,7 +383,7 @@ class ValidatorStore extends BaseStore {
           this.keySharePayload?.operatorIds.sort(),
           this.keySharePayload?.shares,
           `${ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost))}`,
-          await this.getClusterData(this.getClusterHash(this.keySharePayload?.operatorIds.sort())),
+          await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())),
         ];
         resolve(payLoad);
       } catch (e: any) {

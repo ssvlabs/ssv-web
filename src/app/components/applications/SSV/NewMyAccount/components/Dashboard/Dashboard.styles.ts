@@ -13,6 +13,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.gray0,
     borderBottom: `solid 1px ${theme.colors.gray20}`,
   },
+  HeaderColor: {
+    backgroundColor: (props: any) => props.header ? theme.colors.white : theme.colors.gray0,
+  },
   Arrow: {
     width: 24,
     height: 27,

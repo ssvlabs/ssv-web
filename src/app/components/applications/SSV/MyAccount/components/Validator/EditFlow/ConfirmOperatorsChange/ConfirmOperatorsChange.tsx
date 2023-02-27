@@ -8,7 +8,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BackNavigation from '~app/components/common/BackNavigation';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import OperatorsReceipt from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt';
 import { useStyles } from './ConfirmOperatorsChange.styles';
@@ -21,7 +21,7 @@ const ConfirmOperatorsChange = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [operators, setOperators] = useState(null);
-  const process: SingleValidatorProcess = processStore.getProcess;
+  const process: SingleClusterProcess = processStore.getProcess;
   const validator = process?.item;
   
   useEffect(() => {

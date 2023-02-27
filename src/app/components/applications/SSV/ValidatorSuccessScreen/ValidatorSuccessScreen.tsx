@@ -10,8 +10,8 @@ import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
 
@@ -20,11 +20,11 @@ const ValidatorSuccessScreen = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const buttonText = 'Manage Validator';
+  const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const operators = Object.values(operatorStore.selectedOperators);
-  const clusterHash = validatorStore.getClusterHash(operators.map((operator) => operator.id).sort());
+  const clusterHash = clusterStore.getClusterHash(operators.map((operator) => operator.id).sort());
 
   const redirectTo = async () => {
     applicationStore.setIsLoading(true);

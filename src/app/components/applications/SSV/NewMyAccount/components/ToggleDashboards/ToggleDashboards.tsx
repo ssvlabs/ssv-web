@@ -13,6 +13,8 @@ type Props = {
 const ToggleDashboards = (props: Props) => {
   const { type, title, changeState } = props;
   const classes = useStyles({ isOperator: type === 'operator' });
+  const textRef = useRef(null);
+  const imageRef = useRef(null);
   const settingsRef = useRef(null);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -21,8 +23,16 @@ const ToggleDashboards = (props: Props) => {
      * Close menu drop down when click outside
      */
     const handleClickOutside = (e: any) => {
-      // @ts-ignore
-      if (showSettings && settingsRef.current && (!settingsRef.current.contains(e.target))) {
+      if (showSettings
+          && settingsRef.current
+          // @ts-ignore
+          && (!settingsRef.current.contains(e.target))
+          && textRef.current
+          // @ts-ignore
+          && (!textRef.current.contains(e.target))
+          && imageRef.current
+          // @ts-ignore
+          && (!imageRef.current.contains(e.target))) {
         setShowSettings(false);
       }
     };
@@ -36,8 +46,8 @@ const ToggleDashboards = (props: Props) => {
 
   return (
       <Grid container item xs style={{ cursor: 'pointer' }}>
-        <Typography className={classes.Header} onClick={() => setShowSettings(true)}>{title}</Typography>
-        <Grid className={classes.Arrow}/>
+        <Typography ref={textRef} className={classes.Header} onClick={() => setShowSettings(!showSettings)}>{title}</Typography>
+        <Grid ref={imageRef} className={classes.Arrow} onClick={() => setShowSettings(!showSettings)} />
         {
             showSettings && <Grid item className={classes.SettingsWrapper}>
               <Grid ref={settingsRef} container item className={classes.Settings}>

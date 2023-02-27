@@ -160,8 +160,8 @@ class WalletTestStore extends BaseStore implements Wallet {
    */
   get getterContract(): Contract {
     if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
+      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore
@@ -170,8 +170,8 @@ class WalletTestStore extends BaseStore implements Wallet {
 
   get setterContract(): Contract {
     if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
+      const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
       this.contract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore

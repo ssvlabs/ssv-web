@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -15,10 +14,11 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { SingleValidatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
+import LinkText from '~app/components/common/LinkText';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const boxes = [1, 2, 3, 4];
@@ -35,7 +35,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
 
   useEffect(() => {
-    const process: SingleValidatorProcess = processStore.getProcess;
+    const process: SingleClusterProcess = processStore.getProcess;
     if (editPage) {
       if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
       myAccountStore.getValidator(process.item.publicKey).then((validator: any) => {
@@ -65,7 +65,6 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
       action: 'click',
       label: 'not verified',
     });
-    window.open('https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH');
   };
 
   const disableButton = (): boolean => {
@@ -126,11 +125,12 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>
                 You have selected one or more operators that are&nbsp;
-                <Typography
-                  className={classes.NotVerifiedText}
-                  onClick={linkToNotVerified}>
-                  not verified.
-                </Typography>
+                <LinkText
+                    text={'not verified.'}
+                    onClick={linkToNotVerified}
+                    className={classes.NotVerifiedText}
+                    link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH'}
+                />
               </Grid>
               <Grid item xs={12}>
                 Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to

@@ -183,7 +183,7 @@ const RemoveOperator = () => {
               <CheckBox onClickCallBack={checkboxHandler}
                         text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'}/>
 
-              <PrimaryButton disable={!checkbox} errorButton text={'Submit & Remove'}
+              <PrimaryButton disable={!checkbox} errorButton text={'Remove Operator'}
                              submitFunction={submitForm}/>
             </Grid>,
           ]}

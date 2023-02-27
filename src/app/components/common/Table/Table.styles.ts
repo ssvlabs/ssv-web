@@ -5,6 +5,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     TableWrapper: {
         borderRadius: 16,
         backgroundColor: theme.colors.white,
+        pointerEvents: (props: any) => props.disable ? 'none' : 'auto',
     },
     CustomizeCss: {
         '& table': {

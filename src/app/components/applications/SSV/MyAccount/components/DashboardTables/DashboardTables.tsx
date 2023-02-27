@@ -175,7 +175,7 @@ const DashboardTables = () => {
 
   // return validator operators mapped with additional fields fee and performance
   const validatorsData = myAccountStore?.ownerAddressClusters?.map((validator: any) => {
-    const { public_key, status, balance, apr } = validator;
+    const { public_key, balance, apr } = validator;
 
     return {
       public_key: <Grid container item>
@@ -220,7 +220,7 @@ const DashboardTables = () => {
 
   // return validator operators mapped with additional fields fee and performance
   const operatorsData = myAccountStore?.ownerAddressOperators?.map((operator: any) => {
-    const { id, name, status, /* revenue, */ validators_count } = operator;
+    const { id, name, /* revenue, */ validators_count } = operator;
 
     return {
       public_key: <Grid container item>

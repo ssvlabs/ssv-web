@@ -146,11 +146,10 @@ class MyAccountStore extends BaseStore {
                                      forcePerPage,
                                    }: { forcePage?: number, forcePerPage?: number },
   ): Promise<void> {
-    const { page, perPage } = this.ownerAddressOperatorsPagination;
+    const { page, per_page } = this.ownerAddressOperatorsPagination;
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return;
-    const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? perPage, walletStore.accountAddress);
-    if (response?.pagination?.per_page) response.pagination.perPage = response.pagination.per_page;
+    const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? per_page, walletStore.accountAddress);
     this.ownerAddressOperatorsPagination = response.pagination;
     this.ownerAddressOperators = await this.getOperatorsRevenue(response.operators);
     this.lastUpdateOperators = Date.now();
@@ -194,12 +193,11 @@ class MyAccountStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
     if (!walletStore.accountAddress) return [];
-    const { page, perPage } = this.ownerAddressClustersPagination;
-    const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}`;
+    const { page, per_page } = this.ownerAddressClustersPagination;
+    const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? per_page)}`;
     const response = await Validator.getInstance().clustersByOwnerAddress(query, true);
     if (!response) return [];
     // @ts-ignore
-    if (response?.pagination?.per_page) response.pagination.perPage = response.pagination.per_page;
     this.ownerAddressClustersPagination = response.pagination;
     this.ownerAddressClusters = await Promise.all(response?.clusters.map(async (cluster: any) => {
       const newBalance = await clusterStore.getClusterBalance(cluster.operators);

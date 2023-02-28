@@ -13,8 +13,33 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.gray0,
     borderBottom: `solid 1px ${theme.colors.gray20}`,
   },
+  BigBox: {
+    gap: 68,
+    width: 872,
+    backgroundColor: theme.colors.squareScreenBackground,
+  },
+  NoValidatorImage: {
+    width: 120,
+    height: 120,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    margin: '74px auto 0px auto',
+    backgroundImage: 'url(/images/logo/no_validators.svg)',
+  },
+  NoValidatorText: {
+    fontSize: 16,
+    fontWeight: 500,
+    lineHeight: 1.62,
+    marginBottom: 160,
+    textAlign: 'center',
+    color: theme.colors.gray80,
+  },
   HeaderColor: {
     backgroundColor: (props: any) => props.header ? theme.colors.white : theme.colors.gray0,
+  },
+  TableWrapper: {
+    width: 872,
   },
   Arrow: {
     width: 24,

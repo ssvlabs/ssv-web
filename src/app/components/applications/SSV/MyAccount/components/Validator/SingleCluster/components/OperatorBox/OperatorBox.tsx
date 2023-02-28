@@ -15,9 +15,6 @@ const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const walletStore: WalletStore = stores.Wallet;
-  console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
-  console.log(Object.keys(operator.performance));
-  console.log('<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>');
   if (operator === null) return <Grid item className={classes.OperatorBox}/>;
 
   return (

@@ -21,7 +21,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const { page, pages, perPage, total } = myAccountStore.ownerAddressClustersPagination;
+  const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
 
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
@@ -54,9 +54,6 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   };
 
   const moveToFeeRecipient = () => {
-    processStore.setProcess({
-      processName: 'fee_recipient',
-    }, 2);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT);
   };
 
@@ -85,7 +82,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
             count: total,
             onChangePage,
             totalPages: pages,
-            rowsPerPage: perPage,
+            rowsPerPage: per_page,
           }}
           rowsAction={openSingleCluster}
           columns={[

@@ -14,7 +14,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from './SecondSquare.styles';
@@ -35,7 +35,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
 
   useEffect(() => {
-    const process: SingleClusterProcess = processStore.getProcess;
+    const process: SingleCluster = processStore.getProcess;
     if (editPage) {
       if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
       myAccountStore.getValidator(process.item.publicKey).then((validator: any) => {

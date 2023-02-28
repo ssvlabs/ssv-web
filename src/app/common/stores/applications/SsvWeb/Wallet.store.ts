@@ -181,8 +181,8 @@ class WalletStore extends BaseStore implements Wallet {
       this.accountAddress = address;
       ApiParams.cleanStorage();
       await this.initializeUserInfo();
-      await myAccountStore.getOwnerAddressClusters({});
       await myAccountStore.getOwnerAddressOperators({});
+      await myAccountStore.getOwnerAddressClusters({});
       applicationStore.strategyRedirect = myAccountStore?.ownerAddressOperators?.length || myAccountStore?.ownerAddressClusters?.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
       if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();

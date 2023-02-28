@@ -1,16 +1,16 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
+import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewWhiteWrapper.styles';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
-import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 type Props = {
   header: string,
@@ -25,7 +25,7 @@ const OperatorsFlow = (props: Props) => {
   const classes = useStyles({ mainFlow });
   const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
-  const process: SingleOperatorProcess = processStore.getProcess;
+  const process: SingleOperator = processStore.getProcess;
   const operator = process?.item;
 
   const [showSettings, setShowSettings] = useState(false);
@@ -61,21 +61,12 @@ const OperatorsFlow = (props: Props) => {
   };
 
   const openExplorer = () => {
-    if (true) {
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'explorer_link',
-        action: 'click',
-        label: 'operator',
-      });
-      window.open(`${config.links.EXPLORER_URL}/operators/placeholder/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
-    } else {
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'explorer_link',
-        action: 'click',
-        label: 'validator',
-      });
-      window.open(`${config.links.EXPLORER_URL}/validators/placeholder/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
-    }
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'explorer_link',
+      action: 'click',
+      label: 'operator',
+    });
+    window.open(`${config.links.EXPLORER_URL}/operators/placeholder/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
   const secondaryFlowDom = () => {

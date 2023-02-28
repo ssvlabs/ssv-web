@@ -136,7 +136,7 @@ const RemoveOperator = () => {
 
   return (
     <Grid container item>
-      <NewWhiteWrapper type={1} header={'Operator Details'}/>
+      <NewWhiteWrapper type={1} header={'Operator Details'} />
       <Grid className={classes.BodyWrapper}>
         <BorderScreen
           marginTop={0}

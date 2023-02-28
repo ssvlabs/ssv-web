@@ -27,7 +27,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [loadingOperators, setLoadingOperators] = useState(true);
-  const { page, pages, perPage, total } = myAccountStore.ownerAddressOperatorsPagination;
+  const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
   loadingOperators;
 
   useEffect(() => {
@@ -102,7 +102,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
             page,
             count: total,
             totalPages: pages,
-            rowsPerPage: perPage,
+            rowsPerPage: per_page,
             onChangePage: onChangePage,
           }}
           columns={[

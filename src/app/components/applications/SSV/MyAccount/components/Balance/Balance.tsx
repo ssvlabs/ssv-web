@@ -11,7 +11,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import RemainingDays from '~app/components/applications/SSV/NewMyAccount/common/NewRemainingDays';
-import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ErrorText
   from '~app/components/applications/SSV/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 
@@ -22,7 +22,7 @@ const Balance = () => {
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const liquidated = cluster.isLiquidated;
 

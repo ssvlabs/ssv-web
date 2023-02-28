@@ -26,6 +26,7 @@ const UpdateFeeState = () => {
   const classes = useStyles({ step: processState });
 
   useEffect(() => {
+    return;
     if (!operatorStore.processOperatorId) {
       navigate(applicationStore.strategyRedirect);
       return;

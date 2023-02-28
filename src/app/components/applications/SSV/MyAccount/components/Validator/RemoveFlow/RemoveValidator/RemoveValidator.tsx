@@ -1,20 +1,17 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import { useStyles } from './RemoveValidator.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
+import AddressKeyInput from '~app/components/common/AddressKeyInput';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
-import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator/RemoveValidator.styles';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const RemoveValidator = () => {
   const stores = useStores();
@@ -23,9 +20,9 @@ const RemoveValidator = () => {
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
-  const process: SingleClusterProcess = processStore.getProcess;
-  const validator = process?.item;
-  
+  const process: SingleCluster = processStore.getProcess;
+  const validator = process?.validator;
+
   useEffect(() => {
     if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   }, []);
@@ -36,7 +33,7 @@ const RemoveValidator = () => {
 
   const removeValidator = async () => {
     if (validator.public_key) {
-      const response = await validatorStore.removeValidator(validator.public_key);
+      const response = await validatorStore.removeValidator(validator);
       if (response) {
         navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.REMOVED);
       }
@@ -47,51 +44,42 @@ const RemoveValidator = () => {
 
   return (
     <Grid container item>
-      <ValidatorWhiteHeader text={'Remove Validator'} />
+      <NewWhiteWrapper type={0} header={'Cluster'} />
       <BorderScreen
-        blackHeader
-        onBackButtonClick={() => {
-          GoogleTagManager.getInstance().sendEvent({
-            category: 'navigate',
-            action: 'my_account',
-          });
-        }}
         withoutNavigation
         wrapperClass={classes.Wrapper}
         sectionClass={classes.Section}
-        header={'Removing your validator will:'}
+        header={'Removing Validator'}
         body={[
-          <Grid container item>
-            <Grid item>
-              <ul className={classes.BulletsWrapper}>
-                <li className={classes.Bullet}>Delete all records of your validator keys from the SSV
-                  network.
-                </li>
-                <li className={classes.Bullet}> Your operators will stop operating your validator, which
-                  will result in its inactivation (penalties on the beacon chain), as it will no
-                  longer be maintained by the network.
-                </li>
-              </ul>
+          <Grid container item style={{ gap: 24 }}>
+            <Grid container item style={{ gap: 8 }}>
+              <Grid item className={classes.GrayText}>Validator Public Key</Grid>
+              <AddressKeyInput withBeaconcha address={validator.public_key} />
             </Grid>
-            <Grid item>
-              <Typography className={classes.SecondHeader}>Keep in mind</Typography>
+            <Grid container item style={{ gap: 16 }}>
+              <Grid className={classes.BulletText}>
+                Removing your validator will cause your operators to stop managing it in your behalf, which will result in its inactivation (penalties on the Beacon Chain).
+              </Grid>
+              <Grid className={classes.BulletText}>
+                Please note that this action only applies to its removal from our network and does not exit your validator from the Beacon Chain.
+              </Grid>
+            </Grid>
               <Grid item className={classes.Warning}>
                 To avoid slashing, it is advised to wait at least 2 epochs prior to running the
                 validator on an alternative service.
               </Grid>
-            </Grid>
-            <Grid item className={classes.CheckBoxWrapper}>
-              <Checkbox
-                onClickCallBack={checkboxChange}
-                text={'I understand that my validator will be removed from the network and it will stop attesting on the beacon chain'}
-              />
-              <Button
-                errorButton
-                text={'Remove Validator'}
-                onClick={removeValidator}
-                disable={!removeButtonEnabled}
-              />
-            </Grid>
+              <Grid container item>
+                <Checkbox
+                    onClickCallBack={checkboxChange}
+                    text={'I understand that my validator will be removed from the network and it will stop attesting on the beacon chain'}
+                />
+                <Button
+                    errorButton
+                    text={'Remove Validator'}
+                    onClick={removeValidator}
+                    disable={!removeButtonEnabled}
+                />
+              </Grid>
           </Grid>,
         ]}
       />

@@ -24,7 +24,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleOperator as SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator/SingleOperator.styles';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
@@ -41,10 +41,9 @@ const SingleOperator = () => {
   const processStore: ProcessStore = stores.Process;
   // const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleOperatorProcess = processStore.getProcess;
+  const notificationsStore: NotificationsStore = stores.Notifications;
   const operator = process?.item;
-
 
   useEffect(() => {
     if (!operator) return navigate(applicationStore.strategyRedirect);

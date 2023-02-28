@@ -108,19 +108,23 @@ class ValidatorStore extends BaseStore {
   /**
    * Add new validator
    */
-  async removeValidator(publicKey: string): Promise<boolean> {
+  async removeValidator(validator: any): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
+    const clusterStore: ClusterStore = this.getStore('Cluster');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract: Contract = walletStore.setterContract;
     const ownerAddress: string = walletStore.accountAddress;
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    // @ts-ignore
+    const operatorsIds = validator.operators.map(({ id }) => id).sort();
+    validator.publicKey = validator.public_key.startsWith('0x') ? validator.public_key : `0x${validator.public_key}`;
+    const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(validator.operators));
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       // eslint-disable-next-line no-param-reassign
-      publicKey = publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
-      await contract.methods.removeValidator(publicKey).send({ from: ownerAddress })
+      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             let iterations = 0;
@@ -128,14 +132,14 @@ class ValidatorStore extends BaseStore {
               // Reached maximum iterations
               if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndValidators(resolve, true);
+                await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               }
               iterations += 1;
               // eslint-disable-next-line no-await-in-loop
-              if (!(await myAccountStore.checkEntityInAccount('validator', 'public_key', publicKey.replace(/^(0x)/gi, '')))) {
+              if (!(await myAccountStore.checkEntityInAccount('validator', 'public_key', validator.publicKey.replace(/^(0x)/gi, '')))) {
                 // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndValidators(resolve, true);
+                await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               } else {
                 console.log('Validator is still in API..');
@@ -189,7 +193,7 @@ class ValidatorStore extends BaseStore {
                 // Reached maximum iterations
                 if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 }
                 iterations += 1;
@@ -202,7 +206,7 @@ class ValidatorStore extends BaseStore {
                 );
                 if (changed) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Validator still not updated in API..');
@@ -240,8 +244,6 @@ class ValidatorStore extends BaseStore {
 
       if (!payload) resolve(false);
 
-      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      myAccountStore;
       console.debug('Add Validator Payload: ', payload);
 
       // Send add operator transaction
@@ -264,14 +266,14 @@ class ValidatorStore extends BaseStore {
               //   // Reached maximum iterations
               //   if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
               //     // eslint-disable-next-line no-await-in-loop
-              //     await this.refreshOperatorsAndValidators(resolve, true);
+              //     await this.refreshOperatorsAndClusters(resolve, true);
               //     break;
               //   }
               //   iterations += 1;
               //   // eslint-disable-next-line no-await-in-loop
               //   if (await myAccountStore.checkEntityInAccount('validator', 'public_key', payload[0].replace(/^(0x)/gi, ''))) {
               //     // eslint-disable-next-line no-await-in-loop
-              //     await this.refreshOperatorsAndValidators(resolve, true);
+              //     await this.refreshOperatorsAndClusters(resolve, true);
               //     break;
               //   } else {
               //     console.log('Validator is still not in API..');
@@ -344,18 +346,19 @@ class ValidatorStore extends BaseStore {
         const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
         const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
-
+        const totalCost = walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost);
         const { readable } = await ssvKeys.buildPayload(
             threshold.validatorPublicKey,
             operatorsIds,
             shares,
-            walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost),
+            totalCost,
         );
+
         resolve([
           this.keyStorePublicKey,
-          readable?.operatorIds.split(',').sort(),
+          readable?.operatorIds.split(',').map(Number).sort(),
           readable.shares,
-          `${ssvStore.prepareSsvAmountToTransfer(readable?.ssvAmount)}`,
+          `${ssvStore.prepareSsvAmountToTransfer(totalCost)}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),
         ]);
       } catch (e: any) {
@@ -429,7 +432,7 @@ class ValidatorStore extends BaseStore {
    * @param resolve
    * @param showError
    */
-  async refreshOperatorsAndValidators(resolve: any, showError?: boolean) {
+  async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');

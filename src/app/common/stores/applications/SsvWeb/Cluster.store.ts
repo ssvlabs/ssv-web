@@ -23,6 +23,7 @@ class ClusterStore extends BaseStore {
   }
 
   getSortedOperatorsIds(operators: any[]) {
+    if (typeof operators[0] === 'number') return operators.sort();
     return operators.map(operator => operator.id).sort();
   }
 
@@ -39,7 +40,12 @@ class ClusterStore extends BaseStore {
     const contract: Contract = walletStore.getterContract;
     const clusterData = await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
-    return contract.methods.getBalance(walletStore.accountAddress, operatorsIds, clusterData).call();
+    try {
+      const balance = await contract.methods.getBalance(walletStore.accountAddress, operatorsIds, clusterData).call();
+      return balance;
+    } catch (e) {
+      return 0;
+    }
   }
 
   async isClusterLiquidated(operators: any[]) {
@@ -48,14 +54,25 @@ class ClusterStore extends BaseStore {
     const contract: Contract = walletStore.getterContract;
     const clusterData = await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
-    return contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
+    try {
+      const isLiquidated = await contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
+      return isLiquidated;
+    } catch (e) {
+      return false;
+    }
   }
 
   async getClusterBurnRate(operators: any[]) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    return contract.methods.getClusterBurnRate(operatorsIds).call();
+    const clusterData = await this.getClusterData(this.getClusterHash(operators));
+    try {
+      const burnRate = await contract.methods.getClusterBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
+      return burnRate;
+    } catch (e) {
+      return 0;
+    }
   }
 
   getClusterRunWay(cluster: any) {
@@ -69,6 +86,16 @@ class ClusterStore extends BaseStore {
     try {
       const response = await Validator.getInstance().getClusterData(clusterHash);
       const clusterData = response.cluster;
+      if (clusterData === null) {
+        return {
+          validatorCount: 0,
+          networkFee: 0,
+          networkFeeIndex: 0,
+          index: 0,
+          balance: 0,
+          disabled: false,
+        };
+      }
       return {
         validatorCount: clusterData.validatorCount,
         networkFee: clusterData.networkFee,

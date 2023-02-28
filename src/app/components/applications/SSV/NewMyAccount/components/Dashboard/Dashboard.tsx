@@ -19,7 +19,8 @@ type DashboardProps = {
   rowsAction: any,
   disable: boolean,
   header?: JSX.Element,
-  extraActions?: JSX.Element,
+  // eslint-disable-next-line no-unused-vars
+  extraActions?: (item: any) => JSX.Element,
   paginationActions: TablePaginationActionsProps
 };
 
@@ -108,12 +109,18 @@ const Dashboard = (props: DashboardProps) => {
                   {!extraActions && <CustomizedCellBasic align="right">
                     <Grid className={classes.Arrow}/>
                   </CustomizedCellBasic>}
-                  {extraActions && extraActions}
+                  {extraActions && extraActions(index)}
                 </CustomizedBodyRow>
             ))}
           </TableBody>
         </CustomizedTable>
-        <PaginationActions {...paginationActions} />
+        {paginationActions.totalPages > 1 && <PaginationActions {...paginationActions} />}
+        {rows.length === 0 && <Grid container item className={classes.TableWrapper}>
+          <Grid container item className={classes.BigBox}>
+            <Grid item className={classes.NoValidatorImage} xs={12} />
+            <Grid item xs={12} className={classes.NoValidatorText}>No Validators</Grid>
+          </Grid>
+        </Grid>}
       </TableContainer>
   );
 };

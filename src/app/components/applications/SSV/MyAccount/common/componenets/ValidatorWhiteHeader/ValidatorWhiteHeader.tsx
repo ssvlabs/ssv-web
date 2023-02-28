@@ -9,7 +9,7 @@ import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
@@ -30,7 +30,7 @@ const ValidatorWhiteHeader = (props: Props) => {
   const beaconchaBaseUrl = getBaseBeaconchaUrl();
   const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const validator = process?.item;
 
   const copyToClipboard = () => {

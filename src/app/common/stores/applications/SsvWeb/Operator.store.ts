@@ -140,7 +140,7 @@ class OperatorStore extends BaseStore {
    * @param resolve
    * @param showError
    */
-  async refreshOperatorsAndValidators(resolve: any, showError?: boolean) {
+  async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -296,7 +296,7 @@ class OperatorStore extends BaseStore {
                 // Reached maximum iterations
                 if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 }
                 iterations += 1;
@@ -315,7 +315,7 @@ class OperatorStore extends BaseStore {
                 );
                 if (changed) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Operator is still not updated in API..');
@@ -446,7 +446,7 @@ class OperatorStore extends BaseStore {
                 // Reached maximum iterations
                 if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 }
                 iterations += 1;
@@ -465,7 +465,7 @@ class OperatorStore extends BaseStore {
                 );
                 if (changed) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Operator is still not updated in API..');
@@ -521,7 +521,7 @@ class OperatorStore extends BaseStore {
                 // Reached maximum iterations
                 if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 }
                 iterations += 1;
@@ -540,7 +540,7 @@ class OperatorStore extends BaseStore {
                 );
                 if (changed) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Operator is still not updated in API..');
@@ -593,14 +593,14 @@ class OperatorStore extends BaseStore {
                 // Reached maximum iterations
                 if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 }
                 iterations += 1;
                 // eslint-disable-next-line no-await-in-loop
                 if (!(await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(operatorId), 10)))) {
                   // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndValidators(resolve, true);
+                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Operator is still in API..');
@@ -664,9 +664,6 @@ class OperatorStore extends BaseStore {
             resolve(true);
           }
         } else {
-          console.log('<<<<<<<<<<<<here>>>>>>>>>>>>');
-          console.log(contract.methods);
-          console.log('<<<<<<<<<<<<here>>>>>>>>>>>>');
           contract.methods.registerOperator(...payload)
             .send({ from: address })
             .on('receipt', async (receipt: any) => {
@@ -688,14 +685,14 @@ class OperatorStore extends BaseStore {
                 //   // Reached maximum iterations
                 //   if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 //     // eslint-disable-next-line no-await-in-loop
-                //     await this.refreshOperatorsAndValidators(resolve, true);
+                //     await this.refreshOperatorsAndClusters(resolve, true);
                 //     break;
                 //   }
                 //   iterations += 1;
                 //   // eslint-disable-next-line no-await-in-loop
                 //   if (await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(this.newOperatorKeys.id), 10))) {
                 //     // eslint-disable-next-line no-await-in-loop
-                //     await this.refreshOperatorsAndValidators(resolve, true);
+                //     await this.refreshOperatorsAndClusters(resolve, true);
                 //     break;
                 //   } else {
                 //     console.log('Operator is still not in API..');

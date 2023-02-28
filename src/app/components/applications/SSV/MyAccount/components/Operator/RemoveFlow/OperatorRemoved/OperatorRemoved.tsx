@@ -6,17 +6,14 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import WhiteWrapper from '~app/components/common/WhiteWrapper/WhiteWrapper';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved/OperatorRemoved.styles';
 
 const OperatorRemoved = () => {
     const stores = useStores();
     const navigate = useNavigate();
     const classes = useStyles({});
-    const operatorStore: OperatorStore = stores.Operator;
     const applicationStore: ApplicationStore = stores.Application;
 
     const backToMyAccount = async () => {
@@ -29,9 +26,7 @@ const OperatorRemoved = () => {
 
     return (
       <Grid container item>
-        <WhiteWrapper withBackButton={false} header={'Remove Operator'}>
-          <OperatorId withoutExplorer id={String(operatorStore.processOperatorId)} />
-        </WhiteWrapper>
+        <NewWhiteWrapper type={1} header={'Operator Details'} />
         <Grid item container className={classes.Wrapper}>
           <Grid item className={classes.BackgroundImage} />
           <Typography className={classes.Header}>Your operator was successfully removed!</Typography>

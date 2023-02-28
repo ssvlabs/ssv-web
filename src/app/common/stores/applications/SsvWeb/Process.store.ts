@@ -1,9 +1,9 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
+import { SingleCluster } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
+import { SingleOperator } from '~app/common/stores/applications/SsvWeb/processes/SingleOperator';
 import { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
-import { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-import { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleOperator';
 
 // eslint-disable-next-line no-unused-vars
 enum ProcessType {
@@ -29,7 +29,7 @@ class ProcessStore extends BaseStore {
   }
 
 
-  setProcess(process: RegisterValidator | RegisterOperator | SingleClusterProcess | SingleOperatorProcess, type: ProcessType) {
+  setProcess(process: RegisterValidator | RegisterOperator | SingleCluster | SingleOperator, type: ProcessType) {
     this.type = type;
     this.process = process;
   }
@@ -43,9 +43,9 @@ class ProcessStore extends BaseStore {
   }
 }
 
+export { SingleCluster } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
+export { SingleOperator } from '~app/common/stores/applications/SsvWeb/processes/SingleOperator';
 export { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
-export { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 export { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-export { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleOperator';
 
 export default ProcessStore;

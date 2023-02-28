@@ -9,7 +9,7 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import ProcessStore, { SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const OperatorFlow = () => {
   const classes = useStyles();
@@ -17,16 +17,14 @@ const OperatorFlow = () => {
   const ssvStore: SsvStore = stores.SSV;
   const [inputValue, setInputValue] = useState(0.0);
   const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator = processStore.getProcess;
   const applicationStore: ApplicationStore = stores.Application;
-  const process: SingleOperatorProcess = processStore.getProcess;
   const operator = process?.item;
   const operatorBalance = operator?.balance ?? 0;
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<start>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     const success = await ssvStore.withdrawSsv(false, inputValue.toString(), new Decimal(inputValue).equals(operatorBalance));
-    console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<end>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };

@@ -39,6 +39,15 @@ class Validator {
     }
   }
 
+  async validatorsByClusterHash(ownerAddress: string, clusterHash: string, skipRetry?: boolean): Promise<any> {
+    try {
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/?ownerAddress=${ownerAddress}&search=${clusterHash}&ts=${new Date().getTime()}`;
+      return await this.getData(url, skipRetry);
+    } catch (e) {
+      return { clusters: [], pagination: {} };
+    }
+  }
+
   async getClusterData(clusterHash: string): Promise<any> {
     try {
       const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;

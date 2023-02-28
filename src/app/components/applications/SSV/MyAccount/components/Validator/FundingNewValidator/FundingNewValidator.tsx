@@ -15,7 +15,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
-import ProcessStore, { SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -23,7 +23,7 @@ const FundingNewValidator = () => {
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const [checkedId, setCheckedId] = useState(1);
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const [customPeriod, setCustomPeriod] = useState(0);
   console.log(JSON.parse(JSON.stringify(process)));

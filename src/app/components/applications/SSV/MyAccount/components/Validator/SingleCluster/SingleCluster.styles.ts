@@ -18,7 +18,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     margin: 'auto',
   },
   SettingsWrapper: {
-    zIndex: 999,
     position: 'absolute',
   },
   Settings: {
@@ -26,6 +25,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: 240,
     display: 'flex',
     borderRadius: 8,
+    zIndex: 999,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     backgroundColor: theme.colors.white,
@@ -97,7 +97,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     gap: 8,
     position: 'relative',
     justifyContent: 'end',
-    padding: '14px 26px 20px 32px',
   },
   Header: {
     fontSize: 20,

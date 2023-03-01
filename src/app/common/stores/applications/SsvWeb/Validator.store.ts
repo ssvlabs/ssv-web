@@ -10,17 +10,18 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 
 type KeyShareError = {
   id: number,
   name: string,
   errorMessage: string,
+  subErrorMessage?: string,
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -324,7 +325,7 @@ class ValidatorStore extends BaseStore {
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
-    const process: RegisterValidator = <RegisterValidator>processStore.process;
+    const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
     const {
       operatorsIds,
       publicKeys,
@@ -343,10 +344,15 @@ class ValidatorStore extends BaseStore {
       try {
         const threshold: ISharesKeyPairs = await ssvKeys.createThreshold(this.keyStorePrivateKey, operatorsIds);
         const shares = await ssvKeys.encryptShares(publicKeys, threshold.shares);
-        const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
-        const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-        const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
-        const totalCost = walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost);
+        let totalCost = 'registerValidator' in process ? process.registerValidator?.depositAmount : 0;
+        if ('fundingPeriod' in process) {
+          const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
+          const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
+          const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
+          totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost));
+        } else {
+          
+        }
         const { readable } = await ssvKeys.buildPayload(
             threshold.validatorPublicKey,
             operatorsIds,
@@ -358,7 +364,7 @@ class ValidatorStore extends BaseStore {
           this.keyStorePublicKey,
           readable?.operatorIds.split(',').map(Number).sort(),
           readable.shares,
-          `${ssvStore.prepareSsvAmountToTransfer(totalCost)}`,
+          `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),
         ]);
       } catch (e: any) {
@@ -468,7 +474,7 @@ class ValidatorStore extends BaseStore {
 
   async validateKeySharePayload(): Promise<KeyShareError> {
     const okResponse = { id: 0, name: '', errorMessage: '' };
-    const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, <br/> please try a different keystore file.' };
+    const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, ', subErrorMessage:  'please try a different keystore file.' };
     const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
     try {
       const fileJson = await this.keyShareFile?.text();
@@ -480,7 +486,7 @@ class ValidatorStore extends BaseStore {
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
-      const selectedOperators = await Operator.getInstance().getOperatorsByIds(payload.operatorIds.split(','));
+      const selectedOperators = await Operator.getInstance().getOperatorsByIds(payload.operatorIds);
       if (validatorExist) return validatorExistResponse;
       if (!selectedOperators) return operatorNotExistResponse;
       // @ts-ignore
@@ -488,7 +494,7 @@ class ValidatorStore extends BaseStore {
       return okResponse;
       // @ts-ignore
     } catch (e: any) {
-      return okResponse;
+      return { id: 4, name: 'ERROR', errorMessage: 'file data incorrect, check operator data and re-generate keyshares.json' };
     }
   }
 

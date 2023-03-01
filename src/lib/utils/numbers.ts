@@ -139,3 +139,7 @@ export const formatNumberFromBeaconcha = (num: number) => {
 export const propertyCostByPeriod = (value: number, days: number) => {
   return value * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY * (days ?? 1);
 };
+
+export const operatorCostForYear = (value: number) => {
+  return value * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+};

@@ -48,6 +48,12 @@ class ClusterStore extends BaseStore {
     }
   }
 
+  getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const clusterBurnRate = walletStore.fromWei(cluster.burnRate);
+    return clusterBurnRate / cluster.validator_count * newAmountOfValidators;
+  }
+
   async isClusterLiquidated(operators: any[]) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
@@ -89,20 +95,18 @@ class ClusterStore extends BaseStore {
       if (clusterData === null) {
         return {
           validatorCount: 0,
-          networkFee: 0,
           networkFeeIndex: 0,
           index: 0,
           balance: 0,
-          disabled: false,
+          active: true,
         };
       }
       return {
         validatorCount: clusterData.validatorCount,
-        networkFee: clusterData.networkFee,
         networkFeeIndex: clusterData.networkFeeIndex,
         index: clusterData.index,
         balance: clusterData.balance,
-        disabled: clusterData.disabled,
+        active: clusterData.active,
       };
     } catch (e) {
       return null;

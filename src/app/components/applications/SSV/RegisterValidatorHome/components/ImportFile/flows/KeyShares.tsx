@@ -12,6 +12,14 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+
+type ValidationError = {
+  id: number,
+  errorMessage: string,
+  subErrorMessage?: string,
+};
 
 const KeyShareFlow = () => {
   const stores = useStores();
@@ -19,11 +27,12 @@ const KeyShareFlow = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
+  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const [processingFile, setProcessFile] = useState(false);
-  const [validationError, setValidationError] = useState({ id: 0, errorMessage: '' });
+  const [validationError, setValidationError] = useState<ValidationError>({ id: 0, errorMessage: '', subErrorMessage: '' });
   const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
 
   useEffect(() => {
@@ -88,6 +97,7 @@ const KeyShareFlow = () => {
       return (
           <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
             {validationError.errorMessage}
+            {validationError.subErrorMessage && <Grid item>{validationError.subErrorMessage}</Grid>}
             <RemoveButton/>
           </Grid>
       );
@@ -124,21 +134,34 @@ const KeyShareFlow = () => {
 
   const buttonDisableConditions = processingFile || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
-  return (
-      <BorderScreen
-          blackHeader
-          header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
-          body={[
-            <Grid item container>
-              <Grid item xs={12} className={classes.SubHeader}>Upload the generated <b>keyshares.json</b> file below</Grid>
-              <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText} fileHandler={fileHandler} fileImage={renderFileImage}/>
-              <Grid container item xs={12}>
-                <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
-              </Grid>
-            </Grid>,
-          ]}
-      />
-  );
+  const MainScreen = <BorderScreen
+      blackHeader
+      withoutNavigation={processStore.secondRegistration}
+      header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
+      body={[
+        <Grid item container>
+          <Grid item xs={12} className={classes.SubHeader}>Upload the generated <b>keyshares.json</b> file below</Grid>
+          <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText} fileHandler={fileHandler} fileImage={renderFileImage}/>
+          <Grid container item xs={12}>
+            <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
+          </Grid>
+        </Grid>,
+      ]}
+  />;
+
+  if (processStore.secondRegistration) {
+    return (
+        <Grid container>
+          <NewWhiteWrapper
+              type={0}
+              header={'Cluster'}
+          />
+          {MainScreen}
+        </Grid>
+    );
+  }
+
+  return MainScreen;
 };
 
 export default observer(KeyShareFlow);

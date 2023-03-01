@@ -25,6 +25,7 @@ class ProcessStore extends BaseStore {
       setProcess: action,
       process: observable,
       getProcess: computed,
+      secondRegistration: computed,
     });
   }
 
@@ -40,6 +41,11 @@ class ProcessStore extends BaseStore {
 
   get isValidatorFlow() {
     return this.type === ProcessType.Validator;
+  }
+
+  get secondRegistration() {
+    console.log('secondRegistration ', 'registerValidator' in this.process);
+    return 'registerValidator' in this.process;
   }
 }
 

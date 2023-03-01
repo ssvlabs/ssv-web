@@ -1,18 +1,20 @@
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-// import TextInput from '~app/components/common/TextInput';
-// import ErrorMessage from '~app/components/common/ErrorMessage';
-// import LinkText from '~app/components/common/LinkText/LinkText';
-// import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import LinkText from '~app/components/common/LinkText';
 import { useStyles } from './FundingNewValidator.styles';
 import TextInput from '~app/components/common/TextInput';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -20,21 +22,49 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 const FundingNewValidator = () => {
   const stores = useStores();
   const classes = useStyles();
+  const navigate = useNavigate();
+  const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  const [checkedId, setCheckedId] = useState(1);
+  const clusterStore: ClusterStore = stores.Cluster;
   const process: SingleCluster = processStore.getProcess;
+  const [checkedId, setCheckedId] = useState(1);
+  const [depositSSV, setDepositSSV] = useState(0);
   const cluster = process.item;
-  const [customPeriod, setCustomPeriod] = useState(0);
-  console.log(JSON.parse(JSON.stringify(process)));
-  customPeriod;
+  const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
+  const newRunWay = clusterStore.getClusterRunWay({
+    ...cluster,
+    burnRate: walletStore.toWei(newBurnRate),
+    balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
+  });
+
   const options = [
     { id: 1, timeText: 'No - use current balance' },
     { id: 2, timeText: 'Yes - deposit additional funds' },
   ];
 
-  const checkBox = (id: number) => setCheckedId(id);
+  const checkBox = (id: number) => {
+    if (id === 1) setDepositSSV(0);
+    setCheckedId(id);
+  };
+
   const isChecked = (id: number) => checkedId === id;
+
+  const daysChanged = () => {
+    if (cluster.runWay > newRunWay) return <Typography
+        className={classes.NegativeDays}>(-{formatNumberToUi(cluster.runWay - newRunWay, true)} days)</Typography>;
+    return <Typography
+        className={classes.PositiveDays}>(+{formatNumberToUi(newRunWay - cluster.runWay, true)} days)</Typography>;
+  };
+
+  const ssvChanged = () => {
+    if (depositSSV > 0) return <Typography className={classes.PositiveDays}>(+{depositSSV} SSV)</Typography>;
+  };
+
+  const moveToNextPage = () => {
+    process.registerValidator = { depositAmount: depositSSV };
+    navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+  };
 
 
   return (
@@ -62,7 +92,8 @@ const FundingNewValidator = () => {
                     </Grid>
                     <Grid container item style={{ gap: 8 }}>
                       <Typography
-                          className={classes.Bold}>{formatNumberToUi(walletStore.fromWei(cluster.balance))}</Typography>
+                          className={classes.Bold}>{formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV</Typography>
+                      <Typography className={`${classes.Bold} ${classes.LessBold}`}>{ssvChanged()}</Typography>
                     </Grid>
                   </Grid>
                   <Grid container item className={classes.FieldBox}
@@ -71,10 +102,11 @@ const FundingNewValidator = () => {
                       <Typography className={classes.LightGreyHeader}>Operational Runway</Typography>
                       <ToolTip classExtend={classes.ToolTip} text={'asdasd'}/>
                     </Grid>
-                    <Grid container item style={{ gap: 8 }}>
+                    <Grid container item style={{ gap: 8, alignItems: 'center' }}>
                       <Typography
-                          className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(cluster.runWay, true)}</Typography>
+                          className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(newRunWay, true)}</Typography>
                       <Typography className={classes.DaysText}>days</Typography>
+                      <Typography className={`${classes.Bold} ${classes.LessBold}`}>{daysChanged()}</Typography>
                     </Grid>
                   </Grid>
                   <Grid container style={{ marginTop: 16, gap: 16 }}>
@@ -88,25 +120,29 @@ const FundingNewValidator = () => {
                               <Grid item className={classes.CheckCircle}/>}
                           <Grid item className={classes.TimeText}>{option.timeText}</Grid>
                         </Grid>
-                        {isCustom && <TextInput onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
+                        {isCustom && <TextInput value={depositSSV}
+                                                onChangeCallback={(e: any) => setDepositSSV(Number(e.target.value))}
                                                 extendClass={classes.DaysInput} withSideText/>}
                       </Grid>;
                     })}
                   </Grid>
-                  <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton text={'Next'} submitFunction={console.log}/>
+                  {depositSSV > ssvStore.walletSsvBalance && <Grid container style={{ marginTop: 24 }}>
+                      <ErrorMessage extendClasses={classes.ErrorBox} text={
+                        <Grid container style={{ gap: 8 }}>
+                          <Grid item>
+                            Insufficient SSV balance. Acquire further SSV or pick a different amount.
+                          </Grid>
+                          <Grid container item xs>
+                            <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
+                          </Grid>
+                        </Grid>
+                      }
+                      />
                   </Grid>
-                  {/*<ErrorMessage extendClasses={classes.ErrorBox} text={*/}
-                  {/*  <Grid container style={{ gap: 8 }}>*/}
-                  {/*    <Grid item>*/}
-                  {/*      Insufficient SSV balance. Acquire further SSV or pick a different amount.*/}
-                  {/*    </Grid>*/}
-                  {/*    <Grid container item xs>*/}
-                  {/*      <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>*/}
-                  {/*    </Grid>*/}
-                  {/*  </Grid>*/}
-                  {/*}*/}
-                  {/*/>*/}
+                  }
+                  <Grid container style={{ marginTop: 24 }}>
+                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance} text={'Next'} submitFunction={moveToNextPage} />
+                  </Grid>
                 </Grid>
               </Grid>,
             ]}

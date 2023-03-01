@@ -15,7 +15,9 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 
 const KeyStoreFlow = () => {
@@ -24,6 +26,7 @@ const KeyStoreFlow = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
+  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
@@ -174,34 +177,47 @@ const KeyStoreFlow = () => {
   const inputDisableConditions = !keyStoreFileIsJson || processingFile || validatorStore.validatorPublicKeyExist;
   const buttonDisableConditions = !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
-  return (
-      <BorderScreen
-          blackHeader
-          header={translations.VALIDATOR.IMPORT.TITLE}
-          body={[
-            <Grid item container>
-              <Grid item xs={12} className={classes.SubHeader}>Upload your validator <b>keystore</b> file below</Grid>
-              <ImportInput
-                  fileText={renderFileText}
-                  fileHandler={fileHandler}
-                  fileImage={renderFileImage}
-                  removeButtons={removeButtons}
-                  processingFile={processingFile}
-              />
-              <Grid container item xs={12}>
-                <><InputLabel title="Keystore Password"/>
-                  <Grid item xs={12} className={classes.ItemWrapper}>
-                    <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} />
-                  </Grid>
-                  <Grid item xs={12} className={classes.ErrorWrapper}>
-                    {errorMessage && <ErrorMessage text={errorMessage}/>}
-                  </Grid></>
-                <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
+  const MainScreen =  <BorderScreen
+      blackHeader
+      header={translations.VALIDATOR.IMPORT.TITLE}
+      withoutNavigation={processStore.secondRegistration}
+      body={[
+        <Grid item container>
+          <Grid item xs={12} className={classes.SubHeader}>Upload your validator <b>keystore</b> file below</Grid>
+          <ImportInput
+              fileText={renderFileText}
+              fileHandler={fileHandler}
+              fileImage={renderFileImage}
+              removeButtons={removeButtons}
+              processingFile={processingFile}
+          />
+          <Grid container item xs={12}>
+            <><InputLabel title="Keystore Password"/>
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} />
               </Grid>
-            </Grid>,
-          ]}
-      />
-  );
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <ErrorMessage text={errorMessage}/>}
+              </Grid></>
+            <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
+          </Grid>
+        </Grid>,
+      ]}
+  />;
+
+  if (processStore.secondRegistration) {
+    return (
+        <Grid container>
+          <NewWhiteWrapper
+              type={0}
+              header={'Cluster'}
+          />
+          {MainScreen}
+        </Grid>
+    );
+  }
+
+  return MainScreen;
 };
 
 export default observer(KeyStoreFlow);

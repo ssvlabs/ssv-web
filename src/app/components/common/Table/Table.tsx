@@ -36,7 +36,7 @@ export const Table = ({ columns, data, disable, hideActions = false, actionProps
     // Render the UI for your table
     return (
       <Grid container className={classes.TableWrapper}>
-        <TableContainer className={classes.CustomizeCss} style={{ overflowX: 'initial' }}>
+        <TableContainer className={classes.CustomizeCss}>
           <TTable {...getTableProps()}>
             <TableHead>
               {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (

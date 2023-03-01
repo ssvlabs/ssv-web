@@ -18,7 +18,9 @@ type DashboardProps = {
   columns: any[],
   rowsAction: any,
   disable: boolean,
+  loading?: boolean,
   header?: JSX.Element,
+  headerPadding?: number,
   // eslint-disable-next-line no-unused-vars
   extraActions?: (item: any) => JSX.Element,
   paginationActions: TablePaginationActionsProps
@@ -35,9 +37,9 @@ const CustomizedCellBasic = styled(TableCell)`
   line-height: 1.62;
   font-style: normal;
   font-stretch: normal;
+  vertical-align: top;
   letter-spacing: normal;
   padding: 20px 26px 20px 32px;
-  vertical-align: top;
   color: ${props => props.theme.colors.black};
 `;
 
@@ -47,9 +49,9 @@ const CustomizedBasicRow = styled(TableRow)`
 
 const ContainerHeader = styled(Grid)`
   align-items: center;
+  padding: 20px 26px 0px 32px;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  padding: 20px 26px 0px 32px;
 `;
 
 const CustomizedColumnRow = styled(CustomizedBasicRow)`
@@ -74,17 +76,17 @@ const CustomizedBodyRow = styled(CustomizedBasicRow)`
 `;
 
 const Dashboard = (props: DashboardProps) => {
-  const { columns, rows, rowsAction, paginationActions, header, extraActions } = props;
-  const classes = useStyles({ header });
+  const { columns, rows, rowsAction, paginationActions, header, extraActions, headerPadding, loading } = props;
+  const classes = useStyles({ header, headerPadding });
 
   return (
-      <TableContainer>
+      <TableContainer style={{ overflowX: 'unset' }}>
         {header && <ContainerHeader className={classes.HeaderColor}>{header}</ContainerHeader>}
         <CustomizedTable sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <CustomizedColumnRow className={classes.HeaderColor}>
               {columns.map((column: any, index: number) => {
-                return <CustomizedCellBasic key={index}>
+                return <CustomizedCellBasic className={classes.HeaderColumn} key={index}>
                   <Grid container item className={`${classes.Header} ${classes.ToolTipWrapper}`}>
                     <Typography>{column.name}</Typography>
                     {column.tooltip && <ToolTip text={column.tooltip}/>}
@@ -102,20 +104,20 @@ const Dashboard = (props: DashboardProps) => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   {Object.keys(row).map((key: string, secondIndex: number) => (
-                      <CustomizedCellBasic key={secondIndex} align="left" component="th" scope="row">
+                      <CustomizedCellBasic className={classes.BodyColumn} key={secondIndex} align="left" component="th" scope="row">
                         {row[key]}
                       </CustomizedCellBasic>
                   ))}
                   {!extraActions && <CustomizedCellBasic align="right">
                     <Grid className={classes.Arrow}/>
                   </CustomizedCellBasic>}
-                  {extraActions && extraActions(index)}
+                  {extraActions && <CustomizedCellBasic>{extraActions(index)}</CustomizedCellBasic>}
                 </CustomizedBodyRow>
             ))}
           </TableBody>
         </CustomizedTable>
         {paginationActions.totalPages > 1 && <PaginationActions {...paginationActions} />}
-        {rows.length === 0 && <Grid container item className={classes.TableWrapper}>
+        {rows.length === 0 && !loading && <Grid container item className={classes.TableWrapper}>
           <Grid container item className={classes.BigBox}>
             <Grid item className={classes.NoValidatorImage} xs={12} />
             <Grid item xs={12} className={classes.NoValidatorText}>No Validators</Grid>

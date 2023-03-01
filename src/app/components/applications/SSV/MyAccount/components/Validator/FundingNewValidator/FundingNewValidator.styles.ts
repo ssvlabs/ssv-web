@@ -1,6 +1,13 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
+
+const daysText = {
+  fontSize: 20,
+  lineHeight: 1.4,
+  fontWeight: 'normal',
+};
+
 export const useStyles = makeStyles((theme: Theme) => ({
   Text: {
     fontSize: 16,
@@ -8,6 +15,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: 1.62,
     marginBottom: 24,
     color: theme.colors.gray80,
+  },
+  NegativeDays: {
+    ...daysText,
+    color: theme.colors.primaryError,
+  },
+  PositiveDays: {
+    ...daysText,
+    color: '#08c858',
   },
   BoldGray: {
     fontSize: 20,

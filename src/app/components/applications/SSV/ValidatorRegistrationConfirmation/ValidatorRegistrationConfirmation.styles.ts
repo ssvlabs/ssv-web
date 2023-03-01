@@ -35,6 +35,21 @@ export const useStyles = makeStyles((theme: Theme) => ({
             border: 'none',
         },
     },
+    TotalSSV: {
+        fontSize: 20,
+        lineHeight: 1.4,
+        fontWeight: 'bold',
+        color: theme.colors.gray90,
+    },
+    SecondaryScreenSection: {
+        height: 'fit-content',
+        padding: theme.spacing(8, 8, 4, 8),
+        borderBottom: `solid 1px ${theme.colors.gray20}`,
+        '&:last-child': {
+            border: 'none',
+            padding: theme.spacing(4, 8, 8, 8),
+        },
+    },
     InsufficientBalanceWrapper: {
         fontSize: 14,
         fontWeight: 500,

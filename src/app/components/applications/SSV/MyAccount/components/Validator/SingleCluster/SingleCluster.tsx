@@ -15,6 +15,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard/Dashboard';
@@ -30,7 +31,9 @@ const SingleCluster = () => {
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
+  const operatorStore: OperatorStore = stores.Operator;
   const [showSettings, setShowSettings] = useState(false);
+  const [loadingValidators, setLoadingValidators] = useState(false);
   const process: SingleClusterProcess = processStore.getProcess;
   const [clusterValidators, setClusterValidators] = useState([]);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
@@ -44,9 +47,11 @@ const SingleCluster = () => {
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    setLoadingValidators(true);
     Validator.getInstance().validatorsByClusterHash(walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
+      setLoadingValidators(false);
     });
   }, []);
 
@@ -135,6 +140,7 @@ const SingleCluster = () => {
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
+    operatorStore.selectOperators(cluster.operators);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR);
   };
 
@@ -157,6 +163,8 @@ const SingleCluster = () => {
             {cluster.operators && <Dashboard
                 disable
                 rows={rows}
+                headerPadding={7}
+                loading={loadingValidators}
                 header={<Grid container className={classes.HeaderWrapper}>
                   <Grid item className={classes.Header}>Validators</Grid>
                   <SecondaryButton className={classes.AddToCluster} text={'+ Add Validator'}
@@ -166,7 +174,7 @@ const SingleCluster = () => {
                 rowsAction={console.log}
                 columns={[
                   { name: 'Public Key' },
-                  { name: 'Status' },
+                  { name: 'Status', tooltip: 'asdsadsadas' },
                   { name: 'Balance' },
                   { name: 'Est. APR' },
                 ]}

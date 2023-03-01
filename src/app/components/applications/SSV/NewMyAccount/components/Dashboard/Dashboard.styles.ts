@@ -13,6 +13,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.gray0,
     borderBottom: `solid 1px ${theme.colors.gray20}`,
   },
+  HeaderColumn: {
+    verticalAlign: 'bottom',
+    paddingBottom: (props: any) => props.headerPadding ?? '',
+  },
+  BodyColumn: {
+    verticalAlign: 'middle',
+  },
   BigBox: {
     gap: 68,
     width: 872,

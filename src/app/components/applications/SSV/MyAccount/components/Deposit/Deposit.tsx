@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
+import { useStyles } from './Deposit.styles';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
@@ -10,7 +11,6 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
-import { useStyles } from './Deposit.styles';
 
 const Deposit = () => {
   const stores = useStores();
@@ -90,14 +90,14 @@ const Deposit = () => {
             </>
           ),
         ]}
-        bottom={(
+        bottom={[(
           <Button
             withAllowance
             text={'Deposit'}
             onClick={depositSsv}
             disable={Number(inputValue) <= 0}
           />
-        )}
+        )]}
       />
     </div>
   );

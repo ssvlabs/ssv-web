@@ -13,8 +13,8 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import { useStyles } from './ProductQuestions.styles';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 
 const checkBoxTypes: any = {
   1: 'fees',
@@ -72,7 +72,7 @@ const ProductQuestions = () => {
 
   return (
     <Grid container item>
-      <ValidatorWhiteHeader withBackButton={false} withoutExplorer withCancel={false} text={'Remove Validator'} />
+      <NewWhiteWrapper type={0} header={'Cluster'} />
       <BorderScreen
         blackHeader
         withoutNavigation

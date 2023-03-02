@@ -34,8 +34,7 @@ const Balance = () => {
   }
 
   function moveToWithdraw() {
-    return navigate(config.routes.SSV.VALIDATOR.IMPORT);
-    // return navigate(config.routes.SSV.MY_ACCOUNT.WITHDRAW);
+    return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW);
   }
 
   const renderCtaActions = () => {

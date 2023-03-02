@@ -9,22 +9,31 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays/RemainingDays';
 
 const ValidatorFlow = () => {
-  const classes = useStyles();
   const stores = useStores();
+  const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
+  const walletStore: WalletStore = stores.Wallet;
+  const clusterStore: ClusterStore = stores.Cluster;
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleCluster = processStore.getProcess;
+  const cluster = process.item;
+  const clusterBalance = walletStore.fromWei(cluster.balance);
   const [inputValue, setInputValue] = useState(0.0);
   const applicationStore: ApplicationStore = stores.Application;
   const [userAgree, setUserAgreement] = useState(false);
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
   useEffect(() => {
-    if (ssvStore.getRemainingDays({ newBalance }) > 30 && userAgree) {
+    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) > 30 && userAgree) {
       setUserAgreement(false);
     }
-    if (inputValue === ssvStore.contractDepositSsvBalance) {
+    if (inputValue === clusterBalance) {
       setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
     } else if (buttonColor.default === '#ec1c2640') {
       setButtonColor({ userAgree: '', default: '' });
@@ -33,15 +42,15 @@ const ValidatorFlow = () => {
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(true, inputValue.toString(), new Decimal(inputValue).equals(ssvStore.contractDepositSsvBalance));
+    const success = await ssvStore.withdrawSsv(true, inputValue.toString(), new Decimal(inputValue).equals(clusterBalance));
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };
 
   function inputHandler(e: any) {
     const value = e.target.value;
-    if (value > ssvStore.contractDepositSsvBalance) {
-      setInputValue(ssvStore.contractDepositSsvBalance);
+    if (value > clusterBalance) {
+      setInputValue(clusterBalance);
     } else if (value < 0) {
       setInputValue(0);
     } else {
@@ -51,17 +60,17 @@ const ValidatorFlow = () => {
 
   function maxValue() {
     // @ts-ignore
-    setInputValue(ssvStore.toDecimalNumber(Number(ssvStore.contractDepositSsvBalance)));
+    setInputValue(ssvStore.toDecimalNumber(Number(clusterBalance)));
   }
 
-  const newBalance = inputValue ? ssvStore.contractDepositSsvBalance - Number(inputValue) : undefined;
-  const errorButton = ssvStore.getRemainingDays({ newBalance }) === 0;
-  const showCheckBox = ssvStore.getRemainingDays({ newBalance }) <= 30;
+  const newBalance = inputValue ? clusterBalance - Number(inputValue) : clusterBalance;
+  const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) === 0;
+  const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30;
   const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my account.' : 'I understand the risks of having my account liquidated.';
   let buttonText = 'Withdraw';
   if (errorButton) {
     buttonText = 'Liquidate my account';
-  } else if (inputValue === ssvStore.contractDepositSsvBalance) {
+  } else if (inputValue === clusterBalance) {
     buttonText = 'Withdraw All';
   }
 
@@ -73,6 +82,7 @@ const ValidatorFlow = () => {
               <IntegerInput
                   type="number"
                   value={inputValue}
+                  placeholder={'0.0'}
                   onChange={inputHandler}
                   className={classes.Balance}
               />
@@ -95,10 +105,11 @@ const ValidatorFlow = () => {
 
   return (
       <BorderScreen
+          marginTop={0}
           withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
-          bottom={(
+          bottom={[
               <Button
                   text={buttonText}
                   withAllowance={false}
@@ -106,9 +117,9 @@ const ValidatorFlow = () => {
                   errorButton={errorButton}
                   checkboxesText={showCheckBox ? [checkBoxText] : []}
                   checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-                  disable={(ssvStore.getRemainingDays({ newBalance }) <= 30 && !userAgree) || Number(inputValue) === 0}
-              />
-          )}
+                  disable={(clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree) || Number(inputValue) === 0}
+              />,
+          ]}
       />
   );
 };

@@ -44,7 +44,6 @@ class ProcessStore extends BaseStore {
   }
 
   get secondRegistration() {
-    console.log('secondRegistration ', 'registerValidator' in this.process);
     return 'registerValidator' in this.process;
   }
 }

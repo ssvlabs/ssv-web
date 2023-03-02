@@ -1,17 +1,14 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
+import Settings from './components/Settings';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
-import ImageDiv from '~app/components/common/ImageDiv';
 import { longStringShorten } from '~lib/utils/strings';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
@@ -26,16 +23,13 @@ const SingleCluster = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const settingsRef = useRef(null);
-  const beaconchaBaseUrl = getBaseBeaconchaUrl();
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
-  const [showSettings, setShowSettings] = useState(false);
-  const [loadingValidators, setLoadingValidators] = useState(false);
   const process: SingleClusterProcess = processStore.getProcess;
   const [clusterValidators, setClusterValidators] = useState([]);
+  const [loadingValidators, setLoadingValidators] = useState(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     count: 10,
@@ -55,23 +49,6 @@ const SingleCluster = () => {
     });
   }, []);
 
-  useEffect(() => {
-    /**
-     * Close menu drop down when click outside
-     */
-    const handleClickOutside = (e: any) => {
-      // @ts-ignore
-      if (showSettings && settingsRef.current && (!settingsRef.current.contains(e.target))) {
-        setShowSettings(false);
-      }
-    };
-    // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [settingsRef, showSettings]);
 
   const createData = (
       publicKey: string,
@@ -82,51 +59,10 @@ const SingleCluster = () => {
     return { publicKey, status, balance, apr };
   };
 
-  const openBeaconcha = (publicKey: string) => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'external_link',
-      action: 'click',
-      label: 'Open Beaconcha',
-    });
-    window.open(`${beaconchaBaseUrl}/validator/${publicKey}`);
-  };
-
-  const openExplorer = (publicKey: string) => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'explorer_link',
-      action: 'click',
-      label: 'operator',
-    });
-    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
-  };
-
-  const moveToRemoveValidator = (validator: any) => {
-    process.validator = validator;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT);
-  };
-
   const extraButtons = (itemIndex: number) => {
     const validator: any = clusterValidators[itemIndex];
 
-    return <Grid container className={classes.ExtraButtonsWrapper}>
-      <ImageDiv onClick={()=> openBeaconcha(validator.public_key)} image={'beacon'} width={24} height={24}/>
-      <ImageDiv onClick={()=> openExplorer(validator.public_key)} image={'explorer'} width={24} height={24}/>
-      <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>
-      {showSettings && <Grid item className={classes.SettingsWrapper}>
-        <Grid ref={settingsRef} container item className={classes.Settings}>
-          <Grid container item className={classes.Button} onClick={console.log}>
-            <Grid className={classes.ChangeOperatorsImage} />
-            <Typography>Change Operators</Typography>
-            <Grid className={classes.ChangeOperatorsLinkImage} />
-          </Grid>
-          <Grid container item className={classes.Button} onClick={() => moveToRemoveValidator(validator)}>
-            <Grid className={classes.RemoveValidatorImage} />
-            <Typography>Remove Validator</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-      }
-    </Grid>;
+    return <Settings validator={validator} />;
   };
 
   const rows = clusterValidators?.map((validator: any)=>{

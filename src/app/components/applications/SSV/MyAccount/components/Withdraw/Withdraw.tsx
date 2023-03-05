@@ -1,4 +1,3 @@
-import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';

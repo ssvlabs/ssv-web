@@ -77,6 +77,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
       <Dashboard
           disable
           rows={rows}
+          noItemsText={'No Clusters'}
           paginationActions={{
             page,
             count: total,

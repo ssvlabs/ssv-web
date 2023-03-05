@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStyles } from './Balance.styles';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -18,7 +17,6 @@ const Balance = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
@@ -66,7 +64,7 @@ const Balance = () => {
         </Grid>
         <Grid container item>
           <Grid item xs={12} className={liquidated ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
-            {formatNumberToUi(ssvStore.toDecimalNumber(walletStore.fromWei(cluster.balance)))} SSV
+            {formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV
           </Grid>
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
             {/* ~$449.52 */}

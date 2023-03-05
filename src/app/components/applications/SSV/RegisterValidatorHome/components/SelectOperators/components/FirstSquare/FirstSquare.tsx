@@ -69,7 +69,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
   const getOperators = async (page: number) => {
     if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
-    const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : ''}`;
+    const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'id:asc'}`;
 
     const payload = {
       page,

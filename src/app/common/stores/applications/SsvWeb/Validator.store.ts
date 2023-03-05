@@ -236,6 +236,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       const payload: any = this.registrationMode === 0 ? await this.createKeySharePayLoad() : await this.createKeystorePayload();
       const walletStore: WalletStore = this.getStore('Wallet');
+      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
       const contract: Contract = walletStore.setterContract;
@@ -262,26 +263,29 @@ class ValidatorStore extends BaseStore {
               });
               console.debug('Contract Receipt', receipt);
               resolve(true);
-              // let iterations = 0;
-              // while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              //   // Reached maximum iterations
-              //   if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              //     // eslint-disable-next-line no-await-in-loop
-              //     await this.refreshOperatorsAndClusters(resolve, true);
-              //     break;
-              //   }
-              //   iterations += 1;
-              //   // eslint-disable-next-line no-await-in-loop
-              //   if (await myAccountStore.checkEntityInAccount('validator', 'public_key', payload[0].replace(/^(0x)/gi, ''))) {
-              //     // eslint-disable-next-line no-await-in-loop
-              //     await this.refreshOperatorsAndClusters(resolve, true);
-              //     break;
-              //   } else {
-              //     console.log('Validator is still not in API..');
-              //   }
-              //   // eslint-disable-next-line no-await-in-loop
-              //   await myAccountStore.delay();
-              // }
+              let iterations = 0;
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // Reached maximum iterations
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  // eslint-disable-next-line no-await-in-loop
+                  await this.refreshOperatorsAndClusters(resolve, true);
+                  break;
+                }
+                iterations += 1;
+                console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
+                console.log(payload[4].validatorCount);
+                console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
+                // eslint-disable-next-line no-await-in-loop
+                if (await myAccountStore.checkEntityInAccount('validator', 'validator_count', payload[4].validatorCount)) {
+                  // eslint-disable-next-line no-await-in-loop
+                  await this.refreshOperatorsAndClusters(resolve, true);
+                  break;
+                } else {
+                  console.log('Validator is still not in API..');
+                }
+                // eslint-disable-next-line no-await-in-loop
+                await myAccountStore.delay();
+              }
             }
           })
           .on('transactionHash', (txHash: string) => {
@@ -362,7 +366,7 @@ class ValidatorStore extends BaseStore {
 
         resolve([
           this.keyStorePublicKey,
-          readable?.operatorIds.split(',').map(Number).sort(),
+          readable?.operatorIds.split(',').map(Number).sort((a: number, b: number) => a - b),
           readable.shares,
           `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),
@@ -389,7 +393,7 @@ class ValidatorStore extends BaseStore {
       try {
         const payLoad = [
           this.keySharePublicKey,
-          this.keySharePayload?.operatorIds.sort(),
+          this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
           this.keySharePayload?.shares,
           `${ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(networkCost + operatorsCost + liquidationCollateralCost))}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())),

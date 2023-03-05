@@ -11,7 +11,7 @@ import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers'
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 
-const INTERVAL_TIME = 12000;
+const INTERVAL_TIME = 30000;
 
 class MyAccountStore extends BaseStore {
   static CHECK_UPDATES_MAX_ITERATIONS = 60;

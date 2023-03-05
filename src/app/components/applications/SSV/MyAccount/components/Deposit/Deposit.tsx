@@ -10,12 +10,20 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
 
 const Deposit = () => {
   const stores = useStores();
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
+  const walletStore: WalletStore = stores.Wallet;
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleCluster = processStore.getProcess;
+  const cluster = process.item;
+  const clusterBalance = walletStore.fromWei(cluster.balance);
   const applicationStore: ApplicationStore = stores.Application;
   const [inputValue, setInputValue] = useState('');
 
@@ -42,7 +50,7 @@ const Deposit = () => {
   function inputHandler(e: any) {
     let value = e.target.value;
     if (value === '') value = '0.0';
-    if (value > ssvStore.walletSsvBalance) value = ssvStore.walletSsvBalance;
+    if (value > clusterBalance) value = clusterBalance;
     setInputValue(value);
   }
 
@@ -50,56 +58,61 @@ const Deposit = () => {
     setInputValue(String(ssvStore.walletSsvBalance));
   }
 
-  const newBalance = inputValue ? ssvStore.contractDepositSsvBalance + Number(inputValue) : undefined;
+  const newBalance = inputValue ? clusterBalance + Number(inputValue) : undefined;
 
   return (
-    <div>
-      <BorderScreen
-        header={'Deposit'}
-        body={[
-          (
-            <Grid item container>
-              <Grid container item xs={12} className={classes.BalanceWrapper}>
-                <Grid item container xs={12}>
-                  <Grid item xs={6}>
-                    <IntegerInput
-                      min={'0'}
-                      type="number"
-                      value={inputValue}
-                      placeholder={'0.0'}
-                      onChange={inputHandler}
-                      className={classes.Balance}
-                    />
-                  </Grid>
-                  <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                    <Grid item onClick={maxDeposit} className={classes.MaxButton}>
-                      MAX
+      <Grid container>
+        <NewWhiteWrapper
+            type={0}
+            header={'Cluster'}
+        />
+        <BorderScreen
+            withoutNavigation
+            header={'Deposit'}
+            body={[
+              (
+                  <Grid item container>
+                    <Grid container item xs={12} className={classes.BalanceWrapper}>
+                      <Grid item container xs={12}>
+                        <Grid item xs={6}>
+                          <IntegerInput
+                              min={'0'}
+                              type="number"
+                              value={inputValue}
+                              placeholder={'0.0'}
+                              onChange={inputHandler}
+                              className={classes.Balance}
+                          />
+                        </Grid>
+                        <Grid item container xs={6} className={classes.MaxButtonWrapper}>
+                          <Grid item onClick={maxDeposit} className={classes.MaxButton}>
+                            MAX
+                          </Grid>
+                          <Grid item className={classes.MaxButtonText}>SSV</Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={12} className={classes.WalletBalance} onClick={maxDeposit}>
+                        Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
+                      </Grid>
                     </Grid>
-                    <Grid item className={classes.MaxButtonText}>SSV</Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={12} className={classes.WalletBalance} onClick={maxDeposit}>
-                  Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
-                </Grid>
-              </Grid>
-            </Grid>
-          ),
-          (
-            <>
-              <RemainingDays newBalance={newBalance} />
-            </>
-          ),
-        ]}
-        bottom={[(
-          <Button
-            withAllowance
-            text={'Deposit'}
-            onClick={depositSsv}
-            disable={Number(inputValue) <= 0}
-          />
-        )]}
-      />
-    </div>
+              ),
+              (
+                  <>
+                    <RemainingDays cluster={{ ...cluster, newBalance: newBalance }}/>
+                  </>
+              ),
+            ]}
+            bottom={[(
+                <Button
+                    withAllowance
+                    text={'Deposit'}
+                    onClick={depositSsv}
+                    disable={Number(inputValue) <= 0}
+                />
+            )]}
+        />
+      </Grid>
   );
 };
 

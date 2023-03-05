@@ -23,8 +23,8 @@ class ClusterStore extends BaseStore {
   }
 
   getSortedOperatorsIds(operators: any[]) {
-    if (typeof operators[0] === 'number') return operators.sort();
-    return operators.map(operator => operator.id).sort();
+    if (typeof operators[0] === 'number') return operators.map(Number).sort((a: number, b: number) => a - b);
+    return operators.map(operator => operator.id).map(Number).sort((a: number, b: number) => a - b);
   }
 
   getClusterHash(operators: any[]) {

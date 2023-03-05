@@ -31,10 +31,10 @@ const LiquidationStateError = (props: Props) => {
             return 'Your account has been liquidated. Please reactivate your account in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
             return 'Your balance is running low and puts your account at risk. \n' +
-                'To avoid liquidation please deposit more funds to your account.';
+                'To avoid liquidation please deposit more funds to your cluster.';
         } if (errorType === ErrorType.Withdraw) {
             return 'This withdrawal amount will putting your account at risk of liquidation.\n' +
-                'To avoid liquidation please withdraw less funds from your account.\n';
+                'To avoid liquidation please withdraw less funds from your cluster.\n';
         }
         const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your account at risk of liquidation.' : 'This fee change will liquidate your account, please deposit more SSV or';
         const secondText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your account.' : 'change to a different set of operators.';

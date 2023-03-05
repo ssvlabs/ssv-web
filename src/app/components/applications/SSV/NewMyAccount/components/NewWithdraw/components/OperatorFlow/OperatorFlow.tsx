@@ -1,4 +1,3 @@
-import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
@@ -24,7 +23,7 @@ const OperatorFlow = () => {
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(false, inputValue.toString(), new Decimal(inputValue).equals(operatorBalance));
+    const success = await ssvStore.withdrawSsv(inputValue.toString());
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };

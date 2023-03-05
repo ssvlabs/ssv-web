@@ -70,9 +70,11 @@ const Settings = ({ validator }: { validator: any }) => {
         <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>
         {showSettings && <Grid item className={classes.SettingsWrapper}>
           <Grid ref={settingsRef} container item className={classes.Settings}>
-            <Grid container item className={classes.Button} onClick={console.log}>
-              <Grid className={classes.ChangeOperatorsImage} />
-              <Typography>Change Operators</Typography>
+            <Grid container item className={classes.Button} onClick={console.log} style={{ justifyContent: 'space-between' }}>
+              <Grid container item xs style={{ gap: 8 }}>
+                <Grid item className={classes.ChangeOperatorsImage} />
+                <Typography>Change Operators</Typography>
+              </Grid>
               <Grid className={classes.ChangeOperatorsLinkImage} />
             </Grid>
             <Grid container item className={classes.Button} onClick={moveToRemoveValidator}>

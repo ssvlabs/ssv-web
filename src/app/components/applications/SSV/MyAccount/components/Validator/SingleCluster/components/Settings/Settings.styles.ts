@@ -12,11 +12,11 @@ const imageDefaultProperties = {
 
 export const useStyles = makeStyles((theme: Theme) => ({
   ExtraButtonsWrapper: {
-    gap: 8,
     position: 'relative',
     justifyContent: 'end',
   },
   SettingsWrapper: {
+    zIndex: 999,
     position: 'absolute',
   },
   Settings: {

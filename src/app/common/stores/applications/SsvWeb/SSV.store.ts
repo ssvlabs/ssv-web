@@ -5,8 +5,9 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 class SsvStore extends BaseStore {
   accountInterval: any = null;
@@ -176,10 +177,16 @@ class SsvStore extends BaseStore {
    * @param amount
    */
   async deposit(amount: string) {
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>(async (resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
+      const processStore: ProcessStore = this.getStore('Process');
+      const clusterStore: ClusterStore = this.getStore('Cluster');
+      const process: SingleCluster = processStore.getProcess;
+      const cluster = process.item;
+      const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
+      const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.setterContract.methods.deposit(this.accountAddress, ssvAmount).send({ from: this.accountAddress })
+      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -252,23 +259,27 @@ class SsvStore extends BaseStore {
    * Withdraw ssv
    * @param amount
    * @param withdrawAll
-   * @param validatorState
    */
-  async withdrawSsv(validatorState: boolean, amount: string, withdrawAll: boolean = false) {
-    return new Promise<boolean>((resolve) => {
+  async withdrawSsv(amount: string) {
+    return new Promise<boolean>(async (resolve) => {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
         const processStore: ProcessStore = this.getStore('Process');
+        const clusterStore: ClusterStore = this.getStore('Cluster');
         const process: any = processStore.process;
-        let contractFunction = null;
-        const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-        const operatorPayload = [process.operator?.id];
-        if (withdrawAll) operatorPayload.push(ssvAmount);
-        if (validatorState) contractFunction = walletStore.setterContract.methods.liquidate([this.accountAddress]);
-        else contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(...operatorPayload);
+        let contractFunction: null;
 
-        if (!contractFunction) return;
+        if (processStore.isValidatorFlow) {
+          const cluster: SingleCluster = process.item;
+          const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
+          const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
+          contractFunction = walletStore.setterContract.methods.withdraw(operatorsIds, this.prepareSsvAmountToTransfer(walletStore.toWei(amount)), clusterData);
+        } else {
+          const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
+          contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(process.operator?.id, ssvAmount);
+        }
 
+        // @ts-ignore
         contractFunction.send({ from: this.accountAddress })
             .on('receipt', async () => {
               GoogleTagManager.getInstance().sendEvent({

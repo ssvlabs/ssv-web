@@ -137,7 +137,8 @@ export const formatNumberFromBeaconcha = (num: number) => {
 };
 
 export const propertyCostByPeriod = (value: number, days: number) => {
-  return value * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY * (days ?? 1);
+  const wrapFee = new Decimal(value);
+  return Number(wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_DAY).mul(days ?? 1).toFixed( 2));
 };
 
 export const operatorCostForYear = (value: number) => {

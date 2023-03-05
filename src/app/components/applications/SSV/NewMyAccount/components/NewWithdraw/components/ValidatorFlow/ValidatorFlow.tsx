@@ -1,4 +1,3 @@
-import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
@@ -42,7 +41,7 @@ const ValidatorFlow = () => {
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(true, inputValue.toString(), new Decimal(inputValue).equals(clusterBalance));
+    const success = await ssvStore.withdrawSsv(inputValue.toString());
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };
@@ -60,10 +59,10 @@ const ValidatorFlow = () => {
 
   function maxValue() {
     // @ts-ignore
-    setInputValue(ssvStore.toDecimalNumber(Number(clusterBalance)));
+    setInputValue(Number(clusterBalance));
   }
 
-  const newBalance = inputValue ? clusterBalance - Number(inputValue) : clusterBalance;
+  const newBalance = (inputValue ? clusterBalance - Number(inputValue) : clusterBalance).toFixed(18);
   const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) === 0;
   const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30;
   const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my account.' : 'I understand the risks of having my account liquidated.';
@@ -100,7 +99,7 @@ const ValidatorFlow = () => {
         </Grid>
       </Grid>
   ), (
-      <RemainingDays newBalance={newBalance} />
+      <RemainingDays cluster={{ ...cluster, newBalance: newBalance }} />
   )];
 
   return (

@@ -16,9 +16,10 @@ import PaginationActions, { TablePaginationActionsProps } from '~app/components/
 type DashboardProps = {
   rows: any[],
   columns: any[],
-  rowsAction: any,
   disable: boolean,
+  rowsAction?: any,
   loading?: boolean,
+  noItemsText: string,
   header?: JSX.Element,
   headerPadding?: number,
   // eslint-disable-next-line no-unused-vars
@@ -76,7 +77,11 @@ const CustomizedBodyRow = styled(CustomizedBasicRow)`
 `;
 
 const Dashboard = (props: DashboardProps) => {
-  const { columns, rows, rowsAction, paginationActions, header, extraActions, headerPadding, loading } = props;
+  const { columns, rows, rowsAction, noItemsText, paginationActions, header, extraActions, headerPadding, loading } = props;
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>');
+  console.log(paginationActions);
+  console.log(paginationActions.totalPages);
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>');
   const classes = useStyles({ header, headerPadding });
 
   return (
@@ -100,7 +105,7 @@ const Dashboard = (props: DashboardProps) => {
             {rows.map((row, index: number) => (
                 <CustomizedBodyRow
                     key={index}
-                    onClick={()=>{rowsAction(index);}}
+                    onClick={()=>{rowsAction && rowsAction(index);}}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   {Object.keys(row).map((key: string, secondIndex: number) => (
@@ -120,7 +125,7 @@ const Dashboard = (props: DashboardProps) => {
         {rows.length === 0 && !loading && <Grid container item className={classes.TableWrapper}>
           <Grid container item className={classes.BigBox}>
             <Grid item className={classes.NoValidatorImage} xs={12} />
-            <Grid item xs={12} className={classes.NoValidatorText}>No Validators</Grid>
+            <Grid item xs={12} className={classes.NoValidatorText}>{noItemsText}</Grid>
           </Grid>
         </Grid>}
       </TableContainer>

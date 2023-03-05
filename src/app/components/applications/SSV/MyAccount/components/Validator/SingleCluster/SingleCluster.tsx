@@ -18,6 +18,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard/Dashboard';
 import ProcessStore, { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
+import _ from 'underscore';
 
 const SingleCluster = () => {
   const stores = useStores();
@@ -32,17 +33,19 @@ const SingleCluster = () => {
   const [loadingValidators, setLoadingValidators] = useState(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
-    count: 10,
+    total: 10,
+    pages: 1,
+    per_page: 5,
+    rowsPerPage: 7,
     onChangePage: console.log,
-    totalPages: 1,
-    rowsPerPage: 5,
   });
+
   const cluster = process?.item;
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -80,6 +83,15 @@ const SingleCluster = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR);
   };
 
+  const onChangePage = _.debounce( async (newPage: number) =>  {
+    setLoadingValidators(true);
+    Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+      setClusterValidators(response.validators);
+      setClusterValidatorsPagination(response.pagination);
+      setLoadingValidators(false);
+    }).catch(() => setLoadingValidators(false));
+  }, 200);
+
   return (
       <Grid container>
         <NewWhiteWrapper
@@ -101,13 +113,18 @@ const SingleCluster = () => {
                 rows={rows}
                 headerPadding={7}
                 loading={loadingValidators}
+                noItemsText={'No Validators'}
                 header={<Grid container className={classes.HeaderWrapper}>
                   <Grid item className={classes.Header}>Validators</Grid>
-                  <SecondaryButton className={classes.AddToCluster} text={'+ Add Validator'}
-                                   submitFunction={addToCluster} />
+                  <SecondaryButton className={classes.AddToCluster} text={'+ Add Validator'} submitFunction={addToCluster} />
                 </Grid>}
-                paginationActions={{ ...clusterValidatorsPagination, onChangePage: console.log }}
-                rowsAction={console.log}
+                paginationActions={{
+                  onChangePage: onChangePage,
+                  page: clusterValidatorsPagination.page,
+                  count: clusterValidatorsPagination.total,
+                  totalPages: clusterValidatorsPagination.pages,
+                  rowsPerPage: clusterValidatorsPagination.per_page,
+                }}
                 columns={[
                   { name: 'Public Key' },
                   { name: 'Status', tooltip: 'asdsadsadas' },

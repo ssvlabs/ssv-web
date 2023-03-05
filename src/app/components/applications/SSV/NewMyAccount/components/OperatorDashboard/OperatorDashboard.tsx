@@ -10,18 +10,19 @@ import { useStyles } from '../../NewMyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
+import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards/ToggleDashboards';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import ToggleDashboards
-  from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards/ToggleDashboards';
 
 const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
@@ -60,13 +61,12 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
     return createData(
         <OperatorDetails operator={operator} />,
-        <Status item={operator}/>,
+        <Status item={operator} />,
         `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d']  }%`}`,
-        <SsvAndSubTitle ssv={operator.balance ? formatNumberToUi(operator.balance) : 'place holder'} subText={'~$77.5'}
+        <SsvAndSubTitle ssv={operator.balance ? formatNumberToUi(operator.balance) : 'place holder'}
                         leftTextAlign/>,
         <SsvAndSubTitle
-            ssv={formatNumberToUi(walletStore.fromWei(operator.fee) * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)}
-            subText={'~$77.5'} leftTextAlign />,
+            ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} leftTextAlign />,
         operator.validators_count,
     );
   });
@@ -97,6 +97,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
       <Dashboard
           disable
           rows={rows}
+          noItemsText={'No Operators'}
           rowsAction={openSingleOperator}
           paginationActions={{
             page,
@@ -107,7 +108,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
           }}
           columns={[
             { name: 'Operator Name' },
-            { name: 'Status', tooltip: 'Performance' },
+            { name: 'Status', tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
             { name: '30D Performance' },
             { name: 'Balance' },
             { name: 'Yearly Fee' },

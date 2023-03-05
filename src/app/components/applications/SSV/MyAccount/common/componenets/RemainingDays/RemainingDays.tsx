@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProgressBar from '~app/components/applications/SSV/MyAccount/common/componenets/ProgressBar/ProgressBar';
@@ -16,27 +15,25 @@ import LiquidationStateError
 type Props = {
   cluster?: any,
   gray80?: boolean,
-  newBalance?: number,
-  newBurnRate?: number,
+  newBalance?: any,
+  newBurnRate?: any,
   disableWarning?: boolean,
   operatorChange?: boolean,
 };
 
 const RemainingDays = (props: Props) => {
   const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
-  const { gray80, newBalance, cluster, newBurnRate, operatorChange, disableWarning = false } = props;
+  const { cluster, gray80, operatorChange, disableWarning = false } = props;
 
-  const oldRemainingDays = ssvStore.getRemainingDays({});
   let withdrawState: boolean = false;
   let newRemainingDays: number | undefined;
-  let warningLiquidationState: boolean = oldRemainingDays < 30;
+  let warningLiquidationState: boolean = cluster.runWay < 30;
 
-  if (typeof newBalance !== 'undefined' || typeof newBurnRate !== 'undefined') {
-    newRemainingDays = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) });
-    withdrawState = oldRemainingDays > newRemainingDays;
+  if (typeof cluster.newBalance !== 'undefined' || typeof cluster.newBurnRate !== 'undefined') {
+    newRemainingDays = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(cluster.newBalance) });
+    withdrawState = cluster.runWay > newRemainingDays;
     warningLiquidationState = newRemainingDays < 30;
   }
 
@@ -55,7 +52,7 @@ const RemainingDays = (props: Props) => {
   };
 
   React.useEffect(() => {
-  }, [ssvStore.contractDepositSsvBalance]);
+  }, [cluster.balance]);
 
   return (
       <Grid item container>
@@ -67,13 +64,13 @@ const RemainingDays = (props: Props) => {
             </Grid>
           </Grid>
           <Typography
-              className={classes.AmountOfDays}>{formatNumberToUi(newRemainingDays ?? oldRemainingDays, true)}</Typography>
+              className={classes.AmountOfDays}>{formatNumberToUi(newRemainingDays ?? cluster.runWay, true)}</Typography>
           <Typography className={classes.Days}>
             days
           </Typography>
-          {newRemainingDays !== undefined && newRemainingDays !== oldRemainingDays && (
+          {newRemainingDays !== undefined && newRemainingDays !== cluster.runWay && (
               <Grid item xs
-                    className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - oldRemainingDays, true)} days)`}
+                    className={classes.NewDaysEstimation}>{`(${!withdrawState ? '+' : ''}${formatNumberToUi(newRemainingDays - cluster.runWay, true)} days)`}
               </Grid>
           )}
           {!disableWarning && warningLiquidationState && (

@@ -37,7 +37,7 @@ const Withdraw = () => {
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(processStore.isValidatorFlow, inputValue.toString(), new Decimal(inputValue).equals(ssvStore.contractDepositSsvBalance));
+    const success = await ssvStore.withdrawSsv(inputValue.toString());
     applicationStore.setIsLoading(false);
     if (success) setInputValue(0.0);
   };

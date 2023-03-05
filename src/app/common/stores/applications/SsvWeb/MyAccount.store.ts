@@ -200,9 +200,10 @@ class MyAccountStore extends BaseStore {
     // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;
     this.ownerAddressClusters = await Promise.all(response?.clusters.map(async (cluster: any) => {
-      const newBalance = await clusterStore.getClusterBalance(cluster.operators);
-      const burnRate = await clusterStore.getClusterBurnRate(cluster.operators);
-      const isLiquidated = await clusterStore.isClusterLiquidated(cluster.operators);
+      const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
+      const newBalance = await clusterStore.getClusterBalance(cluster.operators, clusterData);
+      const burnRate = await clusterStore.getClusterBurnRate(cluster.operators, clusterData);
+      const isLiquidated = await clusterStore.isClusterLiquidated(cluster.operators, clusterData);
       const runWay = clusterStore.getClusterRunWay({
         ...cluster,
         burnRate: burnRate,

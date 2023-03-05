@@ -16,6 +16,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import Decimal from 'decimal.js';
 
 const FundingPeriod = () => {
   const options = [
@@ -39,11 +40,11 @@ const FundingPeriod = () => {
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, periodOfTime);
-  const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
+  const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
 
-  const totalCost = operatorsCost + networkCost + liquidationCollateralCost;
-  const InsufficientBalance = totalCost > ssvStore.walletSsvBalance;
-  const showLiquidationError = isCustomPayment && !InsufficientBalance && timePeriodNotValid;
+  const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
+  const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
+  const showLiquidationError = isCustomPayment && insufficientBalance && timePeriodNotValid;
 
   const isChecked = (id: number) => checkedOption.id === id;
 
@@ -83,7 +84,7 @@ const FundingPeriod = () => {
                                             extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
                   </Grid>;
                 })}
-                {InsufficientBalance && <ErrorMessage extendClasses={classes.ErrorBox} text={
+                {insufficientBalance && <ErrorMessage extendClasses={classes.ErrorBox} text={
                   <Grid container style={{ gap: 8 }}>
                     <Grid item>
                       Insufficient SSV balance. Acquire further SSV or pick a different amount.
@@ -105,9 +106,9 @@ const FundingPeriod = () => {
             <Grid container>
               <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
-                <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost)} SSV</Typography>
+                <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
               </Grid>
-              <PrimaryButton text={'Next'} submitFunction={moveToNextPage} disable={InsufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}/>
+              <PrimaryButton text={'Next'} submitFunction={moveToNextPage} disable={insufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}/>
             </Grid>,
           ]}
       />

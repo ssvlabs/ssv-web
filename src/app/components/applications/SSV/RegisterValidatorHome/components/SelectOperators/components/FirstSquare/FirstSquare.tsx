@@ -186,7 +186,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
               <Checkbox disable={disableCheckBoxes && !isSelected} grayBackGround text={''} isChecked={isSelected}/>
             </StyledCell>
             <StyledCell>
-              <OperatorDetails operator={operator}/>
+              <OperatorDetails withoutExplorer operator={operator}/>
             </StyledCell>
             <StyledCell>
               <Grid container>

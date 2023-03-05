@@ -23,6 +23,7 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
+import Decimal from 'decimal.js';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -42,8 +43,8 @@ const ValidatorRegistrationConfirmation = () => {
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
-  const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
-  const totalAmountOfSsv = formatNumberToUi(networkCost + operatorsCost + liquidationCollateralCost);
+  const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+  const totalAmountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
 
   const onRegisterValidatorClick = async () => {
     applicationStore.setIsLoading(true);

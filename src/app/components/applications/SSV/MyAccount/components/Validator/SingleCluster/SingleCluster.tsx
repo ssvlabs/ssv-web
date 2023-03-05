@@ -127,7 +127,7 @@ const SingleCluster = () => {
                 }}
                 columns={[
                   { name: 'Public Key' },
-                  { name: 'Status', tooltip: 'asdsadsadas' },
+                  { name: 'Status', tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
                   { name: 'Balance' },
                   { name: 'Est. APR' },
                 ]}

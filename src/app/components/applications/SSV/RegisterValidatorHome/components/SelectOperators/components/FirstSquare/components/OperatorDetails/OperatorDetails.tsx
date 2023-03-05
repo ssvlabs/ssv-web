@@ -10,13 +10,14 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import config from '~app/common/config';
 
 type Props = {
-    gray80?: boolean;
-    withCopy?: boolean;
-    operator: any // ?? IOperator
+  gray80?: boolean;
+  withCopy?: boolean;
+  withoutExplorer?: boolean;
+  operator: any // ?? IOperator
 };
 
 const OperatorDetails = (props: Props) => {
-    const { gray80, operator, withCopy } = props;
+    const { gray80, operator, withCopy, withoutExplorer } = props;
     const stores = useStores();
     const notificationsStore: NotificationsStore = stores.Notifications;
     const classes = useStyles({ operatorLogo: operator.logo, gray80 });
@@ -41,7 +42,7 @@ const OperatorDetails = (props: Props) => {
       <Grid container className={classes.Wrapper}>
         <Grid item className={classes.OperatorLogo} />
         <Grid item className={classes.TextWrapper}>
-          <Grid item className={classes.Name}>{operatorName ?? 'Unknown'}</Grid>
+          <Grid item className={classes.Name}>{operatorName ?? `Operator ${operator.id}`}</Grid>
           <Grid item container className={classes.Id}>
             ID: {operator.id}
             {withCopy && <Grid className={classes.Copy} onClick={copyId}/>}
@@ -52,9 +53,9 @@ const OperatorDetails = (props: Props) => {
               <OperatorType type={operator.type}/>
             </Grid>
         )}
-        <Grid item className={classes.OperatorType}>
-          <ImageDiv onClick={openExplorer} image={'explorer'} width={15.2} height={15.2} />
-        </Grid>
+        {!withoutExplorer && <Grid item className={classes.OperatorType}>
+          <ImageDiv onClick={openExplorer} image={'explorer'} width={15.2} height={15.2}/>
+        </Grid>}
       </Grid>
     );
 };

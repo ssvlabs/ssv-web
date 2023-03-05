@@ -1,16 +1,39 @@
-import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
-import BorderScreen from '~app/components/common/BorderScreen';
+import React, { useEffect, useState } from 'react';
+import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import InputLabel from '~app/components/common/InputLabel';
 import TextInput from '~app/components/common/TextInput';
+import InputLabel from '~app/components/common/InputLabel';
+import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 
 const FeeRecipient = () => {
+  const stores = useStores();
   const classes = useStyles();
-  classes;
+  const walletStore: WalletStore = stores.Wallet;
+  const clusterStore: ClusterStore = stores.Cluster;
+  const applicationStore: ApplicationStore = stores.Application;
+  const [userInput, setUserInput] = useState('');
+
+  useEffect(() => {
+    setUserInput(walletStore.accountAddress);
+  }, []);
+
+  const submitFeeRecipient = async () => {
+    applicationStore.setIsLoading(true);
+    await clusterStore.setFeeRecipient(userInput);
+    applicationStore.setIsLoading(false);
+  };
+
+  const setFeeRecipient = (e: any) => {
+    const textInput = e.target.value.trim();
+    setUserInput(textInput);
+  };
 
   return (
       <BorderScreen
@@ -29,15 +52,16 @@ const FeeRecipient = () => {
                     </Grid>
                     <Grid container gap={{ gap: 24 }}>
                       <Grid item container>
-                        <InputLabel title="Recipient"/>
+                        <InputLabel title="Recipient" />
                         <TextInput
-                            value={12}
                             disable={false}
+                            value={userInput}
+                            onChangeCallback={setFeeRecipient}
                             data-testid="new-fee-recipient"
                             sideIcon={<Grid className={classes.EditIcon}/>}
                         />
                       </Grid>
-                      <PrimaryButton disable text={'Update'} submitFunction={console.log}/>
+                      <PrimaryButton text={'Update'} submitFunction={submitFeeRecipient}/>
                     </Grid>
                   </Grid>
               ),

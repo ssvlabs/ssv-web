@@ -78,10 +78,6 @@ const CustomizedBodyRow = styled(CustomizedBasicRow)`
 
 const Dashboard = (props: DashboardProps) => {
   const { columns, rows, rowsAction, noItemsText, paginationActions, header, extraActions, headerPadding, loading } = props;
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>');
-  console.log(paginationActions);
-  console.log(paginationActions.totalPages);
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>>>>');
   const classes = useStyles({ header, headerPadding });
 
   return (

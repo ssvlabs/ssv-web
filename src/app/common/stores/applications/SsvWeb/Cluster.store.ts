@@ -6,6 +6,7 @@ import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 // import { propertyCostByPeriod } from '~lib/utils/numbers';
 
 const annotations = {
@@ -33,12 +34,12 @@ class ClusterStore extends BaseStore {
     const operatorsIds = this.getSortedOperatorsIds(operators);
     return keccak256(walletStore.web3.utils.encodePacked(ownerAddress, ...operatorsIds));
   }
-  
-  async getClusterBalance(operators: any[]) {
+
+  async getClusterBalance(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const contract: Contract = walletStore.getterContract;
-    const clusterData = await this.getClusterData(this.getClusterHash(operators));
+    const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
       const balance = await contract.methods.getBalance(walletStore.accountAddress, operatorsIds, clusterData).call();
@@ -54,11 +55,11 @@ class ClusterStore extends BaseStore {
     return clusterBurnRate / cluster.validator_count * newAmountOfValidators;
   }
 
-  async isClusterLiquidated(operators: any[]) {
+  async isClusterLiquidated(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const contract: Contract = walletStore.getterContract;
-    const clusterData = await this.getClusterData(this.getClusterHash(operators));
+    const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
       const isLiquidated = await contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
@@ -68,11 +69,11 @@ class ClusterStore extends BaseStore {
     }
   }
 
-  async getClusterBurnRate(operators: any[]) {
+  async getClusterBurnRate(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    const clusterData = await this.getClusterData(this.getClusterHash(operators));
+    const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     try {
       const burnRate = await contract.methods.getClusterBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
       return burnRate;
@@ -84,8 +85,8 @@ class ClusterStore extends BaseStore {
   getClusterRunWay(cluster: any) {
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
-    const liquidationCollateral = cluster.burnRate * ssvStore.liquidationCollateralPeriod;
-    return (walletStore.fromWei(cluster.balance) - walletStore.fromWei(String(liquidationCollateral))) / (walletStore.fromWei(cluster.burnRate) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY);
+    const liquidationCollateral = walletStore.fromWei(cluster.burnRate) * ssvStore.liquidationCollateralPeriod;
+    return (walletStore.fromWei(cluster.balance) - liquidationCollateral) / (walletStore.fromWei(cluster.burnRate) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY);
   }
 
   async getClusterData(clusterHash: string) {
@@ -111,6 +112,36 @@ class ClusterStore extends BaseStore {
     } catch (e) {
       return null;
     }
+  }
+
+  async setFeeRecipient(feeRecipient: string): Promise<boolean> {
+    return new Promise<boolean>(async (resolve) => {
+      const applicationStore: ApplicationStore = this.getStore('Application');
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const contract: Contract = walletStore.setterContract;
+      try {
+        await contract.methods.setFeeRecipientAddress(feeRecipient).send({ from: walletStore.accountAddress })
+            .on('receipt', async (receipt: any) => {
+              console.log(receipt);
+              resolve(true);
+            })
+            .on('transactionHash', (txHash: string) => {
+              applicationStore.txHash = txHash;
+              applicationStore.showTransactionPendingPopUp(true);
+            })
+            .on('error', (error: any) => {
+              console.debug('Contract Error', error.message);
+              applicationStore.setIsLoading(false);
+              applicationStore.showTransactionPendingPopUp(false);
+              resolve(false);
+            });
+      } catch (e: any) {
+        console.log('<<<<<<<<<<<<<<<<her>>>>>>>>>>>>>>>>');
+        console.log(e.message);
+        console.log('<<<<<<<<<<<<<<<<her>>>>>>>>>>>>>>>>');
+        resolve(false);
+      }
+    });
   }
 }
 

@@ -10,6 +10,7 @@ import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
+import Decimal from 'decimal.js';
 
 type Props = {
   days?: number,
@@ -31,7 +32,7 @@ const FundingSummary = (props: Props) => {
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
-  const liquidationCollateralCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee + ssvStore.networkFee, ssvStore.liquidationCollateralPeriod);
+  const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
 
   const paymentsValue = (paymentId: number): string => {
     switch (paymentId) {

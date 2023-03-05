@@ -29,7 +29,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
 
   const createData = (
       clusterID: string,
-      operators: string,
+      operators: JSX.Element,
       validators: number,
       operational_runway: string,
   ) => {
@@ -40,7 +40,12 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   const rows = myAccountStore.ownerAddressClusters?.map((cluster: any)=>{
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
-        cluster.operators.map((operator: { id: any; }) => operator.id).join(','),
+        <Grid container style={{ gap: 8 }}>
+          {cluster.operators.map((operator: { id: any; }) => {
+            operator;
+            return <Grid container item className={classes.CircleImageOperatorWrapper}><Grid item className={classes.CircleImageOperator} /></Grid>;
+          })}
+        </Grid>,
         cluster.validator_count,
         `${formatNumberToUi(cluster.runWay, true)} Days`);
   });
@@ -87,7 +92,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
           }}
           rowsAction={openSingleCluster}
           columns={[
-            { name: 'Cluster ID', tooltip: 'asdad' },
+            { name: 'Cluster ID', tooltip: 'Unique cluster ID as registered in the network smart contract' },
             { name: 'Operators' },
             { name: 'Validators' },
             { name: 'Operational Runway' },

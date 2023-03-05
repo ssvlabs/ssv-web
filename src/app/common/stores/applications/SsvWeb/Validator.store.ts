@@ -355,8 +355,6 @@ class ValidatorStore extends BaseStore {
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
           const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
-        } else {
-          
         }
         const { readable } = await ssvKeys.buildPayload(
             threshold.validatorPublicKey,
@@ -387,16 +385,20 @@ class ValidatorStore extends BaseStore {
       const clusterStore: ClusterStore = this.getStore('Cluster');
       const processStore: ProcessStore = this.getStore('Process');
       const operatorStore: OperatorStore = this.getStore('Operator');
-      const process: RegisterValidator = <RegisterValidator>processStore.process;
-      const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
-      const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-      const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+      const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
+      let totalCost = 'registerValidator' in process ? process.registerValidator?.depositAmount : 0;
+      if ('fundingPeriod' in process) {
+        const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
+        const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
+        const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+        totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
+      }
       try {
         const payLoad = [
           this.keySharePublicKey,
           this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
           this.keySharePayload?.shares,
-          `${ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()))}`,
+          `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())),
         ];
         resolve(payLoad);

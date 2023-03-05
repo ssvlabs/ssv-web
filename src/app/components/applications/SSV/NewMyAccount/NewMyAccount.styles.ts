@@ -12,6 +12,22 @@ export const useStyles = makeStyles((theme: Theme) => ({
   HeaderWrapper: {
     justifyContent: 'space-between',
   },
+  CircleImageOperator: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(/images/operator_default_background/circle_light.png)',
+  },
+  CircleImageOperatorWrapper: {
+    width: 40,
+    height: 40,
+    padding: 5,
+    borderRadius: '50%',
+    border: `solid 1px ${theme.colors.gray20}`,
+  },
   Header: {
     fontSize: 24,
     fontWeight: 800,

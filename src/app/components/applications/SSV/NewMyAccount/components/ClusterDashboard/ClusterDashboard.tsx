@@ -8,6 +8,7 @@ import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewMyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
+import LinkText from '~app/components/common/LinkText';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -92,7 +93,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
           }}
           rowsAction={openSingleCluster}
           columns={[
-            { name: 'Cluster ID', tooltip: 'Unique cluster ID as registered in the network smart contract' },
+            { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid> },
             { name: 'Operators' },
             { name: 'Validators' },
             { name: 'Operational Runway' },

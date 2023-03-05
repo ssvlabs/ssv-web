@@ -9,6 +9,7 @@ import config, { translations } from '~app/common/config';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
+import LinkText from '~app/components/common/LinkText/LinkText';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -51,7 +52,8 @@ const ValidatorSuccessScreen = () => {
             <Grid item className={classes.Text}>Your new validator is managed by the following cluster:</Grid>
             <Grid container item className={classes.ClusterID}>
               <Typography>Validator Cluster {longStringShorten(clusterHash, 4)}</Typography>
-              <Tooltip text={'adsasd'} />
+              {/* need to add link to "read more on clusters" */}
+              <Tooltip text={<Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid>} />
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
               {Object.values(operatorStore.selectedOperators).map((operator: any) => {

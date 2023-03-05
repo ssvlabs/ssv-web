@@ -31,7 +31,7 @@ const NewRemainingDays = (props: Props) => {
           <Grid item container xs={12}>
             <Typography className={classes.AmountOfDaysText}>Est. Remaining Days</Typography>
             <Grid className={classes.Hint}>
-              <Tooltip text={'Estimated amount of days the account balance is sufficient to run all it’s validators.'} />
+              <Tooltip text={'Estimated amount of days the cluster balance is sufficient to run all it’s validators.'} />
             </Grid>
           </Grid>
           <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>

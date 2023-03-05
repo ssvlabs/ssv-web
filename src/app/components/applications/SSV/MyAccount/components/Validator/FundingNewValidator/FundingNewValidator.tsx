@@ -100,7 +100,7 @@ const FundingNewValidator = () => {
                         style={{ borderTop: 'none', borderRadius: '0px 0px 8px 8px' }}>
                     <Grid container item alignItems={'center'} style={{ gap: 10 }}>
                       <Typography className={classes.LightGreyHeader}>Operational Runway</Typography>
-                      <ToolTip classExtend={classes.ToolTip} text={'asdasd'}/>
+                      <ToolTip classExtend={classes.ToolTip} text={'Estimated amount of days the cluster balance is sufficient to run all it’s validator'}/>
                     </Grid>
                     <Grid container item style={{ gap: 8, alignItems: 'center' }}>
                       <Typography

@@ -51,7 +51,8 @@ const ValidatorSuccessScreen = () => {
             <Grid item className={classes.Text}>Your new validator is managed by the following cluster:</Grid>
             <Grid container item className={classes.ClusterID}>
               <Typography>Validator Cluster {longStringShorten(clusterHash, 4)}</Typography>
-              <Tooltip text={'adsasd'} />
+              {/* need to add link to "read more on clusters" */}
+              <Tooltip text={'Clusters represent a unique set of 4 operators who operate your validators . Read more on clusters'} /> 
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
               {Object.values(operatorStore.selectedOperators).map((operator: any) => {

@@ -87,7 +87,8 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
           }}
           rowsAction={openSingleCluster}
           columns={[
-            { name: 'Cluster ID', tooltip: 'asdad' },
+            {/* need to add link to "read more on clusters" */}
+            { name: 'Cluster ID', tooltip: 'Clusters represent a unique set of 4 operators who operate your validators . Read more on clusters' },
             { name: 'Operators' },
             { name: 'Validators' },
             { name: 'Operational Runway' },

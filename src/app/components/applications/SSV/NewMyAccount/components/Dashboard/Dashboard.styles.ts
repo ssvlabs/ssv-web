@@ -13,6 +13,11 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.gray0,
     borderBottom: `solid 1px ${theme.colors.gray20}`,
   },
+  TableContainer: {
+    overflowX: 'unset',
+    opacity: (props: any) => props.loading ? 0.7 : 1,
+    pointerEvents: (props: any) => props.isLoading ? 'none' : 'auto',
+  },
   HeaderColumn: {
     verticalAlign: 'bottom',
     paddingBottom: (props: any) => props.headerPadding ?? '',

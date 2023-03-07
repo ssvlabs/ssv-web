@@ -70,4 +70,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         paddingLeft: 20,
         lineHeight: 1.62,
     },
+    Icon: {
+        alignSelf: 'center',
+    },
 }));

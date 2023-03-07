@@ -273,9 +273,6 @@ class ValidatorStore extends BaseStore {
                   break;
                 }
                 iterations += 1;
-                console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
-                console.log(payload[4].validatorCount);
-                console.log('<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>');
                 // eslint-disable-next-line no-await-in-loop
                 if (await myAccountStore.checkEntityInAccount('validator', 'validator_count', payload[4].validatorCount)) {
                   // eslint-disable-next-line no-await-in-loop

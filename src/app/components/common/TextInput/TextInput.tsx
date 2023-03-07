@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useStyles } from './TextInput.styles';
 
 type InputProps = {
+    icon?: any,
     value?: any,
     sideIcon?: any,
     disable?: boolean,
@@ -18,7 +19,7 @@ type InputProps = {
     onChangeCallback?: any,
 };
 
-const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withLock, disable, showError, extendClass, wrapperClass, dataTestId, withSideText, sideText, sideIcon }: InputProps) => {
+const TextInput = ({ value, placeHolder, icon, onBlurCallBack, onChangeCallback, withLock, disable, showError, extendClass, wrapperClass, dataTestId, withSideText, sideText, sideIcon }: InputProps) => {
     const classes = useStyles({ showError, disable });
     const [password, showPassword] = useState(false);
 
@@ -47,11 +48,16 @@ const TextInput = ({ value, placeHolder, onBlurCallBack, onChangeCallback, withL
             type={(!withLock || password) ? 'text' : 'password'}
           />
         </Grid>
-        {withSideText && (
-        <Grid item className={classes.Text}>
-            {sideIcon ?? sideText ?? 'SSV'}
-        </Grid>
-        )}
+          {withSideText && (
+              <Grid item className={classes.Text}>
+                  {sideIcon ?? sideText ?? 'SSV'}
+              </Grid>
+          )}
+          {icon && (
+              <Grid item className={classes.Icon}>
+                  {icon}
+              </Grid>
+          )}
       </Grid>
     );
 };

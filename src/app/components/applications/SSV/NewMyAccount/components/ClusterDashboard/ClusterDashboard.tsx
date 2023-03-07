@@ -1,6 +1,6 @@
-import React from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
@@ -22,10 +22,17 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
 
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
+  };
+
+  const clusterWarnings = (runWay: number) => {
+    if (runWay === 0) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
+    if (runWay < 30) return <Grid className={classes.LowRunWay}>Low Runway</Grid>;
+    return;
   };
 
   const createData = (
@@ -33,28 +40,33 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
       operators: JSX.Element,
       validators: number,
       operational_runway: string,
+      runWayError: JSX.Element | undefined,
   ) => {
-    return { clusterID, operators, validators, operational_runway };
+    return { clusterID, operators, validators, operational_runway, runWayError };
   };
 
+  const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
 
-  const rows = myAccountStore.ownerAddressClusters?.map((cluster: any)=>{
+  const rows = sortedClusters.map((cluster: any) => {
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
         <Grid container style={{ gap: 8 }}>
-          {cluster.operators.map((operator: { id: any; }) => {
+          {cluster.operators.map((operator: { id: any; }, index: number) => {
             operator;
-            return <Grid container item className={classes.CircleImageOperatorWrapper}><Grid item className={classes.CircleImageOperator} /></Grid>;
+            return <Grid key={index} container item className={classes.CircleImageOperatorWrapper}><Grid item
+                                                                                                         className={classes.CircleImageOperator}/></Grid>;
           })}
         </Grid>,
         cluster.validator_count,
-        `${formatNumberToUi(cluster.runWay, true)} Days`);
+        `${isNaN(cluster.runWay) ? 'N/A' : `${formatNumberToUi(cluster.runWay, true)  } Days`}`,
+        clusterWarnings(cluster.runWay),
+    );
   });
 
   const openSingleCluster = (listIndex: string) => {
     processStore.setProcess({
       processName: 'single_cluster',
-      item: myAccountStore.ownerAddressClusters[listIndex],
+      item: sortedClusters[listIndex],
     }, 2);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
@@ -64,10 +76,16 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   };
 
   const onChangePage = _.debounce( async (newPage: number) =>  {
-    // setLoadingOperators(true);
+    setLoadingClusters(true);
     await myAccountStore.getOwnerAddressClusters({ forcePage: newPage });
-    // setLoadingOperators(false);
+    setLoadingClusters(false);
   }, 200);
+
+  const rowBackgroundColor = (index: number) => {
+    const indexCluster = sortedClusters[index];
+    if (indexCluster.runWay === 0) return 'rgba(236, 28, 38, 0.03)';
+    if (indexCluster.runWay < 30) return '#FDFBF0';
+  };
 
   return (
     <Grid container className={classes.MyAccountWrapper}>
@@ -76,6 +94,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           <Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
             Fee Address
+            <Grid item className={classes.Pencil} />
           </Grid>
           <Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>
         </Grid>
@@ -83,7 +102,9 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
       <Dashboard
           disable
           rows={rows}
+          loading={loadingCluster}
           noItemsText={'No Clusters'}
+          rowBackgroundColor={rowBackgroundColor}
           paginationActions={{
             page,
             count: total,
@@ -96,7 +117,8 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
             { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid> },
             { name: 'Operators' },
             { name: 'Validators' },
-            { name: 'Operational Runway' },
+            { name: 'Est Operational Runway' },
+            { name: '' },
           ]}
       />
     </Grid>

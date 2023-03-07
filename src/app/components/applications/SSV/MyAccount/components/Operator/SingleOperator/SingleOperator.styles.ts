@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         gap: 68,
         width: 872,
         borderRadius: 16,
-        backgroundColor: '#fdfefe',
+        backgroundColor: theme.colors.squareScreenBackground,
     },
     BoxWrapper: {
         gap: 24,

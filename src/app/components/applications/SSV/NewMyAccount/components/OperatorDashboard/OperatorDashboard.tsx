@@ -27,9 +27,8 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const [loadingOperators, setLoadingOperators] = useState(true);
+  const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
-  loadingOperators;
 
   useEffect(() => {
     myAccountStore.ownerAddressOperators.forEach((operator: any, index: number) => {
@@ -63,7 +62,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
         <OperatorDetails operator={operator} />,
         <Status item={operator} />,
         `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d']  }%`}`,
-        <SsvAndSubTitle ssv={operator.balance ? formatNumberToUi(operator.balance) : 'place holder'}
+        <SsvAndSubTitle ssv={operator.balance ? formatNumberToUi(operator.balance) : '0'}
                         leftTextAlign/>,
         <SsvAndSubTitle
             ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} leftTextAlign />,
@@ -97,6 +96,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
       <Dashboard
           disable
           rows={rows}
+          loading={loadingOperators}
           noItemsText={'No Operators'}
           rowsAction={openSingleOperator}
           paginationActions={{

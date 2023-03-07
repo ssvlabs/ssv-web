@@ -1,5 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
+import { checkAddressChecksum, toChecksumAddress } from 'web3-utils';
 import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -18,6 +19,8 @@ const FeeRecipient = () => {
   const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
   const applicationStore: ApplicationStore = stores.Application;
+  const [readOnlyState, setReadOnlyState] = useState(true);
+  const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState('');
 
   useEffect(() => {
@@ -32,8 +35,17 @@ const FeeRecipient = () => {
 
   const setFeeRecipient = (e: any) => {
     const textInput = e.target.value.trim();
+    try {
+      const checksumInput = toChecksumAddress(textInput);
+      const isChecksumAddress = checkAddressChecksum(checksumInput);
+      setIsAddressValid(isChecksumAddress);
+    } catch {
+      setIsAddressValid(false);
+    }
     setUserInput(textInput);
   };
+
+  const submitDisable = !isAddressValid || userInput.length !== 42;
 
   return (
       <BorderScreen
@@ -50,18 +62,20 @@ const FeeRecipient = () => {
                       Standard rewards from performing other duties will remain to be credited to your validators balance on the Beacon Chain.
                     </Grid>
                     </Grid>
-                    <Grid container gap={{ gap: 24 }}>
+                    <Grid container gap={{ gap: 17 }}>
                       <Grid item container>
-                        <InputLabel title="Recipient" />
+                        <InputLabel title="Fee Recipient Address" />
                         <TextInput
-                            disable={false}
                             value={userInput}
-                            onChangeCallback={setFeeRecipient}
+                            disable={readOnlyState}
+                            showError={!isAddressValid}
                             data-testid="new-fee-recipient"
-                            sideIcon={<Grid className={classes.EditIcon}/>}
+                            onChangeCallback={setFeeRecipient}
+                            icon={<Grid onClick={()=> setReadOnlyState(false)} className={classes.EditIcon}/>}
                         />
+                        <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
                       </Grid>
-                      <PrimaryButton text={'Update'} submitFunction={submitFeeRecipient}/>
+                      <PrimaryButton disable={readOnlyState || submitDisable} text={'Update'} submitFunction={submitFeeRecipient}/>
                     </Grid>
                   </Grid>
               ),

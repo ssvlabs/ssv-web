@@ -15,8 +15,8 @@ import ErrorText from '~app/components/applications/SSV/MyAccount/common/compone
 
 const Balance = () => {
   const stores = useStores();
-  const classes = useStyles();
   const navigate = useNavigate();
+  const classes = useStyles();
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
@@ -35,6 +35,12 @@ const Balance = () => {
     return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW);
   }
 
+  const clusterWarnings = () => {
+    if (cluster.runWay === 0) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
+    if (cluster.runWay < 30) return <Grid className={classes.LowRunWay}>Low Runway</Grid>;
+    return;
+  };
+
   const renderCtaActions = () => {
     if (liquidated) {
       return (
@@ -47,10 +53,10 @@ const Balance = () => {
     return (
         <Grid container item className={classes.ActionButtonWrapper}>
           <Grid item xs>
-            <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit}/>
+            <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit} />
           </Grid>
           <Grid item xs>
-            <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw}/>
+            <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw} />
           </Grid>
         </Grid>
     );
@@ -59,11 +65,12 @@ const Balance = () => {
   return (
     <Grid container className={classes.MyBalanceWrapper}>
       <Grid container item className={classes.SectionWrapper}>
-        <Grid item className={classes.Header} xs={12}>
+        <Grid container item className={classes.Header} xs={12}>
           <span>Balance</span>
+          {clusterWarnings()}
         </Grid>
         <Grid container item>
-          <Grid item xs={12} className={liquidated ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
+          <Grid item xs={12} className={cluster.runWay < 30 ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
             {formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV
           </Grid>
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>

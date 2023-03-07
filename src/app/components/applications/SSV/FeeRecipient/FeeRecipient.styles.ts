@@ -8,6 +8,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: 1.62,
     color: theme.colors.gray80,
   },
+  ErrorText: {
+    height: 23,
+    minWidth: 1,
+    fontSize: 14,
+    marginTop: 4,
+    fontWeight: 500,
+    lineHeight: 1.62,
+    color: theme.colors.primaryError,
+  },
   Warning: {
     // width: 584px;
     gap: 10,
@@ -18,12 +27,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWarningRegular,
   },
   EditIcon: {
-    width: 24,
-    height: 24,
+    width: 16,
+    height: 16,
     cursor: 'pointer',
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundImage: `url(/images/search/${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    backgroundImage: `url(/images/pencil/${theme.darkMode ? 'dark' : 'light'}.svg)`,
   },
 }));

@@ -22,6 +22,7 @@ type DashboardProps = {
   noItemsText: string,
   header?: JSX.Element,
   headerPadding?: number,
+  rowBackgroundColor?: any,
   // eslint-disable-next-line no-unused-vars
   extraActions?: (item: any) => JSX.Element,
   paginationActions: TablePaginationActionsProps
@@ -77,11 +78,11 @@ const CustomizedBodyRow = styled(CustomizedBasicRow)`
 `;
 
 const Dashboard = (props: DashboardProps) => {
-  const { columns, rows, rowsAction, noItemsText, paginationActions, header, extraActions, headerPadding, loading } = props;
-  const classes = useStyles({ header, headerPadding });
+  const { columns, rows, rowBackgroundColor, rowsAction, noItemsText, paginationActions, header, extraActions, headerPadding, loading } = props;
+  const classes = useStyles({ header, headerPadding, loading });
 
   return (
-      <TableContainer style={{ overflowX: 'unset' }}>
+      <TableContainer className={classes.TableContainer}>
         {header && <ContainerHeader className={classes.HeaderColor}>{header}</ContainerHeader>}
         <CustomizedTable sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -102,6 +103,7 @@ const Dashboard = (props: DashboardProps) => {
                 <CustomizedBodyRow
                     key={index}
                     onClick={()=>{rowsAction && rowsAction(index);}}
+                    style={{ backgroundColor: rowBackgroundColor ? rowBackgroundColor(index) : '' }}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   {Object.keys(row).map((key: string, secondIndex: number) => (

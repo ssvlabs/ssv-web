@@ -7,7 +7,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 class SsvStore extends BaseStore {
   accountInterval: any = null;
@@ -275,8 +275,11 @@ class SsvStore extends BaseStore {
           const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
           contractFunction = walletStore.setterContract.methods.withdraw(operatorsIds, this.prepareSsvAmountToTransfer(walletStore.toWei(amount)), clusterData);
         } else {
+          const operator: SingleOperator = process.item;
+          // @ts-ignore
+          const operatorId = operator.id;
           const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-          contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(process.operator?.id, ssvAmount);
+          contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(operatorId, ssvAmount);
         }
 
         // @ts-ignore

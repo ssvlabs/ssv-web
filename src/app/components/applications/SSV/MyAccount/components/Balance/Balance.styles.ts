@@ -2,6 +2,18 @@ import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 import screenSizes from '~lib/utils/screenSizes';
 
+const warningRunWayStates = {
+    gap: 10,
+    height: 26,
+    fontSize: 14,
+    borderRadius: 4,
+    fontWeight: 500,
+    lineHeight: 1.62,
+    padding: '1px 6px',
+    alignItems: 'center',
+    justifyContent: 'center',
+};
+
 export const useStyles = makeStyles((theme: Theme) => ({
     MyBalanceWrapper: {
         width: '424px',
@@ -15,14 +27,28 @@ export const useStyles = makeStyles((theme: Theme) => ({
     SectionWrapper: {
         padding: theme.spacing(8),
     },
+    Liquidated: {
+        width: 82,
+        ...warningRunWayStates,
+        color: theme.colors.primaryError,
+        backgroundColor: 'rgba(236, 28, 38, 0.03)',
+    },
+    LowRunWay: {
+        width: 93,
+        ...warningRunWayStates,
+        color: theme.colors.primaryError,
+        backgroundColor: 'rgba(253, 218, 72, 0.2)',
+    },
     Header: {
+        gap: 16,
+        fontSize: 20,
         width: '77px',
         height: '28px',
-        fontSize: 20,
-        fontWeight: 'bold',
-        fontStretch: 'normal',
-        fontStyle: 'normal',
         lineHeight: 1.4,
+        fontWeight: 'bold',
+        fontStyle: 'normal',
+        alignItems: 'center',
+        fontStretch: 'normal',
         letterSpacing: 'normal',
         color: theme.colors.gray40,
         marginBottom: theme.spacing(5),

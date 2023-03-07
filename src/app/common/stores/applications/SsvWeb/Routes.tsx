@@ -22,14 +22,14 @@ const OperatorTransactionConfirmation = lazy(() => import('~app/components/appli
 const ImportFile = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile'));
 const SingleOperator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator'));
 const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
-const UpdateFee = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee'));
 const SingleValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster'));
+const UpdateFee = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee'));
 const CreateValidator = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator'));
 const SlashingWarning = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning'));
 const SelectOperators = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators'));
 const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
-const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
 const EditValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator'));
+const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
 const UploadKeyStore = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore'));
 const RemoveOperator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator'));
 const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator'));

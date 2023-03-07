@@ -59,7 +59,7 @@ const ValidatorSuccessScreen = () => {
               {Object.values(operatorStore.selectedOperators).map((operator: any) => {
                 return <Grid container item className={classes.Operator}>
                   <Grid item className={classes.OperatorImage} xs={12}/>
-                  <Grid item className={classes.OperatorName} xs>Unknown</Grid>
+                  <Grid item className={classes.OperatorName} xs>Operator {operator.id}</Grid>
                   <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
                 </Grid>;
               })}

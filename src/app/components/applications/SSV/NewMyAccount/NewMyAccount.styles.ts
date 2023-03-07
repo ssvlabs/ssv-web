@@ -1,6 +1,18 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
+const warningRunWayStates = {
+  gap: 10,
+  height: 26,
+  fontSize: 14,
+  borderRadius: 4,
+  fontWeight: 500,
+  lineHeight: 1.62,
+  padding: '1px 6px',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
 export const useStyles = makeStyles((theme: Theme) => ({
   MyAccountWrapper: {
     gap: 24,
@@ -9,8 +21,29 @@ export const useStyles = makeStyles((theme: Theme) => ({
     margin: 'auto',
     flexDirection: 'column',
   },
+  Pencil: {
+    width: 10.5,
+    height: 10.5,
+    alignItems: 'center',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(/images/pencil/blue.svg)',
+  },
   HeaderWrapper: {
     justifyContent: 'space-between',
+  },
+  Liquidated: {
+    width: 82,
+    ...warningRunWayStates,
+    color: theme.colors.primaryError,
+    backgroundColor: 'rgba(236, 28, 38, 0.03)',
+  },
+  LowRunWay: {
+    width: 93,
+    ...warningRunWayStates,
+    color: theme.colors.primaryError,
+    backgroundColor: 'rgba(253, 218, 72, 0.2)',
   },
   CircleImageOperator: {
     width: 30,
@@ -24,7 +57,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   CircleImageOperatorWrapper: {
     width: 40,
     height: 40,
-    padding: 5,
+    padding: 4,
     borderRadius: '50%',
     border: `solid 1px ${theme.colors.gray20}`,
   },

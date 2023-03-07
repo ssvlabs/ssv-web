@@ -35,8 +35,7 @@ const RemoveOperator = () => {
   const classes = useStyles({ isLoading: applicationStore.isLoading });
 
   useEffect(() => {
-    console.log(process);
-    // if (!process.operator) return navigate(applicationStore.strategyRedirect);
+    if (!process.item) return navigate(applicationStore.strategyRedirect);
   }, []);
 
   // const chooseReason = (reason: number) => {
@@ -122,14 +121,8 @@ const RemoveOperator = () => {
   };
 
   const submitForm = async () => {
-    // const reasons: any = { 1: 'Technical Issues', 2: 'Low profitability', 3: 'Other' };
-    // GoogleTagManager.getInstance().sendEvent({
-    //   category: 'remove_feedback',
-    //   action: reasons[leavingReason],
-    //   label: userTextReason,
-    // });
     applicationStore.setIsLoading(true);
-    const isRemoved = await operatorStore.removeOperator(Number(operatorStore.processOperatorId));
+    const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
     applicationStore.setIsLoading(false);
     if (isRemoved) navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS);
   };

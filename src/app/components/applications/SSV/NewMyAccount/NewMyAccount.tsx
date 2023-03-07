@@ -20,8 +20,8 @@ const NewMyAccount = () => {
 
   return (
       dashboardState === State.Validator ?
-          <ClusterDashboard changeState={setDashboardState}/>
-          : <OperatorDashboard changeState={setDashboardState}/>
+          <ClusterDashboard changeState={setDashboardState} />
+          : <OperatorDashboard changeState={setDashboardState} />
   );
 };
 

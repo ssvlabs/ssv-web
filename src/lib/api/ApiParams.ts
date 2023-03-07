@@ -1,5 +1,5 @@
 class ApiParams {
-  static PER_PAGE: number = 5;
+  static PER_PAGE: number = 8;
   static DEFAULT_PAGINATION = {
     page: 1,
     pages: 1,

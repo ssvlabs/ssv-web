@@ -15,8 +15,10 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
-import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards/ToggleDashboards';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ToggleDashboards
+  from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards/ToggleDashboards';
+import OperatorDetails
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
@@ -27,20 +29,23 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const [operatorBalances, setOperatorBalances] = useState({});
   const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
 
   useEffect(() => {
-    myAccountStore.ownerAddressOperators.forEach((operator: any, index: number) => {
-      operatorStore.getOperatorBalance(operator.id).then((balance) => {
-        operator.balance = balance;
-        const newOperatorsList = myAccountStore.ownerAddressOperators;
-        delete newOperatorsList[index];
-        newOperatorsList.push(operator);
-        myAccountStore.ownerAddressOperators = newOperatorsList;
-      });
-    });
+    const fetchData = async () => {
+      for (const operator of myAccountStore.ownerAddressOperators) {
+        const balance = await operatorStore.getOperatorBalance(operator.id);
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
+      }
+    };
+    fetchData();
   }, [page]);
+
+  useEffect(() => {
+  }, [operatorBalances]);
 
   const moveToRegisterOperator = () => {
     navigate(config.routes.SSV.OPERATOR.HOME);
@@ -62,8 +67,8 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
         <OperatorDetails operator={operator} />,
         <Status item={operator} />,
         `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d']  }%`}`,
-        <SsvAndSubTitle ssv={operator.balance ? formatNumberToUi(operator.balance) : '0'}
-                        leftTextAlign/>,
+        // @ts-ignore
+        <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
         <SsvAndSubTitle
             ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} leftTextAlign />,
         operator.validators_count,
@@ -85,6 +90,24 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
     setLoadingOperators(false);
   }, 200);
 
+  const sortByStatus = ( a: any ) => {
+    if ( a.status === 'active') {
+      console.log('active');
+      return -1;
+    }
+    if ( a.status === 'inactive') {
+      console.log('inactive');
+      return 1;
+    }
+    console.log(a.status);
+    return 0;
+  };
+
+  const sortOperatorsByStatus = () => {
+    const newOperatorsList = [...myAccountStore.ownerAddressOperators];
+    myAccountStore.ownerAddressOperators = newOperatorsList.sort( sortByStatus );
+  };
+
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
@@ -97,7 +120,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
           disable
           rows={rows}
           loading={loadingOperators}
-          noItemsText={'No Operators'}
+          noItemsText={'Seems that you have no operators click "Add Operator" in order to run first SSV operator'}
           rowsAction={openSingleOperator}
           paginationActions={{
             page,
@@ -108,7 +131,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
           }}
           columns={[
             { name: 'Operator Name' },
-            { name: 'Status', tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
+            { name: 'Status', onClick: sortOperatorsByStatus, tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
             { name: '30D Performance' },
             { name: 'Balance' },
             { name: 'Yearly Fee' },

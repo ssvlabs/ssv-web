@@ -273,7 +273,13 @@ class SsvStore extends BaseStore {
           const cluster: SingleCluster = process.item;
           const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
           const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-          contractFunction = walletStore.setterContract.methods.withdraw(operatorsIds, this.prepareSsvAmountToTransfer(walletStore.toWei(amount)), clusterData);
+          // @ts-ignore
+          const newBalance = walletStore.fromWei(cluster.balance) - Number(amount);
+          if (clusterStore.getClusterRunWay({ ...process.item, balance: walletStore.toWei(newBalance) }) <= 0) {
+            contractFunction = walletStore.setterContract.methods.liquidate(this.accountAddress, operatorsIds, clusterData);
+          } else {
+            contractFunction = walletStore.setterContract.methods.withdraw(operatorsIds, this.prepareSsvAmountToTransfer(walletStore.toWei(amount)), clusterData);
+          }
         } else {
           const operator: SingleOperator = process.item;
           // @ts-ignore

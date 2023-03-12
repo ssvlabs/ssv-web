@@ -22,8 +22,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column',
   },
   Pencil: {
-    width: 10.5,
-    height: 10.5,
+    width: 11.1,
+    height: 11.1,
     alignItems: 'center',
     backgroundSize: 'contain',
     backgroundPosition: 'center',

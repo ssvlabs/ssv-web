@@ -28,7 +28,7 @@ const Balance = () => {
   }
 
   function moveToDeposit() {
-    return navigate(config.routes.SSV.MY_ACCOUNT.DEPOSIT);
+    return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT);
   }
 
   function moveToWithdraw() {
@@ -36,7 +36,7 @@ const Balance = () => {
   }
 
   const clusterWarnings = () => {
-    if (cluster.runWay === 0) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
+    if (cluster.isLiquidated) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
     if (cluster.runWay < 30) return <Grid className={classes.LowRunWay}>Low Runway</Grid>;
     return;
   };
@@ -79,8 +79,8 @@ const Balance = () => {
         </Grid>
       </Grid>
       <Grid item className={classes.SeparationLine} xs={12} />
-        <Grid container item className={classes.SectionWrapper}>
-          {!liquidated && <RemainingDays cluster={cluster} />}
+        <Grid container item className={classes.SecondSectionWrapper}>
+          <RemainingDays cluster={cluster} />
           {liquidated && (
             <Grid className={classes.ErrorMessageWrapper}>
               <ErrorText

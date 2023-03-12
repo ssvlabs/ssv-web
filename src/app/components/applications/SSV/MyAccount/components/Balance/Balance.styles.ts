@@ -27,6 +27,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     SectionWrapper: {
         padding: theme.spacing(8),
     },
+    SecondSectionWrapper: {
+        padding: theme.spacing(3, 8, 8, 8),
+    },
     Liquidated: {
         width: 82,
         ...warningRunWayStates,
@@ -64,7 +67,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         color: '#a1acbe',
     },
     ErrorMessageWrapper: {
-        margin: '0px 16px 15.5px 16px',
+        // margin: '0px 16px 15.5px 16px',
     },
     CurrentBalance: {
         fontSize: 28,

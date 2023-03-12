@@ -28,6 +28,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
   BigBox: {
     gap: 68,
     width: 1320,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     backgroundColor: theme.colors.squareScreenBackground,
   },
   NoValidatorImage: {
@@ -86,11 +88,5 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     backgroundColor: theme.colors.white,
-  },
-  Header: {
-    fontSize: 12,
-    fontWeight: 500,
-    lineHeight: 1.62,
-    color: theme.colors.gray40,
   },
 }));

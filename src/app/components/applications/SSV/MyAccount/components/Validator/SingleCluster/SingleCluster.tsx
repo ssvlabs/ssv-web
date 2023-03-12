@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -9,16 +10,17 @@ import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
 import { longStringShorten } from '~lib/utils/strings';
+import ImageDiv from '~app/components/common/ImageDiv';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard/Dashboard';
 import ProcessStore, { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
-import _ from 'underscore';
 
 const SingleCluster = () => {
   const stores = useStores();
@@ -28,6 +30,7 @@ const SingleCluster = () => {
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
+  const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleClusterProcess = processStore.getProcess;
   const [clusterValidators, setClusterValidators] = useState([]);
   const [loadingValidators, setLoadingValidators] = useState(false);
@@ -54,7 +57,7 @@ const SingleCluster = () => {
 
 
   const createData = (
-      publicKey: string,
+      publicKey: JSX.Element,
       status: JSX.Element,
       balance: JSX.Element,
       apr: JSX.Element,
@@ -68,11 +71,19 @@ const SingleCluster = () => {
     return <Settings validator={validator} />;
   };
 
+  const copyToClipboard = (publicKey: string) => {
+    navigator.clipboard.writeText(publicKey);
+    notificationsStore.showMessage('Copied to clipboard.', 'success');
+  };
+
   const rows = clusterValidators?.map((validator: any)=>{
     return createData(
-        `0x${longStringShorten(validator.public_key, 4)}`,
+        <Grid container style={{ alignItems: 'center', gap: 8 }}>
+          <Grid item>0x{longStringShorten(validator.public_key, 4)}</Grid>
+          <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={24} height={24} />
+        </Grid>,
         <Status item={validator} />,
-        <Grid item>33.12</Grid>,
+        <Grid item>33.12 ETH</Grid>,
         <Grid item>{12.3}%</Grid>,
     );
   });

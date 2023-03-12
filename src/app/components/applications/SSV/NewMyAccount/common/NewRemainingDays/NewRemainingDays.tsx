@@ -38,7 +38,7 @@ const NewRemainingDays = (props: Props) => {
           <Typography className={classes.Days}>
             days
           </Typography>
-          {warningLiquidationState && (
+          {warningLiquidationState && !cluster.isLiquidated && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays ?? 0} />
               <LiquidationStateError marginTop={'16px'} errorType={1} />

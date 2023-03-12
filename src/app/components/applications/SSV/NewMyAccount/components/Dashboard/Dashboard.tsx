@@ -44,6 +44,19 @@ const CustomizedCellBasic = styled(TableCell)`
   padding: 20px 26px 20px 32px;
   color: ${props => props.theme.colors.black};
 `;
+const CustomizedCellHeaderBasic = styled(TableCell)`
+  font-style: normal;
+  font-stretch: normal;
+  vertical-align: top;
+  letter-spacing: normal;
+  padding: 20px 26px 20px 32px;
+  color: ${props => props.theme.colors.gray40};
+  & p {
+    font-weight: 500;
+    line-height: 1.62;
+    font-size: 12px !important;
+  }
+`;
 
 const CustomizedBasicRow = styled(TableRow)`
   padding: 40px;
@@ -51,7 +64,7 @@ const CustomizedBasicRow = styled(TableRow)`
 
 const ContainerHeader = styled(Grid)`
   align-items: center;
-  padding: 20px 26px 0px 32px;
+  padding: 32px 26px 0px 32px;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
 `;
@@ -88,14 +101,14 @@ const Dashboard = (props: DashboardProps) => {
           <TableHead>
             <CustomizedColumnRow className={classes.HeaderColor}>
               {columns.map((column: any, index: number) => {
-                return <CustomizedCellBasic className={classes.HeaderColumn} key={index}>
-                  <Grid container item className={`${classes.Header} ${classes.ToolTipWrapper}`}>
+                return <CustomizedCellHeaderBasic className={classes.HeaderColumn} key={index}>
+                  <Grid onClick={column.onClick && column.onClick} style={{ cursor: column.onClick ? 'pointer' : 'default' }} container item className={classes.ToolTipWrapper}>
                     <Typography>{column.name}</Typography>
                     {column.tooltip && <ToolTip text={column.tooltip}/>}
                   </Grid>
-                </CustomizedCellBasic>;
+                </CustomizedCellHeaderBasic>;
               })}
-              <CustomizedCellBasic />
+              <CustomizedCellHeaderBasic />
             </CustomizedColumnRow>
           </TableHead>
           <TableBody>

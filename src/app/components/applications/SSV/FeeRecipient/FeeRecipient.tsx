@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
+import React, { useState } from 'react';
 import { checkAddressChecksum, toChecksumAddress } from 'web3-utils';
-import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
@@ -11,21 +11,15 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 
 const FeeRecipient = () => {
   const stores = useStores();
   const classes = useStyles();
-  const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
   const applicationStore: ApplicationStore = stores.Application;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState('');
-
-  useEffect(() => {
-    setUserInput(walletStore.accountAddress);
-  }, []);
 
   const submitFeeRecipient = async () => {
     applicationStore.setIsLoading(true);

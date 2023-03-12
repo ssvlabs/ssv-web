@@ -3,19 +3,19 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     ErrorTextWrapper: {
-        padding: '10px 16px 13px 16px',
-        borderRadius: '1px',
-        background: 'rgba(236, 28, 38, 0.08)',
+        gap: 10,
+        borderRadius: 2,
+        padding: '12px 16px',
+        backgroundColor: 'rgba(236, 28, 38, 0.03)',
+        border: `solid 1px ${theme.colors.primaryError}`,
     },
     ErrorText: {
-        width: '100%',
-        fontSize: '14px',
+        fontSize: 14,
         fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#ec1c26',
+        lineHeight: 1.62,
+        color: theme.colors.black,
     },
     LinkText: {
-        marginTop: '20px',
         textDecoration: 'underline',
         cursor: 'pointer',
         fontSize: '14px',

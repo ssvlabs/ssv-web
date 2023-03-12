@@ -36,7 +36,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
           </Grid>
           <Grid item container className={classes.ColumnWrapper}>
             <Status item={operator}/>
-            <Grid item className={classes.BoldText}>{operator.performance['30d'] ?? 0}%</Grid>
+            <Grid item className={classes.BoldText}>{operator.performance['30d'].toFixed(2) ?? 0}%</Grid>
             <Grid item
                   className={classes.BoldText}>{formatNumberToUi(walletStore.fromWei(operator.fee) * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)} SSV</Grid>
           </Grid>

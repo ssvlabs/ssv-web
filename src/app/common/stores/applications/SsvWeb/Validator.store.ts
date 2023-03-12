@@ -477,9 +477,11 @@ class ValidatorStore extends BaseStore {
   }
 
   async validateKeySharePayload(): Promise<KeyShareError> {
+    const processStore: ProcessStore = this.getStore('Process');
     const okResponse = { id: 0, name: '', errorMessage: '' };
     const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, ', subErrorMessage:  'please try a different keystore file.' };
     const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
+    const operatorNotMatchingResponse = { id: 2, name: 'operators_not_matching', errorMessage: 'bka bla ' };
     try {
       const fileJson = await this.keyShareFile?.text();
       // const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
@@ -489,12 +491,22 @@ class ValidatorStore extends BaseStore {
       const payload = JSON.parse(fileJson).payload.readable;
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
+      const keyShareOperators = payload.operatorIds.sort();
+      if (processStore.secondRegistration) {
+        const process: SingleCluster = processStore.process;
+        const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
+        if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
+          return operatorNotMatchingResponse;
+        }
+      } else {
+        const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
+        if (!selectedOperators) return operatorNotExistResponse;
+        // @ts-ignore
+        operatorStore.selectOperators(selectedOperators);
+      }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
-      const selectedOperators = await Operator.getInstance().getOperatorsByIds(payload.operatorIds);
       if (validatorExist) return validatorExistResponse;
-      if (!selectedOperators) return operatorNotExistResponse;
-      // @ts-ignore
-      operatorStore.selectOperators(selectedOperators);
+
       return okResponse;
       // @ts-ignore
     } catch (e: any) {

@@ -29,9 +29,9 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
   };
 
-  const clusterWarnings = (runWay: number) => {
-    if (runWay === 0) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
-    if (runWay < 30) return <Grid className={classes.LowRunWay}>Low Runway</Grid>;
+  const clusterWarnings = (cluster: any) => {
+    if (cluster.isLiquidated) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
+    if (cluster.runWay < 30) return <Grid className={classes.LowRunWay}>Low Runway</Grid>;
     return;
   };
 
@@ -59,7 +59,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
         </Grid>,
         cluster.validator_count,
         `${isNaN(cluster.runWay) ? 'N/A' : `${formatNumberToUi(cluster.runWay, true)  } Days`}`,
-        clusterWarnings(cluster.runWay),
+        clusterWarnings(cluster),
     );
   });
 
@@ -83,7 +83,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
 
   const rowBackgroundColor = (index: number) => {
     const indexCluster = sortedClusters[index];
-    if (indexCluster.runWay === 0) return 'rgba(236, 28, 38, 0.03)';
+    if (indexCluster.isLiquidated) return 'rgba(236, 28, 38, 0.03)';
     if (indexCluster.runWay < 30) return '#FDFBF0';
   };
 

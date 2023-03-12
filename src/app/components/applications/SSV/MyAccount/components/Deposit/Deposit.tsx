@@ -48,9 +48,9 @@ const Deposit = () => {
   }
 
   function inputHandler(e: any) {
-    let value = e.target.value;
+    let value = e.target.value.trim();
     if (value === '') value = '0.0';
-    if (value > clusterBalance) value = clusterBalance;
+    if (Number(value) > ssvStore.walletSsvBalance) value = String(ssvStore.walletSsvBalance);
     setInputValue(value);
   }
 

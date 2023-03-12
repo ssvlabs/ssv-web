@@ -30,7 +30,6 @@ const config = {
       ROOT: '/join',
       MY_ACCOUNT: {
         DASHBOARD: '/my-account',
-        DEPOSIT: '/my-account/deposit',
         WITHDRAW: '/my-account/withdraw',
         ENABLE_ACCOUNT: '/my-account/reactivate',
         OPERATOR: {
@@ -51,9 +50,10 @@ const config = {
         },
         CLUSTER: {
           ROOT: '/my-account/cluster',
+          DEPOSIT: '/my-account/cluster/deposit',
+          WITHDRAW: '/my-account/cluster/withdraw',
           ADD_VALIDATOR: '/my-account/validator/add',
           FEE_RECIPIENT: '/my-account/fee-recipient',
-          WITHDRAW: '/my-account/validator/withdraw',
           VALIDATOR_UPDATE: {
             ROOT: '/my-account/validator/update',
             ENTER_KEYSTORE: '/my-account/validator/update/enter-key',
@@ -62,8 +62,8 @@ const config = {
             SUCCESS: '/my-account/validator/update/success',
           },
           VALIDATOR_REMOVE: {
-            ROOT: '/my-account/validator/remove',
-            REMOVED: '/my-account/validator/removed',
+            ROOT: '/my-account/cluster/remove-validator',
+            REMOVED: '/my-account/cluster/removed',
           },
         },
         // EDIT_VALIDATOR: '/my-account/validator/:public_key/edit',

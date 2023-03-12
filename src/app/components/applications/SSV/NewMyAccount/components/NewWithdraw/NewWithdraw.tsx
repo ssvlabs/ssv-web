@@ -29,7 +29,7 @@ const NewWithdraw = () => {
           <BorderScreen
               marginTop={0}
               withoutNavigation
-              header={'Balance'}
+              header={'Available Balance'}
               wrapperClass={classes.FirstSquare}
               body={[
                 <Grid item container>

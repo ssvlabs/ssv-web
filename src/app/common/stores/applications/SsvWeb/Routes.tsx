@@ -34,7 +34,6 @@ const UploadKeyStore = lazy(() => import('~app/components/applications/SSV/MyAcc
 const RemoveOperator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/RemoveOperator'));
 const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator'));
 const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
-const OperatorRemoved = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/RemoveFlow/OperatorRemoved'));
 const RemoveValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator'));
 const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
 const ProductQuestions = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions'));
@@ -45,7 +44,7 @@ const Routes: any = () => {
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: any = [
-    { path: ssvRoutes.MY_ACCOUNT.DEPOSIT, Component: Deposit },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     { path: ssvRoutes.MY_ACCOUNT.ENABLE_ACCOUNT, Component: EnableAccount },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },
@@ -53,7 +52,6 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.SUCCESS, Component: OperatorRemoved },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },

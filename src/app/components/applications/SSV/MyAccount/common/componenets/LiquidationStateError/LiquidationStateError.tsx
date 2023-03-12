@@ -47,7 +47,7 @@ const LiquidationStateError = (props: Props) => {
                   <Typography className={classes.OperatorChangeText}>{secondText}</Typography>
                 </Grid>
                 <Grid item>
-                  <LinkText routePush withoutUnderline text={'Deposit'} link={config.routes.SSV.MY_ACCOUNT.DEPOSIT} />
+                  <LinkText routePush withoutUnderline text={'Deposit'} link={config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT} />
                 </Grid>
               </Grid>
             );

@@ -12,10 +12,12 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays/RemainingDays';
+import { useNavigate } from 'react-router-dom';
 
 const ValidatorFlow = () => {
   const stores = useStores();
   const classes = useStyles();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
@@ -43,6 +45,9 @@ const ValidatorFlow = () => {
     applicationStore.setIsLoading(true);
     const success = await ssvStore.withdrawSsv(inputValue.toString());
     applicationStore.setIsLoading(false);
+    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
+      navigate(-1);
+    }
     if (success) setInputValue(0.0);
   };
 
@@ -63,7 +68,8 @@ const ValidatorFlow = () => {
   }
 
   const newBalance = (inputValue ? clusterBalance - Number(inputValue) : clusterBalance).toFixed(18);
-  const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) === 0;
+  // @ts-ignore
+  const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0;
   const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30;
   const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my account.' : 'I understand the risks of having my account liquidated.';
   let buttonText = 'Withdraw';

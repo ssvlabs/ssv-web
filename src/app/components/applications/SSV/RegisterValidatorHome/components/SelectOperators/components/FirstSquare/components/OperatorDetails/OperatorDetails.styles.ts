@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         color: (props: any) => props.gray80 ? theme.colors.gray80 : theme.colors.gray90,
     },
     OperatorType: {
-        marginTop: 5,
+        marginTop: 2,
         marginLeft: 8,
         alignSelf: 'flex-start',
     },

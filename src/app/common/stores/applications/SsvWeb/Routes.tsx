@@ -24,6 +24,7 @@ const SingleOperator = lazy(() => import('~app/components/applications/SSV/MyAcc
 const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
 const SingleValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster'));
 const UpdateFee = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/EditFeeFlow/UpdateFee'));
+const ChangeOperatorName = lazy(() => import('~app/components/applications/SSV/NewMyAccount/components/changeOperatorName'));
 const CreateValidator = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator'));
 const SlashingWarning = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning'));
 const SelectOperators = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators'));
@@ -51,6 +52,7 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA, Component: ChangeOperatorName },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.REACTIVATE, Component: ReactivateCluster },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },

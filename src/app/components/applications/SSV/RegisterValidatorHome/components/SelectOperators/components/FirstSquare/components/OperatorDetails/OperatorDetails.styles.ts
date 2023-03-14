@@ -37,6 +37,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,
+        cursor: 'pointer',
         color: (props: any) => props.gray80 ? theme.colors.gray80 : theme.colors.gray90,
     },
     OperatorType: {

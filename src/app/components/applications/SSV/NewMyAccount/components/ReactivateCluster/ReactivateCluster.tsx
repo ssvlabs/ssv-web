@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
@@ -63,8 +64,9 @@ const ReactivateCluster = () => {
   const reactivateCluster = async () => {
     applicationStore.setIsLoading(true);
     const response = await validatorStore.reactivateCluster(totalCost.toString());
+    applicationStore.showTransactionPendingPopUp(false);
     applicationStore.setIsLoading(false);
-    if (response) navigate(-1);
+    if (response) navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
   };
 
 

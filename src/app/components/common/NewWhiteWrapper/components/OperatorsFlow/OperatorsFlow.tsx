@@ -50,6 +50,7 @@ const OperatorsFlow = (props: Props) => {
 
   const onClick = () => console.log;
   const moveToRemoveOperator = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
+  const moveToMetaData = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA);
 
   const onNavigationClicked = async () => {
     navigate(-1);
@@ -112,7 +113,7 @@ const OperatorsFlow = (props: Props) => {
                 <Grid className={classes.SettingsImage}/>
                 <Typography>Access setting</Typography>
               </Grid>
-              <Grid container item className={classes.Button} onClick={onClick}>
+              <Grid container item className={classes.Button} onClick={moveToMetaData}>
                 <Grid className={classes.MetadataImage}/>
                 <Typography>Metadata</Typography>
               </Grid>

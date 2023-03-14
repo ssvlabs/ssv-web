@@ -175,7 +175,7 @@ const KeyStoreFlow = () => {
 
 
   const inputDisableConditions = !keyStoreFileIsJson || processingFile || validatorStore.validatorPublicKeyExist;
-  const buttonDisableConditions = !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
+  const buttonDisableConditions = processingFile || !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
   const MainScreen =  <BorderScreen
       blackHeader

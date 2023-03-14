@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { useStyles } from './OperatorDetails.styles';
+import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { useStyles } from './OperatorDetails.styles';
-import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-import config from '~app/common/config';
 
 type Props = {
   gray80?: boolean;

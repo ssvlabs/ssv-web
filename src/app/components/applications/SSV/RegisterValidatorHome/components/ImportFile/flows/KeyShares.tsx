@@ -43,6 +43,7 @@ const KeyShareFlow = () => {
     setProcessFile(true);
     validatorStore.setKeyShareFile(file, async () => {
       const response = await validatorStore.validateKeySharePayload();
+      console.log(response);
       setValidationError(response);
       setProcessFile(false);
     });
@@ -132,7 +133,7 @@ const KeyShareFlow = () => {
   };
 
 
-  const buttonDisableConditions = processingFile || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
+  const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
   const MainScreen = <BorderScreen
       blackHeader

@@ -564,9 +564,9 @@ class ValidatorStore extends BaseStore {
   async validateKeySharePayload(): Promise<KeyShareError> {
     const processStore: ProcessStore = this.getStore('Process');
     const okResponse = { id: 0, name: '', errorMessage: '' };
-    const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, ', subErrorMessage:  'please try a different keystore file.' };
     const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
-    const operatorNotMatchingResponse = { id: 2, name: 'operators_not_matching', errorMessage: 'bka bla ' };
+    const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, ', subErrorMessage:  'please try a different keystore file.' };
+    const operatorNotMatchingResponse = { id: 2, name: 'operators_not_matching', errorMessage: 'Operators data does not match cluster,', subErrorMessage:  'check operator data and re-generate keyshares.json' };
     try {
       const fileJson = await this.keyShareFile?.text();
       // const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);

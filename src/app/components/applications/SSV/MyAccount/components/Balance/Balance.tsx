@@ -23,8 +23,8 @@ const Balance = () => {
   const cluster = process.item;
   const liquidated = cluster.isLiquidated;
 
-  function moveToEnableAccount() {
-    return navigate(config.routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT);
+  function moveToReactivateCluster() {
+    return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE);
   }
 
   function moveToDeposit() {
@@ -45,7 +45,7 @@ const Balance = () => {
     if (liquidated) {
       return (
         <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-          <PrimaryButton text={'Reactivate Account'} submitFunction={moveToEnableAccount} />
+          <PrimaryButton text={'Reactivate Account'} submitFunction={moveToReactivateCluster} />
         </Grid>
       );
     }

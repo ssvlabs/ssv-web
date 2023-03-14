@@ -83,9 +83,9 @@ const myAccountScreen: IUserFlow = {
     route: routes.SSV.MY_ACCOUNT.DASHBOARD,
 };
 
-const EnableAccountScreen: IUserFlow = {
+const ReactivateClusterScreen: IUserFlow = {
     name: 'Enable Account',
-    route: routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT,
+    route: routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE,
     depends: [
         myAccountScreen,
     ],
@@ -103,11 +103,11 @@ const SingleValidatorScreen: IUserFlow = {
 const userFlows: IUserFlow[] = [
     successScreens,
     myAccountScreen,
-    EnableAccountScreen,
     importValidatorFlow,
     slashingWarningFlow,
     operatorConfirmation,
     SingleValidatorScreen,
+    ReactivateClusterScreen,
     validatorConfirmationFlow,
 ];
 

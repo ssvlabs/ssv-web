@@ -139,7 +139,7 @@ class ValidatorStore extends BaseStore {
               }
               iterations += 1;
               // eslint-disable-next-line no-await-in-loop
-              if (!(await myAccountStore.checkEntityInAccount('validator', 'public_key', validator.publicKey.replace(/^(0x)/gi, '')))) {
+              if (!(await myAccountStore.checkEntityInAccount('cluster', 'public_key', validator.publicKey.replace(/^(0x)/gi, '')))) {
                 // eslint-disable-next-line no-await-in-loop
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
@@ -274,7 +274,7 @@ class ValidatorStore extends BaseStore {
                 }
                 iterations += 1;
                 // eslint-disable-next-line no-await-in-loop
-                if (await myAccountStore.checkEntityInAccount('validator', 'validator_count', payload[4].validatorCount)) {
+                if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload[4].validatorCount)) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndClusters(resolve, true);
                   break;
@@ -310,6 +310,91 @@ class ValidatorStore extends BaseStore {
                 category: 'validator_register',
                 action: 'register_tx',
                 label: 'error',
+              });
+              resolve(false);
+            }
+            console.debug('Contract Error', error);
+            resolve(true);
+          });
+    });
+  }
+
+  async reactivateCluster(amount: string) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const clusterStore: ClusterStore = this.getStore('Cluster');
+      const processStore: ProcessStore = this.getStore('Process');
+      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+      const applicationStore: ApplicationStore = this.getStore('Application');
+      const notificationsStore: NotificationsStore = this.getStore('Notifications');
+      const contract: Contract = walletStore.setterContract;
+      const process: SingleCluster = <SingleCluster>processStore.process;
+      const cluster = process.item;
+      const ownerAddress: string = walletStore.accountAddress;
+      // @ts-ignore
+      const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
+      const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
+
+      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress })
+          .on('receipt', async (receipt: any) => {
+            // eslint-disable-next-line no-prototype-builtins
+            const event: boolean = receipt.hasOwnProperty('events');
+            if (event) {
+              this.keyStoreFile = null;
+              GoogleTagManager.getInstance().sendEvent({
+                label: 'success',
+                category: 'single_cluster',
+                action: 'reactivate_cluster',
+              });
+              console.debug('Contract Receipt', receipt);
+              resolve(true);
+              let iterations = 0;
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // Reached maximum iterations
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  // eslint-disable-next-line no-await-in-loop
+                  await this.refreshOperatorsAndClusters(resolve, true);
+                  break;
+                }
+                iterations += 1;
+                // eslint-disable-next-line no-await-in-loop
+                if (await myAccountStore.checkEntityInAccount('cluster', 'active', true)) {
+                  // eslint-disable-next-line no-await-in-loop
+                  await this.refreshOperatorsAndClusters(resolve, true);
+                  break;
+                } else {
+                  console.log('Validator is still not in API..');
+                }
+                // eslint-disable-next-line no-await-in-loop
+                await myAccountStore.delay();
+              }
+            }
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            // eslint-disable-next-line no-prototype-builtins
+            const isRejected: boolean = error.hasOwnProperty('code');
+            GoogleTagManager.getInstance().sendEvent({
+              category: 'single_cluster',
+              action: 'reactivate_cluster',
+              label: isRejected ? 'rejected' : 'error',
+            });
+            console.debug('Contract Error', error.message);
+            applicationStore.setIsLoading(false);
+            resolve(false);
+          })
+          .catch((error: any) => {
+            applicationStore.setIsLoading(false);
+            if (error) {
+              notificationsStore.showMessage(error.message, 'error');
+              GoogleTagManager.getInstance().sendEvent({
+                label: 'error',
+                category: 'single_cluster',
+                action: 'reactivate_cluster',
               });
               resolve(false);
             }

@@ -1,4 +1,5 @@
 import React from 'react';
+import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -10,10 +11,12 @@ import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
-import Decimal from 'decimal.js';
 
 type Props = {
   days?: number,
+  networkCost?: number,
+  operatorsCost?: number,
+  liquidationCollateralCost?: number | Decimal,
 };
 
 const FundingSummary = (props: Props) => {
@@ -30,9 +33,9 @@ const FundingSummary = (props: Props) => {
     { id: 3, name: 'Liquidation collateral' },
   ];
 
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
-  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
-  const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+  const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
+  const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
+  const liquidationCollateralCost = props.liquidationCollateralCost ?? new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
 
   const paymentsValue = (paymentId: number): string => {
     switch (paymentId) {

@@ -20,7 +20,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import ValidatorDropDownMenu
   from '~app/components/applications/SSV/MyAccount/components/EnableAccount/Components/ValidatorDropDownMenu/ValidatorDropDownMenu';
 
-const EnableAccount = () => {
+const ReactivateCluster = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -159,4 +159,4 @@ const EnableAccount = () => {
   );
 };
 
-export default observer(EnableAccount);
+export default observer(ReactivateCluster);

@@ -80,7 +80,7 @@ class MyAccountStore extends BaseStore {
     try {
       let method: any;
       switch (entity) {
-        case 'validator':
+        case 'cluster':
           method = 'getOwnerAddressClusters';
           break;
         case 'operator':

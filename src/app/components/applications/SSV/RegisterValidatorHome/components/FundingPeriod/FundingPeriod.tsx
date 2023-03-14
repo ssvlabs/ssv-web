@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
@@ -16,7 +17,6 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
-import Decimal from 'decimal.js';
 
 const FundingPeriod = () => {
   const options = [

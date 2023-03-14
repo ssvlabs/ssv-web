@@ -31,7 +31,6 @@ const config = {
       MY_ACCOUNT: {
         DASHBOARD: '/my-account',
         WITHDRAW: '/my-account/withdraw',
-        ENABLE_ACCOUNT: '/my-account/reactivate',
         OPERATOR: {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
@@ -54,6 +53,7 @@ const config = {
           WITHDRAW: '/my-account/cluster/withdraw',
           ADD_VALIDATOR: '/my-account/validator/add',
           FEE_RECIPIENT: '/my-account/fee-recipient',
+          REACTIVATE: '/my-account/cluster/reactivate',
           VALIDATOR_UPDATE: {
             ROOT: '/my-account/validator/update',
             ENTER_KEYSTORE: '/my-account/validator/update/enter-key',

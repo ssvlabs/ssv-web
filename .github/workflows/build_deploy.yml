@@ -46,7 +46,7 @@ jobs:
           BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           SSV_API_ENDPOINT: ${{ secrets.STAGE_V2_API_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
+          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 
@@ -78,10 +78,9 @@ jobs:
           BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           SSV_API_ENDPOINT: ${{ secrets.STAGE_V3_API_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
+          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_SSV_CONTRACT_ADDRESS }}
           NETWORK_SETTER_CONTRACT_ADDRESS: ${{ secrets.NETWORK_SETTER_CONTRACT_ADDRESS }}
           NETWORK_GETTER_CONTRACT_ADDRESS: ${{ secrets.NETWORK_GETTER_CONTRACT_ADDRESS }}
-          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 
       - name: Deploy stage ssv-web
         if: github.ref == 'refs/heads/stageV3'
@@ -113,7 +112,7 @@ jobs:
           REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
           SSV_API_ENDPOINT: ${{ secrets.STAGE_V2_API_ENDPOINT }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
+          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_SSV_CONTRACT_ADDRESS }}
 
       - name: Deploy stage faucet
         if: github.ref == 'refs/heads/stage'
@@ -142,7 +141,7 @@ jobs:
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
           SSV_API_ENDPOINT: ${{ secrets.STAGE_V2_API_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
+          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_SSV_CONTRACT_ADDRESS }}
           NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 

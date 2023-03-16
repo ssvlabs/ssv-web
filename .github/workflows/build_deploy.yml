@@ -241,7 +241,7 @@ jobs:
 
 
       - name: Deploy prod ssv-web
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/mainV3'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete

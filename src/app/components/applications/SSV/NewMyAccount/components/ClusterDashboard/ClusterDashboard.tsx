@@ -1,8 +1,8 @@
 import _ from 'underscore';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewMyAccount.styles';
@@ -14,14 +14,17 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards';
+import OperatorType from '~app/components/common/OperatorType/OperatorType';
 
 const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const timeoutRef = useRef(null);
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
 
@@ -47,14 +50,48 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
 
   const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
 
+  const handleGridHover = (index: number) => {
+    // @ts-ignore
+    timeoutRef.current = setTimeout(() => {
+      // @ts-ignore
+      setHoveredGrid(index);
+    }, 1000);
+  };
+
+  const handleGridLeave = () => {
+    // @ts-ignore
+    clearTimeout(timeoutRef.current);
+    setHoveredGrid(null);
+  };
+
   const rows = sortedClusters.map((cluster: any) => {
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
         <Grid container style={{ gap: 8 }}>
-          {cluster.operators.map((operator: { id: any; }, index: number) => {
-            operator;
-            return <Grid key={index} container item className={classes.CircleImageOperatorWrapper}><Grid item
-                                                                                                         className={classes.CircleImageOperator}/></Grid>;
+          {cluster.operators.map((operator: any, index: number) => {
+            return <Grid item
+                         container
+                         key={index}
+                         onMouseLeave={handleGridLeave}
+                         onMouseEnter={() => handleGridHover(operator.id + cluster.index)}
+                         className={classes.CircleImageOperatorWrapper}>
+              {hoveredGrid === operator.id + cluster.index && (
+                  <Grid container className={classes.OperatorPopUp}>
+                    <Grid item className={classes.FullImageOperator} />
+                    <Grid item className={classes.Line} />
+                    <Grid item>
+                      <Grid item container style={{ alignItems: 'center', gap: 4 }}>
+                        <Grid>{operator.name}</Grid>
+                        {/*{operator.type !== 'operator' && (*/}
+                            <OperatorType type={'verified_operator'} />
+                        {/*)}*/}
+                      </Grid>
+                      <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
+                    </Grid>
+                  </Grid>
+              )}
+              <Grid item className={classes.CircleImageOperator} />
+            </Grid>;
           })}
         </Grid>,
         cluster.validator_count,

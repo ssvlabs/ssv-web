@@ -89,23 +89,25 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
     await myAccountStore.getOwnerAddressOperators({ forcePage: newPage });
     setLoadingOperators(false);
   }, 200);
-
-  const sortByStatus = ( a: any ) => {
-    if ( a.status === 'active') {
-      console.log('active');
-      return -1;
-    }
-    if ( a.status === 'inactive') {
-      console.log('inactive');
-      return 1;
-    }
-    console.log(a.status);
-    return 0;
+  
+  const sortByStatus = (arr: any) => {
+    return arr.sort((a: any, b: any) => {
+      if (a.status === 'Inactive') {
+        return -1;
+      } else if (b.status === 'Inactive') {
+        return 1;
+      } else if (a.status === 'Active') {
+        return b.status === 'No Validators' ? -1 : -1;
+      } else {
+        return b.status === 'No Validators' ? 0 : 1;
+      }
+    });
   };
+
 
   const sortOperatorsByStatus = () => {
     const newOperatorsList = [...myAccountStore.ownerAddressOperators];
-    myAccountStore.ownerAddressOperators = newOperatorsList.sort( sortByStatus );
+    myAccountStore.ownerAddressOperators = sortByStatus(newOperatorsList);
   };
 
   return (

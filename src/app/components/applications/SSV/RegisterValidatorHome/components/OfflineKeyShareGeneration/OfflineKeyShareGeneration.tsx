@@ -29,7 +29,7 @@ const OfflineKeyShareGeneration = () => {
   const {
     operatorsIds,
     operatorsKeys,
-  } = Object.values(operatorStore.selectedOperators).reduce((aggr, operator: IOperator) => {
+  } = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id).reduce((aggr, operator: IOperator) => {
     // @ts-ignore
     aggr.operatorsIds.push(operator.id);
     // @ts-ignore

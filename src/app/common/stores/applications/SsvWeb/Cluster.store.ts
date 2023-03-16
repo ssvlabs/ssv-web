@@ -75,7 +75,7 @@ class ClusterStore extends BaseStore {
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     try {
-      const burnRate = await contract.methods.getClusterBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
+      const burnRate = await contract.methods.getBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
       return burnRate;
     } catch (e) {
       return 0;

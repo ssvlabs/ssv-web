@@ -82,9 +82,9 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
                     <Grid item>
                       <Grid item container style={{ alignItems: 'center', gap: 4 }}>
                         <Grid>{operator.name}</Grid>
-                        {/*{operator.type !== 'operator' && (*/}
+                        {operator.type !== 'operator' && (
                             <OperatorType type={'verified_operator'} />
-                        {/*)}*/}
+                        )}
                       </Grid>
                       <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
                     </Grid>

@@ -12908,9 +12908,9 @@ jest@26.6.0:
     jest-cli "^26.6.0"
 
 js-base64@^3.7.2:
-  version "3.7.4"
-  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.4.tgz#af95b20f23efc8034afd2d1cc5b9d0adf7419037"
-  integrity sha512-wpM/wi20Tl+3ifTyi0RdDckS4YTD4Lf953mBRrpG8547T7hInHNPEj8+ck4gB8VDcGyeAWFK++Wb/fU1BeavKQ==
+  version "3.7.5"
+  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.5.tgz#21e24cf6b886f76d6f5f165bfcd69cc55b9e3fca"
+  integrity sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==
 
 js-sha256@0.9.0, js-sha256@^0.9.0:
   version "0.9.0"
@@ -13025,10 +13025,10 @@ jsdom@^16.4.0, jsdom@^16.5.3:
     ws "^7.4.6"
     xml-name-validator "^3.0.0"
 
-jsencrypt@^3.2.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/jsencrypt/-/jsencrypt-3.3.1.tgz#5d47e6c1079bb50e714a36d009ba09ea81fbfa18"
-  integrity sha512-dVvV54GdFuJgmEKn+oBiaifDMen4p6o6j/lJh0OVMcouME8sST0bJ7bldIgKBQk4za0zyGn0/pm4vOznR25mLw==
+jsencrypt@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/jsencrypt/-/jsencrypt-3.2.1.tgz#09766983cc760088ff26b12fe7e574252af97727"
+  integrity sha512-k1sD5QV0KPn+D8uG9AdGzTQuamt82QZ3A3l6f7TRwMU6Oi2Vg0BsL+wZIQBONcraO1pc78ExMdvmBBJ8WhNYUA==
 
 jsesc@^2.5.1:
   version "2.5.2"
@@ -13588,9 +13588,9 @@ levn@^0.4.1:
     type-check "~0.4.0"
 
 libphonenumber-js@^1.9.43:
-  version "1.10.19"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.19.tgz#e18970c8d566fbfb1f88e688345f0512e126712e"
-  integrity sha512-MDZ1zLIkfSDZV5xBta3nuvbEOlsnKCPe4z5r3hyup/AXveevkl9A1eSWmLhd2FX4k7pJDe4MrLeQsux0HI/VWg==
+  version "1.10.24"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.24.tgz#a1744cf29df86d5a587562ea28dde12320eb6ab6"
+  integrity sha512-3Dk8f5AmrcWqg+oHhmm9hwSTqpWHBdSqsHmjCJGroULFubi0+x7JEIGmRZCuL3TI8Tx39xaKqfnhsDQ4ALa/Nw==
 
 libsodium-wrappers@^0.7.6:
   version "0.7.10"
@@ -18223,9 +18223,9 @@ ssri@^8.0.1:
   dependencies:
     minipass "^3.1.1"
 
-"ssv-keys@https://github.com/bloxapp/ssv-keys#main":
-  version "0.0.7"
-  resolved "https://github.com/bloxapp/ssv-keys#dd08179d3203174e2f72e7b19ae36ddf222364f6"
+"ssv-keys@https://github.com/bloxapp/ssv-keys#v3":
+  version "0.0.12"
+  resolved "https://github.com/bloxapp/ssv-keys#fa58a6e1ffa084c0ea53a9ad266c6a29574cd796"
   dependencies:
     "@types/figlet" "^1.5.4"
     "@types/underscore" "^1.11.4"
@@ -18246,7 +18246,7 @@ ssri@^8.0.1:
     events "^3.3.0"
     figlet "^1.5.2"
     js-base64 "^3.7.2"
-    jsencrypt "^3.2.1"
+    jsencrypt "3.2.1"
     minimist "^1.2.6"
     moment "^2.29.3"
     node-jsencrypt "^1.0.0"
@@ -19678,9 +19678,9 @@ validate-npm-package-license@^3.0.1:
     spdx-expression-parse "^3.0.0"
 
 validator@^13.7.0:
-  version "13.7.0"
-  resolved "https://registry.yarnpkg.com/validator/-/validator-13.7.0.tgz#4f9658ba13ba8f3d82ee881d3516489ea85c0857"
-  integrity sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==
+  version "13.9.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.9.0.tgz#33e7b85b604f3bbce9bb1a05d5c3e22e1c2ff855"
+  integrity sha512-B+dGG8U3fdtM0/aNK4/X8CXq/EcxU2WPrPEkJGslb47qyHsxmbggTWK0yEA4qnYVNF+nxNlN88o14hIcPmSIEA==
 
 varint@5.0.0:
   version "5.0.0"
@@ -21146,9 +21146,9 @@ yargs@^15.4.1:
     yargs-parser "^18.1.2"
 
 yargs@^17.5.1:
-  version "17.6.2"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.6.2.tgz#2e23f2944e976339a1ee00f18c77fedee8332541"
-  integrity sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==
+  version "17.7.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.1.tgz#34a77645201d1a8fc5213ace787c220eabbd0967"
+  integrity sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==
   dependencies:
     cliui "^8.0.1"
     escalade "^3.1.1"

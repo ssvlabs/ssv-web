@@ -99,7 +99,7 @@ class ValidatorStore extends BaseStore {
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
         if (typeof response === 'object') throw (response);
         this.keyStorePrivateKey = response;
-        this.keyStorePublicKey = ssvKeys.validatorPublicKey;
+        this.keyStorePublicKey = ssvKeys.publicKey;
         resolve(true);
       } catch (e: any) {
         reject(e);
@@ -438,12 +438,7 @@ class ValidatorStore extends BaseStore {
           const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
-        const { readable } = await ssvKeys.buildPayload(
-            threshold.validatorPublicKey,
-            operatorsIds,
-            shares,
-            totalCost,
-        );
+        const { readable } = await ssvKeys.buildPayload({ publicKey: threshold.publicKey, operatorIds: operatorsIds, encryptedShares: shares });
 
         resolve([
           this.keyStorePublicKey,

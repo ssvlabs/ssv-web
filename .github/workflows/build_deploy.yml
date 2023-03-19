@@ -125,7 +125,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.PROD_V3_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run stage faucet build

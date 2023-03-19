@@ -27,6 +27,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   BigBox: {
     gap: 68,
+    width: 1320,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
     backgroundColor: theme.colors.squareScreenBackground,
@@ -52,7 +53,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: (props: any) => props.header ? theme.colors.white : theme.colors.gray0,
   },
   TableWrapper: {
-    maxWidth: 1320,
+    width: 1320,
   },
   Arrow: {
     width: 24,

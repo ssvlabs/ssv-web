@@ -1,6 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ChangeOperatorName.styles';
 import TextInput from '~app/components/common/TextInput';
@@ -9,23 +10,30 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const ChangeOperatorName = () => {
   const stores = useStores();
   const classes = useStyles();
   const walletStore: WalletStore = stores.Wallet;
+  const processStore: ProcessStore = stores.Process;
   const applicationStore: ApplicationStore = stores.Application;
+  const process: SingleOperator = processStore.getProcess;
+  const operator = process?.item;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   setIsAddressValid;
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState(operator.name);
 
   const submitOperatorName = async () => {
-    const signatureHash = await walletStore.web3.eth.personal.sign(userInput, walletStore.accountAddress);
-    console.log(signatureHash);
-    walletStore.web3.eth.personal.ecRecover(userInput, signatureHash, console.log);
-    // someSignatureVerificationAPI(message, address, signatureHash)
     applicationStore.setIsLoading(true);
+    const signatureHash = await walletStore.web3.eth.personal.sign(userInput, walletStore.accountAddress);
+    console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
+    console.log(signatureHash);
+    console.log(userInput);
+    console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
+    const bla = await Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput);
+    bla;
     applicationStore.setIsLoading(false);
   };
 

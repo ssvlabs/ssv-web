@@ -82,6 +82,18 @@ class Operator {
     }
   }
 
+  async updateOperatorName(operatorId: string, signature: string, operatorName: string) {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
+    try {
+      return (await axios.put(url, {
+        operatorName,
+        signature,
+      })).data;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async getOperatorsByIds(operatorIds: number[]): Promise<IOperator[] | boolean> {
     try {
       const promises = operatorIds.map(operatorId => this.getOperator(operatorId, true));

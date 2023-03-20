@@ -442,7 +442,7 @@ class ValidatorStore extends BaseStore {
 
         resolve([
           this.keyStorePublicKey,
-          readable?.operatorIds.split(',').map(Number).sort((a: number, b: number) => a - b),
+          readable?.operatorIds.sort((a: number, b: number) => a - b),
           readable.shares,
           `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),

@@ -57,7 +57,7 @@ const FundingSummary = (props: Props) => {
           const paymentValue = paymentsValue(payment.id);
           const isLast = payment.id === 3;
           return <Grid key={index} container item>
-            <Grid container item xs style={{ gap: 8, marginBottom: index !== 2 ? 8 : 0 }}>
+            <Grid container item xs style={{ gap: 8, marginBottom: index !== 2 ? 8 : 0, alignItems: 'center' }}>
               <Grid item>
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>{payment.name}</Typography>
               </Grid>

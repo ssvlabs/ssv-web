@@ -99,8 +99,9 @@ const FundingNewValidator = () => {
                   <Grid container item className={classes.FieldBox}
                         style={{ borderTop: 'none', borderRadius: '0px 0px 8px 8px' }}>
                     <Grid container item alignItems={'center'} style={{ gap: 10 }}>
-                      <Typography className={classes.LightGreyHeader}>Operational Runway</Typography>
-                      <ToolTip classExtend={classes.ToolTip} text={'Estimated amount of days the cluster balance is sufficient to run all it’s validator'}/>
+                      <Typography className={classes.LightGreyHeader}>Est. Operational Runway</Typography>
+                      <ToolTip classExtend={classes.ToolTip}
+                               text={'Estimated amount of days the cluster balance is sufficient to run all it’s validator'}/>
                     </Grid>
                     <Grid container item style={{ gap: 8, alignItems: 'center' }}>
                       <Typography
@@ -122,26 +123,27 @@ const FundingNewValidator = () => {
                         </Grid>
                         {isCustom && <TextInput value={depositSSV}
                                                 onChangeCallback={(e: any) => setDepositSSV(Number(e.target.value))}
-                                                extendClass={classes.DaysInput} withSideText/>}
+                                                extendClass={classes.DaysInput} withSideText />}
                       </Grid>;
                     })}
                   </Grid>
                   {depositSSV > ssvStore.walletSsvBalance && <Grid container style={{ marginTop: 24 }}>
-                      <ErrorMessage extendClasses={classes.ErrorBox} text={
-                        <Grid container style={{ gap: 8 }}>
-                          <Grid item>
-                            Insufficient SSV balance. Acquire further SSV or pick a different amount.
-                          </Grid>
-                          <Grid container item xs>
-                            <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
-                          </Grid>
+                    <ErrorMessage extendClasses={classes.ErrorBox} text={
+                      <Grid container style={{ gap: 8 }}>
+                        <Grid item>
+                          Insufficient SSV balance. Acquire further SSV or pick a different amount.
                         </Grid>
-                      }
-                      />
+                        <Grid container item xs>
+                          <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
+                        </Grid>
+                      </Grid>
+                    }
+                    />
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance} text={'Next'} submitFunction={moveToNextPage} />
+                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance} text={'Next'}
+                                   submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>
               </Grid>,

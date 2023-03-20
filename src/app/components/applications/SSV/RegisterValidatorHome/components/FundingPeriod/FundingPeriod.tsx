@@ -44,7 +44,7 @@ const FundingPeriod = () => {
 
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
-  const showLiquidationError = isCustomPayment && insufficientBalance && timePeriodNotValid;
+  const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
 
   const isChecked = (id: number) => checkedOption.id === id;
 

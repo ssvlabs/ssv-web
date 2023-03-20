@@ -5,17 +5,31 @@ import { useStyles } from './Status.styles';
 
 const Status = ({ item }: { item: any }) => {
     const classes = useStyles();
+    const isDeleted = item.is_deleted;
     const status = item.status.toLowerCase();
     const isActive = status === 'active';
     const noValidators = item.validators_count === 0;
-    let classesStatus = classes.Status;
-    if (isActive) classesStatus += ` ${classes.Active}`;
-    if (noValidators) classesStatus += ` ${classes.NoValidators}`;
-    if (!isActive && !noValidators) classesStatus += ` ${classes.Inactive}`;
+
+
+    const statusRender = () => {
+        if (isDeleted) return 'Removed';
+        if (noValidators) return 'No Validators';
+        if (isActive) return 'Active';
+        return 'Inactive';
+    };
+
+    const classRender = () => {
+        let classesStatus = classes.Status;
+        if (isDeleted) return `${classesStatus} ${classes.IsDeleted}`;
+        if (noValidators) return `${classesStatus} ${classes.NoValidators}`;
+        if (isActive) return `${classesStatus} ${classes.Active}`;
+        if (!isActive) return `${classesStatus} ${classes.Inactive}`;
+        return classesStatus;
+    };
 
     return (
-      <Grid container item className={classesStatus}>
-        <Typography>{noValidators ? 'No Validators' : status}</Typography>
+      <Grid container item className={classRender()}>
+        <Typography>{statusRender()}</Typography>
       </Grid>
     );
 };

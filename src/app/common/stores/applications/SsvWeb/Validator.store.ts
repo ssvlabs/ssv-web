@@ -120,7 +120,7 @@ class ValidatorStore extends BaseStore {
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // @ts-ignore
-    const operatorsIds = validator.operators.map(({ id }) => id).sort();
+    const operatorsIds = validator.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
     validator.publicKey = validator.public_key.startsWith('0x') ? validator.public_key : `0x${validator.public_key}`;
     const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(validator.operators));
     // eslint-disable-next-line no-async-promise-executor
@@ -442,7 +442,7 @@ class ValidatorStore extends BaseStore {
 
         resolve([
           this.keyStorePublicKey,
-          readable?.operatorIds.split(',').map(Number).sort((a: number, b: number) => a - b),
+          readable?.operatorIds.sort((a: number, b: number) => a - b),
           readable.shares,
           `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),

@@ -111,6 +111,7 @@ const SingleCluster = () => {
         />
         <Grid container item className={classes.Section}>
           {(cluster?.operators).map((operator: any, index: number) => {
+            if (index === 0) operator.is_deleted = true;
             return <OperatorBox key={index} operator={operator} />;
           })}
         </Grid>

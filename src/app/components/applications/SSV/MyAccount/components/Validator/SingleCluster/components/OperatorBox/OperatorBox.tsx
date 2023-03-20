@@ -13,7 +13,8 @@ import OperatorDetails
 
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
-  const classes = useStyles();
+  const isDeleted = operator.is_deleted;
+  const classes = useStyles({ isDeleted });
   const walletStore: WalletStore = stores.Wallet;
   if (operator === null) return <Grid item className={classes.OperatorBox}/>;
 
@@ -36,9 +37,9 @@ const OperatorBox = ({ operator }: { operator: any }) => {
           </Grid>
           <Grid item container className={classes.ColumnWrapper}>
             <Status item={operator}/>
-            <Grid item className={classes.BoldText}>{operator.performance['30d'].toFixed(2) ?? 0}%</Grid>
+            <Grid item className={classes.BoldText}>{isDeleted ? '-' : `${operator.performance['30d'].toFixed(2) ?? 0  }%`}</Grid>
             <Grid item
-                  className={classes.BoldText}>{formatNumberToUi(walletStore.fromWei(operator.fee) * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)} SSV</Grid>
+                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(walletStore.fromWei(operator.fee) * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)  } SSV`}</Grid>
           </Grid>
         </Grid>
       </Grid>

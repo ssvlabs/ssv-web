@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: 312,
     height: 188,
     borderRadius: 16,
-    backgroundColor: theme.colors.squareScreenBackground,
+    backgroundColor: (props: any) => props.isDeleted ? '#f8fcff' : theme.colors.squareScreenBackground,
   },
   FirstSectionOperatorBox: {
     padding: '24px 24px 15px',

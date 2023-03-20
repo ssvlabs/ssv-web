@@ -12,6 +12,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
             // padding: '1px 6px',
         },
     },
+    IsDeleted: {
+        width: 73,
+        height: 26,
+        color: theme.colors.primaryError,
+        backgroundColor: theme.colors.gray20,
+    },
     Active: {
         width: 54,
         height: 26,

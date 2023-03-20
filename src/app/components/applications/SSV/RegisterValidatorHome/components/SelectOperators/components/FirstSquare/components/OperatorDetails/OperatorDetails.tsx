@@ -8,6 +8,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import Tooltip from '~app/components/common/ToolTip/ToolTip';
 
 type Props = {
   gray80?: boolean;
@@ -20,7 +21,7 @@ const OperatorDetails = (props: Props) => {
     const { gray80, operator, withCopy, withoutExplorer } = props;
     const stores = useStores();
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const classes = useStyles({ operatorLogo: operator.logo, gray80 });
+    const classes = useStyles({ isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
     let operatorName = operator?.name;
     if (operator?.name?.length > 14) operatorName = `${operator.name.slice(0, 13)}...`;
 
@@ -53,8 +54,14 @@ const OperatorDetails = (props: Props) => {
               <OperatorType type={operator.type}/>
             </Grid>
         )}
-        {!withoutExplorer && <Grid item className={classes.OperatorType}>
+        {!operator.is_deleted && !withoutExplorer && <Grid item className={classes.OperatorType}>
           <ImageDiv onClick={openExplorer} image={'explorer'} width={20} height={20}/>
+        </Grid>}
+        {operator.is_deleted  && <Grid item className={classes.OperatorType}>
+          <ImageDiv onClick={openExplorer} image={'operatorOff'} width={20} height={20}/>
+        </Grid>}
+        {operator.is_deleted  && <Grid item className={classes.OperatorType}>
+          <Tooltip text={'This operator has left the network permanently'} />
         </Grid>}
       </Grid>
     );

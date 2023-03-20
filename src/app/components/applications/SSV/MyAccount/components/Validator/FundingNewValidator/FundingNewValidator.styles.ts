@@ -66,8 +66,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '18px 24px',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray30}`,
+    backgroundColor: theme.darkMode ? theme.colors.white : '#F8FCFF',
   },
   OptionBox: {
     minHeight: 64,

@@ -3,10 +3,10 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     Wrapper: {
+        gap: 8,
         alignItems: 'flex-start',
     },
     TextWrapper: {
-        marginLeft: 16,
         flexDirection: 'column',
     },
     Copy: {
@@ -38,11 +38,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 500,
         lineHeight: 1.62,
         cursor: 'pointer',
-        color: (props: any) => props.gray80 ? theme.colors.gray80 : theme.colors.gray90,
+        color: (props: any) => {
+            if (props.isDeleted) return theme.colors.gray40;
+            if (props.gray80) return theme.colors.gray80;
+            return theme.colors.gray90;
+        },
     },
     OperatorType: {
         marginTop: 2,
-        marginLeft: 8,
         alignSelf: 'flex-start',
     },
     Id: {

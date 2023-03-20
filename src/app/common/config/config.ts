@@ -52,8 +52,8 @@ const config = {
           ROOT: '/my-account/cluster',
           DEPOSIT: '/my-account/cluster/deposit',
           WITHDRAW: '/my-account/cluster/withdraw',
-          ADD_VALIDATOR: '/my-account/validator/add',
           FEE_RECIPIENT: '/my-account/fee-recipient',
+          ADD_VALIDATOR: '/my-account/cluster/funding',
           REACTIVATE: '/my-account/cluster/reactivate',
           VALIDATOR_UPDATE: {
             ROOT: '/my-account/validator/update',

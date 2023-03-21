@@ -9,8 +9,8 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import RemainingDays from '~app/components/applications/SSV/NewMyAccount/common/NewRemainingDays';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import NewRemainingDays from '~app/components/applications/SSV/NewMyAccount/common/NewRemainingDays';
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
 
 const Balance = () => {
@@ -80,7 +80,7 @@ const Balance = () => {
       </Grid>
       <Grid item className={classes.SeparationLine} xs={12} />
         <Grid container item className={classes.SecondSectionWrapper}>
-          <RemainingDays cluster={cluster} />
+          <NewRemainingDays cluster={cluster} />
           {liquidated && (
             <Grid className={classes.ErrorMessageWrapper}>
               <ErrorText

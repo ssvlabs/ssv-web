@@ -1,4 +1,5 @@
 import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import Operator from '~lib/api/Operator';
@@ -7,6 +8,7 @@ import { useStyles } from './ChangeOperatorName.styles';
 import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -15,11 +17,13 @@ import ProcessStore, { SingleOperator } from '~app/common/stores/applications/Ss
 const ChangeOperatorName = () => {
   const stores = useStores();
   const classes = useStyles();
+  const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const applicationStore: ApplicationStore = stores.Application;
   const process: SingleOperator = processStore.getProcess;
   const operator = process?.item;
+  const [errorMessage, setErrorMessage] = useState('');
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   setIsAddressValid;
@@ -28,13 +32,18 @@ const ChangeOperatorName = () => {
   const submitOperatorName = async () => {
     applicationStore.setIsLoading(true);
     const signatureHash = await walletStore.web3.eth.personal.sign(userInput, walletStore.accountAddress);
-    console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
-    console.log(signatureHash);
-    console.log(userInput);
-    console.log('<<<<<<<<<<<<<<<<<<<<here>>>>>>>>>>>>>>>>>>>>');
-    const bla = await Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput);
-    bla;
-    applicationStore.setIsLoading(false);
+    setErrorMessage('');
+    Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput).then((response) => {
+      operator.name = response;
+      applicationStore.setIsLoading(false);
+      navigate(-1);
+    }).catch((error: any) => {
+      console.log('<<<<<<<<<<<error>>>>>>>>>>>');
+      console.log(error.response.data);
+      setErrorMessage(error.response.data.error.message);
+      console.log('<<<<<<<<<<<error>>>>>>>>>>>');
+      applicationStore.setIsLoading(false);
+    });
   };
 
   const setOperatorName = async (e: any) => {
@@ -69,6 +78,7 @@ const ChangeOperatorName = () => {
                       />
                       {/*<Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>*/}
                     </Grid>
+                    {errorMessage && <ErrorMessage text={errorMessage} extendClasses={classes.Error}/>}
                     <PrimaryButton disable={readOnlyState || submitDisable} text={'Update'} submitFunction={submitOperatorName}/>
                   </Grid>
                 </Grid>

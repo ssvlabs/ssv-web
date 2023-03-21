@@ -8,6 +8,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: 1.62,
     color: theme.colors.gray80,
   },
+  Error: {
+    marginBottom: '0px !important',
+  },
   ErrorText: {
     height: 23,
     minWidth: 1,

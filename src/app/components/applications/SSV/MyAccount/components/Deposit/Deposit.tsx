@@ -13,7 +13,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
+import NewRemainingDays from '~app/components/applications/SSV/NewMyAccount/common/NewRemainingDays';
 
 const Deposit = () => {
   const stores = useStores();
@@ -99,7 +99,7 @@ const Deposit = () => {
               ),
               (
                   <>
-                    <RemainingDays cluster={{ ...cluster, newBalance: newBalance }}/>
+                    <NewRemainingDays cluster={{ ...cluster, newBalance: newBalance }}/>
                   </>
               ),
             ]}

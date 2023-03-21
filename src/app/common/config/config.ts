@@ -29,8 +29,10 @@ const config = {
     SSV: {
       ROOT: '/join',
       MY_ACCOUNT: {
-        DASHBOARD: '/my-account',
+        ROOT: '/my-account',
         WITHDRAW: '/my-account/withdraw',
+        CLUSTER_DASHBOARD: '/my-account/clusters-dashboard',
+        OPERATOR_DASHBOARD: '/my-account/operators-dashboard',
         OPERATOR: {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',

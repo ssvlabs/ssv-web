@@ -1,17 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStyles } from './ToggleDashboards.styles';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import React, { useEffect, useRef, useState } from 'react';
+import { useStyles } from './ToggleDashboards.styles';
+import config from '~app/common/config';
 
 type Props = {
   type?: string,
   title: string,
-  changeState: any,
 };
 
 const ToggleDashboards = (props: Props) => {
-  const { type, title, changeState } = props;
+  const { type, title } = props;
+  const navigate = useNavigate();
   const classes = useStyles({ isOperator: type === 'operator' });
   const textRef = useRef(null);
   const imageRef = useRef(null);
@@ -51,11 +53,11 @@ const ToggleDashboards = (props: Props) => {
         {
             showSettings && <Grid item className={classes.SettingsWrapper}>
               <Grid ref={settingsRef} container item className={classes.Settings}>
-                <Grid container item className={classes.Button} onClick={()=>{changeState(2);}}>
+                <Grid container item className={classes.Button} onClick={()=>{navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);}}>
                   <Grid className={classes.SettingsImage}/>
                   Operators
                 </Grid>
-                <Grid container item className={classes.Button} onClick={()=>{changeState(1);}}>
+                <Grid container item className={classes.Button} onClick={()=>{navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);}}>
                   <Grid className={classes.SettingsImage}/>
                   Validators
                 </Grid>

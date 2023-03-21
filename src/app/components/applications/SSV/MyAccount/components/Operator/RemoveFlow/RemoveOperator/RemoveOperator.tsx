@@ -124,7 +124,7 @@ const RemoveOperator = () => {
     applicationStore.setIsLoading(true);
     const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
     applicationStore.setIsLoading(false);
-    if (isRemoved) navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (isRemoved) navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
   };
 
   return (

@@ -9,14 +9,14 @@ import { useStyles } from '../../NewMyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
+import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards';
-import OperatorType from '~app/components/common/OperatorType/OperatorType';
 
-const ClusterDashboard = ({ changeState }: { changeState: any }) => {
+const ClusterDashboard = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ const ClusterDashboard = ({ changeState }: { changeState: any }) => {
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
-        <ToggleDashboards changeState={changeState} title={'Validator Clusters'} />
+        <ToggleDashboards title={'Validator Clusters'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           <Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
             Fee Address

@@ -37,7 +37,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
     if (editPage) {
-      if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
       myAccountStore.getValidator(process.item.publicKey).then((validator: any) => {
         if (validator?.operators) {
           // @ts-ignore

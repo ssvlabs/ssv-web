@@ -183,7 +183,13 @@ class WalletStore extends BaseStore implements Wallet {
       await this.initializeUserInfo();
       await myAccountStore.getOwnerAddressOperators({});
       await myAccountStore.getOwnerAddressClusters({});
-      applicationStore.strategyRedirect = myAccountStore?.ownerAddressOperators?.length || myAccountStore?.ownerAddressClusters?.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
+      if (myAccountStore?.ownerAddressClusters?.length) {
+        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+      } else if (myAccountStore?.ownerAddressOperators?.length) {
+        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+      } else {
+        applicationStore.strategyRedirect = config.routes.SSV.ROOT;
+      }
       if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
       this.setAccountDataLoaded(true);
@@ -271,6 +277,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get getterContract(): Contract {
+    console.log('<<<<<<<<<<<getterContract>>>>>>>>>>>', config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS);
     if (!this.viewContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
@@ -281,6 +288,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get setterContract(): Contract {
+    console.log('<<<<<<<<<<<getterContract>>>>>>>>>>>', config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
     if (!this.networkContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;

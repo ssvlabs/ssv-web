@@ -6,7 +6,6 @@ import Layout from '~app/components/common/Layout';
 import { SsvAppBar } from '~app/components/common/AppBar';
 // import MyAccount from '~app/components/applications/SSV/MyAccount';
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
-const NewMyAccount = lazy(() => import('~app/components/applications/SSV/NewMyAccount'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
 const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
 const Deposit = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Deposit'));
@@ -19,6 +18,8 @@ const ValidatorSuccessScreen = lazy(() => import('~app/components/applications/S
 const NewWithdraw = lazy(() => import('~app/components/applications/SSV/NewMyAccount/components/NewWithdraw'));
 const OperatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/OperatorConfirmation'));
 const ImportFile = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile'));
+const ClusterDashboard = lazy(() => import('~app/components/applications/SSV/NewMyAccount/components/ClusterDashboard'));
+const OperatorDashboard = lazy(() => import('~app/components/applications/SSV/NewMyAccount/components/OperatorDashboard'));
 const ReactivateCluster = lazy(()=> import('~app/components/applications/SSV/NewMyAccount/components/ReactivateCluster'));
 const SingleOperator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Operator/SingleOperator'));
 const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
@@ -37,7 +38,7 @@ const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/
 const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
 const RemoveValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator'));
 const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
-const ProductQuestions = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions'));
+// const ProductQuestions = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions'));
 const OfflineKeyShareGeneration = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration'));
 const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
 
@@ -50,14 +51,16 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.REACTIVATE, Component: ReactivateCluster },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR_DASHBOARD, Component: OperatorDashboard },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA, Component: ChangeOperatorName },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.REMOVED, Component: ProductQuestions },
+    // { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.REMOVED, Component: ProductQuestions },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE, Component: UploadKeyStore },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CHOOSE_OPERATORS, Component: EditValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS, Component: ConfirmOperatorsChange },
@@ -94,8 +97,7 @@ const Routes: any = () => {
           <Wrapper>
             <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
             <Route path={ssvRoutes.ROOT} element={<Welcome />} />
-            <Route path={ssvRoutes.MY_ACCOUNT.DASHBOARD}>
-              <Route index element={<NewMyAccount/>}/>
+            <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>
               {dashboardRoutes.map((route: any, index: number) => {
                 return <Route key={index} path={route.path} element={<route.Component/>}/>;
               })}

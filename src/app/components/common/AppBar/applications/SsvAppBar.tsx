@@ -6,12 +6,14 @@ import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/components/common/AppBar/AppBar';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 const SsvAppBar = () => {
   const stores = useStores();
   const navigate = useNavigate();
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
-  const hasOperatorsOrClusters = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+  const hasOperatorsOrClusters = [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD, config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD].includes(applicationStore.strategyRedirect);
   const backgroundColor = applicationStore.theme.colors.white;
 
   const moveToDashboard = () => {
@@ -24,7 +26,11 @@ const SsvAppBar = () => {
         action: 'click',
         label: 'My Account',
       });
-      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      if (myAccountStore.ownerAddressClusters?.length > 0) {
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD); 
+      } else {
+        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+      }
     }
   };
   const openDocs = () => {

@@ -29,7 +29,7 @@ const NewRemainingDays = (props: Props) => {
       <Grid item container>
         <Grid item container>
           <Grid item container xs={12}>
-            <Typography className={classes.AmountOfDaysText}>Est. Remaining Days</Typography>
+            <Typography className={classes.AmountOfDaysText}>Est. Operational Runway</Typography>
             <Grid className={classes.Hint}>
               <Tooltip text={'Estimated amount of days the cluster balance is sufficient to run all it’s validators.'} />
             </Grid>
@@ -41,7 +41,7 @@ const NewRemainingDays = (props: Props) => {
           {warningLiquidationState && !cluster.isLiquidated && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays ?? 0} />
-              <LiquidationStateError marginTop={'16px'} errorType={1} />
+              <LiquidationStateError marginTop={'16px'} errorType={remainingDays === 0 ? 3 : 1} />
             </Grid>
           )}
         </Grid>

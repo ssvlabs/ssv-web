@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewWithdraw.styles';
@@ -11,8 +12,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays/RemainingDays';
-import { useNavigate } from 'react-router-dom';
+import NewRemainingDays from '~app/components/applications/SSV/NewMyAccount/common/NewRemainingDays';
 
 const ValidatorFlow = () => {
   const stores = useStores();
@@ -105,7 +105,7 @@ const ValidatorFlow = () => {
         </Grid>
       </Grid>
   ), (
-      <RemainingDays cluster={{ ...cluster, newBalance: newBalance }} />
+      <NewRemainingDays cluster={{ ...cluster, runWay: clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
   )];
 
   return (

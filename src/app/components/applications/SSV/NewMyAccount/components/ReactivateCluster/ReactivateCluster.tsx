@@ -66,7 +66,7 @@ const ReactivateCluster = () => {
     const response = await validatorStore.reactivateCluster(totalCost.toString());
     applicationStore.showTransactionPendingPopUp(false);
     applicationStore.setIsLoading(false);
-    if (response) navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
 

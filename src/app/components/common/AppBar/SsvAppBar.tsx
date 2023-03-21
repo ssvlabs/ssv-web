@@ -20,7 +20,7 @@ const SsvAppBar = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const [showMobileBar, setMobileBar] = useState(false);
   const isDistribution = applicationStore.strategyName === 'distribution';
-  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
 
   const classes = useStyles({
     isDistribution,
@@ -89,7 +89,7 @@ const SsvAppBar = () => {
     if (hasOperatorsOrValidators) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
-      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }
   };
 

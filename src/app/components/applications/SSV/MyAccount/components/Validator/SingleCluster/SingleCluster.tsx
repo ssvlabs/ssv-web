@@ -46,7 +46,7 @@ const SingleCluster = () => {
   const cluster = process?.item;
 
   useEffect(() => {
-    if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
     Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
@@ -111,7 +111,6 @@ const SingleCluster = () => {
         />
         <Grid container item className={classes.Section}>
           {(cluster?.operators).map((operator: any, index: number) => {
-            if (index === 0) operator.is_deleted = true;
             return <OperatorBox key={index} operator={operator} />;
           })}
         </Grid>

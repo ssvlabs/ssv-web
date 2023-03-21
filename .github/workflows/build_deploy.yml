@@ -64,7 +64,7 @@ jobs:
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run stage ssv-web build
+      - name: Run stage V3 ssv-web build
         if: github.ref == 'refs/heads/stageV3'
         run: >
           SSV_API_ENDPOINT="$SSV_API_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_SETTER_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
@@ -82,7 +82,7 @@ jobs:
           NETWORK_SETTER_CONTRACT_ADDRESS: ${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS }}
           NETWORK_GETTER_CONTRACT_ADDRESS: ${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS }}
 
-      - name: Deploy stage ssv-web
+      - name: Deploy stage V3 ssv-web
         if: github.ref == 'refs/heads/stageV3'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
@@ -96,7 +96,7 @@ jobs:
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run stage ssv-web build
+      - name: Run prod V3 ssv-web build
         if: github.ref == 'refs/heads/mainV3'
         run: >
           SSV_API_ENDPOINT="$SSV_API_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_SETTER_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
@@ -114,7 +114,7 @@ jobs:
           NETWORK_SETTER_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS }}
           NETWORK_GETTER_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS }}
 
-      - name: Deploy stage ssv-web
+      - name: Deploy prod V3 ssv-web
         if: github.ref == 'refs/heads/mainV3'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:

@@ -70,6 +70,7 @@ class SsvStore extends BaseStore {
    * Returns instance of SSV contract
    */
   get ssvContract(): Contract {
+    console.log('<<<<<<<<<<<ssvContract>>>>>>>>>>>', this.getContractAddress('ssv_token'));
     if (!this.ssvContractInstance) {
       const walletStore: WalletStore = this.getStore('Wallet');
       this.ssvContractInstance = new walletStore.web3.eth.Contract(

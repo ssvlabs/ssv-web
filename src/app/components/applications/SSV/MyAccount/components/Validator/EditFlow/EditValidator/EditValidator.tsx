@@ -22,7 +22,7 @@ const EditValidator = () => {
     const validator = process?.item;
 
     useEffect(() => {
-        if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+        if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
         applicationStore.setIsLoading(true);
         operatorStore.selectOperators(validator?.operators);
         applicationStore.setIsLoading(false);

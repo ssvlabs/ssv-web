@@ -28,7 +28,7 @@ class ApplicationStore extends BaseStore implements Application {
   whiteNavBarBackground: boolean = false;
   transactionPendingPopUp: boolean = false;
   appTitle: string = 'SSV Network Testnet';
-  strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+  strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
   locationRestrictionEnabled: boolean = false;
 
   constructor() {

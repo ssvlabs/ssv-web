@@ -43,7 +43,7 @@ const PendingExpired = () => {
   }, []);
 
   const backToMyAccount = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
   };
 
   // @ts-ignore

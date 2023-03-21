@@ -80,7 +80,7 @@ const successScreens: IUserFlow = {
 
 const myAccountScreen: IUserFlow = {
     name: 'My Account',
-    route: routes.SSV.MY_ACCOUNT.DASHBOARD,
+    route: routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD,
 };
 
 const ReactivateClusterScreen: IUserFlow = {

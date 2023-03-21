@@ -31,7 +31,7 @@ const ValidatorSuccessScreen = () => {
     applicationStore.setIsLoading(true);
     setTimeout(() => {
       applicationStore.setIsLoading(false);
-      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }, 5000);
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',

@@ -54,7 +54,7 @@ const ProductQuestions = () => {
       .sendEvent({ category: 'remove', action: checkBoxTypes[selectedCheckbox], label: inputValue });
     setTimeout(() => {
       openThankYouDialog(false);
-      navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }, 3000);
   };
 
@@ -63,7 +63,7 @@ const ProductQuestions = () => {
       category: 'remove',
       action: 'my_account',
     });
-    navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
   const isDisabled = (type: number) => {

@@ -54,7 +54,7 @@ const ReactivateCluster = () => {
   ];
 
   useEffect(() => {
-    if (!walletStore.accountAddress) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!walletStore.accountAddress) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     const query = `${walletStore.accountAddress}?status=true&page=1&perPage=100&operators=true`;
     Validator.getInstance().clustersByOwnerAddress(query).then(async (res) => {
       const response = await Validator.getInstance().getOwnerAddressCost(walletStore.accountAddress);
@@ -66,7 +66,7 @@ const ReactivateCluster = () => {
 
   const enableAccount = async () => {
     const response = await ssvStore.activateValidator(totalFee.toFixed());
-    if (response) navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
   return (

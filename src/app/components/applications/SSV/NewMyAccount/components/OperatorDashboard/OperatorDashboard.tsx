@@ -20,7 +20,7 @@ import ToggleDashboards
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
-const OperatorDashboard = ({ changeState }: { changeState: any }) => {
+const OperatorDashboard = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -113,7 +113,7 @@ const OperatorDashboard = ({ changeState }: { changeState: any }) => {
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
-        <ToggleDashboards changeState={changeState} title={'Operators'} type={'operator'} />
+        <ToggleDashboards title={'Operators'} type={'operator'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           <Grid item className={classes.HeaderButton} onClick={moveToRegisterOperator}>Add Operator</Grid>
         </Grid>

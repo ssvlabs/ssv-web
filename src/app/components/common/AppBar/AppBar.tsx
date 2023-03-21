@@ -24,7 +24,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
     const [menuBar, openMenuBar] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     // const isDistribution = applicationStore.strategyName === 'distribution';
-    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     // @ts-ignore
     const classes = useStyles({ backgroundColor });
 

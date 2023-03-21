@@ -24,7 +24,7 @@ const RemoveValidator = () => {
   const validator = process?.validator;
 
   useEffect(() => {
-    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   }, []);
 
   const checkboxChange = () => {
@@ -35,7 +35,7 @@ const RemoveValidator = () => {
     if (validator.public_key) {
       const response = await validatorStore.removeValidator(validator);
       if (response) {
-        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.REMOVED);
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
       }
     }
   };

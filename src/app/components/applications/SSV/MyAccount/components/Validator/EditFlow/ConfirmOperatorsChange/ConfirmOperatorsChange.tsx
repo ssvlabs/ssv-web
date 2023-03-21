@@ -25,7 +25,7 @@ const ConfirmOperatorsChange = () => {
   const validator = process?.item;
   
   useEffect(() => {
-    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     myAccountStore.getValidator(validator.public_key).then((response: any) => {
       setOperators(response.operators);
     });

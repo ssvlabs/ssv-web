@@ -277,7 +277,6 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get getterContract(): Contract {
-    console.log('<<<<<<<<<<<getterContract>>>>>>>>>>>', config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS);
     if (!this.viewContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
@@ -288,7 +287,6 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get setterContract(): Contract {
-    console.log('<<<<<<<<<<<getterContract>>>>>>>>>>>', config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
     if (!this.networkContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;

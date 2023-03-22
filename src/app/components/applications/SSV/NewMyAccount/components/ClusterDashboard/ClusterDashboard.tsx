@@ -97,7 +97,7 @@ const ClusterDashboard = () => {
 
   const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
 
-  const rows = sortedClusters.map((cluster: any, indexx: number) => {
+  const rows = sortedClusters.map((cluster: any) => {
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
         <Grid container style={{ gap: 8 }}>

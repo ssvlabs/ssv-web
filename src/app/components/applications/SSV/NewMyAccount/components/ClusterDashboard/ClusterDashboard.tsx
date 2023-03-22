@@ -22,21 +22,66 @@ const ClusterDashboard = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
+  const warningTimeoutRef = useRef(null);
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
   const [hoveredGrid, setHoveredGrid] = useState(null);
+  const [hoveredWarning, setHoveredWarning] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
 
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
   };
+  const handleGridHover = (index: number) => {
+    // @ts-ignore
+    timeoutRef.current = setTimeout(() => {
+      // @ts-ignore
+      setHoveredGrid(index);
+    }, 300);
+  };
 
+  const handleGridLeave = () => {
+    // @ts-ignore
+    clearTimeout(timeoutRef.current);
+    setHoveredGrid(null);
+  };
+
+  const handleWarningHover = (index: number) => {
+    // @ts-ignore
+    warningTimeoutRef.current = setTimeout(() => {
+      // @ts-ignore
+      setHoveredWarning(index);
+    }, 300);
+  };
+
+  const handleWarningLeave = () => {
+    // @ts-ignore
+    clearTimeout(warningTimeoutRef.current);
+    setHoveredWarning(null);
+  };
   const clusterWarnings = (cluster: any) => {
     if (cluster.isLiquidated) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
-    if (cluster.runWay < 30) return <Grid className={classes.LowRunWay}>Low Runway</Grid>;
+    if (cluster.runWay < 30) return <Grid
+        className={classes.LowRunWay}
+        onMouseLeave={handleWarningLeave}
+        onMouseEnter={() => handleWarningHover(cluster.id)}>
+      Low Runway
+      {(hoveredWarning === cluster.id) && (
+          <Grid container className={classes.OperatorPopUp}>
+            <Grid item className={classes.FullImageOperator}/>
+            <Grid item className={classes.Line}/>
+            <Grid item>
+              <Grid item container style={{ alignItems: 'center', gap: 4 }}>
+                <Grid>{cluster.id}</Grid>
+              </Grid>
+              <Grid item className={classes.OperatorId}>ID: {cluster.id}</Grid>
+            </Grid>
+          </Grid>
+      )}
+    </Grid>;
     return;
   };
 
@@ -51,20 +96,6 @@ const ClusterDashboard = () => {
   };
 
   const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
-
-  const handleGridHover = (index: number) => {
-    // @ts-ignore
-    timeoutRef.current = setTimeout(() => {
-      // @ts-ignore
-      setHoveredGrid(index);
-    }, 300);
-  };
-
-  const handleGridLeave = () => {
-    // @ts-ignore
-    clearTimeout(timeoutRef.current);
-    setHoveredGrid(null);
-  };
 
   const rows = sortedClusters.map((cluster: any, indexx: number) => {
     if (indexx === 0) cluster.runWay = 24;

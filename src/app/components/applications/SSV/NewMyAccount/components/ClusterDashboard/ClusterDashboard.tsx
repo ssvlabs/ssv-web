@@ -66,8 +66,7 @@ const ClusterDashboard = () => {
     setHoveredGrid(null);
   };
 
-  const rows = sortedClusters.map((cluster: any, indexx: number) => {
-    if (indexx === 0) cluster.runWay = 24;
+  const rows = sortedClusters.map((cluster: any) => {
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
         <Grid container style={{ gap: 8 }}>

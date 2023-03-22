@@ -432,7 +432,7 @@ class ValidatorStore extends BaseStore {
       try {
         const threshold: ISharesKeyPairs = await ssvKeys.createThreshold(this.keyStorePrivateKey, operatorsIds);
         const shares = await ssvKeys.encryptShares(publicKeys, threshold.shares);
-        let totalCost = 'registerValidator' in process ? process.registerValidator?.depositAmount : 0;
+        let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
         if ('fundingPeriod' in process) {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);

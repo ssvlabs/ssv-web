@@ -20,6 +20,7 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const boxes = [1, 2, 3, 4];
@@ -100,6 +101,8 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         console.log(error);
         console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
       });
+    } else {
+      setCheckClusterExistence(false);
     }
   }, [operatorStore.selectedEnoughOperators]);
 
@@ -142,7 +145,8 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           ) : ''}
-          {!allSelectedOperatorsVerified && (
+          {clusterExist && <Grid item xs={12}><ErrorMessage text={'You already have this cluster registered, please go to “my account” and add from the cluster page'}/></Grid>}
+          {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>
                 You have selected one or more operators that are&nbsp;

@@ -60,7 +60,7 @@ class Operator {
     if (ordering) url += `ordering=${ordering}&`;
     if (page) url += `page=${page}&`;
     if (perPage) url += `perPage=${perPage}&`;
-    if (type?.length) url += `type=${type.join(',')}`;
+    if (type?.length) url += `type=${type.join(',')}&`;
     url += `ts=${new Date().getTime()}`;
 
     try {

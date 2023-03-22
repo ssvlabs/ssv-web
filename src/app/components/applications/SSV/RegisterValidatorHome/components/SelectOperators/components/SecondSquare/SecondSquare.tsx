@@ -89,11 +89,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
       setClusterExist(false);
       setCheckClusterExistence(true);
       clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators))).then((clusterData) => {
-        console.log('<<<<<<<<<<<<<<<<<<<then>>>>>>>>>>>>>>>>>>>');
-        console.log(clusterData);
-        console.log('<<<<<<<<<<<<<<<<<<<then>>>>>>>>>>>>>>>>>>>');
         if (clusterData?.validatorCount !== 0) {
-          console.log('<<<<<<<<<<<<<<<<<<<if>>>>>>>>>>>>>>>>>>>');
           setClusterExist(true);
         } else {
           setClusterExist(false);

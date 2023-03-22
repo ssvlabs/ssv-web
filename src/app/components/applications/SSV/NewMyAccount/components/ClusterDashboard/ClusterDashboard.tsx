@@ -15,6 +15,7 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/NewMyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/NewMyAccount/components/ToggleDashboards';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -24,6 +25,7 @@ const ClusterDashboard = () => {
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const applicationStore: ApplicationStore = stores.Application;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
@@ -55,7 +57,7 @@ const ClusterDashboard = () => {
     timeoutRef.current = setTimeout(() => {
       // @ts-ignore
       setHoveredGrid(index);
-    }, 1000);
+    }, 300);
   };
 
   const handleGridLeave = () => {
@@ -122,7 +124,7 @@ const ClusterDashboard = () => {
   const rowBackgroundColor = (index: number) => {
     const indexCluster = sortedClusters[index];
     if (indexCluster.isLiquidated) return 'rgba(236, 28, 38, 0.03)';
-    if (indexCluster.runWay < 30) return '#FDFBF0';
+    if (indexCluster.runWay < 30) return applicationStore.darkMode ? 'rgba(255, 210, 10, 0.2)' : '#FDFBF0';
   };
 
   return (

@@ -64,7 +64,8 @@ const ClusterDashboard = () => {
     setHoveredGrid(null);
   };
 
-  const rows = sortedClusters.map((cluster: any) => {
+  const rows = sortedClusters.map((cluster: any, indexx: number) => {
+    if (indexx === 0) cluster.runWay = 24;
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
         <Grid container style={{ gap: 8 }}>
@@ -75,7 +76,7 @@ const ClusterDashboard = () => {
                          onMouseLeave={handleGridLeave}
                          onMouseEnter={() => handleGridHover(operator.id + cluster.index)}
                          className={classes.CircleImageOperatorWrapper}>
-              {hoveredGrid === operator.id + cluster.index && (
+              {(hoveredGrid === operator.id + cluster.index) && (
                   <Grid container className={classes.OperatorPopUp}>
                     <Grid item className={classes.FullImageOperator} />
                     <Grid item className={classes.Line} />

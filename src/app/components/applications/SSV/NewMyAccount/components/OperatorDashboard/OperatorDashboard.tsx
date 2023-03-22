@@ -76,9 +76,11 @@ const OperatorDashboard = () => {
   });
 
   const openSingleOperator = (listIndex: number) => {
+    const operator = myAccountStore.ownerAddressOperators[listIndex];
     processStore.setProcess({
       processName: 'single_operator',
-      item: myAccountStore.ownerAddressOperators[listIndex],
+      // @ts-ignore
+      item: { ...operator, balance: operatorBalances[operator.id] },
     }, 1);
     operatorStore.processOperatorId = myAccountStore.ownerAddressOperators[listIndex].id;
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);

@@ -20,6 +20,7 @@ const NewWithdraw = () => {
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
+  console.log(JSON.parse(JSON.stringify(processItem)));
   const processItemBalance = processStore.isValidatorFlow ? walletStore.fromWei(processItem.balance) : processItem.balance;
 
   return (

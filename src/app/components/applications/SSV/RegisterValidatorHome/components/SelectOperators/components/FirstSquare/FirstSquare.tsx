@@ -80,7 +80,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     };
 
     const response = await Operator.getInstance().getOperators(payload);
-
     if (response?.pagination?.page > 1) {
       setOperatorsData([...operatorsData, ...response.operators]);
     } else {
@@ -249,14 +248,13 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
   const inputHandler = debounce((e: any) => {
     const userInput = e.target.value.trim();
-    const newValue = userInput.replace(/[^0-9]/g, '').slice(0, 4);
-    if (newValue.length >= 1 || newValue.length === 0) {
+    if (userInput.length >= 1 || userInput.length === 0) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',
         action: 'search',
-        label: newValue,
+        label: userInput,
       });
-      setSearchInput(newValue);
+      setSearchInput(userInput);
     }
   }, 1000);
 

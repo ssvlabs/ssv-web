@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { useStyles } from './SecondSquare.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import LinkText from '~app/components/common/LinkText';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -12,13 +14,12 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { useStyles } from './SecondSquare.styles';
-import LinkText from '~app/components/common/LinkText';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const boxes = [1, 2, 3, 4];
@@ -28,9 +29,12 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
+  const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const [clusterExist, setClusterExist] = useState(false);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
+  const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
 
 
@@ -68,19 +72,40 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   };
 
   const disableButton = (): boolean => {
-    return !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
+    return clusterExist || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
       // @ts-ignore
-      // eslint-disable-next-line no-param-reassign
       if (!previousOperatorsIds.includes(operator.id)) acc = true;
       return acc;
     }, false);
-    // if(!operatorStore.selectedEnoughOperators)
   };
 
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
   }, [JSON.stringify(operatorStore.selectedOperators)]);
+
+  useEffect(() => {
+    if (operatorStore.selectedEnoughOperators) {
+      setClusterExist(false);
+      setCheckClusterExistence(true);
+      clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators))).then((clusterData) => {
+        console.log('<<<<<<<<<<<<<<<<<<<then>>>>>>>>>>>>>>>>>>>');
+        console.log(clusterData);
+        console.log('<<<<<<<<<<<<<<<<<<<then>>>>>>>>>>>>>>>>>>>');
+        if (clusterData?.validatorCount !== 0) {
+          console.log('<<<<<<<<<<<<<<<<<<<if>>>>>>>>>>>>>>>>>>>');
+          setClusterExist(true);
+        } else {
+          setClusterExist(false);
+        }
+        setCheckClusterExistence(false);
+      }).catch((error: any)=>{
+        console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
+        console.log(error);
+        console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
+      });
+    }
+  }, [operatorStore.selectedEnoughOperators]);
 
   return (
     <BorderScreen

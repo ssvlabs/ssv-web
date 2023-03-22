@@ -25,7 +25,7 @@ const ValidatorSuccessScreen = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const operators = Object.values(operatorStore.selectedOperators);
-  const clusterHash = clusterStore.getClusterHash(operators.map((operator) => operator.id).sort());
+  const clusterHash = clusterStore.getClusterHash(operators);
 
   const redirectTo = async () => {
     applicationStore.setIsLoading(true);

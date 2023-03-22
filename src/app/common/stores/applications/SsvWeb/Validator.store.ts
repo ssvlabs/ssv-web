@@ -413,10 +413,11 @@ class ValidatorStore extends BaseStore {
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
+    const selectedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
     const {
       operatorsIds,
       publicKeys,
-    } = Object.values(operatorStore.selectedOperators).reduce((aggr, operator: IOperator) => {
+    } = selectedOperators.reduce((aggr, operator: IOperator) => {
       // @ts-ignore
       aggr.operatorsIds.push(operator.id);
       // @ts-ignore

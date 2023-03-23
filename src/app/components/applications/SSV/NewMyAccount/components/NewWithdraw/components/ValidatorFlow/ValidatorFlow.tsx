@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewWithdraw.styles';
 import Button from '~app/components/common/Button/Button';
@@ -44,11 +45,22 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
     const success = await ssvStore.withdrawSsv(inputValue.toString());
-    applicationStore.setIsLoading(false);
-    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
-      navigate(-1);
-    }
-    if (success) setInputValue(0.0);
+    setTimeout(async () => {
+      const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
+      const newCluster = response.cluster;
+      newCluster.validator_count = newCluster.validatorCount;
+      newCluster.operators = cluster.operators;
+      processStore.setProcess({
+        processName: 'single_cluster',
+        // @ts-ignore
+        item: await clusterStore.extendClusterEntity(newCluster),
+      }, 1);
+      applicationStore.setIsLoading(false);
+      if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
+        navigate(-1);
+      }
+      if (success) setInputValue(0.0);
+    }, 10000);
   };
 
   function inputHandler(e: any) {
@@ -105,7 +117,7 @@ const ValidatorFlow = () => {
         </Grid>
       </Grid>
   ), (
-      <NewRemainingDays cluster={{ ...cluster, runWay: clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
+      <NewRemainingDays withdrawState cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
   )];
 
   return (

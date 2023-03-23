@@ -115,6 +115,25 @@ class ClusterStore extends BaseStore {
     }
   }
 
+  async extendClusterEntity(cluster: any) {
+    const clusterData = await this.getClusterData(this.getClusterHash(cluster.operators));
+    const newBalance = await this.getClusterBalance(cluster.operators, clusterData);
+    const burnRate = await this.getClusterBurnRate(cluster.operators, clusterData);
+    const isLiquidated = await this.isClusterLiquidated(cluster.operators, clusterData);
+    const runWay = this.getClusterRunWay({
+      ...cluster,
+      burnRate: burnRate,
+      balance: newBalance,
+    });
+    return {
+      ...cluster,
+      runWay,
+      burnRate,
+      balance: newBalance,
+      isLiquidated,
+    };
+  }
+
   async setFeeRecipient(feeRecipient: string): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
       const applicationStore: ApplicationStore = this.getStore('Application');

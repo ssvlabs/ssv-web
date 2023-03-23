@@ -9,6 +9,7 @@ import { useStyles } from '../../NewMyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
+import ClusterWarnings from './components/ClusterWarnings';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
@@ -22,13 +23,11 @@ const ClusterDashboard = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
-  const warningTimeoutRef = useRef(null);
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
   const [hoveredGrid, setHoveredGrid] = useState(null);
-  const [hoveredWarning, setHoveredWarning] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
 
@@ -49,41 +48,8 @@ const ClusterDashboard = () => {
     setHoveredGrid(null);
   };
 
-  const handleWarningHover = (index: number) => {
-    // @ts-ignore
-    warningTimeoutRef.current = setTimeout(() => {
-      // @ts-ignore
-      setHoveredWarning(index);
-    }, 300);
-  };
 
-  const handleWarningLeave = () => {
-    // @ts-ignore
-    clearTimeout(warningTimeoutRef.current);
-    setHoveredWarning(null);
-  };
-  const clusterWarnings = (cluster: any) => {
-    if (cluster.isLiquidated) return <Grid className={classes.Liquidated}>Liquidated</Grid>;
-    if (cluster.runWay < 30) return <Grid
-        className={classes.LowRunWay}
-        onMouseLeave={handleWarningLeave}
-        onMouseEnter={() => handleWarningHover(cluster.id)}>
-      Low Runway
-      {(hoveredWarning === cluster.id) && (
-          <Grid container className={classes.OperatorPopUp}>
-            <Grid item className={classes.FullImageOperator}/>
-            <Grid item className={classes.Line}/>
-            <Grid item>
-              <Grid item container style={{ alignItems: 'center', gap: 4 }}>
-                <Grid>{cluster.id}</Grid>
-              </Grid>
-              <Grid item className={classes.OperatorId}>ID: {cluster.id}</Grid>
-            </Grid>
-          </Grid>
-      )}
-    </Grid>;
-    return;
-  };
+
 
   const createData = (
       clusterID: string,
@@ -129,7 +95,7 @@ const ClusterDashboard = () => {
         </Grid>,
         cluster.validator_count,
         `${isNaN(cluster.runWay) ? 'N/A' : `${formatNumberToUi(cluster.runWay, true)  } Days`}`,
-        clusterWarnings(cluster),
+        <ClusterWarnings cluster={cluster} />,
     );
   });
 

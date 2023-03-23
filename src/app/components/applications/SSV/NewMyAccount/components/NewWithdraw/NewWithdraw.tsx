@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
@@ -8,6 +8,7 @@ import ValidatorFlow from './components/ValidatorFlow';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorFlow from '~app/components/applications/SSV/NewMyAccount/components/NewWithdraw/components/OperatorFlow';
@@ -17,11 +18,22 @@ const NewWithdraw = () => {
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
+  const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
-  console.log(JSON.parse(JSON.stringify(processItem)));
   const processItemBalance = processStore.isValidatorFlow ? walletStore.fromWei(processItem.balance) : processItem.balance;
+  
+  useEffect(() => {
+    if (processStore.isValidatorFlow) {
+      const interval = setInterval(async () => {
+        // Call your function here
+        processItem.balance = await clusterStore.getClusterBalance(processItem.operators);
+      }, 2000);
+
+      return () => clearInterval(interval); 
+    }
+  }, []);
 
   return (
       <Grid container item style={{ gap: 32 }}>
@@ -43,7 +55,7 @@ const NewWithdraw = () => {
                 </Grid>,
               ]}
           />
-          {processStore.isValidatorFlow ? <ValidatorFlow/> : <OperatorFlow/>}
+          {processStore.isValidatorFlow ? <ValidatorFlow /> : <OperatorFlow />}
         </Grid>
       </Grid>
   );

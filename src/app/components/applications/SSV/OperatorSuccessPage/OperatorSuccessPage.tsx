@@ -11,7 +11,7 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import OperatorId from '~app/components/applications/SSV/MyAccount/components/Operator/common/OperatorId';
+import OperatorId from '~app/components/applications/SSV/NewMyAccount/components/OperatorId';
 import LinkText from '~app/components/common/LinkText/LinkText';
 
 const SetOperatorFee = () => {

@@ -258,7 +258,6 @@ class SsvStore extends BaseStore {
   /**
    * Withdraw ssv
    * @param amount
-   * @param withdrawAll
    */
   async withdrawSsv(amount: string) {
     return new Promise<boolean>(async (resolve) => {

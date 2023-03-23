@@ -92,9 +92,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   const selectOperator = (e: any, operator: IOperator) => {
     // @ts-ignore
     if (wrapperRef.current?.isEqualNode(e.target)) return;
-
     if (operatorStore.isOperatorSelected(operator.id)) {
-      operatorStore.unselectOperatorByPublicKey(operator.address);
+      operatorStore.unselectOperatorByPublicKey(operator);
       return;
     }
     const indexes = [1, 2, 3, 4];
@@ -104,7 +103,6 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
         availableIndex = index;
       }
     });
-
     if (availableIndex) {
       operatorStore.selectOperator(operator, availableIndex);
     }

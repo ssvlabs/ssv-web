@@ -16,7 +16,6 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -34,7 +33,6 @@ const ReactivateCluster = () => {
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [customPeriod, setCustomPeriod] = useState(1);
@@ -49,11 +47,11 @@ const ReactivateCluster = () => {
   const operatorsFee = Object.values(cluster.operators).reduce(
         (previousValue: number, currentValue: any) => previousValue + walletStore.fromWei(currentValue.fee),
         0,
-    );
+    ) * cluster.validator_count;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
+  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * cluster.validator_count;
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
-  const liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+  const liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee * cluster.validator_count).mul(ssvStore.liquidationCollateralPeriod);
 
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
@@ -105,7 +103,7 @@ const ReactivateCluster = () => {
                               className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
                       </Grid>
                       <Grid item
-                            className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
+                            className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
                       {isCustom && <TextInput value={customPeriod}
                                               onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
                                               extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}

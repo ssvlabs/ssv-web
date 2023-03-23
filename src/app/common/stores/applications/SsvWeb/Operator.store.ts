@@ -753,9 +753,9 @@ class OperatorStore extends BaseStore {
   /**
    * Unselect operator by public_key
    */
-  unselectOperatorByPublicKey(public_key: string) {
+  unselectOperatorByPublicKey(operator: any) {
     Object.keys(this.selectedOperators).forEach((index) => {
-      if (this.selectedOperators[index].address === public_key) {
+      if (this.selectedOperators[index].address + this.selectedOperators[index].id === operator.address + operator.id) {
         delete this.selectedOperators[index];
       }
     });
@@ -770,7 +770,7 @@ class OperatorStore extends BaseStore {
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax
     for (const index of [1, 2, 3, 4]) {
-      if (this.selectedOperators[index]?.address === operator.address) {
+      if (this.selectedOperators[index]?.address + this.selectedOperators[index]?.id === operator.address + operator.id) {
         operatorExist = true;
       }
     }

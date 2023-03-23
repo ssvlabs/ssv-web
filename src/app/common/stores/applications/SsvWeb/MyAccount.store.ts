@@ -199,24 +199,7 @@ class MyAccountStore extends BaseStore {
     if (!response) return [];
     // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;
-    this.ownerAddressClusters = await Promise.all(response?.clusters.map(async (cluster: any) => {
-      const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-      const newBalance = await clusterStore.getClusterBalance(cluster.operators, clusterData);
-      const burnRate = await clusterStore.getClusterBurnRate(cluster.operators, clusterData);
-      const isLiquidated = await clusterStore.isClusterLiquidated(cluster.operators, clusterData);
-      const runWay = clusterStore.getClusterRunWay({
-        ...cluster,
-        burnRate: burnRate,
-        balance: newBalance,
-      });
-      return {
-        ...cluster,
-        runWay,
-        burnRate,
-        balance: newBalance,
-        isLiquidated,
-      };
-    })) || [];
+    this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => clusterStore.extendClusterEntity(cluster))) || [];
     return this.ownerAddressClusters;
   }
   //

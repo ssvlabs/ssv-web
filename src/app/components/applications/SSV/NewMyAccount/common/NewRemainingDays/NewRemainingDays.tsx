@@ -6,21 +6,23 @@ import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './NewRemainingDays.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
-import ProgressBar from '~app/components/applications/SSV/MyAccount/common/componenets/ProgressBar/ProgressBar';
-import LiquidationStateError from '~app/components/applications/SSV/MyAccount/common/componenets/LiquidationStateError/LiquidationStateError';
+import ProgressBar from '~app/components/applications/SSV/NewMyAccount/common/ProgressBar/ProgressBar';
+import LiquidationStateError from '~app/components/applications/SSV/NewMyAccount/common/LiquidationStateError/LiquidationStateError';
 
 type Props = {
   cluster: any,
+  withdrawState?: boolean,
 };
 
 const NewRemainingDays = (props: Props) => {
   const stores = useStores();
   stores;
-  const { cluster } = props;
+  const { cluster, withdrawState } = props;
 
-  let withdrawState: boolean = false;
-  let remainingDays: number = cluster.runWay;
-  let warningLiquidationState: boolean = cluster.runWay < 30;
+  const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
+
+  let remainingDays: number = clusterRunWay;
+  let warningLiquidationState: boolean = clusterRunWay < 30;
 
   const classes = useStyles({ warningLiquidationState, withdrawState });
     
@@ -38,6 +40,11 @@ const NewRemainingDays = (props: Props) => {
           <Typography className={classes.Days}>
             days
           </Typography>
+          {cluster.newRunWay !== undefined && (
+              <Grid item xs className={classes.NewDaysEstimation}>
+                {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
+              </Grid>
+          )}
           {warningLiquidationState && !cluster.isLiquidated && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays ?? 0} />

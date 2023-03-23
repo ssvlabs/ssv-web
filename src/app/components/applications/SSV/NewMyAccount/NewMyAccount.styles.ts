@@ -1,17 +1,6 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
-const warningRunWayStates = {
-  gap: 10,
-  height: 26,
-  fontSize: 14,
-  borderRadius: 4,
-  fontWeight: 500,
-  lineHeight: 1.62,
-  padding: '1px 6px',
-  alignItems: 'center',
-  justifyContent: 'center',
-};
 
 export const useStyles = makeStyles((theme: Theme) => ({
   MyAccountWrapper: {
@@ -67,18 +56,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   HeaderWrapper: {
     justifyContent: 'space-between',
-  },
-  Liquidated: {
-    width: 82,
-    ...warningRunWayStates,
-    color: theme.colors.primaryError,
-    backgroundColor: 'rgba(236, 28, 38, 0.03)',
-  },
-  LowRunWay: {
-    width: 93,
-    ...warningRunWayStates,
-    color: theme.colors.primaryError,
-    backgroundColor: 'rgba(253, 218, 72, 0.2)',
   },
   CircleImageOperator: {
     width: 30,

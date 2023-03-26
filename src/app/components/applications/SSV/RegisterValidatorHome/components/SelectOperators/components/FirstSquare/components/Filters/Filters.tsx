@@ -14,18 +14,18 @@ const Filters = (props: Props) => {
   const wrapperRef = useRef(null);
   const [shouldOpen, openPopUp] = useState(false);
   const [verifySelected, selectVerify] = useState(false);
-  const [dappNodeSelected, selectDappNode] = useState(false);
+  // const [dappNodeSelected, selectDappNode] = useState(false);
 
   useEffect(() => {
     const filters = [];
     if (verifySelected) {
       filters.push('verified_operator');
     }
-    if (dappNodeSelected) {
-      filters.push('dapp_node');
-    }
+    // if (dappNodeSelected) {
+    //   filters.push('dapp_node');
+    // }
     props.setFilterBy(filters);
-  }, [verifySelected, dappNodeSelected]);
+  }, [verifySelected]);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
@@ -46,7 +46,7 @@ const Filters = (props: Props) => {
 
   let filterSelected = 0;
   if (verifySelected) filterSelected += 1;
-  if (dappNodeSelected) filterSelected += 1;
+  // if (dappNodeSelected) filterSelected += 1;
 
   return (
     <Grid item container ref={wrapperRef}

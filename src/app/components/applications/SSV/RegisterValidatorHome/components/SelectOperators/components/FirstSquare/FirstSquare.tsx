@@ -49,23 +49,14 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
   const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
 
-  let headers = [
+  const headers = [
     { type: '', displayName: '' },
-    { type: 'name', displayName: 'Name' },
-    { type: 'validators_count', displayName: 'Validators' },
-    { type: '', displayName: '' },
+    { type: 'name', displayName: 'Name', sortable: false },
+    { type: 'validators_count', displayName: 'Validators', sortable: true },
+    { type: 'performance.30d', displayName: '30d performance', sortable: true },
+    { type: 'fee', displayName: 'Yearly Fee', sortable: true },
+    { type: '', displayName: '', sortable: true },
   ];
-  // const skeletons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-  headers = [
-    { type: '', displayName: '' },
-    { type: 'name', displayName: 'Name' },
-    { type: 'validators_count', displayName: 'Validators' },
-    { type: 'performance.30d', displayName: '30d performance' },
-    { type: 'fee', displayName: 'Yearly Fee' },
-    { type: '', displayName: '' },
-  ];
-  // skeletons = [0, 1, 2, 3, 4, 5, 6];
 
   const getOperators = async (page: number) => {
     if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
@@ -311,9 +302,9 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
                         return (
                             <StyledCell key={index} className={classes.HeaderWrapper}>
-                              <Grid container onClick={() => sortHandler(header.type)}>
+                              <Grid container onClick={() => header.sortable && sortHandler(header.type)}>
                                 <Grid item>{header.displayName}</Grid>
-                                {header.displayName !== '' && (
+                                {header.sortable && header.displayName !== '' && (
                                     <Grid
                                         item
                                         className={headerClasses}

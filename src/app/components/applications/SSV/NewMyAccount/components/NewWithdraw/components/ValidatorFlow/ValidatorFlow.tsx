@@ -54,7 +54,7 @@ const ValidatorFlow = () => {
         processName: 'single_cluster',
         // @ts-ignore
         item: await clusterStore.extendClusterEntity(newCluster),
-      }, 1);
+      }, 2);
       applicationStore.setIsLoading(false);
       if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
         navigate(-1);

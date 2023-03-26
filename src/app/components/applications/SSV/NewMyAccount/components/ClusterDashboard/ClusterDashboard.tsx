@@ -34,7 +34,7 @@ const ClusterDashboard = () => {
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
   };
-  const handleGridHover = (index: number) => {
+  const handleGridHover = (index: string) => {
     // @ts-ignore
     timeoutRef.current = setTimeout(() => {
       // @ts-ignore
@@ -72,9 +72,10 @@ const ClusterDashboard = () => {
                          container
                          key={index}
                          onMouseLeave={handleGridLeave}
-                         onMouseEnter={() => handleGridHover(operator.id + cluster.index)}
-                         className={classes.CircleImageOperatorWrapper}>
-              {(hoveredGrid === operator.id + cluster.index) && (
+                         className={classes.CircleImageOperatorWrapper}
+                         onMouseEnter={() => handleGridHover(clusterStore.getClusterHash(cluster.operators) + operator.id)}
+            >
+              {(hoveredGrid === clusterStore.getClusterHash(cluster.operators) + operator.id) && (
                   <Grid container className={classes.OperatorPopUp}>
                     <Grid item className={classes.FullImageOperator} />
                     <Grid item className={classes.Line} />

@@ -7,7 +7,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '../../NewWhiteWrapper.styles';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-import LinkText from '~app/components/common/LinkText/LinkText';
+// import LinkText from '~app/components/common/LinkText/LinkText';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -93,10 +93,10 @@ const OperatorsFlow = (props: Props) => {
     return <Grid container item xs={11} style={{ alignItems: 'center', textAlign: 'center' }}>
       <Grid item className={classes.BackNavigation} style={{ marginRight: 16 }} onClick={onNavigationClicked} />
       <Grid item className={classes.HeaderText}>{header}</Grid>
-      <Grid item className={classes.CompleteProfile}>
-        Complete your operator profile to increase discoverability and attract more stakers.
-        <LinkText text={'Fill Details'}/>
-      </Grid>
+      {/*<Grid item className={classes.CompleteProfile}>*/}
+      {/*  Complete your operator profile to increase discoverability and attract more stakers.*/}
+      {/*  <LinkText text={'Fill Details'}/>*/}
+      {/*</Grid>*/}
     </Grid>;
   };
 

@@ -51,10 +51,10 @@ const SetOperatorFee = () => {
             <Grid className={classes.Wrapper}>
               <Typography className={classes.GreyHeader}>Things that will help you out:</Typography>
               <Grid container className={classes.BoxesWrapper}>
-                <Grid className={classes.BoxWrapper} xs={12}>
-                  <LinkText text={'Provide metadata'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to increase your operator discoverability and
-                  chances of attracting other stakers.
-                </Grid>
+                {/*<Grid className={classes.BoxWrapper} xs={12}>*/}
+                {/*  <LinkText text={'Provide metadata'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to increase your operator discoverability and*/}
+                {/*  chances of attracting other stakers.*/}
+                {/*</Grid>*/}
                 <Grid className={classes.BoxWrapper} xs={12}>
                   <LinkText text={'Monitor your node'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to improve your operator performance and uptime.
                 </Grid>

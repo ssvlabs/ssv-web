@@ -194,7 +194,7 @@ const SingleOperator = () => {
                   Status
                 </Grid>
                 <ToolTip
-                    text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'}/>
+                    text={'Refers to the validators status in the SSV network (not beacon chain),and reflects whether its operators are consistently performing their duties(according to the last 2 epochs)'}/>
               </Grid>,
               accessor: 'status',
             },

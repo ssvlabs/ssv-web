@@ -135,7 +135,7 @@ const OperatorDashboard = () => {
           }}
           columns={[
             { name: 'Operator Name' },
-            { name: 'Status', onClick: sortOperatorsByStatus, tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
+            { name: 'Status', onClick: sortOperatorsByStatus, tooltip: 'Is the operator performing duties for the majority of its validators for the last 2 epochs.' },
             { name: '30D Performance' },
             { name: 'Balance' },
             { name: 'Yearly Fee' },

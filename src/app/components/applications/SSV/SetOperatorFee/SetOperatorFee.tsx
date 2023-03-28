@@ -70,8 +70,8 @@ const SetOperatorFee = () => {
             <Typography className={classes.Text}>The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators.</Typography>
             <Typography className={classes.Text}>Operators set their own fees, denominated in SSV tokens, to be charged per each validator that selects them as one of their operators.</Typography>
             <Typography className={classes.Text}>Fees are presented as annual payments, but in practice are paid to operators continuously as an ongoing process - per each passed block.</Typography>
-            <Typography className={classes.Text}>Your earnings are paid to your ssv account balance, and can be withdrawn to your wallet at any time.</Typography>
-            <Grid className={classes.Text}>Please note that you could always change your fee (according to <br /> the <LinkText text={'limitations'} link={'https://docs.ssv.network/learn/introduction/network-overview#dao-ssv-token-holders'} />) to align with market dynamics, such as competitiveness and SSV price fluctuations.</Grid>
+            <Typography className={classes.Text}>Your earnings are paid to your ssv operator balance, and can be withdrawn to your wallet at any time.</Typography>
+            <Grid className={classes.Text}>Please note that you could always change your fee (according to <br /> the <LinkText text={'limitations'} link={'https://docs.ssv.network/learn/operators/update-fee'} />) to align with market dynamics, such as competitiveness and SSV price fluctuations.</Grid>
           </Grid>
           <Grid item container className={classes.InputWrapper} style={{ gap: 24 }}>
             <Grid item container>

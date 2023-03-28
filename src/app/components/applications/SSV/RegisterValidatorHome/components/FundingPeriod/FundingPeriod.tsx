@@ -96,7 +96,7 @@ const FundingPeriod = () => {
                 }
                 />}
                 {showLiquidationError && <ErrorMessage extendClasses={classes.ErrorBox} text={
-                    <Grid>This period is low and could put your validator at risk. To avoid liquidation please input a longer period. Learn more on liquidations. <LinkText text={'Learn more on liquidations'}
+                    <Grid>This period is low and could put your validator at risk. To avoid liquidation please input a longer period.<LinkText text={'Learn more on liquidations'}
                                           link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>
                 }/>}
               </Grid>

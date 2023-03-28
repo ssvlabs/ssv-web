@@ -142,7 +142,7 @@ const RemoveOperator = () => {
                   <li>Removing your operator will cease your operation of all your managed validators,
                     which will reduce their fault tolerance and put them at risk.
                   </li>
-                  <li>Terminate operation of all your managed validators, which will put them at risk.</li>
+                  <li>Immediately stop receiving future earnings from managed validators operation.</li>
                   <li>Remove yourself from the network and you will not longer be discoverable by other validators.</li>
                 </ul>
               </Grid>

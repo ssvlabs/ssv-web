@@ -92,7 +92,7 @@ const OfflineKeyShareGeneration = () => {
                   <Grid item xs={12} className={classes.Image}/>
                   <Typography className={classes.BlueText}>Command Line Interface</Typography>
                 </Grid>
-                <Grid container item className={`${classes.Box} ${isSelected(2) ? classes.BoxSelected : ''}`}
+                <Grid container item className={`${classes.Box} ${classes.Disable} ${isSelected(2) ? classes.BoxSelected : ''}`}
                       onClick={() => checkBox(2)}>
                   <Grid item xs={12} className={`${classes.Image} ${classes.Desktop}`}/>
                   <Typography className={classes.BlueText}>Desktop App</Typography>

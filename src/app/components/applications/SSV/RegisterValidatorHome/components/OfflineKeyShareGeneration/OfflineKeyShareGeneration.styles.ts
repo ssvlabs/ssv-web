@@ -24,6 +24,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     border: `solid 1px ${theme.colors.primaryBlue}`,
   },
+  Disable: {
+    border: 'none',
+    cursor: 'default',
+    pointerEvents: 'none',
+    backgroundColor: theme.colors.gray20,
+  },
   BoxSelected: {
     '&:first-child': {
       '& div': {

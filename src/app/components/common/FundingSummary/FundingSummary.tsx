@@ -8,9 +8,9 @@ import LinkText from '~app/components/common/LinkText';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
+import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 type Props = {
   days?: number,
@@ -56,18 +56,29 @@ const FundingSummary = (props: Props) => {
         {payments.map((payment: { id: number, name: string }, index: number) => {
           const paymentValue = paymentsValue(payment.id);
           const isLast = payment.id === 3;
+          const isSecond = payment.id === 2;
+          isSecond;
           return <Grid key={index} container item>
             <Grid container item xs style={{ gap: 8, marginBottom: index !== 2 ? 8 : 0, alignItems: 'center' }}>
               <Grid item>
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>{payment.name}</Typography>
               </Grid>
-              <Grid item>
+              <Grid item style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isLast ? <Tooltip
                         text={<Grid>Collateral in the form of SSV tokens,
                           which will be lost at the event of your cluster insolvency
-                          (inability to cover your validator&apos;s operational costs). <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/> :
+                          (inability to cover your validator&apos;s operational costs). <LinkText
+                              text={'Read more on liquidations'}
+                              link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/> :
                     <Typography
-                        className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {formatNumberToUi(daysPeriod, true)} Days</Typography>}
+                        className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {formatNumberToUi(daysPeriod, true)} Days</Typography>
+                }
+                {isSecond && <Tooltip
+                    text={<Grid>Fees charged for using the network. Fees are
+                      determined by the DAO and are used for network growth and expansion. <LinkText
+                          text={'Read more on fees'}
+                          link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/>
+                }
               </Grid>
             </Grid>
             <Grid item xs>
@@ -78,6 +89,7 @@ const FundingSummary = (props: Props) => {
         })}
       </Grid>
   );
-};
+}
+  ;
 
-export default observer(FundingSummary);
+  export default observer(FundingSummary);

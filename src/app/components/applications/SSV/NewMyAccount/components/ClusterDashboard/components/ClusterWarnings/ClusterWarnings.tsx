@@ -12,16 +12,22 @@ const ClusterWarnings = ({ cluster }: { cluster: any }) => {
   const handleWarningLeave = () => {
     // @ts-ignore
     clearTimeout(warningTimeoutRef.current);
-    setShowPopUp(false);
+    // @ts-ignore
+    warningTimeoutRef.current = setTimeout(() => {
+      setShowPopUp(false);
+    }, 300);
+
   };
 
   const handleWarningHover = () => {
     // @ts-ignore
+    clearTimeout(warningTimeoutRef.current);
+    // @ts-ignore
     warningTimeoutRef.current = setTimeout(() => {
-      // @ts-ignore
       setShowPopUp(true);
     }, 300);
   };
+
 
   if (cluster.isLiquidated) {
     return (

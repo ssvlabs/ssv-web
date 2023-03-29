@@ -50,7 +50,7 @@ const NewWithdraw = () => {
                     {formatNumberToUi(ssvStore.toDecimalNumber(Number(processItemBalance)))} SSV
                   </Grid>
                   <Grid item xs={12} className={classes.currentBalanceDollar}>
-                    ~$2,449.53
+                    {/* ~$2,449.53 */}
                   </Grid>
                 </Grid>,
               ]}

@@ -145,7 +145,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           ) : ''}
-          {clusterExist && <Grid item xs={12}><ErrorMessage text={'You already have this cluster registered, please go to “my account” and add from the cluster page'}/></Grid>}
+          {clusterExist && <Grid item xs={12}><ErrorMessage text={'You already have validators within this cluster. To register an additional validator to this cluster, navigate to the cluster page and click “Add Validator”.'}/></Grid>}
           {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>

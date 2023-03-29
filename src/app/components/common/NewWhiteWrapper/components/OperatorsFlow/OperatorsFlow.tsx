@@ -109,13 +109,13 @@ const OperatorsFlow = (props: Props) => {
           }}/>
           {showSettings && <Grid item className={classes.SettingsWrapper}>
             <Grid ref={settingsRef} container item className={classes.Settings}>
-              <Grid container item className={classes.Button} onClick={onClick}>
+              {/* <Grid container item className={classes.Button} onClick={onClick}>
                 <Grid className={classes.SettingsImage}/>
                 <Typography>Access setting</Typography>
-              </Grid>
+              </Grid> */}
               <Grid container item className={classes.Button} onClick={moveToMetaData}>
                 <Grid className={classes.MetadataImage}/>
-                <Typography>Metadata</Typography>
+                <Typography>Change Name</Typography>
               </Grid>
               <Grid container item className={classes.Button} onClick={moveToRemoveOperator}>
                 <Grid className={classes.RemoveImage}/>

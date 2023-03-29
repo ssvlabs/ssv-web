@@ -26,18 +26,18 @@ const LiquidationStateError = (props: Props) => {
 
     const renderText = () => {
         if (errorType === ErrorType.WithdrawAll) {
-            return <div>Withdrawing the requested amount will liquidate your account, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />) of your validators, as they will no longer be operated by the network.</div>;
+            return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
-            return 'Your account has been liquidated. Please reactivate your account in order to resume your validators operation.';
+            return 'Your account has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
-            return 'Your balance is running low and puts your account at risk. \n' +
+            return 'Your balance is running low and puts your cluster at risk. \n' +
                 'To avoid liquidation please deposit more funds to your cluster.';
         } if (errorType === ErrorType.Withdraw) {
-            return 'This withdrawal amount will putting your account at risk of liquidation.\n' +
+            return 'This withdrawal amount will putting your cluster at risk of liquidation.\n' +
                 'To avoid liquidation please withdraw less funds from your cluster.\n';
         }
-        const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your account at risk of liquidation.' : 'This fee change will liquidate your account, please deposit more SSV or';
-        const secondText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your account.' : 'change to a different set of operators.';
+        const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your clustter at risk of liquidation.' : 'This fee change will liquidate your cluster, please deposit more SSV or';
+        const secondText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your cluster.' : 'change to a different set of operators.';
 
         if (errorType === ErrorType.ChangeOperatorsLiquidationWarning || errorType === ErrorType.ChangeOperatorsLiquidation) {
             return (

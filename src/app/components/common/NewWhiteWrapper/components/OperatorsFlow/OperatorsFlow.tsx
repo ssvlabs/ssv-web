@@ -48,7 +48,7 @@ const OperatorsFlow = (props: Props) => {
     };
   }, [settingsRef, showSettings]);
 
-  const onClick = () => console.log;
+  // const onClick = () => console.log;
   const moveToRemoveOperator = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
   const moveToMetaData = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA);
 

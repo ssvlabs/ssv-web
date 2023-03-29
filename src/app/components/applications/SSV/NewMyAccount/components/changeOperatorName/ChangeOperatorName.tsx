@@ -11,6 +11,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
@@ -20,6 +21,7 @@ const ChangeOperatorName = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
   const process: SingleOperator = processStore.getProcess;
   const operator = process?.item;
@@ -36,6 +38,8 @@ const ChangeOperatorName = () => {
     Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput).then((response) => {
       operator.name = response;
       applicationStore.setIsLoading(false);
+      const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
+      selectedOperator.name = response;
       navigate(-1);
     }).catch((error: any) => {
       console.log('<<<<<<<<<<<error>>>>>>>>>>>');

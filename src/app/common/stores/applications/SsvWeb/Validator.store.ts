@@ -434,12 +434,28 @@ class ValidatorStore extends BaseStore {
         const shares = await ssvKeys.encryptShares(publicKeys, threshold.shares);
         let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
         if ('fundingPeriod' in process) {
-          const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
+          const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
           const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
-        const { readable } = await ssvKeys.buildPayload({ publicKey: threshold.publicKey, operatorIds: operatorsIds, encryptedShares: shares });
+        try {
+          await ssvKeys.buildPayload({
+            publicKey: threshold.publicKey,
+            operatorIds: operatorsIds,
+            encryptedShares: shares,
+          });
+        } catch (e: any) {
+          console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
+          console.log(threshold.publicKey);
+          console.log(e.message);
+          console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
+        }
+        const { readable } = await ssvKeys.buildPayload({
+          publicKey: threshold.publicKey,
+          operatorIds: operatorsIds,
+          encryptedShares: shares,
+        });
 
         resolve([
           this.keyStorePublicKey,

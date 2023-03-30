@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -13,7 +14,6 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import Tooltip from '@mui/material/Tooltip';
 
 
 const OfflineKeyShareGeneration = () => {

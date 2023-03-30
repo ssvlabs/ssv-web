@@ -18,8 +18,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 24,
   },
   BoxWrapper: {
-    display: 'flex',
-    alignItems: 'center',
     gap: 8,
     minHeight: 84,
     padding: 16,
@@ -27,6 +25,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 500,
     borderRadius: 8,
     lineHeight: 1.62,
+    display: 'flex',
+    alignItems: 'center',
     color: theme.colors.gray80,
     backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray20}`,

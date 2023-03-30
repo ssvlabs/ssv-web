@@ -266,7 +266,7 @@ const SingleOperator = () => {
                   ]}
                   bottom={[
                     <Grid item xs>
-                      <SecondaryButton disable={false} text={'Update Fee'} submitFunction={moveToUpdateFee} />
+                      <SecondaryButton disable={true} text={'Update Fee'} submitFunction={moveToUpdateFee} />
                     </Grid>,
                   ]}
                   bottomWrapper={classes.ButtonSection}

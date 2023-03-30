@@ -68,6 +68,7 @@ const ClusterDashboard = () => {
         longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
         <Grid container style={{ gap: 8 }}>
           {cluster.operators.map((operator: any, index: number) => {
+
             return <Grid item
                          container
                          key={index}
@@ -138,7 +139,9 @@ const ClusterDashboard = () => {
       </Grid>
       <Dashboard
           disable
-          rows={rows}
+          rows={rows.map((row: any) => {
+            return { ...row, clusterID: row.clusterID.slice(2) };
+          }) }
           loading={loadingCluster}
           noItemsText={'No Clusters'}
           rowBackgroundColor={rowBackgroundColor}

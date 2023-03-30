@@ -75,7 +75,10 @@ const OperatorDashboard = () => {
     );
   });
 
-  const openSingleOperator = (listIndex: number) => {
+  const openSingleOperator = (listIndex: number, e: any) => {
+    if ( e.target === e.currentTarget.querySelector('.openExplorer') ){
+      return;
+    }
     const operator = myAccountStore.ownerAddressOperators[listIndex];
     processStore.setProcess({
       processName: 'single_operator',

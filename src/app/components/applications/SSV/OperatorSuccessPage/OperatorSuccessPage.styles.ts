@@ -18,6 +18,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 24,
   },
   BoxWrapper: {
+    display: 'flex',
+    alignItems: 'center',
     gap: 8,
     minHeight: 84,
     padding: 16,

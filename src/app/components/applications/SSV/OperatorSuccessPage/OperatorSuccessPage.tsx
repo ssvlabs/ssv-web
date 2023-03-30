@@ -56,7 +56,7 @@ const SetOperatorFee = () => {
                 {/*  chances of attracting other stakers.*/}
                 {/*</Grid>*/}
                 <Grid className={classes.BoxWrapper} xs={12}>
-                  <LinkText text={'Monitor your node'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to improve your operator performance and uptime.
+                  <LinkText text={'Monitor your node'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> to improve your operator performance and uptime.
                 </Grid>
               </Grid>
               <PrimaryButton disable={false} text={'Manage Operator'} submitFunction={moveToMyAccount}/>

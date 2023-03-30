@@ -55,7 +55,7 @@ const OperatorDetails = (props: Props) => {
             </Grid>
         )}
         {!operator.is_deleted && !withoutExplorer && <Grid item className={classes.OperatorType}>
-          <ImageDiv onClick={openExplorer} image={'explorer'} width={20} height={20}/>
+          <ImageDiv onClick={openExplorer}  classIdentifier="openExplorer" image={'explorer'} width={20} height={20}/>
         </Grid>}
         {operator.is_deleted && <Grid item className={classes.OperatorType}>
           <ImageDiv onClick={openExplorer} image={'operatorOff'} width={20} height={20}/>

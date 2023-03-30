@@ -65,9 +65,10 @@ const ClusterDashboard = () => {
 
   const rows = sortedClusters.map((cluster: any) => {
     return createData(
-        longStringShorten(clusterStore.getClusterHash(cluster.operators), 4),
+        longStringShorten(clusterStore.getClusterHash(cluster.operators).slice(2), 4),
         <Grid container style={{ gap: 8 }}>
           {cluster.operators.map((operator: any, index: number) => {
+
             return <Grid item
                          container
                          key={index}

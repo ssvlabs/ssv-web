@@ -67,7 +67,7 @@ const ChangeOperatorName = () => {
                 (
                     <Grid container item>
                         <Grid container style={{ gap: 24 }}>
-                            <Grid item className={ classes.Text }>
+                            <Grid item className={classes.Text}>
                                 {/*Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText text={'What are proposal rewards?'} link={'http://google.com'} />*/}
                             </Grid>
                         </Grid>

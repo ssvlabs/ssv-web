@@ -7,12 +7,13 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './OperatorSuccessPage.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
+import LinkText from '~app/components/common/LinkText/LinkText';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
-import LinkText from '~app/components/common/LinkText/LinkText';
+
 
 const SetOperatorFee = () => {
   const stores = useStores();

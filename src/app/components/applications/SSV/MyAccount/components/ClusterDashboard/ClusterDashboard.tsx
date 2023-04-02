@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from '../../MyAccount.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
@@ -17,6 +17,7 @@ import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.sto
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+
 
 const ClusterDashboard = () => {
   const stores = useStores();

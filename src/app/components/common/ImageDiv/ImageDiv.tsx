@@ -19,8 +19,8 @@ const ImageDiv = (props: ImageDivProps) => {
     useEffect(() => {
         if (setOpenExplorerRefs) {
             setOpenExplorerRefs((state: any) => [...state, ref.current]);
-            }
-        }, []);
+        }
+    }, []);
 
     return (
       <Grid onClick={onClick} ref={ref} item className={classes.Image} />

@@ -8,6 +8,7 @@ type ImageDivProps = {
     image: string;
     width: number;
     height: number;
+    classIdentifier?: string;
 };
 
 const ImageDiv = (props: ImageDivProps) => {
@@ -15,7 +16,7 @@ const ImageDiv = (props: ImageDivProps) => {
     const classes = useStyles({ image, width, height });
 
     return (
-      <Grid onClick={onClick} item className={classes.Image} />
+      <Grid onClick={onClick} item className={`${props.classIdentifier} ${classes.Image}`} />
     );
 };
 

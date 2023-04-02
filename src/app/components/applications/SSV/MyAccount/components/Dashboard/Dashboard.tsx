@@ -115,7 +115,7 @@ const Dashboard = (props: DashboardProps) => {
             {rows.map((row, index: number) => (
                 <CustomizedBodyRow
                     key={index}
-                    onClick={()=>{rowsAction && rowsAction(index);}}
+                    onClick={(e : any)=>{rowsAction && rowsAction(index, e);}}
                     style={{ backgroundColor: rowBackgroundColor ? rowBackgroundColor(index) : '' }}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >

@@ -30,7 +30,7 @@ const FundingPeriod = () => {
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const [customPeriod, setCustomPeriod] = useState(1);
+  const [customPeriod, setCustomPeriod] = useState(730);
   const [checkedOption, setCheckedOption] = useState(options[1]);
   const timePeriodNotValid = customPeriod < 30;
   const process: RegisterValidator = processStore.process as RegisterValidator;

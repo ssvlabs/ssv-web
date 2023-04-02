@@ -1,11 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
-import Settings from './components/Settings';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
@@ -19,6 +18,7 @@ import Balance from '~app/components/applications/SSV/MyAccount/components/Balan
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard/Dashboard';
+import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import ProcessStore, { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
 

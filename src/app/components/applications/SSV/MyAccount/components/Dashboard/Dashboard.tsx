@@ -9,8 +9,8 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
-import { useStyles } from './Dashboard.styles';
 import ToolTip from '~app/components/common/ToolTip';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Dashboard/Dashboard.styles';
 import PaginationActions, { TablePaginationActionsProps } from '~app/components/common/Table/PaginationActions/PaginationActions';
 
 type DashboardProps = {

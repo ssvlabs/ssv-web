@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useStyles } from './imageDiv.styles';
+import { useStyles } from '~app/components/common/ImageDiv/ImageDiv.styles';
 
 type ImageDivProps = {
     onClick?: any;

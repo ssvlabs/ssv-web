@@ -1,9 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
-import { useStyles } from './Balance.styles';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -11,6 +10,7 @@ import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Balance/Balance.styles';
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 
 const Balance = () => {

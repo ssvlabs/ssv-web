@@ -1,22 +1,23 @@
+import React, { useRef, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import React, { useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
-import ClusterWarnings from './components/ClusterWarnings';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
-import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
+import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
+import ClusterWarnings from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+
 
 
 const ClusterDashboard = () => {

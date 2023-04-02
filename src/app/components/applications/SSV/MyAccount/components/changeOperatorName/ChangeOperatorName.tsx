@@ -1,10 +1,9 @@
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './ChangeOperatorName.styles';
 import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -14,6 +13,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/changeOperatorName/ChangeOperatorName.styles';
 
 const ChangeOperatorName = () => {
     const stores = useStores();

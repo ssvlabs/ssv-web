@@ -29,6 +29,7 @@ const OperatorDashboard = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState({});
   const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
@@ -63,8 +64,9 @@ const OperatorDashboard = () => {
   };
 
   const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
+
     return createData(
-        <OperatorDetails operator={operator} />,
+        <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
         <Status item={operator} />,
         `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d']  }%`}`,
         // @ts-ignore
@@ -76,7 +78,7 @@ const OperatorDashboard = () => {
   });
 
   const openSingleOperator = (listIndex: number, e: any) => {
-    if ( e.target === e.currentTarget.querySelector('.openExplorer') ){
+    if ( openExplorerRefs.includes(e.target) ){
       return;
     }
     const operator = myAccountStore.ownerAddressOperators[listIndex];

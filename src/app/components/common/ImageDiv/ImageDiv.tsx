@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useStyles } from './imageDiv.styles';
@@ -8,15 +8,20 @@ type ImageDivProps = {
     image: string;
     width: number;
     height: number;
-    classIdentifier?: string;
+    setOpenExplorerRefs?: Function;
 };
 
 const ImageDiv = (props: ImageDivProps) => {
-    const { onClick, image, width, height } = props;
+    const { onClick, image, width, height, setOpenExplorerRefs } = props;
     const classes = useStyles({ image, width, height });
+    const ref = useRef(null);
+
+    useEffect(() => {
+        setOpenExplorerRefs && setOpenExplorerRefs((state: any) => [...state, ref.current]);
+        }, []);
 
     return (
-      <Grid onClick={onClick} item className={`${props.classIdentifier} ${classes.Image}`} />
+      <Grid onClick={onClick} ref={ref} item className={classes.Image} />
     );
 };
 

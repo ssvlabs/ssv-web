@@ -124,11 +124,13 @@ const config = {
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
     EXPLORER_URL: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
     SSV_API_ENDPOINT: process.env.REACT_APP_SSV_API_ENDPOINT || 'https://api.stage.ssv.network/api/v2',
+    MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana',
   },
   GLOBAL_VARIABLE: {
     BLOCKS_PER_DAY: 7160,
     OPERATORS_PER_PAGE: 50,
     BLOCKS_PER_YEAR: 2613400,
+    DEFAULT_CLUSTER_PERIOD: 730,
     NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
     MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
   },

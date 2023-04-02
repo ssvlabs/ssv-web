@@ -14,6 +14,7 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 
 
 const OfflineKeyShareGeneration = () => {
@@ -31,10 +32,8 @@ const OfflineKeyShareGeneration = () => {
     const {
         operatorsIds,
         operatorsKeys,
-    } = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id).reduce((aggr, operator: IOperator) => {
-        // @ts-ignore
+    } = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id).reduce((aggr: any, operator: IOperator) => {
         aggr.operatorsIds.push(operator.id);
-        // @ts-ignore
         aggr.operatorsKeys.push(operator.public_key);
         return aggr;
     }, {
@@ -71,14 +70,6 @@ const OfflineKeyShareGeneration = () => {
     const checkBox = (id: number) => {
         setTextCopied(false);
         setSelectedBox(id);
-    };
-
-    const copyButton = () => {
-        if (!textCopied) return <Grid item className={classes.CopyButton} onClick={copyToClipboard}>Copy</Grid>;
-        return <Grid onClick={copyToClipboard} container item className={classes.ButtonCopied}>
-            <Typography className={classes.TextCopied}>Copied</Typography>
-            <Grid className={classes.V}/>
-        </Grid>;
     };
 
     const MainScreen =
@@ -126,7 +117,7 @@ const OfflineKeyShareGeneration = () => {
                     {selectedBox !== 0 &&
                         <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
                             <Grid item xs className={classes.CopyText}>{cliCommand}</Grid>
-                            {copyButton()}
+                            <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>
                         </Grid>
                     }
                     <PrimaryButton text={'Next'} submitFunction={goToNextPage} disable={!textCopied}/>

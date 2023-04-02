@@ -1,5 +1,5 @@
-import { observer } from 'mobx-react';
 import React, { useState } from 'react';
+import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
@@ -11,10 +11,10 @@ import { useStyles } from './OfflineKeyShareGeneration.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 
 
 const OfflineKeyShareGeneration = () => {
@@ -29,10 +29,9 @@ const OfflineKeyShareGeneration = () => {
 
     const isSelected = (id: number) => selectedBox === id;
     const goToNextPage = () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
-    const {
-        operatorsIds,
-        operatorsKeys,
-    } = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id).reduce((aggr: any, operator: IOperator) => {
+
+    const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
+    const { operatorsIds, operatorsKeys } = sortedOperators.reduce((aggr: any, operator: IOperator) => {
         aggr.operatorsIds.push(operator.id);
         aggr.operatorsKeys.push(operator.public_key);
         return aggr;
@@ -40,6 +39,7 @@ const OfflineKeyShareGeneration = () => {
         operatorsIds: [],
         operatorsKeys: [],
     });
+
     const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')}`;
 
     const instructions = [

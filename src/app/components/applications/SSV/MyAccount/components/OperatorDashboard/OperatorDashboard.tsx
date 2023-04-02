@@ -78,7 +78,7 @@ const OperatorDashboard = () => {
   });
 
   const openSingleOperator = (listIndex: number, e: any) => {
-    if ( openExplorerRefs.includes(e.target) ){
+    if (openExplorerRefs.includes(e.target)){
       return;
     }
     const operator = myAccountStore.ownerAddressOperators[listIndex];

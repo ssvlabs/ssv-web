@@ -17,7 +17,9 @@ const ImageDiv = (props: ImageDivProps) => {
     const ref = useRef(null);
 
     useEffect(() => {
-        setOpenExplorerRefs && setOpenExplorerRefs((state: any) => [...state, ref.current]);
+        if (setOpenExplorerRefs) {
+            setOpenExplorerRefs((state: any) => [...state, ref.current]);
+            }
         }, []);
 
     return (

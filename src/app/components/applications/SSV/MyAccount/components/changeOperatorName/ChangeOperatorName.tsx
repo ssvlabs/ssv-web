@@ -62,7 +62,7 @@ const ChangeOperatorName = () => {
     return (
         <BorderScreen
             blackHeader
-            header={ 'Change Operator Name' }
+            header={'Change Operator Name'}
             body={[
                 (
                     <Grid container item>

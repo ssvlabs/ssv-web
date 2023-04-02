@@ -14,7 +14,7 @@ type Props = {
   gray80?: boolean;
   withCopy?: boolean;
   withoutExplorer?: boolean;
-  operator: any // ?? IOperator
+  operator: any;
   setOpenExplorerRefs?: Function;
 };
 

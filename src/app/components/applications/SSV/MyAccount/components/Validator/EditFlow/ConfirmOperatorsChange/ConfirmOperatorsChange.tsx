@@ -1,7 +1,7 @@
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
@@ -11,7 +11,7 @@ import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.sto
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader';
 import OperatorsReceipt from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt';
-import { useStyles } from './ConfirmOperatorsChange.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange/ConfirmOperatorsChange.styles';
 
 const ConfirmOperatorsChange = () => {
   const stores = useStores();

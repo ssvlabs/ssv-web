@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
@@ -15,7 +15,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { useStyles } from './index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const FeeUpdated = ({ previousFee }: { previousFee: string }) => {
     const stores = useStores();

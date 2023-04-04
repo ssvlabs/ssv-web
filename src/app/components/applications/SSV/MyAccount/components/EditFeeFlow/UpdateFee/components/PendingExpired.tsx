@@ -16,7 +16,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ReactStepper
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { useStyles } from './index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const PendingExpired = () => {
   const stores = useStores();

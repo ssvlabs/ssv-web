@@ -5,14 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './OperatorSuccessPage.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
+import LinkText from '~app/components/common/LinkText/LinkText';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
-import LinkText from '~app/components/common/LinkText/LinkText';
+import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/OperatorSuccessPage.styles';
+
+
 
 const SetOperatorFee = () => {
   const stores = useStores();
@@ -56,7 +58,7 @@ const SetOperatorFee = () => {
                 {/*  chances of attracting other stakers.*/}
                 {/*</Grid>*/}
                 <Grid className={classes.BoxWrapper} xs={12}>
-                  <LinkText text={'Monitor your node'} link={'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana'} /> to improve your operator performance and uptime.
+                  <LinkText text={'Monitor your node'} link={config.links.MONITOR_YOUR_NODE_URL} /> to improve your operator performance and uptime.
                 </Grid>
               </Grid>
               <PrimaryButton disable={false} text={'Manage Operator'} submitFunction={moveToMyAccount}/>

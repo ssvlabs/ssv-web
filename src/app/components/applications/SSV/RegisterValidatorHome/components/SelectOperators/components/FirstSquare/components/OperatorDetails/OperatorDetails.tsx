@@ -3,22 +3,23 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './OperatorDetails.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails.styles';
 
 type Props = {
   gray80?: boolean;
   withCopy?: boolean;
   withoutExplorer?: boolean;
-  operator: any // ?? IOperator
+  operator: any;
+  setOpenExplorerRefs?: Function;
 };
 
 const OperatorDetails = (props: Props) => {
-  const { gray80, operator, withCopy, withoutExplorer } = props;
+  const { gray80, operator, withCopy, withoutExplorer, setOpenExplorerRefs } = props;
   const stores = useStores();
   const notificationsStore: NotificationsStore = stores.Notifications;
   const classes = useStyles({ isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
@@ -55,7 +56,7 @@ const OperatorDetails = (props: Props) => {
             </Grid>
         )}
         {!operator.is_deleted && !withoutExplorer && <Grid item className={classes.OperatorType}>
-          <ImageDiv onClick={openExplorer}  classIdentifier="openExplorer" image={'explorer'} width={20} height={20}/>
+          <ImageDiv onClick={openExplorer} setOpenExplorerRefs={setOpenExplorerRefs} image={'explorer'} width={20} height={20}/>
         </Grid>}
         {operator.is_deleted && <Grid item className={classes.OperatorType}>
           <ImageDiv onClick={openExplorer} image={'operatorOff'} width={20} height={20}/>

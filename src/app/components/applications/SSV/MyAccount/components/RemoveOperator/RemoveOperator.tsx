@@ -1,15 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-// import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
-// import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import CheckBox from '~app/components/common/CheckBox';
-// import LinkText from '~app/components/common/LinkText';
-// import TextInput from '~app/components/common/TextInput';
-// import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';

@@ -13,17 +13,17 @@ import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
+import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/RemainingDays';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { useStyles } from './OperatorsReceipt.style';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt/OperatorsReceipt.style';
 
 type Props = {
   operators: any,

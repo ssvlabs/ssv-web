@@ -1,9 +1,10 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useStyles } from './UploadKeyStore.styles';
 import ImportFile from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/UploadKeyStore/UploadKeyStore.styles';
+
 
 const UploadKeyStore = () => {
     const classes = useStyles();

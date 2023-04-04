@@ -1,7 +1,6 @@
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
-import { useStyles } from './Deposit.styles';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
@@ -15,6 +14,7 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 // import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
 
 const Deposit = () => {

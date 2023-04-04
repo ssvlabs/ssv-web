@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './NewRemainingDays.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import ProgressBar from '~app/components/applications/SSV/MyAccount/common/ProgressBar/ProgressBar';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays/NewRemainingDays.styles';
 import LiquidationStateError from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 
 type Props = {

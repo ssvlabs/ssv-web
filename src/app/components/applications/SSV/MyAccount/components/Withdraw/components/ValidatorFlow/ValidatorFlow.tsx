@@ -1,10 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from '../../Withdraw.styles';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -14,6 +13,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 
 const ValidatorFlow = () => {
   const stores = useStores();

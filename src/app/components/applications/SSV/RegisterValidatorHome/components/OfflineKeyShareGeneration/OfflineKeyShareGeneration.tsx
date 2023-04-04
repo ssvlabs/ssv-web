@@ -1,5 +1,5 @@
-import { observer } from 'mobx-react';
 import React, { useState } from 'react';
+import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
@@ -7,13 +7,14 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import { useStyles } from './OfflineKeyShareGeneration.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
 
 
 const OfflineKeyShareGeneration = () => {
@@ -28,19 +29,17 @@ const OfflineKeyShareGeneration = () => {
 
     const isSelected = (id: number) => selectedBox === id;
     const goToNextPage = () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
-    const {
-        operatorsIds,
-        operatorsKeys,
-    } = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id).reduce((aggr, operator: IOperator) => {
-        // @ts-ignore
+
+    const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
+    const { operatorsIds, operatorsKeys } = sortedOperators.reduce((aggr: any, operator: IOperator) => {
         aggr.operatorsIds.push(operator.id);
-        // @ts-ignore
         aggr.operatorsKeys.push(operator.public_key);
         return aggr;
     }, {
         operatorsIds: [],
         operatorsKeys: [],
     });
+
     const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')}`;
 
     const instructions = [
@@ -71,14 +70,6 @@ const OfflineKeyShareGeneration = () => {
     const checkBox = (id: number) => {
         setTextCopied(false);
         setSelectedBox(id);
-    };
-
-    const copyButton = () => {
-        if (!textCopied) return <Grid item className={classes.CopyButton} onClick={copyToClipboard}>Copy</Grid>;
-        return <Grid onClick={copyToClipboard} container item className={classes.ButtonCopied}>
-            <Typography className={classes.TextCopied}>Copied</Typography>
-            <Grid className={classes.V}/>
-        </Grid>;
     };
 
     const MainScreen =
@@ -126,7 +117,7 @@ const OfflineKeyShareGeneration = () => {
                     {selectedBox !== 0 &&
                         <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
                             <Grid item xs className={classes.CopyText}>{cliCommand}</Grid>
-                            {copyButton()}
+                            <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>
                         </Grid>
                     }
                     <PrimaryButton text={'Next'} submitFunction={goToNextPage} disable={!textCopied}/>

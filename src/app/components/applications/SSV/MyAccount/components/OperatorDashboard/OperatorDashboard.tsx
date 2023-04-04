@@ -1,12 +1,11 @@
+import React, { useEffect, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-import { useStyles } from '../../MyAccount.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -14,11 +13,13 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards
   from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+
 
 const OperatorDashboard = () => {
   const stores = useStores();
@@ -29,6 +30,7 @@ const OperatorDashboard = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState({});
   const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
@@ -63,8 +65,9 @@ const OperatorDashboard = () => {
   };
 
   const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
+
     return createData(
-        <OperatorDetails operator={operator} />,
+        <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
         <Status item={operator} />,
         `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d']  }%`}`,
         // @ts-ignore
@@ -76,7 +79,7 @@ const OperatorDashboard = () => {
   });
 
   const openSingleOperator = (listIndex: number, e: any) => {
-    if ( e.target === e.currentTarget.querySelector('.openExplorer') ){
+    if (openExplorerRefs.includes(e.target)){
       return;
     }
     const operator = myAccountStore.ownerAddressOperators[listIndex];

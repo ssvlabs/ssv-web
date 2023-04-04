@@ -1,15 +1,15 @@
+import React, { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader';
-import { useStyles } from './EditValidator.styles';
+import SelectOperators from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/EditValidator/EditValidator.styles';
 
 const EditValidator = () => {
     const stores = useStores();

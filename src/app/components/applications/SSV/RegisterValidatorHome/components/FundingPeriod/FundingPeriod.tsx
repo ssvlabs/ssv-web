@@ -1,12 +1,11 @@
+import React, { useState } from 'react';
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from './FundingPeriod.styles';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
@@ -17,6 +16,8 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
+
 
 const FundingPeriod = () => {
   const options = [
@@ -30,9 +31,9 @@ const FundingPeriod = () => {
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const [customPeriod, setCustomPeriod] = useState(730);
+  const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
-  const timePeriodNotValid = customPeriod < 30;
+  const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
   const process: RegisterValidator = processStore.process as RegisterValidator;
 
   const checkBox = (option: any) => setCheckedOption(option);

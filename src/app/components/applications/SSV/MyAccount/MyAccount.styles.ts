@@ -114,4 +114,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
     color: theme.colors.primaryBlue,
     backgroundColor: theme.colors.tint70,
   },
+  LightGrey: {
+    fontSize: '16px',
+    color: theme.colors.gray40,
+  },
+  TooltipStyle: {
+    width: '10px',
+    height: '10px',
+  },
 }));

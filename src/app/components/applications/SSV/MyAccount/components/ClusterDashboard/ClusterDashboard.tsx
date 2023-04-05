@@ -3,11 +3,13 @@ import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
+import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
@@ -57,7 +59,7 @@ const ClusterDashboard = () => {
       clusterID: string,
       operators: JSX.Element,
       validators: number,
-      operational_runway: string,
+      operational_runway: string | JSX.Element,
       runWayError: JSX.Element | undefined,
   ) => {
     return { clusterID, operators, validators, operational_runway, runWayError };
@@ -98,7 +100,14 @@ const ClusterDashboard = () => {
           })}
         </Grid>,
         cluster.validator_count,
-        `${isNaN(cluster.runWay) ? 'N/A' : `${formatNumberToUi(cluster.runWay, true)  } Days`}`,
+        isNaN(cluster.runWay) ? (
+            <Grid container item alignItems={'center'} style={{ gap: 10 }}>
+              <Typography className={classes.LightGrey}>N/A</Typography>
+              <ToolTip classExtend={classes.TooltipStyle}
+                       placement={'right'}
+                       text={'Balance and runway are pending calculation, please check again in a few minutes '}/>
+            </Grid>
+        ) : `${formatNumberToUi(cluster.runWay, true)  } Days`,
         <ClusterWarnings cluster={cluster} />,
     );
   });

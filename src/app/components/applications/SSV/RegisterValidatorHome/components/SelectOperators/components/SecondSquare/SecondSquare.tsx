@@ -8,6 +8,7 @@ import { useStyles } from './SecondSquare.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -20,7 +21,6 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import ErrorMessage from '~app/components/common/ErrorMessage';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const boxes = [1, 2, 3, 4];
@@ -34,10 +34,10 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [clusterExist, setClusterExist] = useState(false);
+  const [existClusterData, setExistClusterData] = useState<any>(null);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
-
 
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
@@ -80,6 +80,16 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     }, false);
   };
 
+  const openSingleCluster = () => {
+    const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
+    const cluster = sortedClusters.find((c: any) => c.index.toString() === existClusterData.index.toString());
+    processStore.setProcess({
+      processName: 'single_cluster',
+      item: cluster,
+    }, 2);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
+  };
+
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
@@ -91,6 +101,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
       setCheckClusterExistence(true);
       clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators))).then((clusterData) => {
         if (clusterData?.validatorCount !== 0) {
+          setExistClusterData(clusterData);
           setClusterExist(true);
         } else {
           setClusterExist(false);
@@ -145,7 +156,14 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           ) : ''}
-          {clusterExist && <Grid item xs={12}><ErrorMessage text={'You already have validators within this cluster. To register an additional validator to this cluster, navigate to the cluster page and click “Add Validator”.'}/></Grid>}
+          {clusterExist && <Grid item xs={12}>
+            <ErrorMessage text={
+              <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
+                     <LinkText
+                         text={'cluster page'}
+                         onClick={openSingleCluster}
+                     /> and click “Add Validator”.
+          </Grid>}/></Grid>}
           {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>

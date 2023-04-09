@@ -28,7 +28,7 @@ const LiquidationStateError = (props: Props) => {
         if (errorType === ErrorType.WithdrawAll) {
             return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
-            return 'Your account has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
+            return 'Your cluster has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
             return 'Your balance is running low and puts your cluster at risk. \n' +
                 'To avoid liquidation please deposit more funds to your cluster.';

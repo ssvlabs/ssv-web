@@ -1,18 +1,19 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './OperatorBox.styles';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
+  const ssvStore: SsvStore = stores.SSV;
   const isDeleted = operator.is_deleted;
   const classes = useStyles({ isDeleted });
   const walletStore: WalletStore = stores.Wallet;
@@ -39,7 +40,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
             <Status item={operator}/>
             <Grid item className={classes.BoldText}>{isDeleted ? '-' : `${operator.performance['30d'].toFixed(2) ?? 0  }%`}</Grid>
             <Grid item
-                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(walletStore.fromWei(operator.fee) * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)  } SSV`}</Grid>
+                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} SSV`}</Grid>
           </Grid>
         </Grid>
       </Grid>

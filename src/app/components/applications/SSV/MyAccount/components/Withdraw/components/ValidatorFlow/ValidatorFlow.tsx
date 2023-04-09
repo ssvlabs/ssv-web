@@ -83,10 +83,10 @@ const ValidatorFlow = () => {
   // @ts-ignore
   const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0;
   const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30;
-  const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my account.' : 'I understand the risks of having my account liquidated.';
+  const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my cluster.' : 'I understand the risks of having my cluster liquidated.';
   let buttonText = 'Withdraw';
   if (errorButton) {
-    buttonText = 'Liquidate my account';
+    buttonText = 'Liquidate my cluster';
   } else if (inputValue === clusterBalance) {
     buttonText = 'Withdraw All';
   }

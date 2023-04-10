@@ -13,12 +13,12 @@ import FundingSummary from '~app/components/common/FundingSummary';
 import { useStyles } from './ValidatorRegistrationConfirmation.styles';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { formatNumberToUi, operatorCostForYear, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
@@ -121,7 +121,7 @@ const ValidatorRegistrationConfirmation = () => {
       <Grid item className={classes.SubHeader}>Selected Operators</Grid>
       {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
         const operatorCost = processStore.secondRegistration
-            ? operatorCostForYear(walletStore.fromWei(operator.fee))
+            ? formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))
             : propertyCostByPeriod(walletStore.fromWei(operator.fee), processFundingPeriod);
 
         const operatorCostPeriod = processStore.secondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;

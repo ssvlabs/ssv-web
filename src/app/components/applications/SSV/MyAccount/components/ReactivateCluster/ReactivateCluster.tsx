@@ -35,7 +35,7 @@ const ReactivateCluster = () => {
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
-  const [customPeriod, setCustomPeriod] = useState(1);
+  const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
   const timePeriodNotValid = customPeriod < 30;
   const process: SingleCluster = processStore.getProcess;
@@ -84,11 +84,11 @@ const ReactivateCluster = () => {
               <Grid container>
                 <Typography className={classes.Text}>Your cluster has been <LinkText withoutUnderline
                                                                                      text={'liquidated'}
-                                                                                     link={'http://cblasdasdsa'}/> due
+                                                                                     link={config.links.REACTIVATION_LINK}/> due
                   to insufficient balance for its operational
                   <br/> costs. To resume its operation, you must deposit sufficient funds required for
                   <br/> its reactivation. <LinkText withoutUnderline text={'Learn more on liquidations.'}
-                                                    link={'http://cblasdasdsa'}/></Typography>
+                                                    link={config.links.MORE_ON_LIQUIDATION_LINK}/></Typography>
                 <Typography className={classes.BoxesHeader}>Select your cluster funding period</Typography>
                 <Grid container item style={{ gap: 16 }}>
                   {options.map((option, index) => {

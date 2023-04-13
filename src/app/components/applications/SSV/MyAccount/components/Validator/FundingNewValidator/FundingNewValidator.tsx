@@ -63,7 +63,7 @@ const FundingNewValidator = () => {
 
   const moveToNextPage = () => {
     process.registerValidator = { depositAmount: depositSSV };
-    navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+    navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START);
   };
 
 

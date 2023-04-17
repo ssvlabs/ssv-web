@@ -2,10 +2,10 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
+import config, { translations } from '~app/common/config';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -75,7 +75,7 @@ const Balance = () => {
               (<Grid item xs={12}
                  className={cluster.runWay < 30 ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
             {formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV
-          </Grid>) : (<NaDisplay size={28} weight={800} />)}
+          </Grid>) : (<NaDisplay size={28} weight={800} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
             {/* ~$449.52 */}
           </Grid>

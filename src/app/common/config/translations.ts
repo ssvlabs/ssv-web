@@ -101,6 +101,9 @@ const translations = {
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',
   },
+  NA_DISPLAY:{
+    TOOLTIP_TEXT: 'Balance and runway are pending calculation, please check again in a few minutes',
+  },
 };
 
 export default translations;

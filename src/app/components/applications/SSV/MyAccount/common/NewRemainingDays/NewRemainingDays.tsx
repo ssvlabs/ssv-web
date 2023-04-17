@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
+import { translations } from '~app/common/config';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
@@ -42,7 +43,7 @@ const NewRemainingDays = (props: Props) => {
                 <Typography className={classes.Days}>days</Typography>
               </>)
               :
-              (<NaDisplay size={24} />)}
+              (<NaDisplay size={24} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
           {cluster.newRunWay !== undefined && (
               <Grid item xs className={classes.NewDaysEstimation}>
                 {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}

@@ -7,16 +7,17 @@ import { useStyles } from '~app/components/common/NaDisplay/NaDisplay.styles';
 
 type NaDisplayProps = {
     size?: number;
+    text: string;
     weight?: number;
 };
-const NaDisplay = ({ size, weight } : NaDisplayProps) => {
+const NaDisplay = ({ size, weight, text } : NaDisplayProps) => {
     const classes = useStyles({ size, weight });
 
     return (
         <Grid container item alignItems={'center'}>
             <Typography className={classes.LightGrey}>N/A</Typography>
             <ToolTip placement={'right'}
-                     text={'Balance and runway are pending calculation, please check again in a few minutes '}/>
+                     text={text}/>
         </Grid>
 
     );

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
+import { osName } from 'react-device-detect';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -45,7 +46,7 @@ const OfflineKeyShareGeneration = () => {
     const instructions = [
         {
             id: 1, instructions: [
-                <Grid>1. Download the <b>MacOS</b> executable from <LinkText text={'SSV-Keys Github'}
+                <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
                                                                              link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
                 '2. Launch your terminal',
                 '3. Navigate to the directory you downladed the CLI tool',

@@ -200,7 +200,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             <StyledCell>
               <Grid container>
                 <Grid item
-                      className={classes.FeeColumn}>{formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
+                      className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
                 {disabled && (
                     <Grid item style={{ alignSelf: 'center' }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'}/>

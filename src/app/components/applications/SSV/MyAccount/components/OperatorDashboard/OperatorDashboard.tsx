@@ -73,7 +73,7 @@ const OperatorDashboard = () => {
         // @ts-ignore
         <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
         <SsvAndSubTitle
-            ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} leftTextAlign />,
+            ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} leftTextAlign />,
         operator.validators_count,
     );
   });

@@ -77,7 +77,7 @@ const SingleOperator = () => {
   // @ts-ignore
   const { logo, validators_count, fee, performance } = operator || {};
   const validator30dPerformance = operator ? performance['30d'] : 0;
-  const yearlyFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(fee)));
+  const yearlyFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(fee)));
   const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
   const copyToClipboard = (key: string) => {

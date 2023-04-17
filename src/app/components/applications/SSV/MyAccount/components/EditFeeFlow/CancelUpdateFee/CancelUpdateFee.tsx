@@ -55,9 +55,9 @@ const CancelUpdateFee = () => {
   };
 
   // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
+  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
   // @ts-ignore
-  const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(futureFee)));
+  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(futureFee)));
 
   if (successPage) {
     return (

@@ -65,9 +65,9 @@ const PendingExecution = (props: Props) => {
   if (!operator) return null;
 
   // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
+  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
   // @ts-ignore
-  const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
+  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
 
   return (
     <BorderScreen

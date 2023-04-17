@@ -32,7 +32,7 @@ const ValidatorsFlow = (props: Props) => {
           <Grid item className={classes.BackNavigation} onClick={onNavigationClicked} />
           <Grid item className={classes.HeaderText}>{header}</Grid>
           <Grid item className={classes.subHeaderText}>|</Grid>
-          <Grid item className={classes.subHeaderText}>{longStringShorten(clusterStore.getClusterHash(cluster.operators).slice(2), 4)}</Grid>
+          <Grid item className={classes.subHeaderText}>{longStringShorten(clusterStore.getClusterHash(cluster.operators), 4, undefined, { '': /^0x/ })}</Grid>
         </Grid>
       </Grid>
   );

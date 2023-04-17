@@ -127,7 +127,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                     </Grid>
                     <Grid item>
                       <SsvAndSubTitle
-                        ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />
+                        ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} />
                     </Grid>
                   </Grid>
                 );
@@ -175,7 +175,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                 bold
                 fontSize={16}
                 subTextCenter={false}
-                ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
+                ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee))}
               />
             </Grid>
           </Grid>

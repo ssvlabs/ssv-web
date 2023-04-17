@@ -40,7 +40,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
             <Status item={operator}/>
             <Grid item className={classes.BoldText}>{isDeleted ? '-' : `${operator.performance['30d'].toFixed(2) ?? 0  }%`}</Grid>
             <Grid item
-                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} SSV`}</Grid>
+                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV`}</Grid>
           </Grid>
         </Grid>
       </Grid>

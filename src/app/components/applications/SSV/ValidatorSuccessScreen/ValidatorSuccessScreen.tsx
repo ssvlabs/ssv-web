@@ -51,7 +51,7 @@ const ValidatorSuccessScreen = () => {
           <Grid item container className={classes.Wrapper}>
             <Grid item className={classes.Text}>Your new validator is managed by the following cluster:</Grid>
             <Grid container item className={classes.ClusterID}>
-              <Typography>Validator Cluster {longStringShorten(clusterHash, 4).slice(2)}</Typography>
+              <Typography>Validator Cluster {longStringShorten(clusterHash, 4).replace(/^0x/, '')}</Typography>
               {/* need to add link to "read more on clusters" */}
               <Tooltip text={<Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid>} />
             </Grid>

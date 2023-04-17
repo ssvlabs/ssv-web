@@ -34,7 +34,7 @@ const FundingNewValidator = () => {
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
-    burnRate: walletStore.toWei(newBurnRate),
+    burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
     balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
   });
 

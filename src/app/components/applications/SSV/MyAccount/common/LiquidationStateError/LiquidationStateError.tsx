@@ -26,7 +26,7 @@ const LiquidationStateError = (props: Props) => {
 
     const renderText = () => {
         if (errorType === ErrorType.WithdrawAll) {
-            return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText className={classes.LinkText} text={'penalties on the beacon chain'} link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />) of your validators, as they will no longer be operated by the network.</div>;
+            return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText className={classes.LinkText} text={'penalties on the beacon chain'} link={config.links.ETHER_RESPONSIBILITIES} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
             return 'Your account has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
@@ -63,7 +63,7 @@ const LiquidationStateError = (props: Props) => {
         </Grid>
         {errorType !== 4 && errorType !== 5 && (
           <Grid item>
-            <LinkText className={classes.LinkText} text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />
+            <LinkText className={classes.LinkText} text={'Read more on liquidations'} link={config.links.MORE_ON_LIQUIDATIONS} />
           </Grid>
           )}
       </Grid>

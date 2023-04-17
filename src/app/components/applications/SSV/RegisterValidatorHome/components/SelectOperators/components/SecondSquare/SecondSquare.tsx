@@ -81,8 +81,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   };
 
   const openSingleCluster = () => {
-    const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
-    const cluster = sortedClusters.find((c: any) => c.index.toString() === existClusterData.index.toString());
+    const cluster = myAccountStore.ownerAddressClusters.find((c: any) => c.index.toString() === existClusterData.index.toString());
     processStore.setProcess({
       processName: 'single_cluster',
       item: cluster,
@@ -156,14 +155,17 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           ) : ''}
-          {clusterExist && <Grid item xs={12}>
+          {clusterExist && (
+          <Grid item xs={12}>
             <ErrorMessage text={
               <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
                      <LinkText
                          text={'cluster page'}
-                         onClick={openSingleCluster}
-                     /> and click “Add Validator”.
-          </Grid>}/></Grid>}
+                         onClick={openSingleCluster}/>
+                and click “Add Validator”.
+              </Grid>}/>
+          </Grid>
+          )}
           {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>

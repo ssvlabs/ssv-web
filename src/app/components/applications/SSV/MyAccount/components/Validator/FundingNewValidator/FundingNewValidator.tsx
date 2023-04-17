@@ -28,7 +28,7 @@ const FundingNewValidator = () => {
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const process: SingleCluster = processStore.getProcess;
-  const [checkedId, setCheckedId] = useState(1);
+  const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState(0);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
@@ -121,7 +121,8 @@ const FundingNewValidator = () => {
                               <Grid item className={classes.CheckCircle}/>}
                           <Grid item className={classes.TimeText}>{option.timeText}</Grid>
                         </Grid>
-                        {isCustom && <TextInput value={depositSSV}
+                        {isCustom && <TextInput value={depositSSV || ''}
+                                                placeHolder={'0'}
                                                 onChangeCallback={(e: any) => setDepositSSV(Number(e.target.value))}
                                                 extendClass={classes.DaysInput} withSideText />}
                       </Grid>;
@@ -142,7 +143,7 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance} text={'Next'}
+                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance || !checkedId} text={'Next'}
                                    submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>

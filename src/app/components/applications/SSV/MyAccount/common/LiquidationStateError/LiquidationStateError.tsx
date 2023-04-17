@@ -28,7 +28,7 @@ const LiquidationStateError = (props: Props) => {
         if (errorType === ErrorType.WithdrawAll) {
             return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText className={classes.LinkText} text={'penalties on the beacon chain'} link={config.links.ETHER_RESPONSIBILITIES} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
-            return 'Your account has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
+            return 'Your cluster has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
             return 'Your balance is running low and puts your cluster at risk. \n' +
                 'To avoid liquidation please deposit more funds to your cluster.';
@@ -63,7 +63,7 @@ const LiquidationStateError = (props: Props) => {
         </Grid>
         {errorType !== 4 && errorType !== 5 && (
           <Grid item>
-            <LinkText className={classes.LinkText} text={'Read more on liquidations'} link={config.links.MORE_ON_LIQUIDATIONS} />
+            <LinkText className={classes.LinkText} text={'Read more on liquidations'} link={config.links.MORE_ON_LIQUIDATION_LINK} />
           </Grid>
           )}
       </Grid>

@@ -31,9 +31,9 @@ const LinkText = ({ style, text, onClick, link, className, routePush, withoutUnd
         });
         window.open(link);
       }
-      if (typeof onClick === 'function') {
-        onClick();
-      }
+    }
+    if (typeof onClick === 'function') {
+      onClick();
     }
   };
 

@@ -13,13 +13,13 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import Button from '~app/components/common/Button/Button';
 
 const ReactivateCluster = () => {
   const options = [
@@ -139,8 +139,13 @@ const ReactivateCluster = () => {
                   <Typography className={classes.SsvPrice}
                               style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
                 </Grid>
-                <PrimaryButton text={'Next'} submitFunction={reactivateCluster}
-                               disable={insufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}/>
+                <Button
+                    withAllowance
+                    text={'Next'}
+                    onClick={reactivateCluster}
+                    disable={insufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}
+                    totalAmount={formatNumberToUi(totalCost.toFixed(18))}
+                />
               </Grid>,
             ]}
         />

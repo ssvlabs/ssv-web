@@ -147,12 +147,11 @@ class ClusterStore extends BaseStore {
             })
             .on('transactionHash', (txHash: string) => {
               applicationStore.txHash = txHash;
-              applicationStore.showTransactionPendingPopUp(true);
+              walletStore.notifySdk.hash(txHash);
             })
             .on('error', (error: any) => {
               console.debug('Contract Error', error.message);
               applicationStore.setIsLoading(false);
-              applicationStore.showTransactionPendingPopUp(false);
               resolve(false);
             });
       } catch (e: any) {

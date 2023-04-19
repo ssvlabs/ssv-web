@@ -45,7 +45,7 @@ const Balance = () => {
     if (liquidated) {
       return (
         <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-          <PrimaryButton text={'Reactivate Account'} submitFunction={moveToReactivateCluster} />
+          <PrimaryButton text={'Reactivate Cluster'} submitFunction={moveToReactivateCluster} />
         </Grid>
       );
     }

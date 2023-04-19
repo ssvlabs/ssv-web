@@ -77,7 +77,7 @@ const SingleOperator = () => {
   // @ts-ignore
   const { logo, validators_count, fee, performance } = operator || {};
   const validator30dPerformance = operator ? performance['30d'] : 0;
-  const yearlyFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(fee)));
+  const yearlyFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(fee)));
   const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
   const copyToClipboard = (key: string) => {
@@ -159,7 +159,7 @@ const SingleOperator = () => {
           return {
             status: <Status item={validator} />,
             public_key: <Grid container style={{ alignItems: 'center', gap: 16 }}>
-              <Typography className={classes.TableValueText}>{`0x${longStringShorten(public_key, 6, 4)}`}</Typography>
+              <Typography className={classes.TableValueText}>{longStringShorten(public_key, 6, 4)}</Typography>
               <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={20} height={20} />
             </Grid>,
             extra_buttons: <Grid item container className={classes.ExtraButtonWrapper}>

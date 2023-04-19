@@ -57,7 +57,7 @@ const DeclareFee = (props: Props) => {
 
   if (!operator) return null;
   // @ts-ignore
-  const operatorFee = ssvStore.newGetFeeForYear(walletStore.fromWei(operator?.fee));
+  const operatorFee = ssvStore.getFeeForYear(walletStore.fromWei(operator?.fee));
 
   const changeOperatorFee = async () => {
     applicationStore.setIsLoading(true);

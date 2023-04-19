@@ -55,7 +55,8 @@ const OfflineKeyShareGeneration = () => {
         },
         {
             id: 2, instructions: [
-                '1. Download the MacOS app from  the Starkeys Github',
+                <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
+                                                                                link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
                 '2.Run the Starkeys app',
                 '3. When prompted, copy and paste the following command:',
             ],

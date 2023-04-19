@@ -132,10 +132,10 @@ const ClusterDashboard = () => {
       <Grid container item className={classes.HeaderWrapper}>
         <ToggleDashboards title={'Validator Clusters'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
-          <Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
+          {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
             Fee Address
-            <Grid item className={classes.Pencil} />
-          </Grid>
+            <Grid item className={classes.Pencil}/>
+          </Grid>)}
           <Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>
         </Grid>
       </Grid>

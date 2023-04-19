@@ -123,7 +123,7 @@ const ValidatorRegistrationConfirmation = () => {
       <Grid item className={classes.SubHeader}>Selected Operators</Grid>
       {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
         const operatorCost = processStore.secondRegistration
-            ? formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))
+            ? formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))
             : propertyCostByPeriod(walletStore.fromWei(operator.fee), processFundingPeriod);
 
         const operatorCostPeriod = processStore.secondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;

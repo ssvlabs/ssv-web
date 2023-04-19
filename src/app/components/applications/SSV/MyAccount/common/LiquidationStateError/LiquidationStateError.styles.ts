@@ -16,12 +16,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
         color: theme.colors.black,
     },
     LinkText: {
-        textDecoration: 'underline',
+        fontSize: 14,
         cursor: 'pointer',
-        fontSize: '14px',
-        fontWeight: 500,
-        lineHeight: 1.43,
-        color: '#2b47e3',
+        display: 'inline-block',
+        overflowWrap: 'break-word',
+        textDecoration: 'underline',
+        color: theme.colors.primaryBlue,
     },
     OperatorChangeTextWrapper: {
         alignItems: 'center',

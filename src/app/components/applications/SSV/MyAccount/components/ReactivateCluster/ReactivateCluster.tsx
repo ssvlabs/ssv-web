@@ -8,12 +8,12 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
+import Button from '~app/components/common/Button/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -56,6 +56,7 @@ const ReactivateCluster = () => {
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && insufficientBalance && timePeriodNotValid;
+  const disableCondition = insufficientBalance || customPeriod <= 0 || isNaN(customPeriod);
 
   const isChecked = (id: number) => checkedOption.id === id;
 
@@ -139,8 +140,13 @@ const ReactivateCluster = () => {
                   <Typography className={classes.SsvPrice}
                               style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
                 </Grid>
-                <PrimaryButton text={'Next'} submitFunction={reactivateCluster}
-                               disable={insufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}/>
+                <Button
+                    withAllowance
+                    text={'Next'}
+                    onClick={reactivateCluster}
+                    disable={disableCondition}
+                    totalAmount={formatNumberToUi(totalCost.toFixed(18))}
+                />
               </Grid>,
             ]}
         />

@@ -114,6 +114,7 @@ const Deposit = () => {
                     text={'Deposit'}
                     onClick={depositSsv}
                     disable={Number(inputValue) <= 0}
+                    totalAmount={inputValue}
                 />
             )]}
         />

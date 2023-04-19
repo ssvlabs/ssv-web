@@ -14,6 +14,7 @@ class SsvStore extends BaseStore {
   // Balances
   walletSsvBalance: number = 0;
   contractDepositSsvBalance: number = 0;
+  approvedAllowance: number = 0;
 
   // Calculation props
   networkFee: number = 0;
@@ -43,6 +44,7 @@ class SsvStore extends BaseStore {
       accountInterval: observable,
       accountBurnRate: observable,
       walletSsvBalance: observable,
+      approvedAllowance: observable,
       checkAllowance: action.bound,
       getNetworkFees: action.bound,
       toDecimalNumber: action.bound,
@@ -352,6 +354,7 @@ class SsvStore extends BaseStore {
         this.accountAddress,
         this.getContractAddress('ssv_network_setter'),
       ).call();
+    this.approvedAllowance = allowance;
     this.userGaveAllowance = allowance !== '0';
   }
   /**

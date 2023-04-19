@@ -49,7 +49,7 @@ class SsvStore extends BaseStore {
       setIsLiquidated: action.bound,
       userGaveAllowance: observable,
       getRemainingDays: action.bound,
-      newGetFeeForYear: action.bound,
+      getFeeForYear: action.bound,
       userSyncInterval: action.bound,
       approveAllowance: action.bound,
       ssvContractInstance: observable,
@@ -131,7 +131,7 @@ class SsvStore extends BaseStore {
     clearInterval(this.accountInterval);
   }
 
-  newGetFeeForYear = (fee: number, decimalPlaces?: number): string => {
+  getFeeForYear = (fee: number, decimalPlaces?: number): string => {
     const wrapFee = new Decimal(fee);
     return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
   };

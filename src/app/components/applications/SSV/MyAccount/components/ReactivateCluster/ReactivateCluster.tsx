@@ -8,6 +8,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
+import Button from '~app/components/common/Button/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
@@ -19,7 +20,6 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import Button from '~app/components/common/Button/Button';
 
 const ReactivateCluster = () => {
   const options = [
@@ -56,6 +56,7 @@ const ReactivateCluster = () => {
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && insufficientBalance && timePeriodNotValid;
+  const disableCondition = insufficientBalance || customPeriod <= 0 || isNaN(customPeriod);
 
   const isChecked = (id: number) => checkedOption.id === id;
 
@@ -143,7 +144,7 @@ const ReactivateCluster = () => {
                     withAllowance
                     text={'Next'}
                     onClick={reactivateCluster}
-                    disable={insufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}
+                    disable={disableCondition}
                     totalAmount={formatNumberToUi(totalCost.toFixed(18))}
                 />
               </Grid>,

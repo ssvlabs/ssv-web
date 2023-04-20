@@ -162,7 +162,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                      <LinkText
                          text={'cluster page'}
                          onClick={openSingleCluster}/>
-                and click “Add Validator”.
+                &nbsp;and click “Add Validator”.
               </Grid>}/>
           </Grid>
           )}

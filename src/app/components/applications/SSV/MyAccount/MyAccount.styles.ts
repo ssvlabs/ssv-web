@@ -45,6 +45,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundRepeat: 'no-repeat',
     backgroundImage: 'url(/images/operator_default_background/circle_light.png)',
   },
+  TooltipCustomSize: {
+    width: '10px',
+    height: '10px',
+  },
   Pencil: {
     width: 11.1,
     height: 11.1,

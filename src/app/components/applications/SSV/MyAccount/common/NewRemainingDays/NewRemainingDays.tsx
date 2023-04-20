@@ -14,17 +14,19 @@ import LiquidationStateError from '~app/components/applications/SSV/MyAccount/co
 type Props = {
   cluster: any,
   withdrawState?: boolean,
+  isInputFilled?: boolean | null,
 };
 
 const NewRemainingDays = (props: Props) => {
   const stores = useStores();
   stores;
-  const { cluster, withdrawState } = props;
+  const { cluster, withdrawState, isInputFilled = null } = props;
 
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
-
+  const typeOfiIsInputFilled =  typeof isInputFilled === 'boolean';
   let remainingDays: number = clusterRunWay;
-  let warningLiquidationState: boolean = clusterRunWay < 30;
+  let warningLiquidationState: boolean = typeOfiIsInputFilled ? isInputFilled && clusterRunWay < 30 : clusterRunWay < 30;
+  const showErrorCondition: boolean = typeOfiIsInputFilled ? warningLiquidationState && !cluster.isLiquidated && isInputFilled : warningLiquidationState && !cluster.isLiquidated;
   const errorCondition = withdrawState ? remainingDays === 0 ? 3 : 1 : remainingDays === 0 ? 3 : 0;
 
   const classes = useStyles({ warningLiquidationState, withdrawState });
@@ -50,7 +52,7 @@ const NewRemainingDays = (props: Props) => {
                 {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
               </Grid>
           )}
-          {warningLiquidationState && !cluster.isLiquidated && (
+          {showErrorCondition && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays ?? 0} />
               <LiquidationStateError marginTop={'16px'} errorType={errorCondition} />

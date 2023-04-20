@@ -3,11 +3,12 @@ import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
+import NaDisplay from '~app/components/common/NaDisplay';
+import config, { translations } from '~app/common/config';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
@@ -17,9 +18,6 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import ClusterWarnings from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
-
-
-
 const ClusterDashboard = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -57,7 +55,7 @@ const ClusterDashboard = () => {
       clusterID: string,
       operators: JSX.Element,
       validators: number,
-      operational_runway: string,
+      operational_runway: string | JSX.Element,
       runWayError: JSX.Element | undefined,
   ) => {
     return { clusterID, operators, validators, operational_runway, runWayError };
@@ -98,7 +96,9 @@ const ClusterDashboard = () => {
           })}
         </Grid>,
         cluster.validator_count,
-        `${isNaN(cluster.runWay) ? 'N/A' : `${formatNumberToUi(cluster.runWay, true)  } Days`}`,
+        isNaN(cluster.runWay) ? (
+            <NaDisplay text={translations.NA_DISPLAY.TOOLTIP_TEXT} tooltipClassExtend={classes.TooltipCustomSize} />
+        ) : `${formatNumberToUi(cluster.runWay, true)  } Days`,
         <ClusterWarnings cluster={cluster} />,
     );
   });
@@ -164,5 +164,7 @@ const ClusterDashboard = () => {
     </Grid>
   );
 };
+
+
 
 export default observer(ClusterDashboard);

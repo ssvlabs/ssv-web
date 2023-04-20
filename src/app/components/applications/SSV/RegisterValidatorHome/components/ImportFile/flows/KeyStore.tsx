@@ -132,7 +132,8 @@ const KeyStoreFlow = () => {
 
   const submitHandler = async () => {
     applicationStore.setIsLoading(true);
-    try {
+    setTimeout(async () => {
+      try {
       await validatorStore.extractKeyStoreData(keyStorePassword);
       isDeposited;
       const deposited = true; // await isDeposited();
@@ -170,7 +171,7 @@ const KeyStoreFlow = () => {
         setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
       }
       applicationStore.setIsLoading(false);
-    }
+    }}, 200);
   };
 
 

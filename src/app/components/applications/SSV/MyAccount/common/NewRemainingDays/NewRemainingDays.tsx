@@ -25,6 +25,7 @@ const NewRemainingDays = (props: Props) => {
 
   let remainingDays: number = clusterRunWay;
   let warningLiquidationState: boolean = clusterRunWay < 30;
+  const errorCondition = withdrawState ? remainingDays === 0 ? 3 : 1 : remainingDays === 0 ? 3 : 0;
 
   const classes = useStyles({ warningLiquidationState, withdrawState });
 
@@ -52,7 +53,7 @@ const NewRemainingDays = (props: Props) => {
           {warningLiquidationState && !cluster.isLiquidated && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays ?? 0} />
-              <LiquidationStateError marginTop={'16px'} errorType={remainingDays === 0 ? 3 : 1} />
+              <LiquidationStateError marginTop={'16px'} errorType={errorCondition} />
             </Grid>
           )}
         </Grid>

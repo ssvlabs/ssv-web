@@ -3,7 +3,9 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
+import { translations } from '~app/common/config';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import NaDisplay from '~app/components/common/NaDisplay';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import ProgressBar from '~app/components/applications/SSV/MyAccount/common/ProgressBar/ProgressBar';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays/NewRemainingDays.styles';
@@ -12,20 +14,22 @@ import LiquidationStateError from '~app/components/applications/SSV/MyAccount/co
 type Props = {
   cluster: any,
   withdrawState?: boolean,
+  isInputFilled?: boolean | null,
 };
 
 const NewRemainingDays = (props: Props) => {
   const stores = useStores();
   stores;
-  const { cluster, withdrawState } = props;
+  const { cluster, withdrawState, isInputFilled = null } = props;
 
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
-
+  const typeOfiIsInputFilled =  typeof isInputFilled === 'boolean';
   let remainingDays: number = clusterRunWay;
-  let warningLiquidationState: boolean = clusterRunWay < 30;
+  let warningLiquidationState: boolean = typeOfiIsInputFilled ? isInputFilled && clusterRunWay < 30 : clusterRunWay < 30;
+  const showErrorCondition: boolean = typeOfiIsInputFilled ? warningLiquidationState && !cluster.isLiquidated && isInputFilled : warningLiquidationState && !cluster.isLiquidated;
+  const errorCondition = withdrawState ? remainingDays === 0 ? 3 : 1 : remainingDays === 0 ? 3 : 0;
 
   const classes = useStyles({ warningLiquidationState, withdrawState });
-    
 
     return (
       <Grid item container>
@@ -36,19 +40,22 @@ const NewRemainingDays = (props: Props) => {
               <Tooltip text={'Estimated amount of days the cluster balance is sufficient to run all it’s validators.'} />
             </Grid>
           </Grid>
-          <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>
-          <Typography className={classes.Days}>
-            days
-          </Typography>
+          {remainingDays || cluster.isLiquidated ? (
+              <>
+                <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>
+                <Typography className={classes.Days}>days</Typography>
+              </>)
+              :
+              (<NaDisplay size={24} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
           {cluster.newRunWay !== undefined && (
               <Grid item xs className={classes.NewDaysEstimation}>
                 {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
               </Grid>
           )}
-          {warningLiquidationState && !cluster.isLiquidated && (
+          {showErrorCondition && (
             <Grid container>
               <ProgressBar remainingDays={remainingDays ?? 0} />
-              <LiquidationStateError marginTop={'16px'} errorType={remainingDays === 0 ? 3 : 1} />
+              <LiquidationStateError marginTop={'16px'} errorType={errorCondition} />
             </Grid>
           )}
         </Grid>

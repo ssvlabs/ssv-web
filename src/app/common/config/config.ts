@@ -121,6 +121,7 @@ const config = {
     EXPLORER_NETWORK: process.env.REACT_APP_EXPLORER_NETWORK || 'prater',
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
+    ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
     EXPLORER_URL: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',

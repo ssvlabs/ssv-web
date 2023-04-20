@@ -67,8 +67,8 @@ const OperatorsReceipt = (props: Props) => {
     }, 0,
   );
 
-  const networkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
-  const operatorsYearlyFee = ssvStore.newGetFeeForYear(newOperatorsFee);
+  const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee, 11);
+  const operatorsYearlyFee = ssvStore.getFeeForYear(newOperatorsFee);
   const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
 
   const checkBox = () => {
@@ -126,7 +126,7 @@ const OperatorsReceipt = (props: Props) => {
               </Grid>
               <Grid item xs>
                 <SsvAndSubTitle gray80={currentOperators}
-                  ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}
+                  ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}
                   subText={'/year'} />
               </Grid>
             </Grid>

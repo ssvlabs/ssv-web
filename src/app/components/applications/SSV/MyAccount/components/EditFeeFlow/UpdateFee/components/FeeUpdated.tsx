@@ -51,9 +51,9 @@ const FeeUpdated = ({ previousFee }: { previousFee: string }) => {
     if (!operator) return null;
 
     // @ts-ignore
-    const currentOperatorFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(previousFee)));
+    const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(previousFee)));
     // @ts-ignore
-    const operatorFutureFee = formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
+    const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
 
     return (
       <BorderScreen

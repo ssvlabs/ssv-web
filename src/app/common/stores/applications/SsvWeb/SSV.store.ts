@@ -14,6 +14,7 @@ class SsvStore extends BaseStore {
   // Balances
   walletSsvBalance: number = 0;
   contractDepositSsvBalance: number = 0;
+  approvedAllowance: number = 0;
 
   // Calculation props
   networkFee: number = 0;
@@ -43,13 +44,14 @@ class SsvStore extends BaseStore {
       accountInterval: observable,
       accountBurnRate: observable,
       walletSsvBalance: observable,
+      approvedAllowance: observable,
       checkAllowance: action.bound,
       getNetworkFees: action.bound,
       toDecimalNumber: action.bound,
       setIsLiquidated: action.bound,
       userGaveAllowance: observable,
       getRemainingDays: action.bound,
-      newGetFeeForYear: action.bound,
+      getFeeForYear: action.bound,
       userSyncInterval: action.bound,
       approveAllowance: action.bound,
       ssvContractInstance: observable,
@@ -131,7 +133,7 @@ class SsvStore extends BaseStore {
     clearInterval(this.accountInterval);
   }
 
-  newGetFeeForYear = (fee: number, decimalPlaces?: number): string => {
+  getFeeForYear = (fee: number, decimalPlaces?: number): string => {
     const wrapFee = new Decimal(fee);
     return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
   };
@@ -352,6 +354,7 @@ class SsvStore extends BaseStore {
         this.accountAddress,
         this.getContractAddress('ssv_network_setter'),
       ).call();
+    this.approvedAllowance = allowance;
     this.userGaveAllowance = allowance !== '0';
   }
   /**

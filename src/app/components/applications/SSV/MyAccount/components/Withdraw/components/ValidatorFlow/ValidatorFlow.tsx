@@ -117,7 +117,7 @@ const ValidatorFlow = () => {
         </Grid>
       </Grid>
   ), (
-      <NewRemainingDays withdrawState cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
+      <NewRemainingDays withdrawState isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
   )];
 
   return (

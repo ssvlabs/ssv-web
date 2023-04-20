@@ -26,7 +26,7 @@ const LiquidationStateError = (props: Props) => {
 
     const renderText = () => {
         if (errorType === ErrorType.WithdrawAll) {
-            return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText text={'penalties on the beacon chain'} link={'https://launchpad.ethereum.org/en/faq#responsibilities'} />) of your validators, as they will no longer be operated by the network.</div>;
+            return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText className={classes.LinkText} text={'penalties on the beacon chain'} link={config.links.ETHER_RESPONSIBILITIES} />) of your validators, as they will no longer be operated by the network.</div>;
         } if (errorType === ErrorType.Liquidated) {
             return 'Your cluster has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
         } if (errorType === ErrorType.Deposit) {
@@ -36,7 +36,7 @@ const LiquidationStateError = (props: Props) => {
             return 'This withdrawal amount will putting your cluster at risk of liquidation.\n' +
                 'To avoid liquidation please withdraw less funds from your cluster.\n';
         }
-        const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your clustter at risk of liquidation.' : 'This fee change will liquidate your cluster, please deposit more SSV or';
+        const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your cluster at risk of liquidation.' : 'This fee change will liquidate your cluster, please deposit more SSV or';
         const secondText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your cluster.' : 'change to a different set of operators.';
 
         if (errorType === ErrorType.ChangeOperatorsLiquidationWarning || errorType === ErrorType.ChangeOperatorsLiquidation) {
@@ -62,8 +62,8 @@ const LiquidationStateError = (props: Props) => {
           {renderText()}
         </Grid>
         {errorType !== 4 && errorType !== 5 && (
-          <Grid item className={classes.LinkText}>
-            <LinkText text={'Read more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />
+          <Grid item>
+            <LinkText className={classes.LinkText} text={'Read more on liquidations'} link={config.links.MORE_ON_LIQUIDATION_LINK} />
           </Grid>
           )}
       </Grid>

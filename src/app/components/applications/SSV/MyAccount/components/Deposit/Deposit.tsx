@@ -104,7 +104,7 @@ const Deposit = () => {
               ),
               (
                   <>
-                    <NewRemainingDays cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }}/>
+                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }}/>
                   </>
               ),
             ]}
@@ -114,6 +114,7 @@ const Deposit = () => {
                     text={'Deposit'}
                     onClick={depositSsv}
                     disable={Number(inputValue) <= 0}
+                    totalAmount={inputValue}
                 />
             )]}
         />

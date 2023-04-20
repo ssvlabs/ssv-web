@@ -44,7 +44,8 @@ const ValidatorRegistrationConfirmation = () => {
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
   const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-  const totalAmountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
+  const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
+  const totalAmountOfSsv = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
 
   const onRegisterValidatorClick = async () => {
     applicationStore.setIsLoading(true);
@@ -101,6 +102,7 @@ const ValidatorRegistrationConfirmation = () => {
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance}
+          totalAmount={totalAmountOfSsv}
       />
       {/* <CTAButton */}
       {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}
@@ -121,7 +123,7 @@ const ValidatorRegistrationConfirmation = () => {
       <Grid item className={classes.SubHeader}>Selected Operators</Grid>
       {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
         const operatorCost = processStore.secondRegistration
-            ? formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))
+            ? formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))
             : propertyCostByPeriod(walletStore.fromWei(operator.fee), processFundingPeriod);
 
         const operatorCostPeriod = processStore.secondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;

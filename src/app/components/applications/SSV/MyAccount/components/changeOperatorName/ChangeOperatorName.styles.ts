@@ -9,6 +9,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     color: theme.colors.gray80,
   },
   Error: {
+    width: '100%',
     marginBottom: '0px !important',
   },
   ErrorText: {

@@ -32,25 +32,25 @@ const ChangeOperatorName = () => {
     const [userInput, setUserInput] = useState(operator.name);
 
     const submitOperatorName = async () => {
-        try {
-            applicationStore.setIsLoading(true);
-            const signatureHash = await walletStore.web3.eth.personal.sign(userInput, walletStore.accountAddress);
-            setErrorMessage('');
-            Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput).then((response) => {
-                operator.name = response;
-                applicationStore.setIsLoading(false);
-                const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
-                selectedOperator.name = response;
-                console.log(response);
-                navigate(-1);
-            });
-        } catch (error: any) {
+
+        applicationStore.setIsLoading(true);
+        const signatureHash = await walletStore.web3.eth.personal.sign(userInput, walletStore.accountAddress);
+        setErrorMessage('');
+        Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput).then((response) => {
+            operator.name = response;
+            applicationStore.setIsLoading(false);
+            const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
+            selectedOperator.name = response;
+            console.log(response);
+            navigate(-1);
+        }).catch((error: any) => {
             console.log('<<<<<<<<<<<error>>>>>>>>>>>');
-            setErrorMessage(error.message);
+            setErrorMessage(error.response.data.error.message);
             console.log('<<<<<<<<<<<error>>>>>>>>>>>');
             applicationStore.setIsLoading(false);
-        }
+        });
     };
+
 
     const setOperatorName = async (e: any) => {
         const textInput = e.target.value.trim();

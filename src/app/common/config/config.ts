@@ -59,6 +59,7 @@ const config = {
           SUCCESS_PAGE: '/my-account/cluster/register/success',
           ADD_VALIDATOR: '/my-account/cluster/register/funding',
           UPLOAD_KEY_STORE: '/my-account/cluster/register/upload-keystore',
+          UPLOAD_KEYSHARES: '/my-account/cluster/register/upload-keyshares',
           SLASHING_WARNING: '/my-account/cluster/register/slashing-warning',
           DISTRIBUTE_OFFLINE: '/my-account/cluster/register/distribute-offline',
           CONFIRMATION_PAGE: '/my-account/cluster/register/confirm-transaction',

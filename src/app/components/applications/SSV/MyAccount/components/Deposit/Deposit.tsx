@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
@@ -19,6 +20,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 
 const Deposit = () => {
   const stores = useStores();
+  const navigate = useNavigate();
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
@@ -33,13 +35,15 @@ const Deposit = () => {
 
   async function depositSsv() {
     applicationStore.setIsLoading(true);
-    await ssvStore.deposit(inputValue.toString()).then(async () => {
+    await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
       cluster.balance = await clusterStore.getClusterBalance(cluster.operators);
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
         label: 'success',
       });
+      applicationStore.setIsLoading(false);
+      if (success) navigate(-1);
     }).catch((error) => {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',

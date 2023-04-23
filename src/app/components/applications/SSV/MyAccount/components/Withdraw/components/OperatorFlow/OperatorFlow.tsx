@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
@@ -13,6 +14,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 const OperatorFlow = () => {
   const classes = useStyles();
   const stores = useStores();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const [inputValue, setInputValue] = useState(0.0);
   const processStore: ProcessStore = stores.Process;
@@ -25,7 +27,10 @@ const OperatorFlow = () => {
     applicationStore.setIsLoading(true);
     const success = await ssvStore.withdrawSsv(inputValue.toString());
     applicationStore.setIsLoading(false);
-    if (success) setInputValue(0.0);
+    if (success) {
+      setInputValue(0.0);
+      navigate(-1);
+    }
   };
 
   function inputHandler(e: any) {

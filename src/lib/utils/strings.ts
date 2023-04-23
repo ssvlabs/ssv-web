@@ -1,11 +1,12 @@
 export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
   if (!value) return '';
-  let str = `${value.substr(0, firstFriction)}...${value.substr(value.length - secondFriction, secondFriction)}`;
   if (replacements) {
-      for (let key in replacements) {
-           str = str.replace(replacements[key], key);
-      }
-  }
+        for (let key in replacements) {
+            value = value.replace(replacements[key], key);
+        }
+    }
+  let str = `${value.substr(0, firstFriction)}...${value.substr(value.length - secondFriction, secondFriction)}`;
+
   return str;
 };
 

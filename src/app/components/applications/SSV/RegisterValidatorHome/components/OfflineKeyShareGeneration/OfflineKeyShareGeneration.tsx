@@ -29,7 +29,10 @@ const OfflineKeyShareGeneration = () => {
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     const isSelected = (id: number) => selectedBox === id;
-    const goToNextPage = () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
+    const goToNextPage = {
+        true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES),
+        false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES),
+};
 
     const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
     const { operatorsIds, operatorsKeys } = sortedOperators.reduce((aggr: any, operator: IOperator) => {
@@ -122,7 +125,7 @@ const OfflineKeyShareGeneration = () => {
                             <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>
                         </Grid>
                     }
-                    <PrimaryButton text={'Next'} submitFunction={goToNextPage} disable={!textCopied}/>
+                    <PrimaryButton text={'Next'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]} disable={!textCopied}/>
                 </Grid>,
             ]}
         />;

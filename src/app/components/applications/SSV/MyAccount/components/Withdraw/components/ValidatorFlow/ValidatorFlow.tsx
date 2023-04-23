@@ -59,7 +59,10 @@ const ValidatorFlow = () => {
       if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
         navigate(-1);
       }
-      if (success) setInputValue(0.0);
+      if (success) {
+        setInputValue(0.0);
+        navigate(-1);
+      }
     }, 10000);
   };
 

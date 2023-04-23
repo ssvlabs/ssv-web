@@ -63,7 +63,7 @@ const FundingNewValidator = () => {
 
   const moveToNextPage = () => {
     process.registerValidator = { depositAmount: depositSSV };
-    navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START);
   };
 
 

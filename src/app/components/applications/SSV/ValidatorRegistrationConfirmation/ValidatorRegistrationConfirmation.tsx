@@ -46,6 +46,10 @@ const ValidatorRegistrationConfirmation = () => {
   const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
   const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
   const totalAmountOfSsv = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
+  const successPageNavigate = {
+    true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
+    false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE),
+  };
 
   const onRegisterValidatorClick = async () => {
     applicationStore.setIsLoading(true);
@@ -67,7 +71,7 @@ const ValidatorRegistrationConfirmation = () => {
     const response = await validatorStore.addNewValidator();
     if (response) {
       applicationStore.showTransactionPendingPopUp(false);
-      navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
+      successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
       applicationStore.showTransactionPendingPopUp(false);
       setActionButtonText('Register Validator');

@@ -33,6 +33,10 @@ const KeyStoreFlow = () => {
   const [processingFile, setProcessFile] = useState(false);
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
+  const slashingWarningNavigate = {
+    true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
+    false: () => navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING),
+  };
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -139,8 +143,8 @@ const KeyStoreFlow = () => {
       const deposited = true; // await isDeposited();
       applicationStore.setIsLoading(false);
       validatorStore.registrationMode = 1;
-      navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
-      if (deposited) {
+      slashingWarningNavigate[`${processStore.secondRegistration}`]();
+        if (deposited) {
         GoogleTagManager.getInstance().sendEvent({
           category: 'validator_register',
           action: 'upload_file',

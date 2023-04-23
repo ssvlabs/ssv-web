@@ -25,7 +25,11 @@ const SlashingWarning = () => {
   const publicKey = validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey;
 
   const goToConfirmation = () => {
-    navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
+    if (processStore.secondRegistration) {
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE);
+    } else {
+      navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
+    }
   };
 
   const MainScreen = <BorderScreen

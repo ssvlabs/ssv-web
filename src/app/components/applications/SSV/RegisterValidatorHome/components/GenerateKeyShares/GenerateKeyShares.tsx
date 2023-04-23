@@ -22,6 +22,15 @@ const GenerateKeyShares = () => {
   process;
 
 
+  const uploadKeystore = {
+      true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE),
+      false: () => navigate(config.routes.SSV.VALIDATOR.IMPORT),
+  };
+
+  const distributeOffline = {
+      true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE),
+      false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE),
+  };
 
   const MainScreen = <BorderScreen
       withoutNavigation={processStore.secondRegistration}
@@ -47,7 +56,7 @@ const GenerateKeyShares = () => {
                   text={'Online'}
                   submitFunction={() => {
                     validatorStore.keyStoreFile = null;
-                    navigate(config.routes.SSV.VALIDATOR.IMPORT);
+                    uploadKeystore[`${processStore.secondRegistration}`]();
                   }}
               />
               <Grid item xs={12} className={classes.UnderButtonText}>
@@ -61,7 +70,7 @@ const GenerateKeyShares = () => {
                   text={'Offline'}
                   submitFunction={() => {
                     validatorStore.keyShareFile = null;
-                    navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE);
+                    distributeOffline[`${processStore.secondRegistration}`]();
                   }}
               />
               <Grid item xs={12} className={classes.UnderButtonText}>

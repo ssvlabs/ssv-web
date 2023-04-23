@@ -34,6 +34,10 @@ const KeyShareFlow = () => {
   const [processingFile, setProcessFile] = useState(false);
   const [validationError, setValidationError] = useState<ValidationError>({ id: 0, errorMessage: '', subErrorMessage: '' });
   const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
+  const slashingWarningNavigate = {
+    true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
+    false: () => navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING),
+  };
 
   useEffect(() => {
     validatorStore.clearKeyShareFlowData();
@@ -120,7 +124,7 @@ const KeyShareFlow = () => {
     try {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
-      navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
+      slashingWarningNavigate[`${processStore.secondRegistration}`]();
     } catch (error: any) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',

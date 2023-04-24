@@ -3,6 +3,7 @@ import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
@@ -69,7 +70,7 @@ const FundingSummary = (props: Props) => {
                           which will be lost at the event of your cluster insolvency
                           (inability to cover your validator&apos;s operational costs). <LinkText
                               text={'Read more on liquidations'}
-                              link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/> :
+                              link={config.links.MORE_ON_LIQUIDATION_LINK}/></Grid>}/> :
                     <Typography
                         className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {formatNumberToUi(daysPeriod, true)} Days</Typography>
                 }
@@ -77,7 +78,7 @@ const FundingSummary = (props: Props) => {
                     text={<Grid>Fees charged for using the network. Fees are
                       determined by the DAO and are used for network growth and expansion. <LinkText
                           text={'Read more on fees'}
-                          link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>}/>
+                          link={config.links.MORE_ON_FEES}/></Grid>}/>
                 }
               </Grid>
             </Grid>

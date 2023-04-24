@@ -28,6 +28,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: '50%',
     border: `1px solid ${theme.colors.gray20}`,
   },
+  CircleImageOperatorWrapper: {
+    position: 'relative',
+    zIndex: '10',
+  },
   OperatorName: {
     fontSize: 10,
     fontWeight: 300,
@@ -48,6 +52,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 500,
     lineHeight: 1.62,
     color: theme.colors.gray80,
+  },
+  OperatorCardMargin : {
+    marginLeft: '40px',
   },
   // Incentivized: {
   //     borderTop: `1px solid ${theme.colors.gray20}`,

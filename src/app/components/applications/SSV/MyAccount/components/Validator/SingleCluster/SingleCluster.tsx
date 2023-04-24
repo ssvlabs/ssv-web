@@ -32,8 +32,9 @@ const SingleCluster = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleClusterProcess = processStore.getProcess;
-  const [clusterValidators, setClusterValidators] = useState([]);
-  const [loadingValidators, setLoadingValidators] = useState(false);
+  const [rows, setRows] = useState<any[]>([]);
+  const [clusterValidators, setClusterValidators] = useState<any[]>([]);
+  const [loadingValidators, setLoadingValidators] = useState<boolean>(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     total: 10,
@@ -42,7 +43,6 @@ const SingleCluster = () => {
     rowsPerPage: 7,
     onChangePage: console.log,
   });
-
   const cluster = process?.item;
 
   useEffect(() => {
@@ -55,7 +55,6 @@ const SingleCluster = () => {
     });
   }, []);
 
-
   const createData = (
       publicKey: JSX.Element,
       status: JSX.Element,
@@ -67,7 +66,6 @@ const SingleCluster = () => {
 
   const extraButtons = (itemIndex: number) => {
     const validator: any = clusterValidators[itemIndex];
-
     return <Settings validator={validator} />;
   };
 
@@ -76,17 +74,23 @@ const SingleCluster = () => {
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 
-  const rows = clusterValidators?.map((validator: any)=>{
-    return createData(
-        <Grid container style={{ alignItems: 'center', gap: 8 }}>
-          <Grid item>0x{longStringShorten(validator.public_key, 4)}</Grid>
-          <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={24} height={24} />
-        </Grid>,
-        <Status item={validator} />,
-        <Grid item>33.12 ETH</Grid>,
-        <Grid item>{12.3}%</Grid>,
-    );
-  });
+  const sortValidatorsByStatus = () => {
+    setClusterValidators(prevState => [...prevState.sort((a: any, b: any) => a.status === b.status ? 0 : a.status ? -1 : 1)]);
+  };
+
+  useEffect(() =>{
+      setRows(clusterValidators?.map((validator: any)=>{
+          return createData(
+              <Grid container style={{ alignItems: 'center', gap: 8 }}>
+                  <Grid item>0x{longStringShorten(validator.public_key, 4)}</Grid>
+                  <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={24} height={24} />
+              </Grid>,
+              <Status item={validator} />,
+              <Grid item>33.12 ETH</Grid>,
+              <Grid item>{12.3}%</Grid>,
+          );
+      }));
+  }, [clusterValidators]);
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
@@ -138,7 +142,7 @@ const SingleCluster = () => {
                 }}
                 columns={[
                   { name: 'Public Key' },
-                  { name: 'Status', tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
+                  { name: 'Status', onClick: sortValidatorsByStatus, tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
                   { name: 'Balance' },
                   { name: 'Est. APR' },
                 ]}

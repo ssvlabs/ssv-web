@@ -9,7 +9,7 @@ import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
 import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
-import OperatorType from '~app/components/common/OperatorType/OperatorType';
+import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -18,6 +18,7 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import ClusterWarnings from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+
 const ClusterDashboard = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -48,9 +49,6 @@ const ClusterDashboard = () => {
     setHoveredGrid(null);
   };
 
-
-
-
   const createData = (
       clusterID: string,
       operators: JSX.Element,
@@ -77,19 +75,7 @@ const ClusterDashboard = () => {
                          onMouseEnter={() => handleGridHover(clusterStore.getClusterHash(cluster.operators) + operator.id)}
             >
               {(hoveredGrid === clusterStore.getClusterHash(cluster.operators) + operator.id) && (
-                  <Grid container className={classes.OperatorPopUp}>
-                    <Grid item className={classes.FullImageOperator} />
-                    <Grid item className={classes.Line} />
-                    <Grid item>
-                      <Grid item container style={{ alignItems: 'center', gap: 4 }}>
-                        <Grid>{operator.name}</Grid>
-                        {operator.type !== 'operator' && (
-                            <OperatorType type={'verified_operator'} />
-                        )}
-                      </Grid>
-                      <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
-                    </Grid>
-                  </Grid>
+                  <OperatorCard operator={operator} />
               )}
               <Grid item className={classes.CircleImageOperator} />
             </Grid>;

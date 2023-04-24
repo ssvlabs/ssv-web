@@ -52,9 +52,9 @@ const ValidatorSuccessScreen = () => {
 
   const handleGridLeave = () => {
     if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        setHoveredGrid(null);
-       }
+      clearTimeout(timeoutRef.current);
+      setHoveredGrid(null);
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -26,6 +27,8 @@ const ValidatorSuccessScreen = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const operators = Object.values(operatorStore.selectedOperators);
   const clusterHash = clusterStore.getClusterHash(operators);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
 
   const redirectTo = async () => {
     applicationStore.setIsLoading(true);
@@ -33,11 +36,25 @@ const ValidatorSuccessScreen = () => {
       applicationStore.setIsLoading(false);
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }, 5000);
+
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
       action: 'click',
       label: 'validator',
     });
+  };
+
+  const handleGridHover = (index: string) => {
+    timeoutRef.current = setTimeout(() => {
+      setHoveredGrid(index);
+    }, 300);
+  };
+
+  const handleGridLeave = () => {
+    if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        setHoveredGrid(null);
+       }
   };
 
   return (
@@ -56,9 +73,20 @@ const ValidatorSuccessScreen = () => {
               <Tooltip text={<Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid>} />
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
-              {Object.values(operatorStore.selectedOperators).map((operator: any) => {
+              {Object.values(operatorStore.selectedOperators).map((operator: any, index: number ) => {
                 return <Grid container item className={classes.Operator}>
-                  <Grid item className={classes.OperatorImage} xs={12}/>
+                  <Grid item
+                        container
+                        onMouseLeave={handleGridLeave}
+                        className={classes.CircleImageOperatorWrapper}
+                        onMouseEnter={() => handleGridHover(operator.id)}
+                  >
+                    {(hoveredGrid === operator.id) && (
+                      <OperatorCard classExtend={index === 0 && classes.OperatorCardMargin} operator={operator} />
+                  )}
+                  <Grid item className={classes.OperatorImage}
+                        xs={12}/>
+                  </Grid>
                   <Grid item className={classes.OperatorName} xs>Operator {operator.id}</Grid>
                   <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
                 </Grid>;

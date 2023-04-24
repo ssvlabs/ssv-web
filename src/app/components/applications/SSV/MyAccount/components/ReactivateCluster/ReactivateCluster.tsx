@@ -55,7 +55,7 @@ const ReactivateCluster = () => {
 
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
-  const showLiquidationError = isCustomPayment && insufficientBalance && timePeriodNotValid;
+  const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const disableCondition = insufficientBalance || customPeriod <= 0 || isNaN(customPeriod);
 
   const isChecked = (id: number) => checkedOption.id === id;
@@ -145,7 +145,7 @@ const ReactivateCluster = () => {
                     text={'Next'}
                     onClick={reactivateCluster}
                     disable={disableCondition}
-                    totalAmount={formatNumberToUi(totalCost.toFixed(18))}
+                    totalAmount={disableCondition ? '0' : formatNumberToUi(totalCost.toFixed(18))}
                 />
               </Grid>,
             ]}

@@ -125,6 +125,7 @@ const config = {
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
     EXPLORER_VERSION: process.env.REACT_APP_EXPLORER_VERSION || 'v2',
+    MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
     EXPLORER_NETWORK: process.env.REACT_APP_EXPLORER_NETWORK || 'prater',
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',

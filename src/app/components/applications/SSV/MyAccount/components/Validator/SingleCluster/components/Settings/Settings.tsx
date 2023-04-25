@@ -40,6 +40,17 @@ const Settings = ({ validator }: { validator: any }) => {
     };
   }, [settingsRef, showSettings]);
 
+  const openLink = (link: string) => {
+    if (link) {
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'external_link',
+          action: 'click',
+          label: 'change_operators',
+        });
+        window.open(link);
+      }
+  };
+
   const openBeaconcha = (publicKey: string) => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'external_link',
@@ -75,7 +86,7 @@ const Settings = ({ validator }: { validator: any }) => {
                 <Grid item className={classes.ChangeOperatorsImage} />
                 <Typography>Change Operators</Typography>
               </Grid>
-              <Grid className={classes.ChangeOperatorsLinkImage} />
+              <Grid onClick={() => openLink(config.links.UPDATE_OPERATORS_LINK)} className={classes.ChangeOperatorsLinkImage} />
             </Grid>
             <Grid container item className={classes.Button} onClick={moveToRemoveValidator}>
               <Grid className={classes.RemoveValidatorImage} />

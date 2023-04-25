@@ -32,6 +32,7 @@ const FundingNewValidator = () => {
   const [depositSSV, setDepositSSV] = useState(0);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
+  const disableBtnCondition = depositSSV > ssvStore.walletSsvBalance || (depositSSV === 0 && checkedId === 2) || !checkedId;
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
@@ -143,7 +144,7 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance || !checkedId} text={'Next'}
+                    <PrimaryButton disable={disableBtnCondition} text={'Next'}
                                    submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>

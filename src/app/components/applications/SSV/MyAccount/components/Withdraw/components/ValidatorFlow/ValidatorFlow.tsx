@@ -83,9 +83,7 @@ const ValidatorFlow = () => {
     // @ts-ignore
     setInputValue(Number(clusterBalance));
   }
-
-  console.log(inputValue);
-  console.log( typeof inputValue);
+  
   const newBalance = (inputValue ? clusterBalance - Number(inputValue) : clusterBalance).toFixed(18);
   // @ts-ignore
   const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0;

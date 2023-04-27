@@ -34,15 +34,17 @@ const Button = (props: ButtonParams) => {
     const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount } = props;
 
     useEffect(() => {
+    if (Number(totalAmount) > 0) {
         if (!ssvStore.userGaveAllowance && withAllowance && !isApprovalProcess) {
             setApprovalProcess(true);
             return;
         }
-        if (totalAmount && Number(walletStore.toWei(totalAmount)) > Number(ssvStore.approvedAllowance)){
+        if (totalAmount && Number(walletStore.toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
             setApprovalProcess(true);
             return;
         }
         setApprovalProcess(false);
+      }
     }, [ssvStore.userGaveAllowance, withAllowance, isApprovalProcess, totalAmount]);
 
     const checkWalletConnected = async (onClickCallBack: any) => {

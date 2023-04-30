@@ -111,9 +111,9 @@ const SingleOperator = () => {
     window.open(`${beaconchaBaseUrl}/validator/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
-    const sortValidatorsByStatus = () => {
-        setOperatorsValidators(prevState => [...prevState.sort((a: any, b: any) => a.status === b.status ? 0 : a.status ? -1 : 1)]);
-    };
+  const sortValidatorsByStatus = () => {
+    setOperatorsValidators(prevState => [...prevState.sort((a: any, b: any) => a.status === b.status ? 0 : a.status ? -1 : 1)]);
+  };
 
   const operatorView = React.useMemo(
       () => [

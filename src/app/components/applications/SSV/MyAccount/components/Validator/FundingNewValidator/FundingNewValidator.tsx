@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
@@ -23,28 +23,66 @@ const FundingNewValidator = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const OPTION_USE_CURRENT_BALANCE = 1;
   const ssvStore: SsvStore = stores.SSV;
+  const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState(0);
+  const [errorMessage, setErrorMessage] = useState({ text:'', link: { text:'', path:'' } });
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
+  const disableBtnCondition = (depositSSV === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
     balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
   });
+  const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? depositSSV > 0 : true;
+
+  useEffect(() => {
+    if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && depositSSV === 0) {
+      setErrorMessage({ text:'', link: { text:'', path:'' } });
+      setShowErrorMessage(false);
+      return;
+    }
+    if (depositSSV > ssvStore.walletSsvBalance) {
+      setErrorMessage({
+        text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
+        link: {
+          text: 'Need SSV?',
+          path: 'https://faucet.ssv.network',
+        },
+      });
+      setShowErrorMessage(true);
+      return;
+    }
+    if ( newRunWay < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM ) {
+      setErrorMessage({
+        text: 'Your updated operational puts your cluster validators at risk. To avoid liquidation please top up your cluster balance with greater funds.',
+        link: {
+          text: 'Learn more on liquidations',
+          path: config.links.MORE_ON_LIQUIDATION_LINK,
+        },
+      });
+      setShowErrorMessage(true);
+      return;
+    }
+    setErrorMessage({ text:'', link: { text:'', path:'' } });
+    setShowErrorMessage(false);
+  }, [depositSSV, checkedId]);
 
   const options = [
-    { id: 1, timeText: 'No - use current balance' },
-    { id: 2, timeText: 'Yes - deposit additional funds' },
+    { id: OPTION_USE_CURRENT_BALANCE, timeText: 'No - use current balance' },
+    { id: OPTION_DEPOSIT_ADDITIONAL_FUNDS, timeText: 'Yes - deposit additional funds' },
   ];
 
   const checkBox = (id: number) => {
-    if (id === 1) setDepositSSV(0);
+    if (id === OPTION_USE_CURRENT_BALANCE) setDepositSSV(0);
     setCheckedId(id);
   };
 
@@ -107,7 +145,7 @@ const FundingNewValidator = () => {
                       <Typography
                           className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(newRunWay, true)}</Typography>
                       <Typography className={classes.DaysText}>days</Typography>
-                      <Typography className={`${classes.Bold} ${classes.LessBold}`}>{daysChanged()}</Typography>
+                      {checkedId > 0 && calculateNewRunWayCondition && <Typography className={`${classes.Bold} ${classes.LessBold}`}>{daysChanged()}</Typography>}
                     </Grid>
                   </Grid>
                   <Grid container style={{ marginTop: 16, gap: 16 }}>
@@ -128,14 +166,14 @@ const FundingNewValidator = () => {
                       </Grid>;
                     })}
                   </Grid>
-                  {depositSSV > ssvStore.walletSsvBalance && <Grid container style={{ marginTop: 24 }}>
+                  {showErrorMessage && checkedId > 0 && <Grid container style={{ marginTop: 24 }}>
                     <ErrorMessage extendClasses={classes.ErrorBox} text={
                       <Grid container style={{ gap: 8 }}>
                         <Grid item>
-                          Insufficient SSV balance. Acquire further SSV or pick a different amount.
+                          {errorMessage.text}
                         </Grid>
                         <Grid container item xs>
-                          <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
+                          <LinkText className={classes.Link} text={errorMessage.link.text} link={errorMessage.link.path}/>
                         </Grid>
                       </Grid>
                     }
@@ -143,7 +181,7 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={depositSSV > ssvStore.walletSsvBalance || !checkedId} text={'Next'}
+                    <PrimaryButton disable={disableBtnCondition || showErrorMessage} text={'Next'}
                                    submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>

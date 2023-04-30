@@ -1,9 +1,12 @@
+import Web3 from 'web3';
+import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
 import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
+import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -16,7 +19,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-import Decimal from 'decimal.js';
+import { operatorPublicKeyValidator } from 'ssv-keys/dist/tsc/src/commands/actions/validators/operator';
 
 type KeyShareError = {
   id: number,
@@ -574,11 +577,14 @@ class ValidatorStore extends BaseStore {
   }
 
   async validateKeySharePayload(): Promise<KeyShareError> {
+    const OK_RESPONSE_ID = 0;
+    const ERROR_RESPONSE_ID = 4;
+    const VALIDATOR_EXIST_ID = 3;
+    const PUBLIC_KEY_ERROR_ID = 5;
+    const OPERATOR_NOT_EXIST_ID = 1;
+    const OPERATOR_NOT_MATCHING_ID = 2;
     const processStore: ProcessStore = this.getStore('Process');
-    const okResponse = { id: 0, name: '', errorMessage: '' };
-    const operatorNotExistResponse = { id: 1, name: 'operator_not_exist', errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.' };
-    const validatorExistResponse = { id: 3, name: 'validator_exit', errorMessage: 'Validator is already registered to the network, ', subErrorMessage:  'please try a different keystore file.' };
-    const operatorNotMatchingResponse = { id: 2, name: 'operators_not_matching', errorMessage: 'Operators data does not match cluster,', subErrorMessage:  'check operator data and re-generate keyshares.json' };
+    const { OK_RESPONSE, OPERATOR_NOT_EXIST_RESPONSE, OPERATOR_NOT_MATCHING_RESPONSE, CATCH_ERROR_RESPONSE, VALIDATOR_EXIST_RESPONSE, CHECKSUM_ERROR_RESPONSE } = translations.VALIDATOR.KEYSHARE_RESPONSE;
     try {
       const fileJson = await this.keyShareFile?.text();
       // const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
@@ -588,26 +594,34 @@ class ValidatorStore extends BaseStore {
       const payload = JSON.parse(fileJson).payload.readable;
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
+      const isChecksumValid = Web3.utils.checkAddressChecksum(this.keySharePublicKey);
+      const publicKeyError = operatorPublicKeyValidator(this.keySharePublicKey);
       const keyShareOperators = payload.operatorIds.sort();
+      if (typeof publicKeyError === 'string'){
+        return { ...CATCH_ERROR_RESPONSE, id: PUBLIC_KEY_ERROR_ID, errorMessage: publicKeyError };
+      }
+      if (!isChecksumValid) {
+        return { ...CHECKSUM_ERROR_RESPONSE, id: ERROR_RESPONSE_ID  };
+      }
       if (processStore.secondRegistration) {
         const process: SingleCluster = processStore.process;
         const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
         if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
-          return operatorNotMatchingResponse;
+          return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
         }
       } else {
         const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-        if (!selectedOperators) return operatorNotExistResponse;
+        if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
         // @ts-ignore
         operatorStore.selectOperators(selectedOperators);
       }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
-      if (validatorExist) return validatorExistResponse;
+      if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
 
-      return okResponse;
+      return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {
-      return { id: 4, name: 'ERROR', errorMessage: 'file data incorrect, check operator data and re-generate keyshares.json' };
+      return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID };
     }
   }
 

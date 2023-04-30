@@ -133,6 +133,7 @@ const config = {
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
     EXPLORER_URL: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+    UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     SSV_API_ENDPOINT: process.env.REACT_APP_SSV_API_ENDPOINT || 'https://api.stage.ssv.network/api/v2',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',

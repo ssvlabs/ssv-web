@@ -44,6 +44,7 @@ const SingleCluster = () => {
     onChangePage: console.log,
   });
   const cluster = process?.item;
+  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated;
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
@@ -97,7 +98,6 @@ const SingleCluster = () => {
     operatorStore.selectOperators(cluster.operators);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR);
   };
-
   const onChangePage = _.debounce( async (newPage: number) =>  {
     setLoadingValidators(true);
     Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
@@ -131,7 +131,7 @@ const SingleCluster = () => {
                 noItemsText={'Seems that you have no validators click “Add Cluster“ in order to run your first SSV validator'}
                 header={<Grid container className={classes.HeaderWrapper}>
                   <Grid item className={classes.Header}>Validators</Grid>
-                  <SecondaryButton disable={cluster.isLiquidated} className={classes.AddToCluster} text={'+ Add Validator'} submitFunction={addToCluster} />
+                  <SecondaryButton disable={showAddValidatorBtnCondition} className={classes.AddToCluster} text={'+ Add Validator'} submitFunction={addToCluster} />
                 </Grid>}
                 paginationActions={{
                   onChangePage: onChangePage,

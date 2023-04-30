@@ -111,6 +111,10 @@ const SingleOperator = () => {
     window.open(`${beaconchaBaseUrl}/validator/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
   };
 
+  const sortValidatorsByStatus = () => {
+    setOperatorsValidators(prevState => [...prevState.sort((a: any, b: any) => a.status === b.status ? 0 : a.status ? -1 : 1)]);
+  };
+
   const operatorView = React.useMemo(
       () => [
         {
@@ -189,9 +193,9 @@ const SingleOperator = () => {
             },
             {
               Header: <Grid container item alignItems={'center'}>
-                <Grid item style={{ marginRight: 4 }}>
+                <Typography onClick={() => sortValidatorsByStatus()} style={{ marginRight: 4, cursor:  'pointer' }}>
                   Status
-                </Grid>
+                </Typography>
                 <ToolTip
                     text={'Refers to the validators status in the SSV network (not beacon chain),and reflects whether its operators are consistently performing their duties(according to the last 2 epochs)'}/>
               </Grid>,

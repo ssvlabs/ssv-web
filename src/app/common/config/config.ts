@@ -148,6 +148,35 @@ const config = {
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
     MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
   },
+  KEYSHARE_RESPONSE: {
+    OK_RESPONSE:{
+      id: 0,
+      name: '',
+      errorMessage: '',
+    },
+    OPERATOR_NOT_EXIST_RESPONSE: {
+      id: 1,
+      name: 'operator_not_exist',
+      errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.',
+    },
+    OPERATOR_NOT_MATCHING_RESPONSE : {
+      id: 2,
+      name: 'operators_not_matching',
+      errorMessage: 'Operators data does not match cluster,',
+      subErrorMessage:  'check operator data and re-generate keyshares.json',
+    },
+    VALIDATOR_EXIST_RESPONSE: {
+      id: 3,
+      name: 'validator_exit',
+      errorMessage: 'Validator is already registered to the network, ',
+      subErrorMessage:  'please try a different keystore file.',
+    },
+    CHECKSUM_ERROR_RESPONSE: {
+      id: 4,
+      name: 'ERROR',
+      errorMessage: 'Invalid Ethereum address. Please check that you have entered the address correctly and try again.',
+    },
+  },
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
     NETWORK_ID: process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID,

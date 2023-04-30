@@ -34,16 +34,16 @@ const FundingNewValidator = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
-  const disableBtnCondition = (depositSSV === 0 && checkedId === 2) || !checkedId;
+  const disableBtnCondition = (depositSSV === 0 && checkedId === config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
     balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
   });
-  const calculateNewRunWayCondition = checkedId === 2 ? depositSSV > 0 : true;
+  const calculateNewRunWayCondition = checkedId === config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS ? depositSSV > 0 : true;
 
   useEffect(() => {
-    if (checkedId === 2 && depositSSV === 0) {
+    if (checkedId === config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS && depositSSV === 0) {
       setErrorMessage({ text:'', link: { text:'', path:'' } });
       setShowErrorMessage(false);
       return;
@@ -75,12 +75,12 @@ const FundingNewValidator = () => {
   }, [depositSSV, checkedId]);
 
   const options = [
-    { id: 1, timeText: 'No - use current balance' },
-    { id: 2, timeText: 'Yes - deposit additional funds' },
+    { id: config.GLOBAL_VARIABLE.OPTION_USE_CURRENT_BALANCE, timeText: 'No - use current balance' },
+    { id: config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS, timeText: 'Yes - deposit additional funds' },
   ];
 
   const checkBox = (id: number) => {
-    if (id === 1) setDepositSSV(0);
+    if (id === config.GLOBAL_VARIABLE.OPTION_USE_CURRENT_BALANCE) setDepositSSV(0);
     setCheckedId(id);
   };
 

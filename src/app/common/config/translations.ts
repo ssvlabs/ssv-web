@@ -39,6 +39,33 @@ const translations = {
         INVALID_PASSWORD: 'Invalid keystore file password.',
       },
     },
+    KEYSHARE_RESPONSE: {
+      OK_RESPONSE:{
+        name: '',
+        errorMessage: '',
+      },
+      OPERATOR_NOT_EXIST_RESPONSE: {
+        name: 'operator_not_exist',
+        errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.',
+      },
+      OPERATOR_NOT_MATCHING_RESPONSE : {
+        name: 'operators_not_matching',
+        errorMessage: 'Operators data does not match cluster,',
+        subErrorMessage:  'check operator data and re-generate keyshares.json',
+      },
+      VALIDATOR_EXIST_RESPONSE: {
+        name: 'validator_exit',
+        errorMessage: 'Validator is already registered to the network, ',
+        subErrorMessage:  'please try a different keystore file.',
+      },
+      CHECKSUM_ERROR_RESPONSE: {
+        name: 'ERROR',
+        errorMessage: 'Invalid Ethereum address. Please check that you have entered the address correctly and try again.',
+      },
+      CATCH_ERROR_RESPONSE: {
+        name: 'ERROR', errorMessage: 'file data incorrect, check operator data and re-generate keyshares.json',
+      },
+    },
     CONFIRMATION: {
       TITLE: 'Transaction Details',
       DESCRIPTION: '',

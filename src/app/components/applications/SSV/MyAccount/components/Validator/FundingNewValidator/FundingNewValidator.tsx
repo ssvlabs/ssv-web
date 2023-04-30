@@ -23,7 +23,9 @@ const FundingNewValidator = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const OPTION_USE_CURRENT_BALANCE = 1;
   const ssvStore: SsvStore = stores.SSV;
+  const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
@@ -34,16 +36,16 @@ const FundingNewValidator = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
-  const disableBtnCondition = (depositSSV === 0 && checkedId === config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
+  const disableBtnCondition = (depositSSV === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
     balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
   });
-  const calculateNewRunWayCondition = checkedId === config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS ? depositSSV > 0 : true;
+  const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? depositSSV > 0 : true;
 
   useEffect(() => {
-    if (checkedId === config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS && depositSSV === 0) {
+    if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && depositSSV === 0) {
       setErrorMessage({ text:'', link: { text:'', path:'' } });
       setShowErrorMessage(false);
       return;
@@ -75,12 +77,12 @@ const FundingNewValidator = () => {
   }, [depositSSV, checkedId]);
 
   const options = [
-    { id: config.GLOBAL_VARIABLE.OPTION_USE_CURRENT_BALANCE, timeText: 'No - use current balance' },
-    { id: config.GLOBAL_VARIABLE.OPTION_DEPOSIT_ADDITIONAL_FUNDS, timeText: 'Yes - deposit additional funds' },
+    { id: OPTION_USE_CURRENT_BALANCE, timeText: 'No - use current balance' },
+    { id: OPTION_DEPOSIT_ADDITIONAL_FUNDS, timeText: 'Yes - deposit additional funds' },
   ];
 
   const checkBox = (id: number) => {
-    if (id === config.GLOBAL_VARIABLE.OPTION_USE_CURRENT_BALANCE) setDepositSSV(0);
+    if (id === OPTION_USE_CURRENT_BALANCE) setDepositSSV(0);
     setCheckedId(id);
   };
 

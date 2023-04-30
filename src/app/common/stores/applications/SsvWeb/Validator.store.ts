@@ -3,6 +3,7 @@ import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
 import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
@@ -19,7 +20,6 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 import { operatorPublicKeyValidator } from 'ssv-keys/dist/tsc/src/commands/actions/validators/operator';
-import config from "~app/common/config";
 
 type KeyShareError = {
   id: number,

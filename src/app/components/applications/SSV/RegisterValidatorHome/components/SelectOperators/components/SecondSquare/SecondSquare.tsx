@@ -81,10 +81,9 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
   };
 
   const openSingleCluster = () => {
-    const cluster = myAccountStore.ownerAddressClusters.find((c: any) => c.index.toString() === existClusterData.index.toString());
     processStore.setProcess({
       processName: 'single_cluster',
-      item: cluster,
+      item: { ...existClusterData, operators: [...Object.values(operatorStore.selectedOperators)] },
     }, 2);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
@@ -98,7 +97,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
     if (operatorStore.selectedEnoughOperators) {
       setClusterExist(false);
       setCheckClusterExistence(true);
-      clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators))).then((clusterData) => {
+      clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
         if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
           setExistClusterData(clusterData);
           setClusterExist(true);

@@ -43,6 +43,7 @@ const FundingNewValidator = () => {
     balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
   });
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? depositSSV > 0 : true;
+  const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && depositSSV === 0) {
@@ -143,7 +144,7 @@ const FundingNewValidator = () => {
                     </Grid>
                     <Grid container item style={{ gap: 8, alignItems: 'center' }}>
                       <Typography
-                          className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(newRunWay, true)}</Typography>
+                          className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(runWay, true)}</Typography>
                       <Typography className={classes.DaysText}>days</Typography>
                       {checkedId > 0 && calculateNewRunWayCondition && <Typography className={`${classes.Bold} ${classes.LessBold}`}>{daysChanged()}</Typography>}
                     </Grid>

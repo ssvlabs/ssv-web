@@ -90,7 +90,7 @@ class ClusterStore extends BaseStore {
     return Math.max((walletStore.fromWei(cluster.balance) / burnRatePerDay) - liquidationCollateral, 0);
   }
 
-  async getClusterData(clusterHash: string) {
+  async getClusterData(clusterHash: string, fullData = false) {
     try {
       const response = await Validator.getInstance().getClusterData(clusterHash);
       const clusterData = response.cluster;
@@ -103,7 +103,7 @@ class ClusterStore extends BaseStore {
           active: true,
         };
       }
-      return {
+      return fullData ? clusterData : {
         validatorCount: clusterData.validatorCount,
         networkFeeIndex: clusterData.networkFeeIndex,
         index: clusterData.index,

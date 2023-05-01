@@ -87,8 +87,10 @@ const ValidatorSuccessScreen = () => {
                   <Grid item className={classes.OperatorImage}
                         xs={12}/>
                   </Grid>
-                  <Grid item className={classes.OperatorName} xs>Operator {operator.id}</Grid>
-                  <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
+                  <Grid container className={classes.OperatorData}>
+                      <Grid item className={classes.OperatorName} xs>{operator.name}</Grid>
+                      <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
+                  </Grid>
                 </Grid>;
               })}
             </Grid>

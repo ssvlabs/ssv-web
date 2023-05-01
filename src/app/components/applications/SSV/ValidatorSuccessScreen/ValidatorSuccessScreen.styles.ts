@@ -26,7 +26,11 @@ export const useStyles = makeStyles((theme: Theme) => ({
   OperatorImage: {
     height: 60,
     borderRadius: '50%',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
     border: `1px solid ${theme.colors.gray20}`,
+    backgroundImage: 'url(/images/operator_default_background/circle_light.png)',
   },
   CircleImageOperatorWrapper: {
     position: 'relative',
@@ -52,6 +56,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 500,
     lineHeight: 1.62,
     color: theme.colors.gray80,
+  },
+  OperatorData: {
+    display: 'flex',
+    flexDirection: 'column',
   },
   OperatorCardMargin : {
     marginLeft: '40px',

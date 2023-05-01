@@ -133,7 +133,17 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async connectWalletFromCache() {
     const selectedWallet: any = window.localStorage.getItem('selectedWallet');
-    if (selectedWallet && selectedWallet !== 'undefined') {
+    const walletConnectCondition = selectedWallet === 'WalletConnect' && !!window.localStorage.getItem('walletconnect');
+    const metamaskCondition = selectedWallet && selectedWallet !== 'undefined';
+    if (selectedWallet ===  'WalletConnect') {
+      await this.connectWallet(walletConnectCondition, selectedWallet);
+    } else {
+      await this.connectWallet(metamaskCondition, selectedWallet);
+    }
+  }
+
+  async connectWallet(condition: boolean, selectedWallet: any) {
+    if (condition) {
       await this.onboardSdk.walletSelect(selectedWallet);
       await this.onboardSdk.walletCheck();
     } else {

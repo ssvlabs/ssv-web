@@ -40,7 +40,7 @@ const ReactivateCluster = () => {
   const timePeriodNotValid = customPeriod < 30;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
-  const validatorCount = cluster.validator_count > 0 ? cluster.validator_count : 1;
+  const validatorCount = cluster.validator_count || 1;
 
   const checkBox = (option: any) => setCheckedOption(option);
 

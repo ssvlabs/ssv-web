@@ -15,7 +15,11 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
+const PROVIDER_WALLET_CONNECT = 'WalletConnect';
+const LOCAL_STORAGE_WALLET_KEY = 'selectedWallet';
+const LOCAL_STORAGE_WALLET_CONNECT_PARAMS_KEY = 'walletconnect';
 class WalletStore extends BaseStore implements Wallet {
+
   web3: any = null;
   wallet: any = null;
   notifySdk: any = null;
@@ -132,18 +136,9 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   async connectWalletFromCache() {
-    const selectedWallet: any = window.localStorage.getItem('selectedWallet');
-    const walletConnectCondition = selectedWallet === 'WalletConnect' && !!window.localStorage.getItem('walletconnect');
-    const metamaskCondition = selectedWallet && selectedWallet !== 'undefined';
-    if (selectedWallet ===  'WalletConnect') {
-      await this.connectWallet(walletConnectCondition, selectedWallet);
-    } else {
-      await this.connectWallet(metamaskCondition, selectedWallet);
-    }
-  }
-
-  async connectWallet(condition: boolean, selectedWallet: any) {
-    if (condition) {
+    const selectedWallet: any = window.localStorage.getItem(LOCAL_STORAGE_WALLET_KEY);
+    const walletCondition = selectedWallet === PROVIDER_WALLET_CONNECT ? !!window.localStorage.getItem(LOCAL_STORAGE_WALLET_CONNECT_PARAMS_KEY) : selectedWallet && selectedWallet !== 'undefined';
+    if (walletCondition) {
       await this.onboardSdk.walletSelect(selectedWallet);
       await this.onboardSdk.walletCheck();
     } else {
@@ -153,7 +148,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.setAccountDataLoaded(true);
     }
   }
-
   /**
    * Connect wallet
    */

@@ -40,6 +40,7 @@ const ReactivateCluster = () => {
   const timePeriodNotValid = customPeriod < 30;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
+  const validatorCount = cluster.validator_count || 1;
 
   const checkBox = (option: any) => setCheckedOption(option);
 
@@ -47,11 +48,11 @@ const ReactivateCluster = () => {
   const operatorsFee = Object.values(cluster.operators).reduce(
         (previousValue: number, currentValue: any) => previousValue + walletStore.fromWei(currentValue.fee),
         0,
-    ) * cluster.validator_count;
+    ) * validatorCount;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * cluster.validator_count;
+  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * validatorCount;
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
-  const liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee * cluster.validator_count).mul(ssvStore.liquidationCollateralPeriod);
+  const liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee * validatorCount).mul(ssvStore.liquidationCollateralPeriod);
 
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;

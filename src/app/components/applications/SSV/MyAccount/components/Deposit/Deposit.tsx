@@ -58,7 +58,10 @@ const Deposit = () => {
 
   function inputHandler(e: any) {
     let value = e.target.value.trim();
-    if (value === '') value = '0.0';
+    if (value === '') {
+        setInputValue(value);
+        return;
+    }
     if (Number(value) > ssvStore.walletSsvBalance) value = String(ssvStore.walletSsvBalance);
     setInputValue(value);
   }

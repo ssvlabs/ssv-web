@@ -26,7 +26,7 @@ const ValidatorFlow = () => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = walletStore.fromWei(cluster.balance);
-  const [inputValue, setInputValue] = useState(0.0);
+  const [inputValue, setInputValue] = useState<number | string>('');
   const applicationStore: ApplicationStore = stores.Application;
   const [userAgree, setUserAgreement] = useState(false);
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });

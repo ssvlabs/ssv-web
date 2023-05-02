@@ -59,7 +59,7 @@ class ClusterStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const contract: Contract = walletStore.getterContract;
-    const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
+    const clusterData: any = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
       const isLiquidated = await contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
@@ -102,14 +102,20 @@ class ClusterStore extends BaseStore {
           balance: 0,
           active: true,
         };
+      } else if (fullData) {
+        const isLiquidated: boolean = await this.isClusterLiquidated(Object.values(clusterData.operators));
+        const burnRate: string = await this.getClusterBurnRate(Object.values(clusterData.operators));
+        const runWay: number = this.getClusterRunWay({ ...clusterData, burnRate });
+        return { ...clusterData, isLiquidated, runWay, burnRate };
+      } else {
+        return  {
+          validatorCount: clusterData.validatorCount,
+          networkFeeIndex: clusterData.networkFeeIndex,
+          index: clusterData.index,
+          balance: clusterData.balance,
+          active: clusterData.active,
+        };
       }
-      return fullData ? clusterData : {
-        validatorCount: clusterData.validatorCount,
-        networkFeeIndex: clusterData.networkFeeIndex,
-        index: clusterData.index,
-        balance: clusterData.balance,
-        active: clusterData.active,
-      };
     } catch (e) {
       return null;
     }

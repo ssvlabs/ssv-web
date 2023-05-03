@@ -782,6 +782,7 @@ class OperatorStore extends BaseStore {
    * @param operators
    */
   selectOperators(operators: IOperator[]) {
+    this.selectedOperators = {};
     operators.forEach((value: IOperator, index: number) => {
       this.selectedOperators[index] = value;
     });

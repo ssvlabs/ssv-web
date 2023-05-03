@@ -783,7 +783,7 @@ class OperatorStore extends BaseStore {
    */
   selectOperators(operators: IOperator[]) {
     operators.forEach((value: IOperator, index: number) => {
-      this.selectedOperators[index + 1] = value;
+      this.selectedOperators[index] = value;
     });
   }
 

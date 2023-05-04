@@ -591,7 +591,7 @@ class ValidatorStore extends BaseStore {
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
       const keyShareOperators = payload.operatorIds.sort();
-      if (this.keySharePublicKey.length < 98) {
+      if (this.keySharePublicKey.length !== 98) {
         return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
       }
       if (processStore.secondRegistration) {

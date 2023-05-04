@@ -75,6 +75,15 @@ class Validator {
     }
   }
 
+  async getFeeRecipientAddress(publicKey: string) {
+    try {
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${publicKey}`;
+      return await this.getData(url);
+    } catch (e) {
+      return null;
+    }
+  }
+
   /**
    * Retry few times to get the data
    * @param url

@@ -5,6 +5,7 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, observable, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
+import Validator from '~lib/api/Validator';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
@@ -28,6 +29,7 @@ class WalletStore extends BaseStore implements Wallet {
   wrongNetwork: boolean = false;
   networkId: number | null = null;
   accountDataLoaded: boolean = false;
+  feeRecipientAddress: string = '';
 
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
@@ -61,6 +63,7 @@ class WalletStore extends BaseStore implements Wallet {
       networkHandler: action.bound,
       initWalletHooks: action.bound,
       accountDataLoaded: observable,
+      feeRecipientAddress: observable,
       initializeUserInfo: action.bound,
       setAccountDataLoaded: action.bound,
       connectWalletFromCache: action.bound,
@@ -131,7 +134,6 @@ class WalletStore extends BaseStore implements Wallet {
     if (typeof amount === 'string') amount = amount.slice(0, 16);
     return this.web3.utils.toWei(amount.toString(), 'ether');
   }
-
   /**
    * Check wallet cache and connect
    */
@@ -141,6 +143,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (walletCondition) {
       await this.onboardSdk.walletSelect(selectedWallet);
       await this.onboardSdk.walletCheck();
+      await this.getFeeRecipientAddress();
     } else {
       const applicationStore: Application = this.getStore('Application');
       applicationStore.strategyRedirect = config.routes.SSV.ROOT;
@@ -148,6 +151,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.setAccountDataLoaded(true);
     }
   }
+
   /**
    * Connect wallet
    */
@@ -156,11 +160,21 @@ class WalletStore extends BaseStore implements Wallet {
       console.debug('Connecting wallet..');
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck();
+      await this.getFeeRecipientAddress();
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
       this.notificationsStore.showMessage(message, 'error');
       console.error('Connecting to wallet error:', message);
       return false;
+    }
+  }
+
+  async getFeeRecipientAddress() {
+    const result = await Validator.getInstance().getFeeRecipientAddress(this.accountAddress);
+    if (result.data){
+      this.feeRecipientAddress = result.data.recipientAddress;
+    } else {
+      this.feeRecipientAddress = this.accountAddress;
     }
   }
 

@@ -1,4 +1,3 @@
-// import Web3 from 'web3';
 import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
 import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
@@ -19,7 +18,6 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-// import { operatorPublicKeyValidator } from 'ssv-keys/dist/tsc/src/commands/actions/validators/operator';
 
 type KeyShareError = {
   id: number,
@@ -580,29 +578,22 @@ class ValidatorStore extends BaseStore {
     const OK_RESPONSE_ID = 0;
     const ERROR_RESPONSE_ID = 4;
     const VALIDATOR_EXIST_ID = 3;
-    // const PUBLIC_KEY_ERROR_ID = 5;
+    const PUBLIC_KEY_ERROR_ID = 5;
     const OPERATOR_NOT_EXIST_ID = 1;
     const OPERATOR_NOT_MATCHING_ID = 2;
     const processStore: ProcessStore = this.getStore('Process');
-    const { OK_RESPONSE, OPERATOR_NOT_EXIST_RESPONSE, OPERATOR_NOT_MATCHING_RESPONSE, CATCH_ERROR_RESPONSE, VALIDATOR_EXIST_RESPONSE } = translations.VALIDATOR.KEYSHARE_RESPONSE;
+    const { OK_RESPONSE, OPERATOR_NOT_EXIST_RESPONSE, OPERATOR_NOT_MATCHING_RESPONSE, CATCH_ERROR_RESPONSE, VALIDATOR_EXIST_RESPONSE, VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
     try {
       const fileJson = await this.keyShareFile?.text();
-      // const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
-      // console.log(ssvKeys.keyShares.fromJson(fileJson));
       const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
       const payload = JSON.parse(fileJson).payload.readable;
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
-      // const isChecksumValid = Web3.utils.checkAddressChecksum(this.keySharePublicKey);
-      // const publicKeyError = operatorPublicKeyValidator(this.keySharePublicKey);
       const keyShareOperators = payload.operatorIds.sort();
-      // if (typeof publicKeyError === 'string'){
-      //   return { ...CATCH_ERROR_RESPONSE, id: PUBLIC_KEY_ERROR_ID, errorMessage: publicKeyError };
-      // }
-      // if (!isChecksumValid) {
-      //   return { ...CHECKSUM_ERROR_RESPONSE, id: ERROR_RESPONSE_ID  };
-      // }
+      if (this.keySharePublicKey.length < 98) {
+        return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
+      }
       if (processStore.secondRegistration) {
         const process: SingleCluster = processStore.process;
         const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();

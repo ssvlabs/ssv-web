@@ -62,6 +62,10 @@ const translations = {
         name: 'ERROR',
         errorMessage: 'Invalid Ethereum address. Please check that you have entered the address correctly and try again.',
       },
+      VALIDATOR_PUBLIC_KEY_ERROR: {
+        name: 'ERROR',
+        errorMessage: 'Validator key invalid, please go through key splitting and generate the keyshares files again.',
+      },
       CATCH_ERROR_RESPONSE: {
         name: 'ERROR', errorMessage: 'file data incorrect, check operator data and re-generate keyshares.json',
       },

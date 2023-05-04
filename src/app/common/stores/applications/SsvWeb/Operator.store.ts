@@ -782,10 +782,10 @@ class OperatorStore extends BaseStore {
    * @param operators
    */
   selectOperators(operators: IOperator[]) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const index of [1, 2, 3, 4]) {
-      this.selectedOperators[index] = operators[index - 1];
-    }
+    this.selectedOperators = {};
+    operators.forEach((value: IOperator, index: number) => {
+      this.selectedOperators[index] = value;
+    });
   }
 
   /**

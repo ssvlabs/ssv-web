@@ -108,6 +108,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: 8,
     lineHeight: 1.25,
     cursor: 'pointer',
+    whiteSpace: 'nowrap',
     alignItems: 'center',
     padding: '16px 24px',
     justifyContent: 'center',

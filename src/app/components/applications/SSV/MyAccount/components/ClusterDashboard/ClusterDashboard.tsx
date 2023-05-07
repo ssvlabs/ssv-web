@@ -128,7 +128,7 @@ const ClusterDashboard = () => {
       <Grid container item className={classes.HeaderWrapper}>
         <ToggleDashboards title={'Validator Clusters'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
-          {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
+          {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={() => !loadingFeeRecipient && moveToFeeRecipient()}>
             Fee Address
             {loadingFeeRecipient ? <CircularProgress className={classes.SpinnerWrapper} thickness={6} size={16} /> : <Grid item className={classes.Pencil}/>}
           </Grid>)}

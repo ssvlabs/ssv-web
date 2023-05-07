@@ -37,7 +37,7 @@ class AccountStore extends BaseStore  {
                         resolve(false);
                     });
             } catch (e: any) {
-                console.log(`Error during setting fee recipient: ${e.message}`);
+                console.error(`Error during setting fee recipient: ${e.message}`);
                 resolve(false);
             }
         });

@@ -5,13 +5,13 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, observable, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
-import Validator from '~lib/api/Validator';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -57,7 +57,7 @@ class WalletStore extends BaseStore implements Wallet {
       getterContract: computed,
       setterContract: computed,
       accountAddress: observable,
-      walletHandler: action.bound,
+      onWalletConnectedCallback: action.bound,
       addressHandler: action.bound,
       balanceHandler: action.bound,
       networkHandler: action.bound,
@@ -88,7 +88,7 @@ class WalletStore extends BaseStore implements Wallet {
         wallets,
       },
       subscriptions: {
-        wallet: this.walletHandler,
+        wallet: this.onWalletConnectedCallback,
         address: this.addressHandler,
         network: this.networkHandler,
         balance: this.balanceHandler,
@@ -143,7 +143,6 @@ class WalletStore extends BaseStore implements Wallet {
     if (walletCondition) {
       await this.onboardSdk.walletSelect(selectedWallet);
       await this.onboardSdk.walletCheck();
-      await this.getFeeRecipientAddress();
     } else {
       const applicationStore: Application = this.getStore('Application');
       applicationStore.strategyRedirect = config.routes.SSV.ROOT;
@@ -160,21 +159,11 @@ class WalletStore extends BaseStore implements Wallet {
       console.debug('Connecting wallet..');
       await this.onboardSdk.walletSelect();
       await this.onboardSdk.walletCheck();
-      await this.getFeeRecipientAddress();
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
       this.notificationsStore.showMessage(message, 'error');
       console.error('Connecting to wallet error:', message);
       return false;
-    }
-  }
-
-  async getFeeRecipientAddress() {
-    const result = await Validator.getInstance().getFeeRecipientAddress(this.accountAddress);
-    if (result.data){
-      this.feeRecipientAddress = result.data.recipientAddress;
-    } else {
-      this.feeRecipientAddress = this.accountAddress;
     }
   }
 
@@ -197,6 +186,8 @@ class WalletStore extends BaseStore implements Wallet {
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
       this.accountAddress = address;
+      const accountStore: AccountStore = this.getStore('Account');
+      await accountStore.getFeeRecipientAddress(this.accountAddress);
       ApiParams.cleanStorage();
       await this.initializeUserInfo();
       await myAccountStore.getOwnerAddressOperators({});
@@ -231,7 +222,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Callback for connected wallet
    * @param wallet: any
    */
-  async walletHandler(wallet: any) {
+  async onWalletConnectedCallback(wallet: any) {
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     console.debug('Wallet Connected:', wallet);

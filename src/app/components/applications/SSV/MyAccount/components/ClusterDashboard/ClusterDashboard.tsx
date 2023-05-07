@@ -10,6 +10,8 @@ import LinkText from '~app/components/common/LinkText';
 import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -24,8 +26,10 @@ const ClusterDashboard = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
+  const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
+  const accountStore: AccountStore = stores.Account;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
   const [hoveredGrid, setHoveredGrid] = useState(null);
@@ -98,7 +102,8 @@ const ClusterDashboard = () => {
   };
 
   const moveToFeeRecipient = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT);
+    accountStore.getFeeRecipientAddress(walletStore.accountAddress)
+        .finally(() => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT));
   };
 
   const onChangePage = _.debounce( async (newPage: number) =>  {

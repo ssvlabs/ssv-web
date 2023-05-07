@@ -19,7 +19,7 @@ const FeeRecipient = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
-  const [userInput, setUserInput] = useState(accountStore.feeRecipientAddress);
+  const [userInput, setUserInput] = useState(accountStore.recipientAddress);
 
   const submitFeeRecipient = async () => {
     applicationStore.setIsLoading(true);

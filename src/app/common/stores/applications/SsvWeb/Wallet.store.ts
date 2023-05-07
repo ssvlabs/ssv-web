@@ -11,7 +11,6 @@ import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -58,9 +57,9 @@ class WalletStore extends BaseStore implements Wallet {
       setterContract: computed,
       accountAddress: observable,
       onWalletConnectedCallback: action.bound,
-      addressHandler: action.bound,
-      balanceHandler: action.bound,
-      networkHandler: action.bound,
+      onAccountAddressChangeCallback: action.bound,
+      onBalanceChangeCallback: action.bound,
+      onNetworkChangeCallback: action.bound,
       initWalletHooks: action.bound,
       accountDataLoaded: observable,
       feeRecipientAddress: observable,
@@ -88,13 +87,14 @@ class WalletStore extends BaseStore implements Wallet {
         wallets,
       },
       subscriptions: {
+        network: this.onNetworkChangeCallback,
+        balance: this.onBalanceChangeCallback,
         wallet: this.onWalletConnectedCallback,
-        address: this.addressHandler,
-        network: this.networkHandler,
-        balance: this.balanceHandler,
+        address: this.onAccountAddressChangeCallback,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
+
     this.onboardSdk = Onboard(connectionConfig);
     const notifyOptions = {
       dappId: config.ONBOARD.API_KEY,
@@ -171,7 +171,7 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param address: string
    */
-  async addressHandler(address: string) {
+  async onAccountAddressChangeCallback(address: string) {
     this.setAccountDataLoaded(false);
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -186,12 +186,12 @@ class WalletStore extends BaseStore implements Wallet {
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
       this.accountAddress = address;
-      const accountStore: AccountStore = this.getStore('Account');
-      await accountStore.getFeeRecipientAddress(this.accountAddress);
       ApiParams.cleanStorage();
-      await this.initializeUserInfo();
-      await myAccountStore.getOwnerAddressOperators({});
-      await myAccountStore.getOwnerAddressClusters({});
+      await Promise.all([
+          this.initializeUserInfo(),
+          myAccountStore.getOwnerAddressOperators({}),
+          myAccountStore.getOwnerAddressClusters({}),
+      ]);
       if (myAccountStore?.ownerAddressClusters?.length) {
         applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
       } else if (myAccountStore?.ownerAddressOperators?.length) {
@@ -232,7 +232,7 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Fetch user balances and fees
    */
-  async balanceHandler(balance: any) {
+  async onBalanceChangeCallback(balance: any) {
     if (balance) await this.initializeUserInfo();
   }
 
@@ -240,7 +240,7 @@ class WalletStore extends BaseStore implements Wallet {
    * User Network handler
    * @param networkId: any
    */
-  async networkHandler(networkId: any) {
+  async onNetworkChangeCallback(networkId: any) {
     this.networkId = networkId;
     if (networkId !== 5 && networkId !== undefined) {
       this.wrongNetwork = true;

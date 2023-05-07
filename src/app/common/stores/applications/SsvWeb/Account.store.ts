@@ -6,12 +6,12 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 class AccountStore extends BaseStore  {
-    feeRecipientAddress: string = '';
+    recipientAddress: string = '';
 
     constructor() {
         super();
         makeObservable(this, {
-            feeRecipientAddress: observable,
+            recipientAddress: observable,
         });
     }
 
@@ -24,7 +24,7 @@ class AccountStore extends BaseStore  {
                 await contract.methods.setFeeRecipientAddress(feeRecipient).send({ from: walletStore.accountAddress })
                     .on('receipt', async (receipt: any) => {
                         console.log(receipt);
-                        this.feeRecipientAddress = feeRecipient;
+                        this.recipientAddress = feeRecipient;
                         resolve(true);
                     })
                     .on('transactionHash', (txHash: string) => {
@@ -37,9 +37,7 @@ class AccountStore extends BaseStore  {
                         resolve(false);
                     });
             } catch (e: any) {
-                console.log('<<<<<<<<<<<<<<<<her>>>>>>>>>>>>>>>>');
-                console.log(e.message);
-                console.log('<<<<<<<<<<<<<<<<her>>>>>>>>>>>>>>>>');
+                console.log(`Error during setting fee recipient: ${e.message}`);
                 resolve(false);
             }
         });
@@ -48,9 +46,9 @@ class AccountStore extends BaseStore  {
     async getFeeRecipientAddress(ownerAddress: string) {
         const result = await Account.getInstance().getFeeRecipientAddress(ownerAddress);
         if (result.data){
-            this.feeRecipientAddress = result.data.recipientAddress;
+            this.recipientAddress = result.data.recipientAddress;
         } else {
-            this.feeRecipientAddress = ownerAddress;
+            this.recipientAddress = ownerAddress;
         }
     }
 

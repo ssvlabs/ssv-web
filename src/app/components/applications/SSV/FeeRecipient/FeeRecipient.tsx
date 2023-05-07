@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
 import { checkAddressChecksum, toChecksumAddress } from 'web3-utils';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -8,22 +8,22 @@ import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 
 const FeeRecipient = () => {
   const stores = useStores();
   const classes = useStyles();
-  const clusterStore: ClusterStore = stores.Cluster;
+  const accountStore: AccountStore = stores.Account;
   const applicationStore: ApplicationStore = stores.Application;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState(accountStore.recipientAddress);
 
   const submitFeeRecipient = async () => {
     applicationStore.setIsLoading(true);
-    await clusterStore.setFeeRecipient(userInput);
+    await accountStore.setFeeRecipient(userInput);
     applicationStore.setIsLoading(false);
   };
 

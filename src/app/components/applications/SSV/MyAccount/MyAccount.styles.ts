@@ -108,11 +108,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: 8,
     lineHeight: 1.25,
     cursor: 'pointer',
+    whiteSpace: 'nowrap',
     alignItems: 'center',
     padding: '16px 24px',
     justifyContent: 'center',
     color: theme.colors.white,
     backgroundColor: theme.colors.primaryBlue,
+  },
+  SpinnerWrapper: {
+    color: theme.colors.tint20,
   },
   lightHeaderButton: {
     color: theme.colors.primaryBlue,

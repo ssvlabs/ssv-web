@@ -8,6 +8,7 @@ const stores = [
   'Faucet',
   'Process',
   'Cluster',
+  'Account',
   'Operator',
   'Validator',
   'MyAccount',

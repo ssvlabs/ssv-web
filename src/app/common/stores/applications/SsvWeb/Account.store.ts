@@ -44,14 +44,16 @@ class AccountStore extends BaseStore  {
     }
 
     async getFeeRecipientAddress(ownerAddress: string) {
-        const result = await Account.getInstance().getFeeRecipientAddress(ownerAddress);
-        if (result.data){
+        const result: any = await new Promise(resolve => {
+                const res = Account.getInstance().getFeeRecipientAddress(ownerAddress);
+                resolve(res);
+        });
+        if (result.data) {
             this.recipientAddress = result.data.recipientAddress;
         } else {
             this.recipientAddress = ownerAddress;
         }
     }
-
 }
 
 export default AccountStore;

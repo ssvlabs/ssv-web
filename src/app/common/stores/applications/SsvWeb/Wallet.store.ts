@@ -15,6 +15,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
+const GOERLI_NETWORK_ID = 5;
 const PROVIDER_WALLET_CONNECT = 'WalletConnect';
 const LOCAL_STORAGE_WALLET_KEY = 'selectedWallet';
 const LOCAL_STORAGE_WALLET_CONNECT_PARAMS_KEY = 'walletconnect';
@@ -242,7 +243,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async onNetworkChangeCallback(networkId: any) {
     this.networkId = networkId;
-    if (networkId !== 5 && networkId !== undefined) {
+    if (networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {

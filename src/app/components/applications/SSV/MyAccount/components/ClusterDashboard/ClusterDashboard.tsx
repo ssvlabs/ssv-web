@@ -3,6 +3,7 @@ import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -34,6 +35,7 @@ const ClusterDashboard = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
+  const [loadingFeeRecipient, setLoadingFeeRecipient] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
 
   const moveToRegisterValidator = () => {
@@ -101,9 +103,12 @@ const ClusterDashboard = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
-  const moveToFeeRecipient = () => {
-    accountStore.getFeeRecipientAddress(walletStore.accountAddress)
-        .finally(() => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT));
+  const moveToFeeRecipient = async () => {
+    setLoadingFeeRecipient(true);
+    accountStore.getFeeRecipientAddress(walletStore.accountAddress).finally(() => {
+      setLoadingFeeRecipient(false);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT);
+    });
   };
 
   const onChangePage = _.debounce( async (newPage: number) =>  {
@@ -125,7 +130,7 @@ const ClusterDashboard = () => {
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
             Fee Address
-            <Grid item className={classes.Pencil}/>
+            {loadingFeeRecipient ? <CircularProgress className={classes.SpinnerWrapper} thickness={6} size={16} /> : <Grid item className={classes.Pencil}/>}
           </Grid>)}
           <Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>
         </Grid>

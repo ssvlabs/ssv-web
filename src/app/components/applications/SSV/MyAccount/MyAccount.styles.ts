@@ -114,6 +114,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     color: theme.colors.white,
     backgroundColor: theme.colors.primaryBlue,
   },
+  SpinnerWrapper: {
+    color: theme.colors.tint20,
+  },
   lightHeaderButton: {
     color: theme.colors.primaryBlue,
     backgroundColor: theme.colors.tint70,

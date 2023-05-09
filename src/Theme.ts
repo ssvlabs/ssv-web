@@ -54,6 +54,7 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             primarySuccessDark: isDarkMode ? '#08c858' : '#06b64f',
             primaryWarningRegular: 'rgba(255, 210, 10, 0.2)',
             squareScreenBackground: isDarkMode ? '#0b2a3c' : '#fdfefe',
+            squareScreenBackgroundDeleted: isDarkMode ? '#0b2a3c' : '#f8fcff',
             primaryError: '#ec1c26',
             primarySuccess: '#ec1c26',
             primaryErrorRegular: isDarkMode ? 'rgba(236, 28, 38, 0.32)' : 'rgba(236, 28, 38, 0.12)',

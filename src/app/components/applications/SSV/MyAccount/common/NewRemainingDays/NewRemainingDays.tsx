@@ -21,14 +21,13 @@ const NewRemainingDays = (props: Props) => {
   const stores = useStores();
   stores;
   const { cluster, withdrawState, isInputFilled = null } = props;
-
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
-  const typeOfiIsInputFilled =  typeof isInputFilled === 'boolean';
   let remainingDays: number = clusterRunWay;
+  const typeOfiIsInputFilled =  typeof isInputFilled === 'boolean';
+  const remainingDaysValue = formatNumberToUi(remainingDays, true);
+  const errorCondition = withdrawState ? remainingDays === 0 ? 3 : 1 : remainingDays === 0 ? 3 : 0;
   let warningLiquidationState: boolean = typeOfiIsInputFilled ? isInputFilled && clusterRunWay < 30 : clusterRunWay < 30;
   const showErrorCondition: boolean = typeOfiIsInputFilled ? warningLiquidationState && !cluster.isLiquidated && isInputFilled : warningLiquidationState && !cluster.isLiquidated;
-  const errorCondition = withdrawState ? remainingDays === 0 ? 3 : 1 : remainingDays === 0 ? 3 : 0;
-
   const classes = useStyles({ warningLiquidationState, withdrawState });
 
     return (
@@ -42,8 +41,8 @@ const NewRemainingDays = (props: Props) => {
           </Grid>
           {remainingDays || cluster.isLiquidated ? (
               <>
-                <Typography className={classes.AmountOfDays}>{formatNumberToUi(remainingDays, true)}</Typography>
-                <Typography className={classes.Days}>days</Typography>
+                <Typography className={classes.AmountOfDays}>{remainingDaysValue}</Typography>
+                {+remainingDaysValue > 0 && <Typography className={classes.Days}>days</Typography>}
               </>)
               :
               (<NaDisplay size={24} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}

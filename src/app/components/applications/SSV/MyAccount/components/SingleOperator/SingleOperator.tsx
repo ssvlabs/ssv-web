@@ -95,7 +95,7 @@ const SingleOperator = () => {
   };
 
   const moveToUpdateFee = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT);
   };
 
   const moveToWithdraw = () => {
@@ -269,7 +269,7 @@ const SingleOperator = () => {
                   ]}
                   bottom={[
                     <Grid item xs>
-                      <SecondaryButton disable={true} text={'Update Fee'} submitFunction={moveToUpdateFee} />
+                      <SecondaryButton text={'Update Fee'} submitFunction={moveToUpdateFee} />
                     </Grid>,
                   ]}
                   bottomWrapper={classes.ButtonSection}

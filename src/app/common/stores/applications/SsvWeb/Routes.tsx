@@ -4,6 +4,8 @@ import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
 import { SsvAppBar } from '~app/components/common/AppBar';
+import FeeChange
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeChange';
 // import MyAccount from '~app/components/applications/SSV/MyAccount';
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -63,6 +65,7 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START, Component: FeeChange },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares  },

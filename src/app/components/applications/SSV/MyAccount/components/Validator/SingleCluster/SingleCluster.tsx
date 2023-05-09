@@ -87,8 +87,8 @@ const SingleCluster = () => {
                   <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={24} height={24} />
               </Grid>,
               <Status item={validator} />,
-              <Grid item>33.12 ETH</Grid>,
-              <Grid item>{12.3}%</Grid>,
+              <></>,
+              <></>,
           );
       }));
   }, [clusterValidators]);
@@ -143,8 +143,8 @@ const SingleCluster = () => {
                 columns={[
                   { name: 'Public Key' },
                   { name: 'Status', onClick: sortValidatorsByStatus, tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
-                  { name: 'Balance' },
-                  { name: 'Est. APR' },
+                  { name: '' },
+                  { name: '' },
                 ]}
                 extraActions={extraButtons}
             />}

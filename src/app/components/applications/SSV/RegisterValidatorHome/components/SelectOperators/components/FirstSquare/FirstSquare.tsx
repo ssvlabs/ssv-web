@@ -72,8 +72,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const response = await Operator.getInstance().getOperators(payload);
     if (response?.pagination?.page > 1) {
-      const operatorListInString = operatorsData.map(operator => JSON.stringify(operator));
-      const operators = response.operators.filter((operator: any) => !operatorListInString.includes(JSON.stringify(operator)));
+      const operatorListInString = operatorsData.map(operator => operator.id);
+      const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));
       setOperatorsData([...operatorsData, ...operators]);
     } else {
       setOperatorsData(response.operators);

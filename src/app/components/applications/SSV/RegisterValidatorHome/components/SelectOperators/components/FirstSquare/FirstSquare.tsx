@@ -72,11 +72,12 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     const response = await Operator.getInstance().getOperators(payload);
     if (response?.pagination?.page > 1) {
-      setOperatorsData([...operatorsData, ...response.operators]);
+      const operatorListInString = operatorsData.map(operator => operator.id);
+      const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));
+      setOperatorsData([...operatorsData, ...operators]);
     } else {
       setOperatorsData(response.operators);
     }
-
     setOperatorsPagination(response.pagination);
   };
 

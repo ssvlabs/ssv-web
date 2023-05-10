@@ -4,7 +4,6 @@ import { Theme } from '@mui/material/styles';
 export const useStyles = makeStyles((theme: Theme) => ({
     FeeInput: {
         marginTop: '0px',
-        width: '100%',
     },
     Conversion: {
         width: 88,
@@ -36,5 +35,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     AnnualFeeLabel: {
         size: '14px',
         color: `${theme.colors.gray40}`,
+    },
+    TextError: {
+        color: 'red',
+        zIndex: 9123123,
+        fontSize: '14px',
+        width: '23px',
+    },
+    TextErrorWrapper: {
+        height: '23px',
+        whiteSpace: 'nowrap',
     },
 }));

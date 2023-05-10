@@ -2,6 +2,12 @@ import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
+    ChangeFeeWrapper: {
+        gap: 24,
+        display: 'flex',
+        flexDirection:  'column',
+        justifyContent: 'space-around',
+},
     Stepper: {
         marginTop: 24,
         marginBottom: 40,

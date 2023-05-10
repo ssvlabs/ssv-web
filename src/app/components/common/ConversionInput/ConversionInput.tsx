@@ -1,24 +1,32 @@
 import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
-// import IntegerInput from '~app/components/common/IntegerInput';
-import { useStyles } from '~app/components/common/ConversionInput/ConversionInInput.styles';
-import TextInput from '~app/components/common/TextInput';
 import Typography from '@mui/material/Typography';
+import TextInput from '~app/components/common/TextInput';
+import { useStyles } from '~app/components/common/ConversionInput/ConversionInInput.styles';
+
+export type ErrorType = {
+    shouldDisplay: boolean;
+    errorMessage: string;
+};
 
 type ConversionInputProps = {
+    error?: ErrorType;
+    onChange: Function;
     value: string | number;
+    placeholder?: string
 };
-const ConversionInput = ({ value } : ConversionInputProps) => {
+const ConversionInput = ({ value, onChange, error, placeholder } : ConversionInputProps) => {
     const classes = useStyles();
     const [coins] = useState(['SSV', 'USD']);
     const [currency, setCurrency] = useState('SSV');
+
     const switchCurrency = (selectedCurrency: string) => {
         setCurrency(selectedCurrency);
-
     };
+
     return (
-        <Grid container style={{ gap: 10 }}>
-            <Grid container style={{ gap: 16 }} className={classes.InputAdditionalDataWrapper}>
+        <Grid container style={{ height: '101px', gap: 10 }}>
+            <Grid container className={classes.InputAdditionalDataWrapper}>
                 <Typography className={classes.AnnualFeeLabel}>Annual fee</Typography>
                 <Grid container item className={classes.Conversion}>
                     {coins.map((coin: string, index: number) => {
@@ -35,9 +43,10 @@ const ConversionInput = ({ value } : ConversionInputProps) => {
             <TextInput value={value}
                        extendClass={classes.FeeInput}
                        sideText={currency}
-                       placeHolder={'0'}
-                       onChangeCallback={() => null}
+                       placeHolder={placeholder}
+                       onChangeCallback={onChange}
                        withSideText />
+            <Grid container className={classes.TextErrorWrapper}><Typography className={classes.TextError}>{`${error?.errorMessage}`}</Typography></Grid>
         </Grid>
     );
 };

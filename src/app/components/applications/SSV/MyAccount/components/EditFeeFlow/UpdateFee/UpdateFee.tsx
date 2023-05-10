@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-// import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
+import { validateFeeUpdate } from '~lib/utils/validatesInputs';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import CancelUpdateFee
@@ -14,128 +18,104 @@ import CancelUpdateFee
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee.styles';
-// import FeeChange
-//   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeChange';
-import BorderScreen from '~app/components/common/BorderScreen';
-import Typography from '@mui/material/Typography';
-import ConversionInput from '~app/components/common/ConversionInput/ConversionInput';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
-// import Typography from "@mui/material/Typography";
-// import ReactStepper
-//   from "~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper";
-// import TextInput from "~app/components/common/TextInput";
-// import {validateFeeUpdate} from "~lib/utils/validatesInputs";
-// import PrimaryButton from "~app/components/common/Button/PrimaryButton/PrimaryButton";
-// import BorderScreen from '~app/components/common/BorderScreen';
-// import Typography from '@mui/material/Typography';
-// import ConversionInput from '~app/components/common/ConversionInput/ConversionInput';
-// import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
-// import DeclareFee
-//   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
-// import FeeUpdated
-//   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
-// import WaitingPeriod
-//   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
-// import PendingExpired
-//   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
-// import PendingExecution
-//   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
-// import { formatNumberToUi } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { formatNumberToUi } from '~lib/utils/numbers';
-// import {validateFeeUpdate} from "~lib/utils/validatesInputs";
+import ChangeFee
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
+import IncreaseFlow
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import DecreaseFlow
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
+
+export type ChangeFeeProps = {
+  error: ErrorType;
+  nextIsDisabled: boolean;
+  onNextHandler: Function;
+  onChangeHandler?: Function;
+  inputValue: number | string;
+};
+
+// eslint-disable-next-line no-unused-vars
+enum FeeUpdateSteps {
+  // eslint-disable-next-line no-unused-vars
+  START = 'Start',
+  // eslint-disable-next-line no-unused-vars
+  INCREASE = 'Increase',
+  // eslint-disable-next-line no-unused-vars
+  DECREASE = 'Decrease',
+}
 
 const UpdateFee = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
-  const walletStore: WalletStore = stores.Wallet;
   const ssvStore: SsvStore = stores.SSV;
+  const walletStore: WalletStore = stores.Wallet;
+  const operatorStore: OperatorStore = stores.Operator;
   const [operator, setOperator] = useState<any>(null);
   const applicationStore: ApplicationStore = stores.Application;
-    console.log(stores);
-  const [inputValue, setInputValue] = useState<any>('');
+  const [inputValue, setInputValue] = useState<any>(0);
+  const [nextIsDisabled, setNextIsDisabled] = useState(true);
+  const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
+
+  const { logo, id } = operator || {};
+  const classes = useStyles({ operatorLogo: logo });
+  const [currentFee, setCurrentFee] = useState(0);
+  const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
 
   useEffect(() => {
-    console.log(operatorStore.processOperatorId);
     if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
     applicationStore.setIsLoading(true);
     Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
+        const operatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee)));
         setOperator(response);
-        setInputValue(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee))));
-        await getCurrentState();
+        setCurrentFee(+operatorFee);
+        setInputValue(operatorFee);
       }
       applicationStore.setIsLoading(false);
     });
   }, []);
-
-  // useEffect(() => setInputValue(ssvStore.getFeeForYear(walletStore.fromWei(operator?.fee))), [operator]);
-
-  const getCurrentState = async () => {
-    console.log('in func');
-    // navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
-    // console.log('in get current');
-    // // @ts-ignore
-    // await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
-    // console.log(operatorStore.operatorApprovalBeginTime);
-    // console.log(operatorStore.operatorApprovalEndTime);
-    // console.log(operatorStore.operatorFutureFee);
-    // console.log(operatorStore);
-    // navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
-    // if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
-    //   console.log('if');
-    //   const todayDate = new Date();
-    //   const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
-    //   const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
-    //   const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
-    //
-    //   // @ts-ignore
-    //   const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-    //
-    //   if (isInPendingState) {
-    //     navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.PENDING);
-    //   } else if (startPendingStateTime > todayDate) {
-    //     navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.UPDATE);
-    //   } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
-    //     // @ts-ignore
-    //     const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-    //     if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
-    //       navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
-    //     } else {
-    //       navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.EXPIRED);
-    //     }
-    //   }
-    // }
+  
+  const setErrorHandler = ( errorResponse: ErrorType ) => {
+    setError(errorResponse);
+    if (errorResponse.shouldDisplay) {
+      setNextIsDisabled(true);
+    } else {
+      setNextIsDisabled(false);
+    }
   };
 
-  // @ts-ignore
-  const { logo, id } = operator || {};
-  const classes = useStyles({ operatorLogo: logo });
-  const [error] = useState({ shouldDisplay: false, errorMessage: '' });
-  // validateFeeUpdate(operatorFee, e.target.value, operatorStore.maxFeeIncrease, setError);
-  if (!operator) return null;
-    console.log(operator);
+  const onInputChange = ( e : any ) => {
+    const { value } = e.target;
+    setInputValue(value);
+    if (value !== '') {
+      validateFeeUpdate(operator.fee, value, operatorStore.maxFeeIncrease, setErrorHandler);
+    } else {
+      setError({ shouldDisplay: false, errorMessage: '' });
+      setNextIsDisabled(true);
+    }
+  };
+
+  const onNextHandler = () => {
+    if (Number(inputValue) > currentFee) {
+      setCurrentFlowStep(FeeUpdateSteps.INCREASE);
+    } else {
+      setCurrentFlowStep(FeeUpdateSteps.DECREASE);
+    }
+  };
+
+  const components = {
+    [FeeUpdateSteps.START]: ChangeFee,
+    [FeeUpdateSteps.INCREASE]: IncreaseFlow,
+    [FeeUpdateSteps.DECREASE]: DecreaseFlow,
+  };
+  const Component = components[currentFlowStep];
+
   return (
       <Grid container item>
         <WhiteWrapper header={'Update Operator Fee'}>
           <OperatorId id={id}/>
         </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>
-          <BorderScreen
-              blackHeader
-              withoutNavigation
-              header={'Update Fee'}
-              withoutBorderBottom={true}
-              body={[
-                (<Typography fontSize={16}>Enter your new operator annual fee.</Typography>),
-                <ConversionInput value={inputValue}/>,
-                <Typography >{error.errorMessage}</Typography>,
-                <PrimaryButton  text={'Next'}
-                                submitFunction={() => null}/>,
-              ]}
-          />
+          <Component onNextHandler={onNextHandler} inputValue={inputValue} onChangeHandler={onInputChange} error={error} nextIsDisabled={nextIsDisabled}/>
           <CancelUpdateFee/>
         </Grid>
       </Grid>

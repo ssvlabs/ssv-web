@@ -123,6 +123,7 @@ const config = {
     ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
+    SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
     EXPLORER_VERSION: process.env.REACT_APP_EXPLORER_VERSION || 'v2',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',

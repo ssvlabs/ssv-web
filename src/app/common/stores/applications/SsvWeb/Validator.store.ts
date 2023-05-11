@@ -15,7 +15,7 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 
@@ -566,12 +566,19 @@ class ValidatorStore extends BaseStore {
     const OPERATOR_NOT_EXIST_ID = 1;
     const OPERATOR_NOT_MATCHING_ID = 2;
     const processStore: ProcessStore = this.getStore('Process');
-    const { OK_RESPONSE, OPERATOR_NOT_EXIST_RESPONSE, OPERATOR_NOT_MATCHING_RESPONSE, CATCH_ERROR_RESPONSE, VALIDATOR_EXIST_RESPONSE, VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
+    const { OK_RESPONSE,
+            OPERATOR_NOT_EXIST_RESPONSE,
+            OPERATOR_NOT_MATCHING_RESPONSE,
+            CATCH_ERROR_RESPONSE,
+            VALIDATOR_EXIST_RESPONSE,
+            VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
     try {
       const fileJson = await this.keyShareFile?.text();
       const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
-      const payload = JSON.parse(fileJson).payload;
+      const parsedFile = JSON.parse(fileJson);
+      const { payload, data } = parsedFile;
+      const operatorPublicKeys = data.operators.map((operator: any) => operator.publicKey);
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
       const keyShareOperators = payload.operatorIds.sort();
@@ -587,6 +594,9 @@ class ValidatorStore extends BaseStore {
       } else {
         const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
         if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
+        if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+          return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
+        }
         // @ts-ignore
         operatorStore.selectOperators(selectedOperators);
       }

@@ -50,7 +50,7 @@ const translations = {
       },
       OPERATOR_NOT_MATCHING_RESPONSE : {
         name: 'operators_not_matching',
-        errorMessage: 'Operators data does not match cluster,',
+        errorMessage: 'Operator ID and Key mismatch,',
         subErrorMessage:  'check operator data and re-generate keyshares.json',
       },
       VALIDATOR_EXIST_RESPONSE: {

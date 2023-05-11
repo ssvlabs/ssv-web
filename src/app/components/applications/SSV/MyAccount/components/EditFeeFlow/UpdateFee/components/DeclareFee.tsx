@@ -16,15 +16,11 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import {
+  IncreaseFlowProps,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 
-
-type DeclareFeeProps = {
-  newFee: string | number;
-  oldFee: string | number;
-  currentCurrency: string;
-};
-
-const DeclareFee = ({ newFee, oldFee, currentCurrency }: DeclareFeeProps) => {
+const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
 
   const stores = useStores();
   const navigate = useNavigate();
@@ -73,7 +69,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency }: DeclareFeeProps) => {
   const changeOperatorFee = async () => {
     applicationStore.setIsLoading(true);
     // @ts-ignore
-    const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, userInput);
+    const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee);
     if (response) {
       // @ts-ignore
       let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
@@ -81,7 +77,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency }: DeclareFeeProps) => {
         savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
         localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
       }
-      // await props.getCurrentState();
+      await getCurrentState();
     }
     applicationStore.setIsLoading(false);
   };
@@ -136,10 +132,10 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency }: DeclareFeeProps) => {
               />
               <Grid item container className={classes.TextWrapper}>
                 <Grid item>
-                  <Typography>Updating your operator fee is done in a few steps:</Typography>
+                  <Typography>Increasing your operator fee is done in a few steps:</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography>Process starts by declaring a new fee, which is followed by <br/>
+                  <Typography>Process starts by declaring a new fee, which is followed by
                     a <b>{secondsToDhms(operatorStore.declaredOperatorFeePeriod)} waiting period</b> in which your
                     managed validators are notified. <br/>
                     Once the waiting period has past you could finalize your new fee by <br/> executing it.</Typography>
@@ -181,7 +177,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency }: DeclareFeeProps) => {
                   </ul>
                 </Grid>
               </Grid>
-              <PrimaryButton text={'Declare'}
+              <PrimaryButton text={'Declare New Fee'}
                              submitFunction={changeOperatorFee}/>
             </Grid>,
           ]}

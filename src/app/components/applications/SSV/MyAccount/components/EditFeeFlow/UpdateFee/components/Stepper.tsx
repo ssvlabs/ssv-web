@@ -29,11 +29,11 @@ const ReactStepper = (props: Props) => {
         <Grid item container className={classes.ProgressBarTextWrapper}>
           <Grid className={classes.ProgressBarText}>
             Declare Fee
-            {registerButtonEnabled && (
+            {/*{registerButtonEnabled && (*/}
               <Typography className={classes.ProgressBarText}>
                 {subText}
               </Typography>
-              )}
+              {/*)}*/}
           </Grid>
           <Grid className={classes.ProgressBarText}>
             Waiting Period

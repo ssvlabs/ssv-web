@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
+// import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
@@ -20,14 +20,11 @@ import ReactStepper
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
-type Props = {
-  setPreviousFee: any
-};
 
-const PendingExecution = (props: Props) => {
+const PendingExecution = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  const ssvRoutes = config.routes.SSV;
+  // const ssvRoutes = config.routes.SSV;
   const ssvStore: SsvStore = stores.SSV;
   const classes = useStyles({ step: 2 });
   const walletStore: WalletStore = stores.Wallet;
@@ -51,11 +48,11 @@ const PendingExecution = (props: Props) => {
 
   const submitFeeChange = async () => {
     applicationStore.setIsLoading(true);
-    const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
-    if (response) {
-      props.setPreviousFee(operatorStore.operatorCurrentFee);
-      navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS);
-    }
+    // const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
+    // if (response) {
+    //   props.setPreviousFee(operatorStore.operatorCurrentFee);
+    //   navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS);
+    // }
     applicationStore.setIsLoading(false);
   };
 

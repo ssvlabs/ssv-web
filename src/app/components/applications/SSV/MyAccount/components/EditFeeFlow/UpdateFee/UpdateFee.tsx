@@ -26,7 +26,6 @@ import DecreaseFlow
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
 
 export type UpdateFeeProps = {
-  operator?: any;
   error: ErrorType;
   nextIsDisabled: boolean;
   onNextHandler: Function;

@@ -1,10 +1,11 @@
 import React from 'react';
-import { ChangeFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
+import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
+import DeclareFee
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
 
-const IncreaseFlow = (props : ChangeFeeProps) => {
-    props;
+const IncreaseFlow = ({ oldFee, inputValue, currency } : UpdateFeeProps) => {
     return (
-        <div>Increase</div>
+        <DeclareFee newFee={inputValue} oldFee={oldFee} currentCurrency={currency} />
     );
 };
 

@@ -25,12 +25,16 @@ import IncreaseFlow
 import DecreaseFlow
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
 
-export type ChangeFeeProps = {
+export type UpdateFeeProps = {
+  operator?: any;
   error: ErrorType;
   nextIsDisabled: boolean;
   onNextHandler: Function;
   onChangeHandler?: Function;
   inputValue: number | string;
+  oldFee: number | string;
+  currency: string;
+  setCurrency?: Function;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -56,8 +60,9 @@ const UpdateFee = () => {
   const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
 
   const { logo, id } = operator || {};
+  const [oldFee, setOldFee] = useState(0);
   const classes = useStyles({ operatorLogo: logo });
-  const [currentFee, setCurrentFee] = useState(0);
+  const [currency, setCurrency] = useState('SSV');
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
 
   useEffect(() => {
@@ -67,7 +72,7 @@ const UpdateFee = () => {
       if (response) {
         const operatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee)));
         setOperator(response);
-        setCurrentFee(+operatorFee);
+        setOldFee(+operatorFee);
         setInputValue(operatorFee);
       }
       applicationStore.setIsLoading(false);
@@ -95,7 +100,7 @@ const UpdateFee = () => {
   };
 
   const onNextHandler = () => {
-    if (Number(inputValue) > currentFee) {
+    if (Number(inputValue) > oldFee) {
       setCurrentFlowStep(FeeUpdateSteps.INCREASE);
     } else {
       setCurrentFlowStep(FeeUpdateSteps.DECREASE);
@@ -115,7 +120,14 @@ const UpdateFee = () => {
           <OperatorId id={id}/>
         </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>
-          <Component onNextHandler={onNextHandler} inputValue={inputValue} onChangeHandler={onInputChange} error={error} nextIsDisabled={nextIsDisabled}/>
+          <Component onNextHandler={onNextHandler}
+                     inputValue={inputValue}
+                     onChangeHandler={onInputChange}
+                     error={error}
+                     nextIsDisabled={nextIsDisabled}
+                     currency={currency}
+                     oldFee={oldFee}
+                     setCurrency={setCurrency}   />
           <CancelUpdateFee/>
         </Grid>
       </Grid>

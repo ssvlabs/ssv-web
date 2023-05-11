@@ -1,7 +1,7 @@
 import React from 'react';
-import { ChangeFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
+import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 
-const DecreaseFlow = (props : ChangeFeeProps) => {
+const DecreaseFlow = (props : UpdateFeeProps) => {
     props;
     return (
         <div>Decrease</div>

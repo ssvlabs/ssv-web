@@ -25,7 +25,7 @@ class ApplicationStore extends BaseStore implements Application {
   transactionPendingPopUp: boolean = false;
   appTitle: string = 'SSV Network Testnet Faucet';
   strategyRedirect: string = config.routes.FAUCET.ROOT;
-  locationRestrictionEnabled: boolean = true;
+  locationRestrictionEnabled: boolean = false;
 
   constructor() {
     super();

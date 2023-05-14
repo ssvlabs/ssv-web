@@ -39,7 +39,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.log('+++++', applicationStore.locationRestrictionEnabled);
+    console.log('+++++', 1, applicationStore.locationRestrictionEnabled);
     if (!applicationStore.locationRestrictionEnabled) {
       console.debug('Skipping location restriction functionality in this app.');
       walletStore.connectWalletFromCache();

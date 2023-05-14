@@ -25,7 +25,7 @@ class ApplicationStore extends BaseStore implements Application {
   transactionPendingPopUp: boolean = false;
   appTitle: string = 'SSV Network Testnet Distribution';
   strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
-  locationRestrictionEnabled: boolean = false;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();

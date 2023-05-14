@@ -10,7 +10,7 @@ export default abstract class Application {
   strategyRedirect: string;
   txHash: string | undefined;
   userGeo: string | undefined;
-  locationRestrictionEnabled: boolean = true;
+  locationRestrictionEnabled: boolean = false;
 
   protected constructor(theme: Theme, darkMode: boolean) {
     this.txHash = '';

@@ -31,7 +31,7 @@ jobs:
 
       - name: Run test
         run: yarn test
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run stage ssv-web build
         if: github.ref == 'refs/heads/stage'
         run: >
@@ -61,11 +61,12 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run stage V3 ssv-web build
-        if: github.ref == 'refs/heads/stageV3'
+        #        if: github.ref == 'refs/heads/stageV3'
+        if: github.ref == 'refs/heads/vc/IO1-3353-restict-access'
         run: >
           SSV_API_ENDPOINT="$SSV_API_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_SETTER_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" EXPLORER_VERSION="$EXPLORER_VERSION" EXPLORER_NETWORK="$EXPLORER_NETWORK" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
@@ -83,7 +84,8 @@ jobs:
           NETWORK_GETTER_CONTRACT_ADDRESS: ${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS }}
 
       - name: Deploy stage V3 ssv-web
-        if: github.ref == 'refs/heads/stageV3'
+        #        if: github.ref == 'refs/heads/stageV3'
+        if: github.ref == 'refs/heads/vc/IO1-3353-restict-access'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete
@@ -93,9 +95,9 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.STAGE_V3_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run prod V3 ssv-web build
         if: github.ref == 'refs/heads/mainV3'
         run: >
@@ -125,9 +127,9 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.PROD_V3_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run stage faucet build
         if: github.ref == 'refs/heads/stage'
         run: >
@@ -157,9 +159,9 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.STAGE_FAUCET_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run stage Claim build
         if: github.ref == 'refs/heads/stage'
         run: >
@@ -218,9 +220,9 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET_CLAIM }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run prod ssv-web build
         if: github.ref == 'refs/heads/main'
         run: >
@@ -250,9 +252,9 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.PROD_V2_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-#      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run prod faucet build
         if: github.ref == 'refs/heads/main'
         run: >

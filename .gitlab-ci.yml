@@ -17,7 +17,7 @@ Build stage Docker image:
     - docker build --build-arg BUILD_ENV=staging --build-arg S3_BUCKET=$STAGE_S3_BUCKET --build-arg AWS_ACCESS_KEY_ID=$STAGE_AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$STAGE_AWS_SECRET_ACCESS_KEY -t test-build -f Dockerfile .
 
   only:
-    - vc/IO1-3353-restict-access
+    - stage
 
 #blox-infra-prod
 Build prod Docker image:

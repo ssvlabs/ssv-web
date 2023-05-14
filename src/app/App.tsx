@@ -39,13 +39,11 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.log('+++++', 1, applicationStore.locationRestrictionEnabled);
     if (!applicationStore.locationRestrictionEnabled) {
       console.debug('Skipping location restriction functionality in this app.');
       walletStore.connectWalletFromCache();
     } else {
       checkUserCountryRestriction().then((res: any) => {
-        console.log(res);
         if (res.restricted) {
           walletStore.accountDataLoaded = true;
           applicationStore.userGeo = res.userGeo;

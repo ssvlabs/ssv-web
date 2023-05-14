@@ -65,8 +65,7 @@ jobs:
 
       #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage V3)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       - name: Run stage V3 ssv-web build
-        #        if: github.ref == 'refs/heads/stageV3'
-        if: github.ref == 'refs/heads/vc/IO1-3353-restict-access'
+        if: github.ref == 'refs/heads/stageV3'
         run: >
           SSV_API_ENDPOINT="$SSV_API_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_SETTER_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" EXPLORER_VERSION="$EXPLORER_VERSION" EXPLORER_NETWORK="$EXPLORER_NETWORK" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
@@ -84,8 +83,7 @@ jobs:
           NETWORK_GETTER_CONTRACT_ADDRESS: ${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS }}
 
       - name: Deploy stage V3 ssv-web
-        #        if: github.ref == 'refs/heads/stageV3'
-        if: github.ref == 'refs/heads/vc/IO1-3353-restict-access'
+        if: github.ref == 'refs/heads/stageV3'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete

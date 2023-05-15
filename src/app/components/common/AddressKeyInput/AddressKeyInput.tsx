@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
-import { getBaseBeaconchaUrl, getEtherScanUrl } from '~lib/utils/beaconcha';
+import { ENV } from '~lib/utils/envHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './AddressKeyInput.styles';
 
@@ -20,8 +20,8 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
     const stores = useStores();
     const classes = useStyles();
     const { address, withBeaconcha, withEtherScan, whiteBackgroundColor, withCopy } = props;
-    const etherScan = getEtherScanUrl();
-    const beaconchaBaseUrl = getBaseBeaconchaUrl();
+    const etherScan = ENV().ETHERSCAN_URL;
+    const beaconchaBaseUrl = ENV().BEACONCHA_URL;
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     const copyToClipboard = () => {

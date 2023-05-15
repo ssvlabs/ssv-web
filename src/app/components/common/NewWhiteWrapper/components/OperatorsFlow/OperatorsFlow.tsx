@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { ENV } from '~lib/utils/envHelper';
 import { useStyles } from '../../NewWhiteWrapper.styles';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 // import LinkText from '~app/components/common/LinkText/LinkText';
@@ -67,7 +68,7 @@ const OperatorsFlow = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');  };
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');  };
 
   const secondaryFlowDom = () => {
     return (

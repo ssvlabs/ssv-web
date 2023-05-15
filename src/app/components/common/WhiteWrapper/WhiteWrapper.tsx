@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { ENV } from '~lib/utils/envHelper';
 import ImageDiv from '~app/components/common/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BackNavigation from '~app/components/common/BackNavigation';
@@ -82,7 +83,7 @@ const WhiteWrapper = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${explorerLink}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${explorerLink}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
   };
 
   useEffect(() => {

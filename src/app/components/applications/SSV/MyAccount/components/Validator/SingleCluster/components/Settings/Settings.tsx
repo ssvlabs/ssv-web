@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStyles } from './Settings.styles';
 import { useStores } from '~app/hooks/useStores';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import { ENV } from '~lib/utils/envHelper';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -17,7 +17,7 @@ const Settings = ({ validator }: { validator: any }) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const settingsRef = useRef(null);
-  const beaconchaBaseUrl = getBaseBeaconchaUrl();
+  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
   const process: SingleClusterProcess = processStore.getProcess;
   const [showSettings, setShowSettings] = useState(false);
@@ -66,7 +66,7 @@ const Settings = ({ validator }: { validator: any }) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
   };
 
   const moveToRemoveValidator = () => {

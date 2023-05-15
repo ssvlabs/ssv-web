@@ -10,7 +10,7 @@ import Status from '~app/components/common/Status';
 import Button from '~app/components/common/Button';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import { ENV } from '~lib/utils/envHelper';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -31,7 +31,7 @@ import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorH
 const SingleOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  const beaconchaBaseUrl = getBaseBeaconchaUrl();
+  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   // const [operator, setOperator] = useState(null);
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
@@ -91,7 +91,7 @@ const SingleOperator = () => {
       action: 'click',
       label: linkType,
     });
-    window.open(`${config.links.EXPLORER_URL}/${key}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/${key}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
   };
 
   const moveToUpdateFee = () => {

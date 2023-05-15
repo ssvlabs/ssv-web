@@ -9,7 +9,7 @@ import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/components/common/InputLabel';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
+import { ENV } from '~lib/utils/envHelper';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
@@ -58,7 +58,7 @@ const KeyStoreFlow = () => {
   };
 
   const isDeposited = async (): Promise<boolean> => {
-    const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
+    const beaconChaValidatorUrl = `${ENV().BEACONCHA_URL}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
     try {
       const response: any = (await axios.get(beaconChaValidatorUrl, { timeout: 5000 })).data;
       const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;

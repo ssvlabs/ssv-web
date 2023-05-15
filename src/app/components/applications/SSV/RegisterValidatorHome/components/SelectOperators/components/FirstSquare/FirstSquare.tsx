@@ -12,6 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
+import { ENV } from '~lib/utils/envHelper';
 import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
 import Checkbox from '~app/components/common/CheckBox';
@@ -106,7 +107,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${pubKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${pubKey}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
   };
 
   const sortHandler = (sortType: string) => {

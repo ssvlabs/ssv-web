@@ -28,7 +28,7 @@ class ApplicationStore extends BaseStore implements Application {
   @observable transactionPendingPopUp: boolean = false;
   @observable appTitle: string = 'SSV Network Testnet';
   @observable strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.DASHBOARD;
-  locationRestrictionEnabled: boolean = false;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();

@@ -7,7 +7,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryBu
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
-const ChangeFee = ({ inputValue, onChangeHandler = () => null, error, nextIsDisabled, onNextHandler, setCurrency = () => null }: UpdateFeeProps) => {
+const ChangeFee = ({ newFee, onChangeHandler = () => null, error, nextIsDisabled, onNextHandler, setCurrency = () => null }: UpdateFeeProps) => {
     const classes = useStyles({});
     return (
         <BorderScreen
@@ -18,7 +18,7 @@ const ChangeFee = ({ inputValue, onChangeHandler = () => null, error, nextIsDisa
             body={[
                 <Grid container className={classes.ChangeFeeWrapper}>
                     <Typography fontSize={16}>Enter your new operator annual fee.</Typography>
-                    <ConversionInput value={inputValue} onChange={onChangeHandler} error={error} setCurrency={setCurrency}/>
+                    <ConversionInput value={newFee} onChange={onChangeHandler} error={error} setCurrency={setCurrency}/>
                     <PrimaryButton disable={nextIsDisabled} text={'Next'}
                                 submitFunction={onNextHandler}/>
                 </Grid>,

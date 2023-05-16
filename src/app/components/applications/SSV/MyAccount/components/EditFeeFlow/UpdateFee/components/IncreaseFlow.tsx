@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import DeclareFee
     from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
@@ -6,10 +6,10 @@ import WaitingPeriod
     from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
 import PendingExecution
     from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
-import PendingExpired
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import FeeUpdated
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
 
 export type IncreaseFlowProps = {
     newFee: string | number;
@@ -30,33 +30,46 @@ enum IncreaseSteps {
     CONFIRM,
 }
 
-const IncreaseFlow = ({ oldFee, inputValue, currency } : UpdateFeeProps) => {
+const IncreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();
     const operatorStore: OperatorStore = stores.Operator;
     const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
 
-    const getCurrentState = async () => {
-        // @ts-ignore
-        await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
+    useEffect(() => {
+        getCurrentState();
+    }, []);
+
+    const getCurrentState = (isExecuted?: boolean) => {
+        if (isExecuted) {
+            setCurrentStep(IncreaseSteps.CONFIRM);
+            return;
+        }
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
             const todayDate = new Date();
             const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
             const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
             const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
-
+            console.log('in');
+            console.log(startPendingStateTime > todayDate);
+            console.log('in');
             // @ts-ignore
             const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
+            console.log({ daysFromEndPendingStateTime });
 
             if (isInPendingState) {
                 setCurrentStep(IncreaseSteps.PENDING);
+                console.log('pend');
             } else if (startPendingStateTime > todayDate) {
                 setCurrentStep(IncreaseSteps.WAITING);
-            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
+                console.log('wait');
+            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime >= 3) {
                 // @ts-ignore
                 const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
                 if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
+                    console.log('declare');
                     setCurrentStep(IncreaseSteps.DECLARE_FEE);
                 } else {
+                    console.log('conf');
                     setCurrentStep(IncreaseSteps.CONFIRM);
                 }
             }
@@ -67,12 +80,12 @@ const IncreaseFlow = ({ oldFee, inputValue, currency } : UpdateFeeProps) => {
         [IncreaseSteps.DECLARE_FEE]: DeclareFee,
         [IncreaseSteps.WAITING]: WaitingPeriod,
         [IncreaseSteps.PENDING]: PendingExecution,
-        [IncreaseSteps.CONFIRM]: PendingExpired,
+        [IncreaseSteps.CONFIRM]: FeeUpdated,
     };
     
     const Component = components[currentStep];
     return (
-        <Component newFee={inputValue} oldFee={oldFee} currentCurrency={currency} getCurrentState={getCurrentState} />
+        <Component newFee={newFee} oldFee={oldFee} currentCurrency={currency} getCurrentState={getCurrentState} />
     );
 };
 

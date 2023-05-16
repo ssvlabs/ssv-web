@@ -237,11 +237,25 @@ class OperatorStore extends BaseStore {
   async getOperatorFeeInfo(operatorId: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
-    this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
-    const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
-    this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
-    this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
-    this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+    // this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
+    try {
+      this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
+      const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
+      console.log(response);
+      this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
+      this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
+      this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+    } catch (e: any) {
+      console.error(e.message);
+      this.operatorFutureFee =  null;
+      this.operatorApprovalBeginTime = null;
+      this.operatorApprovalEndTime = null;
+    }
+
+    // console.log('4');
+    // this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
+    // this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
+    // this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
   }
 
   /**

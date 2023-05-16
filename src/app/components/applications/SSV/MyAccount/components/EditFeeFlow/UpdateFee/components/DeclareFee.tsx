@@ -70,6 +70,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
     applicationStore.setIsLoading(true);
     // @ts-ignore
     const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee);
+    await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId as number);
     if (response) {
       // @ts-ignore
       let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
@@ -77,8 +78,11 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
         savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
         localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
       }
-      await getCurrentState();
+      getCurrentState();
+      console.log('first call to state');
     }
+    getCurrentState();
+    console.log('second call to state');
     applicationStore.setIsLoading(false);
   };
 

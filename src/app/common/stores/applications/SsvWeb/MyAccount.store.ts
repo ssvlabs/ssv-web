@@ -109,6 +109,8 @@ class MyAccountStore extends BaseStore {
   async checkEntityChangedInAccount(getter: any, valueBefore: any): Promise<boolean> {
     try {
       const valueAfter = await getter();
+      console.log({ valueBefore });
+      console.log({ valueAfter });
       return JSON.stringify(valueBefore) !== JSON.stringify(valueAfter);
     } catch (e) {
       console.error('MyAccountStore::checkEntityChangedInAccount', e);

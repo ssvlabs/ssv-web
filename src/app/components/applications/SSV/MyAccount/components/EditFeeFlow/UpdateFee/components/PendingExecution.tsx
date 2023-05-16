@@ -1,71 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-// import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import {
+  IncreaseFlowProps,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 
-
-const PendingExecution = () => {
+const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
   const stores = useStores();
-  const navigate = useNavigate();
-  // const ssvRoutes = config.routes.SSV;
-  const ssvStore: SsvStore = stores.SSV;
   const classes = useStyles({ step: 2 });
-  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
-  const [operator, setOperator] = useState(null);
   const applicationStore: ApplicationStore = stores.Application;
-
-  useEffect(() => {
-    if (!operatorStore.processOperatorId) {
-      navigate(applicationStore.strategyRedirect);
-    } else {
-      applicationStore.setIsLoading(true);
-      Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
-        if (response) {
-          setOperator(response);
-        }
-        applicationStore.setIsLoading(false);
-      });
-    }
-  }, []);
-
+  
   const submitFeeChange = async () => {
     applicationStore.setIsLoading(true);
-    // const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
-    // if (response) {
-    //   props.setPreviousFee(operatorStore.operatorCurrentFee);
-    //   navigate(ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.SUCCESS);
-    // }
+    const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
+    if (response) {
+        getCurrentState(true);
+    }
     applicationStore.setIsLoading(false);
   };
 
   const operatorEndApprovalTime = new Date(Number(operatorStore.operatorApprovalEndTime) * 1000);
   const today = new Date();
-
-  if (!operator) return null;
-
-  // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
-  // @ts-ignore
-  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
-
+  
   return (
     <BorderScreen
       blackHeader
@@ -88,13 +57,7 @@ const PendingExecution = () => {
             </Grid>
           </Grid>
           <Grid item container className={classes.FeesChangeWrapper}>
-            <Grid item>
-              <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} />
-            </Grid>
-            <Grid item className={classes.Arrow} />
-            <Grid item>
-              <SsvAndSubTitle bold leftTextAlign ssv={operatorFutureFee} />
-            </Grid>
+            <ChangeFeeDisplayValues currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
           </Grid>
           <Grid item className={classes.Notice}>
             <Grid item className={classes.BulletsWrapper}>

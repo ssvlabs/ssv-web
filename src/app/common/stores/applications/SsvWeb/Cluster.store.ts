@@ -1,11 +1,14 @@
+import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 const annotations = {
   getClusterData: action.bound,
@@ -49,6 +52,13 @@ class ClusterStore extends BaseStore {
 
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
+    if (cluster.validator_count === 0) {
+      const ssvStore: SsvStore = this.getStore('SSV');
+      const operatorsFeePerYear = cluster.operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))), [0]);
+      const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+      const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
+      return parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
+    }
     const clusterBurnRate = walletStore.fromWei(cluster.burnRate);
     return clusterBurnRate / cluster.validator_count * newAmountOfValidators;
   }

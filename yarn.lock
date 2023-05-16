@@ -16262,9 +16262,9 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-"prompts@https://github.com/meshin-blox/prompts.git":
+"prompts@git+https://github.com/meshin-blox/prompts.git":
   version "2.4.2"
-  resolved "https://github.com/meshin-blox/prompts.git#a22bdac044f6b32ba67adb4eacc2e58322512a2d"
+  resolved "git+https://github.com/meshin-blox/prompts.git#a22bdac044f6b32ba67adb4eacc2e58322512a2d"
   dependencies:
     kleur "^4.0.1"
     sisteransi "^1.0.5"
@@ -18230,9 +18230,10 @@ ssri@^8.0.1:
   dependencies:
     minipass "^3.1.1"
 
-"ssv-keys@https://github.com/bloxapp/ssv-keys#v3":
-  version "0.0.13"
-  resolved "https://github.com/bloxapp/ssv-keys#970b9b7b3173241c0393715e12806f51fa516230"
+ssv-keys@0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/ssv-keys/-/ssv-keys-0.0.16.tgz#cc184ff8fa1af22a2aecd7158450e047d36f4cfa"
+  integrity sha512-0okHprbwzX+Lz2McBId+PGkffYvg5eWX8xFZYhQnLcMghjwHo3ZpF4qlQhzyhoGBkh7U4t6PYlbBu1CDy233EA==
   dependencies:
     "@types/figlet" "^1.5.4"
     "@types/underscore" "^1.11.4"

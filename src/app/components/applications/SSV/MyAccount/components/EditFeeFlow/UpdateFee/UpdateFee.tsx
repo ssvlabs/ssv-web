@@ -25,12 +25,16 @@ import IncreaseFlow
 import DecreaseFlow
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
 
-export type ChangeFeeProps = {
+export type UpdateFeeProps = {
   error: ErrorType;
   nextIsDisabled: boolean;
   onNextHandler: Function;
   onChangeHandler?: Function;
-  inputValue: number | string;
+  newFee: number | string;
+  oldFee: number | string;
+  currency: string;
+  setCurrency?: Function;
+  declareNewFeeHandler: Function
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -51,13 +55,13 @@ const UpdateFee = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const [operator, setOperator] = useState<any>(null);
   const applicationStore: ApplicationStore = stores.Application;
-  const [inputValue, setInputValue] = useState<any>(0);
+  const [newFee, setNewFee] = useState<any>(0);
   const [nextIsDisabled, setNextIsDisabled] = useState(true);
-  const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
-
   const { logo, id } = operator || {};
+  const [oldFee, setOldFee] = useState(0);
   const classes = useStyles({ operatorLogo: logo });
-  const [currentFee, setCurrentFee] = useState(0);
+  const [currency, setCurrency] = useState('SSV');
+  const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
 
   useEffect(() => {
@@ -67,13 +71,34 @@ const UpdateFee = () => {
       if (response) {
         const operatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee)));
         setOperator(response);
-        setCurrentFee(+operatorFee);
-        setInputValue(operatorFee);
+        setOldFee(Number(operatorFee));
+        if (!operatorStore.operatorFutureFee) {
+          setNewFee(Number(operatorFee));
+        }
+        await operatorStore.getOperatorFeeInfo(response.id);
+        if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
+          setNewFee(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee))));
+          setCurrentFlowStep(FeeUpdateSteps.INCREASE);
+        } else {
+          setCurrentFlowStep(FeeUpdateSteps.START);
+        }
       }
       applicationStore.setIsLoading(false);
     });
   }, []);
-  
+
+  useEffect(() => {
+    if (error.shouldDisplay || Number(newFee) === Number(oldFee)) {
+      setNextIsDisabled(true);
+    } else {
+      setNextIsDisabled(false);
+    }
+  }, [newFee, error]);
+
+  const declareNewFeeHandler = () => {
+    setCurrentFlowStep(FeeUpdateSteps.START);
+  };
+
   const setErrorHandler = ( errorResponse: ErrorType ) => {
     setError(errorResponse);
     if (errorResponse.shouldDisplay) {
@@ -85,7 +110,7 @@ const UpdateFee = () => {
 
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
-    setInputValue(value);
+    setNewFee(value);
     if (value !== '') {
       validateFeeUpdate(operator.fee, value, operatorStore.maxFeeIncrease, setErrorHandler);
     } else {
@@ -95,7 +120,7 @@ const UpdateFee = () => {
   };
 
   const onNextHandler = () => {
-    if (Number(inputValue) > currentFee) {
+    if (Number(newFee) > oldFee) {
       setCurrentFlowStep(FeeUpdateSteps.INCREASE);
     } else {
       setCurrentFlowStep(FeeUpdateSteps.DECREASE);
@@ -115,7 +140,15 @@ const UpdateFee = () => {
           <OperatorId id={id}/>
         </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>
-          <Component onNextHandler={onNextHandler} inputValue={inputValue} onChangeHandler={onInputChange} error={error} nextIsDisabled={nextIsDisabled}/>
+          <Component onNextHandler={onNextHandler}
+                     declareNewFeeHandler={declareNewFeeHandler}
+                     newFee={newFee}
+                     onChangeHandler={onInputChange}
+                     error={error}
+                     nextIsDisabled={nextIsDisabled}
+                     currency={currency}
+                     oldFee={oldFee}
+                     setCurrency={setCurrency}   />
           <CancelUpdateFee/>
         </Grid>
       </Grid>

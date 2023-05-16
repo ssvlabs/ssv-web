@@ -66,7 +66,7 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
 };
 
 export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean) => {
-  // eslint-disable-next-line eqeqeq
+  if (!Number.isFinite(Number(num))) return '- -';
   if (!num || num == 0 || Number.isNaN(num)) return days ? '0' : '0.0';
   const splitNumber = num.toString().split('.');
   if (splitNumber[1] && !days) {

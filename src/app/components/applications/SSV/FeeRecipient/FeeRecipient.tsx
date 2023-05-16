@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { checkAddressChecksum, toChecksumAddress } from 'web3-utils';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
@@ -50,7 +51,7 @@ const FeeRecipient = () => {
                   <Grid container item style={{ gap: 32 }}>
                     <Grid container style={{ gap: 24 }}>
                     <Grid item className={classes.Text}>
-                      Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText text={'What are proposal rewards?'} link={'http://google.com'} />
+                      Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText text={'What are proposal rewards?'} link={config.links.SSV_DOCUMENTATION} />
                     </Grid>
                     <Grid className={`${classes.Warning} ${classes.Text}`}>
                       Standard rewards from performing other duties will remain to be credited to your validators balance on the Beacon Chain.

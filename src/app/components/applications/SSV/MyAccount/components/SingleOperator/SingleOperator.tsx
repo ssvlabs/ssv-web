@@ -110,7 +110,7 @@ const SingleOperator = () => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${beaconchaBaseUrl}/validator/${publicKey}`);
   };
 
   const sortValidatorsByStatus = () => {
@@ -172,7 +172,7 @@ const SingleOperator = () => {
               <ImageDiv onClick={() => openExplorer(`validators/${validator.public_key}`, 'validator')}
                         image={'explorer'}
                         width={20} height={20} />
-              <ImageDiv onClick={() => openBeaconcha(`0x${validator.public_key}`)} image={'beacon'} width={20}
+              <ImageDiv onClick={() => openBeaconcha(validator.public_key)} image={'beacon'} width={20}
                         height={20} />
             </Grid>,
           };

@@ -41,6 +41,7 @@ const ClusterDashboard = () => {
   const moveToRegisterValidator = () => {
     navigate(config.routes.SSV.VALIDATOR.HOME);
   };
+
   const handleGridHover = (index: string) => {
     // @ts-ignore
     timeoutRef.current = setTimeout(() => {
@@ -68,11 +69,12 @@ const ClusterDashboard = () => {
   const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
 
   const rows = sortedClusters.map((cluster: any) => {
+    const remainingDaysValue = formatNumberToUi(cluster.runWay, true);
+    const remainingDays = +remainingDaysValue > 0 ? `${remainingDaysValue} Days` : remainingDaysValue;
     return createData(
         longStringShorten(clusterStore.getClusterHash(cluster.operators).slice(2), 4),
         <Grid container style={{ gap: 8 }}>
           {cluster.operators.map((operator: any, index: number) => {
-
             return <Grid item
                          container
                          key={index}
@@ -90,11 +92,11 @@ const ClusterDashboard = () => {
         cluster.validator_count,
         isNaN(cluster.runWay) ? (
             <NaDisplay text={translations.NA_DISPLAY.TOOLTIP_TEXT} tooltipClassExtend={classes.TooltipCustomSize} />
-        ) : `${formatNumberToUi(cluster.runWay, true)  } Days`,
+        ) : remainingDays,
         <ClusterWarnings cluster={cluster} />,
     );
   });
-
+  
   const openSingleCluster = (listIndex: string) => {
     processStore.setProcess({
       processName: 'single_cluster',

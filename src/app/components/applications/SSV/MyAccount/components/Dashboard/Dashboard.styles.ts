@@ -19,6 +19,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     pointerEvents: (props: any) => props.isLoading ? 'none' : 'auto',
   },
   HeaderColumn: {
+    whiteSpace: 'nowrap',
     verticalAlign: 'bottom',
     paddingBottom: (props: any) => props.headerPadding ?? '',
   },

@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 import { Contract } from 'web3-eth-contract';
-import { SSVKeys, ISharesKeyPairs } from 'ssv-keys';
+import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
@@ -94,13 +94,11 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve, reject) => {
       try {
         const fileTextPlain: string | undefined = await this.keyStoreFile?.text();
-        const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
+        const ssvKeys = new SSVKeys();
         // @ts-ignore
-        const response = await ssvKeys.getPrivateKeyFromKeystoreData(fileTextPlain, keyStorePassword);
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
-        if (typeof response === 'object') throw (response);
-        this.keyStorePrivateKey = response;
-        this.keyStorePublicKey = ssvKeys.publicKey;
+        const { privateKey, publicKey } = await ssvKeys.extractKeys(fileTextPlain, keyStorePassword);
+        this.keyStorePrivateKey = privateKey;
+        this.keyStorePublicKey = publicKey;
         resolve(true);
       } catch (e: any) {
         reject(e);
@@ -407,32 +405,22 @@ class ValidatorStore extends BaseStore {
 
   async createKeystorePayload(update: boolean = false): Promise<any> {
     update;
-    const ssvKeys = new SSVKeys(SSVKeys.VERSION.V3);
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-    const selectedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
-    const {
-      operatorsIds,
-      publicKeys,
-    } = selectedOperators.reduce((aggr, operator: IOperator) => {
-      // @ts-ignore
-      aggr.operatorsIds.push(operator.id);
-      // @ts-ignore
-      aggr.publicKeys.push(operator.public_key);
-      return aggr;
-    }, {
-      operatorsIds: [],
-      publicKeys: [],
-    });
+    const operators = Object.values(operatorStore.selectedOperators)
+      .sort((a: any, b: any) => a.id - b.id)
+      .map(item => ({ id: item.id, publicKey: item.public_key }));
 
     return new Promise(async (resolve) => {
       try {
-        const threshold: ISharesKeyPairs = await ssvKeys.createThreshold(this.keyStorePrivateKey, operatorsIds);
-        const shares = await ssvKeys.encryptShares(publicKeys, threshold.shares);
+        const ssvKeys = new SSVKeys();
+        const keyShares = new KeyShares();
+        const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
+        const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
         let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
         if ('fundingPeriod' in process) {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
@@ -440,11 +428,12 @@ class ValidatorStore extends BaseStore {
           const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
+        let payload;
         try {
-          await ssvKeys.buildPayload({
+          payload = await keyShares.buildPayload({
             publicKey: threshold.publicKey,
-            operatorIds: operatorsIds,
-            encryptedShares: shares,
+            operators,
+            encryptedShares,
           });
         } catch (e: any) {
           console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
@@ -452,18 +441,13 @@ class ValidatorStore extends BaseStore {
           console.log(e.message);
           console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
         }
-        const { readable } = await ssvKeys.buildPayload({
-          publicKey: threshold.publicKey,
-          operatorIds: operatorsIds,
-          encryptedShares: shares,
-        });
 
         resolve([
           this.keyStorePublicKey,
-          readable?.operatorIds.sort((a: number, b: number) => a - b),
-          readable.shares,
+          payload.operatorIds,
+          payload.shares,
           `${totalCost}`,
-          await clusterStore.getClusterData(clusterStore.getClusterHash(operatorsIds)),
+          await clusterStore.getClusterData(clusterStore.getClusterHash(operators.map(item => item.id))),
         ]);
       } catch (e: any) {
         console.log(e.message);
@@ -582,16 +566,23 @@ class ValidatorStore extends BaseStore {
     const OPERATOR_NOT_EXIST_ID = 1;
     const OPERATOR_NOT_MATCHING_ID = 2;
     const processStore: ProcessStore = this.getStore('Process');
-    const { OK_RESPONSE, OPERATOR_NOT_EXIST_RESPONSE, OPERATOR_NOT_MATCHING_RESPONSE, CATCH_ERROR_RESPONSE, VALIDATOR_EXIST_RESPONSE, VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
+    const { OK_RESPONSE,
+            OPERATOR_NOT_EXIST_RESPONSE,
+            OPERATOR_NOT_MATCHING_RESPONSE,
+            CATCH_ERROR_RESPONSE,
+            VALIDATOR_EXIST_RESPONSE,
+            VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
     try {
       const fileJson = await this.keyShareFile?.text();
       const operatorStore: OperatorStore = this.getStore('Operator');
       // @ts-ignore
-      const payload = JSON.parse(fileJson).payload.readable;
+      const parsedFile = JSON.parse(fileJson);
+      const { payload, data } = parsedFile;
+      const operatorPublicKeys = data.operators.map((operator: any) => operator.publicKey);
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
       const keyShareOperators = payload.operatorIds.sort();
-      if (this.keySharePublicKey.length < 98) {
+      if (this.keySharePublicKey.length !== 98) {
         return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
       }
       if (processStore.secondRegistration) {
@@ -603,6 +594,9 @@ class ValidatorStore extends BaseStore {
       } else {
         const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
         if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
+        if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+          return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
+        }
         // @ts-ignore
         operatorStore.selectOperators(selectedOperators);
       }

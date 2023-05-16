@@ -6,14 +6,14 @@ import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError.styles';
 
-const ErrorType = {
+export const LiquidationStateErrorType = {
     Deposit: 0,
     Withdraw: 1,
     Liquidated: 2,
     WithdrawAll: 3,
     ChangeOperatorsLiquidation: 5,
     ChangeOperatorsLiquidationWarning: 4,
-} as const;
+};
 
 type Props = {
     errorType: number,
@@ -25,21 +25,21 @@ const LiquidationStateError = (props: Props) => {
     const classes = useStyles();
 
     const renderText = () => {
-        if (errorType === ErrorType.WithdrawAll) {
+        if (errorType === LiquidationStateErrorType.WithdrawAll) {
             return <div>Withdrawing the requested amount will liquidate your cluster, which will result in inactivation (<LinkText className={classes.LinkText} text={'penalties on the beacon chain'} link={config.links.ETHER_RESPONSIBILITIES} />) of your validators, as they will no longer be operated by the network.</div>;
-        } if (errorType === ErrorType.Liquidated) {
+        } if (errorType === LiquidationStateErrorType.Liquidated) {
             return 'Your cluster has been liquidated. Please reactivate your cluster in order to resume your validators operation.';
-        } if (errorType === ErrorType.Deposit) {
+        } if (errorType === LiquidationStateErrorType.Deposit) {
             return 'Your balance is running low and puts your cluster at risk. \n' +
                 'To avoid liquidation please deposit more funds to your cluster.';
-        } if (errorType === ErrorType.Withdraw) {
+        } if (errorType === LiquidationStateErrorType.Withdraw) {
             return 'This withdrawal amount will putting your cluster at risk of liquidation.\n' +
                 'To avoid liquidation please withdraw less funds from your cluster.\n';
         }
-        const firstText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your cluster at risk of liquidation.' : 'This fee change will liquidate your cluster, please deposit more SSV or';
-        const secondText = errorType === ErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your cluster.' : 'change to a different set of operators.';
+        const firstText = errorType === LiquidationStateErrorType.ChangeOperatorsLiquidationWarning ? 'This withdrawal amount will place your cluster at risk of liquidation.' : 'This fee change will liquidate your cluster, please deposit more SSV or';
+        const secondText = errorType === LiquidationStateErrorType.ChangeOperatorsLiquidationWarning ? 'To avoid liquidation please withdraw less funds from your cluster.' : 'change to a different set of operators.';
 
-        if (errorType === ErrorType.ChangeOperatorsLiquidationWarning || errorType === ErrorType.ChangeOperatorsLiquidation) {
+        if (errorType === LiquidationStateErrorType.ChangeOperatorsLiquidationWarning || errorType === LiquidationStateErrorType.ChangeOperatorsLiquidation) {
             return (
               <Grid container item className={classes.OperatorChangeTextWrapper}>
                 <Grid item>

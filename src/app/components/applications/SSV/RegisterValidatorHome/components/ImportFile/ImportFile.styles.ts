@@ -43,7 +43,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
         lineHeight: 1.62,
         overflow: 'hidden',
         textAlign: 'center',
-        whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
         color: theme.colors.gray40,
     },

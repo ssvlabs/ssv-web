@@ -1,29 +1,30 @@
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
 import { checkAddressChecksum, toChecksumAddress } from 'web3-utils';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 
 const FeeRecipient = () => {
   const stores = useStores();
   const classes = useStyles();
-  const clusterStore: ClusterStore = stores.Cluster;
+  const accountStore: AccountStore = stores.Account;
   const applicationStore: ApplicationStore = stores.Application;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState(accountStore.recipientAddress);
 
   const submitFeeRecipient = async () => {
     applicationStore.setIsLoading(true);
-    await clusterStore.setFeeRecipient(userInput);
+    await accountStore.setFeeRecipient(userInput);
     applicationStore.setIsLoading(false);
   };
 
@@ -50,7 +51,7 @@ const FeeRecipient = () => {
                   <Grid container item style={{ gap: 32 }}>
                     <Grid container style={{ gap: 24 }}>
                     <Grid item className={classes.Text}>
-                      Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText text={'What are proposal rewards?'} link={'http://google.com'} />
+                      Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText text={'What are proposal rewards?'} link={config.links.SSV_DOCUMENTATION} />
                     </Grid>
                     <Grid className={`${classes.Warning} ${classes.Text}`}>
                       Standard rewards from performing other duties will remain to be credited to your validators balance on the Beacon Chain.

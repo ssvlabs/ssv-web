@@ -15,6 +15,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
+const GOERLI_NETWORK_ID = 5;
 const PROVIDER_WALLET_CONNECT = 'WalletConnect';
 const LOCAL_STORAGE_WALLET_KEY = 'selectedWallet';
 const LOCAL_STORAGE_WALLET_CONNECT_PARAMS_KEY = 'walletconnect';
@@ -28,6 +29,7 @@ class WalletStore extends BaseStore implements Wallet {
   wrongNetwork: boolean = false;
   networkId: number | null = null;
   accountDataLoaded: boolean = false;
+  feeRecipientAddress: string = '';
 
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
@@ -55,12 +57,13 @@ class WalletStore extends BaseStore implements Wallet {
       getterContract: computed,
       setterContract: computed,
       accountAddress: observable,
-      walletHandler: action.bound,
-      addressHandler: action.bound,
-      balanceHandler: action.bound,
-      networkHandler: action.bound,
+      onWalletConnectedCallback: action.bound,
+      onAccountAddressChangeCallback: action.bound,
+      onBalanceChangeCallback: action.bound,
+      onNetworkChangeCallback: action.bound,
       initWalletHooks: action.bound,
       accountDataLoaded: observable,
+      feeRecipientAddress: observable,
       initializeUserInfo: action.bound,
       setAccountDataLoaded: action.bound,
       connectWalletFromCache: action.bound,
@@ -85,13 +88,14 @@ class WalletStore extends BaseStore implements Wallet {
         wallets,
       },
       subscriptions: {
-        wallet: this.walletHandler,
-        address: this.addressHandler,
-        network: this.networkHandler,
-        balance: this.balanceHandler,
+        network: this.onNetworkChangeCallback,
+        balance: this.onBalanceChangeCallback,
+        wallet: this.onWalletConnectedCallback,
+        address: this.onAccountAddressChangeCallback,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
+
     this.onboardSdk = Onboard(connectionConfig);
     const notifyOptions = {
       dappId: config.ONBOARD.API_KEY,
@@ -131,7 +135,6 @@ class WalletStore extends BaseStore implements Wallet {
     if (typeof amount === 'string') amount = amount.slice(0, 16);
     return this.web3.utils.toWei(amount.toString(), 'ether');
   }
-
   /**
    * Check wallet cache and connect
    */
@@ -148,6 +151,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.setAccountDataLoaded(true);
     }
   }
+
   /**
    * Connect wallet
    */
@@ -168,7 +172,7 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param address: string
    */
-  async addressHandler(address: string) {
+  async onAccountAddressChangeCallback(address: string) {
     this.setAccountDataLoaded(false);
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -184,9 +188,11 @@ class WalletStore extends BaseStore implements Wallet {
       myAccountStore.clearIntervals();
       this.accountAddress = address;
       ApiParams.cleanStorage();
-      await this.initializeUserInfo();
-      await myAccountStore.getOwnerAddressOperators({});
-      await myAccountStore.getOwnerAddressClusters({});
+      await Promise.all([
+          this.initializeUserInfo(),
+          myAccountStore.getOwnerAddressOperators({}),
+          myAccountStore.getOwnerAddressClusters({}),
+      ]);
       if (myAccountStore?.ownerAddressClusters?.length) {
         applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
       } else if (myAccountStore?.ownerAddressOperators?.length) {
@@ -217,7 +223,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Callback for connected wallet
    * @param wallet: any
    */
-  async walletHandler(wallet: any) {
+  async onWalletConnectedCallback(wallet: any) {
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     console.debug('Wallet Connected:', wallet);
@@ -227,7 +233,7 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Fetch user balances and fees
    */
-  async balanceHandler(balance: any) {
+  async onBalanceChangeCallback(balance: any) {
     if (balance) await this.initializeUserInfo();
   }
 
@@ -235,9 +241,9 @@ class WalletStore extends BaseStore implements Wallet {
    * User Network handler
    * @param networkId: any
    */
-  async networkHandler(networkId: any) {
+  async onNetworkChangeCallback(networkId: any) {
     this.networkId = networkId;
-    if (networkId !== 5 && networkId !== undefined) {
+    if (networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {

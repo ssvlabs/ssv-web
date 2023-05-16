@@ -105,7 +105,7 @@
     "resolve-url-loader": "^3.1.2",
     "sass": "^1.32.11",
     "sass-loader": "^10.0.5",
-    "ssv-keys": "0.0.16",
+    "ssv-keys": "https://github.com/bloxapp/ssv-keys#v3",
     "semver": "7.3.2",
     "source-map-explorer": "^2.5.3",
     "stream": "npm:stream-browserify",

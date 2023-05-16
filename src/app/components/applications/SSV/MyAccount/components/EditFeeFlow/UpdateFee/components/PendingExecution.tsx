@@ -10,14 +10,14 @@ import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import ReactStepper
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import {
   IncreaseFlowProps,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 
-const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
+const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({ step: 2 });
   const operatorStore: OperatorStore = stores.Operator;
@@ -69,7 +69,7 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState }: 
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
               <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} text={'Cancel'}
-                submitFunction={operatorStore.switchCancelDialog} />
+                               submitFunction={cancelUpdateFee} />
             </Grid>
             <Grid item xs>
               <PrimaryButton withoutLoader={operatorStore.openCancelDialog} disable={false} text={'Execute'}

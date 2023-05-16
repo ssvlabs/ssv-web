@@ -7,10 +7,11 @@ type PreviousNextFeeProps = {
     newFee: number | string;
     oldFee: number | string;
     currentCurrency: string;
+    negativeArrow?: boolean;
 };
 
-const ChangeFeeDisplayValues = ({ oldFee, newFee, currentCurrency = 'SSV' } : PreviousNextFeeProps ) => {
-    const classes = useStyles({});
+const ChangeFeeDisplayValues = ({ oldFee, newFee, currentCurrency = 'SSV', negativeArrow = false } : PreviousNextFeeProps ) => {
+    const classes = useStyles({ negativeArrow });
     return (
         <Grid container className={classes.ContainerWrapper}>
             <Typography className={classes.FeeValue}>{`${oldFee} ${currentCurrency}`}</Typography>

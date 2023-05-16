@@ -1,76 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
-// import TextInput from '~app/components/common/TextInput';
-// import { validateFeeUpdate } from '~lib/utils/validatesInputs';
 import BorderScreen from '~app/components/common/BorderScreen';
-// import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-// import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import {
   IncreaseFlowProps,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
-
   const stores = useStores();
-  const navigate = useNavigate();
-  // const ssvStore: SsvStore = stores.SSV;
-  // const walletStore: WalletStore = stores.Wallet;
-  const operatorStore: OperatorStore = stores.Operator;
-  const [operator, setOperator] = useState(null);
-  // const [userInput, setUserInput] = useState('');
-  const applicationStore: ApplicationStore = stores.Application;
-  // const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
-  // const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
-
-  useEffect(() => {
-    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
-    applicationStore.setIsLoading(true);
-    Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
-      if (response) {
-        setOperator(response);
-      }
-      applicationStore.setIsLoading(false);
-    });
-  }, []);
-
-  // useEffect(() => {
-  //   const isRegisterButtonEnabled = !userInput;
-  //   setRegisterButtonEnabled(!isRegisterButtonEnabled);
-  //   return () => {
-  //     setRegisterButtonEnabled(false);
-  //   };
-  // }, [userInput]);
-  // useEffect(() => {
-  //   const isRegisterButtonEnabled = !userInput || error.shouldDisplay;
-  //   setRegisterButtonEnabled(!isRegisterButtonEnabled);
-  //   return () => {
-  //     setRegisterButtonEnabled(false);
-  //   };
-  // }, [error.shouldDisplay, userInput]);
-
-  // @ts-ignore
   const classes = useStyles({});
-
-  if (!operator) return null;
-  // @ts-ignore
-  // const operatorFee = ssvStore.getFeeForYear(walletStore.fromWei(operator?.fee));
+  const operatorStore: OperatorStore = stores.Operator;
+  const [registerButtonEnabled] = useState(false);
+  const applicationStore: ApplicationStore = stores.Application;
 
   const changeOperatorFee = async () => {
     applicationStore.setIsLoading(true);
-    // @ts-ignore
     const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee);
-    await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId as number);
+    await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore
       let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
@@ -78,27 +32,12 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
         savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
         localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
       }
-      getCurrentState();
-      console.log('first call to state');
     }
     getCurrentState();
-    console.log('second call to state');
     applicationStore.setIsLoading(false);
   };
 
-  // const declareNewOperatorFee = async () => {
-  //   applicationStore.setIsLoading(true);
-  //   applicationStore.setIsLoading(false);
-  // };
-
   const currentDate = new Date();
-  // TODO: error with type script should be fix. here: currentDate.toLocaleTimeString('en-us', options)
-  // const options = {
-  //   day: 'short',
-  //   hour: 'short',
-  //   month: 'short',
-  //   minute: 'short',
-  // };
 
   const secondsToDhms = (seconds: any) => {
     // eslint-disable-next-line no-param-reassign
@@ -131,7 +70,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
               <ReactStepper
                   step={0}
                   subTextAlign={'left'}
-                  // registerButtonEnabled={registerButtonEnabled}
+                  registerButtonEnabled={registerButtonEnabled}
                   subText={currentDate.toLocaleTimeString('en-us').replace('PM', '').replace('AM', '')}
               />
               <Grid item container className={classes.TextWrapper}>
@@ -149,26 +88,8 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
                 <Grid item container>
                   {/*<Grid item className={classes.InputText}>*/}
                     <ChangeFeeDisplayValues   currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
-                    {/*<Typography>Annual fee</Typography>*/}
-                  {/*</Grid>*/}
-                  {/* <Grid item> */}
-                  {/*  <Typography>Annual fee</Typography> */}
-                  {/* </Grid> */}
                 </Grid>
                 <Grid item container style={{ marginBottom: 40 }}>
-                  {/*<TextInput*/}
-                  {/*    withSideText*/}
-                  {/*    value={userInput}*/}
-                  {/*    placeHolder={'0.0'}*/}
-                  {/*    showError={error.shouldDisplay}*/}
-                  {/*    dataTestId={'edit-operator-fee'}*/}
-                  {/*    onChangeCallback={(e: any) => {*/}
-                  {/*      setUserInput(e.target.value);*/}
-                  {/*      // @ts-ignore*/}
-                  {/*      validateFeeUpdate(operatorFee, e.target.value, operatorStore.maxFeeIncrease, setError);*/}
-                  {/*    }}*/}
-                  {/*/>*/}
-                  {/*{error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}*/}
                 </Grid>
               </Grid>
               <Grid item className={classes.Notice}>

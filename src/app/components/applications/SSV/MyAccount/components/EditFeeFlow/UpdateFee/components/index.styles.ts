@@ -311,6 +311,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
             return `1px solid ${theme.colors.tint90}`;
         },
         color: (props: any) => {
+            if (props.step === 5) {
+                return '#34455a';
+            }
             if (props.step === 4) {
                 return theme.colors.primaryError;
             }
@@ -327,6 +330,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
         backgroundColor: (props: any) => {
             if (theme.darkMode) return 'transparent';
+            if (props.step === 5) {
+                return theme.colors.gray20;
+            }
             if (props.step === 4) {
                 return theme.colors.primaryErrorRegular;
             }

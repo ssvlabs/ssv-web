@@ -20,6 +20,6 @@ export const useStyles = makeStyles(() => ({
         transform: 'scaleX(-1)',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/backButton/light.svg)',
+        backgroundImage:(props: any) => props.negativeArrow ? 'url(/images/arrow/light_red.svg)' : 'url(/images/backButton/light.svg)',
     },
 }));

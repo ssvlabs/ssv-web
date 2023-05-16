@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
-import DeclareFee
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
-import WaitingPeriod
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
-import PendingExecution
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
+import CancelFee
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/CancelFee';
+import DeclareFee
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
 import FeeUpdated
     from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
+import WaitingPeriod
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
+import PendingExpired
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
+import PendingExecution
+    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
 
 export type IncreaseFlowProps = {
     newFee: string | number;
     oldFee: string | number;
     currentCurrency: string;
     getCurrentState: Function;
+    declareNewFeeHandler: Function;
+    cancelUpdateFee: Function;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -28,9 +34,13 @@ enum IncreaseSteps {
     PENDING,
     // eslint-disable-next-line no-unused-vars
     CONFIRM,
+    // eslint-disable-next-line no-unused-vars
+    EXPIRED,
+    // eslint-disable-next-line no-unused-vars
+    CANCEL,
 }
 
-const IncreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
+const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : UpdateFeeProps) => {
     const stores = useStores();
     const operatorStore: OperatorStore = stores.Operator;
     const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
@@ -49,43 +59,45 @@ const IncreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
             const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
             const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
             const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
-            console.log('in');
-            console.log(startPendingStateTime > todayDate);
-            console.log('in');
+
             // @ts-ignore
             const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-            console.log({ daysFromEndPendingStateTime });
 
             if (isInPendingState) {
                 setCurrentStep(IncreaseSteps.PENDING);
-                console.log('pend');
             } else if (startPendingStateTime > todayDate) {
                 setCurrentStep(IncreaseSteps.WAITING);
-                console.log('wait');
-            } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime >= 3) {
-                // @ts-ignore
-                const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-                if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
-                    console.log('declare');
-                    setCurrentStep(IncreaseSteps.DECLARE_FEE);
-                } else {
-                    console.log('conf');
-                    setCurrentStep(IncreaseSteps.CONFIRM);
+            } else if (todayDate > endPendingStateTime) {
+                setCurrentStep(IncreaseSteps.EXPIRED);
+            } else if (todayDate > endPendingStateTime ) {
+                if (daysFromEndPendingStateTime >= 3){
+                    declareNewFeeHandler();
+                    return;
                 }
+                setCurrentStep(IncreaseSteps.EXPIRED);
             }
+
+
         }
     };
 
+    const cancelUpdateFee = async () => {
+         await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId as number);
+         setCurrentStep(IncreaseSteps.CANCEL);
+    };
+
     const components = {
-        [IncreaseSteps.DECLARE_FEE]: DeclareFee,
-        [IncreaseSteps.WAITING]: WaitingPeriod,
-        [IncreaseSteps.PENDING]: PendingExecution,
+        [IncreaseSteps.CANCEL]: CancelFee,
         [IncreaseSteps.CONFIRM]: FeeUpdated,
+        [IncreaseSteps.WAITING]: WaitingPeriod,
+        [IncreaseSteps.DECLARE_FEE]: DeclareFee,
+        [IncreaseSteps.EXPIRED]: PendingExpired,
+        [IncreaseSteps.PENDING]: PendingExecution,
     };
     
     const Component = components[currentStep];
     return (
-        <Component newFee={newFee} oldFee={oldFee} currentCurrency={currency} getCurrentState={getCurrentState} />
+        <Component cancelUpdateFee={cancelUpdateFee} declareNewFeeHandler={declareNewFeeHandler} newFee={newFee} oldFee={oldFee} currentCurrency={currency} getCurrentState={getCurrentState} />
     );
 };
 

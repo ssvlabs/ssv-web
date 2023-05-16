@@ -34,6 +34,7 @@ export type UpdateFeeProps = {
   oldFee: number | string;
   currency: string;
   setCurrency?: Function;
+  declareNewFeeHandler: Function
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -64,32 +65,40 @@ const UpdateFee = () => {
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
 
   useEffect(() => {
-    if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
-      setNewFee(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee))));
-      setCurrentFlowStep(FeeUpdateSteps.INCREASE);
-    } else {
-      setCurrentFlowStep(FeeUpdateSteps.START);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
     applicationStore.setIsLoading(true);
     Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
         const operatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee)));
         setOperator(response);
-        setOldFee(+operatorFee);
+        setOldFee(Number(operatorFee));
         if (!operatorStore.operatorFutureFee) {
-          setNewFee(+operatorFee);
+          setNewFee(Number(operatorFee));
         }
-        console.log(response);
         await operatorStore.getOperatorFeeInfo(response.id);
+        if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
+          setNewFee(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee))));
+          setCurrentFlowStep(FeeUpdateSteps.INCREASE);
+        } else {
+          setCurrentFlowStep(FeeUpdateSteps.START);
+        }
       }
       applicationStore.setIsLoading(false);
     });
   }, []);
-  
+
+  useEffect(() => {
+    if (error.shouldDisplay || Number(newFee) === Number(oldFee)) {
+      setNextIsDisabled(true);
+    } else {
+      setNextIsDisabled(false);
+    }
+  }, [newFee, error]);
+
+  const declareNewFeeHandler = () => {
+    setCurrentFlowStep(FeeUpdateSteps.START);
+  };
+
   const setErrorHandler = ( errorResponse: ErrorType ) => {
     setError(errorResponse);
     if (errorResponse.shouldDisplay) {
@@ -124,7 +133,7 @@ const UpdateFee = () => {
     [FeeUpdateSteps.DECREASE]: DecreaseFlow,
   };
   const Component = components[currentFlowStep];
-  console.log(currentFlowStep);
+
   return (
       <Grid container item>
         <WhiteWrapper header={'Update Operator Fee'}>
@@ -132,6 +141,7 @@ const UpdateFee = () => {
         </WhiteWrapper>
         <Grid className={classes.BodyWrapper}>
           <Component onNextHandler={onNextHandler}
+                     declareNewFeeHandler={declareNewFeeHandler}
                      newFee={newFee}
                      onChangeHandler={onInputChange}
                      error={error}

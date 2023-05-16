@@ -1,60 +1,28 @@
+import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
-import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/common/BorderScreen';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import {
+  IncreaseFlowProps,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
-const PendingExpired = () => {
+const PendingExpired = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler } : IncreaseFlowProps) => {
   const stores = useStores();
-  const navigate = useNavigate();
-  const [operator, setOperator] = useState(null);
-  const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
-  const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
-
-  useEffect(() => {
-    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
-    // @ts-ignore
-    const savedOperator = JSON.parse(localStorage.getItem('expired_operators')) ?? [];
-    if (savedOperator && !savedOperator.includes(operatorStore.processOperatorId)) savedOperator.push(operatorStore.processOperatorId);
-    localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
-    applicationStore.setIsLoading(true);
-    Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
-      if (response) {
-        setOperator(response);
-        applicationStore.setIsLoading(false);
-      }
-    });
-  }, []);
-
-  const backToMyAccount = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-  };
-
-  // @ts-ignore
   const classes = useStyles({ step: 4 });
+  const operatorStore: OperatorStore = stores.Operator;
 
-  if (!operator) return null;
-
-  // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
-  // @ts-ignore
-  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee)));
+  const declareNewFee = () => {
+    operatorStore.refreshOperatorFeeData();
+    declareNewFeeHandler();
+  };
 
   return (
     <BorderScreen
@@ -77,16 +45,10 @@ const PendingExpired = () => {
             </Grid>
           </Grid>
           <Grid item container className={classes.FeesChangeWrapper}>
-            <Grid item>
-              <SsvAndSubTitle bold leftTextAlign ssv={currentOperatorFee} />
-            </Grid>
-            <Grid item className={classes.NegativeArrow} />
-            <Grid item>
-              <SsvAndSubTitle fade bold leftTextAlign ssv={operatorFutureFee} />
-            </Grid>
+            <ChangeFeeDisplayValues negativeArrow={true} currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
-            <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={backToMyAccount} />
+            <PrimaryButton disable={false} text={'Declare New Fee'} submitFunction={declareNewFee} />
           </Grid>
         </Grid>,
 

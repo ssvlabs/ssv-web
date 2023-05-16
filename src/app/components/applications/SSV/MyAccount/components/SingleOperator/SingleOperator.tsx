@@ -96,7 +96,6 @@ const SingleOperator = () => {
   };
 
   const moveToUpdateFee = async () => {
-    console.log(operator.id);
     await operatorStore.getOperatorFeeInfo(operator.id);
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT);
   };

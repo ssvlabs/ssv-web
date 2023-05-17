@@ -24,7 +24,6 @@ const OperatorDetails = (props: Props) => {
   const notificationsStore: NotificationsStore = stores.Notifications;
   const classes = useStyles({ isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
   let operatorName = operator?.name;
-  if (operator?.name?.length > 14) operatorName = `${operator.name.slice(0, 13)}...`;
 
   const copyId = () => {
     navigator.clipboard.writeText(operator?.id);

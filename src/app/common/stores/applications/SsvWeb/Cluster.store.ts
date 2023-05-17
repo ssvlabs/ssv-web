@@ -52,17 +52,14 @@ class ClusterStore extends BaseStore {
 
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    if (cluster.validator_count === 0) {
-      const ssvStore: SsvStore = this.getStore('SSV');
-      const operatorsFeePerYear = cluster.operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))), [0]);
-      const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
-      const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
-      return parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
-    }
-    const clusterBurnRate = walletStore.fromWei(cluster.burnRate);
-    return clusterBurnRate / cluster.validator_count * newAmountOfValidators;
+    const ssvStore: SsvStore = this.getStore('SSV');
+    const operatorsFeePerYear = cluster.operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))), [0]);
+    const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+    const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
+    const clusterBurnRate =  parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
+    return clusterBurnRate * newAmountOfValidators;
   }
-
+  
   async isClusterLiquidated(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);

@@ -9,10 +9,8 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import {
-  IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -24,7 +22,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   const changeOperatorFee = async () => {
     applicationStore.setIsLoading(true);
     const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee);
-    await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
+    await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore
       let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
@@ -68,7 +66,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
                 </Grid>
               </Grid>
               <ReactStepper
-                  step={0}
+                  step={StepperSteps.DECLARE_FEE}
                   subTextAlign={'left'}
                   registerButtonEnabled={registerButtonEnabled}
                   subText={currentDate.toLocaleTimeString('en-us').replace('PM', '').replace('AM', '')}

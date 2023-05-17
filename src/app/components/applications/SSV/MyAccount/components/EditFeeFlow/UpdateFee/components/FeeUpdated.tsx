@@ -10,10 +10,8 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import {
-    IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
     const stores = useStores();
@@ -28,7 +26,7 @@ const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
         }, 5000);
     };
 
-    const classes = useStyles({ step: 3 });
+    const classes = useStyles({ step: StepperSteps.UPDATED });
 
     return (
       <BorderScreen
@@ -44,7 +42,7 @@ const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
                 Success
               </Grid>
             </Grid>
-            <ReactStepper step={3} subTextAlign={'center'} />
+            <ReactStepper step={StepperSteps.UPDATED} subTextAlign={'center'} />
             <Grid item container className={classes.TextWrapper}>
               <Grid item>
                 <Typography>You have successfully updated your fee. The new fee will take effect immediately.</Typography>

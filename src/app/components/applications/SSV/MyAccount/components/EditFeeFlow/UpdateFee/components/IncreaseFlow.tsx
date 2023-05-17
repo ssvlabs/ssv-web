@@ -2,18 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
-import CancelFee
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/CancelFee';
-import DeclareFee
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
-import FeeUpdated
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
-import WaitingPeriod
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
-import PendingExpired
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
-import PendingExecution
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
+import CancelFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/CancelFee';
+import DeclareFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
+import FeeUpdated from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
+import WaitingPeriod from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
+import PendingExpired from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
+import PendingExecution from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
 
 export type IncreaseFlowProps = {
     newFee: string | number;

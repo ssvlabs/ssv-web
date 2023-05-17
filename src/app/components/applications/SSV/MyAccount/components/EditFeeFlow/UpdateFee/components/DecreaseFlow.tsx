@@ -9,9 +9,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
-import {
-    useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();

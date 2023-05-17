@@ -7,7 +7,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryBu
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
-const ChangeFee = ({ newFee, onChangeHandler = () => null, error, nextIsDisabled, onNextHandler, setCurrency = () => null }: UpdateFeeProps) => {
+const ChangeFee = ({ newFee, onChangeHandler, error, nextIsDisabled, onNextHandler, setCurrency }: UpdateFeeProps) => {
     const classes = useStyles({});
     return (
         <BorderScreen

@@ -13,27 +13,21 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
-import CancelUpdateFee
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee.styles';
-import ChangeFee
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
-import IncreaseFlow
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import DecreaseFlow
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
+import CancelUpdateFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee.styles';
+import ChangeFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
+import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import DecreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
 
 export type UpdateFeeProps = {
   error: ErrorType;
   nextIsDisabled: boolean;
   onNextHandler: Function;
-  onChangeHandler?: Function;
+  onChangeHandler: Function;
   newFee: number | string;
   oldFee: number | string;
   currency: string;
-  setCurrency?: Function;
+  setCurrency: Function;
   declareNewFeeHandler: Function
 };
 
@@ -75,7 +69,7 @@ const UpdateFee = () => {
         if (!operatorStore.operatorFutureFee) {
           setNewFee(Number(operatorFee));
         }
-        await operatorStore.getOperatorFeeInfo(response.id);
+        await operatorStore.syncOperatorFeeInfo(response.id);
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
           setNewFee(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee))));
           setCurrentFlowStep(FeeUpdateSteps.INCREASE);
@@ -110,7 +104,7 @@ const UpdateFee = () => {
 
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
-    setNewFee(value);
+    setNewFee(value.trim());
     if (value !== '') {
       validateFeeUpdate(operator.fee, value, operatorStore.maxFeeIncrease, setErrorHandler);
     } else {

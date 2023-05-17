@@ -7,22 +7,18 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import ReactStepper
-    from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import {
-    IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler } : IncreaseFlowProps) => {
     const stores = useStores();
-    const classes = useStyles({ step: 5 });
+    const classes = useStyles({ step: StepperSteps.CANCELED });
     const operatorStore: OperatorStore = stores.Operator;
 
     const declareNewFee = () => {
-        operatorStore.refreshOperatorFeeData();
+        operatorStore.clearOperatorFeeInfo();
         declareNewFeeHandler();
-
     };
 
     return (
@@ -39,7 +35,7 @@ const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler } : I
                             Canceled
                         </Grid>
                     </Grid>
-                    <ReactStepper step={4} subTextAlign={'center'} />
+                    <ReactStepper step={StepperSteps.CANCELED} subTextAlign={'center'} />
                     <Grid item container className={classes.TextWrapper}>
                         <Grid item>
                             <Typography>Your fee has been canceled.</Typography>

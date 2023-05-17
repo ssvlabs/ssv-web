@@ -7,20 +7,17 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import ReactStepper
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import {
-  IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const PendingExpired = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler } : IncreaseFlowProps) => {
   const stores = useStores();
-  const classes = useStyles({ step: 4 });
+  const classes = useStyles({ step: StepperSteps.EXPIRED  });
   const operatorStore: OperatorStore = stores.Operator;
 
   const declareNewFee = () => {
-    operatorStore.refreshOperatorFeeData();
+    operatorStore.clearOperatorFeeInfo();
     declareNewFeeHandler();
   };
 
@@ -38,7 +35,7 @@ const PendingExpired = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler 
               Expired
             </Grid>
           </Grid>
-          <ReactStepper step={4} subTextAlign={'center'} />
+          <ReactStepper step={StepperSteps.EXPIRED} subTextAlign={'center'} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>
               <Typography>Your declare fee has expired because you have not executed it.</Typography>

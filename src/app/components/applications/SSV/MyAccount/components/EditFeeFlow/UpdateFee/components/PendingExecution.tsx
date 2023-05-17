@@ -10,16 +10,13 @@ import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import ReactStepper
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import {
-  IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
-  const classes = useStyles({ step: 2 });
+  const classes = useStyles({ step: StepperSteps.EXECUTION });
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   
@@ -49,8 +46,8 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
               Execute
             </Grid>
           </Grid>
-          <ReactStepper step={2} subTextAlign={'center'}
-            subText={`Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`} />
+          <ReactStepper step={StepperSteps.EXECUTION} subTextAlign={'center'}
+                        subText={`Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>
               <Typography>Execute your new fee in order to finalize the fee update process.</Typography>

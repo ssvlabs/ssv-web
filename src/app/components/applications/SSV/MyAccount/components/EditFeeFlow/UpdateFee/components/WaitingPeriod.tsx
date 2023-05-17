@@ -9,12 +9,9 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import ReactStepper
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import {
-  IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -41,7 +38,7 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
               Waiting Period
             </Grid>
           </Grid>
-          <ReactStepper subTextAlign={'center'} step={1}
+          <ReactStepper subTextAlign={'center'} step={StepperSteps.WAITING}
             subText={`${timeDiffCalc(operatorEndApprovalTime, today)} Left`} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>

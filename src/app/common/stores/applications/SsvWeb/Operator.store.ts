@@ -3,6 +3,7 @@ import { sha256 } from 'js-sha256';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -11,7 +12,6 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import Operator from '~lib/api/Operator';
 
 export interface NewOperator {
   id: string,
@@ -116,7 +116,7 @@ class OperatorStore extends BaseStore {
       getOperatorRevenue: action.bound,
       approveOperatorFee: action.bound,
       switchCancelDialog: action.bound,
-      getOperatorFeeInfo: action.bound,
+      syncOperatorFeeInfo: action.bound,
       isOperatorSelected: action.bound,
       getSelectedOperatorsFee: computed,
       selectedEnoughOperators: computed,
@@ -126,7 +126,7 @@ class OperatorStore extends BaseStore {
       getSetOperatorFeePeriod: observable,
       operatorApprovalEndTime: observable,
       cancelChangeFeeProcess: action.bound,
-      refreshOperatorFeeData: action.bound,
+      clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
       validatorsPerOperatorLimit: action.bound,
@@ -165,7 +165,7 @@ class OperatorStore extends BaseStore {
       });
   }
 
-  refreshOperatorFeeData() {
+  clearOperatorFeeInfo() {
     this.operatorFutureFee = null;
     this.operatorApprovalBeginTime = null;
     this.operatorApprovalEndTime = null;
@@ -241,7 +241,7 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  async getOperatorFeeInfo(operatorId: number) {
+  async syncOperatorFeeInfo(operatorId: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     try {
@@ -251,10 +251,8 @@ class OperatorStore extends BaseStore {
       this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
       this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
     } catch (e: any) {
-      console.error(e.message);
-      this.operatorFutureFee =  null;
-      this.operatorApprovalBeginTime = null;
-      this.operatorApprovalEndTime = null;
+      console.error(`Failed to get operator fee details from the contract: ${e.message}`);
+      this.clearOperatorFeeInfo();
     }
   }
 
@@ -286,7 +284,7 @@ class OperatorStore extends BaseStore {
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    await this.getOperatorFeeInfo(operatorId);
+    await this.syncOperatorFeeInfo(operatorId);
     const operatorDataBefore = {
       operatorFutureFee: this.operatorFutureFee,
       operatorApprovalEndTime: this.operatorApprovalEndTime,
@@ -318,7 +316,7 @@ class OperatorStore extends BaseStore {
                 const changed = await myAccountStore.checkEntityChangedInAccount(
                   // eslint-disable-next-line @typescript-eslint/no-loop-func
                   async () => {
-                    await this.getOperatorFeeInfo(operatorId);
+                    await this.syncOperatorFeeInfo(operatorId);
                     return {
                       operatorFutureFee: this.operatorFutureFee,
                       operatorApprovalEndTime: this.operatorApprovalEndTime,
@@ -442,7 +440,7 @@ class OperatorStore extends BaseStore {
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
           ),
         );
-        await this.getOperatorFeeInfo(operatorId);
+        await this.syncOperatorFeeInfo(operatorId);
         const operatorDataBefore = {
           operatorFutureFee: this.operatorFutureFee,
           operatorApprovalEndTime: this.operatorApprovalEndTime,
@@ -462,7 +460,7 @@ class OperatorStore extends BaseStore {
                 iterations += 1;
                 const changed = await myAccountStore.checkEntityChangedInAccount(
                   async () => {
-                    await this.getOperatorFeeInfo(operatorId);
+                    await this.syncOperatorFeeInfo(operatorId);
                     return {
                       operatorFutureFee: this.operatorFutureFee,
                       operatorApprovalEndTime: this.operatorApprovalEndTime,
@@ -512,12 +510,8 @@ class OperatorStore extends BaseStore {
                 new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
             ),
         );
-        await this.getOperatorFeeInfo(operatorId);
-        let operatorBefore = await Operator.getInstance().getOperator(operatorId);
-        operatorBefore = {
-          id: operatorBefore.id,
-          fee: operatorBefore.fee,
-        };
+        const { id, fee }  = await Operator.getInstance().getOperator(operatorId);
+        const operatorBefore = { id, fee };
         await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress })
             .on('receipt', async (receipt: any) => {
               // eslint-disable-next-line no-prototype-builtins
@@ -533,7 +527,6 @@ class OperatorStore extends BaseStore {
                   const changed = await myAccountStore.checkEntityChangedInAccount(
                       async () => {
                         const operatorAfter = await Operator.getInstance().getOperator(operatorId);
-                        await this.getOperatorFeeInfo(operatorId);
                         return {
                           id: operatorAfter.id,
                           fee: operatorAfter.fee,
@@ -562,8 +555,7 @@ class OperatorStore extends BaseStore {
               resolve(false);
             });
       } catch (e: any) {
-        console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
-        console.log(e.message);
+        console.log(`Filed to decrease operator fee: ${e.message}`);
         resolve(false);
       }
     });

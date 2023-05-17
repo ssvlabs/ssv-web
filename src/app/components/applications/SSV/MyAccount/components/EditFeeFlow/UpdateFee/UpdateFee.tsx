@@ -93,7 +93,7 @@ const UpdateFee = () => {
     setCurrentFlowStep(FeeUpdateSteps.START);
   };
 
-  const setErrorHandler = ( errorResponse: ErrorType ) => {
+  const updateFeeErrorHandler = (errorResponse: ErrorType ) => {
     setError(errorResponse);
     if (errorResponse.shouldDisplay) {
       setNextIsDisabled(true);
@@ -106,7 +106,7 @@ const UpdateFee = () => {
     const { value } = e.target;
     setNewFee(value.trim());
     if (value !== '') {
-      validateFeeUpdate(operator.fee, value, operatorStore.maxFeeIncrease, setErrorHandler);
+      validateFeeUpdate(operator.fee, value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
     } else {
       setError({ shouldDisplay: false, errorMessage: '' });
       setNextIsDisabled(true);

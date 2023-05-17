@@ -31,7 +31,7 @@ const ConversionInput = ({ value, onChange, error, placeholder, setCurrency } : 
         <Grid container style={{ height: '101px', gap: 10 }}>
             <Grid container className={classes.InputAdditionalDataWrapper}>
                 <Typography className={classes.AnnualFeeLabel}>Annual fee</Typography>
-                <Grid container item className={classes.Conversion}>
+                {false && <Grid container item className={classes.Conversion}>
                     {coins.map((coin: string, index: number) => {
                         return (
                             <Grid key={index} item xs={6}
@@ -41,7 +41,7 @@ const ConversionInput = ({ value, onChange, error, placeholder, setCurrency } : 
                                   }}>{coin}</Grid>
                         );
                     })}
-                </Grid>
+                </Grid>}
             </Grid>
             <TextInput value={value}
                        extendClass={classes.FeeInput}

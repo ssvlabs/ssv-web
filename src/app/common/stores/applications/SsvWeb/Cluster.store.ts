@@ -92,7 +92,11 @@ class ClusterStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const liquidationCollateral = ssvStore.liquidationCollateralPeriod / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
     const burnRatePerDay = walletStore.fromWei(cluster.burnRate) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-    return Math.max((walletStore.fromWei(cluster.balance) / burnRatePerDay) - liquidationCollateral, 0);
+    let liquidationCollateralCost = burnRatePerDay * liquidationCollateral;
+    if (liquidationCollateralCost < ssvStore.minimumLiquidationCollateral) {
+      liquidationCollateralCost = ssvStore.minimumLiquidationCollateral;
+    }
+    return Math.max((walletStore.fromWei(cluster.balance) - liquidationCollateralCost) / burnRatePerDay, 0);
   }
 
   async getClusterData(clusterHash: string, fullData = false) {

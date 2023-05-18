@@ -425,7 +425,10 @@ class ValidatorStore extends BaseStore {
         if ('fundingPeriod' in process) {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-          const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+          let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+          if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+            liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+          }
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
         let payload;
@@ -469,7 +472,10 @@ class ValidatorStore extends BaseStore {
       if ('fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-        const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+        let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+        if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+          liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+        }
         totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
       }
       try {

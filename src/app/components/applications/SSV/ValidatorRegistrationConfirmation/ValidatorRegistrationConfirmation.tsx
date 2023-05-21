@@ -105,7 +105,7 @@ const ValidatorRegistrationConfirmation = () => {
     <Grid container>
       <Button
           withAllowance
-          text={`${actionButtonText} + 'right'`}
+          text={actionButtonText}
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance}

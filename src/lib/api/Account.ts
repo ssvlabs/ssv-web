@@ -17,7 +17,7 @@ class Account {
         return Account.instance;
     }
 
-    async getFeeRecipientAddress(publicKey: string) {
+    async getAccountData(publicKey: string) {
         try {
             const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${publicKey}`;
             return await this.getData(url);

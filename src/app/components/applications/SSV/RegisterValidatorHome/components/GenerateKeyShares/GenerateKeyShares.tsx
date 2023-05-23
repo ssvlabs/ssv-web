@@ -1,25 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useNavigate } from 'react-router-dom';
-import { useStyles } from './GenerateKeyShares.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares/GenerateKeyShares.styles';
 
 const GenerateKeyShares = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const walletStore: WalletStore = stores.Wallet;
+  const accountStore: AccountStore = stores.Account;
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const process: RegisterValidator | SingleCluster = processStore.getProcess;
   process;
+
+    useEffect(() => {
+        async function getNonce() {
+            await accountStore.getOwnerNonce(walletStore.accountAddress);
+        }
+        getNonce();
+    }, []);
 
 
   const uploadKeystore = {

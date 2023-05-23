@@ -107,7 +107,7 @@
     "sass-loader": "^10.0.5",
     "semver": "7.3.2",
     "source-map-explorer": "^2.5.3",
-    "ssv-keys": "^0.0.18",
+    "ssv-keys": "https://github.com/bloxapp/ssv-keys.git#vc/IO1-3370-shares-signature",
     "stream": "npm:stream-browserify",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",

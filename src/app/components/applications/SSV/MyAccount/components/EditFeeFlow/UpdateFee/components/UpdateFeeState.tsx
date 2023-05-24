@@ -51,7 +51,7 @@ const UpdateFeeState = () => {
         setProcessState(PROCESS_STATE_WAITING);
       } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
         // @ts-ignore
-        const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+        const savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
         if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
           setProcessState(PROCESS_STATE_START);
           return;

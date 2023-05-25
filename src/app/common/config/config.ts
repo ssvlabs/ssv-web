@@ -1,3 +1,7 @@
+import { getCurrentNetwork } from '~lib/utils/envHelper';
+
+const currentNetwork = getCurrentNetwork();
+
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
   retry: {
@@ -120,6 +124,7 @@ const config = {
     },
   },
   links: {
+    SSV_API_ENDPOINT: currentNetwork.api,
     ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
@@ -136,7 +141,6 @@ const config = {
     EXPLORER_URL: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
-    SSV_API_ENDPOINT: process.env.REACT_APP_SSV_API_ENDPOINT || 'https://api.stage.ssv.network/api/v2',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana',
   },
@@ -158,7 +162,7 @@ const config = {
   },
   CONTRACTS: {
     SSV_TOKEN: {
-      ADDRESS: String(process.env.REACT_APP_SSV_CONTRACT_ADDRESS),
+      ADDRESS: currentNetwork.tokenAddress,
       ABI: [
         {
           'anonymous': false,
@@ -541,7 +545,7 @@ const config = {
       ],
     },
     SSV_NETWORK_SETTER: {
-      ADDRESS: String(process.env.REACT_APP_NETWORK_SETTER_CONTRACT_ADDRESS),
+      ADDRESS: currentNetwork.setterContractAddress,
       ABI: [
         {
           'inputs': [],
@@ -2386,7 +2390,7 @@ const config = {
       ],
     },
     SSV_NETWORK_GETTER: {
-      ADDRESS: String(process.env.REACT_APP_NETWORK_GETTER_CONTRACT_ADDRESS),
+      ADDRESS: currentNetwork.getterContractAddress,
       ABI: [
         {
           'inputs': [],

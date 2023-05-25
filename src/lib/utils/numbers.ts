@@ -1,6 +1,5 @@
 // new functionality
 import Decimal from 'decimal.js';
-import config from '~app/common/config';
 
 export const addNumber = (num1: any, num2: any): Decimal => {
   return new Decimal(num1).plus(num2);
@@ -138,9 +137,9 @@ export const formatNumberFromBeaconcha = (num: number) => {
 
 export const propertyCostByPeriod = (value: number, days: number) => {
   const wrapFee = new Decimal(value);
-  return Number(wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_DAY).mul(days ?? 1).toFixed( 2));
+  return Number(wrapFee.mul(7160).mul(days ?? 1).toFixed( 2));
 };
 
 export const operatorCostForYear = (value: number) => {
-  return value * config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR;
+  return value * 2613400;
 };

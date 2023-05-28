@@ -1,15 +1,13 @@
-
-
 export interface IENVS {
-  BEACONCHA_URL: string,
-  LAUNCHPAD_URL: string,
-  ETHERSCAN_URL: string,
-  NETWORK: string,
+    NETWORK: string,
+    BEACONCHA_URL: string,
+    LAUNCHPAD_URL: string,
+    ETHERSCAN_URL: string,
 }
 
 export type NetworkDataType = {
-    networkId: number;
     logo: string;
+    networkId: number;
     optionLabel: string;
     activeLabel: string;
     ssvApiEndpoint: string;
@@ -25,12 +23,12 @@ export const NETWORKS = {
 
 const NETWORK_VARIABLES =  {
         [NETWORKS.MAINNET]: {
-        logo: 'dark',
+            logo: 'dark',
             activeLabel: 'Ethereum',
             optionLabel: 'Ethereum Mainnet',
     },
         [NETWORKS.GOERLI]: {
-        logo: 'light',
+            logo: 'light',
             activeLabel: 'Goerli',
             optionLabel: 'Goerli Testnet',
     },
@@ -59,19 +57,18 @@ export const NETWORKS_DATA = data ? JSON.parse(data).map((network: any) => fillN
 //   },
 // };
 
-
 const _envs = {
   [NETWORKS.GOERLI]: {
-    BEACONCHA_URL: 'https://prater.beaconcha.in',
-    LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
-    ETHERSCAN_URL: 'https://goerli.etherscan.io',
-    NETWORK: 'prater',
+      NETWORK: 'prater',
+      BEACONCHA_URL: 'https://prater.beaconcha.in',
+      LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
+      ETHERSCAN_URL: 'https://goerli.etherscan.io',
   },
   [NETWORKS.MAINNET]: {
-    BEACONCHA_URL: 'https://beaconcha.in',
-    LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
-    ETHERSCAN_URL: 'https://etherscan.io',
-    NETWORK: 'mainnet',
+      NETWORK: 'mainnet',
+      BEACONCHA_URL: 'https://beaconcha.in',
+      LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
+      ETHERSCAN_URL: 'https://etherscan.io',
   },
 };
 
@@ -81,7 +78,6 @@ export const ENV = (): IENVS => {
 };
 
 export const changeCurrentNetwork = (networkId: number) => {
-    console.log('changeCurrentNetwork');
     const networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => network.networkId === networkId);
     window.localStorage.setItem('current_network', networkIndex);
     window.location.reload();

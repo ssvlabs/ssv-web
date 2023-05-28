@@ -30,7 +30,6 @@ class WalletStore extends BaseStore implements Wallet {
   wrongNetwork: boolean = false;
   networkId: number | null = null;
   accountDataLoaded: boolean = false;
-  feeRecipientAddress: string = '';
 
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
@@ -64,7 +63,6 @@ class WalletStore extends BaseStore implements Wallet {
       onNetworkChangeCallback: action.bound,
       initWalletHooks: action.bound,
       accountDataLoaded: observable,
-      feeRecipientAddress: observable,
       initializeUserInfo: action.bound,
       setAccountDataLoaded: action.bound,
       connectWalletFromCache: action.bound,

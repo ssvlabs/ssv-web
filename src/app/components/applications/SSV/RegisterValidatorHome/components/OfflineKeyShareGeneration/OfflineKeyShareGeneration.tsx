@@ -10,7 +10,9 @@ import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -22,18 +24,21 @@ const OfflineKeyShareGeneration = () => {
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
+    const walletStore: WalletStore = stores.Wallet;
+    const accountStore: AccountStore = stores.Account;
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const [selectedBox, setSelectedBox] = useState(0);
     const [textCopied, setTextCopied] = useState(false);
     const notificationsStore: NotificationsStore = stores.Notifications;
+    const { ownerNonce } = accountStore;
+    const { accountAddress } = walletStore;
 
     const isSelected = (id: number) => selectedBox === id;
     const goToNextPage = {
         true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES),
         false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES),
 };
-
     const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
     const { operatorsIds, operatorsKeys } = sortedOperators.reduce((aggr: any, operator: IOperator) => {
         aggr.operatorsIds.push(operator.id);
@@ -44,7 +49,7 @@ const OfflineKeyShareGeneration = () => {
         operatorsKeys: [],
     });
 
-    const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')}`;
+    const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',') } --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
 
     const instructions = [
         {
@@ -96,11 +101,10 @@ const OfflineKeyShareGeneration = () => {
                                       item
                                       className={`${classes.Box} ${classes.Disable} ${isSelected(2) ? classes.BoxSelected : ''}`}
                                       onClick={() => checkBox(2)}>
-                            <Grid item xs={12} className={`${classes.Image} ${classes.Desktop}`}/>
-                            <Typography className={classes.BlueText}>Desktop App</Typography>
-                        </Grid></Grid>}/>
-
-
+                                      <Grid item xs={12} className={`${classes.Image} ${classes.Desktop}`}/>
+                                      <Typography className={classes.BlueText}>Desktop App</Typography>
+                                </Grid>
+                            </Grid>}/>
                     </Grid>
                     {selectedBox === 2 && <Grid container item className={classes.UnofficialTool}>
                         This app is an unofficial tool built as a public good by the OneStar team.

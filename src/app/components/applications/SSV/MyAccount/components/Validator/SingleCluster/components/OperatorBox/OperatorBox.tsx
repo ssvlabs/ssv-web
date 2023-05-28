@@ -10,6 +10,8 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import UpdateFeeState
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
@@ -21,6 +23,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
 
   return (
       <Grid item className={classes.OperatorBox}>
+        <UpdateFeeState />
         <Grid className={classes.FirstSectionOperatorBox}>
           <OperatorDetails operator={operator}/>
         </Grid>
@@ -34,7 +37,10 @@ const OperatorBox = ({ operator }: { operator: any }) => {
               </Grid>
             </Grid>
             <Grid item>30D Perform.</Grid>
-            <Grid item>Yearly Fee</Grid>
+            <Grid className={classes.YearlyFeeWrapper}>
+              <Grid item>Yearly Fee</Grid>
+                <Grid className={classes.UpdateFeeIndicator}/>
+              </Grid>
           </Grid>
           <Grid item container className={classes.ColumnWrapper}>
             <Status item={operator}/>

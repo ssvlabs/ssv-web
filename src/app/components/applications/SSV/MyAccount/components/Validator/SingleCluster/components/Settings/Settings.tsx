@@ -1,16 +1,16 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
-import { useStyles } from './Settings.styles';
-import { useStores } from '~app/hooks/useStores';
 import { ENV } from '~lib/utils/envHelper';
+import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 
 const Settings = ({ validator }: { validator: any }) => {
   const stores = useStores();

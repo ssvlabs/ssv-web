@@ -1,7 +1,29 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export enum StepperSteps {
+    // eslint-disable-next-line no-unused-vars
+    DECLARE_FEE = 0,
+    // eslint-disable-next-line no-unused-vars
+    WAITING = 1,
+    // eslint-disable-next-line no-unused-vars
+    EXECUTION = 2,
+    // eslint-disable-next-line no-unused-vars
+    UPDATED = 3,
+    // eslint-disable-next-line no-unused-vars
+    EXPIRED = 4,
+    // eslint-disable-next-line no-unused-vars
+    CANCELED = 5,
+}
+
 export const useStyles = makeStyles((theme: Theme) => ({
+    ChangeFeeWrapper: {
+        gap: 24,
+        display: 'flex',
+        flexDirection:  'column',
+        justifyContent: 'space-around',
+},
     Stepper: {
         marginTop: 24,
         marginBottom: 40,
@@ -13,7 +35,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: 8,
         '&:nth-of-type(2)': {
             backgroundColor: (props: any) => {
-                if (props.step === 0) {
+                if (props.step === StepperSteps.DECLARE_FEE) {
                     return theme.colors.gray20;
                 }
                 return theme.colors.primaryBlue;
@@ -21,7 +43,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
         '&:nth-of-type(4)': {
             backgroundColor: (props: any) => {
-                if (props.step <= 1) {
+                if (props.step <= StepperSteps.WAITING) {
                     return theme.colors.gray20;
                 }
                 return theme.colors.primaryBlue;
@@ -29,10 +51,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
         '&:nth-of-type(6)': {
             backgroundColor: (props: any) => {
-                if (props.step === 4) {
+                if (props.step === StepperSteps.EXPIRED) {
                     return theme.colors.primaryError;
                 }
-                if (props.step <= 2) {
+                if (props.step <= StepperSteps.EXECUTION) {
                     return theme.colors.gray20;
                 }
                 return theme.colors.primaryBlue;
@@ -40,7 +62,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
         '&:nth-of-type(8)': {
             backgroundColor: (props: any) => {
-                if (props.step === 0) {
+                if (props.step === StepperSteps.DECLARE_FEE) {
                     return theme.colors.gray20;
                 }
                 return theme.colors.primaryBlue;
@@ -58,19 +80,20 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     ProgressBarText: {
         fontSize: 14,
+        fontWeight: 800,
         lineHeight: 1.62,
         textAlign: (props: any) => props.subTextAlign,
         '&:nth-child(1)': {
-            fontWeight: (props: any) => (props.step === 0 && props.registerButtonEnabled) ? 800 : 500,
-            color: (props: any) => (props.step === 0 && props.registerButtonEnabled) ? theme.colors.gray80 : theme.colors.gray60,
+            fontWeight: (props: any) => (props.step === StepperSteps.DECLARE_FEE ) ? 800 : 500,
+            color: (props: any) => (props.step === StepperSteps.DECLARE_FEE ) ? theme.colors.gray80 : theme.colors.gray60,
         },
         '&:nth-child(2)': {
-            fontWeight: (props: any) => props.step === 1 ? 800 : 500,
-            color: (props: any) => props.step === 1 ? theme.colors.gray80 : theme.colors.gray60,
+            fontWeight: (props: any) => props.step === StepperSteps.WAITING ? 800 : 500,
+            color: (props: any) => props.step === StepperSteps.WAITING ? theme.colors.gray80 : theme.colors.gray60,
         },
         '&:nth-child(3)': {
-            fontWeight: (props: any) => props.step === 2 ? 800 : 500,
-            color: (props: any) => props.step === 2 ? theme.colors.gray80 : theme.colors.gray60,
+            fontWeight: (props: any) => props.step === StepperSteps.EXECUTION ? 800 : 500,
+            color: (props: any) => props.step === StepperSteps.EXECUTION ? theme.colors.gray80 : theme.colors.gray60,
         },
         '&:nth-child(4)': {
             fontWeight: 500,
@@ -99,10 +122,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
         // first circle
         '&:nth-of-type(1)': {
             border: (props: any) => {
-                return props.step === 0 ? `3px solid ${theme.colors.primaryBlue}` : 'none';
+                return props.step === StepperSteps.DECLARE_FEE ? `3px solid ${theme.colors.primaryBlue}` : 'none';
             },
             backgroundImage: (props: any) => {
-                if (props.step === 0) {
+                if (props.step === StepperSteps.DECLARE_FEE) {
                     return 'none';
                 }
                 return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
@@ -111,19 +134,19 @@ export const useStyles = makeStyles((theme: Theme) => ({
         // second circle
         '&:nth-of-type(3)': {
             border: (props: any) => {
-                if (props.step === 1) {
+                if (props.step === StepperSteps.WAITING) {
                     return `2px solid ${theme.colors.primaryBlue}`;
                 }
                 return 'none';
             },
             backgroundColor: (props: any) => {
-                if (props.step < 1) {
+                if (props.step < StepperSteps.WAITING) {
                     return theme.colors.gray20;
                 }
                 return theme.colors.white;
             },
             backgroundImage: (props: any) => {
-                if (props.step < 2) {
+                if (props.step < StepperSteps.EXECUTION) {
                     return 'none';
                 }
                 return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
@@ -132,28 +155,28 @@ export const useStyles = makeStyles((theme: Theme) => ({
         // third circle
         '&:nth-of-type(5)': {
             border: (props: any) => {
-                if (props.step === 2) {
+                if (props.step === StepperSteps.EXECUTION) {
                     return `2px solid ${theme.colors.primaryBlue}`;
                 }
                 return 'none';
             },
             backgroundColor: (props: any) => {
-                if (props.step === 4) {
+                if (props.step === StepperSteps.EXPIRED) {
                     return theme.colors.primaryError;
                 }
-                if (props.step === 2) {
+                if (props.step === StepperSteps.EXECUTION) {
                     return theme.colors.primaryBlue;
                 }
-                if (props.step < 2) {
+                if (props.step < StepperSteps.EXECUTION) {
                     return theme.colors.gray20;
                 }
                 return 'none';
             },
             backgroundImage: (props: any) => {
-                if (props.step === 4) {
+                if (props.step === StepperSteps.EXPIRED) {
                     return 'url(/images/x/white.svg)';
                 }
-                if (props.step > 2) {
+                if (props.step > StepperSteps.EXECUTION) {
                     return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
                 }
                 return 'none';
@@ -162,19 +185,19 @@ export const useStyles = makeStyles((theme: Theme) => ({
         // forth circle
         '&:nth-of-type(7)': {
             backgroundColor: (props: any) => {
-                if (props.step === 4) {
+                if (props.step === StepperSteps.EXPIRED) {
                     return theme.colors.primaryError;
                 }
-                if (props.step < 3) {
+                if (props.step < StepperSteps.UPDATED) {
                     return theme.colors.gray20;
                 }
                 return 'none';
             },
             backgroundImage: (props: any) => {
-                if (props.step === 4) {
+                if (props.step === StepperSteps.EXPIRED) {
                     return theme.colors.primaryError;
                 }
-                if (props.step === 3) {
+                if (props.step === StepperSteps.UPDATED) {
                     return `url(/images/checkbox/${theme.darkMode ? 'dark' : 'light'}.svg)`;
                 }
                 return 'none';
@@ -287,7 +310,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         border: (props: any) => {
-            if (props.step === 4 && theme.darkMode) {
+            if (props.step === StepperSteps.EXPIRED && theme.darkMode) {
                 return `1px solid ${theme.colors.primaryError}`;
             }
             if (props.step === 3 && theme.darkMode) {
@@ -304,14 +327,17 @@ export const useStyles = makeStyles((theme: Theme) => ({
             return `1px solid ${theme.colors.tint90}`;
         },
         color: (props: any) => {
-            if (props.step === 4) {
+            if (props.step === StepperSteps.CANCELED) {
+                return '#34455a';
+            }
+            if (props.step === StepperSteps.EXPIRED) {
                 return theme.colors.primaryError;
             }
-            if (props.step === 3) {
+            if (props.step === StepperSteps.UPDATED) {
                 if (theme.darkMode) return theme.colors.primaryBlue;
                 return theme.colors.white;
             }
-            if (props.step === 2) {
+            if (props.step === StepperSteps.EXECUTION) {
                 if (theme.darkMode) return theme.colors.shade20;
                 return theme.colors.white;
             }
@@ -320,13 +346,16 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
         backgroundColor: (props: any) => {
             if (theme.darkMode) return 'transparent';
-            if (props.step === 4) {
+            if (props.step === StepperSteps.CANCELED) {
+                return theme.colors.gray20;
+            }
+            if (props.step === StepperSteps.EXPIRED) {
                 return theme.colors.primaryErrorRegular;
             }
-            if (props.step === 3) {
+            if (props.step === StepperSteps.UPDATED) {
                 return theme.colors.primaryBlue;
             }
-            if (props.step === 2) {
+            if (props.step === StepperSteps.EXECUTION) {
                 return '#60bffa';
             }
             return theme.colors.tint90;

@@ -7,9 +7,7 @@ import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const PROCESS_STATE_START = 0;
 const PROCESS_STATE_WAITING = 1;
@@ -37,7 +35,7 @@ const UpdateFeeState = () => {
 
   const getState = async () => {
     // @ts-ignore
-    await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
+    await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
       const todayDate = new Date();
       const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
@@ -53,7 +51,7 @@ const UpdateFeeState = () => {
         setProcessState(PROCESS_STATE_WAITING);
       } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
         // @ts-ignore
-        const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+        const savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
         if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
           setProcessState(PROCESS_STATE_START);
           return;

@@ -18,7 +18,6 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
 
-
 const FundingPeriod = () => {
   const options = [
     { id: 1, timeText: '6 Months', days: 182.5 },
@@ -29,6 +28,7 @@ const FundingPeriod = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
+  // const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
@@ -41,8 +41,10 @@ const FundingPeriod = () => {
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, periodOfTime);
-  const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-
+  let liquidationCollateralCost = Number(new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod));
+  if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+    liquidationCollateralCost = ssvStore.minimumLiquidationCollateral;
+  }
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
@@ -53,7 +55,6 @@ const FundingPeriod = () => {
     process.fundingPeriod = periodOfTime;
     navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
-
 
   return (
       <BorderScreen
@@ -102,7 +103,7 @@ const FundingPeriod = () => {
                 }/>}
               </Grid>
             </Grid>,
-            <FundingSummary days={isCustomPayment ? customPeriod : checkedOption.days}/>,
+            <FundingSummary liquidationCollateralCost={liquidationCollateralCost} days={isCustomPayment ? customPeriod : checkedOption.days}/>,
             <Grid container>
               <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>

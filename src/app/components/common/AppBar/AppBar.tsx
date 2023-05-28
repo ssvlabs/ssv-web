@@ -1,14 +1,14 @@
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
+import NetworkToggle from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
-import { useStyles } from './AppBar.styles';
-// import Typography from '@material-ui/core/Typography';
+import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
 
 type Button = {
   label: string;
@@ -116,6 +116,9 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
 
         <Grid item className={classes.GridItem}>
           <Grid item container style={{ alignItems: 'center' }}>
+              <Grid item>
+                  <NetworkToggle />
+              </Grid>
             {!applicationStore.userGeo && (
               <Grid item>
                 <ConnectWalletButton />

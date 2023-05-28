@@ -2,8 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { ENV } from '~lib/utils/envHelper';
+import { useStores } from '~app/hooks/useStores';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
@@ -25,7 +25,6 @@ const OperatorDetails = (props: Props) => {
   const notificationsStore: NotificationsStore = stores.Notifications;
   const classes = useStyles({ isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
   let operatorName = operator?.name;
-  if (operator?.name?.length > 14) operatorName = `${operator.name.slice(0, 13)}...`;
 
   const copyId = () => {
     navigator.clipboard.writeText(operator?.id);

@@ -56,7 +56,7 @@ interface SelectedOperators {
 
 class OperatorStore extends BaseStore {
   // Process data
-  processOperatorId: number | undefined;
+  processOperatorId: number = 0;
 
   // Cancel dialog switcher
   openCancelDialog: boolean = false;
@@ -116,7 +116,7 @@ class OperatorStore extends BaseStore {
       getOperatorRevenue: action.bound,
       approveOperatorFee: action.bound,
       switchCancelDialog: action.bound,
-      getOperatorFeeInfo: action.bound,
+      syncOperatorFeeInfo: action.bound,
       isOperatorSelected: action.bound,
       getSelectedOperatorsFee: computed,
       selectedEnoughOperators: computed,
@@ -126,6 +126,7 @@ class OperatorStore extends BaseStore {
       getSetOperatorFeePeriod: observable,
       operatorApprovalEndTime: observable,
       cancelChangeFeeProcess: action.bound,
+      clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
       validatorsPerOperatorLimit: action.bound,
@@ -162,6 +163,12 @@ class OperatorStore extends BaseStore {
         applicationStore.showTransactionPendingPopUp(false);
         resolve(false);
       });
+  }
+
+  clearOperatorFeeInfo() {
+    this.operatorFutureFee = null;
+    this.operatorApprovalBeginTime = null;
+    this.operatorApprovalEndTime = null;
   }
 
   get getSelectedOperatorsFee(): number {
@@ -234,14 +241,19 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  async getOperatorFeeInfo(operatorId: number) {
+  async syncOperatorFeeInfo(operatorId: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
-    this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
-    const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
-    this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
-    this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
-    this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+    try {
+      this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
+      const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
+      this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
+      this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
+      this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+    } catch (e: any) {
+      console.error(`Failed to get operator fee details from the contract: ${e.message}`);
+      this.clearOperatorFeeInfo();
+    }
   }
 
   /**
@@ -272,11 +284,11 @@ class OperatorStore extends BaseStore {
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    let operatorBefore = await Operator.getInstance().getOperator(operatorId);
-    operatorBefore = {
-      id: operatorBefore.id,
-      declared_fee: operatorBefore.declared_fee,
-      previous_fee: operatorBefore.previous_fee,
+    await this.syncOperatorFeeInfo(operatorId);
+    const operatorDataBefore = {
+      operatorFutureFee: this.operatorFutureFee,
+      operatorApprovalEndTime: this.operatorApprovalEndTime,
+      operatorApprovalBeginTime: this.operatorApprovalBeginTime,
     };
 
     return new Promise((resolve) => {
@@ -304,14 +316,14 @@ class OperatorStore extends BaseStore {
                 const changed = await myAccountStore.checkEntityChangedInAccount(
                   // eslint-disable-next-line @typescript-eslint/no-loop-func
                   async () => {
-                    const operatorAfter = await Operator.getInstance().getOperator(operatorId);
+                    await this.syncOperatorFeeInfo(operatorId);
                     return {
-                      id: operatorAfter.id,
-                      declared_fee: operatorAfter.declared_fee,
-                      previous_fee: operatorAfter.previous_fee,
+                      operatorFutureFee: this.operatorFutureFee,
+                      operatorApprovalEndTime: this.operatorApprovalEndTime,
+                      operatorApprovalBeginTime: this.operatorApprovalBeginTime,
                     };
                   },
-                  operatorBefore,
+                    operatorDataBefore,
                 );
                 if (changed) {
                   // eslint-disable-next-line no-await-in-loop
@@ -417,7 +429,6 @@ class OperatorStore extends BaseStore {
    */
   async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
@@ -429,13 +440,12 @@ class OperatorStore extends BaseStore {
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
           ),
         );
-        let operatorBefore = await Operator.getInstance().getOperator(operatorId);
-        operatorBefore = {
-          id: operatorBefore.id,
-          declared_fee: operatorBefore.declared_fee,
-          previous_fee: operatorBefore.previous_fee,
+        await this.syncOperatorFeeInfo(operatorId);
+        const operatorDataBefore = {
+          operatorFutureFee: this.operatorFutureFee,
+          operatorApprovalEndTime: this.operatorApprovalEndTime,
+          operatorApprovalBeginTime: this.operatorApprovalBeginTime,
         };
-
         await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
@@ -443,34 +453,28 @@ class OperatorStore extends BaseStore {
             if (event) {
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
                 if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 }
                 iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
                 const changed = await myAccountStore.checkEntityChangedInAccount(
-                  // eslint-disable-next-line @typescript-eslint/no-loop-func
                   async () => {
-                    const operatorAfter = await Operator.getInstance().getOperator(operatorId);
+                    await this.syncOperatorFeeInfo(operatorId);
                     return {
-                      id: operatorAfter.id,
-                      declared_fee: operatorAfter.declared_fee,
-                      previous_fee: operatorAfter.previous_fee,
+                      operatorFutureFee: this.operatorFutureFee,
+                      operatorApprovalEndTime: this.operatorApprovalEndTime,
+                      operatorApprovalBeginTime: this.operatorApprovalBeginTime,
                     };
                   },
-                  operatorBefore,
+                  operatorDataBefore,
                 );
                 if (changed) {
-                  // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
-                // eslint-disable-next-line no-await-in-loop
                 await myAccountStore.delay();
               }
             }
@@ -488,6 +492,70 @@ class OperatorStore extends BaseStore {
       } catch (e: any) {
         console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
         console.log(e.message);
+        resolve(false);
+      }
+    });
+  }
+
+  async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    return new Promise(async (resolve) => {
+      try {
+        const ssvStore: SsvStore = this.getStore('SSV');
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const applicationStore: ApplicationStore = this.getStore('Application');
+        const contractInstance = walletStore.setterContract;
+        const formattedFee = ssvStore.prepareSsvAmountToTransfer(
+            walletStore.toWei(
+                new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
+            ),
+        );
+        const { id, fee }  = await Operator.getInstance().getOperator(operatorId);
+        const operatorBefore = { id, fee };
+        await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress })
+            .on('receipt', async (receipt: any) => {
+              // eslint-disable-next-line no-prototype-builtins
+              const event: boolean = receipt.hasOwnProperty('events');
+              if (event) {
+                let iterations = 0;
+                while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                    await this.refreshOperatorsAndClusters(resolve, true);
+                    break;
+                  }
+                  iterations += 1;
+                  const changed = await myAccountStore.checkEntityChangedInAccount(
+                      async () => {
+                        const operatorAfter = await Operator.getInstance().getOperator(operatorId);
+                        return {
+                          id: operatorAfter.id,
+                          fee: operatorAfter.fee,
+                        };
+                      },
+                      operatorBefore,
+                  );
+                  if (changed) {
+                    await this.refreshOperatorsAndClusters(resolve, true);
+                    break;
+                  } else {
+                    console.log('Operator is still not updated in API..');
+                  }
+                  await myAccountStore.delay();
+                }
+              }
+            })
+            .on('transactionHash', (txHash: string) => {
+              applicationStore.txHash = txHash;
+              applicationStore.showTransactionPendingPopUp(true);
+            })
+            .on('error', (error: any) => {
+              console.debug('Contract Error', error.message);
+              applicationStore.setIsLoading(false);
+              applicationStore.showTransactionPendingPopUp(false);
+              resolve(false);
+            });
+      } catch (e: any) {
+        console.log(`Filed to decrease operator fee: ${e.message}`);
         resolve(false);
       }
     });

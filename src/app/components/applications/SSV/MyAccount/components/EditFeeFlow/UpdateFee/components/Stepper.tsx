@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useStyles } from './index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 type Props = {
     step: number,
@@ -11,10 +11,11 @@ type Props = {
     registerButtonEnabled?: boolean
 };
 
+
 const ReactStepper = (props: Props) => {
     const { step, registerButtonEnabled, subTextAlign, subText } = props;
     const classes = useStyles({ step, registerButtonEnabled, subTextAlign });
-
+    
     return (
       <Grid item container className={classes.Stepper}>
         <Grid item container className={classes.ProgressBarWrapper}>

@@ -12,6 +12,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -408,24 +409,29 @@ class ValidatorStore extends BaseStore {
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
+    const accountStore: AccountStore = this.getStore('Account');
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
+    const { ownerNonce } = accountStore;
     const operators = Object.values(operatorStore.selectedOperators)
       .sort((a: any, b: any) => a.id - b.id)
-      .map(item => ({ id: item.id, publicKey: item.public_key }));
-
+      .map(item => ({ id: item.id, operatorKey: item.public_key }));
     return new Promise(async (resolve) => {
       try {
         const ssvKeys = new SSVKeys();
         const keyShares = new KeyShares();
+        const { accountAddress } = walletStore;
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
         let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
         if ('fundingPeriod' in process) {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-          const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+          let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+          if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+            liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+          }
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
         let payload;
@@ -434,6 +440,10 @@ class ValidatorStore extends BaseStore {
             publicKey: threshold.publicKey,
             operators,
             encryptedShares,
+          }, {
+            ownerAddress: accountAddress,
+            ownerNonce: ownerNonce,
+            privateKey: this.keyStorePrivateKey,
           });
         } catch (e: any) {
           console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
@@ -469,7 +479,10 @@ class ValidatorStore extends BaseStore {
       if ('fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-        const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+        let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+        if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+          liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+        }
         totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
       }
       try {
@@ -565,7 +578,10 @@ class ValidatorStore extends BaseStore {
     const PUBLIC_KEY_ERROR_ID = 5;
     const OPERATOR_NOT_EXIST_ID = 1;
     const OPERATOR_NOT_MATCHING_ID = 2;
+    const keyShares = new KeyShares();
     const processStore: ProcessStore = this.getStore('Process');
+    const accountStore: AccountStore = this.getStore('Account');
+    const { ownerNonce } = accountStore;
     const { OK_RESPONSE,
             OPERATOR_NOT_EXIST_RESPONSE,
             OPERATOR_NOT_MATCHING_RESPONSE,
@@ -575,10 +591,11 @@ class ValidatorStore extends BaseStore {
     try {
       const fileJson = await this.keyShareFile?.text();
       const operatorStore: OperatorStore = this.getStore('Operator');
+      const walletStore: WalletStore = this.getStore('Wallet');
       // @ts-ignore
       const parsedFile = JSON.parse(fileJson);
       const { payload, data } = parsedFile;
-      const operatorPublicKeys = data.operators.map((operator: any) => operator.publicKey);
+      const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
       this.keySharePayload = payload;
       this.keySharePublicKey = payload.publicKey;
       const keyShareOperators = payload.operatorIds.sort();
@@ -602,11 +619,11 @@ class ValidatorStore extends BaseStore {
       }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-
+      await keyShares.validateSingleShares(payload.shares, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {
-      return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID };
+      return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
     }
   }
 

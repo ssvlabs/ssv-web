@@ -18,6 +18,7 @@ type Props = {
   bottomWrapper?: string,
   withConversion?: boolean,
   withoutNavigation?: boolean,
+  withoutBorderBottom?: boolean,
   onBackButtonClick?: () => void | null | undefined,
 };
 
@@ -39,6 +40,7 @@ const BorderScreen = (props: Props) => {
     bottomWrapper,
     withConversion,
     withoutNavigation,
+    withoutBorderBottom = false,
   } = props;
   const classes = useStyles({ overFlow, gray80, blackHeader, marginTop });
 
@@ -79,7 +81,7 @@ const BorderScreen = (props: Props) => {
         )}
         {body.map((section: any, index: number) => {
           return (
-            <Grid key={index} item container style={{ borderBottom: body.length === 1 ? 'none' : '' }}
+            <Grid key={index} item container style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }}
               className={sectionClass ?? classes.Section}>
               {section}
             </Grid>

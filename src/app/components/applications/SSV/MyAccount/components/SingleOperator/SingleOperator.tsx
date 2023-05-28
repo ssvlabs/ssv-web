@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import Button from '~app/components/common/Button';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
-import { ENV } from '~lib/utils/envHelper';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -20,6 +20,7 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -38,7 +39,7 @@ const SingleOperator = () => {
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  // const operatorStore: OperatorStore = stores.Operator;
+  const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const process: SingleOperatorProcess = processStore.getProcess;
   const notificationsStore: NotificationsStore = stores.Notifications;
@@ -94,8 +95,9 @@ const SingleOperator = () => {
     window.open(`${config.links.EXPLORER_URL}/${key}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
   };
 
-  const moveToUpdateFee = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
+  const moveToUpdateFee = async () => {
+    await operatorStore.syncOperatorFeeInfo(operator.id);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT);
   };
 
   const moveToWithdraw = () => {
@@ -269,7 +271,7 @@ const SingleOperator = () => {
                   ]}
                   bottom={[
                     <Grid item xs>
-                      <SecondaryButton disable={true} text={'Update Fee'} submitFunction={moveToUpdateFee} />
+                      <SecondaryButton text={'Update Fee'} submitFunction={moveToUpdateFee} />
                     </Grid>,
                   ]}
                   bottomWrapper={classes.ButtonSection}

@@ -52,8 +52,10 @@ const ReactivateCluster = () => {
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * validatorCount;
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
-  const liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee * validatorCount).mul(ssvStore.liquidationCollateralPeriod);
-
+  let liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee * validatorCount).mul(ssvStore.liquidationCollateralPeriod);
+  if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+    liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+  }
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;

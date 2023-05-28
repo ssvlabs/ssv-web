@@ -1,15 +1,14 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { ENV } from '~lib/utils/envHelper';
-import { useStyles } from '../../NewWhiteWrapper.styles';
+import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-// import LinkText from '~app/components/common/LinkText/LinkText';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 

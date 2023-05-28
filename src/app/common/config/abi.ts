@@ -1,8 +1,8 @@
-import { NETWORKS } from '~lib/utils/envHelper';
+import { NETWORKS, API_VERSIONS } from '~lib/utils/envHelper';
 
 export const ABI_VERSION = {
    setterContract: {
-       [NETWORKS.MAINNET]: [
+       [`${NETWORKS.GOERLI}_${API_VERSIONS.V3}`]: [
             {
                 'inputs': [],
                 'name': 'ApprovalNotWithinTimeframe',
@@ -1844,7 +1844,7 @@ export const ABI_VERSION = {
                 'type': 'function',
             },
         ],
-       [NETWORKS.GOERLI]: [
+       [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
            {
                'inputs': [
                    {
@@ -3712,7 +3712,7 @@ export const ABI_VERSION = {
        ],
 },
     getterContract: {
-       [NETWORKS.MAINNET]: [
+       [`${NETWORKS.GOERLI}_${API_VERSIONS.V3}`]: [
            {
                'inputs': [],
                'name': 'ApprovalNotWithinTimeframe',
@@ -4503,7 +4503,7 @@ export const ABI_VERSION = {
                'type': 'function',
            },
        ],
-       [NETWORKS.GOERLI]: [
+       [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
            {
                'inputs': [],
                'stateMutability': 'nonpayable',

@@ -10,24 +10,39 @@ export type NetworkDataType = {
     networkId: number;
     optionLabel: string;
     activeLabel: string;
-    ssvApiEndpoint: string;
-    ssvContractAddress: string;
+    api: string;
+    contractToken: string;
     setterContractAddress: string;
     getterContractAddress: string;
+    apiVersion: string;
+    apiNetwork: string;
 };
+
+type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
+    | 'api'
+    | 'apiVersion'
+    | 'apiNetwork'
+    | 'contractToken'
+    | 'setterContractAddress'
+    | 'getterContractAddress'>;
 
 export const NETWORKS = {
   MAINNET: 1,
   GOERLI: 5,
 };
 
+export const API_VERSIONS = {
+    V3: 'v3',
+    V4: 'v4',
+};
+
 const NETWORK_VARIABLES =  {
-        [NETWORKS.MAINNET]: {
+        [`${NETWORKS.GOERLI}_${API_VERSIONS.V3}`]: {
             logo: 'dark',
-            activeLabel: 'Ethereum',
-            optionLabel: 'Ethereum Mainnet',
+            activeLabel: 'Goerli',
+            optionLabel: 'Goerli Testnet',
     },
-        [NETWORKS.GOERLI]: {
+        [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: {
             logo: 'light',
             activeLabel: 'Goerli',
             optionLabel: 'Goerli Testnet',
@@ -36,26 +51,10 @@ const NETWORK_VARIABLES =  {
 
 const data = process.env.REACT_APP_SSV_NETWORKS;
 
-const fillNetworkData = (network: NetworkDataType, networkId: number) => ({ ...network, ...NETWORK_VARIABLES[networkId] });
+const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: number, apiVersion: string): NetworkDataType => ({ ...network, ...NETWORK_VARIABLES[`${networkId}_${apiVersion}`], api: `${network.api}/${network.apiVersion}/${network.apiNetwork}` });
 
-export const NETWORKS_DATA = data ? JSON.parse(data).map((network: any) => fillNetworkData(network, network.networkId)) : null;
-
-// This envs should be used with mainnet
-// =================================================================
-// const _envs = {
-//   [NETWORKS.GOERLI]: {
-//     BEACONCHA_URL: 'https://prater.beaconcha.in',
-//     LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
-//     ETHERSCAN_URL: 'https://goerli.etherscan.io',
-//     NETWORK: 'prater',
-//   },
-//   [NETWORKS.MAINNET]: {
-//     BEACONCHA_URL: 'https://beaconcha.in',
-//     LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
-//     ETHERSCAN_URL: 'https://etherscan.io',
-//     NETWORK: 'mainnet',
-//   },
-// };
+export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
+console.log(NETWORKS_DATA);
 
 const _envs = {
   [NETWORKS.GOERLI]: {
@@ -73,12 +72,12 @@ const _envs = {
 };
 
 export const ENV = (): IENVS => {
-  const finalNetworkId = process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID;
+  const finalNetworkId = getCurrentNetwork().networkId;
   return _envs[parseInt(String(finalNetworkId), 10)];
 };
 
-export const changeCurrentNetwork = (networkId: number) => {
-    const networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => network.networkId === networkId);
+export const changeCurrentNetwork = (networkId: number, version: string) => {
+    const networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => network.networkId === networkId && network.apiVersion === version);
     window.localStorage.setItem('current_network', networkIndex);
     window.location.reload();
 };

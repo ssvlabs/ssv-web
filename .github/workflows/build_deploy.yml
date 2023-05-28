@@ -42,7 +42,9 @@ jobs:
             [
               {
                 "networkId": 5,
-                "api": "https://api.stage.ssv.network/api/v4/prater",
+                "apiVersion": "v4",
+                "apiNetwork": "prater",
+                "api": "https://api.stage.ssv.network/api",
                 "explorerUrl": "https://explorer.stage.ssv.network",
                 "googleTagSecret": "${{ secrets.STAGE_GOOGLE_TAG_SECRET }}",
                 "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
@@ -59,7 +61,9 @@ jobs:
             [
               {
                 "networkId": 5,
-                "api": "https://api.ssv.network/api/v3/prater",
+                "apiVersion": "v3",
+                "apiNetwork": "prater",
+                "api": "https://api.ssv.network/api",
                 "explorerUrl": "https://explorer-v3.ssv.network",
                 "googleTagSecret": "${{ secrets.PROD_GOOGLE_TAG_SECRET }}",
                 "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
@@ -68,7 +72,9 @@ jobs:
               },
               {
                 "networkId": 5,
-                "api": "https://api.ssv.network/api/v4/prater",
+                "apiVersion": "v4",
+                "apiNetwork": "prater",
+                "api": "https://api.ssv.network/api",
                 "explorerUrl": "https://beta.explorer.ssv.network",
                 "googleTagSecret": "${{ secrets.PROD_GOOGLE_TAG_SECRET }}",
                 "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",

@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
@@ -67,7 +66,7 @@ const OperatorsFlow = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');  };
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');  };
 
   const secondaryFlowDom = () => {
     return (

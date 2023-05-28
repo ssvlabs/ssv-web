@@ -8,7 +8,7 @@ import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitc
 const NetworkToggle = () => {
     const optionsRef = useRef(null);
     const [currentNetwork] = useState(getCurrentNetwork());
-    const classes = useStyles({ networkId: currentNetwork.networkId });
+    const classes = useStyles({ logo: currentNetwork.logo });
     const [showNetworks, setShowNetworks] = useState(false);
 
     useEffect(() => {
@@ -30,18 +30,17 @@ const NetworkToggle = () => {
 
     return (
         <Grid>
-        <Grid item container className={classes.NetworkToggleWrapper} onClick={switchShowNetworks}>
-        <Grid item className={classes.NetworkIcon} />
-          <Typography className={classes.NetworkLabel}>{currentNetwork.activeLabel}</Typography>
-        </Grid>
+          <Grid item container className={classes.NetworkToggleWrapper} onClick={switchShowNetworks}>
+            <Grid item className={classes.NetworkIcon} />
+              <Typography className={classes.NetworkLabel}>{currentNetwork.activeLabel}</Typography>
+            </Grid>
             {showNetworks && <Grid item className={classes.OptionsWrapper}>
                 <Grid ref={optionsRef}  container item className={classes.Options}>
-                    {NETWORKS_DATA.map((network: NetworkDataType) => <NetworkOption key={network.networkId} networkId={network.networkId} optionLabel={network.optionLabel}
+                    {NETWORKS_DATA.map((network: NetworkDataType) => <NetworkOption key={`${network.networkId}_${network.apiVersion}`} network={network}
                     />)}
                 </Grid>
-            </Grid>
-            }
-</Grid>
+            </Grid>}
+       </Grid>
     );
 };
 

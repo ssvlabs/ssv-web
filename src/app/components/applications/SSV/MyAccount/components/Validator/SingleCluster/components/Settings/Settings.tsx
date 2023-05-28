@@ -66,7 +66,7 @@ const Settings = ({ validator }: { validator: any }) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}`, '_blank');
   };
 
   const moveToRemoveValidator = () => {

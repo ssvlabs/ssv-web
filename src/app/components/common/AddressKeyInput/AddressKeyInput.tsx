@@ -1,12 +1,12 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
-import { ENV } from '~lib/utils/envHelper';
+import { useStyles } from '~app/components/common/AddressKeyInput/AddressKeyInput.styles';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { useStyles } from './AddressKeyInput.styles';
 
 type ValidatorPrivateKeyInputProps = {
     address: string,
@@ -19,9 +19,8 @@ type ValidatorPrivateKeyInputProps = {
 const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
     const stores = useStores();
     const classes = useStyles();
+    const { ETHERSCAN_URL, BEACONCHA_URL } = ENV();
     const { address, withBeaconcha, withEtherScan, whiteBackgroundColor, withCopy } = props;
-    const etherScan = ENV().ETHERSCAN_URL;
-    const beaconchaBaseUrl = ENV().BEACONCHA_URL;
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     const copyToClipboard = () => {
@@ -35,7 +34,7 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
             action: 'click',
             label: 'Open Beaconcha',
         });
-        window.open(`${beaconchaBaseUrl}/validator/${address}`);
+        window.open(`${BEACONCHA_URL}/validator/${address}`);
     };
 
     const openEtherScan = () => {
@@ -44,7 +43,7 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
             action: 'click',
             label: 'Open Etherscan',
         });
-        window.open(`${etherScan}/address/${address}`);
+        window.open(`${ETHERSCAN_URL}/address/${address}`);
     };
 
     return (

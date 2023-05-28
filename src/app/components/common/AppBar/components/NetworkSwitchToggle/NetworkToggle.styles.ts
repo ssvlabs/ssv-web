@@ -17,7 +17,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: ({ networkId }: any) => networkId === 1 ? 'url(/images/networks/dark.svg)' : 'url(/images/networks/light.svg)',
+        backgroundImage: (props: any) => `url(/images/networks/${props.logo}.svg)`,
     },
     NetworkLabel: {
         fontSize: 16,

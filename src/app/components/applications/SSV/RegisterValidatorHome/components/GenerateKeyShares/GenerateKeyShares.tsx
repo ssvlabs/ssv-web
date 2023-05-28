@@ -27,9 +27,9 @@ const GenerateKeyShares = () => {
 
     useEffect(() => {
         async function getNonce() {
-            await accountStore.getOwnerNonce(walletStore.accountAddress);
+          return accountStore.getOwnerNonce(walletStore.accountAddress);
         }
-        getNonce();
+         getNonce();
     }, []);
 
 

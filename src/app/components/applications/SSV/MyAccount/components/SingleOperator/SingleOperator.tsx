@@ -92,7 +92,7 @@ const SingleOperator = () => {
       action: 'click',
       label: linkType,
     });
-    window.open(`${config.links.EXPLORER_URL}/${key}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/${key}`, '_blank');
   };
 
   const moveToUpdateFee = async () => {

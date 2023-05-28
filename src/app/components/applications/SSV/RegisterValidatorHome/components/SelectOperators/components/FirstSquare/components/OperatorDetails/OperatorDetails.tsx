@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
@@ -37,7 +36,7 @@ const OperatorDetails = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${ENV().NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
   };
 
   return (

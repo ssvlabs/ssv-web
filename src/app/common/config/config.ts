@@ -1,7 +1,7 @@
 import { ABI_VERSION } from '~app/common/config/abi';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
 
-const { networkId, api, tokenAddress, setterContractAddress, getterContractAddress } = getCurrentNetwork();
+const { networkId, api, tokenAddress, setterContractAddress, getterContractAddress, explorerUrl, apiVersion } = getCurrentNetwork();
 
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
@@ -131,15 +131,13 @@ const config = {
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
-    EXPLORER_VERSION: process.env.REACT_APP_EXPLORER_VERSION || 'v2',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
-    EXPLORER_NETWORK: process.env.REACT_APP_EXPLORER_NETWORK || 'prater',
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
-    EXPLORER_URL: process.env.REACT_APP_EXPLORER_URL || 'https://explorer.stage.ssv.network',
+    EXPLORER_URL: explorerUrl,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
@@ -156,7 +154,7 @@ const config = {
   },
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
-    NETWORK_ID: process.env.REACT_APP_BLOCKNATIVE_NETWORK_ID,
+    NETWORK_ID: networkId,
   },
   COIN_KEY: {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
@@ -547,11 +545,11 @@ const config = {
     },
     SSV_NETWORK_SETTER: {
       ADDRESS: setterContractAddress,
-      ABI: ABI_VERSION.setterContract[networkId],
+      ABI: ABI_VERSION.setterContract[`${networkId}_${apiVersion}`],
     },
     SSV_NETWORK_GETTER: {
       ADDRESS: getterContractAddress,
-      ABI: ABI_VERSION.getterContract[networkId],
+      ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`],
     },
     SSV_DISTRIBUTION: {
       ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),

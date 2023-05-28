@@ -46,4 +46,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         height: '23px',
         whiteSpace: 'nowrap',
     },
+    errorInputBorder: {
+        borderColor: '#ec1c26',
+    },
 }));

@@ -64,6 +64,9 @@ export const validateFeeUpdate = (previousValue: number, newValue: string, maxFe
     if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please use numbers only.';
+    } else if (Number(previousValue) === Number(newValue)) {
+        response.shouldDisplay = true;
+        response.errorMessage = 'State for fee hasn\'t changed';
     } else if (compareNumbers(previousValue, newValue)) {
         response.shouldDisplay = true;
         response.errorMessage = 'Please set a different fee amount from current.';

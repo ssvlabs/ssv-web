@@ -95,7 +95,7 @@ jobs:
         env:
           BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
-          SSV_NETWORKS: &ssv_networks |
+          SSV_NETWORKS: |
             [
               {
                 "networkId": 5,

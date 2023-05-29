@@ -147,7 +147,7 @@ const FundingNewValidator = () => {
                     </Grid>
                     <Grid container item style={{ gap: 8, alignItems: 'center' }}>
                       <Typography
-                          className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(runWay, true)}</Typography>
+                          className={`${classes.Bold} ${classes.LessBold}`}>{runWay}</Typography>
                       <Typography className={classes.DaysText}>days</Typography>
                       {checkedId > 0 && calculateNewRunWayCondition && <Typography className={`${classes.Bold} ${classes.LessBold}`}>{daysChanged()}</Typography>}
                     </Grid>

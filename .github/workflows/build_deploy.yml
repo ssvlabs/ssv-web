@@ -56,6 +56,7 @@ jobs:
 
       - name: Build prod networks env
         if: github.ref == 'refs/heads/main'
+        run: echo "Build prod networks env"
         env:
           # TODO: create _V3, _V4 secrets
           SSV_NETWORKS: &ssv_networks |

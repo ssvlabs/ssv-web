@@ -32,26 +32,26 @@ jobs:
       PROD_SSV_NETWORKS: >
         [
           {
-            \"networkId\": 5,
-            \"apiVersion\": \"v3\",
-            \"apiNetwork\": \"prater\",
+            \"networkId\": 1,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"mainnet\",
             \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://explorer-v3.ssv.network\",
+            \"explorerUrl\": \"https://beta.explorer.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
-            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V3 }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V3 }}\"
+            \"tokenAddress\": \"0x3a9f01091C446bdE031E39ea8354647AFef091E7\",
+            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
           },
           {
             \"networkId\": 5,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"prater\",
             \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://beta.explorer.ssv.network\",
+            \"explorerUrl\": \"https://goerli.explorer.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
-            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_TESTNET }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_TESTNET }}\"
           }
         ]
 
@@ -73,6 +73,7 @@ jobs:
       - name: Run test
         run: yarn test
 
+      # <app.stage.ssv.network>
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >
@@ -96,12 +97,12 @@ jobs:
         env:
           SOURCE_DIR: 'build/'
           AWS_REGION: 'us-west-2'
-          # TODO: create this secret
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_V4 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # </app.stage.ssv.network>
 
-
+      # <beta.app.ssv.network>
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/main'
         run: >
@@ -126,3 +127,4 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.PROD_V3_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      # </beta.app.ssv.network>

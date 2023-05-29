@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv';
@@ -12,8 +12,8 @@ import BackNavigation from '~app/components/common/BackNavigation';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styles';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from './WhiteWrapper.styles';
 
 type Props = {
   header: any,
@@ -82,7 +82,7 @@ const WhiteWrapper = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${explorerLink}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${explorerLink}`, '_blank');
   };
 
   useEffect(() => {

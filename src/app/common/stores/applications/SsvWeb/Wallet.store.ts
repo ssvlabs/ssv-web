@@ -8,6 +8,7 @@ import ApiParams from '~lib/api/ApiParams';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
+import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -29,7 +30,6 @@ class WalletStore extends BaseStore implements Wallet {
   wrongNetwork: boolean = false;
   networkId: number | null = null;
   accountDataLoaded: boolean = false;
-  feeRecipientAddress: string = '';
 
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
@@ -63,7 +63,6 @@ class WalletStore extends BaseStore implements Wallet {
       onNetworkChangeCallback: action.bound,
       initWalletHooks: action.bound,
       accountDataLoaded: observable,
-      feeRecipientAddress: observable,
       initializeUserInfo: action.bound,
       setAccountDataLoaded: action.bound,
       connectWalletFromCache: action.bound,
@@ -247,7 +246,7 @@ class WalletStore extends BaseStore implements Wallet {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {
-      config.links.SSV_API_ENDPOINT = `${process.env.REACT_APP_SSV_API_ENDPOINT}/prater`;
+      config.links.SSV_API_ENDPOINT = getCurrentNetwork().api;
       this.wrongNetwork = false;
     }
   }

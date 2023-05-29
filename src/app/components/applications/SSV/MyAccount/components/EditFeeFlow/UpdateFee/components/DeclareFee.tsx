@@ -25,10 +25,10 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore
-      let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+      let savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
       if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
         savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
-        localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
+        window.localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
       }
     }
     getCurrentState();

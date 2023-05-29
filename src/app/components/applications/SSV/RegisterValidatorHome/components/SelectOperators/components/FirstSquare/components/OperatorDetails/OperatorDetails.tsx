@@ -36,7 +36,7 @@ const OperatorDetails = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
   };
 
   return (

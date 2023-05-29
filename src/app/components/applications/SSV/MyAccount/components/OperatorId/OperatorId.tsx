@@ -7,7 +7,7 @@ import { useStores } from '~app/hooks/useStores';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { useStyles } from './OperatorId.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/OperatorId/OperatorId.styles';
 
 type Props = {
   id: string,
@@ -33,7 +33,7 @@ const OperatorId = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${id}`, '_blank');
   };
 
   return (

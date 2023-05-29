@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
@@ -7,7 +8,6 @@ import TableRow from '@mui/material/TableRow';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
-import React, { useEffect, useRef, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
@@ -106,7 +106,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${pubKey}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${pubKey}`, '_blank');
   };
 
   const sortHandler = (sortType: string) => {

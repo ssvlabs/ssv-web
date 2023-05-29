@@ -4,8 +4,8 @@ import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
+import { ENV } from '~lib/utils/envHelper';
 import BaseStore from '~app/common/stores/BaseStore';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -257,7 +257,7 @@ class MyAccountStore extends BaseStore {
 
   async getValidatorsBalances(publicKeys: string[]): Promise<void> {
     try {
-      const balanceUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${publicKeys.join(',')}`;
+      const balanceUrl = `${ENV().BEACONCHA_URL}/api/v1/validator/${publicKeys.join(',')}`;
       const response: any = (await axios.get(balanceUrl, { timeout: 2000 })).data;
       let responseData = response.data;
       if (!Array.isArray(responseData)) {
@@ -273,7 +273,7 @@ class MyAccountStore extends BaseStore {
   }
 
   getValidatorPerformance = async (publicKey: string): Promise<void> => {
-    const url = `${getBaseBeaconchaUrl()}/api/v1/validator/${publicKey}/performance`;
+    const url = `${ENV().BEACONCHA_URL}/api/v1/validator/${publicKey}/performance`;
     try {
       const performance = (await axios.get(url)).data;
       this.beaconChaPerformances[publicKey] = performance.data;

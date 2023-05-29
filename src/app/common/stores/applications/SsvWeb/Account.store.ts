@@ -7,11 +7,13 @@ import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application
 
 class AccountStore extends BaseStore  {
     recipientAddress: string = '';
+    ownerNonce: number = 0;
 
     constructor() {
         super();
         makeObservable(this, {
             recipientAddress: observable,
+            ownerNonce: observable,
         });
     }
 
@@ -45,13 +47,23 @@ class AccountStore extends BaseStore  {
 
     async getFeeRecipientAddress(ownerAddress: string) {
         const result: any = await new Promise(resolve => {
-                const res = Account.getInstance().getFeeRecipientAddress(ownerAddress);
+                const res = Account.getInstance().getAccountData(ownerAddress);
                 resolve(res);
         });
         if (result.data) {
             this.recipientAddress = result.data.recipientAddress;
         } else {
             this.recipientAddress = ownerAddress;
+        }
+    }
+
+    async getOwnerNonce(ownerAddress: string) {
+        const result: any = await new Promise(resolve => {
+            const res = Account.getInstance().getAccountData(ownerAddress);
+            resolve(res);
+        });
+        if (result.data) {
+            this.ownerNonce = Number(result.data.nonce);
         }
     }
 }

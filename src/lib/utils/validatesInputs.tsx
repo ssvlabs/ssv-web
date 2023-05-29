@@ -76,8 +76,9 @@ export const validateFeeUpdate = (previousValue: number, newValue: string, maxFe
     }
     // eslint-disable-next-line radix
     else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
+        const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
         response.shouldDisplay = true;
-        response.errorMessage = 'Please set a greater fee amount.';
+        response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
     } else {
         response.errorMessage = '';
         response.shouldDisplay = false;

@@ -37,10 +37,10 @@ export const API_VERSIONS = {
 };
 
 const NETWORK_VARIABLES =  {
-        [`${NETWORKS.GOERLI}_${API_VERSIONS.V3}`]: {
+        [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: {
             logo: 'dark',
-            activeLabel: 'Goerli',
-            optionLabel: 'Goerli Testnet',
+            activeLabel: 'Ethereum',
+            optionLabel: 'Ethereum Mainnet',
     },
         [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: {
             logo: 'light',

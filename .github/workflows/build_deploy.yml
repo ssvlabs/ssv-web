@@ -14,6 +14,47 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    env:
+      STAGE_SSV_NETWORKS: >
+        [
+          {
+            "networkId": 5,
+            "apiVersion": "v4",
+            "apiNetwork": "prater",
+            "api": "https://api.stage.ssv.network/api",
+            "explorerUrl": "https://explorer.stage.ssv.network",
+            "googleTagSecret": "${{ secrets.STAGE_GOOGLE_TAG_SECRET }}",
+            "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
+            "setterContractAddress": "${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
+            "getterContractAddress": "${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
+          }
+        ]
+      PROD_SSV_NETWORKS: >
+        [
+          {
+            "networkId": 5,
+            "apiVersion": "v3",
+            "apiNetwork": "prater",
+            "api": "https://api.ssv.network/api",
+            "explorerUrl": "https://explorer-v3.ssv.network",
+            "googleTagSecret": "${{ secrets.PROD_GOOGLE_TAG_SECRET }}",
+            "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
+            "setterContractAddress": "${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V3 }}",
+            "getterContractAddress": "${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V3 }}"
+          },
+          {
+            "networkId": 5,
+            "apiVersion": "v4",
+            "apiNetwork": "prater",
+            "api": "https://api.ssv.network/api",
+            "explorerUrl": "https://beta.explorer.ssv.network",
+            "googleTagSecret": "${{ secrets.PROD_GOOGLE_TAG_SECRET }}",
+            "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
+            "setterContractAddress": "${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
+            "getterContractAddress": "${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
+          }
+        ]
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -32,69 +73,18 @@ jobs:
       - name: Run test
         run: yarn test
 
-      - name: Build stage networks env
-        if: github.ref == 'refs/heads/stage'
-        run: echo "Build stage networks env"
-        env:
-          BLOCKNATIVE_KEY: &blocknative_key "${{ secrets.BLOCKNATIVE_KEY }}"
-          LINK_SSV_DEV_DOCS: &link_ssv_dev_docs "${{ secrets.LINK_SSV_DEV_DOCS }}"
-          # TODO: create _V4 secrets
-          SSV_NETWORKS: &ssv_networks |
-            [
-              {
-                "networkId": 5,
-                "apiVersion": "v4",
-                "apiNetwork": "prater",
-                "api": "https://api.stage.ssv.network/api",
-                "explorerUrl": "https://explorer.stage.ssv.network",
-                "googleTagSecret": "${{ secrets.STAGE_GOOGLE_TAG_SECRET }}",
-                "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
-                "setterContractAddress": "${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
-                "getterContractAddress": "${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
-              }
-            ]
-
-      - name: Build prod networks env
-        if: github.ref == 'refs/heads/main'
-        run: echo "Build prod networks env"
-        env:
-          # TODO: create _V3, _V4 secrets
-          SSV_NETWORKS: &ssv_networks |
-            [
-              {
-                "networkId": 5,
-                "apiVersion": "v3",
-                "apiNetwork": "prater",
-                "api": "https://api.ssv.network/api",
-                "explorerUrl": "https://explorer-v3.ssv.network",
-                "googleTagSecret": "${{ secrets.PROD_GOOGLE_TAG_SECRET }}",
-                "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
-                "setterContractAddress": "${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V3 }}",
-                "getterContractAddress": "${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V3 }}"
-              },
-              {
-                "networkId": 5,
-                "apiVersion": "v4",
-                "apiNetwork": "prater",
-                "api": "https://api.ssv.network/api",
-                "explorerUrl": "https://beta.explorer.ssv.network",
-                "googleTagSecret": "${{ secrets.PROD_GOOGLE_TAG_SECRET }}",
-                "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
-                "setterContractAddress": "${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
-                "getterContractAddress": "${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
-              }
-            ]
-
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >
-          SSV_NETWORKS=$SSV_NETWORKS
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
           BLOX_INFRA_API="$BLOX_INFRA_API" 
           DISTRIBUTION_CONTRACT_ADDRESS="$DISTRIBUTION_CONTRACT_ADDRESS" 
           yarn build
         env:
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 
@@ -115,12 +105,14 @@ jobs:
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/main'
         run: >
-          SSV_NETWORKS=$SSV_NETWORKS
+          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
           BLOX_INFRA_API="$BLOX_INFRA_API"  
           yarn build
         env:
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           BLOX_INFRA_API: "https://api.bloxstaking.com"
 
       - name: Deploy prod webapp

@@ -5,6 +5,9 @@
     window.dataLayer = window.dataLayer || [];
   </script>
   <script>
+    import {getCurrentNetwork} from "../src/lib/utils/envHelper";
+    import {GOOGLE_TAG_MANAGER_URL} from "../src/GTMFrame";
+
     (function (w, d, s, l, i) {
       w[l] = w[l] || [];
       w[l].push({
@@ -15,9 +18,9 @@
         j = d.createElement(s), dl = l !== 'dataLayer' ? '&l=' + l : '';
       j.async = true;
       j.src =
-        "%REACT_APP_GOOGLE_TAG_URL%" + i + dl;
+              GOOGLE_TAG_MANAGER_URL + i + dl;
       f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', "%REACT_APP_GOOGLE_TAG_SECRET%");
+    })(window, document, 'script', 'dataLayer', getCurrentNetwork().googleTagSecret);
   </script>
   <meta http-equiv="Cache-Control" content="max-age=0">
   <meta http-equiv="Cache-Control" content="no-cache">
@@ -102,10 +105,5 @@
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root"></div>
 <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
-<noscript>
-  <iframe height="0"
-          src='%REACT_APP_GOOGLE_TAG_URL%%REACT_APP_GOOGLE_TAG_SECRET%' style="display:none;visibility:hidden"
-          width="0"></iframe>
-</noscript>
 </body>
 </html>

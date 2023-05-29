@@ -32,26 +32,26 @@ jobs:
       - name: Run test
         run: yarn test
 
-      - name: Build stage networks env
-        if: github.ref == 'refs/heads/stage'
-        env:
-          BLOCKNATIVE_KEY: &blocknative_key "${{ secrets.BLOCKNATIVE_KEY }}"
-          LINK_SSV_DEV_DOCS: &link_ssv_dev_docs "${{ secrets.LINK_SSV_DEV_DOCS }}"
-          # TODO: create _V4 secrets
-          SSV_NETWORKS: &ssv_networks |
-            [
-              {
-                "networkId": 5,
-                "apiVersion": "v4",
-                "apiNetwork": "prater",
-                "api": "https://api.stage.ssv.network/api",
-                "explorerUrl": "https://explorer.stage.ssv.network",
-                "googleTagSecret": "${{ secrets.STAGE_GOOGLE_TAG_SECRET }}",
-                "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
-                "setterContractAddress": "${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
-                "getterContractAddress": "${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
-              }
-            ]
+#      - name: Build stage networks env
+#        if: github.ref == 'refs/heads/stage'
+#        env:
+#          BLOCKNATIVE_KEY: &blocknative_key "${{ secrets.BLOCKNATIVE_KEY }}"
+#          LINK_SSV_DEV_DOCS: &link_ssv_dev_docs "${{ secrets.LINK_SSV_DEV_DOCS }}"
+#          # TODO: create _V4 secrets
+#          SSV_NETWORKS: &ssv_networks |
+#            [
+#              {
+#                "networkId": 5,
+#                "apiVersion": "v4",
+#                "apiNetwork": "prater",
+#                "api": "https://api.stage.ssv.network/api",
+#                "explorerUrl": "https://explorer.stage.ssv.network",
+#                "googleTagSecret": "${{ secrets.STAGE_GOOGLE_TAG_SECRET }}",
+#                "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
+#                "setterContractAddress": "${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
+#                "getterContractAddress": "${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
+#              }
+#            ]
 
       - name: Build prod networks env
         if: github.ref == 'refs/heads/main'
@@ -95,6 +95,20 @@ jobs:
         env:
           BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
+          SSV_NETWORKS: &ssv_networks |
+            [
+              {
+                "networkId": 5,
+                "apiVersion": "v4",
+                "apiNetwork": "prater",
+                "api": "https://api.stage.ssv.network/api",
+                "explorerUrl": "https://explorer.stage.ssv.network",
+                "googleTagSecret": "${{ secrets.STAGE_GOOGLE_TAG_SECRET }}",
+                "tokenAddress": "0x6471F70b932390f527c6403773D082A0Db8e8A9F",
+                "setterContractAddress": "${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}",
+                "getterContractAddress": "${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}"
+              }
+            ]
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'

@@ -105,12 +105,7 @@ const UpdateFee = () => {
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    if (value !== '') {
-      validateFeeUpdate(operator.fee, value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
-    } else {
-      setError({ shouldDisplay: false, errorMessage: '' });
-      setNextIsDisabled(true);
-    }
+    validateFeeUpdate(Number(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
   };
 
   const onNextHandler = () => {

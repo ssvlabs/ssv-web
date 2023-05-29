@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
@@ -8,10 +8,12 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import OperatorDetails
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import UpdateFeeState
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
+import OperatorDetails
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import NotificationPopUp
+  from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/NotificationPopUp';
 
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
@@ -19,10 +21,14 @@ const OperatorBox = ({ operator }: { operator: any }) => {
   const isDeleted = operator.is_deleted;
   const classes = useStyles({ isDeleted });
   const walletStore: WalletStore = stores.Wallet;
+  const [showPopUp, setShowPopUp] = useState(false);
+  const setShowPopUpHandler = () => showPopUp ? setShowPopUp(false) : setShowPopUp(true);
+
   if (operator === null) return <Grid item className={classes.OperatorBox}/>;
 
   return (
       <Grid item className={classes.OperatorBox}>
+        {showPopUp && <NotificationPopUp closePopUp={() => setShowPopUp(false)} />}
         <UpdateFeeState />
         <Grid className={classes.FirstSectionOperatorBox}>
           <OperatorDetails operator={operator}/>
@@ -39,7 +45,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
             <Grid item>30D Perform.</Grid>
             <Grid className={classes.YearlyFeeWrapper}>
               <Grid item>Yearly Fee</Grid>
-                <Grid className={classes.UpdateFeeIndicator}/>
+                <Grid className={classes.UpdateFeeIndicator} onClick={setShowPopUpHandler}/>
               </Grid>
           </Grid>
           <Grid item container className={classes.ColumnWrapper}>
@@ -49,6 +55,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
                   className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV`}</Grid>
           </Grid>
         </Grid>
+
       </Grid>
   );
 };

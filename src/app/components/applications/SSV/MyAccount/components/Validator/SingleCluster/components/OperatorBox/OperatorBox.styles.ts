@@ -44,4 +44,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: '50%',
     backgroundColor: theme.colors.primaryBlue,
   },
+  PopUpWrapper: {
+    top: 190,
+    left: 210,
+    width: 610,
+    height: 691,
+    zIndex: '99999',
+    borderRadius: 16,
+    position:  'absolute',
+    backgroundColor: '#fdfefe',
+    boxShadow: '0 4px 27px 0 rgba(0, 0, 0, 0.1)',
+  },
 }));

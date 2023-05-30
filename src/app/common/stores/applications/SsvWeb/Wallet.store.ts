@@ -8,10 +8,10 @@ import ApiParams from '~lib/api/ApiParams';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { changeCurrentNetwork, getCurrentNetwork } from '~lib/utils/envHelper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -241,6 +241,7 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async onNetworkChangeCallback(networkId: any) {
+    changeCurrentNetwork(Number(networkId));
     this.networkId = networkId;
     if (networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
       this.wrongNetwork = true;

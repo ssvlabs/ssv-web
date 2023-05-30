@@ -37,10 +37,10 @@ export const API_VERSIONS = {
 };
 
 const NETWORK_VARIABLES =  {
-        [`${NETWORKS.GOERLI}_${API_VERSIONS.V3}`]: {
+        [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: {
             logo: 'dark',
-            activeLabel: 'Goerli',
-            optionLabel: 'Goerli Testnet',
+            activeLabel: 'Ethereum',
+            optionLabel: 'Ethereum Mainnet',
     },
         [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: {
             logo: 'light',
@@ -54,7 +54,6 @@ const data = process.env.REACT_APP_SSV_NETWORKS;
 const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: number, apiVersion: string): NetworkDataType => ({ ...network, ...NETWORK_VARIABLES[`${networkId}_${apiVersion}`], api: `${network.api}/${network.apiVersion}/${network.apiNetwork}` });
 
 export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
-console.log(NETWORKS_DATA);
 
 const _envs = {
   [NETWORKS.GOERLI]: {
@@ -76,8 +75,27 @@ export const ENV = (): IENVS => {
   return _envs[parseInt(String(finalNetworkId), 10)];
 };
 
-export const changeCurrentNetwork = (networkId: number, version: string) => {
-    const networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => network.networkId === networkId && network.apiVersion === version);
+export const switchNetwork = (networkId: number, version: string) => {
+    window.localStorage.setItem('SWITCHED_BY_TOGGLE', 'true');
+    changeCurrentNetwork(networkId, version, true);
+};
+
+export const changeCurrentNetwork = (networkId: number, version?: string, skipToggleFlag?: boolean) => {
+    const toggleFlag = window.localStorage.getItem('SWITCHED_BY_TOGGLE');
+    const parsedToggleFlag = toggleFlag ? JSON.parse(toggleFlag) : false;
+    if (parsedToggleFlag && !skipToggleFlag) {
+        window.localStorage.setItem('SWITCHED_BY_TOGGLE', 'false');
+        return;
+    }
+    const value = window.localStorage.getItem('current_network');
+    const networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => {
+        if (version) {
+            return network.networkId === networkId && network.apiVersion === version;
+        } else {
+            return network.networkId === networkId;
+        }
+    });
+    if (Number(value) === networkIndex ) return;
     window.localStorage.setItem('current_network', networkIndex);
     window.location.reload();
 };

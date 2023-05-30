@@ -242,7 +242,6 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async onNetworkChangeCallback(networkId: any) {
     changeCurrentNetwork(Number(networkId));
-    console.log(networkId);
     this.networkId = networkId;
     if (networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
       this.wrongNetwork = true;

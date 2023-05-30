@@ -55,7 +55,6 @@ const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: num
 
 export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
 
-
 const _envs = {
   [NETWORKS.GOERLI]: {
       NETWORK: 'prater',
@@ -85,7 +84,6 @@ export const changeCurrentNetwork = (networkId: number, version?: string, skipTo
     const toggleFlag = window.localStorage.getItem('SWITCHED_BY_TOGGLE');
     const parsedToggleFlag = toggleFlag ? JSON.parse(toggleFlag) : false;
     if (parsedToggleFlag && !skipToggleFlag) {
-        console.log(networkId);
         window.localStorage.setItem('SWITCHED_BY_TOGGLE', 'false');
         return;
     }

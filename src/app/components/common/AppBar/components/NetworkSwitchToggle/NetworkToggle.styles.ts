@@ -23,6 +23,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontSize: 16,
         fontWeight: 600,
         lineHeight: 1.25,
+        color: theme.colors.gray80,
     },
     OptionsWrapper: {
         zIndex: 999,

@@ -1,19 +1,19 @@
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
 import { useStyles } from '../ImportFile.styles';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 
 type ValidationError = {
   id: number,

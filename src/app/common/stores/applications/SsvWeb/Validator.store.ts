@@ -9,7 +9,7 @@ import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';

@@ -6,9 +6,9 @@ import { ENV } from '~lib/utils/envHelper';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import {
   useStyles,

@@ -1,14 +1,14 @@
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton';
-import { useStyles } from './AppBar.styles';
 
 const SsvAppBar = () => {
   const stores = useStores();

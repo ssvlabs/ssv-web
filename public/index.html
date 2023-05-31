@@ -4,21 +4,6 @@
   <script>
     window.dataLayer = window.dataLayer || [];
   </script>
-  <script>
-    (function (w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l !== 'dataLayer' ? '&l=' + l : '';
-      j.async = true;
-      j.src =
-        "%REACT_APP_GOOGLE_TAG_URL%" + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', "%REACT_APP_GOOGLE_TAG_SECRET%");
-  </script>
   <meta http-equiv="Cache-Control" content="max-age=0">
   <meta http-equiv="Cache-Control" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -102,10 +87,5 @@
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root"></div>
 <iframe id="self-frame" style="border: 0; height: 100vh; width: 100%; display: none;"></iframe>
-<noscript>
-  <iframe height="0"
-          src='%REACT_APP_GOOGLE_TAG_URL%%REACT_APP_GOOGLE_TAG_SECRET%' style="display:none;visibility:hidden"
-          width="0"></iframe>
-</noscript>
 </body>
 </html>

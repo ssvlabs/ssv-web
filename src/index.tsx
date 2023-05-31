@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from '~app/App';
 import { rootStore } from '~root/stores';
 import * as serviceWorker from '~root/serviceWorker';
+import GTMFrame from '~lib/analytics/GoogleTag/components/GTMFrame';
 
 const container = document.getElementById('root');
 // @ts-ignore
@@ -13,6 +14,7 @@ root.render(
   <Provider stores={rootStore}>
     <BrowserRouter>
       <App />
+      <GTMFrame />
     </BrowserRouter>
   </Provider>,
 );

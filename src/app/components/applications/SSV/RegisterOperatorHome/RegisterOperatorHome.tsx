@@ -3,9 +3,9 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/RegisterOperatorHome/RegisterOperatorHome.styles';
 

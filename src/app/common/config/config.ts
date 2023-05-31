@@ -126,6 +126,7 @@ const config = {
   },
   links: {
     SSV_API_ENDPOINT: api,
+    EXPLORER_URL: explorerUrl,
     ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
@@ -137,7 +138,6 @@ const config = {
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
-    EXPLORER_URL: explorerUrl,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',

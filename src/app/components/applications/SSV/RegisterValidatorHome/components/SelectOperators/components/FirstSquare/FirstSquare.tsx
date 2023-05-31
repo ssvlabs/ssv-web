@@ -17,19 +17,19 @@ import ToolTip from '~app/components/common/ToolTip';
 import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-import StyledCell
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
+import StyledCell
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 

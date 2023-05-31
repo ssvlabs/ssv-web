@@ -15,7 +15,7 @@ const NetworkOption = ({ network }: { network: NetworkDataType }) => {
     return (
         <Grid container item className={classes.Button} onClick={changeNetworkHandler}>
             <Grid className={classes.NetworkIcon} />
-            <Typography>{optionLabel}</Typography>
+            <Typography className={classes.NetworkLabel}>{optionLabel}</Typography>
         </Grid>
     );
 };

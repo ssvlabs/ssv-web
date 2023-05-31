@@ -237,7 +237,6 @@ const SingleOperator = () => {
               <BorderScreen
                   withoutNavigation
                   header={'Balance'}
-                  SideHeader={UpdateFeeState}
                   sectionClass={classes.AnnualSection}
                   body={[
                     <Grid container item>

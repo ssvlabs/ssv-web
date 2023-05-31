@@ -4,24 +4,6 @@
   <script>
     window.dataLayer = window.dataLayer || [];
   </script>
-  <script>
-    import {getCurrentNetwork} from "../src/lib/utils/envHelper";
-    import {GOOGLE_TAG_MANAGER_URL} from "../src/lib/analytics/GoogleTag/components/GTMFrame";
-
-    (function (w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l !== 'dataLayer' ? '&l=' + l : '';
-      j.async = true;
-      j.src =
-              GOOGLE_TAG_MANAGER_URL + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', getCurrentNetwork().googleTagSecret);
-  </script>
   <meta http-equiv="Cache-Control" content="max-age=0">
   <meta http-equiv="Cache-Control" content="no-cache">
   <meta http-equiv="Expires" content="0">

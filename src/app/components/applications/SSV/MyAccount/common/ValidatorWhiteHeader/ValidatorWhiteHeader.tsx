@@ -6,8 +6,8 @@ import config from '~app/common/config';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {

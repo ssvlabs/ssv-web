@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/components/common/AppBar/AppBar';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 const SsvAppBar = () => {

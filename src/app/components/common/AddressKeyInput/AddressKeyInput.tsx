@@ -3,8 +3,8 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/AddressKeyInput/AddressKeyInput.styles';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 

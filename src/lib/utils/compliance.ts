@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '~app/common/config';
 
 const DEV_MODE_ON = 1;
-const DEVELOPER_MODE_FLAG = 'devModeFlag';
+const DEV_IGNORE_COUNTRY_RESTRICTION = 'DEV_IGNORE_COUNTRY_RESTRICTION';
 let restrictedCountries: any = null;
 /**
  * Get the list of restricted countries from blox.
@@ -92,7 +92,7 @@ export const getLocalStorageFlagValue = () => {
   if (!window?.localStorage) {
     return null;
   }
-  const value = Number(window.localStorage.getItem(DEVELOPER_MODE_FLAG));
+  const value = Number(window.localStorage.getItem(DEV_IGNORE_COUNTRY_RESTRICTION));
   return value === DEV_MODE_ON;
 };
 
@@ -102,12 +102,12 @@ export const getLocalStorageFlagValue = () => {
 export const checkUserCountryRestriction = async (): Promise<any> => {
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
-  const devMode = getLocalStorageFlagValue();
+  const restrictIgnoreFlag = getLocalStorageFlagValue();
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
   for (const location of userLocation) {
     for (const restrictedLocation of restrictedLocations) {
-      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !devMode) {
+      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
         return { restricted: true, userGeo: userLocation[0] || '' };
       }
     }

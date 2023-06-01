@@ -1,20 +1,20 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import { useStyles } from './ProductQuestions.styles';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/ProductQuestions/ProductQuestions.styles';
 
 const checkBoxTypes: any = {
   1: 'fees',

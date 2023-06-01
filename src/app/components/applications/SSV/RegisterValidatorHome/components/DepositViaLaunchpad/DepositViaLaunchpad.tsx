@@ -2,13 +2,13 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
+import { ENV } from '~lib/utils/envHelper';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import config, { translations } from '~app/common/config';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import {
   useStyles,
@@ -25,7 +25,7 @@ const DepositViaLaunchpad = () => {
       action: 'click',
       label: 'Visit Ethereum Launchpad',
     });
-    window.open(config.links.LAUNCHPAD_LINK);
+    window.open(ENV().LAUNCHPAD_URL);
   };
 
   return (
@@ -44,7 +44,7 @@ const DepositViaLaunchpad = () => {
           <Grid item className={classes.Text} xs={12}>
             You can keep track on the status of your validator activation on:
             <Link
-              href={`${getBaseBeaconchaUrl()}/validator/${validatorStore.keyStorePublicKey}`}
+              href={`${ENV().BEACONCHA_URL}/validator/${validatorStore.keyStorePublicKey}`}
               target="_blank"
               onClick={() => {
                 GoogleTagManager.getInstance().sendEvent({
@@ -55,7 +55,7 @@ const DepositViaLaunchpad = () => {
               }}
             >
               <Typography noWrap>
-                {`${getBaseBeaconchaUrl()}/validator/${validatorStore.keyStorePublicKey}`}
+                {`${ENV().BEACONCHA_URL}/validator/${validatorStore.keyStorePublicKey}`}
               </Typography>
             </Link>
           </Grid>

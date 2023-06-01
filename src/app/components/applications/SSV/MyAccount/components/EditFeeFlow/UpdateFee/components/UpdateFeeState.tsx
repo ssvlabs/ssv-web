@@ -24,7 +24,6 @@ const UpdateFeeState = () => {
   const classes = useStyles({ step: processState });
 
   useEffect(() => {
-    return;
     if (!operatorStore.processOperatorId) {
       navigate(applicationStore.strategyRedirect);
       return;
@@ -51,7 +50,7 @@ const UpdateFeeState = () => {
         setProcessState(PROCESS_STATE_WAITING);
       } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
         // @ts-ignore
-        const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+        const savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
         if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
           setProcessState(PROCESS_STATE_START);
           return;
@@ -111,10 +110,11 @@ const UpdateFeeState = () => {
     }
     // @ts-ignore
     const expiredOn = new Date(operatorStore.operatorApprovalEndTime * 1000);
-    const expiredDay = expiredOn.getDay();
-    const expiredMonth = expiredOn.getMonth();
+    const expiredDay = expiredOn.getDate();
+    const expiredMonth = expiredOn.getMonth() + 1;
     const expiredYear = expiredOn.getFullYear();
-    text = `on ${`${expiredDay}.${expiredMonth}.${expiredYear}`}`;
+
+    text = `on ${expiredDay}.${expiredMonth}.${expiredYear}`;
     return (
       <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
         {text}

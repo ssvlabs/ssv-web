@@ -1,14 +1,13 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { useStyles } from '../../NewWhiteWrapper.styles';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
-// import LinkText from '~app/components/common/LinkText/LinkText';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
@@ -67,7 +66,7 @@ const OperatorsFlow = (props: Props) => {
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');  };
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');  };
 
   const secondaryFlowDom = () => {
     return (

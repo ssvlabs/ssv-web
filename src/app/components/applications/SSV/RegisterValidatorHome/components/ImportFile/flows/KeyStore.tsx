@@ -1,24 +1,24 @@
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
-import { useStyles } from '../ImportFile.styles';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/components/common/InputLabel';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -58,7 +58,7 @@ const KeyStoreFlow = () => {
   };
 
   const isDeposited = async (): Promise<boolean> => {
-    const beaconChaValidatorUrl = `${getBaseBeaconchaUrl()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
+    const beaconChaValidatorUrl = `${ENV().BEACONCHA_URL}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
     try {
       const response: any = (await axios.get(beaconChaValidatorUrl, { timeout: 5000 })).data;
       const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;

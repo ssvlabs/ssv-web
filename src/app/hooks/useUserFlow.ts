@@ -143,11 +143,11 @@ const dispatchUserFlow = (
 };
 
 const setUserFlow = (userFlow: string) => {
-    localStorage.setItem('userFlow', userFlow);
+    window.localStorage.setItem('userFlow', userFlow);
 };
 
 const getUserFlow = () => {
-    return localStorage.getItem('userFlow');
+    return window.localStorage.getItem('userFlow');
 };
 
 const useUserFlow = () => {

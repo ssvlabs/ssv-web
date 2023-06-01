@@ -101,7 +101,7 @@ class ApplicationStore extends BaseStore implements Application {
 
   get localStorage() {
     try {
-      return localStorage;
+      return window.localStorage;
     } catch (e) {
       return {
         getItem(key: string): string | null {

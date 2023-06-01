@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -16,7 +16,6 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   const stores = useStores();
   const classes = useStyles({});
   const operatorStore: OperatorStore = stores.Operator;
-  const [registerButtonEnabled] = useState(false);
   const applicationStore: ApplicationStore = stores.Application;
 
   const changeOperatorFee = async () => {
@@ -25,10 +24,10 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore
-      let savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
+      let savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
       if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
         savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
-        localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
+        window.localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
       }
     }
     getCurrentState();
@@ -36,6 +35,12 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   };
 
   const currentDate = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
 
   const secondsToDhms = (seconds: any) => {
     // eslint-disable-next-line no-param-reassign
@@ -68,8 +73,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
               <ReactStepper
                   step={StepperSteps.DECLARE_FEE}
                   subTextAlign={'left'}
-                  registerButtonEnabled={registerButtonEnabled}
-                  subText={currentDate.toLocaleTimeString('en-us').replace('PM', '').replace('AM', '')}
+                  subText={currentDate.toLocaleString('en-US', options)}
               />
               <Grid item container className={classes.TextWrapper}>
                 <Grid item>
@@ -84,7 +88,6 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
               </Grid>
               <Grid item container className={classes.InputWrapper}>
                 <Grid item container>
-                  {/*<Grid item className={classes.InputText}>*/}
                     <ChangeFeeDisplayValues   currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
                 </Grid>
                 <Grid item container style={{ marginBottom: 40 }}>

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import config from '~app/common/config';
 
+const DEV_MODE_ON = 1;
+const DEV_IGNORE_COUNTRY_RESTRICTION = 'DEV_IGNORE_COUNTRY_RESTRICTION';
 let restrictedCountries: any = null;
 /**
  * Get the list of restricted countries from blox.
@@ -68,7 +70,6 @@ const getCurrentLocation = async (): Promise<string[]> => {
       },
     },
   ];
-
   for (let i = 0; i < countryGetters.length; i += 1) {
     const countryGetter = countryGetters[i];
     try {
@@ -85,6 +86,14 @@ const getCurrentLocation = async (): Promise<string[]> => {
     }
   }
   return [];
+
+};
+export const getLocalStorageFlagValue = () => {
+  if (!window?.localStorage) {
+    return null;
+  }
+  const value = Number(window.localStorage.getItem(DEV_IGNORE_COUNTRY_RESTRICTION));
+  return value === DEV_MODE_ON;
 };
 
 /**
@@ -93,17 +102,12 @@ const getCurrentLocation = async (): Promise<string[]> => {
 export const checkUserCountryRestriction = async (): Promise<any> => {
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
+  const restrictIgnoreFlag = getLocalStorageFlagValue();
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
-  if (config.DEBUG || window.location.host.indexOf('stage.') !== -1) {
-    console.debug('Skipping location restriction functionality due to stage environment.');
-    return { restricted: false, userGeo: 'Development' };
-  }
-  // eslint-disable-next-line no-restricted-syntax
   for (const location of userLocation) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const restrictedLocation of restrictedLocations) {
-      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1) {
+      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
         return { restricted: true, userGeo: userLocation[0] || '' };
       }
     }

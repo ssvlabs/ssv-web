@@ -29,7 +29,7 @@ class ApplicationStore extends BaseStore implements Application {
   transactionPendingPopUp: boolean = false;
   appTitle: string = 'SSV Network Testnet';
   strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
-  locationRestrictionEnabled: boolean = false;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();
@@ -134,7 +134,7 @@ class ApplicationStore extends BaseStore implements Application {
 
   get localStorage() {
     try {
-      return localStorage;
+      return window.localStorage;
     } catch (e) {
       return {
         getItem(key: string): string | null {

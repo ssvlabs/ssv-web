@@ -44,7 +44,7 @@ const ConversionInput = ({ value, onChange, error, placeholder, setCurrency } : 
                 </Grid>}
             </Grid>
             <TextInput value={value}
-                       extendClass={classes.FeeInput}
+                       extendClass={`${classes.FeeInput} ${error?.shouldDisplay && classes.errorInputBorder}`}
                        sideText={currentCurrency}
                        placeHolder={placeholder}
                        onChangeCallback={onChange}

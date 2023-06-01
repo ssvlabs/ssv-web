@@ -2,6 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { useStores } from '~app/hooks/useStores';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 type StepperProps = {
@@ -12,7 +14,19 @@ type StepperProps = {
 };
 
 const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: StepperProps) => {
+    const stores = useStores();
+    const operatorStore: OperatorStore = stores.Operator;
     const classes = useStyles({ step, registerButtonEnabled, subTextAlign });
+    // @ts-ignore
+    const time = (operatorStore.operatorApprovalBeginTime - operatorStore?.declaredOperatorFeePeriod) * 1000;
+    const declareFeeDate = new Date(time);
+    const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+        minute: 'numeric',
+    };
+
 
     const getStepNumber = (currentStep: number, currentPosition: number) => currentStep === currentPosition - 1 || currentStep >= currentPosition ? '' : currentPosition;
 
@@ -32,7 +46,7 @@ const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: St
             Declare Fee
             {registerButtonEnabled && (
               <Typography className={classes.ProgressBarText}>
-                {subText}
+                {step === 0 ? subText : declareFeeDate.toLocaleString('en-US', options)}
               </Typography>
               )}
           </Grid>

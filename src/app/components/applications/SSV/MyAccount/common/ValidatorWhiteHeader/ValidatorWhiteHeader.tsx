@@ -3,11 +3,11 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
-import { getBaseBeaconchaUrl } from '~lib/utils/beaconcha';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
@@ -27,7 +27,7 @@ type Props = {
 const ValidatorWhiteHeader = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
-  const beaconchaBaseUrl = getBaseBeaconchaUrl();
+  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleCluster = processStore.getProcess;
@@ -45,14 +45,14 @@ const ValidatorWhiteHeader = (props: Props) => {
         action: 'click',
         label: 'operator',
       });
-      window.open(`${config.links.EXPLORER_URL}/operators/${props.address}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+      window.open(`${config.links.EXPLORER_URL}/operators/${props.address}`, '_blank');
     } else {
       GoogleTagManager.getInstance().sendEvent({
         category: 'explorer_link',
         action: 'click',
         label: 'validator',
       });
-      window.open(`${config.links.EXPLORER_URL}/validators/${validator.public_key.replace('0x', '')}/?version=${config.links.EXPLORER_VERSION}&network=${config.links.EXPLORER_NETWORK}`, '_blank');
+      window.open(`${config.links.EXPLORER_URL}/validators/${validator.public_key.replace('0x', '')}`, '_blank');
     }
   };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Typography } from '@mui/material';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import Stepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import UpdateFeeProcesses
     from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/UpdateFeeProcesses';
 import {
@@ -21,9 +22,14 @@ const NotificationPopUp = ({ closePopUp }: NotificationPopUpProps) => {
                   <Grid className={classes.ClosePopUpButton} onClick={() => closePopUp()}/>
             </Grid>
             <Typography className={classes.PopUpTitle}>Lucca has started a fee change</Typography>
-            <ChangeFeeDisplayValues   currentCurrency={'SSV'} newFee={11} oldFee={10}/>
+            <Grid item container className={classes.StatusWrapper}>
+                <ChangeFeeDisplayValues currentCurrency={'SSV'} newFee={11} oldFee={10}/>
+            </Grid>
             <Grid className={classes.Line}/>
+            {/*<Grid item container className={classes.StepperWrapper}>*/}
+            {/*</Grid>*/}
             <Typography className={classes.PopUpTitle}>Update Fee Process Overview</Typography>
+            <Stepper step={3} subTextAlign={''}/>
             <UpdateFeeProcesses />
             <LinkText text={'Read documentation'} link={'asdas'} />
         </Grid>

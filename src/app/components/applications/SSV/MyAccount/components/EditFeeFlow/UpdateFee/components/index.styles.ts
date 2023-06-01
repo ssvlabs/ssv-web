@@ -70,7 +70,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         },
     },
     ProgressBarWrapper: {
-        gap: 4,
+        // gap: 4,
         display: 'flex',
         alignItems: 'center',
     },
@@ -117,8 +117,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
         width: 24,
         height: 24,
         flexGrow: 1,
+        fontSize: 16,
+        display: 'flex',
+        fontWeight: 500,
         borderRadius: 16,
-
+        alignText: 'center',
+        justifyContent: 'center',
         // first circle
         '&:nth-of-type(1)': {
             border: (props: any) => {

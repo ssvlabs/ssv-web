@@ -38,6 +38,26 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 800,
         lineHeight: 1.8,
     },
+    StepperWrapper: {
+        // width: '100%',
+        height: '100%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '50%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+    },
+    StatusWrapper: {
+        width: '100%',
+        height: 150,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        // alignItems: 'center',
+        // backgroundColor: 'black',
+    },
     Line: {
         height: 1,
         width: '100%',
@@ -59,13 +79,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
         paddingRight: 16,
         flexDirection: 'column',
         alignItems: 'flex-start',
-        justifyContent: 'space-around',
+        // justifyContent: 'space-around',
     },
     Step: {
         fontSize: 14,
         fontWeight: 500,
         borderRadius: 4,
         lineHeight: 1.62,
+        marginBottom: 20,
         padding: '1px 6px',
         color: (props: any) => {
             if (props.step === '1') {

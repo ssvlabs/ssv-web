@@ -11,7 +11,6 @@ type ProcessElementProps = {
 };
 
 const ProcessElement = ({ step, title, text }: ProcessElementProps) => {
-    console.log(step);
     const classes = useStyles({ step });
 
     return (

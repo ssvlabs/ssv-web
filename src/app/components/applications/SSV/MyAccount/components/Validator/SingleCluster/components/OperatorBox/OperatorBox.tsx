@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
@@ -8,8 +8,7 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import UpdateFeeState
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import NotificationPopUp
@@ -17,19 +16,46 @@ import NotificationPopUp
 
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
   const isDeleted = operator.is_deleted;
-  const classes = useStyles({ isDeleted });
+  const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
-  const [showPopUp, setShowPopUp] = useState(false);
+  const operatorStore: OperatorStore = stores.Operator;
+  const [newFee, setNewFee] = useState<string | null>(null);
+  const [showPopUp, setShowPopUp] = useState<boolean>(false);
+  const [currentStep, setCurrentStep] = useState<null | number>(null);
+  const [updateOperatorFee, setUpdateOperatorFee] = useState<boolean>(false);
   const setShowPopUpHandler = () => showPopUp ? setShowPopUp(false) : setShowPopUp(true);
+
+  useEffect(() => {
+    getCurrentState();
+  }, []);
+
+  const getCurrentState = async () => {
+
+    await operatorStore.syncOperatorFeeInfo(operator.id);
+    if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
+
+      const todayDate = new Date();
+      const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
+      const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
+      setNewFee(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee.toString()))));
+      const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
+      if (isInPendingState) {
+        setCurrentStep(2);
+        setUpdateOperatorFee(true);
+      } else if (startPendingStateTime > todayDate) {
+        setCurrentStep(1);
+        setUpdateOperatorFee(true);
+      }
+    }
+  };
+  const classes = useStyles({ isDeleted, updateOperatorFee });
 
   if (operator === null) return <Grid item className={classes.OperatorBox}/>;
 
   return (
       <Grid item className={classes.OperatorBox}>
-        {showPopUp && <NotificationPopUp closePopUp={() => setShowPopUp(false)} />}
-        <UpdateFeeState />
+        {showPopUp && currentStep && newFee && <NotificationPopUp operator={operator} currentStep={currentStep} newFee={newFee} closePopUp={() => setShowPopUp(false)} />}
         <Grid className={classes.FirstSectionOperatorBox}>
           <OperatorDetails operator={operator}/>
         </Grid>
@@ -44,9 +70,9 @@ const OperatorBox = ({ operator }: { operator: any }) => {
             </Grid>
             <Grid item>30D Perform.</Grid>
             <Grid className={classes.YearlyFeeWrapper}>
-              <Grid item>Yearly Fee</Grid>
-                <Grid className={classes.UpdateFeeIndicator} onClick={setShowPopUpHandler}/>
-              </Grid>
+              <Grid item onClick={setShowPopUpHandler}>Yearly Fee</Grid>
+              {updateOperatorFee && <Grid className={classes.UpdateFeeIndicator} onClick={setShowPopUpHandler}/>}
+            </Grid>
           </Grid>
           <Grid item container className={classes.ColumnWrapper}>
             <Status item={operator}/>
@@ -55,7 +81,6 @@ const OperatorBox = ({ operator }: { operator: any }) => {
                   className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV`}</Grid>
           </Grid>
         </Grid>
-
       </Grid>
   );
 };

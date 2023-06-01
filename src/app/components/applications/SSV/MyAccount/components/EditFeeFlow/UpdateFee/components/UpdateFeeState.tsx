@@ -15,7 +15,7 @@ const PROCESS_STATE_PENDING = 2;
 const PROCESS_STATE_SUCCESS = 3;
 const PROCESS_STATE_EXPIRED = 4;
 
-const UpdateFeeState = () => {
+const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   const stores = useStores();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
@@ -24,7 +24,7 @@ const UpdateFeeState = () => {
   const classes = useStyles({ step: processState });
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) {
+    if (!operatorStore.processOperatorId && !operatorId) {
       navigate(applicationStore.strategyRedirect);
       return;
     }
@@ -34,7 +34,7 @@ const UpdateFeeState = () => {
 
   const getState = async () => {
     // @ts-ignore
-    await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
+    await operatorStore.syncOperatorFeeInfo(operatorId || operatorStore.processOperatorId);
     if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
       const todayDate = new Date();
       const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);

@@ -18,7 +18,7 @@ const ProcessElement = ({ step, title, text }: ProcessElementProps) => {
             <Typography className={classes.Step}>
                {`${step}. ${title}`}
             </Typography>
-            <Typography>{text}</Typography>
+            <Typography className={classes.ProcessText}>{text}</Typography>
         </Grid>
     );
 };

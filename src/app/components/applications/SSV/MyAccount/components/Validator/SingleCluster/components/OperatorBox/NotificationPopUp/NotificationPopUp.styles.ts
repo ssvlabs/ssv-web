@@ -1,29 +1,27 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
-// import {
-//     StepperSteps,
-// } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     PopUpWrapper: {
         top: 190,
         left: 210,
         width: 610,
-        height: 691,
         zIndex: '99999',
         display: 'flex',
         borderRadius: 16,
         position:  'absolute',
         flexDirection: 'column',
-        backgroundColor: '#fdfefe',
-        justifyContent: 'space-around',
+        color: theme.colors.black,
         padding: '16px 16px 16px 16px',
+        backgroundColor: theme.colors.white,
         boxShadow: '0 4px 27px 0 rgba(0, 0, 0, 0.1)',
     },
     CloseButtonWrapper: {
         width: '100%',
         display: 'flex',
-        flexDirection: 'row-reverse',
+        marginBottom: 24,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     ClosePopUpButton: {
         width: 21,
@@ -37,32 +35,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontSize: 18,
         fontWeight: 800,
         lineHeight: 1.8,
-    },
-    StepperWrapper: {
-        // width: '100%',
-        height: '100%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        width: '50%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-    },
-    StatusWrapper: {
-        width: '100%',
-        height: 150,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        // alignItems: 'center',
-        // backgroundColor: 'black',
+        color: theme.colors.black,
     },
     Line: {
         height: 1,
         width: '100%',
-        backgroundColor: '#e6eaf7',
+        marginTop: 25,
+        marginBottom:   25,
         transform: 'rotate(-360deg)',
+        backgroundColor: theme.colors.gray20,
     },
     ProcessesWrapper: {
         width: '100%',
@@ -77,9 +58,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         paddingLeft: 16,
         paddingRight: 16,
+        marginBottom: 25,
         flexDirection: 'column',
         alignItems: 'flex-start',
-        // justifyContent: 'space-around',
+    },
+    ProcessText: {
+        marginBottom: 25,
+        color: theme.colors.black,
     },
     Step: {
         fontSize: 14,
@@ -89,6 +74,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: 20,
         padding: '1px 6px',
         color: (props: any) => {
+            if (theme.darkMode) {
+                return theme.colors.primaryBlue;
+            }
             if (props.step === '1') {
                 return theme.colors.gray60;
             }

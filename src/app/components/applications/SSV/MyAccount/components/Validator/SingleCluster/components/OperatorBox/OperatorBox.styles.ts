@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: 312,
     height: 188,
     borderRadius: 16,
-    border: `1px solid ${theme.colors.primaryBlue}`,
+    border: (props: any) => props.updateOperatorFee && `1px solid ${theme.colors.primaryBlue}`,
     backgroundColor: (props: any) => props.isDeleted ? theme.colors.squareScreenBackgroundDeleted : theme.colors.squareScreenBackground,
   },
   FirstSectionOperatorBox: {
@@ -36,6 +36,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    cursor: (props: any) => props.updateOperatorFee && 'pointer',
   },
   UpdateFeeIndicator: {
     width: 8,

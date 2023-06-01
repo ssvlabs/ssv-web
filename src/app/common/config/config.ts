@@ -133,6 +133,7 @@ const config = {
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
+    SSV_UPDATE_FEE_DOCS: 'https://docs.ssv.network/learn/operators/update-fee',
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',

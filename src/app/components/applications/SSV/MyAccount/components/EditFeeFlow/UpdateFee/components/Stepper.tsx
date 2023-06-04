@@ -3,11 +3,9 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
+import { UPDATE_FEE_STEPS } from '~lib/utils/updateFeeNotificationSteps';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import {
-    UPDATE_FEE_STEPS,
-} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/OperatorBox';
 
 type StepperProps = {
     step: number,

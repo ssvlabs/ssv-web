@@ -24,7 +24,6 @@ const UpdateFeeState = () => {
   const classes = useStyles({ step: processState });
 
   useEffect(() => {
-    return;
     if (!operatorStore.processOperatorId) {
       navigate(applicationStore.strategyRedirect);
       return;
@@ -111,10 +110,11 @@ const UpdateFeeState = () => {
     }
     // @ts-ignore
     const expiredOn = new Date(operatorStore.operatorApprovalEndTime * 1000);
-    const expiredDay = expiredOn.getDay();
-    const expiredMonth = expiredOn.getMonth();
+    const expiredDay = expiredOn.getDate();
+    const expiredMonth = expiredOn.getMonth() + 1;
     const expiredYear = expiredOn.getFullYear();
-    text = `on ${`${expiredDay}.${expiredMonth}.${expiredYear}`}`;
+
+    text = `on ${expiredDay}.${expiredMonth}.${expiredYear}`;
     return (
       <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
         {text}

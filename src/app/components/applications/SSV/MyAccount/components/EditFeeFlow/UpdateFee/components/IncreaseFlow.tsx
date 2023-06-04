@@ -76,8 +76,8 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
     };
 
     const cancelUpdateFee = async () => {
-         await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId as number);
-         setCurrentStep(IncreaseSteps.CANCEL);
+        const res = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId as number);
+        res && setCurrentStep(IncreaseSteps.CANCEL);
     };
 
     const components = {

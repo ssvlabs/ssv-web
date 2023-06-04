@@ -3,8 +3,10 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
+import ProcessStore  from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
@@ -15,6 +17,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();
     const navigate = useNavigate();
     const classes = useStyles({});
+    const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const [buttonText, setButtonText] = useState('Update Fee');
     const [updated, setUpdated] = useState(false);
@@ -24,6 +27,12 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         } else {
             await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
+            const operator = await Operator.getInstance().getOperator(operatorStore.processOperatorId);
+            const balance = await operatorStore.getOperatorBalance(operator.id);
+            processStore.setProcess({
+                processName: 'single_operator',
+                item: { ...operator, balance },
+            }, 1);
             setButtonText('Back To My Account');
             setUpdated(true);
         }

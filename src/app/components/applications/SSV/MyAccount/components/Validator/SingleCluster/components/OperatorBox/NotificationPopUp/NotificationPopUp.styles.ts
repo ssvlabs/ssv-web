@@ -1,5 +1,8 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
+import {
+    UPDATE_FEE_STEPS,
+} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/OperatorBox';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     PopUpWrapper: {
@@ -77,31 +80,31 @@ export const useStyles = makeStyles((theme: Theme) => ({
             if (theme.darkMode) {
                 return theme.colors.primaryBlue;
             }
-            if (props.step === '1') {
+            if (props.step === UPDATE_FEE_STEPS.DECLARE_FEE.toString()) {
                 return theme.colors.gray60;
             }
-            if (props.step === '2') {
+            if (props.step === UPDATE_FEE_STEPS.WAITING.toString()) {
                 return theme.colors.primaryBlue;
             }
-            if (props.step === '3') {
+            if (props.step === UPDATE_FEE_STEPS.PENDING.toString()) {
                 return theme.colors.white;
             }
-            if (props.step === '4') {
+            if (props.step === UPDATE_FEE_STEPS.EXECUTE.toString()) {
                 return theme.colors.white;
             }
             return theme.colors.primaryBlue;},
         backgroundColor: (props: any) => {
             if (theme.darkMode) return 'transparent';
-            if (props.step === '1') {
+            if (props.step === UPDATE_FEE_STEPS.DECLARE_FEE.toString()) {
                 return theme.colors.gray10;
             }
-            if (props.step === '2') {
+            if (props.step === UPDATE_FEE_STEPS.WAITING.toString()) {
                 return theme.colors.tint90;
             }
-            if (props.step === '3') {
+            if (props.step === UPDATE_FEE_STEPS.PENDING.toString()) {
                 return '#60bffa';
             }
-            if (props.step === '4') {
+            if (props.step === UPDATE_FEE_STEPS.EXECUTE.toString()) {
                 return theme.colors.primaryBlue;
             }
             return theme.colors.tint90;},

@@ -5,6 +5,9 @@ import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import {
+    UPDATE_FEE_STEPS,
+} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/OperatorBox';
 
 type StepperProps = {
     step: number,
@@ -12,6 +15,16 @@ type StepperProps = {
     subTextAlign: string,
     registerButtonEnabled?: boolean
 };
+
+// eslint-disable-next-line no-unused-vars
+enum StepperProcessesSteps {
+    // eslint-disable-next-line no-unused-vars
+    DECLARE_STEP = 0,
+    // eslint-disable-next-line no-unused-vars
+    WAITING_STEP = 1,
+    // eslint-disable-next-line no-unused-vars
+    PENDING_STEP = 2,
+}
 
 const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: StepperProps) => {
     const stores = useStores();
@@ -33,26 +46,26 @@ const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: St
     return (
       <Grid item container className={classes.Stepper}>
         <Grid item container className={classes.ProgressBarWrapper}>
-          <Grid item className={classes.StepWrapper}>{getStepNumber(step, 1)}</Grid>
+          <Grid item className={classes.StepWrapper}>{getStepNumber(step, UPDATE_FEE_STEPS.DECLARE_FEE)}</Grid>
           <Grid item className={classes.Line} />
-          <Grid item className={classes.StepWrapper}>{getStepNumber(step, 2)}</Grid>
+          <Grid item className={classes.StepWrapper}>{getStepNumber(step, UPDATE_FEE_STEPS.WAITING)}</Grid>
           <Grid item className={classes.Line} />
-          <Grid item className={classes.StepWrapper}>{getStepNumber(step, 3)}</Grid>
+          <Grid item className={classes.StepWrapper}>{getStepNumber(step, UPDATE_FEE_STEPS.PENDING)}</Grid>
           <Grid item className={classes.Line} />
-          <Grid item className={classes.StepWrapper}>{getStepNumber(step, 4)}</Grid>
+          <Grid item className={classes.StepWrapper}>{getStepNumber(step, UPDATE_FEE_STEPS.EXECUTE)}</Grid>
         </Grid>
         <Grid item container className={classes.ProgressBarTextWrapper}>
           <Grid className={classes.ProgressBarText}>
             Declare Fee
             {registerButtonEnabled && (
               <Typography className={classes.ProgressBarText}>
-                {step === 0 ? subText : declareFeeDate.toLocaleString('en-US', options)}
+                {step === StepperProcessesSteps.DECLARE_STEP ? subText : declareFeeDate.toLocaleString('en-US', options)}
               </Typography>
               )}
           </Grid>
           <Grid className={classes.ProgressBarText}>
             Waiting Period
-            {step === 1 && (
+            {step === StepperProcessesSteps.WAITING_STEP && (
             <Typography className={classes.WaitingPeriod}>
                 {subText}
             </Typography>
@@ -60,7 +73,7 @@ const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: St
           </Grid>
           <Grid className={classes.ProgressBarText}>
             Pending Execution
-            {step === 2 && (
+            {step === StepperProcessesSteps.PENDING_STEP && (
             <Typography className={classes.ExpiresIn}>
                 {subText}
             </Typography>

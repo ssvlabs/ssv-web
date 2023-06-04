@@ -14,6 +14,17 @@ import OperatorDetails
 import NotificationPopUp
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/NotificationPopUp';
 
+export enum UPDATE_FEE_STEPS {
+  // eslint-disable-next-line no-unused-vars
+  DECLARE_FEE = 1,
+  // eslint-disable-next-line no-unused-vars
+  WAITING = 2,
+  // eslint-disable-next-line no-unused-vars
+  PENDING = 3,
+  // eslint-disable-next-line no-unused-vars
+  EXECUTE = 4,
+}
+
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
   const isDeleted = operator.is_deleted;

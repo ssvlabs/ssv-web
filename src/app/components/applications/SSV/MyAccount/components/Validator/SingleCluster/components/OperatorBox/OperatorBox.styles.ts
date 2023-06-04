@@ -6,6 +6,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: 312,
     height: 188,
     borderRadius: 16,
+    border: (props: any) => props.updateOperatorFee && `1px solid ${theme.colors.primaryBlue}`,
     backgroundColor: (props: any) => props.isDeleted ? theme.colors.squareScreenBackgroundDeleted : theme.colors.squareScreenBackground,
   },
   FirstSectionOperatorBox: {
@@ -30,5 +31,29 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 500,
     lineHeight: 1.62,
     color: theme.colors.gray90,
+  },
+  YearlyFeeWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    cursor: (props: any) => props.updateOperatorFee && 'pointer',
+  },
+  UpdateFeeIndicator: {
+    width: 8,
+    height: 8,
+    marginLeft: 5,
+    borderRadius: '50%',
+    backgroundColor: theme.colors.primaryBlue,
+  },
+  PopUpWrapper: {
+    top: 190,
+    left: 210,
+    width: 610,
+    height: 691,
+    zIndex: '99999',
+    borderRadius: 16,
+    position:  'absolute',
+    backgroundColor: '#fdfefe',
+    boxShadow: '0 4px 27px 0 rgba(0, 0, 0, 0.1)',
   },
 }));

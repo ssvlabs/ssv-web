@@ -49,6 +49,14 @@ const FundingPeriod = () => {
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
 
+  const getDisableStateCondition = () => {
+    if (isCustomPayment) {
+      return customPeriod <= 0 || isNaN(customPeriod);
+    }
+    return insufficientBalance;
+  };
+
+  const buttonDisableCondition = getDisableStateCondition();
   const isChecked = (id: number) => checkedOption.id === id;
 
   const moveToNextPage = () => {
@@ -109,7 +117,7 @@ const FundingPeriod = () => {
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
                 <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
               </Grid>
-              <PrimaryButton text={'Next'} submitFunction={moveToNextPage} disable={insufficientBalance || customPeriod <= 0 || isNaN(customPeriod)}/>
+              <PrimaryButton text={'Next'} submitFunction={moveToNextPage} disable={buttonDisableCondition}/>
             </Grid>,
           ]}
       />

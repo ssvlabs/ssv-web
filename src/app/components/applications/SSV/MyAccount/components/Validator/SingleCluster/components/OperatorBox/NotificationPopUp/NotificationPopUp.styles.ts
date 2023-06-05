@@ -1,8 +1,6 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
-import {
-    UPDATE_FEE_STEPS,
-} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/OperatorBox';
+import { UPDATE_FEE_STEPS } from '~lib/utils/updateFeeNotificationSteps';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     PopUpWrapper: {

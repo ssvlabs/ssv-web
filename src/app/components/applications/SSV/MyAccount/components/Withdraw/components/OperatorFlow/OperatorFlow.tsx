@@ -10,6 +10,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const OperatorFlow = () => {
   const classes = useStyles();
@@ -22,6 +23,7 @@ const OperatorFlow = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const operator = process?.item;
   const operatorBalance = operator?.balance ?? 0;
+  const [termsConditionUnchecked, setTermsConditionUnchecked] = useState(true);
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
@@ -32,6 +34,8 @@ const OperatorFlow = () => {
       navigate(-1);
     }
   };
+
+  const changeConditionTermsHandle = () => termsConditionUnchecked ? setTermsConditionUnchecked(false) : setTermsConditionUnchecked(true);
 
   function inputHandler(e: any) {
     const value = e.target.value;
@@ -75,6 +79,18 @@ const OperatorFlow = () => {
       </Grid>
   )];
 
+  const bottomScreen = [
+    (<Grid className={classes.BottomScreenWrapper}>
+          <TermsAndConditionsCheckbox setTermsAndConditions={changeConditionTermsHandle}/>
+          <Button
+              text={'Withdraw'}
+              withAllowance={false}
+              onClick={withdrawSsv}
+              disable={Number(inputValue) === 0 || termsConditionUnchecked}
+          />
+     </Grid>
+    )];
+
   return (
       <BorderScreen
           marginTop={0}
@@ -82,14 +98,7 @@ const OperatorFlow = () => {
           withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
-          bottom={[(
-              <Button
-                  text={'Withdraw'}
-                  withAllowance={false}
-                  onClick={withdrawSsv}
-                  disable={Number(inputValue) === 0}
-              />
-          )]}
+          bottom={bottomScreen}
       />
   );
 };

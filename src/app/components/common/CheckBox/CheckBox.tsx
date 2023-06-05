@@ -2,7 +2,7 @@ import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
 
-type Props = {
+type CheckboxProps = {
   text: any,
   width?: number,
   height?: number,
@@ -10,10 +10,10 @@ type Props = {
   isChecked?: boolean,
   onClickCallBack?: any,
   grayBackGround?: boolean,
+  checkBoxWrapperClass?: string,
 };
 
-const CheckBox = (props: Props) => {
-  const { width, height, text, disable, isChecked, onClickCallBack, grayBackGround } = props;
+const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround, checkBoxWrapperClass }: CheckboxProps) => {
   const [checked, setChecked] = useState(isChecked ?? false);
   const classes = useStyles({ grayBackGround, checked, width, height });
 
@@ -24,7 +24,7 @@ const CheckBox = (props: Props) => {
   };
 
   return (
-    <Grid container className={classes.CheckBoxWrapper} onClick={checkAction}>
+    <Grid container className={`${classes.CheckBoxWrapper} ${checkBoxWrapperClass ?? checkBoxWrapperClass}`} onClick={checkAction}>
       <Grid item>
         <Grid className={classes.BoxWrapper} />
       </Grid>

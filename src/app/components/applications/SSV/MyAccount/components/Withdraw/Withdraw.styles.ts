@@ -131,8 +131,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 500,
         lineHeight: 1.24,
         letterSpacing: -0.5,
-        margin: theme.spacing(0, 0, 1, 5),
         color: theme.colors.black,
+        margin: theme.spacing(0, 0, 1, 5),
     },
     BalanceInputDollar: {
         fontSize: '14px',
@@ -148,5 +148,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
         marginLeft: '11px',
         marginRight: '11px',
         border: '1px solid #5b6c84',
+    },
+    BottomScreenWrapper: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     },
 }));

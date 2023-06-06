@@ -28,7 +28,6 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
       navigate(applicationStore.strategyRedirect);
       return;
     }
-    setInterval(getState, 2000);
     getState();
   }, []);
 

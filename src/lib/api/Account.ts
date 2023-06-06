@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
+import { web3 } from 'ssv-keys/dist/tsc/src/lib/helpers/web3.helper';
 
 class Account {
     private static instance: Account;
@@ -19,7 +20,7 @@ class Account {
 
     async getAccountData(publicKey: string) {
         try {
-            const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${publicKey}`;
+            const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${web3.utils.toChecksumAddress(publicKey)}`;
             return await this.getData(url);
         } catch (e) {
             return null;

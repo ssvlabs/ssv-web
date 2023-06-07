@@ -145,6 +145,10 @@ const config = {
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana',
   },
   GLOBAL_VARIABLE: {
+    GAS_FIXED_PRICE: {
+      GAS_PRICE: process.env.REACT_APP_GAS_PRICE,
+      GAS_LIMIT: process.env.REACT_APP_GAS_LIMIT,
+    },
     BLOCKS_PER_DAY: 7160,
     OPERATORS_PER_PAGE: 50,
     BLOCKS_PER_YEAR: 2613400,

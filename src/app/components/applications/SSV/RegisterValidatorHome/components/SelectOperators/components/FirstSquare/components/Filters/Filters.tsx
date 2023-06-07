@@ -1,9 +1,9 @@
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { useStyles } from './Filters.styles';
 import CheckBox from '~app/components/common/CheckBox';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters/Filters.styles';
 
 type Props = {
   setFilterBy: any;

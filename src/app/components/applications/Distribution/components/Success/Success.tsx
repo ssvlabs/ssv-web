@@ -3,12 +3,12 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import Typography from '@mui/material/Typography';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
+import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
 
 const Success = () => {
   const stores = useStores();

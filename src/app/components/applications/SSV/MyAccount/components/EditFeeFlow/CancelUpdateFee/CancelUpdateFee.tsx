@@ -1,21 +1,21 @@
-import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from './CancelUpdateFee.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
 
 const CancelUpdateFee = () => {
   const stores = useStores();

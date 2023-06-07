@@ -14,18 +14,18 @@ import { longStringShorten } from '~lib/utils/strings';
 import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import ProcessStore, { SingleOperator as SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
+import ProcessStore, { SingleOperator as SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
@@ -237,7 +237,6 @@ const SingleOperator = () => {
               <BorderScreen
                   withoutNavigation
                   header={'Balance'}
-                  SideHeader={UpdateFeeState}
                   sectionClass={classes.AnnualSection}
                   body={[
                     <Grid container item>

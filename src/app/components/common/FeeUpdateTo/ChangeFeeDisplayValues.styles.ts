@@ -1,6 +1,7 @@
 import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     ContainerWrapper: {
         display: 'flex',
         flexWrap: 'nowrap',
@@ -10,8 +11,8 @@ export const useStyles = makeStyles(() => ({
     FeeValue: {
         fontSize: '20px',
         fontWeight: 800,
-        color: '#0b2a3c',
         margin: '0 10px 0 10px',
+        color: theme.colors.black,
     },
     ArrowImage: {
         width: '20px',

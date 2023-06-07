@@ -7,9 +7,9 @@ import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
@@ -219,8 +219,9 @@ class OperatorStore extends BaseStore {
   async initUser() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
-    this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
-    this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
+    const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.methods.getOperatorFeePeriods().call();
+    this.getSetOperatorFeePeriod = Number(executeOperatorFeePeriod);
+    this.declaredOperatorFeePeriod = Number(declareOperatorFeePeriod);
     this.maxFeeIncrease = Number(await walletStore.getterContract.methods.getOperatorFeeIncreaseLimit().call()) / 100;
   }
 
@@ -434,6 +435,7 @@ class OperatorStore extends BaseStore {
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
+        const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
         const contractInstance = walletStore.setterContract;
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           walletStore.toWei(
@@ -446,7 +448,7 @@ class OperatorStore extends BaseStore {
           operatorApprovalEndTime: this.operatorApprovalEndTime,
           operatorApprovalBeginTime: this.operatorApprovalBeginTime,
         };
-        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress })
+        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');

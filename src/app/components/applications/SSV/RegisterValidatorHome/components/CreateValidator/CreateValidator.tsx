@@ -3,8 +3,8 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import config from '~app/common/config';
 import Button from '~app/components/common/Button';
-import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';

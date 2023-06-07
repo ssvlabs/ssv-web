@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import { changeCurrentNetwork, NetworkDataType } from '~lib/utils/envHelper';
+import { NetworkDataType, switchNetwork } from '~lib/utils/envHelper';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 
 const NetworkOption = ({ network }: { network: NetworkDataType }) => {
     const { networkId, optionLabel, apiVersion, logo } = network;
     const changeNetworkHandler = () => {
-        changeCurrentNetwork(networkId, apiVersion);
+        switchNetwork(networkId, apiVersion);
     };
 
     const classes = useStyles({ logo });
@@ -15,7 +15,7 @@ const NetworkOption = ({ network }: { network: NetworkDataType }) => {
     return (
         <Grid container item className={classes.Button} onClick={changeNetworkHandler}>
             <Grid className={classes.NetworkIcon} />
-            <Typography>{optionLabel}</Typography>
+            <Typography className={classes.NetworkLabel}>{optionLabel}</Typography>
         </Grid>
     );
 };

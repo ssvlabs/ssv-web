@@ -109,6 +109,7 @@ const UpdateFee = () => {
   };
 
   const onNextHandler = () => {
+    operatorStore.clearOperatorFeeInfo();
     if (Number(newFee) > oldFee) {
       setCurrentFlowStep(FeeUpdateSteps.INCREASE);
     } else {

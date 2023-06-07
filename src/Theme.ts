@@ -1,4 +1,4 @@
-declare module '@material-ui/core/styles/createMuiTheme' {
+declare module '@mui/material/styles' {
     interface Theme {
         colors?: any
         opacity?: any,
@@ -54,10 +54,12 @@ export const AppTheme = ({ isDarkMode }: ThemeParams): any => {
             primarySuccessDark: isDarkMode ? '#08c858' : '#06b64f',
             primaryWarningRegular: 'rgba(255, 210, 10, 0.2)',
             squareScreenBackground: isDarkMode ? '#0b2a3c' : '#fdfefe',
+            squareScreenBackgroundDeleted: isDarkMode ? '#0b2a3c' : '#f8fcff',
             primaryError: '#ec1c26',
             primarySuccess: '#ec1c26',
             primaryErrorRegular: isDarkMode ? 'rgba(236, 28, 38, 0.32)' : 'rgba(236, 28, 38, 0.12)',
             primarySuccessRegularOpacity: isDarkMode ? 'rgba(8, 200, 88, 0.32)' : 'rgba(8, 200, 88, 0.16)',
+            warning: '#ffd20a',
         },
         opacity: {
             lowPriority: 1,

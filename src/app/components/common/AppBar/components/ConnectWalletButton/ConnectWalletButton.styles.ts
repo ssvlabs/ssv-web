@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     ConnectWalletWrapper: {
         gap: 10,
         height: 48,
@@ -15,6 +16,7 @@ export const useStyles = makeStyles((theme) => ({
         fontFamily: 'Manrope',
         justifyContent: 'center',
         padding: theme.spacing(3, 4, 3, 4),
+        border: `solid 1px ${theme.colors.gray20}`,
         width: (props: any) => props.walletConnected ? 189 : 171,
         backgroundColor: (props: any) => {
             if (props.whiteAppBar) {

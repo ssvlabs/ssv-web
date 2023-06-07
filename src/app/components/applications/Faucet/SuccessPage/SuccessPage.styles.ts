@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     Wrapper: {
         gap: 32,
     },
@@ -26,8 +27,8 @@ export const useStyles = makeStyles((theme) => ({
         height: 32,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
-        marginLeft: theme.spacing(2),
         backgroundRepeat: 'no-repeat',
+        marginLeft: theme.spacing(2),
         backgroundImage: 'url(/images/wallets/metamask.svg)',
     },
 }));

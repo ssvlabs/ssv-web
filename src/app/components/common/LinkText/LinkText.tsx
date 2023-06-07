@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
 import { useStyles } from './LinkText.styles';
-import Typography from '@material-ui/core/Typography';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 
 type MessageDivProps = {
@@ -10,18 +10,19 @@ type MessageDivProps = {
   text: string;
   link?: string;
   onClick?: any;
+  className?: string,
   routePush?: boolean;
   withoutUnderline?: boolean
 };
 
-const LinkText = ({ style, text, onClick, link, routePush, withoutUnderline }: MessageDivProps) => {
-  const history = useHistory();
+const LinkText = ({ style, text, onClick, link, className, routePush, withoutUnderline }: MessageDivProps) => {
+  const navigate = useNavigate();
   const classes = useStyles({ withoutUnderline });
 
   const openLink = () => {
     if (link) {
       if (routePush) {
-        history.push(link);
+        navigate(link);
       } else {
         GoogleTagManager.getInstance().sendEvent({
           category: 'external_link',
@@ -30,14 +31,14 @@ const LinkText = ({ style, text, onClick, link, routePush, withoutUnderline }: M
         });
         window.open(link);
       }
-      if (typeof onClick === 'function') {
-        onClick();
-      }
+    }
+    if (typeof onClick === 'function') {
+      onClick();
     }
   };
 
   return (
-    <Typography style={style} className={classes.Link} onClick={openLink}>{text}</Typography>
+    <Typography style={style} className={className ?? classes.Link} onClick={openLink}>{text}</Typography>
   );
 };
 

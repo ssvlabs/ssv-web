@@ -1,10 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 import screenSizes from '~lib/utils/screenSizes';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     BorderScreenWrapper: {
         width: 648,
         margin: 'auto',
+        marginTop: (props: any) => props.marginTop ?? 32,
         [screenSizes.xs]: {
             width: '100%',
         },
@@ -18,7 +20,7 @@ export const useStyles = makeStyles((theme) => ({
     LinkWrapper: {
         height: 20,
         minWidth: 17,
-        marginBottom: theme.spacing(2),
+        marginBottom: 32,
     },
     ScreenWrapper: {
         borderRadius: 16,

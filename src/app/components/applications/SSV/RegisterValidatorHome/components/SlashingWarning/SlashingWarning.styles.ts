@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     SubHeader: {
         fontSize: 16,
         fontWeight: 500,
@@ -170,7 +171,7 @@ export const useStyles = makeStyles((theme) => ({
         },
         guideStepsContainerPaper: {
             cursor: 'pointer',
-            margin: `${theme.spacing(1)}px auto`,
+            margin: `${theme.spacing(1)} auto`,
             padding: theme.spacing(2),
             '&:hover': {
                 backgroundColor: 'aliceblue',

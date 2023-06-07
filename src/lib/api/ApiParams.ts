@@ -1,10 +1,10 @@
 class ApiParams {
-  static PER_PAGE: number = 5;
+  static PER_PAGE: number = 8;
   static DEFAULT_PAGINATION = {
     page: 1,
     pages: 1,
     total: 0,
-    perPage: ApiParams.PER_PAGE,
+    per_page: ApiParams.PER_PAGE,
   };
 
   /**
@@ -26,7 +26,7 @@ class ApiParams {
    * Clean history
    */
   static cleanStorage(): void {
-    localStorage.removeItem('params');
+    window.localStorage.removeItem('params');
   }
 
   /**
@@ -50,7 +50,7 @@ class ApiParams {
     storage[entity] = storage[entity] || ApiParams.DEFAULT_PAGINATION;
     storage[entity][name] = value;
     try {
-      localStorage.setItem('params', JSON.stringify(storage));
+      window.localStorage.setItem('params', JSON.stringify(storage));
     } catch (e) {
       console.error('Unable to use localStorage');
     }
@@ -62,7 +62,7 @@ class ApiParams {
   static getStorage() {
     ApiParams.initStorage();
     try {
-      return JSON.parse(<string>localStorage.getItem('params'));
+      return JSON.parse(<string>window.localStorage.getItem('params'));
     } catch (e) {
       console.error('Unable to use localStorage');
       return {};
@@ -74,8 +74,8 @@ class ApiParams {
    */
   static initStorage(force: boolean = false) {
     try {
-      if (!localStorage.getItem('params') || force) {
-        localStorage.setItem('params', JSON.stringify({
+      if (!window.localStorage.getItem('params') || force) {
+        window.localStorage.setItem('params', JSON.stringify({
           validators: {
             page: 1,
             perPage: ApiParams.PER_PAGE,

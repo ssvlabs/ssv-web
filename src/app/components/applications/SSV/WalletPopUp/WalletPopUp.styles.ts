@@ -1,6 +1,6 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme: Theme) => ({
+export const useStyles = makeStyles((theme: any) => ({
     Dialog: {
         width: 424,
         padding: 32,

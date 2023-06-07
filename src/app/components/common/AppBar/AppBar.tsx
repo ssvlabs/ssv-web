@@ -1,13 +1,14 @@
-import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
+import Grid from '@mui/material/Grid';
+import { observer } from 'mobx-react';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
+import NetworkToggle from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
-import { useStyles } from './AppBar.styles';
+import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
 
 type Button = {
   label: string;
@@ -17,13 +18,13 @@ type Button = {
 
 const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundColor?: string }) => {
     const stores = useStores();
-    const history = useHistory();
+    const navigate = useNavigate();
     const wrapperRef = useRef(null);
     const buttonsRef = useRef(null);
     const [menuBar, openMenuBar] = useState(false);
     const applicationStore: ApplicationStore = stores.Application;
     // const isDistribution = applicationStore.strategyName === 'distribution';
-    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     // @ts-ignore
     const classes = useStyles({ backgroundColor });
 
@@ -50,7 +51,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         if (applicationStore.isLoading) return;
         // @ts-ignore
         applicationStore.whiteNavBarBackground = false;
-        history.push(applicationStore.strategyRedirect);
+        navigate(applicationStore.strategyRedirect);
     };
 
     const Buttons = () => {
@@ -98,25 +99,26 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
             className={classes.AppBarIcon}
           />
         </Grid>
-        <Grid item container xs className={classes.GridItem}>
-          <Grid item container justify={'center'}>
-            {buttons?.map((button, index) => {
-                    return (
-                      <Grid
-                        item
-                        key={index}
-                        onClick={button.onClick}
-                        className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
-                      >
-                        {button.label}
-                      </Grid>
-                    );
-                })}
-          </Grid>
-        </Grid>
+        <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }}>
+          {buttons?.map((button, index) => {
+            return (
+                <Grid
+                    item
+                    key={index}
+                    onClick={button.onClick}
+                    className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
+                >
+                  {button.label}
+                </Grid>
+            );
+          })}
+            </Grid>
 
         <Grid item className={classes.GridItem}>
           <Grid item container style={{ alignItems: 'center' }}>
+              <Grid item>
+                  <NetworkToggle />
+              </Grid>
             {!applicationStore.userGeo && (
               <Grid item>
                 <ConnectWalletButton />

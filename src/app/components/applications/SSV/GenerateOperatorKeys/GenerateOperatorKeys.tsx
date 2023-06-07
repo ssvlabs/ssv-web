@@ -1,31 +1,30 @@
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
+import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
-// import Checkbox from '~app/common/components/CheckBox';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
-import MessageDiv from '~app/components/common/MessageDiv';
 import InputLabel from '~app/components/common/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import BorderScreen from '~app/components/common/BorderScreen';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import { validateAddressInput, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { validateAddressInput, validateDisplayNameInput, validatePublicKeyInput } from '~lib/utils/validatesInputs';
-import Button from '~app/components/common/Button';
-import Operator from '~lib/api/Operator';
-import { sha256 } from 'js-sha256';
+import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 
 const GenerateOperatorKeys = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
@@ -34,35 +33,26 @@ const GenerateOperatorKeys = () => {
     initialOperatorKey = getRandomOperatorKey(false);
   }
   const [operatorExist, setOperatorExist] = useState(false);
-  // const [userAgreement, setUserAgreement] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
-  // const [feeError, setFeeError] = useState({ shouldDisplay: false, errorMessage: '' });
-  const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey, name: '' });
+  const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey });
   const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
-  const [displayNameError, setDisplayNameError] = useState({ shouldDisplay: false, errorMessage: '' });
 
   // Inputs validation
   useEffect(() => {
-    const isRegisterButtonEnabled = !inputsData.name
-      || !inputsData.publicKey
+    const isRegisterButtonEnabled = !inputsData.publicKey
       || !walletStore.accountAddress
-      || displayNameError.shouldDisplay
       || publicKeyError.shouldDisplay
       || addressError.shouldDisplay;
-    // || feeError.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
     };
   }, [inputsData,
+    inputsData.publicKey,
     walletStore.accountAddress,
-    displayNameError.shouldDisplay,
-    // feeError.shouldDisplay,
     addressError.shouldDisplay,
     publicKeyError.shouldDisplay,
-    inputsData.name,
-    inputsData.publicKey,
   ]);
 
   const onInputChange = (name: string, value: string) => {
@@ -77,7 +67,6 @@ const GenerateOperatorKeys = () => {
     const operatorKeys: NewOperator = {
       fee: 0,
       id: '0',
-      name: inputsData.name,
       address: walletStore.accountAddress,
       pubKey: walletStore.encodeKey(inputsData.publicKey),
     };
@@ -87,7 +76,7 @@ const GenerateOperatorKeys = () => {
       true,
     );
     setOperatorExist(isExists);
-    if (!isExists) history.push(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
+    if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
     applicationStore.setIsLoading(false);
   };
 
@@ -114,28 +103,12 @@ const GenerateOperatorKeys = () => {
                 <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
             </Grid>
             <Grid item className={classes.GridItem}>
-              <InputLabel title="Display Name" />
-              <TextInput
-                value={inputsData.name}
-                data-testid="new-operator-name"
-                showError={displayNameError.shouldDisplay}
-                onChangeCallback={(event: any) => {
-                  onInputChange('name', event.target.value);
-                }}
-                onBlurCallBack={(event: any) => {
-                  validateDisplayNameInput(event.target.value, setDisplayNameError);
-                }}
-              />
-              {displayNameError.shouldDisplay &&
-                <Typography className={classes.TextError}>{displayNameError.errorMessage}</Typography>}
-            </Grid>
-            <Grid item className={classes.GridItem}>
               <InputLabel
                 title="Operator Public Key"
                 withHint
                 toolTipText={(
                   <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                    <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node'} />
+                    <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'} />
                   </div>
                 )}
               />
@@ -153,9 +126,8 @@ const GenerateOperatorKeys = () => {
               {publicKeyError.shouldDisplay &&
                 <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
             </Grid>
-            {operatorExist && <MessageDiv text={translations.OPERATOR.OPERATOR_EXIST} />}
+            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST} />}
           </Grid>
-          {/* <Checkbox onClickCallBack={setUserAgreement} text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'} /> */}
           <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
         </Grid>,
       ]}

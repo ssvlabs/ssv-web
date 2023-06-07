@@ -1,13 +1,13 @@
 import React from 'react';
 // @ts-ignore
 import { useTable } from 'react-table';
-import { Grid } from '@material-ui/core';
-import MaUTable from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableContainer from '@material-ui/core/TableContainer';
+import Grid from '@mui/material/Grid';
+import TTable from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableContainer from '@mui/material/TableContainer';
 import PaginationActions from '~app/components/common/Table/PaginationActions';
 import { useStyles } from './Table.styles';
 
@@ -21,9 +21,9 @@ type PaginationActionParams = {
     totalAmountOfItems: number;
 };
 
-export const Table = ({ columns, data, hideActions = false, actionProps }: { columns: any, data: any, hideActions?: boolean, actionProps?: PaginationActionParams }) => {
+export const Table = ({ columns, data, disable, hideActions = false, actionProps }: { columns: any, data: any, disable?: boolean, hideActions?: boolean, actionProps?: PaginationActionParams }) => {
     // console.log(actionProps?.onChangePage(5));
-    const classes = useStyles({ hideActions });
+    const classes = useStyles({ disable, hideActions });
 
     // Use the state and functions returned from useTable to build your UI
     const { getTableProps, headerGroups, rows, prepareRow } = useTable(
@@ -36,9 +36,8 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
     // Render the UI for your table
     return (
       <Grid container className={classes.TableWrapper}>
-
-        <TableContainer className={classes.CustomizeCss} style={{ overflowX: 'initial' }}>
-          <MaUTable {...getTableProps()}>
+        <TableContainer className={classes.CustomizeCss}>
+          <TTable {...getTableProps()}>
             <TableHead>
               {headerGroups.map((headerGroup: any, headerGroupIndex: number) => (
                 <TableRow key={headerGroupIndex} {...headerGroup.getHeaderGroupProps()}>
@@ -67,7 +66,7 @@ export const Table = ({ columns, data, hideActions = false, actionProps }: { col
                         );
                     })}
             </TableBody>
-          </MaUTable>
+          </TTable>
         </TableContainer>
         {!hideActions && actionProps && actionProps.totalPages > 1 && (
           <PaginationActions

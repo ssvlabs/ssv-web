@@ -48,6 +48,9 @@
 
   <meta
     content="connect-src 'self' data: https://www.gasnow.org
+                        *.walletconnect.com/
+                        wss://*.bridge.walletconnect.org/
+                        https://region1.google-analytics.com/
                         https://api.stage.bloxstaking.com/
                         https://api.bloxstaking.com/
                         http://localhost:3000
@@ -66,16 +69,18 @@
                         ws://localhost:8545
                         https://*.infura.io
                         wss://bridge.walletconnect.org
-                        https://prater.beaconcha.in
+                        https://prater.beaconcha.in/
                         https://beaconcha.in/
                         https://ssv-api.stage.ssv.network/
                         https://ssv-api.ssv.network/
                         https://ssv-api-v2.ssv.network/
                         wss://api.blocknative.com;
                      img-src 'self' data: https://registry.walletconnect.org/
+                         *.walletconnect.com/
                          https://media.stage.ssv.network/
                          https://media.ssv.network/
                          https://media-v2.ssv.network/
+                         https://app-v3.prater.ssv.network/
                          https://www.google-analytics.com/
                          http://www.google-analytics.com/collect
                          https://s2.coinmarketcap.com/
@@ -92,7 +97,6 @@
   />
 
   <link href="%PUBLIC_URL%/logo192.png" rel="apple-touch-icon"/>
-  <link href="%PUBLIC_URL%/manifest.json" rel="manifest"/>
 </head>
 <body style="padding: 0; margin: 0">
 <noscript>You need to enable JavaScript to run this app.</noscript>

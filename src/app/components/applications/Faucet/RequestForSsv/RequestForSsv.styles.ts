@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     BlueText: {
         fontSize: 20,
         lineHeight: 1.4,
@@ -24,8 +25,8 @@ export const useStyles = makeStyles((theme) => ({
         height: 47,
         borderRadius: 2,
         color: theme.colors.gray90,
-        padding: theme.spacing(3, 4),
         background: 'rgb(236, 28, 38, 0.08);',
+        padding: theme.spacing(3, 4),
         border: `solid 1px ${theme.colors.primaryError}`,
         backgroundColor: theme.colors.primaryErrorRegular,
     },

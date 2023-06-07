@@ -1,8 +1,8 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import { useHistory, useLocation } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
@@ -13,17 +13,17 @@ import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
+import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import RemainingDays from '~app/components/applications/SSV/MyAccount/common/componenets/RemainingDays';
+import RemainingDays from '~app/components/applications/SSV/MyAccount/common/RemainingDays';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { useStyles } from './OperatorsReceipt.style';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt/OperatorsReceipt.style';
 
 type Props = {
   operators: any,
@@ -33,7 +33,7 @@ type Props = {
 };
 const OperatorsReceipt = (props: Props) => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location: any = useLocation();
   const { operators, header, previousOperators, currentOperators } = props;
   const ssvStore: SsvStore = stores.SSV;
@@ -48,7 +48,7 @@ const OperatorsReceipt = (props: Props) => {
     location.state = null;
     setOpenRedirect(true);
     setTimeout(() => {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
     }, 10000);
   }
 
@@ -67,8 +67,8 @@ const OperatorsReceipt = (props: Props) => {
     }, 0,
   );
 
-  const networkFee = ssvStore.newGetFeeForYear(ssvStore.networkFee, 11);
-  const operatorsYearlyFee = ssvStore.newGetFeeForYear(newOperatorsFee);
+  const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee, 11);
+  const operatorsYearlyFee = ssvStore.getFeeForYear(newOperatorsFee);
   const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
 
   const checkBox = () => {
@@ -91,9 +91,9 @@ const OperatorsReceipt = (props: Props) => {
     applicationStore.setIsLoading(true);
     const response = await validatorStore.updateValidator();
     if (response) {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.SUCCESS, { success: true });
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS);
       setTimeout(() => {
-        history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT);
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
       }, 10000);
     }
   };
@@ -122,17 +122,17 @@ const OperatorsReceipt = (props: Props) => {
                 <OperatorDetails operator={operator} gray80={currentOperators} />
               </Grid>
               <Grid item>
-                <Status status={operator.status} />
+                <Status item={operator} />
               </Grid>
               <Grid item xs>
                 <SsvAndSubTitle gray80={currentOperators}
-                  ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))}
+                  ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}
                   subText={'/year'} />
               </Grid>
             </Grid>
           );
         })}
-        <Grid container item justify={'space-between'}>
+        <Grid container item style={{ justifyContent: 'space-between' }}>
           <Grid item xs>
             <Typography className={classes.NetworkYearlyFee} style={{ marginRight: 8 }} component={'span'}>Network yearly
               fees</Typography>
@@ -156,7 +156,7 @@ const OperatorsReceipt = (props: Props) => {
         </Grid>
       </Grid>
     </Grid>,
-    <Grid container item justify={'space-between'}>
+    <Grid container item style={{ justifyContent: 'space-between' }}>
       <Grid item>
         <Typography className={classes.NetworkYearlyFee}>Total Yearly Fee</Typography>
       </Grid>

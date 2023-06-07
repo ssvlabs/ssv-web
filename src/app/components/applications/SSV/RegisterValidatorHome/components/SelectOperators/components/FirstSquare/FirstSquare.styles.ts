@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     ScreenWrapper: {
         width: '100%',
     },
@@ -25,18 +26,22 @@ export const useStyles = makeStyles((theme) => ({
     },
     SearchInputWrapper: {
         marginRight: theme.spacing(3),
+        opacity: (props: any) => props.loading ? 0.2 : '',
+        userSelect: (props: any) => props.loading ? 'none' : 'auto',
+        pointerEvents: (props: any) => props.loading ? 'none' : 'auto',
+        cursor: (props: any) => props.loading ? 'progress' : 'pointer',
     },
 
     OperatorsTable: {
         height: 524,
         borderRadius: 16,
         cursor: 'pointer',
-        marginTop: theme.spacing(5),
         backgroundPosition: 'center',
         backgroundSize: '300px 100px',
+        marginTop: theme.spacing(5),
         backgroundRepeat: 'no-repeat !important',
         border: `solid 1px ${theme.colors.gray20}`,
-        // opacity: (props: any) => props.loading ? 0.5 : 1,
+        opacity: (props: any) => props.loading ? 0.2 : 1,
         pointerEvents: (props: any) => props.loading ? 'none' : 'auto',
     },
     HeaderWrapper: {

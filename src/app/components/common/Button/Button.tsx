@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-import Typography from '@material-ui/core/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
@@ -19,6 +19,7 @@ type ButtonParams = {
     checkboxesText?: any[],
     withAllowance?: boolean,
     checkBoxesCallBack?: any[],
+    totalAmount?: string,
 };
 
 const Button = (props: ButtonParams) => {
@@ -30,13 +31,21 @@ const Button = (props: ButtonParams) => {
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
     const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
-    const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack } = props;
+    const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount } = props;
 
     useEffect(() => {
+    if (Number(totalAmount) > 0) {
         if (!ssvStore.userGaveAllowance && withAllowance && !isApprovalProcess) {
             setApprovalProcess(true);
+            return;
         }
-    }, [ssvStore.userGaveAllowance, withAllowance, isApprovalProcess]);
+        if (totalAmount && Number(walletStore.toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
+            setApprovalProcess(true);
+            return;
+        }
+        setApprovalProcess(false);
+      }
+    }, [ssvStore.userGaveAllowance, withAllowance, isApprovalProcess, totalAmount]);
 
     const checkWalletConnected = async (onClickCallBack: any) => {
         if (!walletStore.connected) await walletStore.connect();
@@ -53,6 +62,12 @@ const Button = (props: ButtonParams) => {
         setAllowanceButtonDisable(true);
         setApproveButtonText('Waiting...');
         const userGavePermission = await ssvStore.approveAllowance(false, handlePendingTransaction);
+        await ssvStore.checkAllowance();
+        if (Number(walletStore.toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
+            setApproveButtonText('Approve SSV');
+            setAllowanceButtonDisable(false);
+            return;
+        }
         if (userGavePermission) {
             setApproveButtonText('Approved');
             setUserAllowance(true);

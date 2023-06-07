@@ -1,5 +1,5 @@
-import { action, computed, observable } from 'mobx';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { createTheme, Theme } from '@mui/material/styles';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -13,22 +13,48 @@ import Application from '~app/common/stores/Abstracts/Application';
 
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
-  @observable theme: Theme;
-  @observable txHash: string = '';
-  @observable userGeo: string = '';
-  @observable darkMode: boolean = false;
-  @observable toolBarMenu: boolean = false;
-  @observable walletPopUp: boolean = false;
-  @observable isShowingLoading: boolean = false;
-  @observable walletConnectivity: boolean = false;
-  @observable strategyName: string = 'distribution';
-  @observable transactionPendingPopUp: boolean = false;
-  @observable appTitle: string = 'SSV Network Testnet Distribution';
-  @observable strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
-  locationRestrictionEnabled: boolean = true;
+  theme: Theme;
+  txHash: string = '';
+  userGeo: string = '';
+  darkMode: boolean = false;
+  toolBarMenu: boolean = false;
+  walletPopUp: boolean = false;
+  isShowingLoading: boolean = false;
+  walletConnectivity: boolean = false;
+  strategyName: string = 'distribution';
+  transactionPendingPopUp: boolean = false;
+  appTitle: string = 'SSV Network Testnet Distribution';
+  strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
+  locationRestrictionEnabled: boolean = false;
 
   constructor() {
     super();
+
+    makeObservable(this, {
+      theme: observable,
+      txHash: observable,
+      userGeo: observable,
+      isLoading: computed,
+      appTitle: observable,
+      darkMode: observable,
+      isDarkMode: computed,
+      localStorage: computed,
+      toolBarMenu: observable,
+      walletPopUp: observable,
+      strategyName: observable,
+      setIsLoading: action.bound,
+      isShowingLoading: observable,
+      strategyRedirect: observable,
+      switchDarkMode: action.bound,
+      showWalletPopUp: action.bound,
+      walletConnectivity: observable,
+      applicationRoutes: action.bound,
+      displayToolBarMenu: action.bound,
+      transactionPendingPopUp: observable,
+      setWalletConnectivity: action.bound,
+      showTransactionPendingPopUp: action.bound,
+    });
+
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     if (darkModeSaved) {
@@ -41,49 +67,41 @@ class ApplicationStore extends BaseStore implements Application {
     }
   }
 
-  @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
   }
 
-  @action.bound
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const walletStore: WalletStore = this.getStore('Wallet');
     walletStore.onboardSdk.config({ darkMode: isDarkMode });
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
-    this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
+    this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  @action.bound
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
   }
 
-  @action.bound
   applicationRoutes() {
-    return require('~app/common/stores/applications/Distribution/Routes.tsx').default;
+    return require('~app/common/stores/applications/Distribution/Routes').default;
   }
 
-  @action.bound
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
   }
 
-  @action.bound
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
   }
 
-  @action.bound
   setWalletConnectivity(show: boolean) {
     this.walletConnectivity = show;
   }
 
-  @computed
   get localStorage() {
     try {
-      return localStorage;
+      return window.localStorage;
     } catch (e) {
       return {
         getItem(key: string): string | null {
@@ -99,12 +117,10 @@ class ApplicationStore extends BaseStore implements Application {
     }
   }
 
-  @computed
   get isLoading() {
     return this.isShowingLoading;
   }
 
-  @computed
   get isDarkMode() {
     return this.darkMode;
   }

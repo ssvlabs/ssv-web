@@ -12,7 +12,7 @@ class Validator {
 
   static getInstance(): Validator {
     if (!Validator.instance) {
-      Validator.instance = new Validator(config.links.EXPLORER_CENTER);
+      Validator.instance = new Validator(config.links.SSV_API_ENDPOINT);
     }
     return Validator.instance;
   }
@@ -23,25 +23,52 @@ class Validator {
 
   async getOwnerAddressCost(ownerAddress: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/owned_by/${ownerAddress}/cost`;
+      const url = `${config.links.SSV_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;
     }
   }
 
-  async validatorsByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
+  async clustersByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators${query}&ts=${new Date().getTime()}`;
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
-      return { validators: [], pagination: {} };
+      return { clusters: [], pagination: {} };
+    }
+  }
+
+  async validatorsByClusterHash(page: number, ownerAddress: string, clusterHash: string, skipRetry?: boolean): Promise<any> {
+    try {
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/?&search=${clusterHash}&page=${page}&perPage=7&ts=${new Date().getTime()}`;
+      return await this.getData(url, skipRetry);
+    } catch (e) {
+      return { clusters: [], pagination: {} };
+    }
+  }
+
+  async clusterByHash(clusterHash: string): Promise<any> {
+    try {
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+      return await this.getData(url, true);
+    } catch (e) {
+      return { clusters: [], pagination: {} };
+    }
+  }
+
+  async getClusterData(clusterHash: string): Promise<any> {
+    try {
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+      return await this.getData(url, true);
+    } catch (e) {
+      return null;
     }
   }
 
   async getValidator(publicKey: string, skipRetry?: boolean) {
     try {
-      const url = `${String(process.env.REACT_APP_OPERATORS_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;

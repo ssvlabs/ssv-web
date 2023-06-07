@@ -1,6 +1,6 @@
 import React from 'react';
 import { sha256 } from 'js-sha256';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';

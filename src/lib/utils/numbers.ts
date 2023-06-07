@@ -65,17 +65,8 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
 };
 
 export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean) => {
-  // eslint-disable-next-line eqeqeq
+  if (!Number.isFinite(Number(num))) return '- -';
   if (!num || num == 0 || Number.isNaN(num)) return days ? '0' : '0.0';
-  // let splitNumber = new Decimal(num).toFixed().split('.');
-  // if (splitNumber[1] && splitNumber[1].indexOf('9999') !== -1) {
-  //   let precision = '';
-  //   for (let i = 0; i < splitNumber[1].indexOf('9999') + 3; i += 1) {
-  //     precision += '0';
-  //   }
-  //   precision = `0.${precision}1`;
-  //   splitNumber = new Decimal(num).add(precision).toFixed(splitNumber[1].indexOf('9999') + 4).split('.');
-  // }
   const splitNumber = num.toString().split('.');
   if (splitNumber[1] && !days) {
     const number = splitNumber[0];
@@ -103,7 +94,7 @@ export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean
     decimal = decimal.slice(0, deleteFromIndex);
     return `${number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${decimal.replace(/^0+/, '') !== '' ? `.${decimal}` : ''}`;
   }
-  return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+  return removeMinusInFrontOfZero(`${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`);
   //   decimal = decimal.slice(0, deleteFromIndex);
   //   if (decimal.replace(/0+$/, '') === '') {
   //     decimal = '';
@@ -116,6 +107,15 @@ export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean
   //   return `${final[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}${final[1] ? `.${final[1]}` : ''}`;
   // }
   // return `${splitNumber[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+};
+
+const removeMinusInFrontOfZero = (str: string): string => {
+  // Check if the string starts with "-0"
+  if (str.startsWith('-0')) {
+    // Remove the minus sign from the string
+    str = `${str.slice(1)}`;
+  }
+  return str;
 };
 
 export const roundCryptoValueString = (desiredNumber: number, decimalPlaces: number = 18) => {
@@ -133,4 +133,13 @@ export const roundNumber = (num: number, rlength: number) => {
 export const formatNumberFromBeaconcha = (num: number) => {
   // eslint-disable-next-line no-bitwise
   return formatNumberToUi(num * 10 ** -9);
+};
+
+export const propertyCostByPeriod = (value: number, days: number) => {
+  const wrapFee = new Decimal(value);
+  return Number(wrapFee.mul(7160).mul(days ?? 1).toFixed( 2));
+};
+
+export const operatorCostForYear = (value: number) => {
+  return value * 2613400;
 };

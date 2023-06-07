@@ -1,42 +1,53 @@
 import axios from 'axios';
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 
 class FaucetStore extends BaseStore {
-    @observable amountToTransfer: any;
-    @observable pendingTransaction: any;
-    @observable addressTransactions: any;
+    amountToTransfer: any;
+    pendingTransaction: any;
+    addressTransactions: any;
 
-    @action.bound
+    constructor() {
+        // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
+        super();
+
+        makeObservable(this, {
+            amountToTransfer: observable,
+            pendingTransaction: observable,
+            addressTransactions: observable,
+            getLatestTransactions: action.bound,
+            registerNewTransaction: action.bound,
+            registerSSVTokenInMetamask: action.bound,
+        });
+    }
+
     async registerNewTransaction() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = `${process.env.REACT_APP_OPERATORS_ENDPOINT}/faucet`;
+            const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet`;
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
             return { status: true };
-        } catch (e) {
+        } catch (e: any) {
             return { status: false, type: e.response.data.error.message === 'Reached max transactions per day' ? 1 : 2 };
         }
     }
 
-    @action.bound
     async getLatestTransactions() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = `${process.env.REACT_APP_OPERATORS_ENDPOINT}/faucet`;
+            const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet`;
             this.pendingTransaction = await axios.get(faucetUrl, { params: { owner_address: walletStore.accountAddress } });
             return true;
         } catch (e) {
             return false;
         }
     }
-    
+
     /**
      * @url https://docs.metamask.io/guide/registering-your-token.html
      */
-    @action.bound
     registerSSVTokenInMetamask() {
         return new Promise((resolve, reject) => {
             return this.getStore('Wallet').web3.currentProvider.send({

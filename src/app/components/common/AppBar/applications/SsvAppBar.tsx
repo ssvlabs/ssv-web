@@ -1,26 +1,24 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/components/common/AppBar/AppBar';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 const SsvAppBar = () => {
   const stores = useStores();
-  const history = useHistory();
-  const location = useLocation();
+  const navigate = useNavigate();
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
-  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
-  const backgroundColor = location.pathname.includes(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT)
-  || location.pathname.includes(config.routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT)
-    ? applicationStore.theme.colors.white
-    : '';
+  const hasOperatorsOrClusters = [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD, config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD].includes(applicationStore.strategyRedirect);
+  const backgroundColor = applicationStore.theme.colors.white;
 
   const moveToDashboard = () => {
     if (applicationStore.isLoading) return;
-    if (hasOperatorsOrValidators) {
+    if (hasOperatorsOrClusters) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
       GoogleTagManager.getInstance().sendEvent({
@@ -28,7 +26,11 @@ const SsvAppBar = () => {
         action: 'click',
         label: 'My Account',
       });
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      if (myAccountStore.ownerAddressClusters?.length > 0) {
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD); 
+      } else {
+        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+      }
     }
   };
   const openDocs = () => {
@@ -46,7 +48,7 @@ const SsvAppBar = () => {
       action: 'click',
       label: 'Explorer',
     });
-    window.open(config.links.LINK_EXPLORER);
+    window.open(config.links.EXPLORER_URL);
   };
 
   const buttons = [

@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles(() => ({
     Container: {
@@ -7,7 +7,6 @@ export const useStyles = makeStyles(() => ({
         marginTop: (props: any) => props.editPage ? 20 : '',
         '@media only screen and (max-width: 1400px)': {
             justifyContent: 'center',
-            // flexDirection: 'column-reverse',
         },
     },
     FirstSquare: {

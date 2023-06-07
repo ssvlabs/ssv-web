@@ -1,6 +1,6 @@
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -12,7 +12,7 @@ import { useStyles } from './AppBar.styles';
 
 const SsvAppBar = () => {
   const stores = useStores();
-  const history = useHistory();
+  const navigate = useNavigate();
   const wrapperRef = useRef(null);
   const buttonsRef = useRef(null);
   const [width, setWidth] = useState(window.innerWidth);
@@ -20,7 +20,7 @@ const SsvAppBar = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const [showMobileBar, setMobileBar] = useState(false);
   const isDistribution = applicationStore.strategyName === 'distribution';
-  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
 
   const classes = useStyles({
     isDistribution,
@@ -72,7 +72,7 @@ const SsvAppBar = () => {
       action: 'click',
       label: 'Explorer',
     });
-    window.open(config.links.LINK_EXPLORER);
+    window.open(config.links.EXPLORER_URL);
   }
 
   function openDocs() {
@@ -89,7 +89,7 @@ const SsvAppBar = () => {
     if (hasOperatorsOrValidators) {
       // @ts-ignore
       applicationStore.whiteNavBarBackground = false;
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }
   };
 
@@ -148,7 +148,7 @@ const SsvAppBar = () => {
     if (applicationStore.isLoading) return;
     // @ts-ignore
     applicationStore.whiteNavBarBackground = false;
-    history.push(config.routes.SSV.ROOT);
+    navigate(config.routes.SSV.ROOT);
   };
 
   const MobileButtons = () => {

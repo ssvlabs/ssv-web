@@ -1,5 +1,10 @@
 module.exports = {
   extends: 'airbnb-typescript',
+  plugins: [
+    'react',
+    'jsx-a11y',
+    'import',
+  ],
   rules: {
     'prettier/prettier': 0,
     // A temporary hack related to IDE not resolving correct package.json
@@ -111,6 +116,9 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
         moduleDirectory: ['node_modules', 'app/'],
       },
+    },
+    react: {
+      version: 'detect',
     },
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],

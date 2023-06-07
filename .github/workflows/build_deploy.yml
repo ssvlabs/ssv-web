@@ -14,11 +14,52 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    env:
+      STAGE_SSV_NETWORKS: >
+        [
+          {
+            \"networkId\": 5,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"prater\",
+            \"api\": \"https://api.stage.ssv.network/api\",
+            \"explorerUrl\": \"https://explorer.stage.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
+            \"setterContractAddress\": \"${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+          }
+        ]
+      PROD_SSV_NETWORKS: >
+        [
+          {
+            \"networkId\": 1,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"mainnet\",
+            \"api\": \"https://api.ssv.network/api\",
+            \"explorerUrl\": \"https://beta.explorer.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x3a9f01091C446bdE031E39ea8354647AFef091E7\",
+            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
+          },
+          {
+            \"networkId\": 5,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"prater\",
+            \"api\": \"https://api.ssv.network/api\",
+            \"explorerUrl\": \"https://goerli.explorer.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
+            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_TESTNET }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_TESTNET }}\"
+          }
+        ]
+
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/cache@v2
         with:
+          node-version: 16.15.1
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
@@ -31,24 +72,24 @@ jobs:
 
       - name: Run test
         run: yarn test
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run stage ssv-web build
+
+      # <app.stage.ssv.network>
+      - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
+          BLOX_INFRA_API="$BLOX_INFRA_API" 
+          DISTRIBUTION_CONTRACT_ADDRESS="$DISTRIBUTION_CONTRACT_ADDRESS" 
+          yarn build
         env:
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.stage.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
-          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
-          OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 
-      - name: Deploy stage ssv-web
+      - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
@@ -56,123 +97,26 @@ jobs:
         env:
           SOURCE_DIR: 'build/'
           AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_V4 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      # </app.stage.ssv.network>
 
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run stage faucet build
-        if: github.ref == 'refs/heads/stage'
-        run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
-        env:
-          REACT_APP_FAUCET_PAGE: "true"
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.stage.ssv.network/"
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
-          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
-          OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
-
-      - name: Deploy stage faucet
-        if: github.ref == 'refs/heads/stage'
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.STAGE_FAUCET_AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run stage Claim build
-        if: github.ref == 'refs/heads/stage'
-        run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
-        env:
-          PROD_CLAIM_PAGE: "true"
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.stage.ssv.network"
-          BLOX_INFRA_API: 'https://api.stage.bloxstaking.com'
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          GOOGLE_TAG_SECRET: ${{ secrets.STAGE_GOOGLE_TAG_SECRET }}
-          OPERATORS_ENDPOINT: ${{ secrets.STAGE_OPERATORS_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_SSV_CONTRACT_ADDRESS }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_V2_NETWORK_CONTRACT_ADDRESS }}
-          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
-
-      - name: Deploy claim stage
-        if: github.ref == 'refs/heads/stage'
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.STAGE_V2_AWS_S3_BUCKET_CLAIM }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (stage)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-      ##      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      #      - name: Run prod build
-      #        if: github.ref == 'refs/heads/main'
-      #        run: >
-      #          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-      #          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
-      #        env:
-      #          PROD_CLAIM_PAGE: ""
-      #          BLOX_INFRA_API: 'https://api.bloxstaking.com'
-      #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-      #          EXPLORER_URL: "https://explorer.shifu.ssv.network"
-      #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-      #          GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
-      #          OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
-      #          SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
-      #          NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
-      #          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
-      #
-      #      - name: Deploy prod
-      #        if: github.ref == 'refs/heads/main'
-      #        uses: jakejarvis/s3-sync-action@v0.5.0
-      #        with:
-      #          args: --acl public-read --follow-symlinks --delete
-      #        env:
-      #          SOURCE_DIR: 'build/'
-      #          AWS_REGION: 'us-west-2'
-      #          AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET }}
-      #          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
-      #          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-      ##      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run prod build claim
+      # <beta.app.ssv.network>
+      - name: Run prod webapp build
         if: github.ref == 'refs/heads/main'
         run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
+          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
+          BLOX_INFRA_API="$BLOX_INFRA_API"  
+          yarn build
         env:
-          PROD_CLAIM_PAGE: "true"
-          BLOX_INFRA_API: 'https://api.bloxstaking.com'
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
-          OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_SSV_CONTRACT_ADDRESS }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
-          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
+          BLOX_INFRA_API: "https://api.bloxstaking.com"
 
-
-      - name: Deploy prod claim
+      - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
@@ -180,67 +124,7 @@ jobs:
         env:
           SOURCE_DIR: 'build/'
           AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET_CLAIM }}
+          AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET_V4 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<claim-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run prod ssv-web build
-        if: github.ref == 'refs/heads/main'
-        run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
-        env:
-          PROD_CLAIM_PAGE: ""
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer-v2.ssv.network"
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          BLOX_INFRA_API: 'https://api.bloxstaking.com'
-          GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
-          OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_V2_SSV_CONTRACT_ADDRESS }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS_V2 }}
-          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
-
-
-      - name: Deploy prod ssv-web
-        if: github.ref == 'refs/heads/main'
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.PROD_V2_AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ssv-web (prod) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-      #      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<faucet-web (prod)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-      - name: Run prod faucet build
-        if: github.ref == 'refs/heads/main'
-        run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
-        env:
-          REACT_APP_FAUCET_PAGE: "true"
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.ssv.network/"
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
-          OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.PROD_V2_SSV_CONTRACT_ADDRESS }}
-
-      - name: Deploy prod faucet
-        if: github.ref == 'refs/heads/main'
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.PROD_FAUCET_AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      # </beta.app.ssv.network>

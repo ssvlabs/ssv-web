@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     Status: {
         borderRadius: 4,
         '& p': {
@@ -10,6 +11,12 @@ export const useStyles = makeStyles((theme) => ({
             textTransform: 'capitalize',
             // padding: '1px 6px',
         },
+    },
+    IsDeleted: {
+        width: 73,
+        height: 26,
+        color: theme.colors.primaryError,
+        backgroundColor: theme.colors.gray20,
     },
     Active: {
         width: 54,

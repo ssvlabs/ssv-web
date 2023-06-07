@@ -12,35 +12,27 @@ process.on('unhandledRejection', err => {
 
 // Ensure environment variables are read.
 require('../config/env');
-
 const fs = require('fs');
-const chalk = require('react-dev-utils/chalk');
+const semver = require('semver');
 const webpack = require('webpack');
+const paths = require('../config/paths');
+const chalk = require('react-dev-utils/chalk');
+const getClientEnvironment = require('../config/env');
 const WebpackDevServer = require('webpack-dev-server');
+const configFactory = require('../config/webpack.config');
+const openBrowser = require('react-dev-utils/openBrowser');
 const clearConsole = require('react-dev-utils/clearConsole');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
-const {
-  choosePort,
-  createCompiler,
-  prepareProxy,
-  prepareUrls,
-} = require('react-dev-utils/WebpackDevServerUtils');
-const openBrowser = require('react-dev-utils/openBrowser');
-const semver = require('semver');
-const paths = require('../config/paths');
-const configFactory = require('../config/webpack.config');
 const createDevServerConfig = require('../config/webpackDevServer.config');
-const getClientEnvironment = require('../config/env');
 const react = require(require.resolve('react', { paths: [paths.appPath] }));
+const { choosePort, createCompiler, prepareProxy, prepareUrls } = require('react-dev-utils/WebpackDevServerUtils');
 
 const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
-if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
-  process.exit(1);
-}
+if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) process.exit(1);
 
 // Tools like Cloud9 rely on this.
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
@@ -105,6 +97,7 @@ checkBrowsers(paths.appPath, isInteractive)
       tscCompileOnError,
       webpack,
     });
+
     // Load proxy config
     const proxySetting = require(paths.appPackageJson).proxy;
     const proxyConfig = prepareProxy(

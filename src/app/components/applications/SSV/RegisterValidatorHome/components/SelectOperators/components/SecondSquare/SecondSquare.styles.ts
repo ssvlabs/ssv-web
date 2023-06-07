@@ -1,13 +1,14 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   ScreenWrapper: {
     width: '100%',
     marginBottom: 100,
-    marginTop: (props: any) => props.editPage ? '' : 28,
+    marginTop: (props: any) => props.editPage ? '' : 82,
     '@media only screen and (max-width: 1400px)': {
-      marginTop: 24,
       marginBottom: 24,
+      marginTop: '8px !important',
     },
   },
   DeleteOperator: {
@@ -104,6 +105,7 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.colors.primaryBlue,
   },
   TotalFeesWrapper: {
+    justifyContent: 'space-between',
     marginBottom: theme.spacing(10),
   },
   TotalFeesHeader: {

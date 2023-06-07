@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Route } from 'react-router-dom';
+import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Layout from '~app/components/common/Layout/Layout';
@@ -13,19 +13,22 @@ import CountryNotSupported from '~app/components/applications/SSV/CountryNotSupp
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 const Routes: any = () => {
-    const stores = useStores();
-    const walletStore: WalletStore = stores.Wallet;
-    const distributionStore: DistributionStore = stores.Distribution;
+  const stores = useStores();
+  const walletStore: WalletStore = stores.Wallet;
+  const distributionStore: DistributionStore = stores.Distribution;
 
-    return (
-      <Layout>
-        <DistributionAppBar />
-        <Route exact path={config.routes.COUNTRY_NOT_SUPPORTED} component={CountryNotSupported} />
-        {walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.ROOT} component={Claim} />}
-        {!walletStore.connected && <Route exact path={config.routes.DISTRIBUTION.ROOT} component={DistributionWelcome} />}
-        {distributionStore.userWithdrawRewards && <Route exact path={config.routes.DISTRIBUTION.SUCCESS} component={Success} />}
-      </Layout>
-    );
+  return (
+    <Layout>
+      <DistributionAppBar />
+      <Wrapper>
+        <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
+        {walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<Claim />} />}
+        {!walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<DistributionWelcome />} />}
+        {distributionStore.userWithdrawRewards &&
+          <Route path={config.routes.DISTRIBUTION.SUCCESS} element={<Success />} />}
+      </Wrapper>
+    </Layout>
+  );
 };
 
 export default observer(Routes);

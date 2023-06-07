@@ -1,28 +1,20 @@
+import React from 'react';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 import { useStyles } from './ToolTip.styles';
-import Typography from '@material-ui/core/Typography';
+import AnchorTooltip from './components/AnchorTooltip';
 
 type ToolTipProps = {
   text?: any,
+  classExtend?: string,
+  placement?: 'top' | 'bottom' | 'left' | 'right',
 };
 
-const ToolTip = ({ text }: ToolTipProps) => {
-  const [isShown, setIsShown] = useState(false);
+const ToolTip = ({ text, classExtend, placement }: ToolTipProps) => {
   const classes = useStyles();
 
-  return (
-    <Grid className={classes.ToolTipWrapper}
-      onMouseEnter={() => setIsShown(true)}
-      onMouseLeave={() => setIsShown(false)}
-    >
-      {isShown && (
-        <Grid className={classes.toolTipText}>
-          <Typography>{text}</Typography>
-        </Grid>
-      )}
-    </Grid>
-  );
+  return <AnchorTooltip title={text} placement={placement || 'top'}>
+    <Grid className={`${classes.ToolTipWrapper} ${classExtend}`} />
+  </AnchorTooltip>;
 };
 export default observer(ToolTip);

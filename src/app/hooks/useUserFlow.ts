@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 // import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -23,7 +23,7 @@ const operatorConfirmation: IUserFlow = {
     condition: () => {
         const stores = useStores();
         const operatorStore: OperatorStore = stores.Operator;
-        return !!operatorStore.newOperatorKeys.pubKey && !!operatorStore.newOperatorKeys.name;
+        return !!operatorStore.newOperatorKeys.pubKey;
     },
 };
 
@@ -64,7 +64,7 @@ const validatorConfirmationFlow: IUserFlow = {
     },
 };
 
-const successScreen: IUserFlow = {
+const successScreens: IUserFlow = {
     name: 'Success Screen',
     route: [
         routes.SSV.VALIDATOR.SUCCESS_PAGE,
@@ -80,12 +80,12 @@ const successScreen: IUserFlow = {
 
 const myAccountScreen: IUserFlow = {
     name: 'My Account',
-    route: routes.SSV.MY_ACCOUNT.DASHBOARD,
+    route: routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD,
 };
 
-const EnableAccountScreen: IUserFlow = {
+const ReactivateClusterScreen: IUserFlow = {
     name: 'Enable Account',
-    route: routes.SSV.MY_ACCOUNT.ENABLE_ACCOUNT,
+    route: routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE,
     depends: [
         myAccountScreen,
     ],
@@ -93,7 +93,7 @@ const EnableAccountScreen: IUserFlow = {
 
 const SingleValidatorScreen: IUserFlow = {
     name: 'Single Validator',
-    route: routes.SSV.MY_ACCOUNT.VALIDATOR.ROOT,
+    route: routes.SSV.MY_ACCOUNT.CLUSTER.ROOT,
     depends: [
         myAccountScreen,
     ],
@@ -101,13 +101,13 @@ const SingleValidatorScreen: IUserFlow = {
 };
 
 const userFlows: IUserFlow[] = [
-    successScreen,
+    successScreens,
     myAccountScreen,
-    EnableAccountScreen,
     importValidatorFlow,
     slashingWarningFlow,
     operatorConfirmation,
     SingleValidatorScreen,
+    ReactivateClusterScreen,
     validatorConfirmationFlow,
 ];
 
@@ -143,17 +143,17 @@ const dispatchUserFlow = (
 };
 
 const setUserFlow = (userFlow: string) => {
-    localStorage.setItem('userFlow', userFlow);
+    window.localStorage.setItem('userFlow', userFlow);
 };
 
 const getUserFlow = () => {
-    return localStorage.getItem('userFlow');
+    return window.localStorage.getItem('userFlow');
 };
 
 const useUserFlow = () => {
-    const history = useHistory();
-    const currentRoute = useRouteMatch();
-    const requiredFlow = dispatchUserFlow(userFlows, currentRoute.path);
+    const navigate = useNavigate();
+    // @ts-ignore
+    const requiredFlow = dispatchUserFlow(userFlows, useLocation().pathname);
 
     let redirectUrl;
     if (requiredFlow) {
@@ -166,8 +166,8 @@ const useUserFlow = () => {
         setUserFlow,
         getUserFlow,
         routes,
-        history,
-        path: currentRoute.path,
+        navigate,
+        path: useLocation().pathname,
         flows: userFlows,
         requiredFlow,
         redirectUrl,

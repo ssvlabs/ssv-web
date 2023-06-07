@@ -1,8 +1,8 @@
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { makeStyles, createStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme) => createStyles({
+export const useStyles = makeStyles((theme: Theme) => createStyles({
     Root: {
-        width: '100%',
         '& p, select, input': {
             fontSize: 16,
             fontWeight: 500,
@@ -11,7 +11,11 @@ export const useStyles = makeStyles((theme) => createStyles({
         },
         textAlign: 'center',
         alignItems: 'center',
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
         padding: '20px 32px 32px 32px',
+        backgroundColor: theme.colors.white,
+        borderTop: `solid 1px ${theme.colors.gray20}`,
     },
     PageRangeText: {
         fontSize: 16,
@@ -35,16 +39,12 @@ export const useStyles = makeStyles((theme) => createStyles({
     ButtonsWrapper: {
         gap: 8,
         alignItems: 'center',
-        justifyContent: 'flex-end',
     },
     LeftArrows: {
         width: 36,
         height: 36,
         padding: 6,
-        borderRadius: 8,
-        cursor: (props: any) => props.firstPage ? 'normal' : 'pointer',
-        backgroundColor: (props: any) => props.firstPage ? theme.colors.gray10 : theme.colors.white,
-        border: (props: any) => `solid 1px ${props.firstPage ? theme.colors.gray20 : theme.colors.gray30}`,
+        cursor: 'pointer',
         '& div': {
             width: 24,
             height: 24,
@@ -58,11 +58,7 @@ export const useStyles = makeStyles((theme) => createStyles({
         width: 36,
         height: 36,
         padding: 6,
-        borderRadius: 8,
-        cursor: (props: any) => props.lastPage ? 'normal' : 'pointer',
-        backgroundColor: (props: any) => props.lastPage ? theme.colors.gray10 : theme.colors.white,
-        // eslint-disable-next-line no-nested-ternary
-        border: (props: any) => `solid 1px ${props.lastPage ? theme.colors.gray20 : theme.colors.gray30}`,
+        cursor: 'pointer',
         '& div': {
             width: 24,
             height: 24,
@@ -77,17 +73,8 @@ export const useStyles = makeStyles((theme) => createStyles({
         backgroundImage: (props: any) => {
             if (props.firstPage || theme.darkMode) {
                 return 'url(/images/page_arrows/single/disable.svg)';
-            } 
-                return 'url(/images/page_arrows/single/black.svg)';
-        },
-    },
-    ManyLeft: {
-        // cursor: (props: any) => props.firstPage ? 'auto' : 'pointer',
-        backgroundImage: (props: any) => {
-            if (props.firstPage || theme.darkMode) {
-                return 'url(/images/page_arrows/many/disable.svg)';
             }
-            return 'url(/images/page_arrows/many/black.svg)';
+                return 'url(/images/page_arrows/single/black.svg)';
         },
     },
     SingleRight: {
@@ -98,16 +85,6 @@ export const useStyles = makeStyles((theme) => createStyles({
                 return 'url(/images/page_arrows/single/disable.svg)';
             }
             return 'url(/images/page_arrows/single/black.svg)';
-        },
-    },
-    ManyRight: {
-        transform: 'scaleX(-1)',
-        cursor: (props: any) => props.lastPage ? 'auto' : 'pointer',
-        backgroundImage: (props: any) => {
-            if (props.lastPage || theme.darkMode) {
-                return 'url(/images/page_arrows/many/disable.svg)';
-            }
-            return 'url(/images/page_arrows/many/black.svg)';
         },
     },
     PageNumber: {

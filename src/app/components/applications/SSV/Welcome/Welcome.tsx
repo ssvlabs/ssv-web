@@ -1,8 +1,8 @@
 import React from 'react';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
 import config from '~app/common/config';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -15,7 +15,7 @@ import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styl
 const Welcome = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
 
@@ -33,15 +33,15 @@ const Welcome = () => {
         <Grid container>
           <HeaderSubHeader
             title={'Join the SSV Network'}
-            subtitle={'Run your validator on the decentralized infrastructure of Ethereum staking or help maintain it as one of its operators'}
+            subtitle={'Distribute your validator to run on the SSV network or help maintain it as one of its operators.'}
           />
           <Grid container item className={classes.LinkButtonsWrapper}>
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
                 withVerifyConnection
-                text={'Run Validator'}
+                text={'Distribute Validator'}
                 submitFunction={() => {
-                  walletStore.connected && history.push(config.routes.SSV.VALIDATOR.HOME);
+                  walletStore.connected && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
               />
             </Grid>
@@ -50,7 +50,7 @@ const Welcome = () => {
                 withVerifyConnection
                 text={'Join as Operator'}
                 submitFunction={() => {
-                  walletStore.connected && history.push(config.routes.SSV.OPERATOR.HOME);
+                  walletStore.connected && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}
               />
             </Grid>

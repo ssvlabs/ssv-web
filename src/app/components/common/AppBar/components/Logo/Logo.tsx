@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { getImage } from '~lib/utils/filePath';
 
 const Logo = styled.img`
-  vertical-align: center;
   display: flex;
+  vertical-align: center;
   margin: auto auto auto 0;
 `;
 

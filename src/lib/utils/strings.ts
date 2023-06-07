@@ -1,6 +1,13 @@
-export const longStringShorten = (key: string, firstFriction: number = 10, secondFriction: number = firstFriction) => {
-  if (!key) return '';
-  return `${key.substr(0, firstFriction)}...${key.substr(key.length - secondFriction, secondFriction)}`;
+export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
+  if (!value) return '';
+  if (replacements) {
+        for (let key in replacements) {
+            value = value.replace(replacements[key], key);
+        }
+    }
+  let str = `${value.substr(0, firstFriction)}...${value.substr(value.length - secondFriction, secondFriction)}`;
+
+  return str;
 };
 
 export const normalizeNumber = (number: number, friction: number = 2) => {

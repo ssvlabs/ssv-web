@@ -1,5 +1,6 @@
-import { action, computed, observable } from 'mobx';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -14,24 +15,55 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 
 class ApplicationStore extends BaseStore implements Application {
   // @ts-ignore
-  @observable theme: Theme;
-  @observable txHash: string = '';
-  @observable userGeo: string = '';
-  @observable darkMode: boolean = false;
-  @observable toolBarMenu: boolean = false;
-  @observable walletPopUp: boolean = false;
-  @observable strategyName: string = 'ssv-web';
-  @observable isShowingLoading: boolean = false;
-  @observable runningProcess: string = 'ssv-web';
-  @observable walletConnectivity: boolean = false;
-  @observable whiteNavBarBackground: boolean = false;
-  @observable transactionPendingPopUp: boolean = false;
-  @observable appTitle: string = 'SSV Network Testnet';
-  @observable strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.DASHBOARD;
+  theme: Theme;
+  txHash: string = '';
+  userGeo: string = '';
+  darkMode: boolean = false;
+  toolBarMenu: boolean = false;
+  walletPopUp: boolean = false;
+  strategyName: string = 'ssv-web';
+  isShowingLoading: boolean = false;
+  runningProcess: string = 'ssv-web';
+  walletConnectivity: boolean = false;
+  whiteNavBarBackground: boolean = false;
+  transactionPendingPopUp: boolean = false;
+  appTitle: string = 'SSV Network Testnet';
+  strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
   locationRestrictionEnabled: boolean = false;
 
   constructor() {
     super();
+    makeObservable(this, {
+      theme: observable,
+      txHash: observable,
+      userGeo: observable,
+      isLoading: computed,
+      darkMode: observable,
+      appTitle: observable,
+      isDarkMode: computed,
+      localStorage: computed,
+      toolBarMenu: observable,
+      walletPopUp: observable,
+      strategyName: observable,
+      runningProcess: observable,
+      setIsLoading: action.bound,
+      cancelProcess: action.bound,
+      strategyRedirect: observable,
+      isShowingLoading: observable,
+      switchDarkMode: action.bound,
+      showWalletPopUp: action.bound,
+      walletConnectivity: observable,
+      applicationRoutes: action.bound,
+      setTransactionHash: action.bound,
+      displayToolBarMenu: action.bound,
+      whiteNavBarBackground: observable,
+      transactionPendingPopUp: observable,
+      setApplicationProcess: action.bound,
+      setWalletConnectivity: action.bound,
+      setWhiteNavBarBackground: action.bound,
+      showTransactionPendingPopUp: action.bound,
+    });
+
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     if (darkModeSaved) {
@@ -44,71 +76,65 @@ class ApplicationStore extends BaseStore implements Application {
     }
   }
 
-  @action.bound
   setApplicationProcess(process: string) {
     this.runningProcess = process;
   }
 
-  @action.bound
   setTransactionHash(txHash: string) {
     this.txHash = txHash;
   }
 
-  @action.bound
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
   }
 
-  @action.bound
   setIsLoading(status: boolean) {
     this.isShowingLoading = status;
   }
 
-  @action.bound
   setWhiteNavBarBackground(status: boolean) {
     this.whiteNavBarBackground = status;
   }
 
-  @action.bound
   cancelProcess() {
     const validatorStore: ValidatorStore = this.getStore('Validator');
-    validatorStore.clearValidatorData();
+    validatorStore.clearKeyStoreFlowData();
     this.runningProcess = '';
   }
 
-  @action.bound
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const walletStore: WalletStore = this.getStore('Wallet');
     walletStore.onboardSdk.config({ darkMode: isDarkMode });
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
-    this.theme = createMuiTheme(AppTheme({ isDarkMode: this.isDarkMode }));
+    this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  @action.bound
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
   }
 
-  @action.bound
   applicationRoutes() {
-    return require('~app/common/stores/applications/SsvWeb/Routes.tsx').default;
+    try {
+      return require('~app/common/stores/applications/SsvWeb/Routes').default;
+    } catch (e: any) {
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log(e.message);
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    }
   }
 
-  @action.bound
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
   }
 
-  @action.bound
   setWalletConnectivity(show: boolean) {
     this.walletConnectivity = show;
   }
 
-  @computed
   get localStorage() {
     try {
-      return localStorage;
+      return window.localStorage;
     } catch (e) {
       return {
         getItem(key: string): string | null {
@@ -124,12 +150,10 @@ class ApplicationStore extends BaseStore implements Application {
     }
   }
 
-  @computed
   get isLoading() {
     return this.isShowingLoading;
   }
 
-  @computed
   get isDarkMode() {
     return this.darkMode;
   }

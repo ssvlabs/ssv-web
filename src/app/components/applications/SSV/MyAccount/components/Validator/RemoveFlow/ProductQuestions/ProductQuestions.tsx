@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import { useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import Checkbox from '~app/components/common/CheckBox';
@@ -13,8 +13,8 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/componenets/ValidatorWhiteHeader';
 import { useStyles } from './ProductQuestions.styles';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 
 const checkBoxTypes: any = {
   1: 'fees',
@@ -25,7 +25,7 @@ const checkBoxTypes: any = {
 
 const ProductQuestions = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = React.useState('');
   const [textFieldOpen, setTextFieldOpen] = React.useState(false);
   const [thankYouDialog, openThankYouDialog] = React.useState(false);
@@ -54,7 +54,7 @@ const ProductQuestions = () => {
       .sendEvent({ category: 'remove', action: checkBoxTypes[selectedCheckbox], label: inputValue });
     setTimeout(() => {
       openThankYouDialog(false);
-      history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }, 3000);
   };
 
@@ -63,7 +63,7 @@ const ProductQuestions = () => {
       category: 'remove',
       action: 'my_account',
     });
-    history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
   const isDisabled = (type: number) => {
@@ -72,7 +72,7 @@ const ProductQuestions = () => {
 
   return (
     <Grid container item>
-      <ValidatorWhiteHeader withBackButton={false} withoutExplorer withCancel={false} text={'Remove Validator'} />
+      <NewWhiteWrapper type={0} header={'Cluster'} />
       <BorderScreen
         blackHeader
         withoutNavigation

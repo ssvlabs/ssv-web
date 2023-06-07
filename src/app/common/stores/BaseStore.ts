@@ -2,10 +2,13 @@
  * Base store provides singe source of true
  * for keeping all stores instances in one place
  */
-
 class BaseStore {
   protected static stores: Record<string, any> = {};
   protected static instance: BaseStore | null = null;
+
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+  }
 
   /**
    * Return stores registry to use it in provider and context
@@ -50,13 +53,13 @@ class BaseStore {
     const storeNameParts = name.split('/');
     const storeName = storeNameParts[storeNameParts.length - 1];
     if (!BaseStore.stores[storeName]) {
-        // @ts-ignore
-        const isTest: boolean = window?.Cypress;
-        try {
-            const StoreClass = require(`~app/common/stores/applications/${this.applicationStrategy()}/${isTest ? 'WalletTest' : name}.store`).default;
-            BaseStore.stores[storeName] = new StoreClass();
-        } catch (e) {
-            // console.log(e);
+      // @ts-ignore
+      const isTest: boolean = window?.Cypress;
+      try {
+        const StoreClass = require(`~app/common/stores/applications/${this.applicationStrategy()}/${isTest ? 'WalletTest' : name}.store`).default;
+        BaseStore.stores[storeName] = new StoreClass();
+      } catch (e: any) {
+        console.log('error: ', storeName, e.message);
       }
     }
     return BaseStore.stores[storeName];

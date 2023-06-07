@@ -10,6 +10,7 @@ import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
 // @ts-ignore
 window.crypto = {
+    // @ts-ignore
     getRandomValues(buffer: Buffer) { return crypto.randomFillSync(buffer); },
 };
 

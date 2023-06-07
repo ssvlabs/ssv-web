@@ -1,4 +1,5 @@
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
   Wrapper: {
@@ -15,11 +16,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontSize: 16,
     fontWeight: 500,
     lineHeight: 1.62,
-    overflow: 'hidden',
+    overflow: 'scroll',
     whiteSpace: 'nowrap',
     marginRight: 5,
-    textOverflow: 'ellipsis',
+    // textOverflow: 'ellipsis',
     color: theme.colors.gray60,
+    '&::-webkit-scrollbar': {
+      display: 'none',  /* Safari and Chrome */
+    },
   },
   CopyImage: {
     width: 24,

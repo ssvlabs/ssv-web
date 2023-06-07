@@ -2,14 +2,13 @@ import Web3 from 'web3';
 import Notify from 'bnc-notify';
 import Onboard from 'bnc-onboard';
 import { Contract } from 'web3-eth-contract';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, makeObservable } from 'mobx';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
-import Validator from '~lib/api/Validator';
 import ApiParams from '~lib/api/ApiParams';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
+import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -17,23 +16,57 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
+const GOERLI_NETWORK_ID = 5;
+const PROVIDER_WALLET_CONNECT = 'WalletConnect';
+const LOCAL_STORAGE_WALLET_KEY = 'selectedWallet';
+const LOCAL_STORAGE_WALLET_CONNECT_PARAMS_KEY = 'walletconnect';
 class WalletStore extends BaseStore implements Wallet {
-  @observable web3: any = null;
-  @observable wallet: any = null;
-  @observable notifySdk: any = null;
-  @observable onboardSdk: any = null;
-  @observable accountAddress: string = '';
-  @observable wrongNetwork: boolean = false;
-  @observable networkId: number | null = null;
-  @observable accountDataLoaded: boolean = false;
 
-  private contract: Contract | undefined;
+  web3: any = null;
+  wallet: any = null;
+  notifySdk: any = null;
+  onboardSdk: any = null;
+  accountAddress: string = '';
+  wrongNetwork: boolean = false;
+  networkId: number | null = null;
+  accountDataLoaded: boolean = false;
+
+  private viewContract: Contract | undefined;
+  private networkContract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
   constructor() {
     super();
+    makeObservable(this, {
+      web3: observable,
+      wallet: observable,
+      connected: computed,
+      toWei: action.bound,
+      networkId: observable,
+      notifySdk: observable,
+      connect: action.bound,
+      fromWei: action.bound,
+      onboardSdk: observable,
+      decodeKey: action.bound,
+      resetUser: action.bound,
+      encodeKey: action.bound,
+      isWrongNetwork: computed,
+      wrongNetwork: observable,
+      getterContract: computed,
+      setterContract: computed,
+      accountAddress: observable,
+      onWalletConnectedCallback: action.bound,
+      onAccountAddressChangeCallback: action.bound,
+      onBalanceChangeCallback: action.bound,
+      onNetworkChangeCallback: action.bound,
+      initWalletHooks: action.bound,
+      accountDataLoaded: observable,
+      initializeUserInfo: action.bound,
+      setAccountDataLoaded: action.bound,
+      connectWalletFromCache: action.bound,
+    });
     this.initWalletHooks();
   }
 
@@ -45,7 +78,6 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
-  @action.bound
   initWalletHooks() {
     if (this.onboardSdk) return;
     const connectionConfig = {
@@ -55,13 +87,14 @@ class WalletStore extends BaseStore implements Wallet {
         wallets,
       },
       subscriptions: {
-        wallet: this.walletHandler,
-        address: this.addressHandler,
-        network: this.networkHandler,
-        balance: this.balanceHandler,
+        network: this.onNetworkChangeCallback,
+        balance: this.onBalanceChangeCallback,
+        wallet: this.onWalletConnectedCallback,
+        address: this.onAccountAddressChangeCallback,
       },
     };
     console.debug('OnBoard SDK Config:', connectionConfig);
+
     this.onboardSdk = Onboard(connectionConfig);
     const notifyOptions = {
       dappId: config.ONBOARD.API_KEY,
@@ -75,18 +108,16 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Initialize Account data from contract
    */
-  @action.bound
   async initializeUserInfo() {
     try {
       // await this.operatorStore.validatorsPerOperatorLimit();
       await this.ssvStore.initUser();
       await this.operatorStore.initUser();
-    } catch (e) {
+    } catch (e: any) {
       console.log(e.message);
     }
   }
 
-  @action.bound
   fromWei(amount?: number | string): number {
     if (!amount) return 0;
     if (typeof amount === 'number' && amount === 0) return 0;
@@ -95,7 +126,6 @@ class WalletStore extends BaseStore implements Wallet {
     return parseFloat(this.web3.utils.fromWei(amount.toString(), 'ether'));
   }
 
-  @action.bound
   toWei(amount?: number | string): string {
     if (!amount) return '0';
     // eslint-disable-next-line no-param-reassign
@@ -104,14 +134,13 @@ class WalletStore extends BaseStore implements Wallet {
     if (typeof amount === 'string') amount = amount.slice(0, 16);
     return this.web3.utils.toWei(amount.toString(), 'ether');
   }
-
   /**
    * Check wallet cache and connect
    */
-  @action.bound
   async connectWalletFromCache() {
-    const selectedWallet: any = window.localStorage.getItem('selectedWallet');
-    if (selectedWallet && selectedWallet !== 'undefined') {
+    const selectedWallet: any = window.localStorage.getItem(LOCAL_STORAGE_WALLET_KEY);
+    const walletCondition = selectedWallet === PROVIDER_WALLET_CONNECT ? !!window.localStorage.getItem(LOCAL_STORAGE_WALLET_CONNECT_PARAMS_KEY) : selectedWallet && selectedWallet !== 'undefined';
+    if (walletCondition) {
       await this.onboardSdk.walletSelect(selectedWallet);
       await this.onboardSdk.walletCheck();
     } else {
@@ -125,7 +154,6 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Connect wallet
    */
-  @action.bound
   async connect() {
     try {
       console.debug('Connecting wallet..');
@@ -143,38 +171,48 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param address: string
    */
-  @action.bound
-  async addressHandler(address: string) {
+  async onAccountAddressChangeCallback(address: string) {
     this.setAccountDataLoaded(false);
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const ssvStore: SsvStore = this.getStore('SSV');
     if (address === undefined || !this.wallet?.name) {
+      ssvStore.clearUserSyncInterval();
       await this.resetUser();
+      setTimeout(() => {
+        this.setAccountDataLoaded(true);
+      }, 1000);
     } else {
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
       this.accountAddress = address;
       ApiParams.cleanStorage();
-      await this.initializeUserInfo();
-      const validatorsQuery = `?search=${address}&page=1&perPage=5`;
-      const validatorsResponse = await Validator.getInstance().validatorsByOwnerAddress(validatorsQuery);
-      const operatorsResponse = await Operator.getInstance().getOperatorsByOwnerAddress(1, 5, address);
-      applicationStore.strategyRedirect = operatorsResponse?.operators?.length || validatorsResponse?.validators.length ? config.routes.SSV.MY_ACCOUNT.DASHBOARD : config.routes.SSV.ROOT;
-      if (!operatorsResponse?.operators?.length || !validatorsResponse.validators.length) myAccountStore.forceBigList = true;
-      await myAccountStore.getOwnerAddressValidators({ reFetchBeaconData: true });
-      await myAccountStore.getOwnerAddressOperators({});
+      await Promise.all([
+          this.initializeUserInfo(),
+          myAccountStore.getOwnerAddressOperators({}),
+          myAccountStore.getOwnerAddressClusters({}),
+      ]);
+      if (myAccountStore?.ownerAddressClusters?.length) {
+        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+      } else if (myAccountStore?.ownerAddressOperators?.length) {
+        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+      } else {
+        applicationStore.strategyRedirect = config.routes.SSV.ROOT;
+      }
+      if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
+      this.setAccountDataLoaded(true);
     }
-    this.setAccountDataLoaded(true);
   }
 
-  @action.bound
   async resetUser() {
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
     this.onboardSdk.walletReset();
     this.ssvStore.clearSettings();
     this.operatorStore.clearSettings();
+    myAccountStore.clearIntervals();
     window.localStorage.removeItem('params');
     window.localStorage.removeItem('selectedWallet');
     applicationStore.strategyRedirect = config.routes.SSV.ROOT;
@@ -184,8 +222,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Callback for connected wallet
    * @param wallet: any
    */
-  @action.bound
-  async walletHandler(wallet: any) {
+  async onWalletConnectedCallback(wallet: any) {
     this.wallet = wallet;
     this.web3 = new Web3(wallet.provider);
     console.debug('Wallet Connected:', wallet);
@@ -195,8 +232,7 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Fetch user balances and fees
    */
-  @action.bound
-  async balanceHandler(balance: any) {
+  async onBalanceChangeCallback(balance: any) {
     if (balance) await this.initializeUserInfo();
   }
 
@@ -204,13 +240,13 @@ class WalletStore extends BaseStore implements Wallet {
    * User Network handler
    * @param networkId: any
    */
-  @action.bound
-  async networkHandler(networkId: any) {
+  async onNetworkChangeCallback(networkId: any) {
     this.networkId = networkId;
-    if (networkId !== 5 && networkId !== undefined) {
+    if (networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {
+      config.links.SSV_API_ENDPOINT = getCurrentNetwork().api;
       this.wrongNetwork = false;
     }
   }
@@ -219,7 +255,6 @@ class WalletStore extends BaseStore implements Wallet {
    * encode key
    * @param key
    */
-  @action.bound
   encodeKey(key?: string) {
     if (!key) return '';
     return this.web3?.eth.abi.encodeParameter('string', key);
@@ -229,7 +264,6 @@ class WalletStore extends BaseStore implements Wallet {
    * decode key
    * @param key
    */
-  @action.bound
   decodeKey(key?: string) {
     if (!key) return '';
     return this.web3?.eth.abi.decodeParameter('string', key);
@@ -239,30 +273,36 @@ class WalletStore extends BaseStore implements Wallet {
    * Set Account loaded
    * @param status: boolean
    */
-  @action.bound
   setAccountDataLoaded = (status: boolean): void => {
     this.accountDataLoaded = status;
   };
 
-  @computed
   get connected() {
     return this.accountAddress;
   }
 
-  @computed
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
   }
 
-  @computed
-  get getContract(): Contract {
-    if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK.ADDRESS;
-      this.contract = new this.web3.eth.Contract(abi, contractAddress);
+  get getterContract(): Contract {
+    if (!this.viewContract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
+      this.viewContract = new this.web3.eth.Contract(abi, contractAddress);
     }
     // @ts-ignore
-    return this.contract;
+    return this.viewContract;
+  }
+
+  get setterContract(): Contract {
+    if (!this.networkContract) {
+      const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
+      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
+      this.networkContract = new this.web3.eth.Contract(abi, contractAddress);
+    }
+    // @ts-ignore
+    return this.networkContract;
   }
 }
 

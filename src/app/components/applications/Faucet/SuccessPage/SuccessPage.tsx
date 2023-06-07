@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -14,7 +14,7 @@ import { useStyles } from '~app/components/applications/Faucet/SuccessPage/Succe
 const SuccessPage = () => {
     const stores = useStores();
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     const faucetStore: FaucetStore = stores.Faucet;
     const applicationStore: ApplicationStore = stores.Application;
     
@@ -22,7 +22,7 @@ const SuccessPage = () => {
         applicationStore.setIsLoading(true);
         setTimeout(() => {
             applicationStore.setIsLoading(false);
-            history.push(config.routes.FAUCET.ROOT);
+            navigate(config.routes.FAUCET.ROOT);
         }, 300);
     };
 

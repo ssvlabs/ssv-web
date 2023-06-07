@@ -1,5 +1,5 @@
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
 import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
 
 type Props = {

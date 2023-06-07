@@ -1,7 +1,7 @@
 import React from 'react';
+import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -11,16 +11,16 @@ import { useStyles } from '~app/components/applications/SSV/RegisterOperatorHome
 
 const RegisterOperatorHome = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <BorderScreen
       body={[
         <Grid container>
           <HeaderSubHeader title={'Join the SSV Network Operators'}
-            subtitle={'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.'}
+            subtitle={'To join as an network operator, you must run an SSV node. Start with your node setup and return here to register your operator key.'}
               />
-          <Grid container item justify={'space-evenly'}>
+          <Grid container item>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
                 <SecondaryButton text={'Run SSV Node'} submitFunction={() => {
@@ -33,17 +33,17 @@ const RegisterOperatorHome = () => {
                     }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
-                See our developer documentation
+                Follow our installation docs
               </Grid>
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
                 <SecondaryButton text={'Register Operator'} submitFunction={() => {
-                      history.push(config.routes.SSV.OPERATOR.GENERATE_KEYS);
+                      navigate(config.routes.SSV.OPERATOR.GENERATE_KEYS);
                     }} />
               </Grid>
               <Grid item xs={12} className={classes.UnderButtonText}>
-                Sign up as one of the network operators
+                Sign up with your operator key
               </Grid>
             </Grid>
           </Grid>

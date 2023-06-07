@@ -1,5 +1,5 @@
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
 import BackNavigation from '~app/components/common/BackNavigation';
 import { useStyles } from './BorderScreen.styles';
 
@@ -8,8 +8,9 @@ type Props = {
   bottom?: any,
   header?: string,
   SideHeader?: any,
-  overFlow?: string,
   gray80?: boolean,
+  overFlow?: string,
+  marginTop?: number,
   wrapperClass?: any,
   sectionClass?: any,
   blackHeader?: boolean,
@@ -17,6 +18,7 @@ type Props = {
   bottomWrapper?: string,
   withConversion?: boolean,
   withoutNavigation?: boolean,
+  withoutBorderBottom?: boolean,
   onBackButtonClick?: () => void | null | undefined,
 };
 
@@ -24,21 +26,23 @@ const BorderScreen = (props: Props) => {
   const [coins] = useState(['SSV', 'USD']);
   const [currency, setCurrency] = useState('SSV');
   const {
+    body,
+    gray80,
+    header,
+    bottom,
+    overFlow,
+    marginTop,
+    SideHeader,
+    blackHeader,
     wrapperClass,
     borderRadius,
-    overFlow,
-    SideHeader,
-    gray80,
-    withoutNavigation,
-    blackHeader,
-    header,
-    withConversion,
-    bottomWrapper,
-    body,
     sectionClass,
-    bottom,
+    bottomWrapper,
+    withConversion,
+    withoutNavigation,
+    withoutBorderBottom = false,
   } = props;
-  const classes = useStyles({ overFlow, gray80, blackHeader });
+  const classes = useStyles({ overFlow, gray80, blackHeader, marginTop });
 
   const switchCurrency = (selectedCurrency: string) => {
     setCurrency(selectedCurrency);
@@ -53,13 +57,13 @@ const BorderScreen = (props: Props) => {
       )}
       <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
         {(header || withConversion) && (
-          <Grid container item className={classes.HeaderSection} justify={'space-between'}>
-            <Grid item className={classes.Header}>
+          <Grid container item className={classes.HeaderSection} justifyContent={'space-between'}>
+            <Grid item className={classes.Header} xs>
               {header}
             </Grid>
             {SideHeader && !withConversion && <Grid item><SideHeader /></Grid>}
-            {withConversion && (
-              <Grid item xs={5}>
+            {withConversion && false && (
+              <Grid item>
                 <Grid container item className={classes.Conversion}>
                   {coins.map((coin: string, index: number) => {
                     return (
@@ -77,17 +81,19 @@ const BorderScreen = (props: Props) => {
         )}
         {body.map((section: any, index: number) => {
           return (
-            <Grid key={index} item container style={{ borderBottom: body.length === 1 ? 'none' : '' }}
+            <Grid key={index} item container style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }}
               className={sectionClass ?? classes.Section}>
               {section}
             </Grid>
           );
         })}
-        {bottom && (
-          <Grid item container className={bottomWrapper ?? classes.Section}>
-            {bottom}
-          </Grid>
-        )}
+        {bottom?.map((section: any, index: number) => {
+          return (
+              <Grid key={index} item container className={bottomWrapper ?? classes.Section}>
+                {section}
+              </Grid>
+          );
+        })}
       </Grid>
     </Grid>
   );

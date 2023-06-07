@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     PrimaryButton: {
         height: 60,
         fontSize: 16,
@@ -9,11 +10,11 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: 8,
         textTransform: 'none',
         fontFamily: 'Manrope !important',
-        border: (props: any) => props.errorButton && theme.darkMode ? `1px solid ${theme.colors.primaryError}` : '',
+        border: (props: any) => props.errorButton ? `1px solid ${theme.colors.primaryError}` : '',
         color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.white,
         backgroundColor: (props: any) => {
             if (props.errorButton && theme.darkMode) return 'transparent';
-            if (props.errorButton) return theme.colors.primaryErrorRegular;
+            if (props.errorButton) return 'rgba(236, 28, 38, 0.03)';
             return theme.colors.primaryBlue;
         },
         '&:hover': {

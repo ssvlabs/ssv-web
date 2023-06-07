@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -9,10 +10,10 @@ import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/Req
 
 const SuccessPage = () => {
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const requestForSSV = () => {
-        history.push(config.routes.FAUCET.SUCCESS);
+        navigate(config.routes.FAUCET.SUCCESS);
     };
 
     return (

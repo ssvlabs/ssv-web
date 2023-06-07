@@ -1,9 +1,11 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
     TableWrapper: {
         borderRadius: 16,
         backgroundColor: theme.colors.white,
+        pointerEvents: (props: any) => props.disable ? 'none' : 'auto',
     },
     CustomizeCss: {
         '& table': {

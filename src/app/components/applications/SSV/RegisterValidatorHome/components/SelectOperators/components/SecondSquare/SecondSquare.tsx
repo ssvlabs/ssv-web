@@ -1,41 +1,49 @@
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { Grid, Typography } from '@material-ui/core';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { useStyles } from './SecondSquare.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import LinkText from '~app/components/common/LinkText';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { useStyles } from './SecondSquare.styles';
 
 const SecondSquare = ({ editPage }: { editPage: boolean }) => {
+  const boxes = [1, 2, 3, 4];
   const stores = useStores();
   const classes = useStyles({ editPage });
-  const history = useHistory();
+  const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
+  const processStore: ProcessStore = stores.Process;
+  const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
-  const validatorStore: ValidatorStore = stores.Validator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
+  const [clusterExist, setClusterExist] = useState(false);
+  const [existClusterData, setExistClusterData] = useState<any>(null);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
-  const boxes = [1, 2, 3, 4];
+  const [checkClusterExistence, setCheckClusterExistence] = useState(false);
+  const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
 
   useEffect(() => {
+    const process: SingleCluster = processStore.getProcess;
     if (editPage) {
-      if (!validatorStore.processValidatorPublicKey) return history.push(config.routes.SSV.MY_ACCOUNT.DASHBOARD);
-      myAccountStore.getValidator(validatorStore.processValidatorPublicKey).then((validator: any) => {
+      if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+      myAccountStore.getValidator(process.item.publicKey).then((validator: any) => {
         if (validator?.operators) {
           // @ts-ignore
           setPreviousOperatorsIds(validator.operators.map(({ id }) => id));
@@ -50,9 +58,9 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
 
   const onSelectOperatorsClick = async () => {
     if (editPage) {
-      history.push(config.routes.SSV.MY_ACCOUNT.VALIDATOR.VALIDATOR_UPDATE.ENTER_KEYSTORE);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      history.push(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+      navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
     }
   };
 
@@ -62,23 +70,50 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
       action: 'click',
       label: 'not verified',
     });
-    window.open('https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH');
   };
 
   const disableButton = (): boolean => {
-    return !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
+    return clusterExist || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
       // @ts-ignore
-      // eslint-disable-next-line no-param-reassign
       if (!previousOperatorsIds.includes(operator.id)) acc = true;
       return acc;
     }, false);
-    // if(!operatorStore.selectedEnoughOperators)
+  };
+
+  const openSingleCluster = () => {
+    processStore.setProcess({
+      processName: 'single_cluster',
+      item: { ...existClusterData, operators: [...Object.values(operatorStore.selectedOperators)] },
+    }, 2);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
   }, [JSON.stringify(operatorStore.selectedOperators)]);
+
+  useEffect(() => {
+    if (operatorStore.selectedEnoughOperators) {
+      setClusterExist(false);
+      setCheckClusterExistence(true);
+      clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
+        if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
+          setExistClusterData(clusterData);
+          setClusterExist(true);
+        } else {
+          setClusterExist(false);
+        }
+        setCheckClusterExistence(false);
+      }).catch((error: any)=>{
+        console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
+        console.log(error);
+        console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
+      });
+    } else {
+      setCheckClusterExistence(false);
+    }
+  }, [operatorStore.selectedEnoughOperators]);
 
   return (
     <BorderScreen
@@ -101,7 +136,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
                     </Grid>
                     <Grid item>
                       <SsvAndSubTitle
-                        ssv={formatNumberToUi(ssvStore.newGetFeeForYear(walletStore.fromWei(operator.fee)))} />
+                        ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} />
                     </Grid>
                   </Grid>
                 );
@@ -119,15 +154,27 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           ) : ''}
-          {!allSelectedOperatorsVerified && (
+          {clusterExist && (
+          <Grid item xs={12}>
+            <ErrorMessage text={
+              <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
+                     <LinkText
+                         text={'cluster page'}
+                         onClick={openSingleCluster}/>
+                &nbsp;and click “Add Validator”.
+              </Grid>}/>
+          </Grid>
+          )}
+          {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>
                 You have selected one or more operators that are&nbsp;
-                <Typography
-                  className={classes.NotVerifiedText}
-                  onClick={linkToNotVerified}>
-                  not verified.
-                </Typography>
+                <LinkText
+                    text={'not verified.'}
+                    onClick={linkToNotVerified}
+                    className={classes.NotVerifiedText}
+                    link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH'}
+                />
               </Grid>
               <Grid item xs={12}>
                 Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to
@@ -138,17 +185,17 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
               </Grid>
             </Grid>
           )}
-          <Grid container item xs={12} className={classes.TotalFeesWrapper} justify={'space-between'}>
+          <Grid container item xs={12} className={classes.TotalFeesWrapper}>
             <Grid item className={classes.TotalFeesHeader}>
-              {editPage ? 'New total Operators Yearly Fee' : 'Total Operators Yearly Fee'}
+              {editPage ? 'New Operators Yearly Fee' : 'Operators Yearly Fee'}
             </Grid>
             <Grid item>
               <SsvAndSubTitle
                 bold
                 fontSize={16}
                 subTextCenter={false}
-                ssv={formatNumberToUi(ssvStore.newGetFeeForYear(operatorStore.getSelectedOperatorsFee))}
-                />
+                ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee))}
+              />
             </Grid>
           </Grid>
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}

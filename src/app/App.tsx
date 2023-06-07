@@ -1,9 +1,12 @@
 import { observer } from 'mobx-react';
+import Grid from '@mui/material/Grid';
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { Grid, MuiThemeProvider } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider } from '@mui/material/styles';
 import { BrowserView, MobileView } from 'react-device-detect';
+import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import Routes from '~app/Routes/Routes';
 import config from '~app/common/config';
 import { useStyles } from '~app/App.styles';
@@ -26,7 +29,7 @@ declare global {
 const App = () => {
   const stores = useStores();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const GlobalStyle = globalStyle();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
@@ -39,44 +42,47 @@ const App = () => {
     if (!applicationStore.locationRestrictionEnabled) {
       console.debug('Skipping location restriction functionality in this app.');
       walletStore.connectWalletFromCache();
-      return;
+    } else {
+      checkUserCountryRestriction().then((res: any) => {
+        if (res.restricted) {
+          walletStore.accountDataLoaded = true;
+          applicationStore.userGeo = res.userGeo;
+          applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+        } else {
+          walletStore.connectWalletFromCache();
+        }
+      });
     }
-    checkUserCountryRestriction().then((res: any) => {
-      if (res.restricted) {
-        walletStore.accountDataLoaded = true;
-        applicationStore.userGeo = res.userGeo;
-        applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-        history.push(config.routes.COUNTRY_NOT_SUPPORTED);
-      } else {
-        walletStore.connectWalletFromCache();
-      }
-    });
   }, []);
 
   useEffect(() => {
     if (walletStore.accountDataLoaded) {
-      history.push(applicationStore.strategyRedirect);
+      navigate(applicationStore.strategyRedirect);
     }
   }, [walletStore.accountDataLoaded]);
 
   return (
-    <MuiThemeProvider theme={applicationStore.theme}>
-      <GlobalStyle />
-      {!walletStore.accountDataLoaded && (
-        <Grid container className={classes.LoaderWrapper}>
-          <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
-        </Grid>
-      )}
-      <BarMessage />
-      {/* <AppBar /> */}
-      <BrowserView>
-        {walletStore.accountDataLoaded && <Routes />}
-      </BrowserView>
-      <MobileView>
-        <MobileNotSupported />
-      </MobileView>
-      <CssBaseline />
-    </MuiThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={applicationStore.theme}>
+          <ThemeProviderLegacy theme={applicationStore.theme}>
+            <GlobalStyle/>
+            {!walletStore.accountDataLoaded && (
+                <Grid container className={classes.LoaderWrapper}>
+                  <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
+                </Grid>
+            )}
+            <BarMessage/>
+            <BrowserView>
+              {walletStore.accountDataLoaded && <Routes/>}
+            </BrowserView>
+            <MobileView>
+              <MobileNotSupported/>
+            </MobileView>
+            <CssBaseline/>
+          </ThemeProviderLegacy>
+        </ThemeProvider>
+      </StyledEngineProvider>
   );
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
@@ -16,7 +16,7 @@ import DistributionStore from '~app/common/stores/applications/Distribution/Dist
 const Claim = () => {
     const stores = useStores();
     const classes = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     const walletStore: WalletStore = stores.Wallet;
     const distributionStore: DistributionStore = stores.Distribution;
 
@@ -26,7 +26,7 @@ const Claim = () => {
             return;
         }
         const succeed = await distributionStore.claimRewards();
-        if (succeed) history.push(config.routes.DISTRIBUTION.SUCCESS);
+        if (succeed) navigate(config.routes.DISTRIBUTION.SUCCESS);
     };
 
     return (

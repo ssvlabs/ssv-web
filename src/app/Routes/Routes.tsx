@@ -7,7 +7,6 @@ const Routes = () => {
     const stores = useStores();
     const applicationStore: ApplicationStore = stores.Application;
     const ApplicationRoutes = applicationStore.applicationRoutes();
-
     return <ApplicationRoutes />;
 };
 

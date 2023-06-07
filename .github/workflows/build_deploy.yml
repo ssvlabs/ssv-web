@@ -77,8 +77,8 @@ jobs:
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >
-          GAS_PRICE: ${{ env.GAS_PRICE }} 
-          GAS_LIMIT: ${{ env.GAS_LIMIT }}
+          GAS_PRICE="${{ env.GAS_PRICE }}" 
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
@@ -110,8 +110,8 @@ jobs:
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/main'
         run: >
-          GAS_PRICE: ${{ env.GAS_PRICE }} 
-          GAS_LIMIT: ${{ env.GAS_LIMIT }}
+          GAS_PRICE="${{ env.GAS_PRICE }}" 
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 

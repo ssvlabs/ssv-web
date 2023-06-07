@@ -5,7 +5,7 @@ import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
-import { translations } from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -117,6 +117,7 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract: Contract = walletStore.setterContract;
     const ownerAddress: string = walletStore.accountAddress;
+    const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // @ts-ignore
@@ -126,7 +127,7 @@ class ValidatorStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       // eslint-disable-next-line no-param-reassign
-      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress })
+      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             let iterations = 0;
@@ -242,6 +243,7 @@ class ValidatorStore extends BaseStore {
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
       const contract: Contract = walletStore.setterContract;
       const ownerAddress: string = walletStore.accountAddress;
+      const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
 
       this.newValidatorReceipt = null;
 
@@ -250,7 +252,7 @@ class ValidatorStore extends BaseStore {
       console.debug('Add Validator Payload: ', payload);
 
       // Send add operator transaction
-      contract.methods.registerValidator(...payload).send({ from: ownerAddress })
+      contract.methods.registerValidator(...payload).send({ from: ownerAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -335,8 +337,8 @@ class ValidatorStore extends BaseStore {
       // @ts-ignore
       const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-
-      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress })
+      const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');

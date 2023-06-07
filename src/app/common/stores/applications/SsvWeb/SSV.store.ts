@@ -184,12 +184,13 @@ class SsvStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       const processStore: ProcessStore = this.getStore('Process');
       const clusterStore: ClusterStore = this.getStore('Cluster');
+      const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
       const process: SingleCluster = processStore.getProcess;
       const cluster = process.item;
       const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress })
+      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -269,8 +270,8 @@ class SsvStore extends BaseStore {
         const processStore: ProcessStore = this.getStore('Process');
         const clusterStore: ClusterStore = this.getStore('Cluster');
         const process: any = processStore.process;
+        const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
         let contractFunction: null;
-
         if (processStore.isValidatorFlow) {
           const cluster: SingleCluster = process.item;
           const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
@@ -289,9 +290,8 @@ class SsvStore extends BaseStore {
           const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
           contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(operatorId, ssvAmount);
         }
-
         // @ts-ignore
-        contractFunction.send({ from: this.accountAddress })
+        contractFunction.send({ from: this.accountAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
             .on('receipt', async () => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'my_account',

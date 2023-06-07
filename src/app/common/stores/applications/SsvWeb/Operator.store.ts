@@ -219,8 +219,9 @@ class OperatorStore extends BaseStore {
   async initUser() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
-    this.getSetOperatorFeePeriod = await contract.methods.getExecuteOperatorFeePeriod().call();
-    this.declaredOperatorFeePeriod = await contract.methods.getDeclaredOperatorFeePeriod().call();
+    const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.methods.getOperatorFeePeriods().call();
+    this.getSetOperatorFeePeriod = Number(executeOperatorFeePeriod);
+    this.declaredOperatorFeePeriod = Number(declareOperatorFeePeriod);
     this.maxFeeIncrease = Number(await walletStore.getterContract.methods.getOperatorFeeIncreaseLimit().call()) / 100;
   }
 

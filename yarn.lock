@@ -3629,10 +3629,10 @@
     varuint-bitcoin "^1.0.4"
     wif "^2.0.1"
 
-"@shapeshiftoss/hdwallet-core@1.50.1", "@shapeshiftoss/hdwallet-core@^1.15.2":
-  version "1.50.1"
-  resolved "https://registry.yarnpkg.com/@shapeshiftoss/hdwallet-core/-/hdwallet-core-1.50.1.tgz#beb771415664a5e559fa6eea6af23043f995da35"
-  integrity sha512-LqSHRZeqtUrop2oXl8v1r0RUXNfFhyo4BQHqtW4NUxNqDbAaWpvUWEp3zsXiqmwFdUP3eUTPhcB3Xqg/CtS83A==
+"@shapeshiftoss/hdwallet-core@1.50.2", "@shapeshiftoss/hdwallet-core@^1.15.2":
+  version "1.50.2"
+  resolved "https://registry.yarnpkg.com/@shapeshiftoss/hdwallet-core/-/hdwallet-core-1.50.2.tgz#43edc3e0d84e213872d23ba21688fcf444b07e2e"
+  integrity sha512-iTcpHYS4rzutihipJCmzWvkSRjAdUFRpC4bCdHi2p09bcQMBB7DFtuqflaWDMYM3SXJWGb89PSCoazayj6Y3Vw==
   dependencies:
     "@shapeshiftoss/proto-tx-builder" "^0.8.0"
     eip-712 "^1.0.0"
@@ -3642,23 +3642,23 @@
     type-assertions "^1.1.0"
 
 "@shapeshiftoss/hdwallet-keepkey-webusb@^1.15.2":
-  version "1.50.1"
-  resolved "https://registry.yarnpkg.com/@shapeshiftoss/hdwallet-keepkey-webusb/-/hdwallet-keepkey-webusb-1.50.1.tgz#2fc6d58172af3de74ad7d79028d93eca3481bea7"
-  integrity sha512-cm19Cmg/9vC44+0CztjTF3soBARbrqpmPAbIrIKed9MO07ezV1UXvgsq93hNyLPelOvd7Q8q8W5DoTCm5l6ADQ==
+  version "1.50.2"
+  resolved "https://registry.yarnpkg.com/@shapeshiftoss/hdwallet-keepkey-webusb/-/hdwallet-keepkey-webusb-1.50.2.tgz#bffd91f2b20508075b2c0adad20b3257977e8326"
+  integrity sha512-8Q6HDfUFmvBXY2jD2T8Hu7ThBguctTzczCqD1zLr6u7tuhN4/uRvioRncZfXtoQWHUak7hcYLXAZvktOqufvaA==
   dependencies:
-    "@shapeshiftoss/hdwallet-core" "1.50.1"
-    "@shapeshiftoss/hdwallet-keepkey" "1.50.1"
+    "@shapeshiftoss/hdwallet-core" "1.50.2"
+    "@shapeshiftoss/hdwallet-keepkey" "1.50.2"
 
-"@shapeshiftoss/hdwallet-keepkey@1.50.1", "@shapeshiftoss/hdwallet-keepkey@^1.15.2":
-  version "1.50.1"
-  resolved "https://registry.yarnpkg.com/@shapeshiftoss/hdwallet-keepkey/-/hdwallet-keepkey-1.50.1.tgz#9c6dceeba86a3a717b4c9a1b15b16767048d124f"
-  integrity sha512-IO+3LvMyWOH+x2AEBd7In5xf7LRLaYC35qC52pcpUC7Ammiw1bXnILzOTUoHxmf8HkPKbVkrtNiUfGb3Srfp4g==
+"@shapeshiftoss/hdwallet-keepkey@1.50.2", "@shapeshiftoss/hdwallet-keepkey@^1.15.2":
+  version "1.50.2"
+  resolved "https://registry.yarnpkg.com/@shapeshiftoss/hdwallet-keepkey/-/hdwallet-keepkey-1.50.2.tgz#c6f71058669e25ceec5035f6e4daa2a3ffe2ba5a"
+  integrity sha512-K2bJPMSUWGueePdzIZ/P86xeHEE31orgf/6QUgUlq32vTlmZKHxQSxybGyBzkuPYB6Kvx4/dhYm1zPS6UuZ3WQ==
   dependencies:
     "@ethereumjs/common" "^2.4.0"
     "@ethereumjs/tx" "^3.3.0"
     "@keepkey/device-protocol" "^7.12.2"
     "@shapeshiftoss/bitcoinjs-lib" "5.2.0-shapeshift.2"
-    "@shapeshiftoss/hdwallet-core" "1.50.1"
+    "@shapeshiftoss/hdwallet-core" "1.50.2"
     "@shapeshiftoss/proto-tx-builder" "^0.8.0"
     bignumber.js "^9.0.1"
     bnb-javascript-sdk-nobroadcast "^2.16.14"
@@ -4379,9 +4379,9 @@
     "@types/node" "*"
 
 "@types/prettier@^2.0.0":
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.7.2.tgz#6c2324641cc4ba050a8c710b2b251b377581fbf0"
-  integrity sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.7.3.tgz#3e51a17e291d01d17d3fc61422015a933af7a08f"
+  integrity sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==
 
 "@types/prop-types@*", "@types/prop-types@^15.7.5":
   version "15.7.5"
@@ -8835,9 +8835,9 @@ ejs@^3.1.5:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.411:
-  version "1.4.414"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.414.tgz#f9eedb6fb01b50439d8228d8ee3a6fa5e0108437"
-  integrity sha512-RRuCvP6ekngVh2SAJaOKT/hxqc9JAsK+Pe0hP5tGQIfonU2Zy9gMGdJ+mBdyl/vNucMG6gkXYtuM4H/1giws5w==
+  version "1.4.416"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.416.tgz#7291f704168d3842ae4da3ae9fdc7bfbeb97d116"
+  integrity sha512-AUYh0XDTb2vrj0rj82jb3P9hHSyzQNdTPYWZIhPdCOui7/vpme7+HTE07BE5jwuqg/34TZ8ktlRz6GImJ4IXjA==
 
 elliptic@6.5.2:
   version "6.5.2"
@@ -9872,15 +9872,7 @@ ethereum-public-key-to-address@0.0.1:
     meow "^5.0.0"
     secp256k1 "^3.7.1"
 
-ethereumjs-abi@^0.6.8:
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz#71bc152db099f70e62f108b7cdfca1b362c6fcae"
-  integrity sha512-Tx0r/iXI6r+lRsdvkFDlut0N08jWMnKRZ6Gkq+Nmw75lZe4e6o3EkSnkaBP5NF6+m5PTGAr9JP43N3LyeoglsA==
-  dependencies:
-    bn.js "^4.11.8"
-    ethereumjs-util "^6.0.0"
-
-"ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
+ethereumjs-abi@^0.6.8, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.8"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#ee3994657fa7a427238e6ba92a84d0b529bbcde0"
   dependencies:
@@ -10819,9 +10811,9 @@ fs-minipass@^2.0.0:
     minipass "^3.0.0"
 
 fs-monkey@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/fs-monkey/-/fs-monkey-1.0.3.tgz#ae3ac92d53bb328efe0e9a1d9541f6ad8d48e2d3"
-  integrity sha512-cybjIfiiE+pTWicSCLFHSrXZ6EilF30oh91FDP9S2B051prEa7QWfrVTQm10/dDpswBDXZugPa1Ogu8Yh+HV0Q==
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/fs-monkey/-/fs-monkey-1.0.4.tgz#ee8c1b53d3fe8bb7e5d2c5c5dfc0168afdd2f747"
+  integrity sha512-INM/fWAxMICjttnD0DX1rBvinKskj5G1w+oy/pnm9u/tSlnBrzFonJMcalKJ30P8RRsPzKcCG7Q8l0jx5Fh9YQ==
 
 fs.realpath@^1.0.0:
   version "1.0.0"

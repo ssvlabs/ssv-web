@@ -63,7 +63,7 @@ class AccountStore extends BaseStore  {
             resolve(res);
         });
         if (result.data) {
-            this.ownerNonce = Number(result.data.nonce) + 1;
+            this.ownerNonce = Number(result.data.nonce);
         }
     }
 }

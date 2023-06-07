@@ -1846,17 +1846,6 @@ export const ABI_VERSION = {
         ],
        [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
            {
-               'inputs': [
-                   {
-                       'internalType': 'address',
-                       'name': '_registerAuth',
-                       'type': 'address',
-                   },
-               ],
-               'stateMutability': 'nonpayable',
-               'type': 'constructor',
-           },
-           {
                'inputs': [],
                'name': 'ApprovalNotWithinTimeframe',
                'type': 'error',
@@ -1918,6 +1907,11 @@ export const ABI_VERSION = {
            },
            {
                'inputs': [],
+               'name': 'IncorrectValidatorState',
+               'type': 'error',
+           },
+           {
+               'inputs': [],
                'name': 'InsufficientBalance',
                'type': 'error',
            },
@@ -1964,6 +1958,11 @@ export const ABI_VERSION = {
            {
                'inputs': [],
                'name': 'SameFeeChangeNotAllowed',
+               'type': 'error',
+           },
+           {
+               'inputs': [],
+               'name': 'TargetModuleDoesNotExist',
                'type': 'error',
            },
            {
@@ -2716,6 +2715,10 @@ export const ABI_VERSION = {
                'type': 'event',
            },
            {
+               'stateMutability': 'nonpayable',
+               'type': 'fallback',
+           },
+           {
                'inputs': [],
                'name': 'acceptOwnership',
                'outputs': [],
@@ -2733,48 +2736,6 @@ export const ABI_VERSION = {
                'name': 'cancelDeclaredOperatorFee',
                'outputs': [],
                'stateMutability': 'nonpayable',
-               'type': 'function',
-           },
-           {
-               'inputs': [
-                   {
-                       'internalType': 'bytes32',
-                       'name': '',
-                       'type': 'bytes32',
-                   },
-               ],
-               'name': 'clusters',
-               'outputs': [
-                   {
-                       'internalType': 'bytes32',
-                       'name': '',
-                       'type': 'bytes32',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'dao',
-               'outputs': [
-                   {
-                       'internalType': 'uint32',
-                       'name': 'validatorCount',
-                       'type': 'uint32',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'balance',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'block',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
                'type': 'function',
            },
            {
@@ -2866,29 +2827,60 @@ export const ABI_VERSION = {
            {
                'inputs': [
                    {
-                       'internalType': 'string',
-                       'name': 'initialVersion_',
-                       'type': 'string',
+                       'internalType': 'address',
+                       'name': 'userAddress',
+                       'type': 'address',
                    },
+               ],
+               'name': 'getRegisterAuth',
+               'outputs': [
+                   {
+                       'components': [
+                           {
+                               'internalType': 'bool',
+                               'name': 'registerOperator',
+                               'type': 'bool',
+                           },
+                           {
+                               'internalType': 'bool',
+                               'name': 'registerValidator',
+                               'type': 'bool',
+                           },
+                       ],
+                       'internalType': 'struct Authorization',
+                       'name': '',
+                       'type': 'tuple',
+                   },
+               ],
+               'stateMutability': 'view',
+               'type': 'function',
+           },
+           {
+               'inputs': [
                    {
                        'internalType': 'contract IERC20',
                        'name': 'token_',
                        'type': 'address',
                    },
                    {
-                       'internalType': 'uint64',
-                       'name': 'operatorMaxFeeIncrease_',
-                       'type': 'uint64',
+                       'internalType': 'contract IFnSSVOperators',
+                       'name': 'ssvOperators_',
+                       'type': 'address',
                    },
                    {
-                       'internalType': 'uint64',
-                       'name': 'declareOperatorFeePeriod_',
-                       'type': 'uint64',
+                       'internalType': 'contract IFnSSVClusters',
+                       'name': 'ssvClusters_',
+                       'type': 'address',
                    },
                    {
-                       'internalType': 'uint64',
-                       'name': 'executeOperatorFeePeriod_',
-                       'type': 'uint64',
+                       'internalType': 'contract IFnSSVDAO',
+                       'name': 'ssvDAO_',
+                       'type': 'address',
+                   },
+                   {
+                       'internalType': 'contract IFnSSVViews',
+                       'name': 'ssvViews_',
+                       'type': 'address',
                    },
                    {
                        'internalType': 'uint64',
@@ -2904,6 +2896,21 @@ export const ABI_VERSION = {
                        'internalType': 'uint32',
                        'name': 'validatorsPerOperatorLimit_',
                        'type': 'uint32',
+                   },
+                   {
+                       'internalType': 'uint64',
+                       'name': 'declareOperatorFeePeriod_',
+                       'type': 'uint64',
+                   },
+                   {
+                       'internalType': 'uint64',
+                       'name': 'executeOperatorFeePeriod_',
+                       'type': 'uint64',
+                   },
+                   {
+                       'internalType': 'uint64',
+                       'name': 'operatorMaxFeeIncrease_',
+                       'type': 'uint64',
                    },
                ],
                'name': 'initialize',
@@ -2959,196 +2966,6 @@ export const ABI_VERSION = {
                'name': 'liquidate',
                'outputs': [],
                'stateMutability': 'nonpayable',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'minimumBlocksBeforeLiquidation',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'minimumLiquidationCollateral',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'network',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': 'networkFee',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'networkFeeIndex',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'networkFeeIndexBlockNumber',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'name': 'operatorFeeChangeRequests',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': 'fee',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'approvalBeginTime',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'approvalEndTime',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'operatorFeeConfig',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': 'declareOperatorFeePeriod',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'executeOperatorFeePeriod',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'operatorMaxFeeIncrease',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'name': 'operators',
-               'outputs': [
-                   {
-                       'internalType': 'address',
-                       'name': 'owner',
-                       'type': 'address',
-                   },
-                   {
-                       'internalType': 'uint64',
-                       'name': 'fee',
-                       'type': 'uint64',
-                   },
-                   {
-                       'internalType': 'uint32',
-                       'name': 'validatorCount',
-                       'type': 'uint32',
-                   },
-                   {
-                       'components': [
-                           {
-                               'internalType': 'uint64',
-                               'name': 'block',
-                               'type': 'uint64',
-                           },
-                           {
-                               'internalType': 'uint64',
-                               'name': 'index',
-                               'type': 'uint64',
-                           },
-                           {
-                               'internalType': 'uint64',
-                               'name': 'balance',
-                               'type': 'uint64',
-                           },
-                       ],
-                       'internalType': 'struct ISSVNetworkCore.Snapshot',
-                       'name': 'snapshot',
-                       'type': 'tuple',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [
-                   {
-                       'internalType': 'bytes32',
-                       'name': '',
-                       'type': 'bytes32',
-                   },
-               ],
-               'name': 'operatorsPKs',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'name': 'operatorsWhitelist',
-               'outputs': [
-                   {
-                       'internalType': 'address',
-                       'name': '',
-                       'type': 'address',
-                   },
-               ],
-               'stateMutability': 'view',
                'type': 'function',
            },
            {
@@ -3296,7 +3113,7 @@ export const ABI_VERSION = {
                    },
                    {
                        'internalType': 'bytes',
-                       'name': 'shares',
+                       'name': 'sharesData',
                        'type': 'bytes',
                    },
                    {
@@ -3447,6 +3264,36 @@ export const ABI_VERSION = {
                'inputs': [
                    {
                        'internalType': 'address',
+                       'name': 'userAddress',
+                       'type': 'address',
+                   },
+                   {
+                       'components': [
+                           {
+                               'internalType': 'bool',
+                               'name': 'registerOperator',
+                               'type': 'bool',
+                           },
+                           {
+                               'internalType': 'bool',
+                               'name': 'registerValidator',
+                               'type': 'bool',
+                           },
+                       ],
+                       'internalType': 'struct Authorization',
+                       'name': 'auth',
+                       'type': 'tuple',
+                   },
+               ],
+               'name': 'setRegisterAuth',
+               'outputs': [],
+               'stateMutability': 'nonpayable',
+               'type': 'function',
+           },
+           {
+               'inputs': [
+                   {
+                       'internalType': 'address',
                        'name': 'newOwner',
                        'type': 'address',
                    },
@@ -3537,6 +3384,24 @@ export const ABI_VERSION = {
            {
                'inputs': [
                    {
+                       'internalType': 'enum SSVModules',
+                       'name': 'moduleId',
+                       'type': 'uint8',
+                   },
+                   {
+                       'internalType': 'address',
+                       'name': 'moduleAddress',
+                       'type': 'address',
+                   },
+               ],
+               'name': 'upgradeModule',
+               'outputs': [],
+               'stateMutability': 'nonpayable',
+               'type': 'function',
+           },
+           {
+               'inputs': [
+                   {
                        'internalType': 'address',
                        'name': 'newImplementation',
                        'type': 'address',
@@ -3563,56 +3428,6 @@ export const ABI_VERSION = {
                'name': 'upgradeToAndCall',
                'outputs': [],
                'stateMutability': 'payable',
-               'type': 'function',
-           },
-           {
-               'inputs': [
-                   {
-                       'internalType': 'bytes32',
-                       'name': '',
-                       'type': 'bytes32',
-                   },
-               ],
-               'name': 'validatorPKs',
-               'outputs': [
-                   {
-                       'internalType': 'bytes32',
-                       'name': 'hashedOperatorIds',
-                       'type': 'bytes32',
-                   },
-                   {
-                       'internalType': 'bool',
-                       'name': 'active',
-                       'type': 'bool',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'validatorsPerOperatorLimit',
-               'outputs': [
-                   {
-                       'internalType': 'uint32',
-                       'name': '',
-                       'type': 'uint32',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'version',
-               'outputs': [
-                   {
-                       'internalType': 'bytes32',
-                       'name': '',
-                       'type': 'bytes32',
-                   },
-               ],
-               'stateMutability': 'view',
                'type': 'function',
            },
            {
@@ -4571,6 +4386,11 @@ export const ABI_VERSION = {
            },
            {
                'inputs': [],
+               'name': 'IncorrectValidatorState',
+               'type': 'error',
+           },
+           {
+               'inputs': [],
                'name': 'InsufficientBalance',
                'type': 'error',
            },
@@ -4617,6 +4437,11 @@ export const ABI_VERSION = {
            {
                'inputs': [],
                'name': 'SameFeeChangeNotAllowed',
+               'type': 'error',
+           },
+           {
+               'inputs': [],
+               'name': 'TargetModuleDoesNotExist',
                'type': 'error',
            },
            {
@@ -4734,19 +4559,6 @@ export const ABI_VERSION = {
                ],
                'name': 'Upgraded',
                'type': 'event',
-           },
-           {
-               'inputs': [],
-               'name': '_ssvNetwork',
-               'outputs': [
-                   {
-                       'internalType': 'contract ISSVNetwork',
-                       'name': '',
-                       'type': 'address',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
            },
            {
                'inputs': [],
@@ -4869,32 +4681,6 @@ export const ABI_VERSION = {
            },
            {
                'inputs': [],
-               'name': 'getDeclaredOperatorFeePeriod',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
-               'name': 'getExecuteOperatorFeePeriod',
-               'outputs': [
-                   {
-                       'internalType': 'uint64',
-                       'name': '',
-                       'type': 'uint64',
-                   },
-               ],
-               'stateMutability': 'view',
-               'type': 'function',
-           },
-           {
-               'inputs': [],
                'name': 'getLiquidationThresholdPeriod',
                'outputs': [
                    {
@@ -4971,6 +4757,11 @@ export const ABI_VERSION = {
                        'type': 'uint32',
                    },
                    {
+                       'internalType': 'address',
+                       'name': '',
+                       'type': 'address',
+                   },
+                   {
                        'internalType': 'bool',
                        'name': '',
                        'type': 'bool',
@@ -5000,14 +4791,14 @@ export const ABI_VERSION = {
                        'type': 'uint256',
                    },
                    {
-                       'internalType': 'uint256',
+                       'internalType': 'uint64',
                        'name': '',
-                       'type': 'uint256',
+                       'type': 'uint64',
                    },
                    {
-                       'internalType': 'uint256',
+                       'internalType': 'uint64',
                        'name': '',
-                       'type': 'uint256',
+                       'type': 'uint64',
                    },
                ],
                'stateMutability': 'view',
@@ -5057,7 +4848,25 @@ export const ABI_VERSION = {
                'outputs': [
                    {
                        'internalType': 'uint64',
-                       'name': '',
+                       'name': 'operatorMaxFeeIncrease',
+                       'type': 'uint64',
+                   },
+               ],
+               'stateMutability': 'view',
+               'type': 'function',
+           },
+           {
+               'inputs': [],
+               'name': 'getOperatorFeePeriods',
+               'outputs': [
+                   {
+                       'internalType': 'uint64',
+                       'name': 'declareOperatorFeePeriod',
+                       'type': 'uint64',
+                   },
+                   {
+                       'internalType': 'uint64',
+                       'name': 'executeOperatorFeePeriod',
                        'type': 'uint64',
                    },
                ],
@@ -5104,7 +4913,7 @@ export const ABI_VERSION = {
            {
                'inputs': [
                    {
-                       'internalType': 'contract ISSVNetwork',
+                       'internalType': 'contract IFnSSVViews',
                        'name': 'ssvNetwork_',
                        'type': 'address',
                    },
@@ -5270,6 +5079,19 @@ export const ABI_VERSION = {
                'name': 'renounceOwnership',
                'outputs': [],
                'stateMutability': 'nonpayable',
+               'type': 'function',
+           },
+           {
+               'inputs': [],
+               'name': 'ssvNetwork',
+               'outputs': [
+                   {
+                       'internalType': 'contract IFnSSVViews',
+                       'name': '',
+                       'type': 'address',
+                   },
+               ],
+               'stateMutability': 'view',
                'type': 'function',
            },
            {

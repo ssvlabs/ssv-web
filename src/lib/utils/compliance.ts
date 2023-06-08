@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '~app/common/config';
+import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 
 const DEV_MODE_ON = 1;
 const DEV_IGNORE_COUNTRY_RESTRICTION = 'DEV_IGNORE_COUNTRY_RESTRICTION';
@@ -100,15 +101,18 @@ export const getLocalStorageFlagValue = () => {
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
+  const { networkId } = getCurrentNetwork();
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   const restrictIgnoreFlag = getLocalStorageFlagValue();
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
-  for (const location of userLocation) {
-    for (const restrictedLocation of restrictedLocations) {
-      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
-        return { restricted: true, userGeo: userLocation[0] || '' };
+  if (networkId === NETWORKS.MAINNET) {
+    for (const location of userLocation) {
+      for (const restrictedLocation of restrictedLocations) {
+        if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
+          return { restricted: true, userGeo: userLocation[0] || '' };
+        }
       }
     }
   }

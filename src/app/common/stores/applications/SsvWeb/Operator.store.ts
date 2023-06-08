@@ -435,7 +435,7 @@ class OperatorStore extends BaseStore {
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
-        const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+        const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
         const contractInstance = walletStore.setterContract;
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           walletStore.toWei(
@@ -448,7 +448,7 @@ class OperatorStore extends BaseStore {
           operatorApprovalEndTime: this.operatorApprovalEndTime,
           operatorApprovalBeginTime: this.operatorApprovalBeginTime,
         };
-        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
+        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gas: GAS_LIMIT })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');

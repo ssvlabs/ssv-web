@@ -10,6 +10,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
@@ -30,6 +31,7 @@ const Deposit = () => {
   const clusterBalance = walletStore.fromWei(cluster.balance);
   const applicationStore: ApplicationStore = stores.Application;
   const [inputValue, setInputValue] = useState('');
+  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
 
 
   async function depositSsv() {
@@ -115,13 +117,13 @@ const Deposit = () => {
               ),
             ]}
             bottom={[(
-                <Button
+                termsConditionWrapper(<Button
                     withAllowance
                     text={'Deposit'}
                     onClick={depositSsv}
-                    disable={Number(inputValue) <= 0}
+                    disable={Number(inputValue) <= 0 || !checkedCondition}
                     totalAmount={inputValue}
-                />
+                />)
             )]}
         />
       </Grid>

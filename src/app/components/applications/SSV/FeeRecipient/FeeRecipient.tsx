@@ -9,6 +9,7 @@ import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
@@ -21,6 +22,7 @@ const FeeRecipient = () => {
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState(accountStore.recipientAddress);
+  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
 
   const submitFeeRecipient = async () => {
     applicationStore.setIsLoading(true);
@@ -70,7 +72,7 @@ const FeeRecipient = () => {
                         />
                         <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
                       </Grid>
-                      <PrimaryButton disable={readOnlyState || submitDisable} text={'Update'} submitFunction={submitFeeRecipient}/>
+                        {termsConditionWrapper(<PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} text={'Update'} submitFunction={submitFeeRecipient}/>)}
                     </Grid>
                   </Grid>
               ),

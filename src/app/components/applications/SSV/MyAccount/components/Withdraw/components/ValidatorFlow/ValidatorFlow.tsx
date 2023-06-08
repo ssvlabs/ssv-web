@@ -9,6 +9,7 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -26,9 +27,10 @@ const ValidatorFlow = () => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = walletStore.fromWei(cluster.balance);
-  const [inputValue, setInputValue] = useState<number | string>('');
   const applicationStore: ApplicationStore = stores.Application;
   const [userAgree, setUserAgreement] = useState(false);
+  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
+  const [inputValue, setInputValue] = useState<number | string>('');
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
   useEffect(() => {
@@ -132,15 +134,15 @@ const ValidatorFlow = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={[
-              <Button
-                  text={buttonText}
-                  withAllowance={false}
-                  onClick={withdrawSsv}
-                  errorButton={errorButton}
-                  checkboxesText={showCheckBox ? [checkBoxText] : []}
-                  checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-                  disable={(clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree) || Number(inputValue) === 0}
-              />,
+            termsConditionWrapper(<Button
+                text={buttonText}
+                withAllowance={false}
+                onClick={withdrawSsv}
+                errorButton={errorButton}
+                checkboxesText={showCheckBox ? [checkBoxText] : []}
+                checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
+                disable={(clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree) || Number(inputValue) === 0 || !checkedCondition}
+            />),
           ]}
       />
   );

@@ -50,7 +50,7 @@ class AccountStore extends BaseStore  {
                 const res = Account.getInstance().getAccountData(ownerAddress);
                 resolve(res);
         });
-        if (result.data) {
+        if (result.data.recipientAddress) {
             this.recipientAddress = result.data.recipientAddress;
         } else {
             this.recipientAddress = ownerAddress;

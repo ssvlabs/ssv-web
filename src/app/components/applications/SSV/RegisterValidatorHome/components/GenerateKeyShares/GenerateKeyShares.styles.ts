@@ -41,7 +41,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         marginTop: theme.spacing(2),
     },
     LinkButtonWrapper: {
-        width: 280,
+        width: (props: { networkId: number }) => props.networkId === 1 ? '100%' : 280,
         display: 'flex',
         cursor: 'pointer',
         alignItems: 'center',

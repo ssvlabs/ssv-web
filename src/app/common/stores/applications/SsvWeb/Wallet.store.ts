@@ -11,10 +11,10 @@ import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { changeCurrentNetwork, getCurrentNetwork } from '~lib/utils/envHelper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { changeCurrentNetwork, getCurrentNetwork, NetworkDataType, NETWORKS, NETWORKS_DATA } from '~lib/utils/envHelper';
 
 const GOERLI_NETWORK_ID = 5;
 const PROVIDER_WALLET_CONNECT = 'WalletConnect';
@@ -241,9 +241,10 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async onNetworkChangeCallback(networkId: any) {
+    const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => network.networkId !== NETWORKS.MAINNET);
     changeCurrentNetwork(Number(networkId));
     this.networkId = networkId;
-    if (networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
+    if (notIncludeMainnet && networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Goerli', 'error');
     } else {

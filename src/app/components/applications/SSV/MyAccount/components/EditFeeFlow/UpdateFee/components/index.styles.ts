@@ -100,6 +100,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
             color: theme.colors.gray60,
         },
     },
+    DeclaredFee: {
+        fontSize: 14,
+        display: 'flex',
+        lineHeight: 1.62,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        fontWeight: (props: any) => (props.step === StepperSteps.DECLARE_FEE ) ? 800 : 500,
+    },
     WaitingPeriod: {
         fontSize: 14,
         fontWeight: 500,

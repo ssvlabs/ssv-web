@@ -149,9 +149,4 @@ export const useStyles = makeStyles((theme: Theme) => ({
         marginRight: '11px',
         border: '1px solid #5b6c84',
     },
-    BottomScreenWrapper: {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-    },
 }));

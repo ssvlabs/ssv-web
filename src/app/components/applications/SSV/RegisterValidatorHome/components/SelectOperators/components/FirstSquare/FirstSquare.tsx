@@ -161,7 +161,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
       const disabled = reachedMaxValidators || isDeleted;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
-      const isInactive = operator.status.toLowerCase() === 'inactive';
+      const isInactive = operator.status.toLowerCase() === 'inactive' || operator.status.toLowerCase() === 'no validators';
 
       return (
           <TableRow

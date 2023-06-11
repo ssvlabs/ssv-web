@@ -10,6 +10,7 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/OperatorSuccessPage.styles';
@@ -20,12 +21,13 @@ const SetOperatorFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  // const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
 
   const moveToMyAccount = async () => {
     applicationStore.setIsLoading(true);
+    await myAccountStore.getOwnerAddressOperators({});
     setTimeout(() => {
       applicationStore.setIsLoading(false);
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
@@ -53,10 +55,6 @@ const SetOperatorFee = () => {
             <Grid className={classes.Wrapper}>
               <Typography className={classes.GreyHeader}>Things that will help you out:</Typography>
               <Grid container className={classes.BoxesWrapper}>
-                {/*<Grid className={classes.BoxWrapper} xs={12}>*/}
-                {/*  <LinkText text={'Provide metadata'} link={'https://docs.ssv.network/run-a-node/operator-node'} /> to increase your operator discoverability and*/}
-                {/*  chances of attracting other stakers.*/}
-                {/*</Grid>*/}
                 <Grid className={classes.BoxWrapper} xs={12}>
                   <LinkText text={'Monitor your node'} link={config.links.MONITOR_YOUR_NODE_URL} /> to improve your operator performance and uptime.
                 </Grid>

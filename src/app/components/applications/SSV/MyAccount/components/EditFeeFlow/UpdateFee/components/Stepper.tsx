@@ -34,8 +34,6 @@ const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: St
     const options: Intl.DateTimeFormatOptions = {
         day: 'numeric',
         month: 'short',
-        hour: 'numeric',
-        minute: 'numeric',
     };
 
 
@@ -55,11 +53,9 @@ const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: St
         <Grid item container className={classes.ProgressBarTextWrapper}>
           <Grid className={classes.ProgressBarText}>
             Declare Fee
-            {registerButtonEnabled && (
-              <Typography className={classes.ProgressBarText}>
+              <Typography className={classes.DeclaredFee}>
                 {step === StepperProcessesSteps.DECLARE_STEP ? subText : declareFeeDate.toLocaleString('en-US', options)}
               </Typography>
-              )}
           </Grid>
           <Grid className={classes.ProgressBarText}>
             Waiting Period

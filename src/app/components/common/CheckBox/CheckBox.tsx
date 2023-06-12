@@ -12,10 +12,10 @@ type CheckboxProps = {
   isChecked?: boolean,
   onClickCallBack?: any,
   grayBackGround?: boolean,
-  checkBoxWrapperClass?: string,
+
 };
 
-const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround, checkBoxWrapperClass }: CheckboxProps) => {
+const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround }: CheckboxProps) => {
   const stores = useStores();
   const checkboxStore: CheckboxStore = stores.Checkbox;
   const [checked, setChecked] = useState(isChecked ?? false);
@@ -34,7 +34,7 @@ const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, gr
   };
 
   return (
-    <Grid container className={`${classes.CheckBoxWrapper} ${checkBoxWrapperClass ?? checkBoxWrapperClass}`} onClick={checkAction}>
+    <Grid container className={classes.CheckBoxWrapper} onClick={checkAction}>
       <Grid item>
         <Grid className={classes.BoxWrapper} />
       </Grid>

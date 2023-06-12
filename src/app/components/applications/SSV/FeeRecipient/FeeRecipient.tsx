@@ -13,6 +13,7 @@ import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const FeeRecipient = () => {
   const stores = useStores();
@@ -22,7 +23,7 @@ const FeeRecipient = () => {
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState(accountStore.recipientAddress);
-  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
+  const { checkedCondition } = useTermsAndConditions();
 
   const submitFeeRecipient = async () => {
     applicationStore.setIsLoading(true);
@@ -72,7 +73,7 @@ const FeeRecipient = () => {
                         />
                         <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
                       </Grid>
-                        {termsConditionWrapper(<PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} text={'Update'} submitFunction={submitFeeRecipient}/>)}
+                        <TermsAndConditionsCheckbox buttonElement={<PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} text={'Update'} submitFunction={submitFeeRecipient}/>}/>
                     </Grid>
                   </Grid>
               ),

@@ -1,22 +1,14 @@
-import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
+import { useStores } from '~app/hooks/useStores';
+import CheckboxStore from '~app/common/stores/applications/SsvWeb/Checkbox.store';
 import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
-import { useStyles } from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditions.styles';
-import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 export const useTermsAndConditions = () => {
-    const classes = useStyles();
+    const stores = useStores();
     const { networkId } = getCurrentNetwork();
-    const [checkedCondition, setCheckedCondition] = useState(networkId !== NETWORKS.MAINNET);
+    const checkboxStore: CheckboxStore = stores.Checkbox;
+    const isMainnet: boolean = networkId === NETWORKS.MAINNET;
+    const checkedCondition = isMainnet ? checkboxStore.checkedCondition : true;
+    const checkedConditionHandler = () => checkboxStore.checkedCondition ? checkboxStore.setCheckboxStateFalse() : checkboxStore.setCheckboxStateTrue();
 
-    const checkedConditionHandler = () => checkedCondition ?  setCheckedCondition(false) : setCheckedCondition(true);
-
-    const termsConditionWrapper = (buttonElement : JSX.Element) => ( <Grid className={classes.BottomScreenWrapper}>
-            {networkId === NETWORKS.MAINNET &&
-                <TermsAndConditionsCheckbox setTermsAndConditions={checkedConditionHandler}/>}
-            {buttonElement}
-        </Grid>
-    );
-
-    return { termsConditionWrapper, checkedCondition };
+    return { networkId, checkedConditionHandler, checkedCondition, isMainnet };
 };

@@ -23,6 +23,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 
@@ -34,11 +35,11 @@ const ValidatorRegistrationConfirmation = () => {
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
+  const { checkedCondition } = useTermsAndConditions();
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const process: RegisterValidator | SingleCluster = processStore.process;
-  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
   const [actionButtonText, setActionButtonText] = useState('Register Validator');
 
@@ -104,14 +105,15 @@ const ValidatorRegistrationConfirmation = () => {
     {errorMessage && <ErrorMessage text={errorMessage}/>}
 
     <Grid container>
-      {termsConditionWrapper(<Button
+      {<TermsAndConditionsCheckbox buttonElement={<Button
           withAllowance
           text={actionButtonText}
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance || !checkedCondition}
           totalAmount={totalAmountOfSsv}
-      />)}
+      />}/>
+        }
     </Grid>
   </Grid>;
 

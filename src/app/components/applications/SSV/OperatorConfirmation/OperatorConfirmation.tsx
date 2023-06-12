@@ -16,6 +16,7 @@ import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
@@ -24,7 +25,7 @@ const OperatorConfirmation = () => {
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
-  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
+  const { checkedCondition } = useTermsAndConditions();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
   const onRegisterClick = async () => {
@@ -83,7 +84,7 @@ const OperatorConfirmation = () => {
                 </Grid>
               </Grid>
               <Grid container item>
-                {termsConditionWrapper(<PrimaryButton disable={!checkedCondition} text={actionButtonText} submitFunction={onRegisterClick}/>)}
+               <TermsAndConditionsCheckbox buttonElement={<PrimaryButton disable={!checkedCondition} text={actionButtonText} submitFunction={onRegisterClick}/>}/>
               </Grid>
             </Grid>,
           ]}

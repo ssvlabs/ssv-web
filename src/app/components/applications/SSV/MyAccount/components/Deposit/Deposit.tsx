@@ -14,9 +14,10 @@ import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const Deposit = () => {
   const stores = useStores();
@@ -31,7 +32,7 @@ const Deposit = () => {
   const clusterBalance = walletStore.fromWei(cluster.balance);
   const applicationStore: ApplicationStore = stores.Application;
   const [inputValue, setInputValue] = useState('');
-  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
+  const { checkedCondition } = useTermsAndConditions();
 
 
   async function depositSsv() {
@@ -117,13 +118,13 @@ const Deposit = () => {
               ),
             ]}
             bottom={[(
-                termsConditionWrapper(<Button
+                <TermsAndConditionsCheckbox buttonElement={<Button
                     withAllowance
                     text={'Deposit'}
                     onClick={depositSsv}
                     disable={Number(inputValue) <= 0 || !checkedCondition}
                     totalAmount={inputValue}
-                />)
+                />}/>
             )]}
         />
       </Grid>

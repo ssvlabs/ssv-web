@@ -12,9 +12,10 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const ValidatorFlow = () => {
   const stores = useStores();
@@ -29,7 +30,7 @@ const ValidatorFlow = () => {
   const clusterBalance = walletStore.fromWei(cluster.balance);
   const applicationStore: ApplicationStore = stores.Application;
   const [userAgree, setUserAgreement] = useState(false);
-  const { termsConditionWrapper, checkedCondition } = useTermsAndConditions();
+  const { checkedCondition } = useTermsAndConditions();
   const [inputValue, setInputValue] = useState<number | string>('');
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
@@ -134,15 +135,15 @@ const ValidatorFlow = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={[
-            termsConditionWrapper(<Button
-                text={buttonText}
-                withAllowance={false}
-                onClick={withdrawSsv}
-                errorButton={errorButton}
-                checkboxesText={showCheckBox ? [checkBoxText] : []}
-                checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-                disable={(clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree) || Number(inputValue) === 0 || !checkedCondition}
-            />),
+              <TermsAndConditionsCheckbox buttonElement={<Button
+                  text={buttonText}
+                  withAllowance={false}
+                  onClick={withdrawSsv}
+                  errorButton={errorButton}
+                  checkboxesText={showCheckBox ? [checkBoxText] : []}
+                  checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
+                  disable={(clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree) || Number(inputValue) === 0 || !checkedCondition}
+              />}/>,
           ]}
       />
   );

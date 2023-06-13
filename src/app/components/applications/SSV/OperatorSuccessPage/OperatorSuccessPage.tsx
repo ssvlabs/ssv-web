@@ -27,11 +27,10 @@ const SetOperatorFee = () => {
 
   const moveToMyAccount = async () => {
     applicationStore.setIsLoading(true);
-    await myAccountStore.getOwnerAddressOperators({});
-    setTimeout(() => {
+    await myAccountStore.getOwnerAddressOperators({}).then(() => {
       applicationStore.setIsLoading(false);
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-    }, 5000);
+    });
   };
 
   return (

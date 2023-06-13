@@ -7,6 +7,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
+import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
@@ -99,9 +100,10 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async initializeUserInfo() {
     try {
+      const { faucetApi } = getCurrentNetwork();
       const applicationStore: Application = this.getStore('Application');
       const faucetStore: FaucetStore = this.getStore('Faucet');
-      const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet/config`;
+      const faucetUrl = `${faucetApi}/config`;
       const response = (await axios.get(faucetUrl)).data;
       faucetStore.amountToTransfer = response[0].amount_to_transfer;
       // eslint-disable-next-line no-constant-condition

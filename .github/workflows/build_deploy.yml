@@ -141,17 +141,16 @@ jobs:
       - name: Run prod faucet build
         if: github.ref == 'refs/heads/main'
         run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
         env:
           REACT_APP_FAUCET_PAGE: "true"
+          SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           EXPLORER_URL: "https://explorer.ssv.network/"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
-          OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT_v2 }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.STAGE_CONTRACT_ADDRESS }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.GOERLI_PROD_SSV_CONTRACT_ADDRESS }}
       - name: Deploy prod faucet
         if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0
@@ -169,7 +168,8 @@ jobs:
       - name: Run prod build claim
         if: github.ref == 'refs/heads/main'
         run: >
-          OPERATORS_ENDPOINT="$OPERATORS_ENDPOINT" CONTRACT_ADDRESS="$NETWORK_CONTRACT_ADDRESS" GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
           EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
         env:
           PROD_CLAIM_PAGE: "true"
@@ -178,12 +178,8 @@ jobs:
           EXPLORER_URL: "https://explorer.shifu.ssv.network"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           GOOGLE_TAG_SECRET: ${{ secrets.PROD_GOOGLE_TAG_SECRET }}
-          OPERATORS_ENDPOINT: ${{ secrets.PROD_OPERATORS_ENDPOINT }}
-          SSV_CONTRACT_ADDRESS: ${{ secrets.GOERLI_PROD_SSV_CONTRACT_ADDRESS }}
-          NETWORK_CONTRACT_ADDRESS: ${{ secrets.PROD_NETWORK_CONTRACT_ADDRESS }}
+          SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
           DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
-
-
       - name: Deploy prod claim
         if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0

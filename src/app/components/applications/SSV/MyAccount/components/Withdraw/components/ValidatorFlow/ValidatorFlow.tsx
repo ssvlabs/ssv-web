@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
@@ -35,7 +36,7 @@ const ValidatorFlow = () => {
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
   useEffect(() => {
-    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) > 30 && userAgree) {
+    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && userAgree) {
       setUserAgreement(false);
     }
     if (withdrawValue === clusterBalance) {
@@ -90,8 +91,8 @@ const ValidatorFlow = () => {
   const newBalance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
   // @ts-ignore
   const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0;
-  const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30;
-  const buttonDisableCondition = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree || Number(withdrawValue) === 0 || !checkedCondition;
+  const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
+  const buttonDisableCondition = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !userAgree || Number(withdrawValue) === 0 || !checkedCondition;
   const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my cluster.' : 'I understand the risks of having my cluster liquidated.';
   let buttonText = 'Withdraw';
   if (errorButton) {
@@ -136,7 +137,8 @@ const ValidatorFlow = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={[
-              <TermsAndConditionsCheckbox buttonElement={<Button
+              <TermsAndConditionsCheckbox>
+                <Button
                   text={buttonText}
                   withAllowance={false}
                   onClick={withdrawSsv}
@@ -144,7 +146,8 @@ const ValidatorFlow = () => {
                   checkboxesText={showCheckBox ? [checkBoxText] : []}
                   checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
                   disable={buttonDisableCondition}
-              />}/>,
+              />
+              </TermsAndConditionsCheckbox>,
           ]}
       />
   );

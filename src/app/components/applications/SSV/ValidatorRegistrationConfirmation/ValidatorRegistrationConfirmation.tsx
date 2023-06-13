@@ -105,15 +105,16 @@ const ValidatorRegistrationConfirmation = () => {
     {errorMessage && <ErrorMessage text={errorMessage}/>}
 
     <Grid container>
-      {<TermsAndConditionsCheckbox buttonElement={<Button
+      <TermsAndConditionsCheckbox>
+        <Button
           withAllowance
           text={actionButtonText}
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance || !checkedCondition}
           totalAmount={totalAmountOfSsv}
-      />}/>
-        }
+      />
+      </TermsAndConditionsCheckbox>
     </Grid>
   </Grid>;
 

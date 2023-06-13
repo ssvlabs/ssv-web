@@ -85,12 +85,14 @@ const OperatorFlow = () => {
           withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
-          bottom={[<TermsAndConditionsCheckbox buttonElement={<Button
+          bottom={[<TermsAndConditionsCheckbox>
+            <Button
               text={'Withdraw'}
               withAllowance={false}
               onClick={withdrawSsv}
               disable={Number(inputValue) === 0 || checkedCondition}
-          />}/>]}
+          />
+          </TermsAndConditionsCheckbox>]}
       />
   );
 };

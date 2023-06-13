@@ -6,10 +6,10 @@ import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import { useStyles } from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditions.styles';
 
 type TermsAndConditionsType = {
-    buttonElement: JSX.Element;
+    children: JSX.Element;
 };
 
-const TermsAndConditionsCheckbox = ({ buttonElement } : TermsAndConditionsType) => {
+const TermsAndConditionsCheckbox = ({ children } : TermsAndConditionsType) => {
     const classes = useStyles();
     const { checkedConditionHandler, isMainnet } = useTermsAndConditions();
 
@@ -21,7 +21,7 @@ const TermsAndConditionsCheckbox = ({ buttonElement } : TermsAndConditionsType) 
                 text={<Grid>I have read and agreed to the <LinkText text={'terms and conditions'}
                                                                     link={'https://ssv.network/terms-of-use/'}/></Grid>}
             />}
-            {buttonElement}
+            {children}
         </Grid>
     );
 };

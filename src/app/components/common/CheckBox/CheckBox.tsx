@@ -22,9 +22,7 @@ const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, gr
   const classes = useStyles({ grayBackGround, checked, width, height });
 
   useEffect(() => {
-    if (checkboxStore.checkedCondition) {
       checkboxStore.setCheckboxStateFalse();
-    }
   }, []);
 
   const checkAction = () => {

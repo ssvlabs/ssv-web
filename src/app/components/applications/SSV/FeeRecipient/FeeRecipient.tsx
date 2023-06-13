@@ -73,7 +73,9 @@ const FeeRecipient = () => {
                         />
                         <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
                       </Grid>
-                        <TermsAndConditionsCheckbox buttonElement={<PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} text={'Update'} submitFunction={submitFeeRecipient}/>}/>
+                        <TermsAndConditionsCheckbox>
+                            <PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} text={'Update'} submitFunction={submitFeeRecipient}/>
+                        </TermsAndConditionsCheckbox>
                     </Grid>
                   </Grid>
               ),

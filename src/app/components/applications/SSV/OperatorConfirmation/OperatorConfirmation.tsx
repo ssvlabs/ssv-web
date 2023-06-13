@@ -84,7 +84,9 @@ const OperatorConfirmation = () => {
                 </Grid>
               </Grid>
               <Grid container item>
-               <TermsAndConditionsCheckbox buttonElement={<PrimaryButton disable={!checkedCondition} text={actionButtonText} submitFunction={onRegisterClick}/>}/>
+               <TermsAndConditionsCheckbox>
+                 <PrimaryButton disable={!checkedCondition} text={actionButtonText} submitFunction={onRegisterClick}/>
+               </TermsAndConditionsCheckbox>
               </Grid>
             </Grid>,
           ]}

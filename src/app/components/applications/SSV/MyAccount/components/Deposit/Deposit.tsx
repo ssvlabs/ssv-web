@@ -118,13 +118,15 @@ const Deposit = () => {
               ),
             ]}
             bottom={[(
-                <TermsAndConditionsCheckbox buttonElement={<Button
+                <TermsAndConditionsCheckbox>
+                    <Button
                     withAllowance
                     text={'Deposit'}
                     onClick={depositSsv}
                     disable={Number(inputValue) <= 0 || !checkedCondition}
                     totalAmount={inputValue}
-                />}/>
+                />
+                </TermsAndConditionsCheckbox>
             )]}
         />
       </Grid>

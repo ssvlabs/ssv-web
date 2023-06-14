@@ -4285,6 +4285,11 @@ export const ABI_VERSION = {
            },
            {
                'inputs': [],
+               'name': 'MaxValueExceeded',
+               'type': 'error',
+           },
+           {
+               'inputs': [],
                'name': 'NewBlockPeriodIsBelowMinimum',
                'type': 'error',
            },
@@ -4778,6 +4783,19 @@ export const ABI_VERSION = {
            },
            {
                'inputs': [],
+               'name': 'getValidatorsPerOperatorLimit',
+               'outputs': [
+                   {
+                       'internalType': 'uint32',
+                       'name': '',
+                       'type': 'uint32',
+                   },
+               ],
+               'stateMutability': 'view',
+               'type': 'function',
+           },
+           {
+               'inputs': [],
                'name': 'getVersion',
                'outputs': [
                    {
@@ -4792,7 +4810,7 @@ export const ABI_VERSION = {
            {
                'inputs': [
                    {
-                       'internalType': 'contract IFnSSVViews',
+                       'internalType': 'contract ISSVViews',
                        'name': 'ssvNetwork_',
                        'type': 'address',
                    },
@@ -4965,7 +4983,7 @@ export const ABI_VERSION = {
                'name': 'ssvNetwork',
                'outputs': [
                    {
-                       'internalType': 'contract IFnSSVViews',
+                       'internalType': 'contract ISSVViews',
                        'name': '',
                        'type': 'address',
                    },

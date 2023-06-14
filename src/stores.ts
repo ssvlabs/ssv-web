@@ -9,6 +9,7 @@ const stores = [
   'Process',
   'Cluster',
   'Account',
+  'Checkbox',
   'Operator',
   'Validator',
   'MyAccount',

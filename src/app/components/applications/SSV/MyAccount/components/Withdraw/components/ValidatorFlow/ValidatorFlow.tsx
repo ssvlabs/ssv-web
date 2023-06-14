@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
@@ -9,11 +10,13 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const ValidatorFlow = () => {
   const stores = useStores();
@@ -26,25 +29,26 @@ const ValidatorFlow = () => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = walletStore.fromWei(cluster.balance);
-  const [inputValue, setInputValue] = useState<number | string>('');
   const applicationStore: ApplicationStore = stores.Application;
   const [userAgree, setUserAgreement] = useState(false);
+  const { checkedCondition } = useTermsAndConditions();
+  const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
 
   useEffect(() => {
-    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) > 30 && userAgree) {
+    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && userAgree) {
       setUserAgreement(false);
     }
-    if (inputValue === clusterBalance) {
+    if (withdrawValue === clusterBalance) {
       setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
     } else if (buttonColor.default === '#ec1c2640') {
       setButtonColor({ userAgree: '', default: '' });
     }
-  }, [inputValue]);
+  }, [withdrawValue]);
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(inputValue.toString());
+    const success = await ssvStore.withdrawSsv(withdrawValue.toString());
     setTimeout(async () => {
       const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
       const newCluster = response.cluster;
@@ -60,7 +64,7 @@ const ValidatorFlow = () => {
         navigate(-1);
       }
       if (success) {
-        setInputValue(0.0);
+        setWithdrawValue(0.0);
         navigate(-1);
       }
     }, 10000);
@@ -69,30 +73,31 @@ const ValidatorFlow = () => {
   function inputHandler(e: any) {
     const value = e.target.value;
     if (value > clusterBalance) {
-      setInputValue(clusterBalance);
+      setWithdrawValue(clusterBalance);
     } else if (value < 0) {
-      setInputValue(0);
+      setWithdrawValue(0);
     } else if (value === '') {
-      setInputValue(value);
+      setWithdrawValue(value);
     } else {
-      setInputValue(Number(value));
+      setWithdrawValue(Number(value));
     }
   }
 
   function maxValue() {
     // @ts-ignore
-    setInputValue(Number(clusterBalance));
+    setWithdrawValue(Number(clusterBalance));
   }
   
-  const newBalance = (inputValue ? clusterBalance - Number(inputValue) : clusterBalance).toFixed(18);
+  const newBalance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
   // @ts-ignore
   const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0;
-  const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30;
+  const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
+  const buttonDisableCondition = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !userAgree || Number(withdrawValue) === 0 || !checkedCondition;
   const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my cluster.' : 'I understand the risks of having my cluster liquidated.';
   let buttonText = 'Withdraw';
   if (errorButton) {
     buttonText = 'Liquidate my cluster';
-  } else if (inputValue === clusterBalance) {
+  } else if (withdrawValue === clusterBalance) {
     buttonText = 'Withdraw All';
   }
 
@@ -103,7 +108,7 @@ const ValidatorFlow = () => {
             <Grid item xs={6}>
               <IntegerInput
                   type="number"
-                  value={inputValue}
+                  value={withdrawValue}
                   placeholder={'0.0'}
                   onChange={inputHandler}
                   className={classes.Balance}
@@ -122,7 +127,7 @@ const ValidatorFlow = () => {
         </Grid>
       </Grid>
   ), (
-      <NewRemainingDays withdrawState isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
+      <NewRemainingDays withdrawState isInputFilled={!!withdrawValue} cluster={{ ...cluster, newRunWay: !withdrawValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }} />
   )];
 
   return (
@@ -132,15 +137,17 @@ const ValidatorFlow = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={[
-              <Button
+              <TermsAndConditionsCheckbox>
+                <Button
                   text={buttonText}
                   withAllowance={false}
                   onClick={withdrawSsv}
                   errorButton={errorButton}
                   checkboxesText={showCheckBox ? [checkBoxText] : []}
                   checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-                  disable={(clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 30 && !userAgree) || Number(inputValue) === 0}
-              />,
+                  disable={buttonDisableCondition}
+              />
+              </TermsAndConditionsCheckbox>,
           ]}
       />
   );

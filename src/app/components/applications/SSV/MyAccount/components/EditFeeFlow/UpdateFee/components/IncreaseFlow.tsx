@@ -6,7 +6,6 @@ import CancelFee from '~app/components/applications/SSV/MyAccount/components/Edi
 import DeclareFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
 import FeeUpdated from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
 import WaitingPeriod from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
-import PendingExpired from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
 import PendingExecution from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
 
 export type IncreaseFlowProps = {
@@ -28,8 +27,6 @@ enum IncreaseSteps {
     PENDING,
     // eslint-disable-next-line no-unused-vars
     CONFIRM,
-    // eslint-disable-next-line no-unused-vars
-    EXPIRED,
     // eslint-disable-next-line no-unused-vars
     CANCEL,
 }
@@ -54,23 +51,11 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
             const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
             const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
 
-            // @ts-ignore
-            const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-
             if (isInPendingState) {
                 setCurrentStep(IncreaseSteps.PENDING);
             } else if (startPendingStateTime > todayDate) {
                 setCurrentStep(IncreaseSteps.WAITING);
-            } else if (todayDate > endPendingStateTime) {
-                setCurrentStep(IncreaseSteps.EXPIRED);
-            } else if (todayDate > endPendingStateTime ) {
-                if (daysFromEndPendingStateTime >= 3){
-                    declareNewFeeHandler();
-                    return;
-                }
-                setCurrentStep(IncreaseSteps.EXPIRED);
             }
-
 
         }
     };
@@ -85,7 +70,6 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
         [IncreaseSteps.CONFIRM]: FeeUpdated,
         [IncreaseSteps.WAITING]: WaitingPeriod,
         [IncreaseSteps.DECLARE_FEE]: DeclareFee,
-        [IncreaseSteps.EXPIRED]: PendingExpired,
         [IncreaseSteps.PENDING]: PendingExecution,
     };
     

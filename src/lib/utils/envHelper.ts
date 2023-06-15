@@ -6,16 +6,17 @@ export interface IENVS {
 }
 
 export type NetworkDataType = {
+    api: string;
     logo: string;
     networkId: number;
-    optionLabel: string;
-    activeLabel: string;
-    api: string;
-    contractToken: string;
-    setterContractAddress: string;
-    getterContractAddress: string;
+    faucetApi: string;
     apiVersion: string;
     apiNetwork: string;
+    optionLabel: string;
+    activeLabel: string;
+    contractToken: string;
+    getterContractAddress: string;
+    setterContractAddress: string;
 };
 
 type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
@@ -51,7 +52,7 @@ const NETWORK_VARIABLES =  {
 
 const data = process.env.REACT_APP_SSV_NETWORKS;
 
-const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: number, apiVersion: string): NetworkDataType => ({ ...network, ...NETWORK_VARIABLES[`${networkId}_${apiVersion}`], api: `${network.api}/${network.apiVersion}/${network.apiNetwork}` });
+const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: number, apiVersion: string): NetworkDataType => ({ ...network, ...NETWORK_VARIABLES[`${networkId}_${apiVersion}`], api: `${network.api}/${network.apiVersion}/${network.apiNetwork}`, faucetApi: `${network.api}/faucet` });
 
 export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
 

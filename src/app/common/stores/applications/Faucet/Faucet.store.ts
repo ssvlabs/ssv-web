@@ -2,7 +2,10 @@ import axios from 'axios';
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { getCurrentNetwork } from '~lib/utils/envHelper';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
+
+const { faucetApi } = getCurrentNetwork();
 
 class FaucetStore extends BaseStore {
     amountToTransfer: any;
@@ -26,7 +29,7 @@ class FaucetStore extends BaseStore {
     async registerNewTransaction() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet`;
+            const faucetUrl = faucetApi;
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
             return { status: true };
         } catch (e: any) {
@@ -37,7 +40,7 @@ class FaucetStore extends BaseStore {
     async getLatestTransactions() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = `${config.links.SSV_API_ENDPOINT}/faucet`;
+            const faucetUrl = faucetApi;
             this.pendingTransaction = await axios.get(faucetUrl, { params: { owner_address: walletStore.accountAddress } });
             return true;
         } catch (e) {

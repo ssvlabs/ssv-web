@@ -38,12 +38,7 @@ const SetOperatorFee = () => {
     }
     validateFeeInput(userInput, setError);
     setUserInput(removeLeadingZeros(userInput));
-    if (userInput === '0') {
-      setZeroError(true);
-    }
-    else {
-      setZeroError(false);
-    }
+    setZeroError(userInput === '0');
     const isRegisterButtonDisabled = typeof userInput === 'object' || error.shouldDisplay;
     setRegisterButtonDisabled(isRegisterButtonDisabled);
   }, [error.shouldDisplay, userInput]);

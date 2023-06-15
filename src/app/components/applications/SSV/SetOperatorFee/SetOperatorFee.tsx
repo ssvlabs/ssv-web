@@ -17,22 +17,30 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 
 type UserInput = string;
 
+const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
+
 const SetOperatorFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
+  const [error, setError] = useState(INITIAL_ERROR_STATE);
   const [zeroError, setZeroError] = useState(false);
-  const [userInput, setUserInput] = useState<UserInput | null>(null);
-  const [registerButtonEnabled, setRegisterButtonEnabled] = useState(true);
-  const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const [userInput, setUserInput] = useState<UserInput>('');
+  const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
 
   useEffect(() => {
-    const isRegisterButtonEnabled = typeof userInput === 'object' || error.shouldDisplay;
-    setRegisterButtonEnabled(!isRegisterButtonEnabled);
-    return () => {
-      setRegisterButtonEnabled(false);
-    };
+   if ( userInput === '') {
+     setZeroError(false);
+     setError(INITIAL_ERROR_STATE);
+     setRegisterButtonDisabled(true);
+     return;
+    }
+    validateFeeInput(userInput, setError);
+    setUserInput(removeLeadingZeros(userInput));
+    setZeroError(userInput === '0');
+    const isRegisterButtonDisabled = typeof userInput === 'object' || error.shouldDisplay;
+    setRegisterButtonDisabled(isRegisterButtonDisabled);
   }, [error.shouldDisplay, userInput]);
 
   const moveToSubmitConfirmation = () => {
@@ -48,17 +56,8 @@ const SetOperatorFee = () => {
     return stripped === '' ? '0' : stripped;
   };
 
-  const verifyFeeNumber = (value: string) => {
-    setUserInput(value);
-  };
-
-  const checkIfNumberZero = (value: string) => {
-    validateFeeInput(value, setError);
-    if (typeof userInput === 'string') {
-      setUserInput(removeLeadingZeros(userInput));
-      if (userInput === '0') setZeroError(true);
-      else setZeroError(false); 
-    }
+  const verifyFeeNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInput(event.target.value.trim());
   };
 
   return (
@@ -86,12 +85,11 @@ const SetOperatorFee = () => {
                 placeHolder={'0.0'}
                 showError={error.shouldDisplay}
                 dataTestId={'edit-operator-fee'}
-                onChangeCallback={(e: any) => verifyFeeNumber(e.target.value)}
-                onBlurCallBack={(event: any) => { checkIfNumberZero(event.target.value); }} />
+                onChangeCallback={verifyFeeNumber}/>
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
             {zeroError && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'}/>}
-              <PrimaryButton text={'Next'} disable={!registerButtonEnabled} submitFunction={moveToSubmitConfirmation} />
+              <PrimaryButton text={'Next'} disable={registerButtonDisabled} submitFunction={moveToSubmitConfirmation} />
           </Grid>
         </Grid>,
       ]}

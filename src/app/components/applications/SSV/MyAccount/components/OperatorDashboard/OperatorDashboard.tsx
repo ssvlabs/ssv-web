@@ -69,7 +69,7 @@ const OperatorDashboard = () => {
     return createData(
         <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
         <Status item={operator} />,
-        `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d']  }%`}`,
+        `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d'].toFixed(2)  }%`}`,
         // @ts-ignore
         <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
         <SsvAndSubTitle

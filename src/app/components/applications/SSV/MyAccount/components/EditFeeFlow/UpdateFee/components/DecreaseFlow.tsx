@@ -13,29 +13,53 @@ import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFee
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
-const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
+// eslint-disable-next-line no-unused-vars
+enum DECREASE_STEPS {
+    // eslint-disable-next-line no-unused-vars
+    DEFAULT = 'default',
+    // eslint-disable-next-line no-unused-vars
+    UPDATED = 'updated',
+    // eslint-disable-next-line no-unused-vars
+    CANCELED = 'cancelled',
+}
+
+const DecreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : UpdateFeeProps) => {
     const stores = useStores();
     const navigate = useNavigate();
     const classes = useStyles({});
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const [buttonText, setButtonText] = useState('Update Fee');
-    const [updated, setUpdated] = useState(false);
+    const [titleLabel, setTitleLabel] = useState('Your new operator annual fee will be updated to.');
+    const [decreaseStep, setDecreaseStep] = useState(DECREASE_STEPS.DEFAULT);
+
+    const decreaseStepActions = {
+        [DECREASE_STEPS.UPDATED] : () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD),
+        [DECREASE_STEPS.CANCELED] : () => declareNewFeeHandler(),
+    };
 
     const onUpdateFeeHandle = async () => {
-        if (updated) {
-            navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-        } else {
-            await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
-            const operator = await Operator.getInstance().getOperator(operatorStore.processOperatorId);
-            const balance = await operatorStore.getOperatorBalance(operator.id);
-            processStore.setProcess({
-                processName: 'single_operator',
-                item: { ...operator, balance },
-            }, 1);
-            setButtonText('Back To My Account');
-            setUpdated(true);
+        if (decreaseStep !== DECREASE_STEPS.DEFAULT) {
+            decreaseStepActions[decreaseStep]();
+            return;
         }
+        const response = await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
+        if (!response) {
+            setTitleLabel('Your fee has been canceled.');
+            setButtonText('Declare New Fee');
+            setDecreaseStep(DECREASE_STEPS.CANCELED);
+            return;
+        }
+        const operator = await Operator.getInstance().getOperator(operatorStore.processOperatorId);
+        const balance = await operatorStore.getOperatorBalance(operator.id);
+        processStore.setProcess({
+            processName: 'single_operator',
+            item: { ...operator, balance },
+        }, 1);
+        setTitleLabel('You have successfully updated your fee. The new fee will take effect immediately.');
+        setButtonText('Back To My Account');
+        setDecreaseStep(DECREASE_STEPS.UPDATED);
+
     };
     return (
         <BorderScreen
@@ -45,9 +69,9 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
             withoutBorderBottom={true}
             body={[
                 <Grid container className={classes.ChangeFeeWrapper}>
-                    <Typography fontSize={16}>{updated ? 'You have successfully updated your fee. The new fee will take effect immediately.' : 'Your new operator annual fee will be updated to.'}</Typography>
+                    <Typography fontSize={16}>{titleLabel}</Typography>
                     <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee}/>
-                    {!updated && <Grid item className={classes.Notice}>
+                    {!decreaseStep && <Grid item className={classes.Notice}>
                        <Grid item className={classes.BulletsWrapper}>
                             Keep in mind that the process of increasing your fee is different than decreasing it, and
                             returning back to your current fee in the future would take longer.

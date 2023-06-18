@@ -138,7 +138,7 @@ jobs:
       # </beta.app.ssv.network>
 
       # <faucet.stage.ssv.network>
-      - name: Run prod faucet build
+      - name: Run stage faucet build
         if: github.ref == 'refs/heads/stage'
         run: >
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
@@ -164,7 +164,7 @@ jobs:
       # </faucet.stage.ssv.network>
 
       # <claim.stage.ssv.network>
-      - name: Run prod build claim
+      - name: Run stage build claim
         if: github.ref == 'refs/heads/stage'
         run: >
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"

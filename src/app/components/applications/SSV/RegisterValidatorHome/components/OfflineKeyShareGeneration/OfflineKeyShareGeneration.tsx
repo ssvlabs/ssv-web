@@ -50,7 +50,7 @@ const OfflineKeyShareGeneration = () => {
         {
             id: 1, instructions: [
                 <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
-                                                                             link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
+                                                                             link={'https://github.com/bloxapp/ssv-keys/releases/tag/v0.0.18'}/></Grid>,
                 '2. Launch your terminal',
                 '3. Navigate to the directory you downladed the CLI tool',
                 '4. Run the tool with the following command:',
@@ -59,7 +59,7 @@ const OfflineKeyShareGeneration = () => {
         {
             id: 2, instructions: [
                 <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
-                                                                                link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
+                                                                                link={'https://github.com/bloxapp/ssv-keys/releases/tag/v0.0.18'}/></Grid>,
                 '2.Run the Starkeys app',
                 '3. When prompted, copy and paste the following command:',
             ],

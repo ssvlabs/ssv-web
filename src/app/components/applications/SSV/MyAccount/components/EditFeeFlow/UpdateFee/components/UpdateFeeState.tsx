@@ -7,15 +7,12 @@ import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 
 const PROCESS_STATE_START = 0;
 const PROCESS_STATE_WAITING = 1;
 const PROCESS_STATE_PENDING = 2;
 const PROCESS_STATE_SUCCESS = 3;
-const PROCESS_STATE_EXPIRED = 4;
 
 const UpdateFeeState = () => {
   const stores = useStores();
@@ -26,39 +23,26 @@ const UpdateFeeState = () => {
   const classes = useStyles({ step: processState });
 
   useEffect(() => {
-    return;
     if (!operatorStore.processOperatorId) {
       navigate(applicationStore.strategyRedirect);
       return;
     }
-    setInterval(getState, 2000);
     getState();
   }, []);
 
   const getState = async () => {
     // @ts-ignore
-    await operatorStore.getOperatorFeeInfo(operatorStore.processOperatorId);
+    await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
       const todayDate = new Date();
       const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
       const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
 
-      // @ts-ignore
-      const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-
       if (isInPendingState) {
         setProcessState(PROCESS_STATE_PENDING);
       } else if (startPendingStateTime > todayDate) {
         setProcessState(PROCESS_STATE_WAITING);
-      } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
-        // @ts-ignore
-        const savedOperator = JSON.parse(localStorage.getItem('expired_operators'));
-        if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
-          setProcessState(PROCESS_STATE_START);
-          return;
-        }
-        setProcessState(PROCESS_STATE_EXPIRED);
       }
     }
   };
@@ -74,9 +58,6 @@ const UpdateFeeState = () => {
         break;
       case PROCESS_STATE_SUCCESS:
         text = 'Success';
-        break;
-      case PROCESS_STATE_EXPIRED:
-        text = 'Expired';
         break;
     }
     return (
@@ -113,10 +94,11 @@ const UpdateFeeState = () => {
     }
     // @ts-ignore
     const expiredOn = new Date(operatorStore.operatorApprovalEndTime * 1000);
-    const expiredDay = expiredOn.getDay();
-    const expiredMonth = expiredOn.getMonth();
+    const expiredDay = expiredOn.getDate();
+    const expiredMonth = expiredOn.getMonth() + 1;
     const expiredYear = expiredOn.getFullYear();
-    text = `on ${`${expiredDay}.${expiredMonth}.${expiredYear}`}`;
+
+    text = `on ${expiredDay}.${expiredMonth}.${expiredYear}`;
     return (
       <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
         {text}

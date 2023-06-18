@@ -20,7 +20,7 @@ class SsvStore extends BaseStore {
   networkFee: number = 0;
   accountBurnRate: number = 0;
   liquidationCollateralPeriod: number = 0;
-
+  minimumLiquidationCollateral: number = 0;
   // Allowance
   userGaveAllowance: boolean = false;
 
@@ -65,6 +65,7 @@ class SsvStore extends BaseStore {
       liquidationCollateralPeriod: observable,
       getBalanceFromSsvContract: action.bound,
       prepareSsvAmountToTransfer: action.bound,
+      minimumLiquidationCollateral: observable,
       getBalanceFromDepositContract: action.bound,
     });
   }
@@ -409,9 +410,11 @@ class SsvStore extends BaseStore {
     const networkContract = walletStore.getterContract;
     const liquidationCollateral = await networkContract.methods.getLiquidationThresholdPeriod().call();
     const networkFee = await networkContract.methods.getNetworkFee().call();
+    const minimumLiquidationCollateral = await networkContract.methods.getMinimumLiquidationCollateral().call();
     // hardcoded should be replaced
     this.networkFee = walletStore.fromWei(networkFee);
     this.liquidationCollateralPeriod = Number(liquidationCollateral);
+    this.minimumLiquidationCollateral = walletStore.fromWei(minimumLiquidationCollateral);
   }
 
   /**

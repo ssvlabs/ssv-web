@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { isFinite } from 'lodash';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -90,6 +91,8 @@ const FundingNewValidator = () => {
   const isChecked = (id: number) => checkedId === id;
 
   const daysChanged = () => {
+    if (!isFinite(cluster.runWay)) return <Typography
+        className={classes.PositiveDays}>(+{formatNumberToUi(newRunWay, true)} days)</Typography>;
     if (cluster.runWay > newRunWay) return <Typography
         className={classes.NegativeDays}>(-{formatNumberToUi(cluster.runWay - newRunWay, true)} days)</Typography>;
     return <Typography
@@ -144,7 +147,7 @@ const FundingNewValidator = () => {
                     </Grid>
                     <Grid container item style={{ gap: 8, alignItems: 'center' }}>
                       <Typography
-                          className={`${classes.Bold} ${classes.LessBold}`}>{formatNumberToUi(runWay, true)}</Typography>
+                          className={`${classes.Bold} ${classes.LessBold}`}>{runWay}</Typography>
                       <Typography className={classes.DaysText}>days</Typography>
                       {checkedId > 0 && calculateNewRunWayCondition && <Typography className={`${classes.Bold} ${classes.LessBold}`}>{daysChanged()}</Typography>}
                     </Grid>

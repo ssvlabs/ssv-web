@@ -43,7 +43,10 @@ const ValidatorRegistrationConfirmation = () => {
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
-  const liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+  let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+  if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+    liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+  }
   const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
   const totalAmountOfSsv = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {
@@ -150,7 +153,7 @@ const ValidatorRegistrationConfirmation = () => {
   </Grid>,
   ];
 
-  if (!processStore.secondRegistration) screenBody.push(<FundingSummary/>);
+  if (!processStore.secondRegistration) screenBody.push(<FundingSummary liquidationCollateralCost={liquidationCollateralCost} />);
   if (!processStore.secondRegistration) screenBody.push(TotalSection);
 
   const MainScreen = <BorderScreen

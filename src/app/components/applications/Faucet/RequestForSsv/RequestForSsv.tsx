@@ -22,14 +22,14 @@ const RequestForSsv = () => {
     const faucetStore: FaucetStore = stores.Faucet;
     const walletStore: WalletStore = stores.Wallet;
     const [error, setError] = useState('');
-    const [disabled, setDisabled] = useState(true);
+    // const [disabled, setDisabled] = useState(true);
     const applicationStore: ApplicationStore = stores.Application;
     const [buttonText, setButtonText] = useState('Request');
-    const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
+    // const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
 
     useEffect(() => {
         setError('');
-        setDisabled(true);
+        // setDisabled(true);
         setButtonText('Request');
     }, [walletStore.accountAddress]);
 
@@ -44,7 +44,7 @@ const RequestForSsv = () => {
                 navigate(config.routes.FAUCET.DEPLETED);
             } else {
                 setError('Reached Max Transactions Per Day');
-                setReachedMaxTransactionPerDay(true);
+                // setReachedMaxTransactionPerDay(true);
                 applicationStore.setIsLoading(false);
                 setButtonText('Request');
             }
@@ -82,10 +82,10 @@ const RequestForSsv = () => {
             {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
             <HCaptcha
               ref={captchaRef}
-              onVerify={() => setDisabled(false)}
+              // onVerify={() => setDisabled(false)}
               sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
             />
-            <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV} disable={disabled || reachedMaxTransactionPerDay}
+            <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV}
               withVerifyConnection={false} />
           </Grid>,
         ]}

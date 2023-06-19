@@ -110,6 +110,9 @@ export const checkUserCountryRestriction = async (): Promise<any> => {
   if (networkId === NETWORKS.MAINNET) {
     for (const location of userLocation) {
       for (const restrictedLocation of restrictedLocations) {
+        if (String(restrictedLocation).toLowerCase() === 'israel'){
+          return { restricted: false, userGeo: userLocation[0] || '' };
+        }
         if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
           return { restricted: true, userGeo: userLocation[0] || '' };
         }

@@ -491,7 +491,7 @@ class ValidatorStore extends BaseStore {
         const payLoad = [
           this.keySharePublicKey,
           this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-          this.keySharePayload?.shares,
+          this.keySharePayload?.sharesData,
           `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())),
         ];
@@ -621,7 +621,7 @@ class ValidatorStore extends BaseStore {
       }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.shares, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
+      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {

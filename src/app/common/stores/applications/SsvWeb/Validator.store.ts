@@ -117,7 +117,7 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract: Contract = walletStore.setterContract;
     const ownerAddress: string = walletStore.accountAddress;
-    const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+    const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // @ts-ignore
@@ -127,7 +127,7 @@ class ValidatorStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       // eslint-disable-next-line no-param-reassign
-      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
+      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gas: GAS_LIMIT })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             let iterations = 0;
@@ -243,7 +243,7 @@ class ValidatorStore extends BaseStore {
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
       const contract: Contract = walletStore.setterContract;
       const ownerAddress: string = walletStore.accountAddress;
-      const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+      const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
 
       this.newValidatorReceipt = null;
 
@@ -252,7 +252,7 @@ class ValidatorStore extends BaseStore {
       console.debug('Add Validator Payload: ', payload);
 
       // Send add operator transaction
-      contract.methods.registerValidator(...payload).send({ from: ownerAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
+      contract.methods.registerValidator(...payload).send({ from: ownerAddress, gas: GAS_LIMIT })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -337,8 +337,8 @@ class ValidatorStore extends BaseStore {
       // @ts-ignore
       const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-      const { GAS_PRICE, GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
-      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gasPrice: GAS_PRICE, gas: GAS_LIMIT })
+      const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gas: GAS_LIMIT })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -491,7 +491,7 @@ class ValidatorStore extends BaseStore {
         const payLoad = [
           this.keySharePublicKey,
           this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-          this.keySharePayload?.shares,
+          this.keySharePayload?.sharesData,
           `${totalCost}`,
           await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())),
         ];
@@ -621,7 +621,7 @@ class ValidatorStore extends BaseStore {
       }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.shares, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
+      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {

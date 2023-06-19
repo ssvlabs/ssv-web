@@ -7,15 +7,16 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-// import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
@@ -23,8 +24,8 @@ const OperatorConfirmation = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
-  // const [checked, setCheckBox] = useState(false);
   const applicationStore: ApplicationStore = stores.Application;
+  const { checkedCondition } = useTermsAndConditions();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
   const onRegisterClick = async () => {
@@ -83,14 +84,9 @@ const OperatorConfirmation = () => {
                 </Grid>
               </Grid>
               <Grid container item>
-                {/*<Checkbox*/}
-                {/*    onClickCallBack={setCheckBox}*/}
-                {/*    text={(*/}
-                {/*        <div>I have read and agreed to the <a target={'_blank'} href={'www.google.com'}>terms and*/}
-                {/*          conditions</a></div>*/}
-                {/*    )}*/}
-                {/*/>*/}
-                <PrimaryButton disable={false} text={actionButtonText} submitFunction={onRegisterClick}/>
+               <TermsAndConditionsCheckbox>
+                 <PrimaryButton disable={!checkedCondition} text={actionButtonText} submitFunction={onRegisterClick}/>
+               </TermsAndConditionsCheckbox>
               </Grid>
             </Grid>,
           ]}

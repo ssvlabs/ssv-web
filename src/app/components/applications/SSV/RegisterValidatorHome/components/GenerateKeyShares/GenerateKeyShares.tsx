@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { getCurrentNetwork } from '~lib/utils/envHelper';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
@@ -16,8 +17,9 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 
 const GenerateKeyShares = () => {
   const stores = useStores();
-  const classes = useStyles();
   const navigate = useNavigate();
+  const { networkId } = getCurrentNetwork();
+  const classes = useStyles({ networkId });
   const walletStore: WalletStore = stores.Wallet;
   const accountStore: AccountStore = stores.Account;
   const processStore: ProcessStore = stores.Process;
@@ -60,20 +62,20 @@ const GenerateKeyShares = () => {
               subtitle={'Select your preferred method to split your key:'}
           />
           <Grid container item className={classes.LinkButtonsWrapper}>
-            <Grid container item className={classes.LinkButtonWrapper}>
-              <SecondaryButton
-                  dataTestId={'online'}
-                  withVerifyConnection
-                  text={'Online'}
-                  submitFunction={() => {
-                    validatorStore.keyStoreFile = null;
-                    uploadKeystore[`${processStore.secondRegistration}`]();
-                  }}
-              />
-              <Grid item xs={12} className={classes.UnderButtonText}>
-                Split key via the webapp
-              </Grid>
-            </Grid>
+              {networkId !== 1 && <Grid container item className={classes.LinkButtonWrapper}>
+                  <SecondaryButton
+                      dataTestId={'online'}
+                      withVerifyConnection
+                      text={'Online'}
+                      submitFunction={() => {
+                          validatorStore.keyStoreFile = null;
+                          uploadKeystore[`${processStore.secondRegistration}`]();
+                      }}
+                  />
+                  <Grid item xs={12} className={classes.UnderButtonText}>
+                      Split key via the webapp
+                  </Grid>
+              </Grid>}
             <Grid container item className={classes.LinkButtonWrapper}>
               <SecondaryButton
                   dataTestId={'offline'}

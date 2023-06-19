@@ -1,4 +1,5 @@
 import Grid from '@mui/material/Grid';
+import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ import FundingSummary from '~app/components/common/FundingSummary';
 import { useStyles } from './ValidatorRegistrationConfirmation.styles';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
@@ -21,9 +23,9 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
-import Decimal from 'decimal.js';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -33,10 +35,10 @@ const ValidatorRegistrationConfirmation = () => {
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
+  const { checkedCondition } = useTermsAndConditions();
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
-  // const [checked, selectCheckBox] = useState(false);
   const process: RegisterValidator | SingleCluster = processStore.process;
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
   const [actionButtonText, setActionButtonText] = useState('Register Validator');
@@ -103,23 +105,16 @@ const ValidatorRegistrationConfirmation = () => {
     {errorMessage && <ErrorMessage text={errorMessage}/>}
 
     <Grid container>
-      <Button
+      <TermsAndConditionsCheckbox>
+        <Button
           withAllowance
           text={actionButtonText}
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
-          disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance}
+          disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance || !checkedCondition}
           totalAmount={totalAmountOfSsv}
       />
-      {/* <CTAButton */}
-      {/*  // checkboxesText={[<span>I have read and agreed to the <a target="_blank" href={'www.google.com'}>terms and condition</a></span>]} */}
-      {/*  // checkBoxesCallBack={[selectCheckBox]} */}
-      {/*  withAllowance */}
-      {/*  testId={'confirm-button'} */}
-      {/*  disable={false} */}
-      {/*  onClick={onRegisterValidatorClick} */}
-      {/*  text={actionButtonText} */}
-      {/* /> */}
+      </TermsAndConditionsCheckbox>
     </Grid>
   </Grid>;
 

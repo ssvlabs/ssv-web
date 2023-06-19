@@ -1,8 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
+import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
+import CheckboxStore from '~app/common/stores/applications/SsvWeb/Checkbox.store';
 
-type Props = {
+type CheckboxProps = {
   text: any,
   width?: number,
   height?: number,
@@ -10,12 +12,18 @@ type Props = {
   isChecked?: boolean,
   onClickCallBack?: any,
   grayBackGround?: boolean,
+
 };
 
-const CheckBox = (props: Props) => {
-  const { width, height, text, disable, isChecked, onClickCallBack, grayBackGround } = props;
+const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround }: CheckboxProps) => {
+  const stores = useStores();
+  const checkboxStore: CheckboxStore = stores.Checkbox;
   const [checked, setChecked] = useState(isChecked ?? false);
   const classes = useStyles({ grayBackGround, checked, width, height });
+
+  useEffect(() => {
+      checkboxStore.setCheckboxStateFalse();
+  }, []);
 
   const checkAction = () => {
     if (disable) return;

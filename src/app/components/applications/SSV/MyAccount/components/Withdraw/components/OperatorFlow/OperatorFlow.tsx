@@ -8,8 +8,10 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 
 const OperatorFlow = () => {
   const classes = useStyles();
@@ -22,6 +24,7 @@ const OperatorFlow = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const operator = process?.item;
   const operatorBalance = operator?.balance ?? 0;
+  const { checkedCondition } = useTermsAndConditions();
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
@@ -82,14 +85,14 @@ const OperatorFlow = () => {
           withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
-          bottom={[(
-              <Button
-                  text={'Withdraw'}
-                  withAllowance={false}
-                  onClick={withdrawSsv}
-                  disable={Number(inputValue) === 0}
-              />
-          )]}
+          bottom={[<TermsAndConditionsCheckbox>
+            <Button
+              text={'Withdraw'}
+              withAllowance={false}
+              onClick={withdrawSsv}
+              disable={Number(inputValue) === 0 || checkedCondition}
+          />
+          </TermsAndConditionsCheckbox>]}
       />
   );
 };

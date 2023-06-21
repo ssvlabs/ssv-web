@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import Button from '~app/components/common/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -18,7 +18,7 @@ const CreateValidator = () => {
       action: 'click',
       label: 'Visit Ethereum Launchpad',
     });
-    window.open(config.links.LAUNCHPAD_LINK);
+    window.open(ENV().LAUNCHPAD_URL);
   };
 
   return (

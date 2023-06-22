@@ -7,7 +7,7 @@ import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import { GasGroup } from '~app/common/config/gasPrices';
+import { GasGroup } from '~app/common/config/gasLimits';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -16,7 +16,7 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { getFixedGasPrice, getRegisterValidatorGasPrice } from '~lib/utils/gasPriceHelper';
+import { getFixedGasLimit, getRegisterValidatorGasLimit } from '~lib/utils/gasLimitHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -119,7 +119,7 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract: Contract = walletStore.setterContract;
     const ownerAddress: string = walletStore.accountAddress;
-    const gasPrice = getFixedGasPrice(GasGroup.REMOVE_VALIDATOR);
+    const gasLimit = getFixedGasLimit(GasGroup.REMOVE_VALIDATOR);
 
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -130,7 +130,7 @@ class ValidatorStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       // eslint-disable-next-line no-param-reassign
-      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gas: gasPrice })
+      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gas: gasLimit })
           .on('receipt', async () => {
             ApiParams.initStorage(true);
             let iterations = 0;
@@ -251,7 +251,7 @@ class ValidatorStore extends BaseStore {
       const clusterHash = clusterStore.getClusterHash(payload[1]);
       const response = await Validator.getInstance().getClusterData(clusterHash);
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-      const gasPrice = getRegisterValidatorGasPrice(!!response.cluster, payload[1].length, 'registerValidator' in process && process.registerValidator?.depositAmount);
+      const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload[1].length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
 
       this.newValidatorReceipt = null;
 
@@ -260,7 +260,7 @@ class ValidatorStore extends BaseStore {
       console.debug('Add Validator Payload: ', payload);
 
       // Send add operator transaction
-      contract.methods.registerValidator(...payload).send({ from: ownerAddress, gas: gasPrice })
+      contract.methods.registerValidator(...payload).send({ from: ownerAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -345,8 +345,8 @@ class ValidatorStore extends BaseStore {
       // @ts-ignore
       const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-      const gasPrice = getFixedGasPrice(GasGroup.REACTIVATE_CLUSTER);
-      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gas: gasPrice })
+      const gasLimit = getFixedGasLimit(GasGroup.REACTIVATE_CLUSTER);
+      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');

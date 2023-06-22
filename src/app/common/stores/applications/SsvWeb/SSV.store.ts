@@ -4,10 +4,10 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { GasGroup } from '~app/common/config/gasPrices';
-import { getFixedGasPrice } from '~lib/utils/gasPriceHelper';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import { getFixedGasPrice, getLiquidationGasPrice } from '~lib/utils/gasPriceHelper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
@@ -273,7 +273,7 @@ class SsvStore extends BaseStore {
         const clusterStore: ClusterStore = this.getStore('Cluster');
         const process: any = processStore.process;
         const eventFlow = operatorFlow ? GasGroup.WITHDRAW_OPERATOR_BALANCE : GasGroup.WITHDRAW_CLUSTER_BALANCE;
-        const gasPrice = getFixedGasPrice(eventFlow);
+        let gasPrice = getFixedGasPrice(eventFlow);
         let contractFunction: null;
         if (processStore.isValidatorFlow) {
           const cluster: SingleCluster = process.item;
@@ -282,6 +282,7 @@ class SsvStore extends BaseStore {
           // @ts-ignore
           const newBalance = walletStore.fromWei(cluster.balance) - Number(amount);
           if (clusterStore.getClusterRunWay({ ...process.item, balance: walletStore.toWei(newBalance) }) <= 0) {
+            gasPrice = getLiquidationGasPrice(cluster.operators.length);
             contractFunction = walletStore.setterContract.methods.liquidate(this.accountAddress, operatorsIds, clusterData);
           } else {
             contractFunction = walletStore.setterContract.methods.withdraw(operatorsIds, this.prepareSsvAmountToTransfer(walletStore.toWei(amount)), clusterData);

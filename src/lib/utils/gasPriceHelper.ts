@@ -1,7 +1,7 @@
 import { GasGroup, MAX_GAS_PER_GROUP } from '~app/common/config/gasPrices';
 
 const addTenPercent = (value: number): number =>  {
-    return Math.floor(value * 1.1);
+    return Math.floor(value * 1.2);
 };
 
 export const getRegisterValidatorGasPrice = (clusterExist: boolean, countOfOperators: number, withoutDeposit: boolean): number => {

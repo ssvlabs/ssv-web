@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { isFinite } from 'lodash';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
@@ -32,27 +32,27 @@ const FundingNewValidator = () => {
   const clusterStore: ClusterStore = stores.Cluster;
   const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
-  const [depositSSV, setDepositSSV] = useState(0);
+  const [depositSSV, setDepositSSV] = useState<string | number>(0);
   const [errorMessage, setErrorMessage] = useState({ text:'', link: { text:'', path:'' } });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
-  const disableBtnCondition = (depositSSV === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
+  const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
-    balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + depositSSV),
+    balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + Number(depositSSV)),
   });
-  const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? depositSSV > 0 : true;
+  const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
 
   useEffect(() => {
-    if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && depositSSV === 0) {
+    if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
       setErrorMessage({ text:'', link: { text:'', path:'' } });
       setShowErrorMessage(false);
       return;
     }
-    if (depositSSV > ssvStore.walletSsvBalance) {
+    if (Number(depositSSV) > ssvStore.walletSsvBalance) {
       setErrorMessage({
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         link: {
@@ -100,14 +100,19 @@ const FundingNewValidator = () => {
   };
 
   const ssvChanged = () => {
-    if (depositSSV > 0) return <Typography className={classes.PositiveDays}>(+{depositSSV} SSV)</Typography>;
+    if (Number(depositSSV) > 0) return <Typography className={classes.PositiveDays}>(+{depositSSV} SSV)</Typography>;
   };
 
   const moveToNextPage = () => {
-    process.registerValidator = { depositAmount: depositSSV };
+    process.registerValidator = { depositAmount: Number(depositSSV) };
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START);
   };
 
+  const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.replace(/[^0-9.]/g, '').trim();
+    const finalValue = value.toString().includes('.') ? value : Number(value);
+    setDepositSSV(finalValue);
+  };
 
   return (
       <Grid container>
@@ -163,9 +168,8 @@ const FundingNewValidator = () => {
                               <Grid item className={classes.CheckCircle}/>}
                           <Grid item className={classes.TimeText}>{option.timeText}</Grid>
                         </Grid>
-                        {isCustom && <TextInput value={depositSSV || ''}
-                                                placeHolder={'0'}
-                                                onChangeCallback={(e: any) => setDepositSSV(Number(e.target.value))}
+                        {isCustom && <TextInput value={depositSSV}
+                                                onChangeCallback={changeDepositSsvHandler}
                                                 extendClass={classes.DaysInput} withSideText />}
                       </Grid>;
                     })}

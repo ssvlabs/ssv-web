@@ -13,7 +13,7 @@ export const getRegisterValidatorGasPrice = (clusterExist: boolean, countOfOpera
 
 export const getLiquidationGasPrice = (countOfOperators: number): number => {
     const EVENT = 'LIQUIDATE_CLUSTER';
-    return calculateTenPercentIncrease(MAX_GAS_PER_GROUP[GasGroup[`${EVENT}${countOfOperators}`]]);
+    return calculateTenPercentIncrease(MAX_GAS_PER_GROUP[GasGroup[`${EVENT}_${countOfOperators}`]]);
 };
 
 export const getFixedGasPrice = (eventType: number) => calculateTenPercentIncrease(MAX_GAS_PER_GROUP[eventType]);

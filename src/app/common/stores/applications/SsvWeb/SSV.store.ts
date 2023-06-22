@@ -3,6 +3,8 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { GasGroup } from '~app/common/config/gasPrices';
+import { getFixedGasPrice } from '~lib/utils/gasPriceHelper';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
@@ -181,16 +183,16 @@ class SsvStore extends BaseStore {
    */
   async deposit(amount: string) {
     return new Promise<boolean>(async (resolve) => {
+      const gasPrice = getFixedGasPrice(GasGroup.DEPOSIT);
       const walletStore: WalletStore = this.getStore('Wallet');
       const processStore: ProcessStore = this.getStore('Process');
       const clusterStore: ClusterStore = this.getStore('Cluster');
-      const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
       const process: SingleCluster = processStore.getProcess;
       const cluster = process.item;
       const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress, gas: GAS_LIMIT })
+      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress, gas: gasPrice })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -263,14 +265,15 @@ class SsvStore extends BaseStore {
    * Withdraw ssv
    * @param amount
    */
-  async withdrawSsv(amount: string) {
+  async withdrawSsv(amount: string, operatorFlow: boolean = false) {
     return new Promise<boolean>(async (resolve) => {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
         const processStore: ProcessStore = this.getStore('Process');
         const clusterStore: ClusterStore = this.getStore('Cluster');
         const process: any = processStore.process;
-        const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+        const eventFlow = operatorFlow ? GasGroup.WITHDRAW_OPERATOR_BALANCE : GasGroup.WITHDRAW_CLUSTER_BALANCE;
+        const gasPrice = getFixedGasPrice(eventFlow);
         let contractFunction: null;
         if (processStore.isValidatorFlow) {
           const cluster: SingleCluster = process.item;
@@ -291,7 +294,7 @@ class SsvStore extends BaseStore {
           contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(operatorId, ssvAmount);
         }
         // @ts-ignore
-        contractFunction.send({ from: this.accountAddress, gas: GAS_LIMIT })
+        contractFunction.send({ from: this.accountAddress, gas: gasPrice })
             .on('receipt', async () => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'my_account',

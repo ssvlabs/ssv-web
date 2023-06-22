@@ -28,7 +28,7 @@ const OperatorFlow = () => {
 
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(inputValue.toString());
+    const success = await ssvStore.withdrawSsv(inputValue.toString(), true);
     applicationStore.setIsLoading(false);
     if (success) {
       setInputValue(0.0);

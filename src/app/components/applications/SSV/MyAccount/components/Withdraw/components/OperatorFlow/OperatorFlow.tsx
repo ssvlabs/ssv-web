@@ -90,7 +90,7 @@ const OperatorFlow = () => {
               text={'Withdraw'}
               withAllowance={false}
               onClick={withdrawSsv}
-              disable={Number(inputValue) === 0 || checkedCondition}
+              disable={Number(inputValue) === 0 || !checkedCondition}
           />
           </TermsAndConditionsCheckbox>]}
       />

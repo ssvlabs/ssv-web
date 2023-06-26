@@ -200,6 +200,7 @@ class MyAccountStore extends BaseStore {
     // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;
     this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => clusterStore.extendClusterEntity(cluster))) || [];
+    this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validator_count > 0 || !cluster.isLiquidated);
     return this.ownerAddressClusters;
   }
   //

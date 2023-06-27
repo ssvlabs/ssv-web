@@ -201,11 +201,11 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  isOperatorRegistrable(validatorsRegisteredCount: number) {
+  async isOperatorRegistrable(validatorsRegisteredCount: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {
-      contract.methods.getValidatorsPerOperatorLimit().call().then((maxValidators: number) => this.operatorValidatorsLimit = maxValidators);
+      await contract.methods.getValidatorsPerOperatorLimit().call().then((maxValidators: number) => this.operatorValidatorsLimit = maxValidators);
     }
     return this.operatorValidatorsLimit > validatorsRegisteredCount;
   }

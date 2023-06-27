@@ -37,12 +37,12 @@ type ClusterDataType = {
   validatorCount: number;
 };
 
-type PayloadType = false | {
-  keyStorePublicKey: string;
-  operatorIds: number[],
-  sharesData: string,
-  totalCost: string;
-  clusterData: ClusterDataType,
+const PAYLOAD_KEYS = {
+  KEYSTORE_PUBLIC_KEY: 'keyStorePublicKey',
+  OPERATOR_IDS: 'operatorIds',
+  SHARES_DATA: 'sharesData',
+  TOTAL_COST: 'totalCost',
+  CLUSTER_DATA: 'clusterData',
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -189,10 +189,11 @@ class ValidatorStore extends BaseStore {
   async updateValidator() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
+      const { KEYSTORE_PUBLIC_KEY, OPERATOR_IDS } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const contract: Contract = walletStore.setterContract;
-      const payload: PayloadType = await this.createKeystorePayload(true);
+      const payload: Map<string, any> | false = await this.createKeystorePayload(true);
       if (!payload) {
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
@@ -200,15 +201,15 @@ class ValidatorStore extends BaseStore {
         return;
       }
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.keyStorePublicKey}`);
+      const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
 
-      const response = await contract.methods.updateValidator(...Object.values(payload)).send({ from: walletStore.accountAddress })
+      const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               this.keyStoreFile = null;
-              this.newValidatorReceipt = payload.operatorIds;
+              this.newValidatorReceipt = payload.get(OPERATOR_IDS);
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
@@ -222,7 +223,7 @@ class ValidatorStore extends BaseStore {
                 // eslint-disable-next-line no-await-in-loop
                 const changed = await myAccountStore.checkEntityChangedInAccount(
                     async () => {
-                      return Validator.getInstance().getValidator(`0x${payload.keyStorePublicKey}`);
+                      return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
                     },
                     validatorBefore,
                 );
@@ -254,7 +255,8 @@ class ValidatorStore extends BaseStore {
 
   async addNewValidator() {
     return new Promise(async (resolve) => {
-      const payload: PayloadType = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
+      const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
+      const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const clusterStore: ClusterStore = this.getStore('Cluster');
       const processStore: ProcessStore = this.getStore('Process');
@@ -269,23 +271,23 @@ class ValidatorStore extends BaseStore {
         return;
       }
 
-      const clusterHash = clusterStore.getClusterHash(payload.operatorIds);
+      const clusterHash = clusterStore.getClusterHash(payload.get(OPERATOR_IDS));
       const response = await Validator.getInstance().getClusterData(clusterHash);
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-      const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.operatorIds.length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
+      const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.get(OPERATOR_IDS).length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
 
       this.newValidatorReceipt = null;
 
       console.debug('Add Validator Payload: ', payload);
 
       // Send add operator transaction
-      contract.methods.registerValidator(...Object.values(payload)).send({ from: ownerAddress, gas: gasLimit })
+      contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               this.keyStoreFile = null;
-              this.newValidatorReceipt = payload.operatorIds;
+              this.newValidatorReceipt = payload.get(OPERATOR_IDS);
               GoogleTagManager.getInstance().sendEvent({
                 category: 'validator_register',
                 action: 'register_tx',
@@ -303,7 +305,7 @@ class ValidatorStore extends BaseStore {
                 }
                 iterations += 1;
                 // eslint-disable-next-line no-await-in-loop
-                if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.clusterData.validatorCount)) {
+                if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
                   // eslint-disable-next-line no-await-in-loop
                   await this.refreshOperatorsAndClusters(resolve, true);
                   break;
@@ -433,7 +435,7 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async createKeystorePayload(update: boolean = false): Promise<PayloadType | false> {
+  async createKeystorePayload(update: boolean = false): Promise<Map<string, any> | false> {
     update;
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
@@ -463,9 +465,9 @@ class ValidatorStore extends BaseStore {
           }
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
-        let payload;
+        let keysharePayload;
         try {
-          payload = await keyShares.buildPayload({
+          keysharePayload = await keyShares.buildPayload({
             publicKey: threshold.publicKey,
             operators,
             encryptedShares,
@@ -481,13 +483,13 @@ class ValidatorStore extends BaseStore {
           console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
         }
 
-        resolve({
-          keyStorePublicKey: this.keyStorePublicKey,
-          operatorIds: payload.operatorIds,
-          sharesData: payload.shares,
-          totalCost: `${totalCost}`,
-          clusterData: await clusterStore.getClusterData(clusterStore.getClusterHash(operators.map(item => item.id))),
-      });
+        const payload = this.createPayload(this.keyStorePublicKey,
+            keysharePayload.operatorIds,
+            keysharePayload.shares,
+            `${totalCost}`,
+            await clusterStore.getClusterData(clusterStore.getClusterHash(operators.map(item => item.id))));
+
+        resolve(payload);
       } catch (e: any) {
         console.log(e.message);
         resolve(false);
@@ -495,7 +497,7 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async createKeySharePayload(update: boolean = false): Promise<PayloadType | false> {
+  async createKeySharePayload(update: boolean = false): Promise<Map<string, any> | false> {
     update;
     return new Promise(async (resolve) => {
       const ssvStore: SsvStore = this.getStore('SSV');
@@ -515,13 +517,11 @@ class ValidatorStore extends BaseStore {
         totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
       }
       try {
-        const payload = {
-          keyStorePublicKey: this.keySharePublicKey,
-          operatorIds: this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-          sharesData: this.keySharePayload?.sharesData,
-          totalCost: `${totalCost}`,
-          clusterData: await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())),
-      };
+        const payload = this.createPayload(this.keySharePublicKey,
+            this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
+            this.keySharePayload?.sharesData, `${totalCost}`,
+            await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
+
         resolve(payload);
       } catch (e: any) {
         console.log(e.message);
@@ -654,6 +654,16 @@ class ValidatorStore extends BaseStore {
     } catch (e: any) {
       return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
     }
+  }
+
+  createPayload(publicKey: string, operatorIds: number[], sharesData: string, totalCost: string, clusterData: ClusterDataType) {
+    const payload = new Map<string, any>();
+    payload.set('keyStorePublicKey', publicKey);
+    payload.set('operatorIds', operatorIds);
+    payload.set('sharesData', sharesData);
+    payload.set('totalCost', `${totalCost}`);
+    payload.set('clusterData', clusterData);
+    return payload;
   }
 
   isJsonFile(file: any): boolean {

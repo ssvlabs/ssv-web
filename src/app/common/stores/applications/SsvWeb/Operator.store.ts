@@ -82,7 +82,7 @@ class OperatorStore extends BaseStore {
 
   loadingOperators: boolean = false;
 
-  operatorValidatorsLimit: number = 2000;
+  operatorValidatorsLimit: number = 0;
 
   constructor() {
     // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
@@ -201,12 +201,12 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  async isOperatorRegistrable(validatorsRegisteredCount: number) {
+  isOperatorRegistrable(validatorsRegisteredCount: number) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
-    const maxValidatorsCount = await contract.methods.getValidatorsPerOperatorLimit().call();
-    this.operatorValidatorsLimit = maxValidatorsCount;
-    // eslint-disable-next-line radix
+    if (this.operatorValidatorsLimit === 0) {
+      contract.methods.getValidatorsPerOperatorLimit().call().then((maxValidators: number) => this.operatorValidatorsLimit = maxValidators);
+    }
     return this.operatorValidatorsLimit > validatorsRegisteredCount;
   }
 

@@ -1,9 +1,10 @@
+import React from 'react';
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
+import Operator from '~lib/api/Operator';
 import { compareNumbers } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import LinkText from '~app/components/common/LinkText/LinkText';
-import React from 'react';
 
 interface ErrorObject {
     errorMessage: any,
@@ -41,7 +42,7 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
     callback(response);
 };
 
-export const validateFeeInput = (value: string, callback: any): void => {
+export const validateFeeInput = (value: string, callback: Function): void => {
     // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
     const response = { shouldDisplay: false, errorMessage: '' };
     // eslint-disable-next-line radix
@@ -56,6 +57,14 @@ export const validateFeeInput = (value: string, callback: any): void => {
     }
 
     callback(response);
+};
+
+export const validateOperatorPublicKey = async (publicKey: string): Promise<boolean> => {
+        const response = await Operator.getInstance().getOperatorByPublicKey(publicKey);
+        if (response.data) {
+            return true;
+        }
+       return false;
 };
 
 export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, callback: any): void => {

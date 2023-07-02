@@ -1,10 +1,10 @@
 import { GasGroup, MAX_GAS_PER_GROUP } from '~app/common/config/gasLimits';
+import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 
-const USE_HARDCODED_GAS_LIMIT = 'USE_HARDCODED_GAS_LIMIT';
+// const USE_HARDCODED_GAS_LIMIT = 'USE_HARDCODED_GAS_LIMIT';
 
 const calculateTenPercentIncrease = (value: number): number | null =>  {
-      const result = window.localStorage.getItem(USE_HARDCODED_GAS_LIMIT);
-      if ( result && JSON.parse(result)) {
+      if ( getLocalStorageFlagValue(DEVELOPER_FLAGS.USE_HARDCODED_GAS_LIMIT) === 1) {
           return Math.floor(value * 1.2);
       }
     return null;

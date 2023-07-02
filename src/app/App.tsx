@@ -13,6 +13,7 @@ import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
+import DeveloperHelper from '~lib/utils/developerHelper';
 import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
@@ -64,6 +65,7 @@ const App = () => {
 
   return (
       <StyledEngineProvider injectFirst>
+        <DeveloperHelper />
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
             <GlobalStyle/>

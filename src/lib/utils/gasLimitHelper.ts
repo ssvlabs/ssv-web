@@ -5,7 +5,7 @@ import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerH
 
 const calculateTenPercentIncrease = (value: number): number | null =>  {
       if ( getLocalStorageFlagValue(DEVELOPER_FLAGS.USE_HARDCODED_GAS_LIMIT) === 1) {
-          return Math.floor(value * 1.2);
+          return Math.floor(value * 1.1);
       }
     return null;
 };

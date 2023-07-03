@@ -3,9 +3,11 @@ import { Contract } from 'web3-eth-contract';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { GasGroup } from '~app/common/config/gasLimits';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import { getFixedGasLimit, getLiquidationGasLimit } from '~lib/utils/gasLimitHelper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
@@ -181,16 +183,16 @@ class SsvStore extends BaseStore {
    */
   async deposit(amount: string) {
     return new Promise<boolean>(async (resolve) => {
+      const gasLimit = getFixedGasLimit(GasGroup.DEPOSIT);
       const walletStore: WalletStore = this.getStore('Wallet');
       const processStore: ProcessStore = this.getStore('Process');
       const clusterStore: ClusterStore = this.getStore('Cluster');
-      const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
       const process: SingleCluster = processStore.getProcess;
       const cluster = process.item;
       const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress, gas: GAS_LIMIT })
+      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress, gas: gasLimit })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -263,14 +265,15 @@ class SsvStore extends BaseStore {
    * Withdraw ssv
    * @param amount
    */
-  async withdrawSsv(amount: string) {
+  async withdrawSsv(amount: string, operatorFlow: boolean = false) {
     return new Promise<boolean>(async (resolve) => {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
         const processStore: ProcessStore = this.getStore('Process');
         const clusterStore: ClusterStore = this.getStore('Cluster');
         const process: any = processStore.process;
-        const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+        const eventFlow = operatorFlow ? GasGroup.WITHDRAW_OPERATOR_BALANCE : GasGroup.WITHDRAW_CLUSTER_BALANCE;
+        let gasLimit = getFixedGasLimit(eventFlow);
         let contractFunction: null;
         if (processStore.isValidatorFlow) {
           const cluster: SingleCluster = process.item;
@@ -279,6 +282,7 @@ class SsvStore extends BaseStore {
           // @ts-ignore
           const newBalance = walletStore.fromWei(cluster.balance) - Number(amount);
           if (clusterStore.getClusterRunWay({ ...process.item, balance: walletStore.toWei(newBalance) }) <= 0) {
+            gasLimit = getLiquidationGasLimit(cluster.operators.length);
             contractFunction = walletStore.setterContract.methods.liquidate(this.accountAddress, operatorsIds, clusterData);
           } else {
             contractFunction = walletStore.setterContract.methods.withdraw(operatorsIds, this.prepareSsvAmountToTransfer(walletStore.toWei(amount)), clusterData);
@@ -291,7 +295,7 @@ class SsvStore extends BaseStore {
           contractFunction = walletStore.setterContract.methods.withdrawOperatorEarnings(operatorId, ssvAmount);
         }
         // @ts-ignore
-        contractFunction.send({ from: this.accountAddress, gas: GAS_LIMIT })
+        contractFunction.send({ from: this.accountAddress, gas: gasLimit })
             .on('receipt', async () => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'my_account',

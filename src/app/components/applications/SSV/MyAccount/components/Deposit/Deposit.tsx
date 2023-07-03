@@ -18,6 +18,7 @@ import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 const Deposit = () => {
   const stores = useStores();
@@ -27,6 +28,7 @@ const Deposit = () => {
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = walletStore.fromWei(cluster.balance);
@@ -44,7 +46,8 @@ const Deposit = () => {
         action: 'deposit_tx',
         label: 'success',
       });
-      applicationStore.setIsLoading(false);
+        await myAccountStore.getOwnerAddressClusters({});
+        applicationStore.setIsLoading(false);
       if (success) navigate(-1);
     }).catch((error) => {
       GoogleTagManager.getInstance().sendEvent({

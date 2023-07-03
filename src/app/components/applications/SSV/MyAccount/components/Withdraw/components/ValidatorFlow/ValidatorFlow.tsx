@@ -13,6 +13,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
@@ -26,6 +27,7 @@ const ValidatorFlow = () => {
   const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = walletStore.fromWei(cluster.balance);
@@ -49,25 +51,24 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     applicationStore.setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    setTimeout(async () => {
-      const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
-      const newCluster = response.cluster;
-      newCluster.validator_count = newCluster.validatorCount;
-      newCluster.operators = cluster.operators;
-      processStore.setProcess({
-        processName: 'single_cluster',
-        // @ts-ignore
-        item: await clusterStore.extendClusterEntity(newCluster),
-      }, 2);
-      applicationStore.setIsLoading(false);
-      if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
-        navigate(-1);
-      }
-      if (success) {
-        setWithdrawValue(0.0);
-        navigate(-1);
-      }
-    }, 10000);
+    const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
+    const newCluster = response.cluster;
+    newCluster.validator_count = newCluster.validatorCount;
+    newCluster.operators = cluster.operators;
+    processStore.setProcess({
+      processName: 'single_cluster',
+      // @ts-ignore
+      item: await clusterStore.extendClusterEntity(newCluster),
+    }, 2);
+    await myAccountStore.getOwnerAddressClusters({});
+    applicationStore.setIsLoading(false);
+    if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
+      navigate(-1);
+    }
+    if (success) {
+      setWithdrawValue(0.0);
+      navigate(-1);
+    }
   };
 
   function inputHandler(e: any) {

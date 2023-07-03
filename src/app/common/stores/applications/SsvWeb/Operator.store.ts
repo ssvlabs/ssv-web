@@ -6,6 +6,8 @@ import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
+import { GasGroup } from '~app/common/config/gasLimits';
+import { getFixedGasLimit } from '~lib/utils/gasLimitHelper';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -82,7 +84,7 @@ class OperatorStore extends BaseStore {
 
   loadingOperators: boolean = false;
 
-  operatorValidatorsLimit: number = 2000;
+  operatorValidatorsLimit: number = 0;
 
   constructor() {
     // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
@@ -201,8 +203,12 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  isOperatorRegistrable(validatorsRegisteredCount: number) {
-    // eslint-disable-next-line radix
+  async isOperatorRegistrable(validatorsRegisteredCount: number) {
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const contract: Contract = walletStore.getterContract;
+    if (this.operatorValidatorsLimit === 0) {
+      await contract.methods.getValidatorsPerOperatorLimit().call().then((maxValidators: number) => this.operatorValidatorsLimit = maxValidators);
+    }
     return this.operatorValidatorsLimit > validatorsRegisteredCount;
   }
 
@@ -285,6 +291,7 @@ class OperatorStore extends BaseStore {
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const gasLimit = getFixedGasLimit(GasGroup.CANCEL_OPERATOR_FEE);
     await this.syncOperatorFeeInfo(operatorId);
     const operatorDataBefore = {
       operatorFutureFee: this.operatorFutureFee,
@@ -297,7 +304,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
         const contract: Contract = walletStore.setterContract;
-        contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+        contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -435,7 +442,7 @@ class OperatorStore extends BaseStore {
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
-        const { GAS_LIMIT } = config.GLOBAL_VARIABLE.GAS_FIXED_PRICE;
+        const gasLimit = getFixedGasLimit(GasGroup.DECLARE_OPERATOR_FEE);
         const contractInstance = walletStore.setterContract;
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           walletStore.toWei(
@@ -448,7 +455,7 @@ class OperatorStore extends BaseStore {
           operatorApprovalEndTime: this.operatorApprovalEndTime,
           operatorApprovalBeginTime: this.operatorApprovalBeginTime,
         };
-        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gas: GAS_LIMIT })
+        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -501,6 +508,7 @@ class OperatorStore extends BaseStore {
 
   async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const gasLimit = getFixedGasLimit(GasGroup.REDUCE_OPERATOR_FEE);
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
@@ -514,7 +522,7 @@ class OperatorStore extends BaseStore {
         );
         const { id, fee }  = await Operator.getInstance().getOperator(operatorId);
         const operatorBefore = { id, fee };
-        await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress })
+        await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gas: gasLimit })
             .on('receipt', async (receipt: any) => {
               // eslint-disable-next-line no-prototype-builtins
               const event: boolean = receipt.hasOwnProperty('events');
@@ -575,13 +583,14 @@ class OperatorStore extends BaseStore {
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const applicationStore: ApplicationStore = this.getStore('Application');
         let operatorBefore = await Operator.getInstance().getOperator(operatorId);
+        const gasLimit = getFixedGasLimit(GasGroup.EXECUTE_OPERATOR_FEE);
         operatorBefore = {
           id: operatorBefore.id,
           declared_fee: operatorBefore.declared_fee,
           previous_fee: operatorBefore.previous_fee,
         };
 
-        await walletStore.setterContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress })
+        await walletStore.setterContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -645,13 +654,14 @@ class OperatorStore extends BaseStore {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const gasLimit = getFixedGasLimit(GasGroup.REMOVE_OPERATOR);
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
       const contractInstance = walletStore.setterContract;
 
       // eslint-disable-next-line no-async-promise-executor
       return await new Promise(async (resolve) => {
-        await contractInstance.methods.removeOperator(operatorId).send({ from: walletStore.accountAddress })
+        await contractInstance.methods.removeOperator(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -715,6 +725,7 @@ class OperatorStore extends BaseStore {
         const contract: Contract = walletStore.setterContract;
         const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
+        const gasLimit = getFixedGasLimit(GasGroup.REGISTER_OPERATOR);
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
@@ -735,7 +746,7 @@ class OperatorStore extends BaseStore {
           }
         } else {
           contract.methods.registerOperator(...payload)
-            .send({ from: address })
+            .send({ from: address, gas: gasLimit })
             .on('receipt', async (receipt: any) => {
               // eslint-disable-next-line no-prototype-builtins
               const events: boolean = receipt.hasOwnProperty('events');

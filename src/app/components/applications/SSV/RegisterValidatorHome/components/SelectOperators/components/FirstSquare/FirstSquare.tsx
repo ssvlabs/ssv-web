@@ -211,7 +211,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
             </StyledCell>
             <StyledCell>
               <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
-                redirectTo(operator.address);
+                redirectTo(operator.id);
               }}/>
             </StyledCell>
           </TableRow>

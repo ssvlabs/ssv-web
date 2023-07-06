@@ -39,7 +39,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
         lineHeight: 1.62,
         border: 'none !important',
         color: theme.colors.gray90,
+        resize:'none',
         backgroundColor: 'transparent',
+        '&:focus': {
+            outline: 'none',
+            border: 'none !important',
+            borderColor: 'none !important',
+        },
     },
     FullInput: {
         width: '100%',

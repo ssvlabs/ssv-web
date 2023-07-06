@@ -9,6 +9,7 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 
 type Props = {
@@ -23,6 +24,7 @@ const OperatorsFlow = (props: Props) => {
   const settingsRef = useRef(null);
   const classes = useStyles({ mainFlow });
   const processStore: ProcessStore = stores.Process;
+  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleOperator = processStore.getProcess;
   const operator = process?.item;
@@ -47,9 +49,11 @@ const OperatorsFlow = (props: Props) => {
     };
   }, [settingsRef, showSettings]);
 
-  // const onClick = () => console.log;
   const moveToRemoveOperator = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
-  const moveToMetaData = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA);
+  const moveToMetaData = () => {
+    metadataStore.initMetadata(operator);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA);
+  };
 
   const onNavigationClicked = async () => {
     navigate(-1);
@@ -113,7 +117,7 @@ const OperatorsFlow = (props: Props) => {
               </Grid> */}
               <Grid container item className={classes.Button} onClick={moveToMetaData}>
                 <Grid className={classes.MetadataImage}/>
-                <Typography>Change Name</Typography>
+                <Typography>Edit Details</Typography>
               </Grid>
               <Grid container item className={classes.Button} onClick={moveToRemoveOperator}>
                 <Grid className={classes.RemoveImage}/>

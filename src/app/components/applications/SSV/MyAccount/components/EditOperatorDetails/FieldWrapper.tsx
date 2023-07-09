@@ -20,7 +20,7 @@ const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const { label, errorMessage, placeholderText } = metadataStore.getMetadata(fieldKey);
+    const { label, errorMessage, placeholderText, additionalLabelText } = metadataStore.getMetadata(fieldKey);
 
     const extendClasses = {
         [FIELD_KEYS.DESCRIPTION]: classes.DescriptionInput,
@@ -46,10 +46,10 @@ const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
         <Grid container item>
                          <Grid container>
                              <Grid item container>
-                                <InputLabel title={label}/>
+                                <InputLabel title={label} additionalLabel={additionalLabelText}/>
                                  <Component fieldKey={fieldKey} placeholder={placeholderText} extendClass={extendClasses[fieldKey]} />
                 </Grid>
-                <Typography className={classes.ErrorMessage}>{errorMessage}</Typography>
+                <Typography className={classes.ErrorMessage}>{fieldKey !== FIELD_KEYS.OPERATOR_IMAGE && errorMessage}</Typography>
             </Grid>
         </Grid>
     );

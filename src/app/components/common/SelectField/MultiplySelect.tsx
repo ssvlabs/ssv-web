@@ -8,9 +8,8 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const { options } = metadataStore.getMetadata(fieldKey);
-    const [values, setValues] = React.useState<string[]>([]);
-
+    const { value, options } = metadataStore.getMetadata(fieldKey);
+    const [values, setValues] = React.useState<string[]>(value.split(','));
     const handleChange = (event:  SelectChangeEvent<string[]>) => {
         setValues(metadataStore.setMetadataValue(fieldKey, event.target.value));
     };
@@ -24,8 +23,8 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
                 placeholder={placeholder}
                 renderValue={(selected) => (
                     <div >
-                        {(selected as string[]).map((value) => (
-                            <Chip key={value} label={value} />
+                        {(selected as string[]).map((option) => (
+                            <Chip key={option} label={option} />
                         ))}
                     </div>
                 )}>

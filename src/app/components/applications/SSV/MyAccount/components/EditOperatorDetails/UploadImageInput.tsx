@@ -2,7 +2,9 @@ import React, { useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
+import { translations } from '~app/common/config';
 import LinkText from '~app/components/common/LinkText/LinkText';
+import { ALLOWED_IMAGE_TYPES } from '~lib/utils/operatorMetadataHelper';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import ImportInput
     from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common/ImportInput';
@@ -19,17 +21,12 @@ const UploadImageInput = ({ fieldKey, extendClass } : { fieldKey: string, extend
 
     const fileHandler = (file: any) => {
         const newData = metadataStore.getMetadata(fieldKey);
-        const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'];
-        if (!allowedTypes.includes(file.type)) {
-            newData.errorMessage = 'File must be .jpg .jpeg .png .svg';
-            setCurrentData(newData);
-            metadataStore.setMetadata(fieldKey, newData);
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            metadataStore.setErrorMessage(fieldKey, translations.OPERATOR_METADATA.IMAGE_TYPE_ERROR);
             return;
         }
         if ((file.size / 1024) > 200) {
-            newData.errorMessage = 'File must be up to 200KB';
-            setCurrentData(newData);
-            metadataStore.setMetadata(fieldKey, newData);
+            metadataStore.setErrorMessage(fieldKey, translations.OPERATOR_METADATA.IMAGE_SIZE_ERROR);
             return;
         }
         newData.errorMessage = '';
@@ -41,6 +38,19 @@ const UploadImageInput = ({ fieldKey, extendClass } : { fieldKey: string, extend
                 newData.imageFileName = file.name;
                 metadataStore.setMetadata(fieldKey, newData);
                 setCurrentData(newData);
+
+                let img = new Image();
+                img.onload = () => {
+                    if (img.width < 400 || img.height < 400) {
+                        newData.errorMessage = translations.OPERATOR_METADATA.IMAGE_RESOLUTION_ERROR;
+                        setCurrentData(newData);
+                        metadataStore.setMetadata(fieldKey, newData);
+                        return;
+                    }
+                };
+                if (typeof base64ImageString === 'string') {
+                    img.src = base64ImageString;
+                }
             }
         };
         reader.readAsDataURL(file);
@@ -57,11 +67,10 @@ const UploadImageInput = ({ fieldKey, extendClass } : { fieldKey: string, extend
     };
 
     const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.RemoveIcon} />;
-
-    // TODO: add drop icon
+    
     const renderFileText = () => {
-        if (currentData.imageFileName) {
-           return (<Typography className={classes.ImageName}>{currentData.imageFileName} {currentData.errorMessage} <RemoveButton/></Typography>);
+        if (currentData.imageFileName && !currentData.errorMessage) {
+           return (<Typography className={classes.ImageName}>{currentData.imageFileName} <RemoveButton/></Typography>);
         }
         if (currentData.errorMessage) {
            return (<Typography className={classes.ImageErrorMessage}>{currentData.errorMessage} <RemoveButton/></Typography>);

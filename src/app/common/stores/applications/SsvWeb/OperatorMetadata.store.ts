@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { makeObservable, observable } from 'mobx';
+import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import {
     exceptions,
@@ -28,9 +29,17 @@ class OperatorMetadataStore extends BaseStore  {
         const metadata = new Map<string, FieldEntity>();
         Object.values(FIELD_KEYS).forEach(key => {
            if (exceptionsField.includes(key)){
-               metadata.set(key, { ...FIELDS[key], value: operator[exceptions[key]] });
+               if (key === FIELD_KEYS.MEV_RELAYS) {
+                   metadata.set(key, { ...FIELDS[key], value: operator[exceptions[key]].split(',') });
+               } else {
+                   metadata.set(key, { ...FIELDS[key], value: operator[exceptions[key]] });
+               }
            } else {
-                metadata.set(key, { ...FIELDS[key], value: operator[_.snakeCase(key)] });
+               if (key === FIELD_KEYS.OPERATOR_IMAGE){
+                   metadata.set(key, { ...FIELDS[key], imageFileName: operator[key] });
+               } else {
+                   metadata.set(key, { ...FIELDS[key], value: operator[_.snakeCase(key)] });
+               }
             }
         });
         this.operatorMetadataList = metadata;
@@ -100,7 +109,7 @@ class OperatorMetadataStore extends BaseStore  {
             const condition = FIELD_CONDITIONS[key];
             if (condition && fieldEntity) {
                 if (key === FIELD_KEYS.OPERATOR_NAME && fieldEntity.value?.length === 0) {
-                    this.setErrorMessage(key, 'Required field');
+                    this.setErrorMessage(key, translations.OPERATOR_METADATA.REQUIRED_FIELD_ERROR);
                     metadataContainsError = true;
                 } else if (fieldEntity.value?.length > condition.maxLength) {
                     this.setErrorMessage(key, condition.errorMessage);
@@ -112,10 +121,12 @@ class OperatorMetadataStore extends BaseStore  {
                 const res = isLink(fieldEntity.value);
                 if (fieldEntity.value && res){
                     metadataContainsError = true;
-                    this.setErrorMessage(key, 'Must be link');
+                    this.setErrorMessage(key, translations.OPERATOR_METADATA.LINK_ERROR);
                 } else {
                     this.setErrorMessage(key, '');
                 }
+            }  else if (key === FIELD_KEYS.OPERATOR_IMAGE) {
+                metadataContainsError = !!fieldEntity.errorMessage;
             }
         }
         return metadataContainsError;

@@ -30,15 +30,17 @@ const CountriesAutocompleteInput = ({ fieldKey }: { fieldKey: string }) => {
     const [currentCountry, setCurrentCountry] = useState(metadataStore.getMetadataValue(fieldKey));
 
     const onTagsChange = (event: any, value: any) => {
-        metadataStore.setMetadataValue(fieldKey, value);
-        setCurrentCountry(metadataStore.setMetadataValue(fieldKey, value));
+        if (event) {
+            metadataStore.setMetadataValue(fieldKey, value);
+            setCurrentCountry(metadataStore.setMetadataValue(fieldKey, value));
+        }
     };
 
     return (
         <Autocomplete
             className={classes.AutocompleteInput}
             inputValue={currentCountry}
-            onInputChange={onTagsChange}
+            onInputChange={(e: any, value: any) => onTagsChange(e, value)}
             id="controllable-states-demo"
             options={data.map((country: CountryType) => country.name)}
             renderInput={params => <TextField

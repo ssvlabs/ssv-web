@@ -129,6 +129,13 @@ const translations = {
       },
     },
   },
+  OPERATOR_METADATA: {
+    IMAGE_SIZE_ERROR: 'File must be up to 200KB',
+    IMAGE_TYPE_ERROR: 'File must be .jpg .jpeg .png .svg',
+    IMAGE_RESOLUTION_ERROR: 'The image size should be at least 400x400px.',
+    REQUIRED_FIELD_ERROR: 'Required field',
+    LINK_ERROR: 'Must be link',
+  },
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',
   },

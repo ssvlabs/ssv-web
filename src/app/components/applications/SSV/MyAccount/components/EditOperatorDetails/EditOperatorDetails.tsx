@@ -16,29 +16,29 @@ import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 
 const EditOperatorDetails = () => {
-    const classes = useStyles({});
     const stores = useStores();
-    const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const applicationStore: ApplicationStore = stores.Application;
-    const myAccountStore: MyAccountStore = stores.MyAccount;
+    const navigate = useNavigate();
+    const classes = useStyles({});
     const walletStore: WalletStore = stores.Wallet;
     const processStore: ProcessStore = stores.Process;
+    const myAccountStore: MyAccountStore = stores.MyAccount;
+    const applicationStore: ApplicationStore = stores.Application;
+    const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const process: SingleOperator =  processStore.getProcess;
     const operator = process?.item;
-    const [buttonDisable, setButtonDisable] = useState<boolean>(false);
-    const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
+    const [buttonDisable, setButtonDisable] = useState<boolean>(false);
 
     useEffect(() => {
-            if (buttonDisable) {
+            // if (buttonDisable) {
             setButtonDisable(metadataStore.validateOperatorMetaData());
-        }
+        // }
     }, [JSON.stringify(metadataStore.operatorMetadataList)]);
 
     const submitHandler = async () => {
-        setButtonDisable(metadataStore.validateOperatorMetaData());
-
-        if (!buttonDisable) {
+        const isNotValidity = metadataStore.validateOperatorMetaData();
+        setButtonDisable(isNotValidity);
+        if (!isNotValidity) {
             let payload = metadataStore.createMetadataPayload();
             let rawDataToValidate: any = [];
             Object.values(payload).map(value =>
@@ -59,6 +59,7 @@ const EditOperatorDetails = () => {
                 setErrorMessage(error.response.data.error.message);
                 applicationStore.setIsLoading(false);
             });
+            applicationStore.setIsLoading(false);
         }
     };
 

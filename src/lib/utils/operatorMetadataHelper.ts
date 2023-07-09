@@ -21,12 +21,15 @@ export type FieldEntity = {
     placeholderText: string;
     options?: string[];
     imageFileName?: string;
+    additionalLabelText?: string,
 };
 
 type FieldCondition = {
     maxLength: number;
     errorMessage: string;
 };
+
+export const ALLOWED_IMAGE_TYPES = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'];
 
 export const FIELD_CONDITIONS: Record<string, FieldCondition> = {
     [FIELD_KEYS.OPERATOR_NAME]: { maxLength: 30, errorMessage: 'Operator name up to 30 characters' },
@@ -55,6 +58,7 @@ export const FIELDS: { [key: string]: FieldEntity } = {
         errorMessage: '',
         placeholderText: '',
         imageFileName: '',
+        additionalLabelText: '(Icons should be square and at least 400 x 400 PX)',
     },
     [FIELD_KEYS.DESCRIPTION]: {
         label: 'Description',

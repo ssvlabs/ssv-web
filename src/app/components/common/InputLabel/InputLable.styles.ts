@@ -13,4 +13,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
         lineHeight: 1.14,
         color: theme.colors.gray40,
     },
+    AdditionalLabel: {
+        fontSize: 14,
+        color: theme.colors.gray30,
+    },
 }));

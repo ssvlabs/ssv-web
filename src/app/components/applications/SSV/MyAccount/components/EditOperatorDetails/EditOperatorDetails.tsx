@@ -33,7 +33,7 @@ const EditOperatorDetails = () => {
             // if (buttonDisable) {
             setButtonDisable(metadataStore.validateOperatorMetaData());
         // }
-    }, [JSON.stringify(metadataStore.operatorMetadataList)]);
+    }, [JSON.stringify(metadataStore.metadata)]);
 
     const submitHandler = async () => {
         const isNotValidity = metadataStore.validateOperatorMetaData();
@@ -74,8 +74,8 @@ const EditOperatorDetails = () => {
             ...Object.values(FIELD_KEYS).map((key: string) =>{
                 return (<FieldWrapper fieldKey={key} />);
             }),
-                <Typography className={classes.ErrorMessage}>{errorMessage}</Typography>,
-                <PrimaryButton text={'Update'}
+            <Typography className={classes.ErrorMessage}>{errorMessage}</Typography>,
+            <PrimaryButton text={'Update'}
                                disable={buttonDisable}
                                wrapperClass={classes.marginBottom}
                                submitFunction={submitHandler}/>,

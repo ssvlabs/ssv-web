@@ -96,14 +96,10 @@ class Operator {
 
   async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
     const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
-    try {
       return (await axios.put(url, {
         ...operatorMetadata,
         signature,
       })).data;
-    } catch (e) {
-      throw e;
-    }
   }
 
   async getOperatorNodes(layer: number): Promise<[]> {

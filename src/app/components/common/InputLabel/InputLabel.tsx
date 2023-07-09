@@ -19,7 +19,7 @@ const InputLabel = ({ title, withHint, toolTipText, additionalLabel }: InputLabe
         <Typography className={classes.Text}>
           {title}
         </Typography>
-          <Typography className={classes.AdditionalLabel}>
+        <Typography className={classes.AdditionalLabel}>
           {additionalLabel}
         </Typography>
         {withHint && <Tooltip text={toolTipText} />}

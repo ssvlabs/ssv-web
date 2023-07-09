@@ -8,7 +8,7 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const { value, options } = metadataStore.getMetadata(fieldKey);
+    const { value, options } = metadataStore.getMetadataEntity(fieldKey);
     const [values, setValues] = React.useState<string[]>(value.split(','));
     const handleChange = (event:  SelectChangeEvent<string[]>) => {
         setValues(metadataStore.setMetadataValue(fieldKey, event.target.value));

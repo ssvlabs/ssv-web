@@ -8,8 +8,8 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const options = metadataStore.getMetadata(fieldKey).options!;
-    const [currentValue, setCurrentValue] = useState(metadataStore.getMetadata(fieldKey).value);
+    const options = metadataStore.getMetadataEntity(fieldKey).options!;
+    const [currentValue, setCurrentValue] = useState(metadataStore.getMetadataEntity(fieldKey).value);
 
     const changeValueHandler = (event: SelectChangeEvent) => {
         const { value } = event.target;

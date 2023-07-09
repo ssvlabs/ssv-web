@@ -1,3 +1,4 @@
+import { translations } from '~app/common/config';
 
 export const FIELD_KEYS = {
     OPERATOR_NAME: 'operatorName',
@@ -14,7 +15,7 @@ export const FIELD_KEYS = {
 };
 
 
-export type FieldEntity = {
+export type MetadataEntity = {
     label: string;
     value: string | any;
     errorMessage: string;
@@ -43,9 +44,9 @@ export const exceptions: Record<string, string> =   {
     eth2NodeClient: 'eth2_node_client',
 };
 
-export const exceptionsField = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
+export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
 
-export const FIELDS: { [key: string]: FieldEntity } = {
+export const FIELDS: { [key: string]: MetadataEntity } = {
     [FIELD_KEYS.OPERATOR_NAME]: {
         label: 'Display Name',
         value: '',
@@ -117,6 +118,35 @@ export const FIELDS: { [key: string]: FieldEntity } = {
         errorMessage: '',
         placeholderText: 'Enter your LinkedIn Link',
     },
+};
+
+export const photoValidation = (file: any, callback: Function) => {
+    let errorMessage = '';
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        errorMessage = translations.OPERATOR_METADATA.IMAGE_TYPE_ERROR;
+        return callback('', file.name, errorMessage);
+    }
+    if ((file.size / 1024) > 200) {
+        errorMessage = translations.OPERATOR_METADATA.IMAGE_SIZE_ERROR;
+    }
+    const reader = new FileReader();
+    reader.onloadend = function (e) {
+        if (e?.target?.readyState === FileReader.DONE ) {
+            const base64ImageString = e.target.result;
+            let img = new Image();
+            img.onload = () => {
+                if (img.width < 400 || img.height < 400) {
+                    errorMessage = translations.OPERATOR_METADATA.IMAGE_RESOLUTION_ERROR;
+                }
+                callback(base64ImageString, file.name, errorMessage);
+            };
+            if (typeof base64ImageString === 'string') {
+                img.src = base64ImageString;
+            }
+        }
+    };
+    reader.readAsDataURL(file);
+
 };
 
 export const isLink = (value: string) => {

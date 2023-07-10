@@ -94,6 +94,23 @@ class Operator {
     }
   }
 
+  async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
+      return (await axios.put(url, {
+        ...operatorMetadata,
+        signature,
+      })).data;
+  }
+
+  async getOperatorNodes(layer: number): Promise<[]> {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/nodes/${layer}`;
+    try {
+      return await this.getData(url, true);
+    } catch (e) {
+      return [];
+    }
+  }
+
   async getOperatorsByIds(operatorIds: number[]): Promise<IOperator[] | boolean> {
     try {
       const promises = operatorIds.map(operatorId => this.getOperator(operatorId, true));

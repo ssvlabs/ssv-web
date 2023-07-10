@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
 
-export const GOOGLE_TAG_MANAGER_URL = 'http://www.googletagmanager.com/gtm.js?id=';
+export const GOOGLE_TAG_MANAGER_URL = 'https://www.googletagmanager.com/gtm.js?id=';
 const GTMFrame = ({}) => {
   const [scriptCreated, setScriptCreated] = useState(false);
   const currentNetwork = getCurrentNetwork();

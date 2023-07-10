@@ -44,6 +44,11 @@ export const exceptions: Record<string, string> =   {
     eth2NodeClient: 'eth2_node_client',
 };
 
+export const OPERATOR_NODE_TYPES = {
+    [FIELD_KEYS.EXECUTION_CLIENT]: 1,
+    [FIELD_KEYS.CONSENSUS_CLIENT]: 2,
+};
+
 export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
 
 export const FIELDS: { [key: string]: MetadataEntity } = {
@@ -91,14 +96,14 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         value: '',
         errorMessage: '',
         placeholderText: 'Geth, Nethermind, Besu...',
-        options: ['Geth', 'Nethermind', 'Besu', 'Erigon'],
+        options: [],
     },
     [FIELD_KEYS.CONSENSUS_CLIENT]: {
         label: 'Consensus Client',
         value: '',
         errorMessage: '',
         placeholderText: 'Prism, Lighthouse, Teku...',
-        options: ['Prysm', 'Lighthouse', 'Teku', 'Nimbus', 'Lodestar'],
+        options: [],
     },
     [FIELD_KEYS.WEBSITE_URL]: {
         label: 'Website Link',

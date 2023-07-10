@@ -50,8 +50,8 @@ const OperatorsFlow = (props: Props) => {
   }, [settingsRef, showSettings]);
 
   const moveToRemoveOperator = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
-  const moveToMetaData = () => {
-    metadataStore.initMetadata(operator);
+  const moveToMetaData = async () => {
+    await metadataStore.initMetadata(operator);
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA);
   };
 

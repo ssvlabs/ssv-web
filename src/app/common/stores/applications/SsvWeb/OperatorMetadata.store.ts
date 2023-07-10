@@ -10,7 +10,9 @@ import {
     MetadataEntity,
     FIELDS,
     isLink,
+    OPERATOR_NODE_TYPES,
 } from '~lib/utils/operatorMetadataHelper';
+import Operator from '~lib/api/Operator';
 
 class OperatorMetadataStore extends BaseStore  {
     metadata: Map<string, MetadataEntity> = new Map<string, MetadataEntity>();
@@ -25,24 +27,33 @@ class OperatorMetadataStore extends BaseStore  {
     }
 
     // Init operator metadata
-    initMetadata(operator: any) {
+    async initMetadata(operator: any) {
         const metadata = new Map<string, MetadataEntity>();
         Object.values(FIELD_KEYS).forEach(metadataFieldName => {
-           if (camelToSnakeFieldsMapping.includes(metadataFieldName)){
-               if (metadataFieldName === FIELD_KEYS.MEV_RELAYS) {
-                   metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]].split(',') });
-               } else {
-                   metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]] });
-               }
-           } else {
-               if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE){
-                   metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], imageFileName: operator[metadataFieldName] });
-               } else {
-                   metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[_.snakeCase(metadataFieldName)] });
-               }
+            if (camelToSnakeFieldsMapping.includes(metadataFieldName)){
+                if (metadataFieldName === FIELD_KEYS.MEV_RELAYS) {
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]].split(',') });
+                } else {
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]] });
+                }
+            } else {
+                if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE){
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], imageFileName: operator[metadataFieldName] });
+                } else {
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[_.snakeCase(metadataFieldName)] });
+                }
             }
         });
         this.metadata = metadata;
+    }
+
+    async updateOperatorNodeOptions() {
+        for (const key of Object.keys(OPERATOR_NODE_TYPES)){
+            const options = await Operator.getInstance().getOperatorNodes(OPERATOR_NODE_TYPES[key]);
+            const data = this.metadata.get(key);
+            data!.options = options;
+            this.metadata.set(key, data!);
+        }
     }
 
     // return metadata entity by metadata field name
@@ -96,9 +107,7 @@ class OperatorMetadataStore extends BaseStore  {
             if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
                 value = value.join(',');
             }
-            if (value) {
-                payload[field] = value;
-            }
+                payload[field] = value || '';
         });
         return payload;
     }

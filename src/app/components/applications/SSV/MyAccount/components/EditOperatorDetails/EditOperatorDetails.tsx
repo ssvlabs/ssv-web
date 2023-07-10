@@ -30,9 +30,13 @@ const EditOperatorDetails = () => {
     const [buttonDisable, setButtonDisable] = useState<boolean>(false);
 
     useEffect(() => {
-            // if (buttonDisable) {
+        (async () => {
+            await metadataStore.updateOperatorNodeOptions();
+        })();
+    }, []);
+
+    useEffect(() => {
             setButtonDisable(metadataStore.validateOperatorMetaData());
-        // }
     }, [JSON.stringify(metadataStore.metadata)]);
 
     const submitHandler = async () => {
@@ -44,11 +48,18 @@ const EditOperatorDetails = () => {
             Object.values(payload).map(value =>
                 rawDataToValidate.push(value),
             );
-            
             rawDataToValidate = rawDataToValidate.join('|');
             applicationStore.setIsLoading(true);
-
-            const signatureHash = await walletStore.web3.eth.personal.sign(rawDataToValidate, walletStore.accountAddress);
+            let signatureHash;
+            try {
+                signatureHash = await walletStore.web3.eth.personal.sign(rawDataToValidate, walletStore.accountAddress);
+                setErrorMessage('');
+            } catch (e: any){
+                console.log(`Error message: ${e.message}`);
+                setErrorMessage('You must confirm the signature request through your wallet');
+                applicationStore.setIsLoading(false);
+                return;
+            }
             await Operator.getInstance().updateOperatorMetadata(operator.id, signatureHash, payload).then((response) => {
                 operator.name = response.name;
                 applicationStore.setIsLoading(false);

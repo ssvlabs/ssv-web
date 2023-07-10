@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Chip, FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
@@ -9,7 +9,10 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const { value, options } = metadataStore.getMetadataEntity(fieldKey);
-    const [values, setValues] = React.useState<string[]>(value.split(','));
+    const [values, setValues] = React.useState<string[]>([]);
+
+    useEffect(() => setValues(value?.split(',')), []);
+
     const handleChange = (event:  SelectChangeEvent<string[]>) => {
         setValues(metadataStore.setMetadataValue(fieldKey, event.target.value));
     };

@@ -136,7 +136,7 @@ class OperatorMetadataStore extends BaseStore  {
                     this.setErrorMessage(metadataFieldName, '');
                 }
             }  else if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
-                metadataContainsError = fieldEntity.errorMessage ? true : metadataContainsError;
+                metadataContainsError = !!fieldEntity.errorMessage || metadataContainsError;
             }
         }
         return metadataContainsError;

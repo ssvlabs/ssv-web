@@ -41,7 +41,8 @@ const config = {
         OPERATOR: {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
-          META_DATA: '/my-account/operator/edit_name',
+          META_DATA: '/my-account/operator/edit-metadata',
+          META_DATA_CONFIRMATION: '/my-account/operator/edit-metadata/confirmation',
           REMOVE: {
             ROOT: '/my-account/operator/remove',
             SUCCESS: '/my-account/operator/remove/success',

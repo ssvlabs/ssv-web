@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { makeObservable, observable } from 'mobx';
+import Operator from '~lib/api/Operator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import {
@@ -12,7 +13,6 @@ import {
     isLink,
     OPERATOR_NODE_TYPES,
 } from '~lib/utils/operatorMetadataHelper';
-import Operator from '~lib/api/Operator';
 
 class OperatorMetadataStore extends BaseStore  {
     metadata: Map<string, MetadataEntity> = new Map<string, MetadataEntity>();

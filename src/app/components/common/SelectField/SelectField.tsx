@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
@@ -18,15 +19,15 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
     };
 
     return (
+        <FormControl className={classes.SelectExtendClass} fullWidth>
             <Select
-                className={classes.SelectExtendClass}
-                fullWidth
                 value={currentValue}
                 onChange={changeValueHandler}
                 placeholder={placeholder}
             >
                 {options.map((option: string, index: number ) => <MenuItem key={index} value={option}>{option}</MenuItem>)}
             </Select>
+        </FormControl>
     );
 };
 

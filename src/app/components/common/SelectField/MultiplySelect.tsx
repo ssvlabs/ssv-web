@@ -3,6 +3,7 @@ import Chip from '@mui/material/Chip';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useStores } from '~app/hooks/useStores';
+import FormControl from '@mui/material/FormControl';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
@@ -13,16 +14,18 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
     const { value, options } = metadataStore.getMetadataEntity(fieldKey);
     const [values, setValues] = React.useState<string[]>([]);
 
-    useEffect(() => setValues(value?.split(',')), []);
+    useEffect(() => {
+        const operatorMevRelays = value?.trim().split(',');
+        setValues(operatorMevRelays.filter((v: string) => v));
+    }, []);
 
     const handleChange = (event: any) => {
         setValues(metadataStore.setMetadataValue(fieldKey, event.target.value));
     };
 
     return (
+        <FormControl className={classes.SelectExtendClass} fullWidth>
             <Select
-                className={classes.SelectExtendClass}
-                fullWidth
                 multiple
                 value={values}
                 onChange={handleChange}
@@ -40,6 +43,7 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
                     </MenuItem>
                 ))}
             </Select>
+        </FormControl>
     );
 };
 

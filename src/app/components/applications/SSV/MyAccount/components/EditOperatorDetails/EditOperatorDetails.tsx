@@ -61,10 +61,12 @@ const EditOperatorDetails = () => {
                 return;
             }
             await Operator.getInstance().updateOperatorMetadata(operator.id, signatureHash, payload).then((response) => {
-                operator.name = response.name;
-                applicationStore.setIsLoading(false);
                 const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
-                selectedOperator.name = response.name;
+                applicationStore.setIsLoading(false);
+                for (let key in response) {
+                    operator[key] = response[key];
+                    selectedOperator[key] = response[key];
+                }
                 navigate(-1);
             }).catch((error: any) => {
                 setErrorMessage(error.response.data.error.message);

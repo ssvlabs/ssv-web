@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { useStores } from '~app/hooks/useStores';
-import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
@@ -11,21 +12,21 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
     const options = metadataStore.getMetadataEntity(fieldKey).options!;
     const [currentValue, setCurrentValue] = useState(metadataStore.getMetadataEntity(fieldKey).value);
 
-    const changeValueHandler = (event: SelectChangeEvent) => {
+    const changeValueHandler = (event: any) => {
         const { value } = event.target;
         setCurrentValue(metadataStore.setMetadataValue(fieldKey, value));
     };
 
     return (
-        <FormControl className={classes.SelectExtendClass} fullWidth>
             <Select
+                className={classes.SelectExtendClass}
+                fullWidth
                 value={currentValue}
                 onChange={changeValueHandler}
                 placeholder={placeholder}
             >
                 {options.map((option: string, index: number ) => <MenuItem key={index} value={option}>{option}</MenuItem>)}
             </Select>
-        </FormControl>
     );
 };
 

@@ -6,7 +6,7 @@ import {
     useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 
-function InputFieldComponent({ fieldKey, extendClass, placeholder  }: { fieldKey: string, placeholder: string, extendClass: string }) {
+const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey: string, placeholder: string, extendClass?: string }) => {
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
@@ -25,6 +25,6 @@ function InputFieldComponent({ fieldKey, extendClass, placeholder  }: { fieldKey
             placeHolder={placeholder}
             onChangeCallback={onChangeHandler}/>
     );
-}
+};
 
 export default InputFieldComponent;

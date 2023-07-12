@@ -135,6 +135,7 @@ const translations = {
     IMAGE_RESOLUTION_ERROR: 'Image dimensions must be at least 400x400px.',
     REQUIRED_FIELD_ERROR: 'Required field',
     LINK_ERROR: 'Enter a valid link i.e - https://ssv.network/',
+    SPECIAL_CHARACTERS_ERROR: 'Error: Your input contains special characters not allowed. Only these special characters are allowed: _!$#’|',
   },
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',

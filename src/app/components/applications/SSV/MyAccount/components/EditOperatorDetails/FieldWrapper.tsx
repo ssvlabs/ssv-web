@@ -15,6 +15,7 @@ import {
 } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import CountriesAutocompleteInput
     from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/CountriesAutocompleteInput';
+import DynamicTextarea from '~app/components/common/DynamicTextArea/DynamicTextArea';
 
 const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
     const classes = useStyles();
@@ -34,7 +35,7 @@ const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
         [FIELD_KEYS.OPERATOR_IMAGE]: UploadImageInput,
         [FIELD_KEYS.WEBSITE_URL]: InputFieldComponent,
         [FIELD_KEYS.TWITTER_URL]: InputFieldComponent,
-        [FIELD_KEYS.DESCRIPTION]: InputFieldComponent,
+        [FIELD_KEYS.DESCRIPTION]: DynamicTextarea,
         [FIELD_KEYS.LINKEDIN_URL]: InputFieldComponent,
         [FIELD_KEYS.OPERATOR_NAME]: InputFieldComponent,
         [FIELD_KEYS.SETUP_PROVIDER]: InputFieldComponent,

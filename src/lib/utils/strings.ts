@@ -13,3 +13,8 @@ export const longStringShorten = (value: string, firstFriction: number = 10, sec
 export const normalizeNumber = (number: number, friction: number = 2) => {
   return number.toFixed(friction);
 };
+
+export const checkSpecialCharacters = (value: string) => {
+    const linkRegex = /^[A-Za-z0-9 (_!$#'|)-]+$/;
+    return linkRegex.test(value);
+};

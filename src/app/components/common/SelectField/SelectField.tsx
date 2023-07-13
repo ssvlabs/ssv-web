@@ -21,6 +21,7 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
     return (
         <FormControl className={classes.SelectExtendClass} fullWidth>
             <Select
+                className={classes.ChipExtendClass}
                 value={currentValue}
                 onChange={changeValueHandler}
                 placeholder={placeholder}

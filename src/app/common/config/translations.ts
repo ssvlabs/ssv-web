@@ -140,6 +140,7 @@ const translations = {
       SUBTITLE: 'See your updated details on your operator page in the network Explorer',
       EXPLORER_BUTTON: 'View in Explorer',
       RETURN_TO_MY_ACCOUNT: 'Return to My Account',
+      SPECIAL_CHARACTERS_ERROR: 'Field accepts numbers, English characters and the following characters: _!$#\'-|',
     },
   },
   CTA_BUTTON: {

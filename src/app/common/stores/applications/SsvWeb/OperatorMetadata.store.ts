@@ -3,6 +3,7 @@ import { makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { checkSpecialCharacters } from '~lib/utils/strings';
 import {
     exceptions,
     camelToSnakeFieldsMapping,
@@ -124,6 +125,9 @@ class OperatorMetadataStore extends BaseStore  {
                 } else if (fieldEntity.value?.length > condition.maxLength) {
                     this.setErrorMessage(metadataFieldName, condition.errorMessage);
                     metadataContainsError = true;
+                } else if (fieldEntity.value && !checkSpecialCharacters(fieldEntity.value)){
+                    this.setErrorMessage(metadataFieldName, translations.OPERATOR_METADATA.SPECIAL_CHARACTERS_ERROR);
+                    metadataContainsError = true;
                 } else {
                     this.setErrorMessage(metadataFieldName, '');
                 }
@@ -136,7 +140,7 @@ class OperatorMetadataStore extends BaseStore  {
                     this.setErrorMessage(metadataFieldName, '');
                 }
             }  else if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
-                metadataContainsError = !!fieldEntity.errorMessage;
+                metadataContainsError = !!fieldEntity.errorMessage || metadataContainsError;
             }
         }
         return metadataContainsError;

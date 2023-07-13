@@ -105,5 +105,41 @@ export const useStyles = makeStyles((theme: Theme) => {
             },
 
         },
+        ConfirmationBox: {
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        ConfirmationWrapper: {
+            width: 635,
+            height: 245,
+            borderRadius: 16,
+            position: 'relative',
+            backgroundColor: theme.colors.white,
+            padding: '37px 32px 32px 32px',
+        },
+        BackgroundImage: {
+            top: 0,
+            zIndex: 0,
+            width: 248,
+            height: 248,
+            right: -44,
+            position: 'absolute',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundImage: 'url(/images/backgroundIcon/light.svg)',
+        },
+        ButtonGroup: {
+            marginTop: 40,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+        },
+        buttonWidth: {
+            width: '280px',
+        },
     };
 });

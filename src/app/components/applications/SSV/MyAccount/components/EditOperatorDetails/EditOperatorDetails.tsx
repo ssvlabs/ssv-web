@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -67,7 +68,7 @@ const EditOperatorDetails = () => {
                     operator[key] = response[key];
                     selectedOperator[key] = response[key];
                 }
-                navigate(-1);
+                navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
             }).catch((error: any) => {
                 setErrorMessage(error.response.data.error.message);
                 applicationStore.setIsLoading(false);

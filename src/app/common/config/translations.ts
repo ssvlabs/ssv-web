@@ -135,7 +135,13 @@ const translations = {
     IMAGE_RESOLUTION_ERROR: 'Image dimensions must be at least 400x400px.',
     REQUIRED_FIELD_ERROR: 'Required field',
     LINK_ERROR: 'Enter a valid link i.e - https://ssv.network/',
-    SPECIAL_CHARACTERS_ERROR: 'Field accepts numbers, English characters and the following characters: _!$#\'-|',
+    CONFIRMATION_CHANGE: {
+      TITLE: 'Operator details has been updated',
+      SUBTITLE: 'See your updated details on your operator page in the network Explorer',
+      EXPLORER_BUTTON: 'View in Explorer',
+      RETURN_TO_MY_ACCOUNT: 'Return to My Account',
+      SPECIAL_CHARACTERS_ERROR: 'Field accepts numbers, English characters and the following characters: _!$#\'-|',
+    },
   },
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',

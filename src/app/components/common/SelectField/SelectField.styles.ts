@@ -3,6 +3,9 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => {
     return {
+        ChipExtendClass: {
+            color: theme.colors.gray100,
+        },
         SelectExtendClass: {
             '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
                 fontSize: 16,
@@ -16,7 +19,7 @@ export const useStyles = makeStyles((theme: Theme) => {
                 padding: '12px 20px',
                 lineHeight: 1.62,
                 border: 'none !important',
-                color: theme.colors.gray90,
+                color: theme.colors.gray100,
                 backgroundColor: 'transparent',
             },
             '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {

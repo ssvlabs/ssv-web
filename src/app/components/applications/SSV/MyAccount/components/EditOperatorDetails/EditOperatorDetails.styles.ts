@@ -51,7 +51,7 @@ export const useStyles = makeStyles((theme: Theme) => {
             height: 16,
             marginLeft: 16,
             backgroundRepeat: 'no-repeat',
-            backgroundImage: 'url(/images/x/black.svg)',
+            backgroundImage: `url(/images/x/${theme.darkMode ? 'light' : 'black'}.svg)`,
         },
         ImageName: {
             fontSize: 14,
@@ -59,6 +59,7 @@ export const useStyles = makeStyles((theme: Theme) => {
             display: 'flex',
             margin: '12px 20px',
             alignItems: 'center',
+            color: theme.colors.gray100,
         },
         ErrorMessage: {
             fontSize: 14,
@@ -87,6 +88,7 @@ export const useStyles = makeStyles((theme: Theme) => {
         AutocompleteInner: {
             '& .MuiInputBase-root': {
                 '& .MuiInputBase-input': {
+                    color: theme.colors.gray100,
                     marginLeft: 14,
                     fontSize: '16px',
                     border: 'none',
@@ -102,6 +104,42 @@ export const useStyles = makeStyles((theme: Theme) => {
                 borderColor: theme.colors.gray30,
             },
 
+        },
+        ConfirmationBox: {
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        ConfirmationWrapper: {
+            width: 635,
+            height: 245,
+            borderRadius: 16,
+            position: 'relative',
+            backgroundColor: theme.colors.white,
+            padding: '37px 32px 32px 32px',
+        },
+        BackgroundImage: {
+            top: 0,
+            zIndex: 0,
+            width: 248,
+            height: 248,
+            right: -44,
+            position: 'absolute',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundImage: 'url(/images/backgroundIcon/light.svg)',
+        },
+        ButtonGroup: {
+            marginTop: 40,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+        },
+        buttonWidth: {
+            width: '280px',
         },
     };
 });

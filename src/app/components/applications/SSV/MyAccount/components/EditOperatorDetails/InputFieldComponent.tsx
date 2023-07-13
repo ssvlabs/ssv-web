@@ -14,7 +14,7 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
 
     const onChangeHandler = (event: any) => {
         const { value } = event.target;
-        setCurrentValue(metadataStore.setMetadataValue(fieldKey, value));
+        setCurrentValue(metadataStore.setMetadataValue(fieldKey, value.trim()));
     };
 
     return (

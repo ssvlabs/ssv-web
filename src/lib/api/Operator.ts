@@ -82,6 +82,15 @@ class Operator {
     }
   }
 
+  async getOperatorByPublicKey(publicKey: string) {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/public_key/${publicKey}`;
+    try {
+      return await this.getData(url, true);
+    } catch (e) {
+      return null;
+    }
+  }
+
   async updateOperatorName(operatorId: string, signature: string, operatorName: string) {
     const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
     try {

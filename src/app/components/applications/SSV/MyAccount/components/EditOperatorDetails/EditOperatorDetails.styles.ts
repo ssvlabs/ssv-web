@@ -115,7 +115,7 @@ export const useStyles = makeStyles((theme: Theme) => {
             height: 245,
             borderRadius: 16,
             position: 'relative',
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.white,
             padding: '37px 32px 32px 32px',
         },
         BackgroundImage: {

@@ -51,7 +51,7 @@ export const useStyles = makeStyles((theme: Theme) => {
             height: 16,
             marginLeft: 16,
             backgroundRepeat: 'no-repeat',
-            backgroundImage: 'url(/images/x/black.svg)',
+            backgroundImage: `url(/images/x/${theme.darkMode ? 'light' : 'black'}.svg)`,
         },
         ImageName: {
             fontSize: 14,
@@ -59,6 +59,7 @@ export const useStyles = makeStyles((theme: Theme) => {
             display: 'flex',
             margin: '12px 20px',
             alignItems: 'center',
+            color: theme.colors.gray100,
         },
         ErrorMessage: {
             fontSize: 14,
@@ -87,6 +88,7 @@ export const useStyles = makeStyles((theme: Theme) => {
         AutocompleteInner: {
             '& .MuiInputBase-root': {
                 '& .MuiInputBase-input': {
+                    color: theme.colors.gray100,
                     marginLeft: 14,
                     fontSize: '16px',
                     border: 'none',

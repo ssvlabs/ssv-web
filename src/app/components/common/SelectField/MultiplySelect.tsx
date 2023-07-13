@@ -33,7 +33,7 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
                 renderValue={(selected) => (
                     <div >
                         {(selected as string[]).map((option) => (
-                            <Chip key={option} label={option} />
+                            <Chip className={classes.ChipExtendClass} key={option} label={option} />
                         ))}
                     </div>
                 )}>

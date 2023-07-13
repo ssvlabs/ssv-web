@@ -155,6 +155,6 @@ export const photoValidation = (file: any, callback: Function) => {
 };
 
 export const isLink = (value: string) => {
-    const linkRegex = /^(https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+    const linkRegex = /^(https?:\/\/)?[a-zA-Z0-9][\w.-]*\.[a-zA-Z]{2,}(\/\S*)?$/;
     return !linkRegex.test(value);
 };

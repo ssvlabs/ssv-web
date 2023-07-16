@@ -31,7 +31,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
 
     const customFilterOptions = (options: any, state: any) => {
         const inputValue = state.inputValue.toLowerCase();
-        return data.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-2'].toLowerCase().includes(inputValue)).map(d => d.name);
+        return data.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => d.name);
     };
 
     const onFocusHandler = () => {
@@ -51,7 +51,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
 
     const countryWithAlpha = () => {
         const country = data.find(c => c.name === currentCountry);
-        return country ? `${currentCountry} (${country['alpha-2']})` : currentCountry;
+        return country ? `${currentCountry} (${country['alpha-3']})` : currentCountry;
     };
 
     const [showingValue, setShowingValue] = useState(countryWithAlpha());

@@ -59,7 +59,10 @@ export const validateFeeInput = (value: string, callback: Function): void => {
     callback(response);
 };
 
-export const validateOperatorPublicKey = async (publicKey: string): Promise<boolean> => !!await Operator.getInstance().getOperatorByPublicKey(publicKey);
+export const validateOperatorPublicKey = async (publicKey: string): Promise<boolean> => {
+    const res = await Operator.getInstance().getOperatorByPublicKey(publicKey);
+    return res.data;
+};
 
 export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, callback: any): void => {
     const response = { shouldDisplay: false, errorMessage: '' };

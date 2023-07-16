@@ -6,6 +6,9 @@ export const useStyles = makeStyles((theme: Theme) => {
         ChipExtendClass: {
             color: theme.colors.gray100,
         },
+        PlaceholderColor: {
+          color: theme.colors.gray30,
+        },
         SelectExtendClass: {
             '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
                 fontSize: 16,
@@ -19,7 +22,9 @@ export const useStyles = makeStyles((theme: Theme) => {
                 padding: '12px 20px',
                 lineHeight: 1.62,
                 border: 'none !important',
-                color: theme.colors.gray100,
+                color: (props: any) => {
+                    return props?.isPlaceholder ? theme.colors.gray30 : theme.colors.gray100;
+                },
                 backgroundColor: 'transparent',
             },
             '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
@@ -27,6 +32,11 @@ export const useStyles = makeStyles((theme: Theme) => {
             },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
                 borderColor: `${theme.colors.gray30}`,
+            },
+        },
+        multiplyInput: {
+            '& .MuiOutlinedInput-root .MuiOutlinedInput-input': {
+                padding: '12px 10px',
             },
         },
     };

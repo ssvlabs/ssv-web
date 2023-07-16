@@ -82,7 +82,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         label: 'Mev Relays',
         value: '',
         errorMessage: '',
-        placeholderText: 'Geth, Nethermind, Besu...',
+        placeholderText: 'Aestus, Agnostic Gnosis, Blocknative...',
         options: ['Aestus', 'Agnostic Gnosis', 'Blocknative', 'bloXroute Ethical', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
     },
     [FIELD_KEYS.LOCATION]: {

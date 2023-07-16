@@ -8,7 +8,7 @@ import { useStyles } from '~app/components/common/SelectField/SelectField.styles
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
 const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placeholder: string }) => {
-    const classes = useStyles( {} );
+    const classes = useStyles( {});
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const { value, options } = metadataStore.getMetadataEntity(fieldKey);
@@ -30,7 +30,7 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
                 value={values}
                 onChange={handleChange}
                 displayEmpty
-                renderValue={(selected) => ( selected.length > 0 ?
+                renderValue={(selected) => ( selected?.length ?
                         <div >
                         {(selected as string[]).map((option) => (
                             <Chip className={classes.ChipExtendClass} key={option} label={option} />

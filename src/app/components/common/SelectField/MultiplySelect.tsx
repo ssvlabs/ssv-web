@@ -8,7 +8,7 @@ import { useStyles } from '~app/components/common/SelectField/SelectField.styles
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
 const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placeholder: string }) => {
-    const classes = useStyles( {});
+    const classes = useStyles({});
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const { value, options } = metadataStore.getMetadataEntity(fieldKey);

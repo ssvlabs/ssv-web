@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useStores } from '~app/hooks/useStores';
-import jsonCountriesFile from '~lib/files/countries.json';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import {
     useStyles,
@@ -26,12 +25,12 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const data: CountryType[] = JSON.parse(JSON.stringify(jsonCountriesFile));
+    // const data: CountryType[] = JSON.parse(JSON.stringify(jsonCountriesFile));
     const [currentCountry, setCurrentCountry] = useState(metadataStore.getMetadataValue(fieldKey));
 
     const customFilterOptions = (options: any, state: any) => {
         const inputValue = state.inputValue.toLowerCase();
-        return data.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => d.name);
+        return metadataStore.locations.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => d.name);
     };
 
     const onFocusHandler = () => {
@@ -50,13 +49,13 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
     };
 
     const countryWithAlpha = () => {
-        const country = data.find(c => c.name === currentCountry);
+        const country = metadataStore.locations.find(c => c.name === currentCountry);
         return country ? `${currentCountry} (${country['alpha-3']})` : currentCountry;
     };
 
     const [showingValue, setShowingValue] = useState(countryWithAlpha());
 
-    useEffect(() => { setShowingValue(countryWithAlpha());}, [currentCountry]);
+    useEffect(() => setShowingValue(countryWithAlpha()), [currentCountry]);
 
     return (
         <Autocomplete
@@ -66,7 +65,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
             onBlur={onBlurHandler}
             filterOptions={customFilterOptions}
             onInputChange={(e: any, value: any) => onTagsChange(e, value)}
-            options={data.map((country: CountryType) => country.name)}
+            options={metadataStore.locations.map((country: CountryType) => `${country.name} (${country['alpha-3']})`)}
             renderInput={params => <TextField
                 placeholder={placeholder}
                 className={classes.AutocompleteInner}

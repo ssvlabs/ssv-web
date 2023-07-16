@@ -32,6 +32,7 @@ const EditOperatorDetails = () => {
 
     useEffect(() => {
         (async () => {
+            await metadataStore.updateOperatorLocations();
             await metadataStore.updateOperatorNodeOptions();
         })();
     }, []);

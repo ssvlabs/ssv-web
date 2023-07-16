@@ -7,7 +7,6 @@ import { useStyles } from '~app/components/common/SelectField/SelectField.styles
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
 const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder: string }) => {
-    const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const options = metadataStore.getMetadataEntity(fieldKey).options!;
@@ -18,6 +17,7 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
         setCurrentValue(metadataStore.setMetadataValue(fieldKey, value));
     };
 
+    const classes = useStyles({ isPlaceholder: !currentValue });
     return (
         <FormControl className={classes.SelectExtendClass} fullWidth>
             <Select
@@ -25,7 +25,11 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
                 value={currentValue}
                 onChange={changeValueHandler}
                 placeholder={placeholder}
+                displayEmpty
             >
+                <MenuItem className={classes.PlaceholderColor} value="" disabled>
+                    {placeholder}
+                </MenuItem>
                 {options.map((option: string, index: number ) => <MenuItem key={index} value={option}>{option}</MenuItem>)}
             </Select>
         </FormControl>

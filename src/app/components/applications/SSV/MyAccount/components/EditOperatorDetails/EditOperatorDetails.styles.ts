@@ -3,6 +3,9 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => {
     return {
+        PlaceholderColor: {
+            color: theme.colors.gray30,
+        },
         marginBottom: {
             marginBottom: 32,
         },
@@ -29,6 +32,7 @@ export const useStyles = makeStyles((theme: Theme) => {
             fontSize: '16px',
             display: 'flex',
             alignItems: 'center',
+            '&::placeholder': { color: theme.colors.gray30 },
         },
         FileText: {
             margin: '12px 20px',
@@ -92,6 +96,7 @@ export const useStyles = makeStyles((theme: Theme) => {
                     marginLeft: 14,
                     fontSize: '16px',
                     border: 'none',
+                    '&::placeholder': { color: theme.colors.gray40 },
                 },
             },
             '& .MuiOutlinedInput-notchedOutline': {

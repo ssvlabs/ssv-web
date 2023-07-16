@@ -26,10 +26,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
         resize: 'none',
         borderRadius: 8,
         color: theme.colors.black,
+        backgroundColor: theme.colors.white,
         border: 'none',
         padding: '10px 20px 10px 20px',
         '&:focus': {
             outline: 'none',
         },
-    }, 
+        '&::placeholder': { color: theme.colors.gray30 },
+    },
 }));

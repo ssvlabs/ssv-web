@@ -22,7 +22,7 @@ type CountryType = {
     'sub-region-code': string;
 };
 
-const CountriesAutocompleteInput = ({ fieldKey }: { fieldKey: string }) => {
+const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: string, placeholder: string }) => {
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
@@ -51,7 +51,7 @@ const CountriesAutocompleteInput = ({ fieldKey }: { fieldKey: string }) => {
 
     const countryWithAlpha = () => {
         const country = data.find(c => c.name === currentCountry);
-        return country ? `${currentCountry} | ${country['alpha-2']}` : currentCountry;
+        return country ? `${currentCountry} (${country['alpha-2']})` : currentCountry;
     };
 
     const [showingValue, setShowingValue] = useState(countryWithAlpha());
@@ -68,6 +68,7 @@ const CountriesAutocompleteInput = ({ fieldKey }: { fieldKey: string }) => {
             onInputChange={(e: any, value: any) => onTagsChange(e, value)}
             options={data.map((country: CountryType) => country.name)}
             renderInput={params => <TextField
+                placeholder={placeholder}
                 className={classes.AutocompleteInner}
                 {...params}  />}
         />

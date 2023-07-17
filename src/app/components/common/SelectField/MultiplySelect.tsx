@@ -15,7 +15,7 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
     const [values, setValues] = React.useState<string[]>([]);
 
     useEffect(() => {
-        const operatorMevRelays = value?.trim().split(',');
+        const operatorMevRelays = (value ?? '').trim().split(',');
         setValues(operatorMevRelays.filter((v: string) => v));
     }, []);
 

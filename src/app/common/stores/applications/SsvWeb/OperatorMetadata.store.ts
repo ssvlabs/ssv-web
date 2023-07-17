@@ -12,15 +12,17 @@ import {
     MetadataEntity,
     FIELDS,
     isLink,
-    OPERATOR_NODE_TYPES,
+    OPERATOR_NODE_TYPES, CountryType,
 } from '~lib/utils/operatorMetadataHelper';
 
 class OperatorMetadataStore extends BaseStore  {
     metadata: Map<string, MetadataEntity> = new Map<string, MetadataEntity>();
+    locations: CountryType[] = [];
 
     constructor() {
         super();
         makeObservable(this, {
+            locations: observable,
             metadata: observable,
             getMetadataValue: observable,
             setMetadataValue: observable,
@@ -55,6 +57,11 @@ class OperatorMetadataStore extends BaseStore  {
             data!.options = options;
             this.metadata.set(key, data!);
         }
+    }
+
+    async updateOperatorLocations() {
+            const options = await Operator.getInstance().getOperatorAvailableLocations();
+            this.locations = options;
     }
 
     // return metadata entity by metadata field name

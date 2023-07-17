@@ -35,15 +35,15 @@ class OperatorMetadataStore extends BaseStore  {
         Object.values(FIELD_KEYS).forEach(metadataFieldName => {
             if (camelToSnakeFieldsMapping.includes(metadataFieldName)){
                 if (metadataFieldName === FIELD_KEYS.MEV_RELAYS) {
-                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]].split(',') });
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]].split(',') || '' });
                 } else {
-                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]] });
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[exceptions[metadataFieldName]] || '' });
                 }
             } else {
                 if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE){
-                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], imageFileName: operator[metadataFieldName] });
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], imageFileName: operator[metadataFieldName] || '' });
                 } else {
-                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[_.snakeCase(metadataFieldName)] });
+                    metadata.set(metadataFieldName, { ...FIELDS[metadataFieldName], value: operator[_.snakeCase(metadataFieldName)] || '' });
                 }
             }
         });

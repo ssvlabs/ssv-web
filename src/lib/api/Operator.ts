@@ -82,6 +82,15 @@ class Operator {
     }
   }
 
+  async getOperatorByPublicKey(publicKey: string) {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/public_key/${publicKey}`;
+    try {
+      return await this.getData(url, true);
+    } catch (e) {
+      return null;
+    }
+  }
+
   async updateOperatorName(operatorId: string, signature: string, operatorName: string) {
     const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
     try {
@@ -91,6 +100,32 @@ class Operator {
       })).data;
     } catch (e) {
       throw e;
+    }
+  }
+
+  async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
+      return (await axios.put(url, {
+        ...operatorMetadata,
+        signature,
+      })).data;
+  }
+
+  async getOperatorNodes(layer: number): Promise<[]> {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/nodes/${layer}`;
+    try {
+      return await this.getData(url, true);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async getOperatorAvailableLocations(): Promise<[]> {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/locations`;
+    try {
+      return await this.getData(url, true);
+    } catch (e) {
+      return [];
     }
   }
 

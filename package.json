@@ -142,7 +142,8 @@
     "postpublish": "pinst --enable",
     "local-node": "./scripts/start_local_node.sh",
     "local-server": "./scripts/start_webapp_for_tests.sh",
-    "security:check": "./scripts/check_security.sh"
+    "security:check": "./scripts/check_security.sh",
+    "prod:watch": "nodemon -w ./src --ext js,jsx,json,css,scss --exec \"yarn build && serve -s build\""
   },
   "license": "GPL-3.0",
   "eslintConfig": {
@@ -237,6 +238,9 @@
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.1",
     "babel-plugin-inline-react-svg": "^2.0.1",
     "cypress": "^7.3.0",
+    "serve": "^14.2.0",
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1",
     "cypress-file-upload": "^5.0.7",
     "enzyme": "^3.11.0",
     "enzyme-to-json": "^3.6.2",

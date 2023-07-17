@@ -6,14 +6,15 @@ import Spinner from '~app/components/common/Spinner';
 
 type Props = {
   fileText: any,
-  fileImage: any,
+  fileImage?: any,
   fileHandler: any,
   removeButtons?: any,
+  extendClass?: string,
   processingFile: boolean,
 };
 
 const ImportInput = (props: Props) => {
-  const { processingFile, fileHandler, fileText, fileImage, removeButtons } = props;
+  const { processingFile, fileHandler, fileText, fileImage, removeButtons, extendClass } = props;
   const classes = useStyles();
   const inputRef = useRef(null);
 
@@ -41,10 +42,10 @@ const ImportInput = (props: Props) => {
           onDrop={handleDrop}
           onClick={handleClick}
           onDragOver={handleDrag}
-          className={classes.DropZone}
+          className={`${classes.DropZone} ${extendClass}`}
       >
         <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop}/>
-        {!processingFile && fileImage()}
+        {!processingFile && fileImage && fileImage()}
         {!processingFile && fileText()}
         {processingFile && (
             <Grid container item>

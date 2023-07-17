@@ -1,10 +1,8 @@
-import { sha256 } from 'js-sha256';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
@@ -17,9 +15,9 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { validateAddressInput, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
+import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 
 const GenerateOperatorKeys = () => {
   const stores = useStores();
@@ -71,10 +69,7 @@ const GenerateOperatorKeys = () => {
       pubKey: walletStore.encodeKey(inputsData.publicKey),
     };
     operatorStore.setOperatorKeys(operatorKeys);
-    const isExists = await Operator.getInstance().getOperator(
-      sha256(walletStore.decodeKey(operatorKeys.pubKey)),
-      true,
-    );
+    const isExists = await validateOperatorPublicKey(inputsData.publicKey);
     setOperatorExist(isExists);
     if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
     applicationStore.setIsLoading(false);

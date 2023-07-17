@@ -18,7 +18,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
 
     const customFilterOptions = (options: any, state: any) => {
         const inputValue = state.inputValue.toLowerCase();
-        return metadataStore.locations.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => `${d.name} (${d['alpha-3']})`);
+        return metadataStore.locations.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => d.name);
     };
 
     const onFocusHandler = () => {
@@ -48,7 +48,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
             onBlur={onBlurHandler}
             filterOptions={customFilterOptions}
             onInputChange={(e: any, value: any) => onTagsChange(e, value)}
-            options={metadataStore.locations.map((country: CountryType) => `${country.name} (${country['alpha-3']})`)}
+            options={metadataStore.locations.map((country: CountryType) => country.name)}
             renderInput={params => <TextField
                 placeholder={placeholder}
                 className={classes.AutocompleteInner}

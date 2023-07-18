@@ -11,10 +11,12 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const options = metadataStore.getMetadataEntity(fieldKey).options!;
     const [currentValue, setCurrentValue] = useState(metadataStore.getMetadataEntity(fieldKey).value);
-
+    const [isPlaceholder, setIsPlaceholder] = useState(!currentValue);
+    
     const changeValueHandler = (event: any) => {
         const { value } = event.target;
         setCurrentValue(metadataStore.setMetadataValue(fieldKey, value));
+        setIsPlaceholder(!value);
     };
 
     const classes = useStyles({ isPlaceholder: !currentValue });
@@ -27,8 +29,8 @@ const SelectField = ({ fieldKey, placeholder } : { fieldKey: string, placeholder
                 placeholder={placeholder}
                 displayEmpty
             >
-                <MenuItem className={classes.PlaceholderColor} value="" disabled>
-                    {placeholder}
+                <MenuItem className={`${isPlaceholder && classes.PlaceholderColor}`} value={''} disabled={isPlaceholder}>
+                    {isPlaceholder ? placeholder : 'None'}
                 </MenuItem>
                 {options.map((option: string, index: number ) => <MenuItem key={index} value={option}>{option}</MenuItem>)}
             </Select>

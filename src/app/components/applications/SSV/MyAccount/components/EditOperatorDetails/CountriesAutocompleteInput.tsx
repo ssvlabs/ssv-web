@@ -14,11 +14,11 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const [currentCountry, setCurrentCountry] = useState(metadataStore.getMetadataValue(fieldKey));
 
-    useEffect(() => setCurrentCountry(countryWithAlpha(currentCountry)), [metadataStore.locations.toString()]);
+    useEffect(() => setCurrentCountry(countryWithAlpha(currentCountry)), [metadataStore.locationsData.toString()]);
 
     const customFilterOptions = (options: any, state: any) => {
         const inputValue = state.inputValue.toLowerCase();
-        return metadataStore.locations.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => `${d.name} (${d['alpha-3']})`);
+        return metadataStore.locationsData.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => `${d.name} (${d['alpha-3']})`);
     };
 
     const onFocusHandler = () => {
@@ -31,12 +31,13 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
 
     const onTagsChange = (event: any, value: any) => {
         if (event) {
-            setCurrentCountry(metadataStore.setMetadataValue(fieldKey, value));
+            setCurrentCountry(value);
+            metadataStore.setMetadataValue(fieldKey, metadataStore.locationsList[value]);
         }
     };
 
     const countryWithAlpha = (location: string) => {
-        const country = metadataStore.locations.find(c => c.name === location);
+        const country = metadataStore.locationsData.find(c => c.name === location);
         return country ? `${location} (${country['alpha-3']})` : location;
     };
 
@@ -48,7 +49,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
             onBlur={onBlurHandler}
             filterOptions={customFilterOptions}
             onInputChange={(e: any, value: any) => onTagsChange(e, value)}
-            options={metadataStore.locations.map((country: CountryType) => `${country.name} (${country['alpha-3']})`)}
+            options={metadataStore.locationsData.map((country: CountryType) => country.name)}
             renderInput={params => <TextField
                 placeholder={placeholder}
                 className={classes.AutocompleteInner}

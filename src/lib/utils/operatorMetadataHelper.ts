@@ -44,7 +44,7 @@ type FieldCondition = {
     errorMessage: string;
 };
 
-export const ALLOWED_IMAGE_TYPES = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'];
+export const ALLOWED_IMAGE_TYPES = ['image/jpg', 'image/jpeg', 'image/png'];
 
 export const FIELD_CONDITIONS: Record<string, FieldCondition> = {
     [FIELD_KEYS.OPERATOR_NAME]: { maxLength: 30, errorMessage: 'Operator name up to 30 characters' },

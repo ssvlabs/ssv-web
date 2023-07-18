@@ -17,12 +17,14 @@ import {
 
 class OperatorMetadataStore extends BaseStore  {
     metadata: Map<string, MetadataEntity> = new Map<string, MetadataEntity>();
-    locations: CountryType[] = [];
+    locationsData: CountryType[] = [];
+    locationsList: Record<string, string> = {};
 
     constructor() {
         super();
         makeObservable(this, {
-            locations: observable,
+            locationsList: observable,
+            locationsData: observable,
             metadata: observable,
             getMetadataValue: observable,
             setMetadataValue: observable,
@@ -60,8 +62,9 @@ class OperatorMetadataStore extends BaseStore  {
     }
 
     async updateOperatorLocations() {
-            const options = await Operator.getInstance().getOperatorAvailableLocations();
-            this.locations = options;
+            const options: CountryType[] = await Operator.getInstance().getOperatorAvailableLocations();
+            options.forEach((option: CountryType) => this.locationsList[`${option.name} (${option['alpha-3']})`] = option.name);
+            this.locationsData = options;
     }
 
     // return metadata entity by metadata field name
@@ -117,6 +120,7 @@ class OperatorMetadataStore extends BaseStore  {
             }
                 payload[field] = value || '';
         });
+        console.log(payload);
         return payload;
     }
 

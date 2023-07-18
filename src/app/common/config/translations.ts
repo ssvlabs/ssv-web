@@ -131,7 +131,7 @@ const translations = {
   },
   OPERATOR_METADATA: {
     IMAGE_SIZE_ERROR: 'File must be up to 200KB',
-    IMAGE_TYPE_ERROR: 'File must be .jpg .jpeg .png .svg',
+    IMAGE_TYPE_ERROR: 'File must be .jpg .jpeg .png',
     IMAGE_RESOLUTION_ERROR: 'Image dimensions must be at least 400x400px.',
     REQUIRED_FIELD_ERROR: 'Required field',
     LINK_ERROR: 'Enter a valid link i.e - https://ssv.network/',

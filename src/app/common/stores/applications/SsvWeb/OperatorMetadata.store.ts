@@ -120,6 +120,7 @@ class OperatorMetadataStore extends BaseStore  {
             }
                 payload[field] = value || '';
         });
+        console.log(payload);
         return payload;
     }
 

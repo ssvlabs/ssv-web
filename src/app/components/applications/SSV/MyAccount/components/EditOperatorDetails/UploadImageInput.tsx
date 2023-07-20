@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
+import { truncateText } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import { photoValidation } from '~lib/utils/operatorMetadataHelper';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
@@ -46,7 +47,7 @@ const UploadImageInput = ({ fieldKey, extendClass } : { fieldKey: string, extend
     
     const renderFileText = () => {
         if (currentData.imageFileName && !currentData.errorMessage) {
-           return (<Typography className={classes.ImageName}>{currentData.imageFileName} <RemoveButton/></Typography>);
+           return (<Typography className={classes.ImageName}>{truncateText(currentData.imageFileName, 50)} <RemoveButton/></Typography>);
         }
         if (currentData.errorMessage) {
            return (<Typography className={classes.ImageErrorMessage}>{currentData.errorMessage} <RemoveButton/></Typography>);

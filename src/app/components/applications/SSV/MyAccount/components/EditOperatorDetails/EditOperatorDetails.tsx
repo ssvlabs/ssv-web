@@ -27,7 +27,7 @@ const EditOperatorDetails = () => {
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const process: SingleOperator =  processStore.getProcess;
     const operator = process?.item;
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState(['']);
     const [buttonDisable, setButtonDisable] = useState<boolean>(false);
 
     useEffect(() => {
@@ -55,10 +55,10 @@ const EditOperatorDetails = () => {
             let signatureHash;
             try {
                 signatureHash = await walletStore.web3.eth.personal.sign(rawDataToValidate, walletStore.accountAddress);
-                setErrorMessage('');
+                setErrorMessage(['']);
             } catch (e: any){
                 console.log(`Error message: ${e.message}`);
-                setErrorMessage('You must confirm the signature request through your wallet');
+                setErrorMessage(['You must confirm the signature request through your wallet']);
                 applicationStore.setIsLoading(false);
                 return;
             }
@@ -71,8 +71,13 @@ const EditOperatorDetails = () => {
                 }
                 navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
             }).catch((error: any) => {
-                setErrorMessage(error.response.data.error.message);
-                applicationStore.setIsLoading(false);
+                const { message } = error.response.data.error;
+                if (typeof message !== 'string') {
+                    setErrorMessage(Object.values(message));
+                } else {
+                    setErrorMessage([message]);
+                    applicationStore.setIsLoading(false);
+                }
             });
             applicationStore.setIsLoading(false);
         }
@@ -89,7 +94,7 @@ const EditOperatorDetails = () => {
             ...Object.values(FIELD_KEYS).map((key: string) =>{
                 return (<FieldWrapper fieldKey={key} />);
             }),
-            <Typography className={classes.ErrorMessage}>{errorMessage}</Typography>,
+            ...errorMessage.map(error => <Typography className={classes.ErrorMessage}>{error}</Typography>),
             <PrimaryButton text={'Update'}
                                disable={buttonDisable}
                                wrapperClass={classes.marginBottom}

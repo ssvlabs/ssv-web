@@ -53,7 +53,7 @@ const UploadImageInput = ({ fieldKey, extendClass } : { fieldKey: string, extend
         }
         return (
             <Grid item xs={12} className={classes.FileText}>
-                   Drop file here or <LinkText text={'browse'}/> Max size: 200KB (JPG, PNG,SVG)
+                   Drop file here or <LinkText text={'browse'}/> Max size: 200KB (JPG, JPEG, PNG)
             </Grid>
         );
     };

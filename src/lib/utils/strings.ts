@@ -23,6 +23,6 @@ export const normalizeNumber = (number: number, friction: number = 2) => {
 };
 
 export const checkSpecialCharacters = (value: string) => {
-    const linkRegex = /^[A-Za-z0-9 _!$#'|-]+$/;
+    const linkRegex = /^[A-Za-z0-9 _!$#’'|-]+$/;
     return linkRegex.test(value);
 };

@@ -83,7 +83,7 @@ class Operator {
   }
 
   async updateOperatorName(operatorId: string, signature: string, operatorName: string) {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/operator_name`;
     try {
       return (await axios.put(url, {
         operatorName,

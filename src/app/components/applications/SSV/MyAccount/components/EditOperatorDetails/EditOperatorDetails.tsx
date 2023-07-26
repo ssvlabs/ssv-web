@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -47,10 +48,16 @@ const EditOperatorDetails = () => {
         if (!isNotValidity) {
             let payload = metadataStore.createMetadataPayload();
             let rawDataToValidate: any = [];
-            Object.values(payload).map(value =>
-                rawDataToValidate.push(value),
+            Object.keys(payload).map(key => {
+                if (key === FIELD_KEYS.OPERATOR_IMAGE && payload[key]){
+                    const calculatedHash = sha256(payload[key]);
+                    rawDataToValidate.push(calculatedHash);
+                } else if (payload[key]) {
+                    rawDataToValidate.push(payload[key]);
+                   }
+                },
             );
-            rawDataToValidate = rawDataToValidate.join('|');
+            rawDataToValidate = rawDataToValidate.join(',');
             applicationStore.setIsLoading(true);
             let signatureHash;
             try {

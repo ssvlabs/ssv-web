@@ -48,15 +48,13 @@ const EditOperatorDetails = () => {
         if (!isNotValidity) {
             let payload = metadataStore.createMetadataPayload();
             let rawDataToValidate: any = [];
-            Object.keys(payload).map(key => {
-                if (key === FIELD_KEYS.OPERATOR_IMAGE && payload[key]){
-                    const calculatedHash = sha256(payload[key]);
-                    rawDataToValidate.push(calculatedHash);
-                } else if (payload[key]) {
-                    rawDataToValidate.push(payload[key]);
-                   }
-                },
-            );
+            Object.keys(payload).forEach(field => {
+                if (payload[field]) {
+                    const newItem =
+                        field === 'logo' ? sha256(payload[field]) : payload[field];
+                    rawDataToValidate.push(newItem);
+                }
+            });
             rawDataToValidate = rawDataToValidate.join(',');
             applicationStore.setIsLoading(true);
             let signatureHash;

@@ -4,11 +4,11 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import LinkText from '~app/components/common/LinkText/LinkText';
+import { longStringShorten, truncateText } from '~lib/utils/strings';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
@@ -88,7 +88,7 @@ const ValidatorSuccessScreen = () => {
                         xs={12}/>
                   </Grid>
                   <Grid container className={classes.OperatorData}>
-                      <Grid item className={classes.OperatorName} xs>{operator.name}</Grid>
+                      <Grid item className={classes.OperatorName} xs>{truncateText(operator.name, 12)}</Grid>
                       <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
                   </Grid>
                 </Grid>;

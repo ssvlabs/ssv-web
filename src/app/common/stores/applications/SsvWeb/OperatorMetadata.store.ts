@@ -15,6 +15,20 @@ import {
     OPERATOR_NODE_TYPES, CountryType,
 } from '~lib/utils/operatorMetadataHelper';
 
+export const fieldsToValidateSignature = [
+    FIELD_KEYS.OPERATOR_NAME,
+    FIELD_KEYS.DESCRIPTION,
+    FIELD_KEYS.LOCATION,
+    FIELD_KEYS.SETUP_PROVIDER,
+    FIELD_KEYS.EXECUTION_CLIENT,
+    FIELD_KEYS.CONSENSUS_CLIENT,
+    FIELD_KEYS.MEV_RELAYS,
+    FIELD_KEYS.WEBSITE_URL,
+    FIELD_KEYS.TWITTER_URL,
+    FIELD_KEYS.LINKEDIN_URL,
+    FIELD_KEYS.OPERATOR_IMAGE,
+];
+
 class OperatorMetadataStore extends BaseStore  {
     metadata: Map<string, MetadataEntity> = new Map<string, MetadataEntity>();
     locationsData: CountryType[] = [];
@@ -99,19 +113,6 @@ class OperatorMetadataStore extends BaseStore  {
 
     // return payload for transaction
     createMetadataPayload() {
-        const fieldsToValidateSignature = [
-            FIELD_KEYS.OPERATOR_NAME,
-            FIELD_KEYS.DESCRIPTION,
-            FIELD_KEYS.LOCATION,
-            FIELD_KEYS.SETUP_PROVIDER,
-            FIELD_KEYS.EXECUTION_CLIENT,
-            FIELD_KEYS.CONSENSUS_CLIENT,
-            FIELD_KEYS.MEV_RELAYS,
-            FIELD_KEYS.WEBSITE_URL,
-            FIELD_KEYS.TWITTER_URL,
-            FIELD_KEYS.LINKEDIN_URL,
-            FIELD_KEYS.OPERATOR_IMAGE,
-        ];
         let payload: Record<string, string> = {};
         fieldsToValidateSignature.forEach((field: string) => {
             let value = this.getMetadataValue(field);

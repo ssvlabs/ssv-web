@@ -12,10 +12,10 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
 const EditOperatorDetails = () => {
     const stores = useStores();
@@ -48,10 +48,10 @@ const EditOperatorDetails = () => {
         if (!isNotValidity) {
             let payload = metadataStore.createMetadataPayload();
             let rawDataToValidate: any = [];
-            Object.keys(payload).forEach(field => {
+            fieldsToValidateSignature.forEach(field => {
                 if (payload[field]) {
                     const newItem =
-                        field === 'logo' ? sha256(payload[field]) : payload[field];
+                        field === FIELD_KEYS.OPERATOR_IMAGE ? `logo:sha256:${sha256(payload[field])}` : payload[field];
                     rawDataToValidate.push(newItem);
                 }
             });

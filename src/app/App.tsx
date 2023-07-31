@@ -60,7 +60,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-
     if (walletStore.accountDataLoaded && !unsafeMode) {
       navigate(applicationStore.strategyRedirect);
     }

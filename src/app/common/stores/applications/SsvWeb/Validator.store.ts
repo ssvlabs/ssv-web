@@ -670,11 +670,7 @@ class ValidatorStore extends BaseStore {
         resolve(false);
         return;
       }
-
       this.newValidatorReceipt = null;
-
-      console.debug('Add Validator Payload: ', payload);
-      console.log(payload);
       // Send add operator transaction
       contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: null })
           .on('receipt', async (receipt: any) => {

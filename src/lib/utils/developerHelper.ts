@@ -18,6 +18,7 @@ export const setLocalStorageFlagValue = (flagName: string, flagValue: any) => {
 export const DEVELOPER_FLAGS = {
     SHOW_HELP: 'developerHelper',
     USE_HARDCODED_GAS_LIMIT: 'useHardcodedGasLimit',
+    UPLOAD_KEYSHARE_UNSAFE_MODE: 'uploadKeyShareUnsafeMode',
 };
 
 export const developerFlagsInfo = {
@@ -27,6 +28,10 @@ export const developerFlagsInfo = {
     },
     [DEVELOPER_FLAGS.USE_HARDCODED_GAS_LIMIT]: {
         'description': 'Use/not use hardcoded gas limit',
+        'values': ['0', '1'],
+    },
+    [DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE]: {
+        'description': 'Use/not use upload keyshare unsafe mode',
         'values': ['0', '1'],
     },
 };

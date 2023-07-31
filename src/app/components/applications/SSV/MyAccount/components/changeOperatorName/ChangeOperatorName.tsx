@@ -37,11 +37,10 @@ const ChangeOperatorName = () => {
         const signatureHash = await walletStore.web3.eth.personal.sign(userInput, walletStore.accountAddress);
         setErrorMessage('');
         Operator.getInstance().updateOperatorName(operator.id, signatureHash, userInput).then((response) => {
-            operator.name = response;
+            operator.name = response.name;
             applicationStore.setIsLoading(false);
             const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
-            selectedOperator.name = response;
-            console.log(response);
+            selectedOperator.name = response.name;
             navigate(-1);
         }).catch((error: any) => {
             console.log('<<<<<<<<<<<error>>>>>>>>>>>');

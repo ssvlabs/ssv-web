@@ -128,7 +128,7 @@ const SingleCluster = () => {
                 rows={rows}
                 headerPadding={7}
                 loading={loadingValidators}
-                noItemsText={'Seems that you have no validators click “Add Cluster“ in order to run your first SSV validator'}
+                noItemsText={'No Validators'}
                 header={<Grid container className={classes.HeaderWrapper}>
                   <Grid item className={classes.Header}>Validators</Grid>
                   <SecondaryButton disable={showAddValidatorBtnCondition} className={classes.AddToCluster} text={'+ Add Validator'} submitFunction={addToCluster} />

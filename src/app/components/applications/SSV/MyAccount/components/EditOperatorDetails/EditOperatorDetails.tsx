@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +12,10 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
 const EditOperatorDetails = () => {
     const stores = useStores();
@@ -47,10 +48,14 @@ const EditOperatorDetails = () => {
         if (!isNotValidity) {
             let payload = metadataStore.createMetadataPayload();
             let rawDataToValidate: any = [];
-            Object.values(payload).map(value =>
-                rawDataToValidate.push(value),
-            );
-            rawDataToValidate = rawDataToValidate.join('|');
+            fieldsToValidateSignature.forEach(field => {
+                if (payload[field]) {
+                    const newItem =
+                        field === FIELD_KEYS.OPERATOR_IMAGE ? `logo:sha256:${sha256(payload[field])}` : payload[field];
+                    rawDataToValidate.push(newItem);
+                }
+            });
+            rawDataToValidate = rawDataToValidate.join(',');
             applicationStore.setIsLoading(true);
             let signatureHash;
             try {

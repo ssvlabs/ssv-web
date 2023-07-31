@@ -3,11 +3,13 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { truncateText } from '~lib/utils/strings';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails.styles';
 
 type Props = {
@@ -43,7 +45,11 @@ const OperatorDetails = (props: Props) => {
       <Grid container className={classes.Wrapper}>
         <Grid item className={classes.OperatorLogo}/>
         <Grid item className={classes.TextWrapper}>
-          <Grid item className={classes.Name}>{operatorName ?? `Operator ${operator.id}`}</Grid>
+          <Grid item className={classes.Name}>
+            {operatorName.length > 12 ? <AnchorTooltip title={operatorName} placement={'top'}>
+              {truncateText(operatorName, 12)}
+            </AnchorTooltip> : operatorName}
+          </Grid>
           <Grid item container className={classes.Id}>
             ID: {operator.id}
             {withCopy && <Grid className={classes.Copy} onClick={copyId}/>}

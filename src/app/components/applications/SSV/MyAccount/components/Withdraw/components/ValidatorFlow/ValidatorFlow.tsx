@@ -9,7 +9,6 @@ import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
@@ -31,7 +30,7 @@ const ValidatorFlow = () => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = walletStore.fromWei(cluster.balance);
-  const applicationStore: ApplicationStore = stores.Application;
+  const [isLoading, setIsLoading] = useState(false);
   const [userAgree, setUserAgreement] = useState(false);
   const { checkedCondition } = useTermsAndConditions();
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
@@ -49,7 +48,7 @@ const ValidatorFlow = () => {
   }, [withdrawValue]);
 
   const withdrawSsv = async () => {
-    applicationStore.setIsLoading(true);
+    setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
     const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
     const newCluster = response.cluster;
@@ -61,7 +60,7 @@ const ValidatorFlow = () => {
       item: await clusterStore.extendClusterEntity(newCluster),
     }, 2);
     await myAccountStore.getOwnerAddressClusters({});
-    applicationStore.setIsLoading(false);
+    setIsLoading(false);
     if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0) {
       navigate(-1);
     }
@@ -144,6 +143,7 @@ const ValidatorFlow = () => {
                   withAllowance={false}
                   onClick={withdrawSsv}
                   errorButton={errorButton}
+                  isLoading={isLoading}
                   checkboxesText={showCheckBox ? [checkBoxText] : []}
                   checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
                   disable={buttonDisableCondition}

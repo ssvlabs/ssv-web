@@ -743,23 +743,21 @@ class ValidatorStore extends BaseStore {
 
   async createKeySharePayloadUnsafe(update: boolean = false): Promise<Map<string, any> | false> {
     update;
-    return new Promise(async (resolve) => {
-      const ssvStore: SsvStore = this.getStore('SSV');
-      const walletStore: WalletStore = this.getStore('Wallet');
-      const clusterStore: ClusterStore = this.getStore('Cluster');
-      let totalCost = 4.5;
-      try {
-        const amountInWei = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(totalCost));
-        const payload = this.createPayload(this.keySharePublicKey,
-            this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-            this.keySharePayload?.sharesData, `${amountInWei}`,
-            await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
-        resolve(payload);
-      } catch (e: any) {
-        console.log(e.message);
-        resolve(false);
-      }
-    });
+    const ssvStore: SsvStore = this.getStore('SSV');
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const clusterStore: ClusterStore = this.getStore('Cluster');
+    const totalCost = 4.5;
+    try {
+      const amountInWei = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(totalCost));
+      const payload = this.createPayload(this.keySharePublicKey,
+          this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
+          this.keySharePayload?.sharesData, `${amountInWei}`,
+          await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
+      return payload;
+    } catch (e: any) {
+      console.log(e.message);
+      return false;
+    }
   }
 
   async validateKeySharePayloadUnsafe(): Promise<KeyShareError> {

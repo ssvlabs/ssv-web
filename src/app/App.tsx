@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
@@ -13,12 +13,12 @@ import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
-import DeveloperHelper from '~lib/utils/developerHelper';
 import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
+import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 
 declare global {
   interface Window {
@@ -34,6 +34,8 @@ const App = () => {
   const GlobalStyle = globalStyle();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
+  const location = useLocation();
+  const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
 
   useEffect(() => {
     document.title = applicationStore.appTitle;
@@ -58,7 +60,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (walletStore.accountDataLoaded) {
+    if (walletStore.accountDataLoaded && !unsafeMode) {
       navigate(applicationStore.strategyRedirect);
     }
   }, [walletStore.accountDataLoaded]);

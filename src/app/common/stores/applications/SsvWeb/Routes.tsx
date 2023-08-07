@@ -37,7 +37,6 @@ const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/
 const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
 const RemoveValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator'));
 const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
-const ValidatorRegistrationConfirmationUnsafe = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmationUnsafe'));
 const OfflineKeyShareGeneration = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration'));
 const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
 const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
@@ -72,7 +71,6 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS, Component: ConfirmOperatorsChange },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION, Component: MetadataConfirmationPage },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE_UNSAFE, Component: ValidatorRegistrationConfirmationUnsafe },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, Component: ConfirmOperatorsChange },
   ];
 

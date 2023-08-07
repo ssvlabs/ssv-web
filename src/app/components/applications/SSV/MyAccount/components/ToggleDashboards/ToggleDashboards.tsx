@@ -54,11 +54,11 @@ const ToggleDashboards = (props: Props) => {
             showSettings && <Grid item className={classes.SettingsWrapper}>
               <Grid ref={settingsRef} container item className={classes.Settings}>
                 <Grid container item className={classes.Button} onClick={()=>{navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);}}>
-                  <Grid className={classes.SettingsImage}/>
+                  <Grid className={classes.SettingsImageOperator}/>
                   Operators
                 </Grid>
                 <Grid container item className={classes.Button} onClick={()=>{navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);}}>
-                  <Grid className={classes.SettingsImage}/>
+                  <Grid className={classes.SettingsImageValidator}/>
                   Validators
                 </Grid>
               </Grid>

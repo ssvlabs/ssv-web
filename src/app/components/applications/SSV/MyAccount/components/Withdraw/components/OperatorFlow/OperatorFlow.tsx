@@ -7,7 +7,6 @@ import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -20,18 +19,18 @@ const OperatorFlow = () => {
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const [inputValue, setInputValue] = useState(0.0);
+  const [isLoading, setIsLoading] = useState(false);
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
-  const applicationStore: ApplicationStore = stores.Application;
   const operatorStore: OperatorStore = stores.Operator;
   const operator = process?.item;
   const operatorBalance = operator?.balance ?? 0;
   const { checkedCondition } = useTermsAndConditions();
 
   const withdrawSsv = async () => {
-    applicationStore.setIsLoading(true);
+    setIsLoading(true);
     const success = await ssvStore.withdrawSsv(inputValue.toString(), true);
-    applicationStore.setIsLoading(false);
+    setIsLoading(false);
     if (success) {
       setInputValue(0.0);
       const balance = await operatorStore.getOperatorBalance(operator.id);
@@ -97,6 +96,7 @@ const OperatorFlow = () => {
               text={'Withdraw'}
               withAllowance={false}
               onClick={withdrawSsv}
+              isLoading={isLoading}
               disable={Number(inputValue) === 0 || !checkedCondition}
           />
           </TermsAndConditionsCheckbox>]}

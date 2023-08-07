@@ -108,7 +108,7 @@ const Deposit = () => {
                           <Grid item className={classes.MaxButtonText}>SSV</Grid>
                         </Grid>
                       </Grid>
-                      <Grid item xs={12} className={classes.WalletBalance} onClick={maxDeposit}>
+                      <Grid item xs={12} className={classes.WalletBalance}>
                         Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
                       </Grid>
                     </Grid>

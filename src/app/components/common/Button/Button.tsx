@@ -19,6 +19,7 @@ type ButtonParams = {
     checkboxesText?: any[],
     withAllowance?: boolean,
     checkBoxesCallBack?: any[],
+    isLoading?: boolean,
     totalAmount?: string,
 };
 
@@ -31,7 +32,7 @@ const Button = (props: ButtonParams) => {
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
     const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
-    const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount } = props;
+    const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount, isLoading } = props;
 
     useEffect(() => {
     if (Number(totalAmount) > 0) {
@@ -83,6 +84,7 @@ const Button = (props: ButtonParams) => {
             disable={disable}
             dataTestId={testId}
             errorButton={errorButton}
+            isLoading={isLoading}
             submitFunction={() => { checkWalletConnected(onClick); }}
             text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
           />

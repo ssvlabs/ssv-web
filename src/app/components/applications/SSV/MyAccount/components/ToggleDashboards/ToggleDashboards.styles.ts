@@ -43,8 +43,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundRepeat: 'no-repeat',
     backgroundImage: 'url(/images/diagramArrow/light.svg)',
   },
-  SettingsImage: {
-    backgroundImage: 'url(/images/toggle_dashboard/light.svg)',
+  SettingsImageOperator: {
+    backgroundImage: `url(/images/toggle_dashboard/operators-${theme.darkMode ? 'light' :  'dark'}.svg)`,
+    ...imageDefaultProperties,
+  },
+  SettingsImageValidator: {
+    backgroundImage: `url(/images/toggle_dashboard/validators-${theme.darkMode ? 'light' :  'dark'}.svg)`,
     ...imageDefaultProperties,
   },
   Button: {

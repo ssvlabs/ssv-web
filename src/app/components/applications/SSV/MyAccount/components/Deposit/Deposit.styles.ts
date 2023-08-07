@@ -59,7 +59,6 @@ export const useStyles = makeStyles((theme: Theme) => {
             lineHeight: 1.62,
             textAlign: 'right',
             color: theme.colors.gray40,
-            cursor: 'pointer',
         },
         AmountOfDays: {
             marginTop: '16px',

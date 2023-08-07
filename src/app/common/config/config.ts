@@ -70,6 +70,7 @@ const config = {
           SLASHING_WARNING: '/my-account/cluster/register/slashing-warning',
           DISTRIBUTE_OFFLINE: '/my-account/cluster/register/distribute-offline',
           CONFIRMATION_PAGE: '/my-account/cluster/register/confirm-transaction',
+          CONFIRMATION_PAGE_UNSAFE: '/my-account/cluster/register/confirmation-unsafe',
           DISTRIBUTION_METHOD_START: '/my-account/cluster/register/distribution-method',
           VALIDATOR_UPDATE: {
             ROOT: '/my-account/validator/update',

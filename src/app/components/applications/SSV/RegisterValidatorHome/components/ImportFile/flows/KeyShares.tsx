@@ -142,27 +142,7 @@ const KeyShareFlow = () => {
     applicationStore.setIsLoading(false);
   };
 
-  const submitHandlerUnsafeMode = async () => {
-    try {
-      const response = await validatorStore.addNewValidatorUnsafe();
-      if (response) {
-        applicationStore.showTransactionPendingPopUp(false);
-        navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
-      } else {
-        applicationStore.showTransactionPendingPopUp(false);
-      }
-      applicationStore.setIsLoading(false);
-    } catch (error: any) {
-      console.log('catch');
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'validator_register',
-        action: 'upload_file',
-        label: 'invalid_file',
-      });
-      setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
-    }
-    applicationStore.setIsLoading(false);
-  };
+  const submitHandlerUnsafeMode = () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE_UNSAFE);
 
   const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
 

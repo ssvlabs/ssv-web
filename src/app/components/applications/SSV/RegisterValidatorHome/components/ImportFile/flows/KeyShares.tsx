@@ -142,7 +142,7 @@ const KeyShareFlow = () => {
     applicationStore.setIsLoading(false);
   };
 
-  const submitHandlerUnsafeMode = async () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE_UNSAFE);
+  const submitHandlerUnsafeMode = () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE_UNSAFE);
 
   const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
 

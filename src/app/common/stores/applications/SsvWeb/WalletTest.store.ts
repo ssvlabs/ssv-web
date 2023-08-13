@@ -50,7 +50,7 @@ class WalletTestStore extends BaseStore implements Wallet {
       initWalletHooks: action.bound,
       setAccountLoaded: action.bound,
       initializeUserInfo: action.bound,
-      connectWalletFromCache: action.bound,
+      checkConnectedWallet: action.bound,
       selectWalletAndCheckIfReady: action.bound,
     });
   }
@@ -137,7 +137,7 @@ class WalletTestStore extends BaseStore implements Wallet {
   /**
    * Check wallet cache and connect
    */
-  async connectWalletFromCache() {
+  async checkConnectedWallet() {
     const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
     if (selectedWallet) {
       await this.onboardSdk.walletSelect(selectedWallet);

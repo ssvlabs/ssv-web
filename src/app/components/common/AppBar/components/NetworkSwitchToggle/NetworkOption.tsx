@@ -1,13 +1,18 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import { NetworkDataType, switchNetwork } from '~lib/utils/envHelper';
+import { useStores } from '~app/hooks/useStores';
+import { NetworkDataType } from '~lib/utils/envHelper';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 
 const NetworkOption = ({ network }: { network: NetworkDataType }) => {
-    const { networkId, optionLabel, apiVersion, logo } = network;
-    const changeNetworkHandler = () => {
-        switchNetwork(networkId, apiVersion);
+    const stores = useStores();
+    const walletStore: WalletStore = stores.Wallet;
+    const { networkId, optionLabel,  logo } = network;
+    const changeNetworkHandler = async () => {
+        await walletStore.changeNetwork(networkId);
+        window.location.reload();
     };
 
     const classes = useStyles({ logo });

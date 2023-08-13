@@ -53,7 +53,7 @@ class WalletStore extends BaseStore implements Wallet {
       accountDataLoaded: observable,
       initializeUserInfo: action.bound,
       setAccountDataLoaded: action.bound,
-      connectWalletFromCache: action.bound,
+      checkConnectedWallet: action.bound,
     });
     this.initWalletHooks();
   }
@@ -111,7 +111,7 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * Check wallet cache and connect
    */
-  async connectWalletFromCache() {
+  async checkConnectedWallet() {
     const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
     if (selectedWallet && selectedWallet !== 'undefined') {
       await this.onboardSdk.walletSelect(selectedWallet);

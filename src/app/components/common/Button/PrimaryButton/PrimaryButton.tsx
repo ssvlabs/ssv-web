@@ -52,16 +52,20 @@ const PrimaryButton = (props: Props) => {
         await submitFunction();
     };
 
+    const showLoaderCondition = applicationStore.isLoading || isLoading && !withoutLoader;
+    const isLoadingClassCondition = applicationStore.isLoading || isLoading;
+    const isDisabledCondition = disable || applicationStore.isLoading;
+
     return (
         <Grid container item>
             <Button
                 type="submit"
                 onClick={submitHandler}
                 data-testid={dataTestId}
-                disabled={disable || applicationStore.isLoading}
-                className={`${applicationStore.isLoading || isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+                disabled={isDisabledCondition}
+                className={`${isLoadingClassCondition ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
             >
-                {applicationStore.isLoading || isLoading && !withoutLoader && <Spinner errorSpinner={errorButton}/>}
+                {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
                 {text}
             </Button>
         </Grid>

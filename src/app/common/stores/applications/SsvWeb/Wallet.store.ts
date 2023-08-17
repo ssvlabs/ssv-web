@@ -105,9 +105,7 @@ class WalletStore extends BaseStore implements Wallet {
           enabled: false,
         },
         desktop: {
-          position: 'topRight',
           enabled: false,
-          minimal: false,
         },
       },
       chains: [
@@ -124,7 +122,7 @@ class WalletStore extends BaseStore implements Wallet {
       ],
       appMetadata: {
         name: 'SSV Network',
-        icon: getImage('ssvIcons/icon.svg'),
+        icon: getImage('ssvIcons/logo.svg'),
         logo: getImage('ssvIcons/logo.svg'),
         description: 'SSV Network',
         recommendedInjectedWallets: [
@@ -270,7 +268,6 @@ class WalletStore extends BaseStore implements Wallet {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
-    // this.onboardSdk.walletReset();
     this.ssvStore.clearSettings();
     this.operatorStore.clearSettings();
     myAccountStore.clearIntervals();

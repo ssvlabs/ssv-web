@@ -27,7 +27,7 @@ const ValidatorSuccessScreen = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const operators = Object.values(operatorStore.selectedOperators);
   const clusterHash = clusterStore.getClusterHash(operators);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<any>(null);
   const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
 
   const redirectTo = async () => {

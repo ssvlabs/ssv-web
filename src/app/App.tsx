@@ -44,7 +44,7 @@ const App = () => {
   useEffect(() => {
     if (!applicationStore.locationRestrictionEnabled) {
       console.debug('Skipping location restriction functionality in this app.');
-      walletStore.connectWalletFromCache();
+      walletStore.checkConnectedWallet();
     } else {
       checkUserCountryRestriction().then((res: any) => {
         if (res.restricted) {
@@ -53,17 +53,17 @@ const App = () => {
           applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
         } else {
-          walletStore.connectWalletFromCache();
+          walletStore.checkConnectedWallet();
         }
       });
     }
   }, []);
 
   useEffect(() => {
-    if (walletStore.accountDataLoaded && !unsafeMode) {
+    if (walletStore?.accountDataLoaded && !unsafeMode) {
       navigate(applicationStore.strategyRedirect);
     }
-  }, [walletStore.accountDataLoaded]);
+  }, [walletStore?.accountDataLoaded]);
 
   return (
       <StyledEngineProvider injectFirst>
@@ -71,14 +71,14 @@ const App = () => {
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
             <GlobalStyle/>
-            {!walletStore.accountDataLoaded && (
+            {!walletStore?.accountDataLoaded && (
                 <Grid container className={classes.LoaderWrapper}>
                   <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
                 </Grid>
             )}
             <BarMessage/>
             <BrowserView>
-              {walletStore.accountDataLoaded && <Routes/>}
+              {walletStore?.accountDataLoaded && <Routes/>}
             </BrowserView>
             <MobileView>
               <MobileNotSupported/>

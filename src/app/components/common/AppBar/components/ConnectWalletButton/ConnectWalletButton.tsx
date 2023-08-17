@@ -32,8 +32,8 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     };
 
     let icon;
-    if (walletStore.wallet?.name) {
-        switch (walletStore.wallet.name) {
+    if (walletStore.wallet?.label) {
+        switch (walletStore.wallet.label) {
             case 'Ledger':
                 icon = getImage('wallets/metamask.svg');
                 break;

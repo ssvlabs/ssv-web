@@ -746,7 +746,7 @@ class ValidatorStore extends BaseStore {
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
-    const totalCost = 4.5;
+    const totalCost = 8;
     try {
       const amountInWei = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(totalCost));
       const payload = this.createPayload(this.keySharePublicKey,

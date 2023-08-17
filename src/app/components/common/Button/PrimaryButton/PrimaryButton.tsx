@@ -10,14 +10,15 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { useStyles } from './PrimaryButton.styles';
 
 type Props = {
-    text: string,
-    disable?: boolean,
-    submitFunction: any,
-    dataTestId?: string,
-    wrapperClass?: string,
-    errorButton?: boolean,
-    withoutLoader?: boolean,
-    withVerifyConnection?: boolean
+    text: string;
+    disable?: boolean;
+    isLoading?: boolean;
+    submitFunction: any;
+    dataTestId?: string;
+    wrapperClass?: string;
+    errorButton?: boolean;
+    withoutLoader?: boolean;
+    withVerifyConnection?: boolean;
 };
 
 const PrimaryButton = (props: Props) => {
@@ -25,7 +26,7 @@ const PrimaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, withVerifyConnection } = props;
+    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
 
     // useEffect(() => {
@@ -51,16 +52,20 @@ const PrimaryButton = (props: Props) => {
         await submitFunction();
     };
 
+    const showLoaderCondition = applicationStore.isLoading || isLoading && !withoutLoader;
+    const isLoadingClassCondition = applicationStore.isLoading || isLoading;
+    const isDisabledCondition = disable || applicationStore.isLoading;
+
     return (
         <Grid container item>
             <Button
                 type="submit"
                 onClick={submitHandler}
                 data-testid={dataTestId}
-                disabled={disable || applicationStore.isLoading}
-                className={`${applicationStore.isLoading ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+                disabled={isDisabledCondition}
+                className={`${isLoadingClassCondition ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
             >
-                {applicationStore.isLoading && !withoutLoader && <Spinner errorSpinner={errorButton}/>}
+                {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
                 {text}
             </Button>
         </Grid>

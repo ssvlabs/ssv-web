@@ -10,11 +10,10 @@ const NetworkOption = ({ network }: { network: NetworkDataType }) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
     const { networkId, optionLabel,  logo, apiVersion } = network;
-    
+
     const changeNetworkHandler = async () => {
         if (walletStore.wallet) {
-            await walletStore.changeNetwork(networkId);
-            window.location.reload();
+            await walletStore.changeNetwork(networkId).then((response) => console.log(response));
         } else {
             switchNetwork(networkId, apiVersion);
         }

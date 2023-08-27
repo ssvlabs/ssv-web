@@ -35,6 +35,7 @@ const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
         [FIELD_KEYS.OPERATOR_IMAGE]: UploadImageInput,
         [FIELD_KEYS.WEBSITE_URL]: InputFieldComponent,
         [FIELD_KEYS.TWITTER_URL]: InputFieldComponent,
+        [FIELD_KEYS.DKG_ADDRESS]: InputFieldComponent,
         [FIELD_KEYS.DESCRIPTION]: DynamicTextarea,
         [FIELD_KEYS.LINKEDIN_URL]: InputFieldComponent,
         [FIELD_KEYS.OPERATOR_NAME]: InputFieldComponent,

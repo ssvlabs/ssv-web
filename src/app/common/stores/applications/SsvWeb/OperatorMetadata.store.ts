@@ -12,7 +12,7 @@ import {
     MetadataEntity,
     FIELDS,
     isLink,
-    OPERATOR_NODE_TYPES, CountryType,
+    OPERATOR_NODE_TYPES, CountryType, checkDkgAddress,
 } from '~lib/utils/operatorMetadataHelper';
 
 export const fieldsToValidateSignature = [
@@ -26,6 +26,7 @@ export const fieldsToValidateSignature = [
     FIELD_KEYS.WEBSITE_URL,
     FIELD_KEYS.TWITTER_URL,
     FIELD_KEYS.LINKEDIN_URL,
+    FIELD_KEYS.DKG_ADDRESS,
     FIELD_KEYS.OPERATOR_IMAGE,
 ];
 
@@ -142,11 +143,13 @@ class OperatorMetadataStore extends BaseStore  {
                 } else {
                     this.setErrorMessage(metadataFieldName, '');
                 }
-            } else if ([FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL].includes(metadataFieldName) && typeof fieldEntity.value === 'string') {
-                const res = isLink(fieldEntity.value);
+            } else if ([FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(metadataFieldName) && typeof fieldEntity.value === 'string') {
+                const isDkgField = metadataFieldName === FIELD_KEYS.DKG_ADDRESS;
+                const res = isDkgField ? checkDkgAddress(fieldEntity.value) : isLink(fieldEntity.value);
+                const errorMessage = isDkgField ? translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR : translations.OPERATOR_METADATA.LINK_ERROR;
                 if (fieldEntity.value && res){
                     metadataContainsError = true;
-                    this.setErrorMessage(metadataFieldName, translations.OPERATOR_METADATA.LINK_ERROR);
+                    this.setErrorMessage(metadataFieldName, errorMessage);
                 } else {
                     this.setErrorMessage(metadataFieldName, '');
                 }

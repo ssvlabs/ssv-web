@@ -12,6 +12,7 @@ export const FIELD_KEYS = {
     WEBSITE_URL: 'websiteUrl',
     TWITTER_URL: 'twitterUrl',
     LINKEDIN_URL: 'linkedinUrl',
+    DKG_ADDRESS: 'dkgAddress',
 };
 
 export type CountryType = {
@@ -119,6 +120,12 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         placeholderText: 'Prism, Lighthouse, Teku...',
         options: [],
     },
+    [FIELD_KEYS.DKG_ADDRESS]: {
+        label: 'DKG Node IP',
+        value: '',
+        errorMessage: '',
+        placeholderText: 'Enter your DKG Node IP',
+    },
     [FIELD_KEYS.WEBSITE_URL]: {
         label: 'Website Link',
         value: '',
@@ -171,4 +178,17 @@ export const photoValidation = (file: any, callback: Function) => {
 export const isLink = (value: string) => {
     const linkRegex = /^(https?:\/\/)?[a-zA-Z0-9][\w.-]*\.[a-zA-Z]{2,}(\/\S*)?$/;
     return !linkRegex.test(value);
+};
+
+export const checkDkgAddress = (value: string) => {
+    const pattern = new RegExp(
+        '^(' +
+        '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}' + // Domain name
+        '|' +
+        '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' + // IP address
+        ')' +
+        '(:\\d{1,5})?' + // Optional port
+        '$',
+    );
+    return !pattern.test(value);
 };

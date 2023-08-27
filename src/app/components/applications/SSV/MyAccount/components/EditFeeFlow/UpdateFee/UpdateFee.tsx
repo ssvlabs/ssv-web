@@ -63,7 +63,7 @@ const UpdateFee = () => {
     applicationStore.setIsLoading(true);
     Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
-        const operatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee)));
+        const operatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(response.fee))).replace(',', '');
         setOperator(response);
         setOldFee(Number(operatorFee));
         if (!operatorStore.operatorFutureFee) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
@@ -33,8 +33,14 @@ const ValidatorFlow = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userAgree, setUserAgreement] = useState(false);
   const { checkedCondition } = useTermsAndConditions();
+  const [checkBoxText, setCheckBoxText] = useState('');
+  const [errorButton, setErrorButton] = useState(false);
+  const [showCheckBox, setShowCheckBox] = useState(false);
+  const [newBalance, setNewBalance] = useState<string | number>(clusterBalance);
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
+  const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
   const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
+  const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
 
   useEffect(() => {
     if (clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && userAgree) {
@@ -45,7 +51,26 @@ const ValidatorFlow = () => {
     } else if (buttonColor.default === '#ec1c2640') {
       setButtonColor({ userAgree: '', default: '' });
     }
-  }, [withdrawValue]);
+
+    const balance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
+    const runWay = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(balance) });
+    const errorConditionButton = runWay <= 0;
+    const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
+
+    setNewBalance(balance);
+    setErrorButton(errorConditionButton);
+    setShowCheckBox(showCheckboxCondition);
+    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !userAgree || Number(withdrawValue) === 0 || !checkedCondition);
+
+    setCheckBoxText(errorConditionButton && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK);
+    if (errorConditionButton) {
+      setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.LIQUIDATE_MY_CLUSTER);
+    } else if (withdrawValue === clusterBalance) {
+      setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW_ALL);
+    } else {
+      setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
+    }
+  }, [withdrawValue, userAgree, checkedCondition]);
 
   const withdrawSsv = async () => {
     setIsLoading(true);
@@ -86,19 +111,6 @@ const ValidatorFlow = () => {
   function maxValue() {
     // @ts-ignore
     setWithdrawValue(Number(clusterBalance));
-  }
-  
-  const newBalance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
-  // @ts-ignore
-  const errorButton = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= 0;
-  const showCheckBox = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
-  const buttonDisableCondition = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !userAgree || Number(withdrawValue) === 0 || !checkedCondition;
-  const checkBoxText = errorButton ? 'I understand that withdrawing this amount will liquidate my cluster.' : 'I understand the risks of having my cluster liquidated.';
-  let buttonText = 'Withdraw';
-  if (errorButton) {
-    buttonText = 'Liquidate my cluster';
-  } else if (withdrawValue === clusterBalance) {
-    buttonText = 'Withdraw All';
   }
 
   const secondBorderScreen = [(

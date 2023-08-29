@@ -21,6 +21,17 @@ const translations = {
         'There is no need to wait until your validator is active on the beacon chain, you can return to register your validator to our network while it\'s pending on the staking queue, once it gets activated, your selected operators will operate it immediately.',
       ],
     },
+    WITHDRAW: {
+      BUTTON: {
+        WITHDRAW: 'Withdraw',
+        WITHDRAW_ALL: 'Withdraw All',
+        LIQUIDATE_MY_CLUSTER: 'Liquidate my cluster',
+      },
+      CHECKBOX: {
+        LIQUIDATION_RISK:  'I understand the risks of having my cluster liquidated.',
+        LIQUIDATE_MY_CLUSTER: 'I understand that withdrawing this amount will liquidate my cluster.',
+      },
+    },
     BALANCE_AND_FEE: {
       TITLE: 'Cluster Balances and Fees',
       SUB_TITLE: '',

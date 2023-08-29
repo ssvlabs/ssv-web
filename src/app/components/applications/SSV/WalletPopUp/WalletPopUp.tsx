@@ -17,7 +17,7 @@ const WalletPopUp = () => {
 
     const changeWallet = async () => {
         applicationStore.showWalletPopUp(false);
-        await walletStore.onboardSdk.walletSelect();
+        await walletStore.onboardSdk.connectWallet();
     };
 
     const closePopUp = () => {

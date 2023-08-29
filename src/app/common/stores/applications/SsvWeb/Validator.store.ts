@@ -485,7 +485,7 @@ class ValidatorStore extends BaseStore {
 
         const payload = this.createPayload(this.keyStorePublicKey,
             keysharePayload.operatorIds,
-            keysharePayload.shares,
+            keysharePayload.sharesData,
             `${totalCost}`,
             await clusterStore.getClusterData(clusterStore.getClusterHash(operators.map(item => item.id))));
 

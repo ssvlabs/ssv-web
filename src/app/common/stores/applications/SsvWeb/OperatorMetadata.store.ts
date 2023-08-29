@@ -12,7 +12,7 @@ import {
     MetadataEntity,
     FIELDS,
     isLink,
-    OPERATOR_NODE_TYPES, CountryType,
+    OPERATOR_NODE_TYPES, CountryType, checkDkgAddress,
 } from '~lib/utils/operatorMetadataHelper';
 
 export const fieldsToValidateSignature = [
@@ -26,6 +26,7 @@ export const fieldsToValidateSignature = [
     FIELD_KEYS.WEBSITE_URL,
     FIELD_KEYS.TWITTER_URL,
     FIELD_KEYS.LINKEDIN_URL,
+    FIELD_KEYS.DKG_ADDRESS,
     FIELD_KEYS.OPERATOR_IMAGE,
 ];
 
@@ -126,35 +127,77 @@ class OperatorMetadataStore extends BaseStore  {
 
     // validate metadata values
     validateOperatorMetaData() {
-        let metadataContainsError = false;
+        let metadataContainsError: boolean = false;
         for (const [metadataFieldName, fieldEntity] of this.metadata.entries()) {
-            const condition = FIELD_CONDITIONS[metadataFieldName];
-            if (condition && fieldEntity) {
-                if (metadataFieldName === FIELD_KEYS.OPERATOR_NAME && fieldEntity.value?.length === 0) {
-                    this.setErrorMessage(metadataFieldName, translations.OPERATOR_METADATA.REQUIRED_FIELD_ERROR);
-                    metadataContainsError = true;
-                } else if (fieldEntity.value?.length > condition.maxLength) {
-                    this.setErrorMessage(metadataFieldName, condition.errorMessage);
-                    metadataContainsError = true;
-                } else if (fieldEntity.value && !checkSpecialCharacters(fieldEntity.value)){
-                    this.setErrorMessage(metadataFieldName, translations.OPERATOR_METADATA.SPECIAL_CHARACTERS_ERROR);
-                    metadataContainsError = true;
-                } else {
-                    this.setErrorMessage(metadataFieldName, '');
-                }
-            } else if ([FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL].includes(metadataFieldName) && typeof fieldEntity.value === 'string') {
-                const res = isLink(fieldEntity.value);
-                if (fieldEntity.value && res){
-                    metadataContainsError = true;
-                    this.setErrorMessage(metadataFieldName, translations.OPERATOR_METADATA.LINK_ERROR);
-                } else {
-                    this.setErrorMessage(metadataFieldName, '');
-                }
-            }  else if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
+             if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
                 metadataContainsError = !!fieldEntity.errorMessage || metadataContainsError;
-            }
+             } else {
+                 metadataContainsError = this.processField(metadataFieldName, fieldEntity, metadataContainsError);
+             }
         }
         return metadataContainsError;
+    }
+
+    checkWithConditions(metadataFieldName: string, fieldEntity: MetadataEntity) {
+        const condition = FIELD_CONDITIONS[metadataFieldName];
+        const response = {
+            result: false,
+            errorMessage: '',
+        };
+        console.log(metadataFieldName);
+        if (condition) {
+            const innerConditions = [
+                {
+                    condition: metadataFieldName === FIELD_KEYS.OPERATOR_NAME && fieldEntity.value?.length === 0,
+                    response: translations.OPERATOR_METADATA.REQUIRED_FIELD_ERROR,
+                }, {
+                    condition: fieldEntity.value?.length > condition.maxLength,
+                    response: condition.errorMessage,
+                }, {
+                    condition: fieldEntity.value && !checkSpecialCharacters(fieldEntity.value),
+                    response: translations.OPERATOR_METADATA.SPECIAL_CHARACTERS_ERROR,
+                },
+            ];
+            for (let innerCondition of innerConditions) {
+                if (innerCondition.condition) {
+                    response.result = innerCondition.condition;
+                    response.errorMessage = innerCondition.response;
+                }
+            }
+        }
+        return response;
+    }
+
+    checkExceptionFields(fieldName: string, value: string): boolean {
+        return [FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(fieldName) && typeof value === 'string';
+    }
+
+    checkFieldValue(metadataFieldName: string, fieldValue: string) {
+        if (metadataFieldName === FIELD_KEYS.DKG_ADDRESS) {
+            return {
+                result: checkDkgAddress(fieldValue),
+                errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR,
+            };
+        } else {
+            return {
+                result: isLink(fieldValue),
+                errorMessage: translations.OPERATOR_METADATA.LINK_ERROR,
+            };
+        }
+    }
+
+   processField(metadataFieldName: string, fieldEntity: MetadataEntity, metadataContainsError: boolean) {
+        const exceptionField = this.checkExceptionFields(metadataFieldName, fieldEntity.value);
+        const { result, errorMessage } = exceptionField ? this.checkFieldValue(metadataFieldName, fieldEntity.value) : this.checkWithConditions(metadataFieldName, fieldEntity);
+
+        if (fieldEntity.value && result) {
+            this.setErrorMessage(metadataFieldName, errorMessage);
+            return true;
+        } else {
+            this.setErrorMessage(metadataFieldName, '');
+            return metadataContainsError;
+        }
+
     }
 }
 

@@ -142,6 +142,7 @@ const config = {
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
+    MORE_ABOUT_UPDATE_FEES: 'https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana',

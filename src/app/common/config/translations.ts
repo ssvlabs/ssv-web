@@ -21,6 +21,17 @@ const translations = {
         'There is no need to wait until your validator is active on the beacon chain, you can return to register your validator to our network while it\'s pending on the staking queue, once it gets activated, your selected operators will operate it immediately.',
       ],
     },
+    WITHDRAW: {
+      BUTTON: {
+        WITHDRAW: 'Withdraw',
+        WITHDRAW_ALL: 'Withdraw All',
+        LIQUIDATE_MY_CLUSTER: 'Liquidate my cluster',
+      },
+      CHECKBOX: {
+        LIQUIDATION_RISK:  'I understand the risks of having my cluster liquidated.',
+        LIQUIDATE_MY_CLUSTER: 'I understand that withdrawing this amount will liquidate my cluster.',
+      },
+    },
     BALANCE_AND_FEE: {
       TITLE: 'Cluster Balances and Fees',
       SUB_TITLE: '',
@@ -136,6 +147,7 @@ const translations = {
     REQUIRED_FIELD_ERROR: 'Required field',
     LINK_ERROR: 'Enter a valid link i.e - https://ssv.network/',
     SPECIAL_CHARACTERS_ERROR: 'Field accepts numbers, English characters and the following characters: _!$#\'-|',
+    DKG_ADDRESS_ERROR: 'DKG IP address or domain name with optional port',
     CONFIRMATION_CHANGE: {
       TITLE: 'Operator details has been updated',
       SUBTITLE: 'See your updated details on your operator page in the network Explorer',

@@ -156,4 +156,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     Section: {
         padding: '12px 32px 32px',
     },
+    UpdateFeeTooltipText: {
+        fontSize: 12,
+   },
+    LinkText: {
+        fontSize: 12,
+        cursor: 'pointer',
+        display: 'inline-block',
+        overflowWrap: 'break-word',
+        textDecoration: 'underline',
+        color: theme.colors.primaryBlue,
+    },
 }));

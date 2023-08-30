@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
@@ -15,6 +16,7 @@ import { Table } from '~app/components/common/Table/Table';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
+import LinkText from '~app/components/common/LinkText/LinkText';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -213,6 +215,22 @@ const SingleOperator = () => {
       ], [applicationStore.darkMode],
   );
 
+  const UpdateFeeButton = () => !Number(operator.fee) ?
+      <Tooltip
+          title={
+          <Typography className={classes.UpdateFeeTooltipText}>
+              Operators with a fee of 0 can not change their fee
+              <LinkText className={classes.LinkText} text={'read more on operator fees'} link={config.links.MORE_ABOUT_UPDATE_FEES}/>
+          </Typography>}
+          placement="top-end"
+          children={
+          <Grid item xs>
+            <SecondaryButton disable={!Number(operator.fee)} text={'Update Fee'} submitFunction={moveToUpdateFee} />
+          </Grid>}
+      />
+      :
+      <SecondaryButton disable={!Number(operator.fee)} text={'Update Fee'} submitFunction={moveToUpdateFee} />;
+
   return (
       <Grid container item style={{ gap: 26 }}>
         <NewWhiteWrapper
@@ -268,11 +286,7 @@ const SingleOperator = () => {
                       </Grid>
                     </Grid>,
                   ]}
-                  bottom={[
-                    <Grid item xs>
-                      <SecondaryButton text={'Update Fee'} submitFunction={moveToUpdateFee} />
-                    </Grid>,
-                  ]}
+                  bottom={[<UpdateFeeButton/>]}
                   bottomWrapper={classes.ButtonSection}
                   wrapperClass={classes.AnnualWrapper}
               />

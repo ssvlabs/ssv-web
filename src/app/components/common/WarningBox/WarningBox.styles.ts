@@ -1,10 +1,14 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
+type WarningBoxStylesProps = {
+  width: number | undefined,
+  height: number | undefined,
+};
+
 export const useStyles = makeStyles((theme: Theme) => ({
   Wrapper: {
     gap: 10,
-    height: 47,
     fontSize: 14,
     borderRadius: 2,
     fontWeight: 500,
@@ -14,6 +18,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     color: theme.colors.gray90,
     justifyContent: 'flex-start',
     border: `solid 1px ${theme.colors.warning}`,
+    margin: 'auto',
     backgroundColor: theme.colors.primaryWarningRegular,
+    width: (props: WarningBoxStylesProps) => props?.width && props.width,
+    height: (props: WarningBoxStylesProps) => props?.height ? props.height : 47,
   },
 }));

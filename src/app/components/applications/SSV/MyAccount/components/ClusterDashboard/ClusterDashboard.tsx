@@ -10,6 +10,7 @@ import { longStringShorten } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
 import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
+import Deprecation from '~app/components/common/Depreciation';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
@@ -127,6 +128,7 @@ const ClusterDashboard = () => {
 
   return (
     <Grid container className={classes.MyAccountWrapper}>
+      <Deprecation />
       <Grid container item className={classes.HeaderWrapper}>
         <ToggleDashboards title={'Validator Clusters'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>

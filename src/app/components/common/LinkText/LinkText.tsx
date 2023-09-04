@@ -12,10 +12,11 @@ type MessageDivProps = {
   onClick?: any;
   className?: string,
   routePush?: boolean;
+  extendClassName?: string
   withoutUnderline?: boolean
 };
 
-const LinkText = ({ style, text, onClick, link, className, routePush, withoutUnderline }: MessageDivProps) => {
+const LinkText = ({ style, text, onClick, link, className, routePush, withoutUnderline, extendClassName }: MessageDivProps) => {
   const navigate = useNavigate();
   const classes = useStyles({ withoutUnderline });
 
@@ -38,7 +39,7 @@ const LinkText = ({ style, text, onClick, link, className, routePush, withoutUnd
   };
 
   return (
-    <Typography style={style} className={className ?? classes.Link} onClick={openLink}>{text}</Typography>
+    <Typography style={style} className={`${className ?? classes.Link} ${extendClassName}`} onClick={openLink}>{text}</Typography>
   );
 };
 

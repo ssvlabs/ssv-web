@@ -7,6 +7,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import Deprecation from '~app/components/common/Depreciation';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -120,6 +121,7 @@ const OperatorDashboard = () => {
 
   return (
     <Grid container className={classes.MyAccountWrapper}>
+      <Deprecation/>
       <Grid container item className={classes.HeaderWrapper}>
         <ToggleDashboards title={'Operators'} type={'operator'} />
         <Grid container item xs className={classes.HeaderButtonsWrapper}>

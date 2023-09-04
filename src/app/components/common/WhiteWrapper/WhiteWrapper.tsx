@@ -7,13 +7,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv';
+import Deprecation from '~app/components/common/Depreciation';
 import GoogleTagManager from '~lib/analytics/GoogleTagManager';
 import BackNavigation from '~app/components/common/BackNavigation';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styles';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from './WhiteWrapper.styles';
 
 type Props = {
   header: any,
@@ -140,6 +141,7 @@ const WhiteWrapper = (props: Props) => {
           </Grid>
         )}
         <Grid item xs={12} className={classes.ChildWrapper}>
+          <Deprecation />
           {children}
         </Grid>
         <Dialog

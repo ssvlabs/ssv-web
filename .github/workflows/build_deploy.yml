@@ -104,7 +104,7 @@ jobs:
         env:
           EXPLORER_VERSION: "v3"
           EXPLORER_NETWORK: "prater"
-          EXPLORER_URL: "https://explorer-v3.ssv.network"
+          EXPLORER_URL: "https://explorer.ssv.network"
           BLOX_INFRA_API: 'https://api.bloxstaking.com'
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}

@@ -585,9 +585,10 @@ class ValidatorStore extends BaseStore {
       const parsedFile = JSON.parse(fileJson);
       const { payload, data } = parsedFile;
       const operatorPublicKeys = data.operators.map((operator: any) => operator.publicKey);
-      this.keySharePayload = payload;
-      this.keySharePublicKey = payload.publicKey;
-      const keyShareOperators = payload.operatorIds.sort();
+      // IO1-3393: cleanup when newest version will be supported only
+      this.keySharePayload = payload.readable || payload;
+      this.keySharePublicKey = this.keySharePayload.publicKey;
+      const keyShareOperators = this.keySharePayload.operatorIds.sort();
       if (this.keySharePublicKey.length !== 98) {
         return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
       }

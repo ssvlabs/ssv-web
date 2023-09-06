@@ -53,7 +53,7 @@ export const FIELD_CONDITIONS: Record<string, FieldCondition> = {
     [FIELD_KEYS.SETUP_PROVIDER]: { maxLength: 50, errorMessage: 'Cloud provider up to 50 characters' },
 };
 
-export const exceptions: Record<string, string> =   {
+export const exceptions: Record<string, string> = {
     operatorName: 'name',
     eth1NodeClient: 'eth1_node_client',
     eth2NodeClient: 'eth2_node_client',
@@ -98,7 +98,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         value: '',
         errorMessage: '',
         placeholderText: 'Aestus, Agnostic Gnosis, Blocknative...',
-        options: ['Aestus', 'Agnostic Gnosis', 'Blocknative', 'bloXroute Ethical', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
+        options: ['Aestus', 'Agnostic Gnosis', 'Blocknative', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
     },
     [FIELD_KEYS.LOCATION]: {
         label: 'Server Geolocation',
@@ -157,7 +157,7 @@ export const photoValidation = (file: any, callback: Function) => {
     }
     const reader = new FileReader();
     reader.onloadend = function (e) {
-        if (e?.target?.readyState === FileReader.DONE ) {
+        if (e?.target?.readyState === FileReader.DONE) {
             const base64ImageString = e.target.result;
             let img = new Image();
             img.onload = () => {

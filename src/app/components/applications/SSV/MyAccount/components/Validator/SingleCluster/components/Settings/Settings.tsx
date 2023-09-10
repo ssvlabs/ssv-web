@@ -81,12 +81,12 @@ const Settings = ({ validator }: { validator: any }) => {
         <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>
         {showSettings && <Grid item className={classes.SettingsWrapper}>
           <Grid ref={settingsRef} container item className={classes.Settings}>
-            <Grid container item className={classes.Button} onClick={console.log} style={{ justifyContent: 'space-between' }}>
+            <Grid  container item className={classes.Button} onClick={() => openLink(config.links.UPDATE_OPERATORS_LINK)} style={{ justifyContent: 'space-between' }}>
               <Grid container item xs style={{ gap: 8 }}>
                 <Grid item className={classes.ChangeOperatorsImage} />
                 <Typography>Change Operators</Typography>
               </Grid>
-              <Grid onClick={() => openLink(config.links.UPDATE_OPERATORS_LINK)} className={classes.ChangeOperatorsLinkImage} />
+              <Grid className={classes.ChangeOperatorsLinkImage} />
             </Grid>
             <Grid container item className={classes.Button} onClick={moveToRemoveValidator}>
               <Grid className={classes.RemoveValidatorImage} />

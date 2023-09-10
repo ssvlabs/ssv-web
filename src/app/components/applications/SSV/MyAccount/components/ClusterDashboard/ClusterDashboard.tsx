@@ -152,7 +152,7 @@ const ClusterDashboard = () => {
           }}
           rowsAction={openSingleCluster}
           columns={[
-            { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid> },
+            { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid> },
             { name: 'Operators' },
             { name: 'Validators' },
             { name: 'Est Operational Runway' },

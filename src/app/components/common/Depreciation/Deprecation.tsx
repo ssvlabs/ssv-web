@@ -16,7 +16,7 @@ const Deprecation = () => {
                     Jato-V2 Testnet is now live! Please take note that Jato-V1 is scheduled to be deprecated on
                     September 18th. <LinkText link={'https://ssv.network/blog/technology/migrating-to-Jato-v2'}
                                               extendClassName={classes.DeprecationText} text={'Read more'}/> to discover
-                    how to migrate to the new testnet and for further details. <LinkText link={'beta.app.ssv.network'}
+                    how to migrate to the new testnet and for further details. <LinkText link={'https://beta.app.ssv.network'}
                                                                                          extendClassName={classes.DeprecationText}
                                                                                          text={'Try out Jato-v2.'}/>
                 </Typography>}

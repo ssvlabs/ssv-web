@@ -46,7 +46,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundImage: 'url(/images/operator_default_background/circle_light.png)',
+    backgroundImage: (props: any) => `url(${props?.operatorLogo || '/images/operator_default_background/circle_light.png'})`,
   },
   TooltipCustomSize: {
     width: '10px',

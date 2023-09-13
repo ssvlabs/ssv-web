@@ -9,7 +9,8 @@ type OperatorCardProps = {
 };
 
 const OperatorCard = ({ operator, classExtend }: OperatorCardProps) => {
-    const classes = useStyles();
+    const classes = useStyles({ operatorLogo: operator.logo });
+
     return (
         <Grid container className={`${classes.OperatorPopUp} ${classExtend && classExtend}`}>
             <Grid item className={classes.FullImageOperator} />

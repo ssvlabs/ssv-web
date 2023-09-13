@@ -1677,6 +1677,11 @@ export const ABI_VERSION = {
     [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'constructor',
+      },
+      {
+        'inputs': [],
         'name': 'ApprovalNotWithinTimeframe',
         'type': 'error',
       },
@@ -1723,6 +1728,11 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'FeeIncreaseNotAllowed',
+        'type': 'error',
+      },
+      {
+        'inputs': [],
+        'name': 'FeeTooHigh',
         'type': 'error',
       },
       {
@@ -2241,7 +2251,7 @@ export const ABI_VERSION = {
             'type': 'uint64',
           },
         ],
-        'name': 'OperatorFeeCancellationDeclared',
+        'name': 'OperatorFeeDeclarationCancelled',
         'type': 'event',
       },
       {
@@ -2317,6 +2327,19 @@ export const ABI_VERSION = {
           },
         ],
         'name': 'OperatorFeeIncreaseLimitUpdated',
+        'type': 'event',
+      },
+      {
+        'anonymous': false,
+        'inputs': [
+          {
+            'indexed': false,
+            'internalType': 'uint64',
+            'name': 'maxFee',
+            'type': 'uint64',
+          },
+        ],
+        'name': 'OperatorMaximumFeeUpdated',
         'type': 'event',
       },
       {
@@ -2595,7 +2618,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {
@@ -2660,27 +2683,16 @@ export const ABI_VERSION = {
         'type': 'function',
       },
       {
-        'inputs': [
-          {
-            'internalType': 'address',
-            'name': 'userAddress',
-            'type': 'address',
-          },
-        ],
-        'name': 'getRegisterAuth',
+        'inputs': [],
+        'name': 'getVersion',
         'outputs': [
           {
-            'internalType': 'bool',
-            'name': 'authOperators',
-            'type': 'bool',
-          },
-          {
-            'internalType': 'bool',
-            'name': 'authValidators',
-            'type': 'bool',
+            'internalType': 'string',
+            'name': 'version',
+            'type': 'string',
           },
         ],
-        'stateMutability': 'view',
+        'stateMutability': 'pure',
         'type': 'function',
       },
       {
@@ -2750,7 +2762,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {
@@ -3092,29 +3104,6 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'userAddress',
-            'type': 'address',
-          },
-          {
-            'internalType': 'bool',
-            'name': 'authOperator',
-            'type': 'bool',
-          },
-          {
-            'internalType': 'bool',
-            'name': 'authValidator',
-            'type': 'bool',
-          },
-        ],
-        'name': 'setRegisterAuth',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'address',
             'name': 'newOwner',
             'type': 'address',
           },
@@ -3159,6 +3148,19 @@ export const ABI_VERSION = {
           },
         ],
         'name': 'updateLiquidationThresholdPeriod',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'uint64',
+            'name': 'maxFee',
+            'type': 'uint64',
+          },
+        ],
+        'name': 'updateMaximumOperatorFee',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function',
@@ -3304,6 +3306,19 @@ export const ABI_VERSION = {
       {
         'inputs': [
           {
+            'internalType': 'uint64',
+            'name': 'operatorId',
+            'type': 'uint64',
+          },
+        ],
+        'name': 'withdrawAllOperatorEarnings',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
             'internalType': 'uint256',
             'name': 'amount',
             'type': 'uint256',
@@ -3325,19 +3340,6 @@ export const ABI_VERSION = {
             'internalType': 'uint256',
             'name': 'amount',
             'type': 'uint256',
-          },
-        ],
-        'name': 'withdrawOperatorEarnings',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      },
-      {
-        'inputs': [
-          {
-            'internalType': 'uint64',
-            'name': 'operatorId',
-            'type': 'uint64',
           },
         ],
         'name': 'withdrawOperatorEarnings',
@@ -4245,6 +4247,11 @@ export const ABI_VERSION = {
       },
       {
         'inputs': [],
+        'name': 'FeeTooHigh',
+        'type': 'error',
+      },
+      {
+        'inputs': [],
         'name': 'FeeTooLow',
         'type': 'error',
       },
@@ -4445,7 +4452,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {
@@ -4501,7 +4508,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {
@@ -4560,6 +4567,19 @@ export const ABI_VERSION = {
           {
             'internalType': 'uint64',
             'name': '',
+            'type': 'uint64',
+          },
+        ],
+        'stateMutability': 'view',
+        'type': 'function',
+      },
+      {
+        'inputs': [],
+        'name': 'getMaximumOperatorFee',
+        'outputs': [
+          {
+            'internalType': 'uint64',
+            'name': 'operatorMaxFee',
             'type': 'uint64',
           },
         ],
@@ -4660,6 +4680,11 @@ export const ABI_VERSION = {
         'name': 'getOperatorDeclaredFee',
         'outputs': [
           {
+            'internalType': 'bool',
+            'name': '',
+            'type': 'bool',
+          },
+          {
             'internalType': 'uint256',
             'name': '',
             'type': 'uint256',
@@ -4751,7 +4776,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {
@@ -4814,7 +4839,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {
@@ -4870,7 +4895,7 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'internalType': 'address',
-            'name': 'owner',
+            'name': 'clusterOwner',
             'type': 'address',
           },
           {

@@ -14,6 +14,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 
 export interface NewOperator {
   id: string,
@@ -254,9 +255,15 @@ class OperatorStore extends BaseStore {
     try {
       this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
       const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
-      this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
-      this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
-      this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+      if (response['0'] && getCurrentNetwork().networkId === NETWORKS.GOERLI) {
+        this.operatorFutureFee = response['1'];
+        this.operatorApprovalBeginTime = response['2'];
+        this.operatorApprovalEndTime = response['3'];
+      } else {
+        this.operatorFutureFee = response['0'] === '0' ? null : response['0'];
+        this.operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
+        this.operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+      }
     } catch (e: any) {
       console.error(`Failed to get operator fee details from the contract: ${e.message}`);
       this.clearOperatorFeeInfo();

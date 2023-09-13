@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
+import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
@@ -19,7 +20,7 @@ const TermsAndConditionsCheckbox = ({ children } : TermsAndConditionsType) => {
                 grayBackGround
                 onClickCallBack={checkedConditionHandler}
                 text={<Grid>I have read and agreed to the <LinkText text={'terms and conditions'}
-                                                                    link={'https://ssv.network/terms-of-use/'}/></Grid>}
+                                                                    link={config.links.TERMS_OF_USE_LINK}/></Grid>}
             />}
             {children}
         </Grid>

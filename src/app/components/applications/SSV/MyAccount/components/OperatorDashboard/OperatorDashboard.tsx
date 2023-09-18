@@ -23,7 +23,7 @@ import OperatorDetails
 
 const OperatorDashboard = () => {
   const stores = useStores();
-  const classes = useStyles();
+  const classes = useStyles({});
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;

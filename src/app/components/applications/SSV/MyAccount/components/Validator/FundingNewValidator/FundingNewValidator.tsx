@@ -37,7 +37,6 @@ const FundingNewValidator = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
-  const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId;
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
@@ -45,6 +44,7 @@ const FundingNewValidator = () => {
   });
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
+  const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1;
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
@@ -189,7 +189,7 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={disableBtnCondition || showErrorMessage} text={'Next'}
+                    <PrimaryButton disable={disableBtnCondition} text={'Next'}
                                    submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>

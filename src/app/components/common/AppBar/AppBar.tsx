@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import AppLinksToggle from '~app/components/common/AppLinksToggle';
 import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
@@ -15,6 +16,7 @@ type Button = {
   label: string;
   onClick: () => void;
   blueColor?: boolean;
+  options?: any[],
 };
 
 const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundColor?: string }) => {
@@ -103,16 +105,20 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         </Grid>
         <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }}>
           {buttons?.map((button, index) => {
-            return (
-                <Grid
-                    item
-                    key={index}
-                    onClick={button.onClick}
-                    className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
-                >
-                  {button.label}
-                </Grid>
-            );
+              if (button?.options && button?.options?.length > 0) {
+                  return <AppLinksToggle label={'...'} options={button?.options?.map((option: any) => ({ label: option.label, link: option.link, bottomLine: option.bottomLine || false }))} />;
+              } else {
+                  return (
+                      <Grid
+                          item
+                          key={index}
+                          onClick={button.onClick}
+                          className={`${classes.Button} ${button.blueColor && hasOperatorsOrValidators ? classes.BlueLink : ''}`}
+                      >
+                          {button.label}
+                      </Grid>
+                  );
+              }
           })}
            {uploadKeyshareUnsafeMode && <Grid
             item

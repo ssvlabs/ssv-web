@@ -11,6 +11,7 @@ import LinkText from '~app/components/common/LinkText';
 import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
+import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -24,7 +25,7 @@ import ClusterWarnings from '~app/components/applications/SSV/MyAccount/componen
 
 const ClusterDashboard = () => {
   const stores = useStores();
-  const classes = useStyles();
+  const classes = useStyles({});
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
@@ -85,7 +86,7 @@ const ClusterDashboard = () => {
               {(hoveredGrid === clusterStore.getClusterHash(cluster.operators) + operator.id) && (
                   <OperatorCard operator={operator} />
               )}
-              <Grid item className={classes.CircleImageOperator} />
+              <OperatorCircleImage operatorLogo={operator.logo} />
             </Grid>;
           })}
         </Grid>,
@@ -152,7 +153,7 @@ const ClusterDashboard = () => {
           }}
           rowsAction={openSingleCluster}
           columns={[
-            { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={'asdas'}/></Grid> },
+            { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid> },
             { name: 'Operators' },
             { name: 'Validators' },
             { name: 'Est Operational Runway' },

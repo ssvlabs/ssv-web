@@ -159,7 +159,8 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       const hasValidators = operator.validators_count !== 0;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
       const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
-      const disabled = reachedMaxValidators || isDeleted;
+      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+      const disabled = reachedMaxValidators || isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;
 
@@ -172,7 +173,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
               }}
           >
             <StyledCell style={{ paddingLeft: 20, width: 60 }}>
-              <Checkbox disable={disableCheckBoxes && !isSelected} grayBackGround text={''} isChecked={isSelected}/>
+              <Checkbox disable={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''} isChecked={isSelected}/>
             </StyledCell>
             <StyledCell>
               <OperatorDetails withoutExplorer operator={operator}/>
@@ -202,7 +203,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
               <Grid container>
                 <Grid item
                       className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
-                {disabled && (
+                {disabled && !isPrivateOperator && (
                     <Grid item style={{ alignSelf: 'center' }}>
                       <ToolTip text={'Operator reached  maximum amount of validators'}/>
                     </Grid>

@@ -33,7 +33,7 @@ const OperatorAccessSettings = () => {
     const [addressError, setAddressError] = useState(INITIAL_ERROR_STATE);
     const [isPermissionedOperator, setIsPermissionedOperator] = useState(isOperatorPermissioned);
     const isFirstUsage = !operator?.address_whitelist && address === config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
-    const btnDisabledCondition = addressError.shouldDisplay || address.toString() === operator.address_whitelist?.toString() || !address || isFirstUsage;
+    const btnDisabledCondition = addressError.shouldDisplay || !address || isFirstUsage || address.toString() === operator.address_whitelist?.toString();
     const classes = useStyles({ isPermissionedOperator });
 
     const changeAddressHandler = (e: any) => {

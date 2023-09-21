@@ -135,6 +135,7 @@ class OperatorStore extends BaseStore {
       validatorsPerOperatorLimit: action.bound,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
+      updateOperatorAddressWhitelist: observable,
       newOperatorRegisterSuccessfully: observable,
     });
   }
@@ -148,7 +149,6 @@ class OperatorStore extends BaseStore {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-
     return Promise.all([
       myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
@@ -268,6 +268,56 @@ class OperatorStore extends BaseStore {
       console.error(`Failed to get operator fee details from the contract: ${e.message}`);
       this.clearOperatorFeeInfo();
     }
+  }
+
+  /**
+   * update operator address whitelist
+   */
+  async updateOperatorAddressWhitelist(operatorId: string, address: string) {
+    return new Promise(async (resolve) => {
+      try {
+        const walletStore: WalletStore = this.getStore('Wallet');
+        const applicationStore: ApplicationStore = this.getStore('Application');
+        const gasLimit = getFixedGasLimit(GasGroup.DECLARE_OPERATOR_FEE);
+        const contractInstance = walletStore.setterContract;
+        await contractInstance.methods.setOperatorWhitelist(operatorId, address).send({ from: walletStore.accountAddress, gas: gasLimit })
+            .on('receipt', async (receipt: any) => {
+              const event: boolean = receipt.hasOwnProperty('events');
+              if (event) {
+                let iterations = 0;
+                while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                    await this.refreshOperatorsAndClusters(resolve, true);
+                    break;
+                  }
+                  iterations += 1;
+                  const operator = await Operator.getInstance().getOperator(operatorId);
+                  const changed = operator.address_whitelist.toString() === address.toString();
+                  if (changed) {
+                    await this.refreshOperatorsAndClusters(resolve, true);
+                    break;
+                  } else {
+                    console.log('Operator is still not updated in API..');
+                  }
+                }
+              }
+            })
+            .on('transactionHash', (txHash: string) => {
+              applicationStore.txHash = txHash;
+              applicationStore.showTransactionPendingPopUp(true);
+            })
+            .on('error', (error: any) => {
+              console.debug('Contract Error', error.message);
+              applicationStore.setIsLoading(false);
+              applicationStore.showTransactionPendingPopUp(false);
+              resolve(false);
+            });
+      } catch (e: any) {
+        console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
+        console.log(e.message);
+        resolve(false);
+      }
+    });
   }
 
   /**

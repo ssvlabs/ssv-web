@@ -155,6 +155,13 @@ const translations = {
       RETURN_TO_MY_ACCOUNT: 'Return to My Account',
     },
   },
+  OPERATOR_WHITELIST_ADDRESS: {
+    TITLE: 'Access setting',
+    INPUT_LABEL: 'Authorized Address',
+    INPUT_LABEL_TOOLTIP: 'Any Ethereum address, contract or wallet. Can be changed in the future',
+    SECOND_TITLE: 'Permissioned Operator',
+    TEXT: 'Enabling the permissioned operator setting will only allow the authorized owner address to register validators to your operator.',
+  },
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',
   },

@@ -14,6 +14,7 @@ import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
+import { equalsAddresses } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -159,7 +160,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       const hasValidators = operator.validators_count !== 0;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
       const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
-      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress);
       const disabled = reachedMaxValidators || isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;

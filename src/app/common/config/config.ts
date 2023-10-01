@@ -43,6 +43,7 @@ const config = {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
           META_DATA: '/my-account/operator/edit-metadata',
+          ACCESS_SETTINGS: '/my-account/operator/permission-change',
           META_DATA_CONFIRMATION: '/my-account/operator/edit-metadata/confirmation',
           REMOVE: {
             ROOT: '/my-account/operator/remove',
@@ -166,6 +167,7 @@ const config = {
     NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
     MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
+    DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000',
   },
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,

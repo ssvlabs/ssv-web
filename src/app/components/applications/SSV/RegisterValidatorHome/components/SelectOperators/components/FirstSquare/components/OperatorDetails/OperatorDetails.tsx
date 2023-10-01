@@ -26,6 +26,7 @@ const OperatorDetails = (props: Props) => {
   const notificationsStore: NotificationsStore = stores.Notifications;
   const classes = useStyles({ isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
   let operatorName = operator?.name;
+  const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
 
   const copyId = () => {
     navigator.clipboard.writeText(operator?.id);
@@ -43,7 +44,11 @@ const OperatorDetails = (props: Props) => {
 
   return (
       <Grid container className={classes.Wrapper}>
-        <Grid item className={classes.OperatorLogo}/>
+        <Grid item className={classes.OperatorLogo}>
+          {isPrivateOperator && <Grid className={classes.PrivateOperatorWrapper}>
+            <Grid className={classes.PrivateOperatorLockIcon}/>
+          </Grid>}
+        </Grid>
         <Grid item className={classes.TextWrapper}>
           <Grid item className={classes.Name}>
             {operatorName.length > 12 ? <AnchorTooltip title={operatorName} placement={'top'}>

@@ -11,11 +11,10 @@ type ToggleOptionModel = {
 };
 
 type ToggleSelectProps = {
-    label: string,
     options: ToggleOptionModel[]
 };
 
-const AppLinksToggle = ({ label, options }: ToggleSelectProps) => {
+const AppLinksToggle = ({ options }: ToggleSelectProps) => {
     const classes = useStyles({});
     const optionsRef = useRef(null);
     const [showOptions, setShowOptions] = useState(false);
@@ -40,7 +39,7 @@ const AppLinksToggle = ({ label, options }: ToggleSelectProps) => {
     return (
         <Grid className={classes.ToggleWrapper} onClick={switchShowOptions}>
             <Grid className={classes.DotsGroupWrapper}>
-              {label}
+                <Grid className={classes.DotsGroup}/>
             </Grid>
             {showOptions && <Grid item className={classes.OptionsWrapper}>
                 <Grid ref={optionsRef}  container item className={classes.Options}>

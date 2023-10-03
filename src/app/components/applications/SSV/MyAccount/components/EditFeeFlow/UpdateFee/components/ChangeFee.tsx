@@ -21,7 +21,7 @@ const ChangeFee = ({ newFee, onChangeHandler, error, nextIsDisabled, onNextHandl
             withoutBorderBottom={true}
             body={[
                 <Grid container className={classes.ChangeFeeWrapper}>
-                    <Typography fontSize={16}>Enter your new operator annual fee.</Typography>
+                    <Typography className={classes.ChangeFeeText} fontSize={16}>Enter your new operator annual fee.</Typography>
                     <ConversionInput value={newFee} onChange={onChangeHandler} error={error} setCurrency={setCurrency}/>
                     <TermsAndConditionsCheckbox>
                         <PrimaryButton disable={nextIsDisabled || !checkedCondition} text={'Next'}

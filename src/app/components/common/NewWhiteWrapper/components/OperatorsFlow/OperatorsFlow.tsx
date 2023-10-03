@@ -64,6 +64,8 @@ const OperatorsFlow = (props: Props) => {
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 
+  const goToAccessSettings = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS);
+
   const openExplorer = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
@@ -111,10 +113,10 @@ const OperatorsFlow = (props: Props) => {
           }}/>
           {showSettings && <Grid item className={classes.SettingsWrapper}>
             <Grid ref={settingsRef} container item className={classes.Settings}>
-              {/* <Grid container item className={classes.Button} onClick={onClick}>
+              <Grid container item className={classes.Button} onClick={goToAccessSettings}>
                 <Grid className={classes.SettingsImage}/>
                 <Typography>Access setting</Typography>
-              </Grid> */}
+              </Grid>
               <Grid container item className={classes.Button} onClick={moveToMetaData}>
                 <Grid className={classes.MetadataImage}/>
                 <Typography>Edit Details</Typography>

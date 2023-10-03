@@ -386,4 +386,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         padding: 0,
         marginBottom: 40,
     },
+    ChangeFeeText: {
+        color: theme.colors.gray80,
+    },
 }));

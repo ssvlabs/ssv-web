@@ -42,7 +42,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
             backgroundColor: (props: any) => props.errorButton ? '' : theme.colors.tint80,
         },
         '&:focus': {
-            backgroundColor: theme.colors.tint80,
+            backgroundColor: (props: any) => props.errorButton ? '' : theme.colors.tint80,
         },
         '&:disabled': {
             color: (props: any) => props.errorButton ? theme.colors.primaryError : theme.colors.tint20,

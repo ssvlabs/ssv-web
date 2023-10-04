@@ -1,3 +1,5 @@
+import { web3 } from 'ssv-keys/dist/tsc/src/lib/helpers/web3.helper';
+
 export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
   if (!value) return '';
   if (replacements) {
@@ -26,3 +28,5 @@ export const checkSpecialCharacters = (value: string) => {
     const linkRegex = /^[A-Za-z0-9 _!$#’'|-]+$/;
     return linkRegex.test(value);
 };
+
+export const equalsAddresses = (a: string, b: string): boolean => web3.utils.toChecksumAddress(a) === web3.utils.toChecksumAddress(b);

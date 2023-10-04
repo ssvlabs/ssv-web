@@ -32,7 +32,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontSize: '14px !important',
         fontWeight: '600 !important',
         lineHeight: '1.25 !important',
-        color: `${theme.colors.gray60} !important`,
+        color: `${theme.darkMode ? theme.colors.gray60 : theme.colors.gray80} !important`,
     },
     Button: {
         gap: 12,
@@ -63,7 +63,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/dots_group.svg)',
+        backgroundImage: `url(/images/dots/dots_${theme.darkMode ? 'dark' : 'light'}.svg)`,
     },
     DotsGroupWrapper: {
         height: '100%',

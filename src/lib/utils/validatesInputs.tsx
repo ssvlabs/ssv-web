@@ -26,11 +26,13 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
     callback(response);
 };
 
-export const validateAddressInput = (value: string, callback: React.Dispatch<ErrorObject>): void => {
+export const validateAddressInput = (value: string, callback: React.Dispatch<ErrorObject>, skipEmpty: boolean = false): void => {
     const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
     const response = { shouldDisplay: true, errorMessage: '' };
     const regx = /^[A-Za-z0-9]+$/;
-    if (value.length === 0) {
+    if (value.length === 0 && skipEmpty) {
+        response.shouldDisplay = false;
+    } else if (value.length === 0) {
         response.errorMessage = 'Please enter an operator address.';
     } else if ((value.length !== 42 && value.startsWith('0x')) || (value.length !== 40 && !value.startsWith('0x')) || (!walletStore.web3.utils.isAddress(value))) {
         response.errorMessage = 'Operator address must be a valid address format.';

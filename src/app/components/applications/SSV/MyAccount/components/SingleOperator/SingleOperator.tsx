@@ -35,7 +35,6 @@ const SingleOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const beaconchaBaseUrl = ENV().BEACONCHA_URL;
-  // const [operator, setOperator] = useState(null);
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
   const ssvStore: SsvStore = stores.SSV;

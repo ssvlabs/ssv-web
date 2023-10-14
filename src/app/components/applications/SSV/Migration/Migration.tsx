@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ConnectWallet from '~app/components/applications/SSV/Migration/ConnectWallet/ConnectWallet';
+import UploadMigrationFile from '~app/components/applications/SSV/Migration/UploadMigrationFile/UploadMigrationFile';
 
 
 const STEPS: Record<string, number> = {
@@ -9,18 +10,27 @@ const STEPS: Record<string, number> = {
 };
 
 const Migration = () => {
-    const [currentStep, setCurrentStep] = useState(STEPS.UPLOAD_MIGRATION_FILE);
-    setCurrentStep;
+    const [currentStep, setCurrentStep] = useState(STEPS.CONNECT_WALLET);
+
+    const nextStep = () => {
+        if (currentStep === STEPS.CONNECT_WALLET) {
+            setCurrentStep(STEPS.UPLOAD_MIGRATION_FILE);
+        }
+        else {
+            setCurrentStep(STEPS.CONNECT_WALLET);
+        }
+    };
+
     const components = {
         [STEPS.CONNECT_WALLET]: ConnectWallet,
-        [STEPS.UPLOAD_MIGRATION_FILE]: ConnectWallet,
+        [STEPS.UPLOAD_MIGRATION_FILE]: UploadMigrationFile,
         [STEPS.REGISTER_VALIDATORS]: ConnectWallet,
     };
 
     const Component = components[currentStep];
 
     return (
-        <Component />
+        <Component nextStep={nextStep} />
     );
 };
 

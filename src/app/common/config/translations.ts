@@ -80,6 +80,10 @@ const translations = {
       CATCH_ERROR_RESPONSE: {
         name: 'ERROR', errorMessage: 'file data incorrect, check operator data and re-generate keyshares.json',
       },
+      INCORRECT_OWNER_ADDRESS_ERROR: {
+        name: 'ERROR', errorMessage: 'Wrong wallet connected', subErrorMessage: 'please connect to wallet',
+      },
+      INVALID_OPERATOR_DETAILS: { message: 'Invalid operator details', subErrorMessage: 'Please contact support' },
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',

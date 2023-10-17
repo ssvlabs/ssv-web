@@ -11,7 +11,7 @@ const SelectOperators = ({ editPage }: { editPage?: boolean }) => {
     const stores = useStores();
     const operatorStore: OperatorStore = stores.Operator;
     const classes = useStyles({ editPage });
-    const [clusterSize, setClusterSize] = useState(4);
+    const [clusterSize, setClusterSize] = useState(operatorStore.clusterSize);
 
     const changeClusterSizeHandler = (size: number) => {
         operatorStore.setClusterSize(size);

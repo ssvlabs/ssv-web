@@ -122,29 +122,32 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
         <Grid container>
           <HeaderSubHeader title={'Selected Operators'} />
           <Grid container item className={classes.BoxesWrapper}>
-            {clusterBox.map((index: number) => {
-              if (operatorStore.selectedOperators[index]) {
-                const operator = operatorStore.selectedOperators[index];
+            <Grid className={classes.OperatorBoxesWrapper}>
+              {clusterBox.map((index: number) => {
+                if (operatorStore.selectedOperators[index]) {
+                  const operator = operatorStore.selectedOperators[index];
+                  return (
+                      <Grid key={index} container className={classes.SelectedOperatorBox}>
+                        <Grid className={classes.DeleteOperator} onClick={() => {
+                          removeOperator(index);
+                        }}><Grid className={classes.whiteLine} /></Grid>
+                        <Grid item>
+                          <OperatorDetails operator={operator} />
+                        </Grid>
+                        <Grid item>
+                          <SsvAndSubTitle
+                              ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} />
+                        </Grid>
+                      </Grid>
+                  );
+                }
                 return (
-                  <Grid key={index} container className={classes.SelectedOperatorBox}>
-                    <Grid className={classes.DeleteOperator} onClick={() => {
-                      removeOperator(index);
-                    }}><Grid className={classes.whiteLine} /></Grid>
-                    <Grid item>
-                      <OperatorDetails operator={operator} />
-                    </Grid>
-                    <Grid item>
-                      <SsvAndSubTitle
-                        ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} />
-                    </Grid>
-                  </Grid>
+                    <Grid key={index} item className={classes.BoxPlaceHolder}>Select Operator
+                      0{index}</Grid>
                 );
-              }
-              return (
-                <Grid key={index} item className={classes.BoxPlaceHolder}>Select Operator
-                  0{index}</Grid>
-              );
-            })}
+              })}
+            </Grid>
+
           </Grid>
           {editPage ? (
             <Grid container item xs={12} className={classes.AlertMessage}>

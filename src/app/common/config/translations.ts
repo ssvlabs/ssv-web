@@ -94,7 +94,7 @@ const translations = {
       DESCRIPTION: 'Your validator is currently active on beacon chain:',
     },
     SELECT_OPERATORS: {
-      TITLE: 'Pick the cluster of network operators to run you validator',
+      TITLE: 'Pick the cluster of network operators to run your validator',
       DESCRIPTION: 'Pick the cluster of network operators to run your validator.',
     },
     SUCCESS: {

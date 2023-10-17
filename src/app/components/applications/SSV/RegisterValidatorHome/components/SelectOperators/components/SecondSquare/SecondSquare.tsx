@@ -22,8 +22,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
-const SecondSquare = ({ editPage }: { editPage: boolean }) => {
-  const boxes = [1, 2, 3, 4];
+const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
   const classes = useStyles({ editPage });
   const navigate = useNavigate();
@@ -123,7 +122,7 @@ const SecondSquare = ({ editPage }: { editPage: boolean }) => {
         <Grid container>
           <HeaderSubHeader title={'Selected Operators'} />
           <Grid container item className={classes.BoxesWrapper}>
-            {boxes.map((index: number) => {
+            {clusterBox.map((index: number) => {
               if (operatorStore.selectedOperators[index]) {
                 const operator = operatorStore.selectedOperators[index];
                 return (

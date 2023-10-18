@@ -18,13 +18,15 @@ const SelectOperators = ({ editPage }: { editPage?: boolean }) => {
         setClusterSize(size);
     };
 
-    const boxes: Record<number, number[]> = {
-        [4]: [1, 2, 3, 4],
-        [7]: [1, 2, 3, 4, 5, 6, 7],
-        [10]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [13]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-    };
+    const generateRange = (to: number) => Array.from({ length: to }, (_, i) => i + 1);
 
+    const boxes: Record<number, number[]> = {
+        4: generateRange(4),
+        7: generateRange(7),
+        10: generateRange(10),
+        13: generateRange(13),
+    };
+    console.log(boxes);
     return (
       <Grid container className={classes.Container}>
         <Grid item className={classes.FirstSquare}>

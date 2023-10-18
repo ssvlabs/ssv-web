@@ -34,6 +34,11 @@ export const useStyles = makeStyles((theme: Theme) => ({
       flexDirection: 'column',
     },
   },
+  OperatorBoxesWrapper: {
+    width: '100%',
+    maxHeight: 460,
+    overflowY: 'scroll',
+  },
   SelectedOperatorBox: {
     width: 360,
     height: 97,

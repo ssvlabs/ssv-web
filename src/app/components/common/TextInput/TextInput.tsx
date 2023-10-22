@@ -1,6 +1,7 @@
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useStyles } from './TextInput.styles';
+import InputSideButton from '~app/components/common/Button/InputSideButton/InputSideButton';
 
 type InputProps = {
     icon?: any,
@@ -19,6 +20,11 @@ type InputProps = {
     onChangeCallback?: any,
     extendInputClass?: string,
     isTextArea?: boolean,
+    sideButton?: boolean,
+    sideButtonClicked?: boolean,
+    sideButtonLabel?: string,
+    sideButtonAction?: Function,
+    sideButtonDisabled?: boolean,
 };
 
 const TextInput = ({ icon,
@@ -36,7 +42,12 @@ const TextInput = ({ icon,
                      onBlurCallBack,
                      onChangeCallback,
                      extendInputClass,
+                     sideButtonAction,
+                     sideButtonLabel,
+                       sideButtonClicked,
+                     sideButton,
                      isTextArea,
+                     sideButtonDisabled,
                    ...params }: InputProps) => {
     const classes = useStyles({ showError, disable, isTextArea });
     const [password, showPassword] = useState(false);
@@ -81,6 +92,9 @@ const TextInput = ({ icon,
         />
             }
         </Grid>
+          {sideButton &&  (
+              <InputSideButton confirmedState={sideButtonClicked} sideButtonAction={sideButtonAction} disabled={sideButtonDisabled} sideButtonLabel={sideButtonLabel ?? 'Confirm'}/>
+          )}
           {withSideText && (
               <Grid item className={classes.Text}>
                   {sideIcon ?? sideText ?? 'SSV'}

@@ -4,7 +4,7 @@ import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     BorderScreenWrapper: {
-        width: (props: any) => props.customSize ?? 648,
+        width: (props: any) => props.width ?? 648,
         margin: 'auto',
         marginTop: (props: any) => props.marginTop ?? 32,
         [screenSizes.xs]: {
@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
             width: 648,
         },
         [screenSizes.lg]: {
-            width: (props: any) => props.customSize ?? 648,
+            width: (props: any) => props.width ?? 648,
         },
     },
     LinkWrapper: {

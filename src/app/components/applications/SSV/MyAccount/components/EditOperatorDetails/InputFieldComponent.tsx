@@ -14,6 +14,22 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const [currentValue, setCurrentValue] = useState(metadataStore.getMetadataValue(fieldKey));
 
+    const onPasteHandler = (event: any) => {
+        // Prevent the default paste behavior
+        event.preventDefault();
+    
+        // Get the pasted value from clipboard
+        let pastedValue = event.clipboardData.getData('text');
+    
+        // If the value starts with HTTP_PREFIX, remove it
+        if (pastedValue.startsWith(HTTP_PREFIX)) {
+            pastedValue = pastedValue.substring(HTTP_PREFIX.length);
+        }
+    
+        setCurrentValue(HTTP_PREFIX + pastedValue);
+        metadataStore.setMetadataValue(fieldKey, HTTP_PREFIX + pastedValue);
+    };
+
     const onChangeHandler = (event: any) => {
         const { value } = event.target;
 
@@ -44,6 +60,7 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
             extendClass={extendClass}
             placeHolder={placeholder}
             onFocusCallback={onFocusHandler}
+            onPasteCallback={onPasteHandler}
             onChangeCallback={onChangeHandler}/>
     );
 };

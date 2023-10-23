@@ -35,6 +35,7 @@ export interface IOperator {
   selected?: boolean,
   dappNode?: boolean,
   ownerAddress: string,
+  dkg_address?: string,
   autoSelected?: boolean
   validatorsCount?: number,
   verified_operator?: boolean,

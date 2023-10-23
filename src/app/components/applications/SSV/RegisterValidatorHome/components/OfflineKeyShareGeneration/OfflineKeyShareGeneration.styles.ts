@@ -62,6 +62,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
       backgroundImage: 'url(/images/offlineKeyShares/white_desktop.svg)',
     },
   },
+  DkgImage: {
+    backgroundImage: 'url(/images/dkg_icon.svg)',
+  },
   UnofficialTool: {
     ...smallerText,
     borderRadius: 2,
@@ -69,6 +72,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     color: theme.colors.gray90,
     backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray30}`,
+  },
+  ColumnDirection: {
+    display: 'flex',
+    flexDirection: 'column',
   },
   BlueText: {
     ...text,
@@ -140,5 +147,44 @@ export const useStyles = makeStyles((theme: Theme) => ({
     '&::-webkit-scrollbar': {
       display: 'none',  /* Safari and Chrome */
     },
+  },
+  DkgInstructionsWrapper: {
+    gap: 30,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  DkgNotification: {
+    width: '100%',
+    height: 47,
+    fontSize: 14,
+    fontWeight: 500,
+    padding: '12px 16px 12px 16px',
+    color: theme.colors.gray90,
+    border: `1px solid ${theme.colors.gray30}`,
+    backgroundColor: theme.darkMode ? theme.colors.white : '#F8FCFF',
+  },
+  DkgText: {
+    gap: 4,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    color: theme.colors.gray90,
+  },
+  DkgErrorMessage: {
+    color: theme.colors.primaryError,
+  },
+  DkgTitle: {
+    fontSize: 16,
+    fontWeight: 700,
+    color: theme.colors.gray40,
+  },
+  DkgWithdrawAddressWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  DkgInputLabel: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: theme.colors.gray40,
   },
 }));

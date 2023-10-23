@@ -139,7 +139,7 @@ const OfflineKeyShareGeneration = () => {
             withoutNavigation={processStore.secondRegistration}
             header={'How do you want to generate your keyshares?'}
             overFlow={'none'}
-            customSize={872}
+            width={872}
             body={[
                 <Grid container style={{ gap: 24 }}>
                     <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>

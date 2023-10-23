@@ -16,6 +16,8 @@ type InputProps = {
     extendClass?: string,
     wrapperClass?: string,
     withSideText?: boolean,
+    onFocusCallback?: any,
+    onPasteCallback?: any,
     onChangeCallback?: any,
     extendInputClass?: string,
     isTextArea?: boolean,
@@ -33,8 +35,10 @@ const TextInput = ({ icon,
                      placeHolder,
                      wrapperClass,
                      withSideText,
+                     onFocusCallback,
                      onBlurCallBack,
                      onChangeCallback,
+                     onPasteCallback,
                      extendInputClass,
                      isTextArea,
                    ...params }: InputProps) => {
@@ -72,6 +76,8 @@ const TextInput = ({ icon,
                 value={value}
                 maxLength={614}
                 disabled={disable}
+                onFocus={onFocusCallback}
+                onPaste={onPasteCallback}
                 onBlur={onBlurCallBack}
                 data-testid={dataTestId}
                 className={`${classes.Input} ${extendInputClass}`}

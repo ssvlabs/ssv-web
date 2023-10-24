@@ -48,6 +48,7 @@ const Filters = (props: Props) => {
 
   let filterSelected = 0;
   if (verifySelected) filterSelected += 1;
+  if (props.dkgEnabled) filterSelected += 1;
   // if (dappNodeSelected) filterSelected += 1;
 
   return (

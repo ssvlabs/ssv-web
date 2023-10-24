@@ -37,6 +37,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   Text: {
     maxWidth: 543,
-    marginTop: -3,
+    marginTop: 1,
   },
 }));

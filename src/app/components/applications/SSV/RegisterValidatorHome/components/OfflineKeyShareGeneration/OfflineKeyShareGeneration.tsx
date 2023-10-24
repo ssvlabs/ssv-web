@@ -14,6 +14,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
+import { checkDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -42,7 +43,7 @@ const OfflineKeyShareGeneration = () => {
     const { accountAddress } = walletStore;
     const { apiNetwork } = getCurrentNetwork();
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
-    const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => operator.dkg_address);
+    const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !checkDkgAddress(operator.dkg_address ?? ''));
 
     const confirmWithdrawalAddressHandler = () => {
         if (confirmedWithdrawalAddress) {

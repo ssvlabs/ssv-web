@@ -21,7 +21,7 @@ const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
     const classes = useStyles();
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const { label, errorMessage, placeholderText, additionalLabelText } = metadataStore.getMetadataEntity(fieldKey);
+    const { label, errorMessage, placeholderText, additionalLabelText, toolTipText } = metadataStore.getMetadataEntity(fieldKey);
 
     const extendClasses = {
         [FIELD_KEYS.DESCRIPTION]: classes.DescriptionInput,
@@ -48,7 +48,7 @@ const FieldWrapper = ({ fieldKey }: { fieldKey: string }) => {
         <Grid container item>
             <Grid container>
                 <Grid item container>
-                    <InputLabel title={label} additionalLabel={additionalLabelText}/>
+                    <InputLabel title={label} withHint={!!toolTipText} additionalLabel={additionalLabelText} toolTipText={toolTipText}/>
                     <Component fieldKey={fieldKey} placeholder={placeholderText} extendClass={extendClasses[fieldKey]} />
                 </Grid>
                 <Typography className={classes.ErrorMessage}>{fieldKey !== FIELD_KEYS.OPERATOR_IMAGE && errorMessage}</Typography>

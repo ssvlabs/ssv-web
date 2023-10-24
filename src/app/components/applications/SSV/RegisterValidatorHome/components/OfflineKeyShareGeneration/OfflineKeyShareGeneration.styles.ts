@@ -63,7 +63,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   DkgImage: {
-    backgroundImage: 'url(/images/dkg_icon.svg)',
+    backgroundImage: 'url(/images/dkg_icons/dkg_icon.svg)',
+  },
+  DkgImageUnselected: {
+    backgroundImage: 'url(/images/dkg_icons/dkg_icon_blue.svg)',
   },
   UnofficialTool: {
     ...smallerText,

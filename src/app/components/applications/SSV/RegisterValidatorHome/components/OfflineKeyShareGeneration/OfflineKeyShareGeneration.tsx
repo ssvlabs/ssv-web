@@ -8,11 +8,11 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
+import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { checkDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -25,6 +25,14 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
+
+const OFFLINE_FLOWS = {
+    COMMAND_LINE: 1,
+    DESKTOP_APP: 2,
+    DKG: 3,
+};
+
+const XS = 12;
 
 const OfflineKeyShareGeneration = () => {
     const stores = useStores();
@@ -41,7 +49,8 @@ const OfflineKeyShareGeneration = () => {
     const notificationsStore: NotificationsStore = stores.Notifications;
     const { ownerNonce } = accountStore;
     const { accountAddress } = walletStore;
-    const { apiNetwork } = getCurrentNetwork();
+    const { apiNetwork, networkId } = getCurrentNetwork();
+    const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
     const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !checkDkgAddress(operator.dkg_address ?? ''));
 
@@ -59,7 +68,7 @@ const OfflineKeyShareGeneration = () => {
         true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES),
         false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES),
 };
-    
+
     const goToChangeOperators = () => {
         navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
     };
@@ -79,7 +88,7 @@ const OfflineKeyShareGeneration = () => {
 
     const instructions = [
         {
-            id: 1, instructions: [
+            id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [
                 <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
                                                                              link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
                 '2. Launch your terminal',
@@ -88,7 +97,7 @@ const OfflineKeyShareGeneration = () => {
             ],
         },
         {
-            id: 2, instructions: [
+            id: OFFLINE_FLOWS.DESKTOP_APP, instructions: [
                 <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
                                                                                 link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
                 '2.Run the Starkeys app',
@@ -98,7 +107,7 @@ const OfflineKeyShareGeneration = () => {
     ];
 
     const copyToClipboard = () => {
-        const command = selectedBox === 1 ? cliCommand : dkgCliCommand;
+        const command = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
         navigator.clipboard.writeText(command);
         notificationsStore.showMessage('Copied to clipboard.', 'success');
         setTextCopied(true);
@@ -117,15 +126,15 @@ const OfflineKeyShareGeneration = () => {
         setConfirmedWithdrawalAddress(false);
     };
 
-    const showCopyButtonCondition = selectedBox === 1 || (selectedBox === 3 && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
-    const commandCli = selectedBox === 1 ? cliCommand : dkgCliCommand;
-    const buttonLabelCondition = selectedBox === 1 || selectedBox === 3 && operatorsAcceptDkg || selectedBox === 0;
-    const cliCommandPanelCondition = selectedBox === 1 || selectedBox === 3 && operatorsAcceptDkg;
+    const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
+    const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
+    const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
+    const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg;
     const buttonLabel = buttonLabelCondition ? 'Next' : 'Change Operators';
-    const submitFunctionCondition = selectedBox === 3 && !operatorsAcceptDkg;
+    const submitFunctionCondition = selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg;
 
     const disabledCondition = () => {
-        if (selectedBox === 1 || selectedBox === 3 && operatorsAcceptDkg) {
+        if (selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg) {
             return !textCopied;
         } else if (selectedBox === 0) {
             return true;
@@ -140,35 +149,35 @@ const OfflineKeyShareGeneration = () => {
             withoutNavigation={processStore.secondRegistration}
             header={'How do you want to generate your keyshares?'}
             overFlow={'none'}
-            width={872}
+            width={isNotMainnet ? 872 : undefined}
             body={[
                 <Grid container style={{ gap: 24 }}>
                     <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
-                        <Grid container item className={`${classes.Box} ${isSelected(1) ? classes.BoxSelected : ''}`}
-                              onClick={() => checkBox(1)}>
-                            <Grid item xs={12} className={classes.Image}/>
+                        <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.COMMAND_LINE) ? classes.BoxSelected : ''}`}
+                              onClick={() => checkBox(OFFLINE_FLOWS.COMMAND_LINE)}>
+                            <Grid item xs={XS} className={classes.Image}/>
                             <Typography className={classes.BlueText}>Command Line Interface</Typography>
                         </Grid>
                         <Tooltip title="Coming soon..." placement="top-end" children={
                             <Grid>
                                 <Grid container 
                                       item
-                                      className={`${classes.Box} ${classes.Disable} ${isSelected(2) ? classes.BoxSelected : ''}`}
-                                      onClick={() => checkBox(2)}>
-                                      <Grid item xs={12} className={`${classes.Image} ${classes.Desktop}`}/>
+                                      className={`${classes.Box} ${classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
+                                      onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
+                                      <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
                                       <Typography className={classes.BlueText}>Desktop App</Typography>
                                 </Grid>
                             </Grid>}/>
-                        <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
-                              onClick={() => checkBox(3)}>
-                            <Grid item xs={12} className={`${classes.Image} ${classes.DkgImage}`}/>
+                        {isNotMainnet && <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
+                               onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
+                            <Grid item xs={XS} className={`${classes.Image} ${classes.DkgImage} ${!isSelected(OFFLINE_FLOWS.DKG) && classes.DkgImageUnselected}`}/>
                             <Typography className={classes.BlueText}>DKG</Typography>
-                        </Grid>
+                        </Grid>}
                     </Grid>
-                    {selectedBox === 2 && <Grid container item className={classes.UnofficialTool}>
+                    {selectedBox === OFFLINE_FLOWS.DESKTOP_APP && <Grid container item className={classes.UnofficialTool}>
                         This app is an unofficial tool built as a public good by the OneStar team.
                     </Grid>}
-                    {selectedBox !== 0 && selectedBox !== 3 && <Grid container item>
+                    {selectedBox !== 0 && selectedBox !== OFFLINE_FLOWS.DKG && <Grid container item>
                         <Typography className={classes.GrayText} style={{ marginBottom: 16 }}>instructions:</Typography>
                         <Grid container className={classes.ColumnDirection} item style={{ gap: 24 }}>
                             {instructions.map((instruction) => {
@@ -182,7 +191,7 @@ const OfflineKeyShareGeneration = () => {
                         </Grid>
                     </Grid>
                     }
-                    {selectedBox === 3 && operatorsAcceptDkg && <Grid container item className={classes.DkgInstructionsWrapper}>
+                    {selectedBox === OFFLINE_FLOWS.DKG && isNotMainnet && operatorsAcceptDkg && <Grid container item className={classes.DkgInstructionsWrapper}>
                         <Grid className={classes.DkgNotification}>
                             Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
                         </Grid>

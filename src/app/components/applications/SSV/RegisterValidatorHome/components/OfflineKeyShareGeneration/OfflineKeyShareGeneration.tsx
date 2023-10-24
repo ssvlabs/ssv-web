@@ -39,7 +39,7 @@ const OfflineKeyShareGeneration = () => {
     const { ownerNonce } = accountStore;
     const { accountAddress } = walletStore;
     const { apiNetwork, networkId } = getCurrentNetwork();
-    const isPrater = networkId !== NETWORKS.MAINNET;
+    const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
 
     const confirmWithdrawalAddressHandler = () => {
@@ -117,7 +117,7 @@ const OfflineKeyShareGeneration = () => {
             withoutNavigation={processStore.secondRegistration}
             header={'How do you want to generate your keyshares?'}
             overFlow={'none'}
-            width={isPrater ? 872 : undefined}
+            width={isNotMainnet ? 872 : undefined}
             body={[
                 <Grid container style={{ gap: 24 }}>
                     <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
@@ -136,7 +136,7 @@ const OfflineKeyShareGeneration = () => {
                                       <Typography className={classes.BlueText}>Desktop App</Typography>
                                 </Grid>
                             </Grid>}/>
-                        {isPrater && <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
+                        {isNotMainnet && <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
                                onClick={() => checkBox(3)}>
                             <Grid item xs={12} className={`${classes.Image} ${classes.DkgImage}`}/>
                             <Typography className={classes.BlueText}>DKG</Typography>
@@ -159,7 +159,7 @@ const OfflineKeyShareGeneration = () => {
                         </Grid>
                     </Grid>
                     }
-                    {selectedBox === 3 && isPrater && <Grid container item className={classes.DkgInstructionsWrapper}>
+                    {selectedBox === 3 && isNotMainnet && <Grid container item className={classes.DkgInstructionsWrapper}>
                         <Grid className={classes.DkgNotification}>
                             Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
                         </Grid>

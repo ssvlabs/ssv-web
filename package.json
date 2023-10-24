@@ -239,10 +239,8 @@
     "@types/uuid": "^8.3.0",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.1",
     "babel-plugin-inline-react-svg": "^2.0.1",
-    "cypress": "^7.3.0",
-    "serve": "^14.2.0",
     "concurrently": "^8.2.0",
-    "nodemon": "^3.0.1",
+    "cypress": "^7.3.0",
     "cypress-file-upload": "^5.0.7",
     "enzyme": "^3.11.0",
     "enzyme-to-json": "^3.6.2",
@@ -255,9 +253,13 @@
     "jest-watch-typeahead": "^2.2.1",
     "jsdom": "^16.5.3",
     "jsdom-global": "^3.0.2",
+    "nodemon": "^3.0.1",
     "pinst": "^2.1.6",
     "sass-lint": "^1.13.1",
-    "ts-node": "^9.1.1"
+    "serve": "^14.2.0",
+    "ts-node": "^9.1.1",
+    "webpack-bundle-analyzer": "^4.9.1",
+    "webpack-cli": "^5.1.4"
   },
   "babel": {
     "presets": [

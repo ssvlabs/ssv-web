@@ -12,8 +12,7 @@ type InputLabelProps = {
 };
 
 const InputLabel = ({ title, withHint, toolTipText, additionalLabel }: InputLabelProps) => {
-  const classes = useStyles();
-
+    const classes = useStyles();
     return (
       <Grid container className={classes.Wrapper}>
         <Typography className={classes.Text}>

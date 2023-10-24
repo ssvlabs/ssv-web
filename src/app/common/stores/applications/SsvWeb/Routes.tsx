@@ -42,11 +42,14 @@ const OfflineKeyShareGeneration = lazy(() => import('~app/components/application
 const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
 const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
 
+const Migration = lazy(() => import('~app/components/applications/SSV/Migration/Migration'));
+
 const Routes: any = () => {
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
+    { path: ssvRoutes.MY_ACCOUNT.MIGRATION.START_MIGRATION, Component: Migration },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },

@@ -86,6 +86,7 @@ class OperatorStore extends BaseStore {
   loadingOperators: boolean = false;
 
   operatorValidatorsLimit: number = 0;
+  clusterSize: number = 4;
 
   constructor() {
     // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
@@ -100,10 +101,12 @@ class OperatorStore extends BaseStore {
       maxFeeIncrease: observable,
       newOperatorKeys: observable,
       clearSettings: action.bound,
+      setClusterSize: action.bound,
       openCancelDialog: observable,
       getOperatorFee: action.bound,
       removeOperator: action.bound,
       loadingOperators: observable,
+      clusterSize: observable,
       addNewOperator: action.bound,
       selectOperator: action.bound,
       processOperatorId: observable,
@@ -186,7 +189,7 @@ class OperatorStore extends BaseStore {
    * Check if selected necessary minimum of operators
    */
   get selectedEnoughOperators(): boolean {
-    return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
+    return this.stats.selected >= this.clusterSize;
   }
 
   /**
@@ -884,10 +887,10 @@ class OperatorStore extends BaseStore {
    * @param operator
    * @param selectedIndex
    */
-  selectOperator(operator: IOperator, selectedIndex: number) {
+  selectOperator(operator: IOperator, selectedIndex: number, clusterBox: number[]) {
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax
-    for (const index of [1, 2, 3, 4]) {
+    for (const index of clusterBox) {
       if (this.selectedOperators[index]?.address + this.selectedOperators[index]?.id === operator.address + operator.id) {
         operatorExist = true;
       }
@@ -921,6 +924,10 @@ class OperatorStore extends BaseStore {
 
   unselectAllOperators() {
     this.selectedOperators = {};
+  }
+
+  setClusterSize(size: number) {
+    this.clusterSize = size;
   }
 }
 

@@ -8,10 +8,10 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
+import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -38,7 +38,8 @@ const OfflineKeyShareGeneration = () => {
     const notificationsStore: NotificationsStore = stores.Notifications;
     const { ownerNonce } = accountStore;
     const { accountAddress } = walletStore;
-    const { apiNetwork } = getCurrentNetwork();
+    const { apiNetwork, networkId } = getCurrentNetwork();
+    const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
 
     const confirmWithdrawalAddressHandler = () => {
@@ -116,7 +117,7 @@ const OfflineKeyShareGeneration = () => {
             withoutNavigation={processStore.secondRegistration}
             header={'How do you want to generate your keyshares?'}
             overFlow={'none'}
-            width={872}
+            width={isNotMainnet ? 872 : undefined}
             body={[
                 <Grid container style={{ gap: 24 }}>
                     <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
@@ -135,11 +136,11 @@ const OfflineKeyShareGeneration = () => {
                                       <Typography className={classes.BlueText}>Desktop App</Typography>
                                 </Grid>
                             </Grid>}/>
-                        <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
-                              onClick={() => checkBox(3)}>
+                        {isNotMainnet && <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
+                               onClick={() => checkBox(3)}>
                             <Grid item xs={12} className={`${classes.Image} ${classes.DkgImage}`}/>
                             <Typography className={classes.BlueText}>DKG</Typography>
-                        </Grid>
+                        </Grid>}
                     </Grid>
                     {selectedBox === 2 && <Grid container item className={classes.UnofficialTool}>
                         This app is an unofficial tool built as a public good by the OneStar team.
@@ -158,7 +159,7 @@ const OfflineKeyShareGeneration = () => {
                         </Grid>
                     </Grid>
                     }
-                    {selectedBox === 3 && <Grid container item className={classes.DkgInstructionsWrapper}>
+                    {selectedBox === 3 && isNotMainnet && <Grid container item className={classes.DkgInstructionsWrapper}>
                         <Grid className={classes.DkgNotification}>
                             Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
                         </Grid>

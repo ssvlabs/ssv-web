@@ -137,7 +137,7 @@ const OfflineKeyShareGeneration = () => {
                             </Grid>}/>
                         <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
                               onClick={() => checkBox(3)}>
-                            <Grid item xs={12} className={`${classes.Image} ${classes.DkgImage}`}/>
+                            <Grid item xs={12} className={`${classes.Image} ${classes.DkgImage} ${!isSelected(3) && classes.DkgImageUnselected}`}/>
                             <Typography className={classes.BlueText}>DKG</Typography>
                         </Grid>
                     </Grid>

@@ -26,7 +26,6 @@ const SelectOperators = ({ editPage }: { editPage?: boolean }) => {
         10: generateRange(10),
         13: generateRange(13),
     };
-    console.log(boxes);
     return (
       <Grid container className={classes.Container}>
         <Grid item className={classes.FirstSquare}>

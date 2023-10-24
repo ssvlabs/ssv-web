@@ -51,6 +51,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   const [searchInput, setSearchInput] = useState('');
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
   const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
+  const [dkgEnabled, selectDkgEnabled] = useState(false);
 
   const headers = [
     { type: '', displayName: '' },
@@ -68,6 +69,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     const payload = {
       page,
       ordering,
+      dkgEnabled,
       perPage: 10,
       type: filterBy,
       search: searchInput,
@@ -289,7 +291,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
                           <div className={classes.SearchIcon}/>}
                   />
                 </Grid>
-                <Filters setFilterBy={setFilterBy}/>
+                <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled} />
               </Grid>
               <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
                 <Table stickyHeader aria-label="sticky table">

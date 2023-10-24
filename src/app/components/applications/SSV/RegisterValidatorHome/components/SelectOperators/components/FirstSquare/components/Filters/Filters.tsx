@@ -7,6 +7,8 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 
 type Props = {
   setFilterBy: any;
+  selectDkgEnabled: Function;
+  dkgEnabled: boolean;
 };
 
 const Filters = (props: Props) => {
@@ -25,7 +27,7 @@ const Filters = (props: Props) => {
     //   filters.push('dapp_node');
     // }
     props.setFilterBy(filters);
-  }, [verifySelected]);
+  }, [verifySelected, props.dkgEnabled]);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
@@ -69,6 +71,20 @@ const Filters = (props: Props) => {
               selectVerify(!verifySelected);
             }}
             text={<Grid item className={classes.Text}>Verified</Grid>}
+          />
+          <CheckBox
+            width={24}
+            height={24}
+            isChecked={props.dkgEnabled}
+            onClickCallBack={() => {
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'validator_register',
+                action: 'filter',
+                label: 'dkg_enabled',
+              });
+              props.selectDkgEnabled(!props.dkgEnabled);
+            }}
+            text={<Grid item className={classes.Text}>DKG Enabled</Grid>}
           />
           {/*<CheckBox*/}
           {/*  width={24}*/}

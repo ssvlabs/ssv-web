@@ -10,9 +10,11 @@ import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
+import { checkDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -21,6 +23,7 @@ import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton'
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
 
 const OFFLINE_FLOWS = {
@@ -49,6 +52,7 @@ const OfflineKeyShareGeneration = () => {
     const { apiNetwork, networkId } = getCurrentNetwork();
     const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
+    const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !checkDkgAddress(operator.dkg_address ?? ''));
 
     const confirmWithdrawalAddressHandler = () => {
         if (confirmedWithdrawalAddress) {
@@ -64,6 +68,11 @@ const OfflineKeyShareGeneration = () => {
         true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES),
         false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES),
 };
+
+    const goToChangeOperators = () => {
+        navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
+    };
+
     const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
     const { operatorsIds, operatorsKeys } = sortedOperators.reduce((aggr: any, operator: IOperator) => {
         aggr.operatorsIds.push(operator.id);
@@ -79,7 +88,7 @@ const OfflineKeyShareGeneration = () => {
 
     const instructions = [
         {
-            id: 1, instructions: [
+            id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [
                 <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
                                                                              link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
                 '2. Launch your terminal',
@@ -88,7 +97,7 @@ const OfflineKeyShareGeneration = () => {
             ],
         },
         {
-            id: 2, instructions: [
+            id: OFFLINE_FLOWS.DESKTOP_APP, instructions: [
                 <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
                                                                                 link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
                 '2.Run the Starkeys app',
@@ -98,7 +107,7 @@ const OfflineKeyShareGeneration = () => {
     ];
 
     const copyToClipboard = () => {
-        const command = selectedBox === 1 ? cliCommand : dkgCliCommand;
+        const command = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
         navigator.clipboard.writeText(command);
         notificationsStore.showMessage('Copied to clipboard.', 'success');
         setTextCopied(true);
@@ -117,7 +126,22 @@ const OfflineKeyShareGeneration = () => {
         setConfirmedWithdrawalAddress(false);
     };
 
-    const showCopyButtonCondition = selectedBox === 1 || (selectedBox === 3 && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
+    const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
+    const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
+    const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
+    const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg;
+    const buttonLabel = buttonLabelCondition ? 'Next' : 'Change Operators';
+    const submitFunctionCondition = selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg;
+
+    const disabledCondition = () => {
+        if (selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg) {
+            return !textCopied;
+        } else if (selectedBox === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     const MainScreen =
         <BorderScreen
@@ -167,7 +191,7 @@ const OfflineKeyShareGeneration = () => {
                         </Grid>
                     </Grid>
                     }
-                    {selectedBox === OFFLINE_FLOWS.DKG && isNotMainnet && <Grid container item className={classes.DkgInstructionsWrapper}>
+                    {selectedBox === OFFLINE_FLOWS.DKG && isNotMainnet && operatorsAcceptDkg && <Grid container item className={classes.DkgInstructionsWrapper}>
                         <Grid className={classes.DkgNotification}>
                             Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
                         </Grid>
@@ -188,13 +212,17 @@ const OfflineKeyShareGeneration = () => {
                         </Grid>
                         <Typography className={classes.DkgText}>2. Initiate the DKG ceremony with the following command:</Typography>
                     </Grid>}
-                    {selectedBox !== 0 &&
+                    {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
+                        <ErrorMessage text={'DKG method is unavailable because some of your selected operators have not provided a DKG endpoint. '} />
+                        {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <DkgOperator operator={operator} />)}
+                    </Grid>}
+                    {cliCommandPanelCondition &&
                         <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
-                            <Grid item xs className={classes.CopyText}>{selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand}</Grid>
+                            <Grid item xs className={classes.CopyText}>{commandCli}</Grid>
                             {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
                         </Grid>
                     }
-                    <PrimaryButton text={'Next'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]} disable={!textCopied}/>
+                    <PrimaryButton text={buttonLabel} submitFunction={submitFunctionCondition ? goToChangeOperators : goToNextPage[`${processStore.secondRegistration}`]} disable={disabledCondition()}/>
                 </Grid>,
             ]}
         />;

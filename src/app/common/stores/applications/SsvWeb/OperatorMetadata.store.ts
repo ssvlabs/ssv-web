@@ -144,7 +144,7 @@ class OperatorMetadataStore extends BaseStore  {
             result: false,
             errorMessage: '',
         };
-        console.log(metadataFieldName);
+
         if (condition) {
             const innerConditions = [
                 {

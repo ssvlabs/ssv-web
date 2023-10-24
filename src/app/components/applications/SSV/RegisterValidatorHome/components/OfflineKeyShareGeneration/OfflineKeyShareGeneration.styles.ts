@@ -190,4 +190,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 600,
     color: theme.colors.gray40,
   },
+  DkgOperatorsWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
 }));

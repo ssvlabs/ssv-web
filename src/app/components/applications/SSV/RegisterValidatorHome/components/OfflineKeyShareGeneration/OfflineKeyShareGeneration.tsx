@@ -23,6 +23,14 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
 
+const OFFLINE_FLOWS = {
+    COMMAND_LINE: 1,
+    DESKTOP_APP: 2,
+    DKG: 3,
+};
+
+const XS = 12;
+
 const OfflineKeyShareGeneration = () => {
     const stores = useStores();
     const classes = useStyles();
@@ -120,31 +128,31 @@ const OfflineKeyShareGeneration = () => {
             body={[
                 <Grid container style={{ gap: 24 }}>
                     <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
-                        <Grid container item className={`${classes.Box} ${isSelected(1) ? classes.BoxSelected : ''}`}
-                              onClick={() => checkBox(1)}>
-                            <Grid item xs={12} className={classes.Image}/>
+                        <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.COMMAND_LINE) ? classes.BoxSelected : ''}`}
+                              onClick={() => checkBox(OFFLINE_FLOWS.COMMAND_LINE)}>
+                            <Grid item xs={XS} className={classes.Image}/>
                             <Typography className={classes.BlueText}>Command Line Interface</Typography>
                         </Grid>
                         <Tooltip title="Coming soon..." placement="top-end" children={
                             <Grid>
                                 <Grid container 
                                       item
-                                      className={`${classes.Box} ${classes.Disable} ${isSelected(2) ? classes.BoxSelected : ''}`}
-                                      onClick={() => checkBox(2)}>
-                                      <Grid item xs={12} className={`${classes.Image} ${classes.Desktop}`}/>
+                                      className={`${classes.Box} ${classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
+                                      onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
+                                      <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
                                       <Typography className={classes.BlueText}>Desktop App</Typography>
                                 </Grid>
                             </Grid>}/>
-                        <Grid container item className={`${classes.Box} ${isSelected(3) ? classes.BoxSelected : ''}`}
-                              onClick={() => checkBox(3)}>
-                            <Grid item xs={12} className={`${classes.Image} ${classes.DkgImage} ${!isSelected(3) && classes.DkgImageUnselected}`}/>
+                        <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
+                              onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
+                            <Grid item xs={XS} className={`${classes.Image} ${classes.DkgImage} ${!isSelected(3) && classes.DkgImageUnselected}`}/>
                             <Typography className={classes.BlueText}>DKG</Typography>
                         </Grid>
                     </Grid>
-                    {selectedBox === 2 && <Grid container item className={classes.UnofficialTool}>
+                    {selectedBox === OFFLINE_FLOWS.DESKTOP_APP && <Grid container item className={classes.UnofficialTool}>
                         This app is an unofficial tool built as a public good by the OneStar team.
                     </Grid>}
-                    {selectedBox !== 0 && selectedBox !== 3 && <Grid container item>
+                    {selectedBox !== 0 && selectedBox !== OFFLINE_FLOWS.DKG && <Grid container item>
                         <Typography className={classes.GrayText} style={{ marginBottom: 16 }}>instructions:</Typography>
                         <Grid container className={classes.ColumnDirection} item style={{ gap: 24 }}>
                             {instructions.map((instruction) => {
@@ -181,7 +189,7 @@ const OfflineKeyShareGeneration = () => {
                     </Grid>}
                     {selectedBox !== 0 &&
                         <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
-                            <Grid item xs className={classes.CopyText}>{selectedBox === 1 ? cliCommand : dkgCliCommand}</Grid>
+                            <Grid item xs className={classes.CopyText}>{selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand}</Grid>
                             {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
                         </Grid>
                     }

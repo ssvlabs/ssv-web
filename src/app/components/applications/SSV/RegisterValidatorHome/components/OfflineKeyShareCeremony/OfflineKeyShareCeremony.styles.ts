@@ -51,12 +51,15 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundImage: 'url(/images/v/black.svg)',
   },
   DkgInstructionsWrapper: {
-    gap: 30,
+    gap: 16,
     display: 'flex',
     flexDirection: 'column',
   },
   DkgNotification: {
+    gap: 20,
     width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
     fontSize: 14,
     fontWeight: 500,
     padding: '12px 16px',
@@ -66,21 +69,79 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: '5px',
   },
   DkgText: {
-    gap: 4,
+    fontSize: 16,
+    fontWeight: 500,
+    color: theme.colors.gray90,
+  },
+  StepTitle: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: theme.colors.primaryBlue,
+  },
+  DkgTitle: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: theme.colors.gray90,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    color: theme.colors.gray90,
-  },
-  DkgTitle: {
-    fontSize: 16,
-    fontWeight: 700,
-    color: theme.colors.gray40,
   },
   DkgCode: {  // For the `<code>` tags
-    backgroundColor: '#E6F7FF',  // A blue-ish tone similar to the image
+    backgroundColor: theme.colors.tint80,  // A blue-ish tone similar to the image
     borderRadius: '4px',  // slightly rounded corners
     padding: '2px 4px',  // Padding for the code tags
-    color: '#333',  // A slightly darker text color
+    color: theme.colors.primaryBlue,  // A slightly darker text color
+  },
+  DkgCodeText: {
+    fontSize: 16,
+    fontWeight: 500,
+    color: theme.colors.gray90,
+  },
+  TitleBox: {
+    width: 872,
+    borderRadius: 16,
+    backgroundColor: theme.colors.white,
+    padding: '32px',
+    fontSize: 24,
+    fontWeight: 800,
+    color: theme.colors.gray90,
+  },
+  CeremonyContainerWrapper: {
+    gap: 20,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  StepAndBadgeWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  CompletedBadge: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: '1px 8px 1px 8px',
+    backgroundColor: '#08C85829',
+    borderRadius: 4,
+  },
+  CompletedBadgeText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: theme.colors.primarySuccessDark,
+  },
+  CompletedIcon: {
+    width: 16,
+    height: 16,
+    marginLeft: 8,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url(/images/step-done.svg)',
+  },
+  BackButtonWrapper: {
+    width: 872,
+    marginTop: 20,
   },
 }));

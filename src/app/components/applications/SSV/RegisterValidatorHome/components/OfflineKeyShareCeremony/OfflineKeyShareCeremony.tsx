@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import BorderScreen from '~app/components/common/BorderScreen';
+import BackNavigation from '~app/components/common/BackNavigation';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/OfflineKeyShareCeremony.styles';
@@ -38,46 +38,65 @@ const OfflineKeyShareCeremony = () => {
     };
 
     return (
-        <Grid container>
-            <BorderScreen
-            blackHeader
-            withoutNavigation={processStore.secondRegistration}
-            header={'DKG Ceremony Summary'}
-            overFlow={'none'}
-            body={[
-                <Grid container style={{ gap: 24 }}>
-                    <Grid container item className={classes.DkgInstructionsWrapper}>
-                        <Typography className={classes.DkgTitle}>Step 1: Validator Key Generation</Typography>
-                        <Grid className={classes.DkgNotification}>
+        <Grid container className={classes.CeremonyContainerWrapper}>
+            <Grid item className={classes.BackButtonWrapper}>
+                <BackNavigation />
+            </Grid>
+            <Grid className={classes.TitleBox}>
+                DKG Ceremony Summary
+            </Grid>
+                    <Grid className={classes.TitleBox}>
+                        <Grid container item className={classes.DkgInstructionsWrapper}>
+                            <Grid className={classes.StepAndBadgeWrapper}>
+                                <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 1:</Typography>&nbsp;Validator Key Generation</Typography>
+                                <Grid className={classes.CompletedBadge}>
+                                    <Typography className={classes.CompletedBadgeText}>Completed</Typography>
+                                    <Grid className={classes.CompletedIcon}/>
+                                </Grid>
+                            </Grid>
                             <Typography className={classes.DkgText}>
                                 Following the successful completion of the DKG ceremony, several files have been generated and placed in the directory you initiated the command from:
                             </Typography>
-                            <Typography variant="body2"><code className={classes.DkgCode}>deposit-[validator_key].json</code>: This file contains the deposit data needed to activate your validator on the Beacon Chain.</Typography>
-                            <Typography variant="body2"><code className={classes.DkgCode}>keyshares-[validator_key].json</code>: This file contains the keyshares necessary to register your validator on the SSV Network.</Typography>
-                            <Typography variant="body2"><code className={classes.DkgCode}>encrypted_private_key-[validator_key].json</code> and <code>password-[validator_key]</code>: These files contain the ceremony identifiers, which are crucial for resharing your validator to a different set of operators in the future.</Typography>
+                            <Grid className={classes.DkgNotification}>
+                                <Grid>
+                                    <code className={classes.DkgCode}>deposit-[validator_key].json</code>
+                                    <Typography className={classes.DkgCodeText}> This file contains the deposit data needed to activate your validator on the Beacon Chain.</Typography>
+                                </Grid>
+                                <Grid>
+                                    <code className={classes.DkgCode}>keyshares-[validator_key].json</code>
+                                    <Typography className={classes.DkgCodeText}>  This file contains the keyshares necessary to register your validator on the SSV Network.</Typography>
+                                </Grid>
+                                <Grid>
+                                    <code className={classes.DkgCode}>encrypted_private_key-[validator_key].json</code> and <code className={classes.DkgCode}>password-[validator_key]</code>
+                                    <Typography className={classes.DkgCodeText}> These files contain the ceremony identifiers, which are crucial for resharing your validator to a different set of operators in the future.</Typography>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
-                    <Grid container item className={classes.DkgInstructionsWrapper}>
-                        <Typography className={classes.DkgTitle}>Step 2: Deposit Validator</Typography>
-                        <Grid className={classes.DkgText}>
-                            Activate your validator on the Beacon Chain by depositing 32 ETH into Ethereum's Deposit Contract.
-                            You can deposit your validator using <LinkText text={'Ethereum\'s LaunchPad'} link={ENV().LAUNCHPAD_URL}/>&nbsp;or 
-                            refer to the <LinkText text={'validator activation'} link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide for assistance.
+                    <Grid className={classes.TitleBox}>
+                        <Grid container item className={classes.DkgInstructionsWrapper}>
+                            <Grid className={classes.StepAndBadgeWrapper}>
+                                <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 2:</Typography>&nbsp;Deposit Validator</Typography>
+                                {isValidatorButtonDisabled() && <Grid className={classes.CompletedBadge}>
+                                    <Typography className={classes.CompletedBadgeText}>Completed</Typography>
+                                    <Grid className={classes.CompletedIcon}/>
+                                </Grid>}
+                            </Grid>
+                            <Grid className={classes.DkgText}>
+                                Activate your validator on the Beacon Chain by depositing 32 ETH into Ethereum's Deposit Contract.
+                                You can deposit your validator using <LinkText text={'Ethereum\'s LaunchPad'} link={ENV().LAUNCHPAD_URL}/>&nbsp;or
+                                refer to the <LinkText text={'validator activation'} link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide for assistance.
+                            </Grid>
+                            <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick} disable={isValidatorButtonDisabled()}/>
                         </Grid>
-                        <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick} disable={isValidatorButtonDisabled()}/>
                     </Grid>
-                    <Grid container item className={classes.DkgInstructionsWrapper}>
-                        <Typography className={classes.DkgTitle}>Step 3: Register Validator</Typography>
-                        <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing its key shares to your cluster operators.</Typography>
-                        <PrimaryButton text={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]} disable={isRegisterButtonDisabled()}/>
+                    <Grid className={classes.TitleBox}>
+                        <Grid container item className={classes.DkgInstructionsWrapper}>
+                            <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 3:</Typography>&nbsp;Register Validator</Typography>
+                            <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing its key shares to your cluster operators.</Typography>
+                            <PrimaryButton text={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]} disable={isRegisterButtonDisabled()}/>
+                        </Grid>
                     </Grid>
-                </Grid>,
-            ]}
-            />
-            <Grid container direction="column" spacing={4}>
-                
-                
-            </Grid>
         </Grid>
     );
 };

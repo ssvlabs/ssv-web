@@ -39,6 +39,7 @@ const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/
 const RemoveValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator'));
 const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
 const OfflineKeyShareGeneration = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration'));
+const OfflineKeyShareCeremony = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony'));
 const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
 const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
 
@@ -99,6 +100,7 @@ const Routes: any = () => {
     { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
     { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
+    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
   ];
 

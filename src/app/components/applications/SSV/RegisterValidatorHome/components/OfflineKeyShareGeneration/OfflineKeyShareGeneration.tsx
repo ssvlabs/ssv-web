@@ -64,7 +64,17 @@ const OfflineKeyShareGeneration = () => {
 
     const isSelected = (id: number) => selectedBox === id;
 
-    const goToCeremonyPage = () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY);
+    const goToNextPage = (selectedBoxIndex: number, isSecondRegistration: boolean) => {
+        if (selectedBoxIndex === OFFLINE_FLOWS.DKG) {
+            navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY);
+            return;
+        }
+        if (isSecondRegistration) {
+            navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
+        } else {
+            navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
+        }
+    };
 
     const goToChangeOperators = () => {
         navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
@@ -226,7 +236,7 @@ const OfflineKeyShareGeneration = () => {
                             {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
                         </Grid>
                     }
-                    <PrimaryButton text={buttonLabel} submitFunction={submitFunctionCondition ? goToChangeOperators : goToCeremonyPage} disable={disabledCondition()}/>
+                    <PrimaryButton text={buttonLabel} submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)} disable={disabledCondition()}/>
                 </Grid>,
             ]}
         />;

@@ -26,12 +26,6 @@ const OfflineKeyShareCeremony = () => {
         false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES),
     };
 
-    // Updated condition to determine if the "My validator has been activated" button is disabled
-    const isValidatorButtonDisabled = () => isValidatorActivated;
-
-    // Updated condition to determine if the "Register Validator" button is disabled
-    const isRegisterButtonDisabled = () => !isValidatorActivated;
-
     // Handler when "My validator has been activated" is clicked
     const handleValidatorActivatedClick = () => {
         setValidatorActivated(true);
@@ -77,7 +71,7 @@ const OfflineKeyShareCeremony = () => {
                         <Grid container item className={classes.DkgInstructionsWrapper}>
                             <Grid className={classes.StepAndBadgeWrapper}>
                                 <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 2:</Typography>&nbsp;Deposit Validator</Typography>
-                                {isValidatorButtonDisabled() && <Grid className={classes.CompletedBadge}>
+                                {isValidatorActivated && <Grid className={classes.CompletedBadge}>
                                     <Typography className={classes.CompletedBadgeText}>Completed</Typography>
                                     <Grid className={classes.CompletedIcon}/>
                                 </Grid>}
@@ -87,14 +81,14 @@ const OfflineKeyShareCeremony = () => {
                                 You can deposit your validator using <LinkText text={'Ethereum\'s LaunchPad'} link={ENV().LAUNCHPAD_URL}/>&nbsp;or
                                 refer to the <LinkText text={'validator activation'} link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide for assistance.
                             </Grid>
-                            <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick} disable={isValidatorButtonDisabled()}/>
+                            <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick} disable={isValidatorActivated}/>
                         </Grid>
                     </Grid>
                     <Grid className={classes.TitleBox}>
                         <Grid container item className={classes.DkgInstructionsWrapper}>
                             <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 3:</Typography>&nbsp;Register Validator</Typography>
                             <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing its key shares to your cluster operators.</Typography>
-                            <PrimaryButton text={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]} disable={isRegisterButtonDisabled()}/>
+                            <PrimaryButton text={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]} disable={!isValidatorActivated}/>
                         </Grid>
                     </Grid>
         </Grid>

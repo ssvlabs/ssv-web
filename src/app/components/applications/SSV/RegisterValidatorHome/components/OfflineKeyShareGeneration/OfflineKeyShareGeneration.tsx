@@ -53,7 +53,6 @@ const OfflineKeyShareGeneration = () => {
     const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
     const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !checkDkgAddress(operator.dkg_address ?? ''));
-
     const confirmWithdrawalAddressHandler = () => {
         if (confirmedWithdrawalAddress) {
             setConfirmedWithdrawalAddress(false);
@@ -64,10 +63,18 @@ const OfflineKeyShareGeneration = () => {
     };
 
     const isSelected = (id: number) => selectedBox === id;
-    const goToNextPage = {
-        true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES),
-        false: () => navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES),
-};
+
+    const goToNextPage = (selectedBoxIndex: number, isSecondRegistration: boolean) => {
+        if (selectedBoxIndex === OFFLINE_FLOWS.DKG) {
+            navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY);
+            return;
+        }
+        if (isSecondRegistration) {
+            navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
+        } else {
+            navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
+        }
+    };
 
     const goToChangeOperators = () => {
         navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
@@ -83,8 +90,15 @@ const OfflineKeyShareGeneration = () => {
         operatorsKeys: [],
     });
 
+    const operatorsInfo = Object.values(operatorStore.selectedOperators).map((operator: any) => {
+        const newOperator = JSON.parse(JSON.stringify(operator));  // Deep copy
+        newOperator.ip = newOperator.dkg_address;
+        delete newOperator.dkg_address;
+        return newOperator;
+    });
+
     const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',') } --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-    const dkgCliCommand = `docker run -it "ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --network ${apiNetwork} --operatorIDs ${operatorsIds.join(',')} --depositResultsPath /data --ssvPayloadResultsPath /data --operatorsInfo ${JSON.stringify(Object.values(operatorStore.selectedOperators))} --encryptedKeyOutputPath /data --generateKeypair `;
+    const dkgCliCommand = `docker run -it "bloxstaking/ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --network ${apiNetwork} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo '${JSON.stringify(operatorsInfo)}'`;
 
     const instructions = [
         {
@@ -222,7 +236,7 @@ const OfflineKeyShareGeneration = () => {
                             {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
                         </Grid>
                     }
-                    <PrimaryButton text={buttonLabel} submitFunction={submitFunctionCondition ? goToChangeOperators : goToNextPage[`${processStore.secondRegistration}`]} disable={disabledCondition()}/>
+                    <PrimaryButton text={buttonLabel} submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)} disable={disabledCondition()}/>
                 </Grid>,
             ]}
         />;

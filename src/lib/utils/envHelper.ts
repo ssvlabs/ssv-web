@@ -3,6 +3,7 @@ export interface IENVS {
   BEACONCHA_URL: string,
   LAUNCHPAD_URL: string,
   ETHERSCAN_URL: string,
+  INSUFFICIENT_BALANCE_URL: string,
 }
 
 export type NetworkDataType = {
@@ -105,18 +106,21 @@ const _envs = {
     BEACONCHA_URL: 'https://prater.beaconcha.in',
     LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://goerli.etherscan.io',
+    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
   },
   [NETWORKS.HOLESKY]: {
     NETWORK: 'holesky',
     BEACONCHA_URL: 'https://holesky.beaconcha.in',
     LAUNCHPAD_URL: 'https://holesky.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://holesky.etherscan.io',
+    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
   },
   [NETWORKS.MAINNET]: {
     NETWORK: 'mainnet',
     BEACONCHA_URL: 'https://beaconcha.in',
     LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://etherscan.io',
+    INSUFFICIENT_BALANCE_URL: 'https://coinmarketcap.com/currencies/ssv-network/#Markets',
   },
 };
 

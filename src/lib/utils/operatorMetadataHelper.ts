@@ -184,7 +184,9 @@ export const isLink = (value: string) => {
     return !linkRegex.test(value);
 };
 
-export const checkDkgAddress = (value: string) => {
+export const checkDkgAddress = (value: string, isForm?: boolean) => {
+    if (isForm && value === HTTP_PREFIX) return false;
+
     if (!value.startsWith(HTTP_PREFIX)) return true;
 
     const addressWithoutHttp = value.substring(HTTP_PREFIX.length);

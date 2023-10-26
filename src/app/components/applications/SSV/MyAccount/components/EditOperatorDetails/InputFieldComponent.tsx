@@ -37,6 +37,7 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
             // Ensure http:// is always present
             if (!value.startsWith(HTTP_PREFIX)) {
                 setCurrentValue(HTTP_PREFIX);
+                metadataStore.setMetadataValue(fieldKey, '');
                 return;
             }
             setCurrentValue(value);

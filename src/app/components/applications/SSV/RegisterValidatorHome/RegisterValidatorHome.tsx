@@ -45,7 +45,7 @@ const RegisterValidatorHome = () => {
     <BorderScreen
       body={[
         <Grid container>
-          <HeaderSubHeader title={'Run a Distibuted Validator'}
+          <HeaderSubHeader title={'Run a Distributed Validator'}
             subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
           />
           <Typography className={classes.GrayText}>Prerequisites</Typography>

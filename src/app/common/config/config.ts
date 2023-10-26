@@ -1,7 +1,15 @@
 import { ABI_VERSION } from '~app/common/config/abi';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
 
-const { networkId, api, tokenAddress, setterContractAddress, getterContractAddress, explorerUrl, apiVersion } = getCurrentNetwork();
+const {
+  networkId,
+  api,
+  tokenAddress,
+  setterContractAddress,
+  getterContractAddress,
+  explorerUrl,
+  apiVersion,
+} = getCurrentNetwork();
 
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,

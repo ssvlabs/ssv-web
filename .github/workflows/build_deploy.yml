@@ -27,6 +27,17 @@ jobs:
             \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
             \"setterContractAddress\": \"${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+          },
+          {
+            \"networkId\": 17000,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"holesky\",
+            \"api\": \"https://api.stage.ssv.network/api\",
+            \"explorerUrl\": \"https://holesky-explorer.stage.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x68A8DDD7a59A900E0657e9f8bbE02B70c947f25F\",
+            \"setterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
           }
         ]
       PROD_SSV_NETWORKS: >
@@ -246,4 +257,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
       # </claim.ssv.network>
-      

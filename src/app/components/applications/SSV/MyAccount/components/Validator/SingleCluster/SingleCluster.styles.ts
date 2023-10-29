@@ -2,6 +2,10 @@ import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
+  Wrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
   Section: {
     gap: 24,
     width: 1320,

@@ -12,7 +12,7 @@ import {
     MetadataEntity,
     FIELDS,
     isLink,
-    OPERATOR_NODE_TYPES, CountryType, checkDkgAddress,
+    OPERATOR_NODE_TYPES, CountryType, checkDkgAddress, HTTP_PREFIX,
 } from '~lib/utils/operatorMetadataHelper';
 
 export const fieldsToValidateSignature = [
@@ -119,8 +119,10 @@ class OperatorMetadataStore extends BaseStore  {
             let value = this.getMetadataValue(field);
             if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
                 value = value.join(',');
+            } else if (field === FIELD_KEYS.DKG_ADDRESS && value === HTTP_PREFIX) {
+                value = '';
             }
-                payload[field] = value || '';
+            payload[field] = value || '';
         });
         return payload;
     }
@@ -144,7 +146,7 @@ class OperatorMetadataStore extends BaseStore  {
             result: false,
             errorMessage: '',
         };
-        console.log(metadataFieldName);
+
         if (condition) {
             const innerConditions = [
                 {
@@ -175,7 +177,7 @@ class OperatorMetadataStore extends BaseStore  {
     checkFieldValue(metadataFieldName: string, fieldValue: string) {
         if (metadataFieldName === FIELD_KEYS.DKG_ADDRESS) {
             return {
-                result: checkDkgAddress(fieldValue),
+                result: checkDkgAddress(fieldValue, true),
                 errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR,
             };
         } else {

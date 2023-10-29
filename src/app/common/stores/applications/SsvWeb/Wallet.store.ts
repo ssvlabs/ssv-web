@@ -3,7 +3,7 @@ import Notify from 'bnc-notify';
 import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
 import injectedModule from '@web3-onboard/injected-wallets';
-import { action, computed, observable, makeObservable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import { getImage } from '~lib/utils/filePath';
@@ -15,15 +15,24 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { changeCurrentNetwork, getCurrentNetwork, NetworkDataType, NETWORKS, NETWORKS_DATA } from '~lib/utils/envHelper';
+import {
+  changeCurrentNetwork,
+  getCurrentNetwork,
+  GOERLI_NETWORK_ID,
+  HOLESKY_NETWORK_ID,
+  inNetworks,
+  NetworkDataType,
+  NETWORKS,
+  NETWORKS_DATA,
+  toHexString,
+} from '~lib/utils/envHelper';
 
 const WALLET_CONNECTED = 'WalletConnected';
-
-const GOERLI_NETWORK_ID = 5;
 
 const TOKEN_NAMES = {
   [NETWORKS.MAINNET]: 'ETH',
   [NETWORKS.GOERLI]: 'GoerliETH',
+  [NETWORKS.HOLESKY]: 'ETH',
 };
 
 class WalletStore extends BaseStore implements Wallet {
@@ -119,6 +128,11 @@ class WalletStore extends BaseStore implements Wallet {
           token: TOKEN_NAMES[NETWORKS.GOERLI],
           label: 'Goerli testnet',
         },
+        {
+          id: NETWORKS.HOLESKY,
+          label: 'Holesky testnet',
+          token: TOKEN_NAMES[NETWORKS.HOLESKY],
+        },
       ],
       appMetadata: {
         name: 'SSV Network',
@@ -134,16 +148,15 @@ class WalletStore extends BaseStore implements Wallet {
     const wallets = this.onboardSdk.state.select('wallets');
     wallets.subscribe(async (update: any) => {
       if (update.length > 0) {
-        const networkId = update[0]?.chains[0]?.id?.replace('0x', '');
+        const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
         const balance = update[0]?.accounts[0]?.balance ? update[0]?.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
         const wallet = update[0];
         const address = update[0]?.accounts[0]?.address;
         await this.onWalletConnectedCallback(wallet);
-        this.onNetworkChangeCallback(Number(networkId));
+        this.onNetworkChangeCallback(networkId);
         await this.onBalanceChangeCallback(balance);
         await this.onAccountAddressChangeCallback(address);
-      }
-      else if (this.accountAddress && update.length === 0) {
+      } else if (this.accountAddress && update.length === 0) {
         await this.onAccountAddressChangeCallback(undefined);
       }
     });
@@ -155,7 +168,7 @@ class WalletStore extends BaseStore implements Wallet {
     };
     // @ts-ignore
     this.notifySdk = Notify(notifyOptions);
-    }
+  }
 
   /**
    * Initialize Account data from contract
@@ -179,7 +192,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   async changeNetwork(networkId: string | number) {
-    await this.onboardSdk.setChain({ chainId: `0x${networkId}` });
+    await this.onboardSdk.setChain({ chainId: networkId });
   }
 
   toWei(amount?: number | string): string {
@@ -190,12 +203,13 @@ class WalletStore extends BaseStore implements Wallet {
     if (typeof amount === 'string') amount = amount.slice(0, 16);
     return this.web3.utils.toWei(amount.toString(), 'ether');
   }
+
   /**
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
     const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
-    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)){
+    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
       await this.onAccountAddressChangeCallback(undefined);
     }
   }
@@ -227,7 +241,7 @@ class WalletStore extends BaseStore implements Wallet {
 
   /**
    * User address handler
-   * @param address: string
+   * @param address
    */
   async onAccountAddressChangeCallback(address: string | undefined) {
     this.setAccountDataLoaded(false);
@@ -278,7 +292,7 @@ class WalletStore extends BaseStore implements Wallet {
 
   /**
    * Callback for connected wallet
-   * @param wallet: any
+   * @param wallet
    */
   async onWalletConnectedCallback(wallet: any) {
     this.wallet = wallet;
@@ -295,18 +309,27 @@ class WalletStore extends BaseStore implements Wallet {
 
   /**
    * User Network handler
-   * @param networkId: any
+   * @param networkId
    */
   onNetworkChangeCallback(networkId: any) {
-    const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => network.networkId !== NETWORKS.MAINNET);
-    changeCurrentNetwork(Number(networkId));
-    this.networkId = networkId;
-    if (notIncludeMainnet && networkId !== GOERLI_NETWORK_ID && networkId !== undefined) {
+    const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
+      return toHexString(network.networkId).toLowerCase() !== '0x1';
+    });
+    const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
+    if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
       this.wrongNetwork = true;
-      this.notificationsStore.showMessage('Please change network to Goerli', 'error');
+      this.notificationsStore.showMessage('Please change network to Holesky', 'error');
     } else {
+      try {
+        changeCurrentNetwork(Number(networkId));
+      } catch (e) {
+        this.wrongNetwork = true;
+        this.notificationsStore.showMessage(String(e), 'error');
+        return;
+      }
       config.links.SSV_API_ENDPOINT = getCurrentNetwork().api;
       this.wrongNetwork = false;
+      this.networkId = networkId;
     }
   }
 

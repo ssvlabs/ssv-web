@@ -33,8 +33,10 @@ import StyledCell
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ClusterSize
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
 
-const FirstSquare = ({ editPage }: { editPage: boolean }) => {
+const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean, clusterSize: number, setClusterSize: Function, clusterBox: number[] }) => {
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const [loading, setLoading] = useState(false);
@@ -49,6 +51,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   const [searchInput, setSearchInput] = useState('');
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
   const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
+  const [dkgEnabled, selectDkgEnabled] = useState(false);
 
   const headers = [
     { type: '', displayName: '' },
@@ -66,6 +69,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const payload = {
       page,
       ordering,
+      dkgEnabled,
       perPage: 10,
       type: filterBy,
       search: searchInput,
@@ -89,7 +93,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       operatorStore.unselectOperatorByPublicKey(operator);
       return;
     }
-    const indexes = [1, 2, 3, 4];
+    const indexes = clusterBox;
     let availableIndex: undefined | number;
     indexes.forEach((index: number) => {
       if (!operatorStore.selectedOperators[index] && !availableIndex) {
@@ -97,7 +101,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       }
     });
     if (availableIndex) {
-      operatorStore.selectOperator(operator, availableIndex);
+      operatorStore.selectOperator(operator, availableIndex, clusterBox);
     }
   };
 
@@ -276,6 +280,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
           header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
           body={[
             <Grid container>
+              <ClusterSize currentClusterSize={clusterSize} changeClusterSize={setClusterSize}/>
               <Grid item container>
                 <Grid item xs className={classes.SearchInputWrapper}>
                   <TextInput
@@ -286,7 +291,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
                           <div className={classes.SearchIcon}/>}
                   />
                 </Grid>
-                <Filters setFilterBy={setFilterBy}/>
+                <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled} />
               </Grid>
               <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
                 <Table stickyHeader aria-label="sticky table">

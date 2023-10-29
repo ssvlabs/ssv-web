@@ -37,6 +37,7 @@ const RegisterValidatorHome = () => {
       processName: 'register_validator',
     }, 2);
     operatorStore.unselectAllOperators();
+    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
     navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
   };
 

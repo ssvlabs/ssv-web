@@ -96,7 +96,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontSize: 20,
         lineHeight: 1.4,
         fontWeight: 'bold',
-        color: theme.colors.gray70,
+        color: theme.colors.gray90,
     },
     Step: {
         gap: 10,

@@ -108,7 +108,7 @@ const SingleCluster = () => {
   }, 200);
 
   return (
-      <Grid container>
+      <Grid container className={classes.Wrapper}>
         <NewWhiteWrapper
             type={0}
             header={'Cluster'}

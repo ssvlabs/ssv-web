@@ -34,8 +34,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
       flexDirection: 'column',
     },
   },
+  OperatorBoxesWrapper: {
+    width: '100%',
+    maxHeight: 460,
+    overflowY: 'scroll',
+    paddingTop: 10,
+  },
   SelectedOperatorBox: {
-    width: 360,
+    width: '97%',
     height: 97,
     fontSize: 16,
     fontWeight: 500,
@@ -49,7 +55,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray20}`,
     '@media only screen and (max-width: 1400px)': {
-      width: '100%',
+      width: '98%',
     },
   },
 

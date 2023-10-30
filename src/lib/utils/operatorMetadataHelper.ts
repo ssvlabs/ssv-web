@@ -101,7 +101,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         value: '',
         errorMessage: '',
         placeholderText: 'Aestus, Agnostic Gnosis, Blocknative...',
-        options: ['Aestus', 'Agnostic Gnosis', 'Blocknative', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
+        options: ['Aestus', 'Agnostic Gnosis', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
     },
     [FIELD_KEYS.LOCATION]: {
         label: 'Server Geolocation',

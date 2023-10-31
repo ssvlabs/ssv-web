@@ -9,7 +9,8 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator.styles';
 
 const DkgOperator = ({ operator }: { operator: IOperator }) => {
-    const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled: !checkDkgAddress(operator.dkg_address ?? '') });
+    const dkgEnabled = !checkDkgAddress(operator.dkg_address ?? '');
+    const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled });
 
     return (
         <Grid className={classes.OperatorDetails}>
@@ -22,7 +23,7 @@ const DkgOperator = ({ operator }: { operator: IOperator }) => {
                     <Grid className={classes.OperatorId}>ID: {operator.id}</Grid>
                 </Grid>
             </Grid>
-            <Grid className={classes.DkgEnabledBudge}>DKG Enabled</Grid>
+            <Grid className={classes.DkgEnabledBudge}>DKG {dkgEnabled ? 'Enabled' : 'Disabled'}</Grid>
         </Grid>
     );
 };

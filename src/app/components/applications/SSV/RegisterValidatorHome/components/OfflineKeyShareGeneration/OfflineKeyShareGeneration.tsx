@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
-import { osName } from 'react-device-detect';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { osName, isWindows } from 'react-device-detect';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -53,6 +53,8 @@ const OfflineKeyShareGeneration = () => {
     const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
     const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !checkDkgAddress(operator.dkg_address ?? ''));
+    const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
+
     const confirmWithdrawalAddressHandler = () => {
         if (confirmedWithdrawalAddress) {
             setConfirmedWithdrawalAddress(false);
@@ -77,7 +79,7 @@ const OfflineKeyShareGeneration = () => {
     };
 
     const goToChangeOperators = () => {
-        navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
+        navigate(-4);
     };
 
     const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
@@ -98,7 +100,7 @@ const OfflineKeyShareGeneration = () => {
     });
 
     const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',') } --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-    const dkgCliCommand = `docker run -v .:/data -it "bloxstaking/ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --network ${apiNetwork} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo '${JSON.stringify(operatorsInfo)}' --generateInitiatorKey --outputPath /data`;
+    const dkgCliCommand = `docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo '${JSON.stringify(operatorsInfo)}' --network ${apiNetwork} --generateInitiatorKey --outputPath /data`;
 
     const instructions = [
         {
@@ -155,6 +157,13 @@ const OfflineKeyShareGeneration = () => {
         } else {
             return false;
         }
+    };
+
+    const hideButtonCondition = () => {
+        if (submitFunctionCondition) {
+            return !processStore.secondRegistration;
+        }
+        return true;
     };
 
     const MainScreen =
@@ -236,7 +245,9 @@ const OfflineKeyShareGeneration = () => {
                             {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
                         </Grid>
                     }
-                    <PrimaryButton text={buttonLabel} submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)} disable={disabledCondition()}/>
+                    {hideButtonCondition() && <PrimaryButton text={buttonLabel}
+                                    submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
+                                    disable={disabledCondition()}/>}
                 </Grid>,
             ]}
         />;

@@ -5,6 +5,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     Wrapper: {
         gap: 8,
         alignItems: 'flex-start',
+        flexWrap: 'nowrap',
     },
     TextWrapper: {
         flexDirection: 'column',
@@ -37,6 +38,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontSize: 16,
         fontWeight: 500,
         lineHeight: 1.62,
+        whiteSpace: 'nowrap',
         color: (props: any) => {
             if (props.isDeleted) return theme.colors.gray40;
             if (props.gray80) return theme.colors.gray80;

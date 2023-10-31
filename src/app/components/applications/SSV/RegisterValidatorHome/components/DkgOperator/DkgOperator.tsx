@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { truncateText } from '~lib/utils/strings';
-import { checkDkgAddress } from '~lib/utils/operatorMetadataHelper';
+import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import {
@@ -9,7 +9,7 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator.styles';
 
 const DkgOperator = ({ operator }: { operator: IOperator }) => {
-    const dkgEnabled = !checkDkgAddress(operator.dkg_address ?? '');
+    const dkgEnabled = !validateDkgAddress(operator.dkg_address ?? '');
     const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled });
 
     return (

@@ -12,7 +12,7 @@ import {
     MetadataEntity,
     FIELDS,
     isLink,
-    OPERATOR_NODE_TYPES, CountryType, checkDkgAddress, HTTP_PREFIX,
+    OPERATOR_NODE_TYPES, CountryType, validateDkgAddress, HTTP_PREFIX,
 } from '~lib/utils/operatorMetadataHelper';
 
 export const fieldsToValidateSignature = [
@@ -177,7 +177,7 @@ class OperatorMetadataStore extends BaseStore  {
     checkFieldValue(metadataFieldName: string, fieldValue: string) {
         if (metadataFieldName === FIELD_KEYS.DKG_ADDRESS) {
             return {
-                result: checkDkgAddress(fieldValue, true),
+                result: validateDkgAddress(fieldValue, true),
                 errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR,
             };
         } else {

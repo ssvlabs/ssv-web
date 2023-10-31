@@ -14,7 +14,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
-import { checkDkgAddress } from '~lib/utils/operatorMetadataHelper';
+import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -52,7 +52,7 @@ const OfflineKeyShareGeneration = () => {
     const { apiNetwork, networkId } = getCurrentNetwork();
     const isNotMainnet = networkId !== NETWORKS.MAINNET;
     const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
-    const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !checkDkgAddress(operator.dkg_address ?? ''));
+    const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
     const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
 
     const confirmWithdrawalAddressHandler = () => {

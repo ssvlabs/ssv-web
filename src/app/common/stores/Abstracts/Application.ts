@@ -19,7 +19,7 @@ export default abstract class Application {
     this.userGeo = undefined;
     this.darkMode = darkMode;
     this.strategyName = 'Distribution';
-    this.appTitle = 'SSV Network Testnet Distribution';
+    this.appTitle = 'SSV Network Distribution';
     this.strategyRedirect = config.routes.DISTRIBUTION.ROOT;
   }
 

@@ -7,8 +7,10 @@ import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SecondSquare.styles';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
+import WarningBox from '~app/components/common/WarningBox';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ErrorMessage from '~app/components/common/ErrorMessage';
+import { MEV_RELAYS } from '~lib/utils/operatorMetadataHelper';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -19,8 +21,8 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorDetails
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import MevIcon from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
@@ -37,6 +39,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
+
+  const operatorHasMevRelays = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.mev_relays);
 
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
@@ -134,9 +138,12 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                         <Grid item>
                           <OperatorDetails operator={operator} />
                         </Grid>
-                        <Grid item>
+                        <Grid item className={classes.FeeAndMevRelaysWrapper}>
                           <SsvAndSubTitle
                               ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} />
+                          <Grid className={classes.MevRelaysWrapper}>
+                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay} hasMevRelay={operator.mev_relays?.includes(mevRelay)} />)}
+                          </Grid>
                         </Grid>
                       </Grid>
                   );
@@ -200,6 +207,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
               />
             </Grid>
           </Grid>
+          {operatorHasMevRelays && <WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'} textLink={'Learn more'}
+                       link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
             submitFunction={onSelectOperatorsClick} />
         </Grid>,

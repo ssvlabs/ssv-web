@@ -23,7 +23,7 @@ class ApplicationStore extends BaseStore implements Application {
   walletConnectivity: boolean = false;
   strategyName: string = 'distribution';
   transactionPendingPopUp: boolean = false;
-  appTitle: string = 'SSV Network Testnet Distribution';
+  appTitle: string = 'SSV Network Distribution';
   strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
   locationRestrictionEnabled: boolean = false;
 

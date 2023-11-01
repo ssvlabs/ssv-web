@@ -36,9 +36,22 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   OperatorBoxesWrapper: {
     width: '100%',
-    maxHeight: 460,
+    maxHeight: 480,
     overflowY: 'scroll',
     paddingTop: 10,
+  },
+  MevRelaysWrapper: {
+    gap: 3,
+    width: 128,
+    height: 14,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  FeeAndMevRelaysWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
   },
   SelectedOperatorBox: {
     width: '97%',
@@ -50,7 +63,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative',
     color: theme.colors.gray30,
     marginBottom: theme.spacing(5),
-    padding: '24px 19px 24px 20px',
+    display: 'flex',
+    flexWrap: 'nowrap',
+    padding: '24px 10px 24px 10px',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray20}`,
@@ -58,7 +73,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
       width: '98%',
     },
   },
-
   BoxPlaceHolder: {
     width: 360,
     height: 97,
@@ -112,7 +126,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   TotalFeesWrapper: {
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(10),
+    marginBottom: 20,
   },
   TotalFeesHeader: {
     fontSize: 16,
@@ -120,5 +134,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: 1.62,
     color: theme.colors.gray90,
     justifyContent: 'space-between',
+  },
+  ExtendWarningClass: {
+    marginBottom: 20,
   },
 }));

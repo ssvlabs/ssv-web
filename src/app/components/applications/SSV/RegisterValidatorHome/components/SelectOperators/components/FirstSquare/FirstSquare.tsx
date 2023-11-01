@@ -35,6 +35,8 @@ import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import ClusterSize
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
+import MevCounterBadge
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean, clusterSize: number, setClusterSize: Function, clusterBox: number[] }) => {
   const stores = useStores();
@@ -59,6 +61,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     { type: 'validators_count', displayName: 'Validators', sortable: true },
     { type: 'performance.30d', displayName: '30d performance', sortable: true },
     { type: 'fee', displayName: 'Yearly Fee', sortable: true },
+    { type: 'mev', displayName: 'MEV', sortable: true },
     { type: '', displayName: '', sortable: true },
   ];
 
@@ -168,6 +171,8 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       const disabled = reachedMaxValidators || isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;
+      const mevRelays = operator?.mev_relays || '';
+      const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
       return (
           <TableRow
@@ -213,6 +218,11 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
                       <ToolTip text={'Operator reached  maximum amount of validators'}/>
                     </Grid>
                 )}
+              </Grid>
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount}/>
               </Grid>
             </StyledCell>
             <StyledCell>

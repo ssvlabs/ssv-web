@@ -15,6 +15,28 @@ export const FIELD_KEYS = {
     DKG_ADDRESS: 'dkgAddress',
 };
 
+export const MEV_RELAYS = {
+    AESTUS: 'Aestus',
+    AGNOSTIC: 'Agnostic Gnosis',
+    BLOXROUTE_MAX_PROFIT: 'bloXroute Max Profit',
+    BLOXROUTE_REGULATED: 'bloXroute Regulated',
+    EDEN: 'Eden Network',
+    FLASHBOTS: 'Flashbots',
+    MANIFOLD: 'Manifold',
+    ULTRA_SOUND: 'Ultra Sound',
+};
+
+export const MEV_RELAYS_LOGOS = {
+    [MEV_RELAYS.AESTUS]: 'Aestus',
+    [MEV_RELAYS.AGNOSTIC]: 'agnostic',
+    [MEV_RELAYS.BLOXROUTE_MAX_PROFIT]: 'blox-route',
+    [MEV_RELAYS.BLOXROUTE_REGULATED]: 'blox-route',
+    [MEV_RELAYS.EDEN]: 'eden',
+    [MEV_RELAYS.FLASHBOTS]: 'Flashbots',
+    [MEV_RELAYS.MANIFOLD]: 'manifold',
+    [MEV_RELAYS.ULTRA_SOUND]: 'ultraSound',
+};
+
 export type CountryType = {
     'alpha-2': string;
     'alpha-3': string;
@@ -101,7 +123,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         value: '',
         errorMessage: '',
         placeholderText: 'Aestus, Agnostic Gnosis, Blocknative...',
-        options: ['Aestus', 'Agnostic Gnosis', 'Blocknative', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
+        options: Object.values(MEV_RELAYS),
     },
     [FIELD_KEYS.LOCATION]: {
         label: 'Server Geolocation',
@@ -184,7 +206,7 @@ export const isLink = (value: string) => {
     return !linkRegex.test(value);
 };
 
-export const checkDkgAddress = (value: string, isForm?: boolean) => {
+export const validateDkgAddress = (value: string, isForm?: boolean) => {
     if (isForm && value === HTTP_PREFIX) return false;
 
     if (!value.startsWith(HTTP_PREFIX)) return true;

@@ -1,14 +1,32 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
-import Onboard from 'bnc-onboard';
+import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
+import injectedModule from '@web3-onboard/injected-wallets';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
+import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
-import { wallets } from '~app/common/stores/utilis/wallets';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
+import {
+  changeCurrentNetwork, getCurrentNetwork,
+  GOERLI_NETWORK_ID,
+  HOLESKY_NETWORK_ID, inNetworks,
+  NetworkDataType,
+  NETWORKS,
+  NETWORKS_DATA,
+  toHexString,
+} from '~lib/utils/envHelper';
+
+const WALLET_CONNECTED = 'WalletConnected';
+
+const TOKEN_NAMES = {
+  [NETWORKS.MAINNET]: 'ETH',
+  [NETWORKS.GOERLI]: 'GoerliETH',
+  [NETWORKS.HOLESKY]: 'ETH',
+};
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -40,6 +58,7 @@ class WalletStore extends BaseStore implements Wallet {
       ssvBalance: observable,
       onboardSdk: observable,
       decodeKey: action.bound,
+      changeNetwork: action.bound,
       encodeKey: action.bound,
       wrongNetwork: observable,
       isWrongNetwork: computed,
@@ -68,20 +87,72 @@ class WalletStore extends BaseStore implements Wallet {
    */
   initWalletHooks() {
     if (this.onboardSdk) return;
-    const connectionConfig = {
-      dappId: config.ONBOARD.API_KEY,
-      networkId: 1,
-      walletSelect: {
-        wallets,
+    const injected = injectedModule();
+    const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
+    this.onboardSdk = Onboard({
+      theme: theme,
+      apiKey: config.ONBOARD.API_KEY,
+      wallets: [injected],
+      disableFontDownload: true,
+      connect: {
+        autoConnectLastWallet: true,
+        showSidebar: false,
+        removeIDontHaveAWalletInfoLink: true,
+        removeWhereIsMyWalletWarning: true,
       },
-      subscriptions: {
-        wallet: this.walletHandler,
-        address: this.addressHandler,
-        network: this.networkHandler,
+      notify: {
+        enabled: false,
       },
-    };
-    console.debug('OnBoard SDK Config:', connectionConfig);
-    this.onboardSdk = Onboard(connectionConfig);
+      accountCenter: {
+        mobile: {
+          enabled: false,
+        },
+        desktop: {
+          enabled: false,
+        },
+      },
+      chains: [
+        {
+          id: NETWORKS.MAINNET,
+          token: TOKEN_NAMES[NETWORKS.MAINNET],
+          label: 'Ethereum Mainnet',
+        },
+        {
+          id: NETWORKS.GOERLI,
+          token: TOKEN_NAMES[NETWORKS.GOERLI],
+          label: 'Goerli testnet',
+        },
+        {
+          id: NETWORKS.HOLESKY,
+          label: 'Holesky testnet',
+          token: TOKEN_NAMES[NETWORKS.HOLESKY],
+        },
+      ],
+      appMetadata: {
+        name: 'SSV Network',
+        icon: getImage('ssvIcons/logo.svg'),
+        logo: getImage('ssvIcons/logo.svg'),
+        description: 'SSV Network',
+        recommendedInjectedWallets: [
+          { name: 'MetaMask', url: 'https://metamask.io' },
+        ],
+      },
+    });
+
+    const wallets = this.onboardSdk.state.select('wallets');
+    wallets.subscribe(async (update: any) => {
+      if (update.length > 0) {
+        const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
+        const wallet = update[0];
+        const address = update[0]?.accounts[0]?.address;
+        await this.walletHandler(wallet);
+        await this.networkHandler(networkId);
+        await this.addressHandler(address);
+      } else if (this.accountAddress && update.length === 0) {
+        await this.addressHandler(undefined);
+      }
+    });
+
     const notifyOptions = {
       dappId: config.ONBOARD.API_KEY,
       networkId: 1,
@@ -98,6 +169,10 @@ class WalletStore extends BaseStore implements Wallet {
 
   }
 
+  async changeNetwork(networkId: string | number) {
+    await this.onboardSdk.setChain({ chainId: networkId });
+  }
+
   fromWei(amount?: string): number {
     if (!amount) return 0;
     return this.web3.utils.fromWei(amount, 'ether');
@@ -112,12 +187,9 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
-    if (selectedWallet && selectedWallet !== 'undefined') {
-      await this.onboardSdk.walletSelect(selectedWallet);
-      await this.onboardSdk.walletCheck();
-    } else {
-      this.setAccountDataLoaded(true);
+    const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
+      await this.addressHandler(undefined);
     }
   }
 
@@ -127,8 +199,15 @@ class WalletStore extends BaseStore implements Wallet {
   async connect() {
     try {
       console.debug('Connecting wallet..');
-      await this.onboardSdk.walletSelect();
-      await this.onboardSdk.walletCheck();
+      const result = await this.onboardSdk.connectWallet();
+      if (result?.length > 0) {
+        const networkId = result[0].chains[0].id.replace('0x', '');
+        const wallet = result[0];
+        const address = result[0].accounts[0].address;
+        await this.walletHandler(wallet);
+        await this.networkHandler(Number(networkId));
+        await this.addressHandler(address);
+      }
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
       this.notificationsStore.showMessage(message, 'error');
@@ -141,8 +220,9 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param address: string
    */
-  async addressHandler(address: string) {
+  async addressHandler(address: string | undefined) {
     this.setAccountDataLoaded(false);
+    window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
     } else {
@@ -169,9 +249,25 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async networkHandler(networkId: any) {
-    console.log('networkId: ', networkId);
-    this.networkId = networkId;
-    this.wrongNetwork = networkId !== 1 && networkId !== undefined;
+    const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
+      return toHexString(network.networkId).toLowerCase() !== '0x1';
+    });
+    const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
+    if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
+      this.wrongNetwork = true;
+      this.notificationsStore.showMessage('Please change network to Holesky', 'error');
+    } else {
+      try {
+        changeCurrentNetwork(Number(networkId));
+      } catch (e) {
+        this.wrongNetwork = true;
+        this.notificationsStore.showMessage(String(e), 'error');
+        return;
+      }
+      config.links.SSV_API_ENDPOINT = getCurrentNetwork().api;
+      this.wrongNetwork = false;
+      this.networkId = networkId;
+    }
   }
 
   /**

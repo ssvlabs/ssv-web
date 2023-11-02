@@ -18,13 +18,16 @@ type Props = {
   withoutExplorer?: boolean;
   operator: any;
   setOpenExplorerRefs?: Function;
+  logoSize?: number;
+  nameFontSize?: number;
+  idFontSize?: number;
 };
 
 const OperatorDetails = (props: Props) => {
-  const { gray80, operator, withCopy, withoutExplorer, setOpenExplorerRefs } = props;
+  const { gray80, operator, withCopy, withoutExplorer, setOpenExplorerRefs, logoSize, nameFontSize, idFontSize } = props;
   const stores = useStores();
   const notificationsStore: NotificationsStore = stores.Notifications;
-  const classes = useStyles({ isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
+  const classes = useStyles({ nameFontSize, idFontSize, logoSize, isDeleted: operator.is_deleted, operatorLogo: operator.logo, gray80 });
   let operatorName = operator?.name;
   const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
 

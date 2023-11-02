@@ -4,6 +4,7 @@ import { Theme } from '@mui/material/styles';
 export const useStyles = makeStyles((theme: Theme) => ({
     ScreenWrapper: {
         width: '100%',
+      minHeight: 791,
     },
     Inactive: {
         color: theme.colors.primaryError,

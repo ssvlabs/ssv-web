@@ -182,11 +182,11 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
                 !disabled && selectOperator(e, operator);
               }}
           >
-            <StyledCell style={{ paddingLeft: 20, width: 60 }}>
+            <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
               <Checkbox disable={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''} isChecked={isSelected}/>
             </StyledCell>
             <StyledCell>
-              <OperatorDetails withoutExplorer operator={operator}/>
+              <OperatorDetails nameFontSize={14} idFontSize={12} withoutExplorer operator={operator}/>
             </StyledCell>
             <StyledCell>
               <Grid container>
@@ -287,6 +287,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
           withConversion
           withoutNavigation={editPage}
           wrapperClass={classes.ScreenWrapper}
+          wrapperHeight={791}
           header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
           body={[
             <Grid container>

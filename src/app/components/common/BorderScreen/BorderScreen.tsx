@@ -12,6 +12,7 @@ type Props = {
   overFlow?: string,
   width?: number,
   marginTop?: number,
+  wrapperHeight?: number,
   wrapperClass?: any,
   sectionClass?: any,
   blackHeader?: boolean,
@@ -43,8 +44,9 @@ const BorderScreen = (props: Props) => {
     withConversion,
     withoutNavigation,
     withoutBorderBottom = false,
+    wrapperHeight,
   } = props;
-  const classes = useStyles({ overFlow, gray80, blackHeader, marginTop, width });
+  const classes = useStyles({ overFlow, gray80, blackHeader, marginTop, width, wrapperHeight });
 
   const switchCurrency = (selectedCurrency: string) => {
     setCurrency(selectedCurrency);

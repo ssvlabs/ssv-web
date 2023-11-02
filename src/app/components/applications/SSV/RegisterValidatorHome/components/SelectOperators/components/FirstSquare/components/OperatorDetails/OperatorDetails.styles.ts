@@ -4,11 +4,14 @@ import { Theme } from '@mui/material/styles';
 export const useStyles = makeStyles((theme: Theme) => ({
     Wrapper: {
         gap: 8,
-        alignItems: 'flex-start',
         flexWrap: 'nowrap',
+      alignItems: 'center',
     },
     TextWrapper: {
+      display: 'flex',
+      gap: 8,
         flexDirection: 'column',
+      justifyContent: 'space-between',
     },
     Copy: {
         width: 14,
@@ -22,8 +25,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
         backgroundImage: `url(/images/copy/${theme.darkMode ? 'dark' : 'gray'}.svg)`,
     },
     OperatorLogo: {
-        width: 40,
-        height: 40,
+        width: (props: any) => props.logoSize ? props.logoSize : 40,
+        height: (props: any) => props.logoSize ? props.logoSize : 40,
         borderRadius: 4,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
@@ -35,7 +38,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         marginTop: 4,
     },
     Name: {
-        fontSize: 16,
+        fontSize: (props: any) => props.nameFontSize ? props.nameFontSize : 16,
         fontWeight: 500,
         lineHeight: 1.62,
         whiteSpace: 'nowrap',
@@ -50,7 +53,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         alignSelf: 'flex-start',
     },
     Id: {
-        fontSize: 14,
+        fontSize: (props: any) => props.idFontSize ? props.idFontSize : 14,
         marginTop: -6,
         fontWeight: 500,
         lineHeight: 1.62,

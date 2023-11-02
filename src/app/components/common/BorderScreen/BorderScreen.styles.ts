@@ -23,6 +23,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: 32,
     },
     ScreenWrapper: {
+      height: (props: any) => props.wrapperHeight,
         borderRadius: 16,
         overflow: (props: any) => props.overFlow ?? 'hidden',
         border: (props: any) => props.gray80 ? `1px solid ${theme.colors.gray20}` : 'none',

@@ -16,7 +16,7 @@ const DkgOperator = ({ operator }: { operator: IOperator }) => {
         <Grid className={classes.OperatorDetails}>
             <Grid className={classes.OperatorNameAndIdWrapper}>
                 <Grid className={classes.OperatorLogo}/>
-                <Grid>
+                <Grid className={classes.OperatorName}>
                     {operator.name.length > 12 ? <AnchorTooltip title={operator.name} placement={'top'}>
                         {truncateText(operator.name, 12)}
                     </AnchorTooltip> : operator.name}

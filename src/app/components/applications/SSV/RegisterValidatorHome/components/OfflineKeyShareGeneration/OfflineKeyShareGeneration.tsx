@@ -56,10 +56,7 @@ const OfflineKeyShareGeneration = () => {
     const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
 
     const confirmWithdrawalAddressHandler = () => {
-        if (confirmedWithdrawalAddress) {
-            setConfirmedWithdrawalAddress(false);
-            setTextCopied(false);
-        } else {
+            if (!addressValidationError.shouldDisplay && withdrawalAddress) {
             setConfirmedWithdrawalAddress(true);
         }
     };
@@ -145,7 +142,7 @@ const OfflineKeyShareGeneration = () => {
     const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
     const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
     const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
-    const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg;
+    const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && confirmedWithdrawalAddress;
     const buttonLabel = buttonLabelCondition ? 'Next' : 'Change Operators';
     const submitFunctionCondition = selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg;
 
@@ -179,7 +176,8 @@ const OfflineKeyShareGeneration = () => {
                         <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.COMMAND_LINE) ? classes.BoxSelected : ''}`}
                               onClick={() => checkBox(OFFLINE_FLOWS.COMMAND_LINE)}>
                             <Grid item xs={XS} className={classes.Image}/>
-                            <Typography className={classes.BlueText}>Command Line Interface</Typography>
+                                <Typography className={classes.BlueText}>Command Line Interface</Typography>
+                                <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
                         </Grid>
                         <Tooltip title="Coming soon..." placement="top-end" children={
                             <Grid>
@@ -188,13 +186,19 @@ const OfflineKeyShareGeneration = () => {
                                       className={`${classes.Box} ${classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
                                       onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
                                       <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
-                                      <Typography className={classes.BlueText}>Desktop App</Typography>
+                                      <Grid className={classes.OptionTextWrapper}>
+                                          <Typography className={classes.BlueText}>Desktop App</Typography>
+                                          <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
+                                      </Grid>
                                 </Grid>
                             </Grid>}/>
                         {isNotMainnet && <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
                                onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
                             <Grid item xs={XS} className={`${classes.Image} ${classes.DkgImage} ${!isSelected(OFFLINE_FLOWS.DKG) && classes.DkgImageUnselected}`}/>
-                            <Typography className={classes.BlueText}>DKG</Typography>
+                            <Grid className={classes.OptionTextWrapper}>
+                                <Typography className={classes.BlueText}>DKG</Typography>
+                                <Typography className={classes.AdditionalGrayText}>Generate from New Key</Typography>
+                            </Grid>
                         </Grid>}
                     </Grid>
                     {selectedBox === OFFLINE_FLOWS.DESKTOP_APP && <Grid container item className={classes.UnofficialTool}>
@@ -214,32 +218,44 @@ const OfflineKeyShareGeneration = () => {
                         </Grid>
                     </Grid>
                     }
-                    {selectedBox === OFFLINE_FLOWS.DKG && isNotMainnet && operatorsAcceptDkg && <Grid container item className={classes.DkgInstructionsWrapper}>
+                    {selectedBox === OFFLINE_FLOWS.DKG && isNotMainnet && operatorsAcceptDkg &&
+                      <Grid container item className={classes.DkgInstructionsWrapper}>
                         <Grid className={classes.DkgNotification}>
                             Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
                         </Grid>
-                        <Typography className={classes.DkgTitle}>Prerequisite</Typography>
-                        <Grid className={classes.DkgText}><LinkText text={'Docker installed'} link={'https://docs.docker.com/engine/install/'}/>&nbsp;on the machine hosting the DKG client</Grid>
-                        <Typography className={classes.DkgTitle}>Instructions</Typography>
-                        <Grid className={classes.DkgText}>1. Set Withdrawal Address <CustomTooltip text={'Ethereum address to receive staking rewards and principle staked ETH. Please note that this cannot be changed in the future.'}/></Grid>
-                        <Grid className={classes.DkgWithdrawAddressWrapper}>
-                            <Typography className={classes.DkgInputLabel}>Withdrawal Address</Typography>
-                            <TextInput value={withdrawalAddress}
-                                       onChangeCallback={changeWithdrawalAddressHandler}
-                                       sideButton={true}
-                                       sideButtonLabel={confirmedWithdrawalAddress ? 'Confirmed' : 'Confirm'}
-                                       sideButtonClicked={confirmedWithdrawalAddress}
-                                       sideButtonAction={confirmWithdrawalAddressHandler}
-                                       sideButtonDisabled={!withdrawalAddress || addressValidationError.shouldDisplay} />
-                            {addressValidationError.errorMessage && withdrawalAddress && <Typography className={classes.DkgErrorMessage}>{addressValidationError.errorMessage}</Typography>}
-                        </Grid>
-                        <Typography className={classes.DkgText}>2. Initiate the DKG ceremony with the following command:</Typography>
+                          <Grid className={classes.DkgSectionWrapper}>
+                              <Typography className={classes.DkgTitle}>Prerequisite</Typography>
+                              <Grid className={classes.DkgText}><LinkText text={'Docker installed'} link={'https://docs.docker.com/engine/install/'}/>&nbsp;on the machine hosting the DKG client</Grid>
+                          </Grid>
+                          <Grid className={classes.DkgSectionWrapper}>
+                              <Typography className={classes.DkgTitle}>Instructions</Typography>
+                              <Grid className={classes.DkgText}>1. Set Withdrawal Address <CustomTooltip text={'Ethereum address to receive staking rewards and principle staked ETH. Please note that this cannot be changed in the future.'}/></Grid>
+                              <Grid className={classes.DkgWithdrawAddressWrapper}>
+                                  <Typography className={classes.DkgInputLabel}>Withdrawal Address</Typography>
+                                  <TextInput value={withdrawalAddress}
+                                             onChangeCallback={changeWithdrawalAddressHandler}
+                                             sideButton={true}
+                                             sideButtonLabel={confirmedWithdrawalAddress ? 'Confirmed' : 'Confirm'}
+                                             sideButtonClicked={confirmedWithdrawalAddress}
+                                             sideButtonAction={confirmWithdrawalAddressHandler}
+                                             sideButtonDisabled={!withdrawalAddress || addressValidationError.shouldDisplay} />
+                                  {addressValidationError.errorMessage && withdrawalAddress && <Typography className={classes.DkgErrorMessage}>{addressValidationError.errorMessage}</Typography>}
+                              </Grid>
+                          </Grid>
+                          {cliCommandPanelCondition && <Grid className={classes.DkgSectionWrapper}>
+                                <Typography className={classes.DkgText}>2. Initiate the DKG ceremony with the following command:</Typography>
+                                <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
+                                    <Grid item xs className={classes.CopyText}>{commandCli}</Grid>
+                                    {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
+                                </Grid>
+                              <Typography className={classes.DkgCliAdditionalText}>Experiencing issues initiating the ceremony? Explore solutions in the <LinkText style={{ fontSize: 14, fontWeight: 500 }} text={'troubleshooting guide.'}  /></Typography>
+                          </Grid>}
                     </Grid>}
                     {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
                         <ErrorMessage text={'DKG method is unavailable because some of your selected operators have not provided a DKG endpoint. '} />
                         {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <DkgOperator operator={operator} />)}
                     </Grid>}
-                    {cliCommandPanelCondition &&
+                    {selectedBox === 1 &&
                         <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
                             <Grid item xs className={classes.CopyText}>{commandCli}</Grid>
                             {showCopyButtonCondition && <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}

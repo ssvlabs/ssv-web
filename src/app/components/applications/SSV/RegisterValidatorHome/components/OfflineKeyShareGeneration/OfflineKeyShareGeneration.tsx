@@ -260,8 +260,10 @@ const OfflineKeyShareGeneration = () => {
                     <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
                 </Grid>
                 <Typography className={classes.DkgCliAdditionalText}>Experiencing issues initiating the ceremony?
-                  Explore solutions in the <LinkText style={{ fontSize: 14, fontWeight: 500 }}
-                                                     text={'troubleshooting guide.'}/></Typography>
+                  Explore solutions in the <LinkText
+                    style={{ fontSize: 14, fontWeight: 500 }}
+                    link={config.links.DKG_TROUBLESHOOTING_LINK}
+                    text={'troubleshooting guide.'}/></Typography>
               </Grid>}
             </Grid>}
           {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>

@@ -3,7 +3,7 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
   Wrapper: {
-    gap: 8,
+    gap: 10,
     flexWrap: 'nowrap',
     alignItems: 'center',
   },

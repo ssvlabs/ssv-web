@@ -192,7 +192,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
                       isChecked={isSelected}/>
           </StyledCell>
           <StyledCell>
-            <OperatorDetails nameFontSize={14} idFontSize={12} withoutExplorer operator={operator}/>
+            <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator}/>
           </StyledCell>
           <StyledCell>
             <Grid container>

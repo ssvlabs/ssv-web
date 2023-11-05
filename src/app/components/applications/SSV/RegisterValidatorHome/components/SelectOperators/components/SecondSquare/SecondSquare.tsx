@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SecondSquare.styles';
+import Typography from '@mui/material/Typography';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import WarningBox from '~app/components/common/WarningBox';
@@ -21,12 +22,14 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import MevIcon from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import MevIcon
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
+import OperatorDetails
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
-  const classes = useStyles({ editPage });
+  const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
@@ -41,6 +44,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
 
   const operatorHasMevRelays = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.mev_relays);
+  const operatorCount = Object.values(operatorStore.selectedOperators).length;
+  const clusterSize = clusterBox.length;
 
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
@@ -108,7 +113,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
           setClusterExist(false);
         }
         setCheckClusterExistence(false);
-      }).catch((error: any)=>{
+      }).catch((error: any) => {
         console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
         console.log(error);
         console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
@@ -123,77 +128,67 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
       withoutNavigation
       wrapperClass={classes.ScreenWrapper}
       body={[
-        <Grid container>
-          <HeaderSubHeader title={'Selected Operators'} />
-          <Grid container item className={classes.BoxesWrapper}>
-            <Grid className={classes.OperatorBoxesWrapper}>
-              {clusterBox.map((index: number) => {
-                if (operatorStore.selectedOperators[index]) {
-                  const operator = operatorStore.selectedOperators[index];
-                  return (
+        <Grid className={classes.firstSectionWrapper}>
+          <Grid container className={classes.firstSection}>
+            <Grid className={classes.HeaderWrapper}>
+              <HeaderSubHeader marginBottom={24} title={'Selected Operators'}/>
+              <Typography
+                className={classes.SelectedOperatorsIndicator}>{`${operatorCount}/${clusterSize}`}</Typography>
+            </Grid>
+            <Grid container item className={classes.BoxesWrapper}>
+              <Grid className={classes.OperatorBoxesWrapper}>
+                {clusterBox.map((index: number) => {
+                  if (operatorStore.selectedOperators[index]) {
+                    const operator = operatorStore.selectedOperators[index];
+                    return (
                       <Grid key={index} container className={classes.SelectedOperatorBox}>
                         <Grid className={classes.DeleteOperator} onClick={() => {
                           removeOperator(index);
-                        }}><Grid className={classes.whiteLine} /></Grid>
+                        }}><Grid className={classes.whiteLine}/></Grid>
                         <Grid item>
-                          <OperatorDetails operator={operator} />
+                          <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} operator={operator}
+                                           withoutExplorer/>
                         </Grid>
                         <Grid item className={classes.FeeAndMevRelaysWrapper}>
-                          <SsvAndSubTitle
-                              ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} />
+                          <SsvAndSubTitle fontSize={14}
+                                          ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
-                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay} hasMevRelay={operator.mev_relays?.includes(mevRelay)} />)}
+                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
+                                                                                          hasMevRelay={operator.mev_relays?.includes(mevRelay)}/>)}
                           </Grid>
                         </Grid>
                       </Grid>
-                  );
-                }
-                return (
+                    );
+                  }
+                  return (
                     <Grid key={index} item className={classes.BoxPlaceHolder}>Select Operator
                       0{index}</Grid>
-                );
-              })}
+                  );
+                })}
+              </Grid>
             </Grid>
-
+            {editPage ? (
+              <Grid container item xs={12} className={classes.AlertMessage}>
+                <Grid item xs={12}>
+                  Updating operators is experimental and could result in slashing, please proceed at your own
+                  discretion.
+                </Grid>
+              </Grid>
+            ) : ''}
+            {clusterExist && (
+              <Grid item xs={12}>
+                <ErrorMessage text={
+                  <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
+                    <LinkText
+                      text={'cluster page'}
+                      onClick={openSingleCluster}/>
+                    &nbsp;and click “Add Validator”.
+                  </Grid>}/>
+              </Grid>
+            )}
           </Grid>
-          {editPage ? (
-            <Grid container item xs={12} className={classes.AlertMessage}>
-              <Grid item xs={12}>
-                Updating operators is experimental and could result in slashing, please proceed at your own discretion.
-              </Grid>
-            </Grid>
-          ) : ''}
-          {clusterExist && (
-          <Grid item xs={12}>
-            <ErrorMessage text={
-              <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
-                     <LinkText
-                         text={'cluster page'}
-                         onClick={openSingleCluster}/>
-                &nbsp;and click “Add Validator”.
-              </Grid>}/>
-          </Grid>
-          )}
-          {!allSelectedOperatorsVerified && !clusterExist && (
-            <Grid container item xs={12} className={classes.WarningMessage}>
-              <Grid item xs={12} className={classes.WarningHeader}>
-                You have selected one or more operators that are&nbsp;
-                <LinkText
-                    text={'not verified.'}
-                    onClick={linkToNotVerified}
-                    className={classes.NotVerifiedText}
-                    link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH'}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to
-                your validators’ performance.
-              </Grid>
-              <Grid item xs={12}>
-                Please proceed only if you know and trust these operators.
-              </Grid>
-            </Grid>
-          )}
+        </Grid>,
+        <Grid container className={classes.SecondSection}>
           <Grid container item xs={12} className={classes.TotalFeesWrapper}>
             <Grid item className={classes.TotalFeesHeader}>
               {editPage ? 'New Operators Yearly Fee' : 'Operators Yearly Fee'}
@@ -207,10 +202,32 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
               />
             </Grid>
           </Grid>
-          {operatorHasMevRelays && <WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'} textLink={'Learn more'}
-                       link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
+          {!allSelectedOperatorsVerified && !clusterExist && (
+            <Grid container item xs={12} className={classes.WarningMessage}>
+              <Grid item xs={12} className={classes.WarningHeader}>
+                You have selected one or more operators that are&nbsp;
+                <LinkText
+                  text={'not verified.'}
+                  onClick={linkToNotVerified}
+                  className={classes.NotVerifiedText}
+                  link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH'}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to
+                your validators’ performance.
+              </Grid>
+              <Grid item xs={12}>
+                Please proceed only if you know and trust these operators.
+              </Grid>
+            </Grid>
+          )}
+          {operatorHasMevRelays &&
+            <WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
+                        textLink={'Learn more'}
+                        link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
-            submitFunction={onSelectOperatorsClick} />
+                         submitFunction={onSelectOperatorsClick}/>
         </Grid>,
       ]}
     />

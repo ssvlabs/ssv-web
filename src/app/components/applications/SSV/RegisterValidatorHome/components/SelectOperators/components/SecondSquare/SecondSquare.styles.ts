@@ -3,6 +3,7 @@ import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
   ScreenWrapper: {
+    maxHeight: 791,
     width: '100%',
     marginBottom: 100,
     marginTop: (props: any) => props.editPage ? '' : 82,
@@ -30,14 +31,18 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.white,
   },
   BoxesWrapper: {
+    width: '100%',
+    height: 400,
     '@media only screen and (max-width: 1400px)': {
       flexDirection: 'column',
     },
   },
   OperatorBoxesWrapper: {
     width: '100%',
-    maxHeight: 480,
-    overflowY: 'scroll',
+    height: 521,
+
+    overflowY: (props: any) => props.shouldBeScrollable ? 'scroll' : 'hidden',
+    overflowX: 'hidden',
     paddingTop: 10,
   },
   MevRelaysWrapper: {
@@ -49,13 +54,14 @@ export const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'flex-end',
   },
   FeeAndMevRelaysWrapper: {
+    gap: 8,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
   },
   SelectedOperatorBox: {
     width: '97%',
-    height: 97,
+    height: 80,
     fontSize: 16,
     fontWeight: 500,
     borderRadius: 8,
@@ -65,7 +71,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(5),
     display: 'flex',
     flexWrap: 'nowrap',
-    padding: '24px 10px 24px 10px',
+    padding: '18px 20px 18px 20px',
+    alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.white,
     border: `solid 1px ${theme.colors.gray20}`,
@@ -75,13 +82,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   BoxPlaceHolder: {
     width: 360,
-    height: 97,
+    height: 80,
     fontSize: 16,
     fontWeight: 500,
     lineHeight: 1.62,
     borderRadius: 8,
     color: theme.colors.gray30,
-    marginBottom: theme.spacing(5),
+    marginBottom: 16,
     padding: '24px 100px 47px 20px',
     backgroundColor: theme.colors.gray10,
     border: `dashed 1px ${theme.colors.gray30}`,
@@ -97,9 +104,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: 1.62,
     color: theme.colors.gray90,
     padding: theme.spacing(3, 4),
-    marginBottom: theme.spacing(5),
+    marginBottom: 12,
     backgroundColor: 'rgba(255, 210, 10, 0.2)',
-    border: `solid 1px ${theme.colors.primaryWarningRegular}`,
+    border: `solid 1px ${theme.colors.warning}`,
   },
   AlertMessage: {
     gap: 8,
@@ -138,4 +145,26 @@ export const useStyles = makeStyles((theme: Theme) => ({
   ExtendWarningClass: {
     marginBottom: 20,
   },
+  firstSectionWrapper: {
+    width: '100%',
+    minHeight: 570,
+  },
+  firstSection: {
+    display: 'flex',
+    gap: 0,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  SecondSection: {},
+  HeaderWrapper: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  SelectedOperatorsIndicator: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: theme.colors.primaryBlue,
+  },
+
 }));

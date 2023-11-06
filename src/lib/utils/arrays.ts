@@ -23,3 +23,5 @@ export const group = (array: any[]) => {
         return r;
     }, {});
 };
+
+export const allEqual = (arr: any[], fieldName: string) => arr.every(obj => obj[fieldName] === arr[0][fieldName]);

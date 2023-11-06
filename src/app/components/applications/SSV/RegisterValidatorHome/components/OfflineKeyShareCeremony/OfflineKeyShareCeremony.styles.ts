@@ -144,4 +144,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: 872,
     marginTop: 20,
   },
+  SelectedBoxBorder: {
+    border: `1px solid ${theme.colors.primaryBlue}`,
+  },
 }));

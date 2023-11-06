@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
+import { allEqual } from '~lib/utils/arrays';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SecondSquare.styles';
 import Typography from '@mui/material/Typography';
@@ -15,6 +16,7 @@ import { MEV_RELAYS } from '~lib/utils/operatorMetadataHelper';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -37,15 +39,18 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const windowSize = useWindowSize();
   const [clusterExist, setClusterExist] = useState(false);
   const [existClusterData, setExistClusterData] = useState<any>(null);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
 
-  const operatorHasMevRelays = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.mev_relays);
+  const operatorHasMevRelays = allEqual(Object.values(operatorStore.selectedOperators), 'mev_relays');
   const operatorCount = Object.values(operatorStore.selectedOperators).length;
   const clusterSize = clusterBox.length;
+  const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
+
 
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
@@ -125,6 +130,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 
   return (
     <BorderScreen
+      width={secondSquareWidth}
+      marginTop={84}
       withoutNavigation
       wrapperClass={classes.ScreenWrapper}
       body={[
@@ -188,7 +195,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
             )}
           </Grid>
         </Grid>,
-        <Grid container className={classes.SecondSection}>
+        <Grid container>
           <Grid container item xs={12} className={classes.TotalFeesWrapper}>
             <Grid item className={classes.TotalFeesHeader}>
               {editPage ? 'New Operators Yearly Fee' : 'Operators Yearly Fee'}
@@ -210,7 +217,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                   text={'not verified.'}
                   onClick={linkToNotVerified}
                   className={classes.NotVerifiedText}
-                  link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmbuDdbbm7Ygan8Qi8PWoGzN3NJCVmBJQsv2roUTZVg6CH'}
+                  link={'https://docs.ssv.network/learn/operators/verified-operators'}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -222,7 +229,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
               </Grid>
             </Grid>
           )}
-          {operatorHasMevRelays &&
+          {!operatorHasMevRelays &&
             <WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
                         textLink={'Learn more'}
                         link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}

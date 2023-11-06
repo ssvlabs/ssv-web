@@ -67,7 +67,7 @@ const OfflineKeyShareCeremony = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid className={classes.TitleBox}>
+                    <Grid className={`${classes.TitleBox} ${!isValidatorActivated ? classes.SelectedBoxBorder : null}`}>
                         <Grid container item className={classes.DkgInstructionsWrapper}>
                             <Grid className={classes.StepAndBadgeWrapper}>
                                 <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 2:</Typography>&nbsp;Deposit Validator</Typography>
@@ -84,7 +84,7 @@ const OfflineKeyShareCeremony = () => {
                             <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick} disable={isValidatorActivated}/>
                         </Grid>
                     </Grid>
-                    <Grid className={classes.TitleBox}>
+                    <Grid className={`${classes.TitleBox} ${isValidatorActivated ? classes.SelectedBoxBorder : null}`}>
                         <Grid container item className={classes.DkgInstructionsWrapper}>
                             <Typography className={classes.DkgTitle}><Typography className={classes.StepTitle}>Step 3:</Typography>&nbsp;Register Validator</Typography>
                             <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing its key shares to your cluster operators.</Typography>

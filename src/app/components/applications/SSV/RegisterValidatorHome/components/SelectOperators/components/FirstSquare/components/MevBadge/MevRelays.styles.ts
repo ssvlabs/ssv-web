@@ -16,17 +16,25 @@ export const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 500,
     },
     MevRelaysPopUp: {
-        width: 487,
+        width: 526,
         alignItems: 'center',
         position: 'absolute',
-        padding: '16px 24px',
+      top: (props: any) => props.popUpTop,
+        padding: '20px',
         borderRadius: 16,
         backgroundColor: theme.colors.white,
         boxShadow: '0 3px 12px 0 rgba(0, 0, 0, 0.06)',
         zIndex: 9999999,
     },
+  MevRelaysTitle: {
+      fontSize: 16,
+    fontWeight: 500,
+    color: theme.colors.black,
+  },
     MevRelaysContainer: {
         gap: 6,
+      marginTop: 10,
+      width: '100%',
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -66,4 +74,5 @@ export const useStyles = makeStyles((theme: Theme) => ({
         opacity: (props: any) => props.hasMevRelay ? 'none' : '40%',
         backgroundImage: (props: any) => `url(/images/mevs/${props.mevIcon}.svg)`,
     },
+  MevRelayBadgeText: { fontSize: 14, fontWeight: 500 },
 }));

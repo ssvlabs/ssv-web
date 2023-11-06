@@ -33,8 +33,17 @@ import StyledCell
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import ClusterSize
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
+import MevCounterBadge
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
 
-const FirstSquare = ({ editPage }: { editPage: boolean }) => {
+const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
+  editPage: boolean,
+  clusterSize: number,
+  setClusterSize: Function,
+  clusterBox: number[]
+}) => {
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const [loading, setLoading] = useState(false);
@@ -49,6 +58,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   const [searchInput, setSearchInput] = useState('');
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
   const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
+  const [dkgEnabled, selectDkgEnabled] = useState(false);
 
   const headers = [
     { type: '', displayName: '' },
@@ -56,6 +66,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     { type: 'validators_count', displayName: 'Validators', sortable: true },
     { type: 'performance.30d', displayName: '30d performance', sortable: true },
     { type: 'fee', displayName: 'Yearly Fee', sortable: true },
+    { type: 'mev', displayName: 'MEV', sortable: true },
     { type: '', displayName: '', sortable: true },
   ];
 
@@ -66,6 +77,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
     const payload = {
       page,
       ordering,
+      dkgEnabled,
       perPage: 10,
       type: filterBy,
       search: searchInput,
@@ -89,7 +101,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       operatorStore.unselectOperatorByPublicKey(operator);
       return;
     }
-    const indexes = [1, 2, 3, 4];
+    const indexes = clusterBox;
     let availableIndex: undefined | number;
     indexes.forEach((index: number) => {
       if (!operatorStore.selectedOperators[index] && !availableIndex) {
@@ -97,7 +109,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       }
     });
     if (availableIndex) {
-      operatorStore.selectOperator(operator, availableIndex);
+      operatorStore.selectOperator(operator, availableIndex, clusterBox);
     }
   };
 
@@ -143,15 +155,15 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
     if (operatorsData?.length === 0 && !loading) {
       return (
-          <TableRow hover>
-            <StyledCell className={classes.NoRecordsWrapper}>
-              <Grid container>
-                <Grid item xs={12} className={classes.NoRecordImage}/>
-                <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
-                <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
-              </Grid>
-            </StyledCell>
-          </TableRow>
+        <TableRow hover>
+          <StyledCell className={classes.NoRecordsWrapper}>
+            <Grid container>
+              <Grid item xs={12} className={classes.NoRecordImage}/>
+              <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
+              <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
+            </Grid>
+          </StyledCell>
+        </TableRow>
       );
     }
 
@@ -164,59 +176,67 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
       const disabled = reachedMaxValidators || isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;
+      const mevRelays = operator?.mev_relays || '';
+      const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
       return (
-          <TableRow
-              key={Math.floor(Math.random() * 10000000)}
-              className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
-              onClick={(e) => {
-                !disabled && selectOperator(e, operator);
-              }}
-          >
-            <StyledCell style={{ paddingLeft: 20, width: 60 }}>
-              <Checkbox disable={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''} isChecked={isSelected}/>
-            </StyledCell>
-            <StyledCell>
-              <OperatorDetails withoutExplorer operator={operator}/>
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <Grid item>{operator.validators_count}</Grid>
-                {reachedMaxValidators && (
-                    <Grid item style={{ marginLeft: 4 }}>
-                      <ToolTip text={'Operator reached  maximum amount of validators'}/>
-                    </Grid>
-                )}
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <Grid item
-                      className={hasValidators && isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
-                {isInactive && (
-                    <Grid item xs={12}>
-                      <Status item={operator} />
-                    </Grid>
-                )}
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <Grid item
-                      className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
-                {disabled && !isPrivateOperator && (
-                    <Grid item style={{ alignSelf: 'center' }}>
-                      <ToolTip text={'Operator reached  maximum amount of validators'}/>
-                    </Grid>
-                )}
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
-                redirectTo(operator.id);
-              }}/>
-            </StyledCell>
-          </TableRow>
+        <TableRow
+          key={Math.floor(Math.random() * 10000000)}
+          className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
+          onClick={(e) => {
+            !disabled && selectOperator(e, operator);
+          }}
+        >
+          <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
+            <Checkbox disable={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''}
+                      isChecked={isSelected}/>
+          </StyledCell>
+          <StyledCell>
+            <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator}/>
+          </StyledCell>
+          <StyledCell>
+            <Grid container>
+              <Grid item>{operator.validators_count}</Grid>
+              {reachedMaxValidators && (
+                <Grid item style={{ marginLeft: 4 }}>
+                  <ToolTip text={'Operator reached  maximum amount of validators'}/>
+                </Grid>
+              )}
+            </Grid>
+          </StyledCell>
+          <StyledCell>
+            <Grid container>
+              <Grid item
+                    className={hasValidators && isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
+              {isInactive && (
+                <Grid item xs={12}>
+                  <Status item={operator}/>
+                </Grid>
+              )}
+            </Grid>
+          </StyledCell>
+          <StyledCell>
+            <Grid container>
+              <Grid item
+                    className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
+              {disabled && !isPrivateOperator && (
+                <Grid item style={{ alignSelf: 'center' }}>
+                  <ToolTip text={'Operator reached  maximum amount of validators'}/>
+                </Grid>
+              )}
+            </Grid>
+          </StyledCell>
+          <StyledCell>
+            <Grid container>
+              <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount}/>
+            </Grid>
+          </StyledCell>
+          <StyledCell>
+            <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
+              redirectTo(operator.id);
+            }}/>
+          </StyledCell>
+        </TableRow>
       );
     });
   };
@@ -257,7 +277,7 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
 
   useEffect(() => {
     setLoading(true);
-    getOperators(1).then(()=>{
+    getOperators(1).then(() => {
       setLoading(false);
       scrollRef.current.scrollTop = 0;
     });
@@ -268,65 +288,67 @@ const FirstSquare = ({ editPage }: { editPage: boolean }) => {
   }, [operatorsPagination.page]);
 
   return (
-      <BorderScreen
-          blackHeader
-          withConversion
-          withoutNavigation={editPage}
-          wrapperClass={classes.ScreenWrapper}
-          header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
-          body={[
-            <Grid container>
-              <Grid item container>
-                <Grid item xs className={classes.SearchInputWrapper}>
-                  <TextInput
-                      withSideText
-                      placeHolder={'Search...'}
-                      onChangeCallback={inputHandler}
-                      sideIcon={loading ? <CircularProgress size={25} className={classes.Loading}/> :
-                          <div className={classes.SearchIcon}/>}
-                  />
-                </Grid>
-                <Filters setFilterBy={setFilterBy}/>
-              </Grid>
-              <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      {rows.length > 0 && headers.map((header: any, index: number) => {
-                        const sortByType = sortBy === header.type;
-                        const ascending = sortOrder === 'asc';
-                        const descending = sortOrder === 'desc';
-                        let headerClasses = classes.SortArrow;
+    <BorderScreen
+      blackHeader
+      withConversion
+      withoutNavigation={editPage}
+      wrapperClass={classes.ScreenWrapper}
+      wrapperHeight={791}
+      header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
+      body={[
+        <Grid container>
+          <ClusterSize currentClusterSize={clusterSize} changeClusterSize={setClusterSize}/>
+          <Grid item container>
+            <Grid item xs className={classes.SearchInputWrapper}>
+              <TextInput
+                withSideText
+                placeHolder={'Search...'}
+                onChangeCallback={inputHandler}
+                sideIcon={loading ? <CircularProgress size={25} className={classes.Loading}/> :
+                  <div className={classes.SearchIcon}/>}
+              />
+            </Grid>
+            <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled}/>
+          </Grid>
+          <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {rows.length > 0 && headers.map((header: any, index: number) => {
+                    const sortByType = sortBy === header.type;
+                    const ascending = sortOrder === 'asc';
+                    const descending = sortOrder === 'desc';
+                    let headerClasses = classes.SortArrow;
 
-                        if (sortByType) {
-                          if (ascending) headerClasses += ` ${classes.ArrowDown}`;
-                          if (descending) headerClasses += ` ${classes.ArrowUp}`;
-                        }
+                    if (sortByType) {
+                      if (ascending) headerClasses += ` ${classes.ArrowDown}`;
+                      if (descending) headerClasses += ` ${classes.ArrowUp}`;
+                    }
 
-                        return (
-                            <StyledCell key={index} className={classes.HeaderWrapper}>
-                              <Grid container onClick={() => header.sortable && sortHandler(header.type)}>
-                                <Grid item>{header.displayName}</Grid>
-                                {header.sortable && header.displayName !== '' && (
-                                    <Grid
-                                        item
-                                        className={headerClasses}
-                                    />
-                                )}
-                              </Grid>
-                            </StyledCell>
-                        );
-                      })}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>,
-          ]}
-      />
+                    return (
+                      <StyledCell key={index} className={classes.HeaderWrapper}>
+                        <Grid container onClick={() => header.sortable && sortHandler(header.type)}>
+                          <Grid item>{header.displayName}</Grid>
+                          {header.sortable && header.displayName !== '' && (
+                            <Grid
+                              item
+                              className={headerClasses}
+                            />
+                          )}
+                        </Grid>
+                      </StyledCell>
+                    );
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>,
+      ]}
+    />
   );
 };
 

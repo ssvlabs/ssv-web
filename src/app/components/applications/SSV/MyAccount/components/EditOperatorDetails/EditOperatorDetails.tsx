@@ -39,7 +39,7 @@ const EditOperatorDetails = () => {
     }, []);
 
     useEffect(() => {
-            setButtonDisable(metadataStore.validateOperatorMetaData());
+        setButtonDisable(metadataStore.validateOperatorMetaData());
     }, [JSON.stringify(metadataStore.metadata)]);
 
     const submitHandler = async () => {

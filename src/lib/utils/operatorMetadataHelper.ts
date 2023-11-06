@@ -15,6 +15,28 @@ export const FIELD_KEYS = {
     DKG_ADDRESS: 'dkgAddress',
 };
 
+export const MEV_RELAYS = {
+    AESTUS: 'Aestus',
+    AGNOSTIC: 'Agnostic Gnosis',
+    BLOXROUTE_MAX_PROFIT: 'bloXroute Max Profit',
+    BLOXROUTE_REGULATED: 'bloXroute Regulated',
+    EDEN: 'Eden Network',
+    FLASHBOTS: 'Flashbots',
+    MANIFOLD: 'Manifold',
+    ULTRA_SOUND: 'Ultra Sound',
+};
+
+export const MEV_RELAYS_LOGOS = {
+    [MEV_RELAYS.AESTUS]: 'Aestus',
+    [MEV_RELAYS.AGNOSTIC]: 'agnostic',
+    [MEV_RELAYS.BLOXROUTE_MAX_PROFIT]: 'blox-route',
+    [MEV_RELAYS.BLOXROUTE_REGULATED]: 'blox-route',
+    [MEV_RELAYS.EDEN]: 'eden',
+    [MEV_RELAYS.FLASHBOTS]: 'Flashbots',
+    [MEV_RELAYS.MANIFOLD]: 'manifold',
+    [MEV_RELAYS.ULTRA_SOUND]: 'ultraSound',
+};
+
 export type CountryType = {
     'alpha-2': string;
     'alpha-3': string;
@@ -37,6 +59,7 @@ export type MetadataEntity = {
     placeholderText: string;
     options?: string[];
     imageFileName?: string;
+    toolTipText?: string;
     additionalLabelText?: string,
 };
 
@@ -65,6 +88,8 @@ export const OPERATOR_NODE_TYPES = {
 };
 
 export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
+
+export const HTTP_PREFIX = 'http://';
 
 export const FIELDS: { [key: string]: MetadataEntity } = {
     [FIELD_KEYS.OPERATOR_NAME]: {
@@ -98,7 +123,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         value: '',
         errorMessage: '',
         placeholderText: 'Aestus, Agnostic Gnosis, Blocknative...',
-        options: ['Aestus', 'Agnostic Gnosis', 'Blocknative', 'bloXroute Max Profit', 'bloXroute Regulated', 'Eden Network', 'Flashbots', 'Manifold', 'Ultra Sound'],
+        options: Object.values(MEV_RELAYS),
     },
     [FIELD_KEYS.LOCATION]: {
         label: 'Server Geolocation',
@@ -121,10 +146,11 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         options: [],
     },
     [FIELD_KEYS.DKG_ADDRESS]: {
-        label: 'DKG Node IP',
-        value: '',
+        label: 'DKG Endpoint',
+        value: HTTP_PREFIX,
         errorMessage: '',
-        placeholderText: 'Enter your DKG Node IP',
+        placeholderText: 'http://ip:port',
+        toolTipText: 'The IP address or domain name of the machine running the operator DKG client, along with the port number ("3030" is the default port). Example: "http://192.168.1.1:3030 or "http://my.example.com:3030"',
     },
     [FIELD_KEYS.WEBSITE_URL]: {
         label: 'Website Link',
@@ -180,15 +206,18 @@ export const isLink = (value: string) => {
     return !linkRegex.test(value);
 };
 
-export const checkDkgAddress = (value: string) => {
-    const pattern = new RegExp(
-        '^(' +
-        '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}' + // Domain name
-        '|' +
-        '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' + // IP address
-        ')' +
-        '(:\\d{1,5})?' + // Optional port
-        '$',
-    );
-    return !pattern.test(value);
+export const validateDkgAddress = (value: string, isForm?: boolean) => {
+    if (isForm && value === HTTP_PREFIX) return false;
+
+    if (!value.startsWith(HTTP_PREFIX)) return true;
+
+    const addressWithoutHttp = value.substring(HTTP_PREFIX.length);
+
+    const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}';
+    const ipPattern = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
+    const portPattern = ':\\d{1,5}';
+
+    const pattern = new RegExp(`^(${domainPattern}|${ipPattern})${portPattern}$`);
+
+    return !pattern.test(addressWithoutHttp);
 };

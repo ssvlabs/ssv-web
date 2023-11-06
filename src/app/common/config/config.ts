@@ -1,7 +1,15 @@
 import { ABI_VERSION } from '~app/common/config/abi';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
 
-const { networkId, api, tokenAddress, setterContractAddress, getterContractAddress, explorerUrl, apiVersion } = getCurrentNetwork();
+const {
+  networkId,
+  api,
+  tokenAddress,
+  setterContractAddress,
+  getterContractAddress,
+  explorerUrl,
+  apiVersion,
+} = getCurrentNetwork();
 
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
@@ -58,6 +66,9 @@ const config = {
             EXPIRED: '/my-account/operator/fee-update/expired',
           },
         },
+        MIGRATION: {
+          START_MIGRATION: '/my-account/migration',
+        },
         CLUSTER: {
           ROOT: '/my-account/cluster',
           DEPOSIT: '/my-account/cluster/deposit',
@@ -105,6 +116,7 @@ const config = {
         DISTRIBUTION_METHOD: {
           START: '/join/validator/distribution-method',
           DISTRIBUTE_OFFLINE: '/join/validator/distribute-offline',
+          DISTRIBUTE_SUMMARY: '/join/validator/ceremony-summary',
           UPLOAD_KEYSHARES: '/join/validator/upload-keyshares',
         },
         FUNDING_PERIOD_PAGE: '/join/validator/funding',
@@ -154,6 +166,7 @@ const config = {
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/run-a-node/operator-node/maintenance/monitoring-grafana',
+    DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting',
   },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {

@@ -13,6 +13,7 @@ const stores = [
   'Operator',
   'Validator',
   'MyAccount',
+  'Migration',
   'Application',
   'Distribution',
   'Notifications',

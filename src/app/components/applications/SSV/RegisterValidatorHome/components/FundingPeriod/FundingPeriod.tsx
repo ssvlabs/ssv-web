@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -100,7 +101,7 @@ const FundingPeriod = () => {
                       Insufficient SSV balance. Acquire further SSV or pick a different amount.
                     </Grid>
                     <Grid container item xs>
-                      <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
+                      <LinkText className={classes.Link} text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
                     </Grid>
                   </Grid>
                 }

@@ -37,6 +37,7 @@ const RegisterValidatorHome = () => {
       processName: 'register_validator',
     }, 2);
     operatorStore.unselectAllOperators();
+    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
     navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
   };
 
@@ -44,7 +45,7 @@ const RegisterValidatorHome = () => {
     <BorderScreen
       body={[
         <Grid container>
-          <HeaderSubHeader title={'Run a Distibuted Validator'}
+          <HeaderSubHeader title={'Run a Distributed Validator'}
             subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
           />
           <Typography className={classes.GrayText}>Prerequisites</Typography>

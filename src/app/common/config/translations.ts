@@ -80,6 +80,10 @@ const translations = {
       CATCH_ERROR_RESPONSE: {
         name: 'ERROR', errorMessage: 'file data incorrect, check operator data and re-generate keyshares.json',
       },
+      INCORRECT_OWNER_ADDRESS_ERROR: {
+        name: 'ERROR', errorMessage: 'Wrong wallet connected', subErrorMessage: 'please connect to wallet',
+      },
+      INVALID_OPERATOR_DETAILS: { message: 'Invalid operator details', subErrorMessage: 'Please contact support' },
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',
@@ -94,7 +98,7 @@ const translations = {
       DESCRIPTION: 'Your validator is currently active on beacon chain:',
     },
     SELECT_OPERATORS: {
-      TITLE: 'Pick the cluster of network operators to run you validator',
+      TITLE: 'Pick the cluster of network operators to run your validator',
       DESCRIPTION: 'Pick the cluster of network operators to run your validator.',
     },
     SUCCESS: {
@@ -147,7 +151,7 @@ const translations = {
     REQUIRED_FIELD_ERROR: 'Required field',
     LINK_ERROR: 'Enter a valid link i.e - https://ssv.network/',
     SPECIAL_CHARACTERS_ERROR: 'Field accepts numbers, English characters and the following characters: _!$#\'-|',
-    DKG_ADDRESS_ERROR: 'DKG IP address or domain name with optional port',
+    DKG_ADDRESS_ERROR: 'Endpoint must specify ip and port',
     CONFIRMATION_CHANGE: {
       TITLE: 'Operator details has been updated',
       SUBTITLE: 'See your updated details on your operator page in the network Explorer',

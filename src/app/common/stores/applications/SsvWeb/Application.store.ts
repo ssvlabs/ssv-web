@@ -27,7 +27,7 @@ class ApplicationStore extends BaseStore implements Application {
   walletConnectivity: boolean = false;
   whiteNavBarBackground: boolean = false;
   transactionPendingPopUp: boolean = false;
-  appTitle: string = 'SSV Network Testnet';
+  appTitle: string = 'SSV Network';
   strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
   locationRestrictionEnabled: boolean = true;
 

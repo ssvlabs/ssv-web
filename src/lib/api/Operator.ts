@@ -9,6 +9,7 @@ type OperatorsListQuery = {
   type?: string[],
   perPage?: number
   ordering?: string,
+  dkgEnabled?: boolean,
 };
 
 type OperatorValidatorListQuery = {
@@ -54,13 +55,14 @@ class Operator {
    * Get operators
    */
   async getOperators(props: OperatorsListQuery, skipRetry?: boolean) {
-    const { page, perPage, type, ordering, search } = props;
+    const { page, perPage, type, ordering, search, dkgEnabled } = props;
     let url = `${String(config.links.SSV_API_ENDPOINT)}/operators?`;
     if (search) url += `search=${search}&`;
     if (ordering) url += `ordering=${ordering}&`;
     if (page) url += `page=${page}&`;
     if (perPage) url += `perPage=${perPage}&`;
     if (type?.length) url += `type=${type.join(',')}&`;
+    if (dkgEnabled)url += 'has_dkg_address=true&';
     url += `ts=${new Date().getTime()}`;
 
     try {

@@ -35,6 +35,8 @@ export interface IOperator {
   selected?: boolean,
   dappNode?: boolean,
   ownerAddress: string,
+  dkg_address?: string,
+  mev_relays?: string,
   autoSelected?: boolean
   validatorsCount?: number,
   verified_operator?: boolean,
@@ -86,6 +88,7 @@ class OperatorStore extends BaseStore {
   loadingOperators: boolean = false;
 
   operatorValidatorsLimit: number = 0;
+  clusterSize: number = 4;
 
   constructor() {
     // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
@@ -100,10 +103,12 @@ class OperatorStore extends BaseStore {
       maxFeeIncrease: observable,
       newOperatorKeys: observable,
       clearSettings: action.bound,
+      setClusterSize: action.bound,
       openCancelDialog: observable,
       getOperatorFee: action.bound,
       removeOperator: action.bound,
       loadingOperators: observable,
+      clusterSize: observable,
       addNewOperator: action.bound,
       selectOperator: action.bound,
       processOperatorId: observable,
@@ -186,7 +191,7 @@ class OperatorStore extends BaseStore {
    * Check if selected necessary minimum of operators
    */
   get selectedEnoughOperators(): boolean {
-    return this.stats.selected >= config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS;
+    return this.stats.selected >= this.clusterSize;
   }
 
   /**
@@ -255,7 +260,8 @@ class OperatorStore extends BaseStore {
     try {
       this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
       const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
-      if (response['0'] && getCurrentNetwork().networkId === NETWORKS.GOERLI) {
+      const testNets = [NETWORKS.GOERLI, NETWORKS.HOLESKY];
+      if (response['0'] && testNets.indexOf(getCurrentNetwork().networkId) !== -1) {
         this.operatorFutureFee = response['1'];
         this.operatorApprovalBeginTime = response['2'];
         this.operatorApprovalEndTime = response['3'];
@@ -336,13 +342,14 @@ class OperatorStore extends BaseStore {
 
   async getOperatorBalance(id: number): Promise<any> {
     return new Promise((resolve) => {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.getterContract;
-        contract.methods.getOperatorEarnings(id).call().then((response: any) => {
-            resolve(walletStore.fromWei(response));
-        }).catch(() => resolve(true));
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const contract: Contract = walletStore.getterContract;
+      contract.methods.getOperatorEarnings(id).call().then((response: any) => {
+        resolve(walletStore.fromWei(response));
+      }).catch(() => resolve(true));
     });
   }
+
   /**
    * Cancel change fee process for operator
    */
@@ -388,7 +395,7 @@ class OperatorStore extends BaseStore {
                       operatorApprovalBeginTime: this.operatorApprovalBeginTime,
                     };
                   },
-                    operatorDataBefore,
+                  operatorDataBefore,
                 );
                 if (changed) {
                   // eslint-disable-next-line no-await-in-loop
@@ -512,7 +519,10 @@ class OperatorStore extends BaseStore {
           operatorApprovalEndTime: this.operatorApprovalEndTime,
           operatorApprovalBeginTime: this.operatorApprovalBeginTime,
         };
-        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gas: gasLimit })
+        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({
+          from: walletStore.accountAddress,
+          gas: gasLimit,
+        })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -573,54 +583,57 @@ class OperatorStore extends BaseStore {
         const applicationStore: ApplicationStore = this.getStore('Application');
         const contractInstance = walletStore.setterContract;
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
-            walletStore.toWei(
-                new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
-            ),
+          walletStore.toWei(
+            new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
+          ),
         );
-        const { id, fee }  = await Operator.getInstance().getOperator(operatorId);
+        const { id, fee } = await Operator.getInstance().getOperator(operatorId);
         const operatorBefore = { id, fee };
-        await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({ from: walletStore.accountAddress, gas: gasLimit })
-            .on('receipt', async (receipt: any) => {
-              // eslint-disable-next-line no-prototype-builtins
-              const event: boolean = receipt.hasOwnProperty('events');
-              if (event) {
-                let iterations = 0;
-                while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                    await this.refreshOperatorsAndClusters(resolve, true);
-                    break;
-                  }
-                  iterations += 1;
-                  const changed = await myAccountStore.checkEntityChangedInAccount(
-                      async () => {
-                        const operatorAfter = await Operator.getInstance().getOperator(operatorId);
-                        return {
-                          id: operatorAfter.id,
-                          fee: operatorAfter.fee,
-                        };
-                      },
-                      operatorBefore,
-                  );
-                  if (changed) {
-                    await this.refreshOperatorsAndClusters(resolve, true);
-                    break;
-                  } else {
-                    console.log('Operator is still not updated in API..');
-                  }
-                  await myAccountStore.delay();
+        await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({
+          from: walletStore.accountAddress,
+          gas: gasLimit,
+        })
+          .on('receipt', async (receipt: any) => {
+            // eslint-disable-next-line no-prototype-builtins
+            const event: boolean = receipt.hasOwnProperty('events');
+            if (event) {
+              let iterations = 0;
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                  await this.refreshOperatorsAndClusters(resolve, true);
+                  break;
                 }
+                iterations += 1;
+                const changed = await myAccountStore.checkEntityChangedInAccount(
+                  async () => {
+                    const operatorAfter = await Operator.getInstance().getOperator(operatorId);
+                    return {
+                      id: operatorAfter.id,
+                      fee: operatorAfter.fee,
+                    };
+                  },
+                  operatorBefore,
+                );
+                if (changed) {
+                  await this.refreshOperatorsAndClusters(resolve, true);
+                  break;
+                } else {
+                  console.log('Operator is still not updated in API..');
+                }
+                await myAccountStore.delay();
               }
-            })
-            .on('transactionHash', (txHash: string) => {
-              applicationStore.txHash = txHash;
-              applicationStore.showTransactionPendingPopUp(true);
-            })
-            .on('error', (error: any) => {
-              console.debug('Contract Error', error.message);
-              applicationStore.setIsLoading(false);
-              applicationStore.showTransactionPendingPopUp(false);
-              resolve(false);
-            });
+            }
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            console.debug('Contract Error', error.message);
+            applicationStore.setIsLoading(false);
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(false);
+          });
       } catch (e: any) {
         console.log(`Filed to decrease operator fee: ${e.message}`);
         resolve(false);
@@ -647,7 +660,10 @@ class OperatorStore extends BaseStore {
           previous_fee: operatorBefore.previous_fee,
         };
 
-        await walletStore.setterContract.methods.executeOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
+        await walletStore.setterContract.methods.executeOperatorFee(operatorId).send({
+          from: walletStore.accountAddress,
+          gas: gasLimit,
+        })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -718,7 +734,10 @@ class OperatorStore extends BaseStore {
 
       // eslint-disable-next-line no-async-promise-executor
       return await new Promise(async (resolve) => {
-        await contractInstance.methods.removeOperator(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
+        await contractInstance.methods.removeOperator(operatorId).send({
+          from: walletStore.accountAddress,
+          gas: gasLimit,
+        })
           .on('receipt', async (receipt: any) => {
             // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
@@ -787,8 +806,8 @@ class OperatorStore extends BaseStore {
 
         // Send add operator transaction
         payload.push(
-            transaction.pubKey,
-            ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(feePerBlock)),
+          transaction.pubKey,
+          ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(feePerBlock)),
         );
 
         console.debug('Register Operator Transaction Data:', payload);
@@ -884,10 +903,10 @@ class OperatorStore extends BaseStore {
    * @param operator
    * @param selectedIndex
    */
-  selectOperator(operator: IOperator, selectedIndex: number) {
+  selectOperator(operator: IOperator, selectedIndex: number, clusterBox: number[]) {
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax
-    for (const index of [1, 2, 3, 4]) {
+    for (const index of clusterBox) {
       if (this.selectedOperators[index]?.address + this.selectedOperators[index]?.id === operator.address + operator.id) {
         operatorExist = true;
       }
@@ -921,6 +940,10 @@ class OperatorStore extends BaseStore {
 
   unselectAllOperators() {
     this.selectedOperators = {};
+  }
+
+  setClusterSize(size: number) {
+    this.clusterSize = size;
   }
 }
 

@@ -10,7 +10,9 @@ type Props = {
   SideHeader?: any,
   gray80?: boolean,
   overFlow?: string,
+  width?: number | string,
   marginTop?: number,
+  wrapperHeight?: number,
   wrapperClass?: any,
   sectionClass?: any,
   blackHeader?: boolean,
@@ -33,6 +35,7 @@ const BorderScreen = (props: Props) => {
     overFlow,
     marginTop,
     SideHeader,
+    width,
     blackHeader,
     wrapperClass,
     borderRadius,
@@ -41,8 +44,9 @@ const BorderScreen = (props: Props) => {
     withConversion,
     withoutNavigation,
     withoutBorderBottom = false,
+    wrapperHeight,
   } = props;
-  const classes = useStyles({ overFlow, gray80, blackHeader, marginTop });
+  const classes = useStyles({ overFlow, gray80, blackHeader, marginTop, width, wrapperHeight });
 
   const switchCurrency = (selectedCurrency: string) => {
     setCurrency(selectedCurrency);
@@ -52,7 +56,7 @@ const BorderScreen = (props: Props) => {
     <Grid container className={`${classes.BorderScreenWrapper} ${wrapperClass || ''}`}>
       {!withoutNavigation && (
         <Grid item className={classes.LinkWrapper}>
-          <BackNavigation onClick={props.onBackButtonClick} />
+          <BackNavigation onClick={props.onBackButtonClick}/>
         </Grid>
       )}
       <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
@@ -61,15 +65,15 @@ const BorderScreen = (props: Props) => {
             <Grid item className={classes.Header} xs>
               {header}
             </Grid>
-            {SideHeader && !withConversion && <Grid item><SideHeader /></Grid>}
+            {SideHeader && !withConversion && <Grid item><SideHeader/></Grid>}
             {withConversion && false && (
               <Grid item>
                 <Grid container item className={classes.Conversion}>
                   {coins.map((coin: string, index: number) => {
                     return (
                       <Grid key={index} item xs={6}
-                        className={`${classes.Currency} ${currency === coin && classes.SelectedCurrency}`}
-                        onClick={() => {
+                            className={`${classes.Currency} ${currency === coin && classes.SelectedCurrency}`}
+                            onClick={() => {
                               switchCurrency(coin);
                             }}>{coin}</Grid>
                     );
@@ -81,17 +85,18 @@ const BorderScreen = (props: Props) => {
         )}
         {body.map((section: any, index: number) => {
           return (
-            <Grid key={index} item container style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }}
-              className={sectionClass ?? classes.Section}>
+            <Grid key={index} item container
+                  style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }}
+                  className={sectionClass ?? classes.Section}>
               {section}
             </Grid>
           );
         })}
         {bottom?.map((section: any, index: number) => {
           return (
-              <Grid key={index} item container className={bottomWrapper ?? classes.Section}>
-                {section}
-              </Grid>
+            <Grid key={index} item container className={bottomWrapper ?? classes.Section}>
+              {section}
+            </Grid>
           );
         })}
       </Grid>

@@ -91,12 +91,11 @@ const OfflineKeyShareGeneration = () => {
     operatorsKeys: [],
   });
 
-  const operatorsInfo = Object.values(operatorStore.selectedOperators).map((operator: any) => {
-    const newOperator = JSON.parse(JSON.stringify(operator));  // Deep copy
-    newOperator.ip = newOperator.dkg_address;
-    delete newOperator.dkg_address;
-    return newOperator;
-  });
+  const operatorsInfo = Object.values(operatorStore.selectedOperators).map((operator: any) => ({
+    id: operator.id,
+    public_key: operator.public_key,
+    ip: operator.dkg_address,
+  }));
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
   const dkgCliCommand = `docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo '${JSON.stringify(operatorsInfo)}' --network ${apiNetwork} --generateInitiatorKey --outputPath /data`;
@@ -136,7 +135,7 @@ const OfflineKeyShareGeneration = () => {
   const changeWithdrawalAddressHandler = (e: any) => {
     const { value } = e.target;
     setWithdrawalAddress(value);
-    validateAddressInput(value, setAddressValidationError);
+    validateAddressInput(value, setAddressValidationError, false, 'Withdrawal address');
     setTextCopied(false);
     setConfirmedWithdrawalAddress(false);
   };
@@ -269,7 +268,14 @@ const OfflineKeyShareGeneration = () => {
           {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
             <ErrorMessage
               text={'DKG method is unavailable because some of your selected operators have not provided a DKG endpoint. '}/>
-            {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <DkgOperator
+            {Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => {
+              if (a.dkg_address && !b.dkg_address) {
+                return 1;
+              } else if (!a.dkg_address && b.dkg_address) {
+                return -1;
+              }
+              return a.id - b.id;
+            }).map((operator: IOperator) => <DkgOperator
               operator={operator}/>)}
           </Grid>}
           {selectedBox === 1 &&

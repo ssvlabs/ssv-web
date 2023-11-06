@@ -155,7 +155,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
-  SecondSection: {},
   HeaderWrapper: {
     width: '100%',
     display: 'flex',

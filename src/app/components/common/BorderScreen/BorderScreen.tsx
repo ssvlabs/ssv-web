@@ -10,7 +10,7 @@ type Props = {
   SideHeader?: any,
   gray80?: boolean,
   overFlow?: string,
-  width?: number,
+  width?: number | string,
   marginTop?: number,
   wrapperHeight?: number,
   wrapperClass?: any,

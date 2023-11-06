@@ -268,7 +268,7 @@ const OfflineKeyShareGeneration = () => {
           {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
             <ErrorMessage
               text={'DKG method is unavailable because some of your selected operators have not provided a DKG endpoint. '}/>
-            {Object.values(operatorStore.selectedOperators).sort((a: any, b: any) =>  {
+            {Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => {
               if (a.dkg_address && !b.dkg_address) {
                 return 1;
               } else if (!a.dkg_address && b.dkg_address) {

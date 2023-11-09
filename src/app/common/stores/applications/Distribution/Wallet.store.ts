@@ -201,7 +201,7 @@ class WalletStore extends BaseStore implements Wallet {
       console.debug('Connecting wallet..');
       const result = await this.onboardSdk.connectWallet();
       if (result?.length > 0) {
-        const networkId = result[0].chains[0].id.replace('0x', '');
+        const networkId = result[0].chains[0].id;
         const wallet = result[0];
         const address = result[0].accounts[0].address;
         await this.walletHandler(wallet);

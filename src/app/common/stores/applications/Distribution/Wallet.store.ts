@@ -12,12 +12,8 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import {
   changeCurrentNetwork, getCurrentNetwork,
-  GOERLI_NETWORK_ID,
-  HOLESKY_NETWORK_ID, inNetworks,
-  NetworkDataType,
-  NETWORKS,
-  NETWORKS_DATA,
-  toHexString,
+  inNetworks,
+  NETWORKS, notIncludeMainnet, testNets,
 } from '~lib/utils/envHelper';
 
 const WALLET_CONNECTED = 'WalletConnected';
@@ -249,10 +245,6 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async networkHandler(networkId: any) {
-    const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
-      return toHexString(network.networkId).toLowerCase() !== '0x1';
-    });
-    const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
     if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Holesky', 'error');

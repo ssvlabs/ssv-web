@@ -6,10 +6,9 @@ export const useStyles = makeStyles(() => ({
         height: 220,
         margin: 'auto',
         cursor: 'pointer',
-        marginBottom: 40,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'url(/images/claim/light.svg)',
+        backgroundImage: 'url(/images/restrict/restrict.svg)',
     },
 }));

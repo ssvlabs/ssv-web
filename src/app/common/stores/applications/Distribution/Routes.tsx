@@ -10,22 +10,19 @@ import Claim from '~app/components/applications/Distribution/components/Claim/Cl
 import Success from '~app/components/applications/Distribution/components/Success/Success';
 import DistributionWelcome from '~app/components/applications/Distribution/components/Welcome/Welcome';
 import CountryNotSupported from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported';
-import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 
 const Routes: any = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
-  const distributionStore: DistributionStore = stores.Distribution;
 
   return (
     <Layout>
-      <DistributionAppBar />
+      <DistributionAppBar/>
       <Wrapper>
-        <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
-        {walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<Claim />} />}
-        {!walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<DistributionWelcome />} />}
-        {distributionStore.userWithdrawRewards &&
-          <Route path={config.routes.DISTRIBUTION.SUCCESS} element={<Success />} />}
+        <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported/>}/>
+        {walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<Claim/>}/>}
+        {!walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<DistributionWelcome/>}/>}
+        <Route path={config.routes.DISTRIBUTION.SUCCESS} element={<Success/>}/>
       </Wrapper>
     </Layout>
   );

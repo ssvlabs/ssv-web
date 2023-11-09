@@ -12,6 +12,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     AddSsvToWallet: {
         height: 60,
+        marginTop: 20,
         marginBottom: 27,
         cursor: 'pointer',
         textAlign: 'left',
@@ -38,5 +39,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
         textAlign: 'center',
         textDecoration: 'underline',
         color: theme.colors.primaryBlue,
+    },
+    LinkWrapper: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: 33,
+        justifyContent: 'center',
     },
 }));

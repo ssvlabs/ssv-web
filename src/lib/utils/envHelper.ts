@@ -129,6 +129,8 @@ export const ENV = (): IENVS => {
   return _envs[parseInt(String(finalNetworkId), 10)];
 };
 
+export const transactionLink = (txHash: string) => `${ENV().ETHERSCAN_URL}/tx/${txHash}`;
+
 export const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
 
 export const changeCurrentNetwork = (networkId: number, version?: string) => {
@@ -162,3 +164,5 @@ export const getCurrentNetwork = () => {
   const networkId = NETWORKS_DATA[0].networkId;
   return { ...NETWORKS_DATA[0], ...NETWORK_VARIABLES[networkId] };
 };
+
+export const networkTitle = getCurrentNetwork().networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';

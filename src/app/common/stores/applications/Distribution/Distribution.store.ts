@@ -1,6 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
+import { equalsAddresses } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -13,13 +14,16 @@ import NotificationsStore from '~app/common/stores/applications/Distribution/Not
  */
 
 class DistributionStore extends BaseStore {
-  @observable rewardIndex: number = 0;
-  @observable claimed: boolean = false;
+  @observable merkleRoot: string = '';
   @observable userAddress: string = '';
+  @observable rewardIndex: number = 0;
   @observable rewardAmount: number = 0;
+  @observable claimed: boolean = false;
+  @observable claimedRewards: number = 0;
   @observable rewardMerkleProof: string[] = [];
   @observable userWithdrawRewards: boolean = false;
   @observable distributionContractInstance: Contract | null = null;
+
 
   @action.bound
   async claimRewards() {
@@ -31,9 +35,9 @@ class DistributionStore extends BaseStore {
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
       applicationStore.setIsLoading(true);
       await contract.methods.claim(
-        this.rewardIndex,
         this.userAddress,
         String(this.rewardAmount),
+        this.merkleRoot,
         this.rewardMerkleProof,
       ).send({ from: walletStore.accountAddress })
         .on('receipt', async (receipt: any) => {
@@ -58,6 +62,18 @@ class DistributionStore extends BaseStore {
   }
 
   @action.bound
+  async cumulativeClaimed() {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      const contract = this.distributionContract;
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const result = await contract.methods.cumulativeClaimed(this.userAddress).call();
+      this.claimedRewards = walletStore.fromWei(parseInt(String(result)).toString());
+      resolve(result);
+    });
+  }
+
+  @action.bound
   async cleanState() {
     this.claimed = false;
     this.rewardIndex = 0;
@@ -68,35 +84,23 @@ class DistributionStore extends BaseStore {
   }
 
   @action.bound
-  async checkIfClaimed() {
-    const contract = this.distributionContract;
-    // @ts-ignore
-    const merkleTreeAddresses = Object.keys(merkleTree.claims);
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const ownerAddress = merkleTreeAddresses.filter(address => address.toLowerCase() === walletStore.accountAddress.toLowerCase());
-    if (!ownerAddress.length) return;
-    // @ts-ignore
-    const user = merkleTree.claims[ownerAddress[0]];
-    if (!user) return;
-    this.claimed = await contract.methods.isClaimed(user.index).call();
-  }
-
-  @action.bound
   async eligibleForReward() {
     await this.cleanState();
     // @ts-ignore
-    const merkleTreeAddresses = Object.keys(merkleTree.claims);
+    const merkleTreeAddresses = merkleTree.data;
     const walletStore: WalletStore = this.getStore('Wallet');
-    merkleTreeAddresses.forEach((address: string) => {
-      if (address.toLowerCase() === walletStore.accountAddress.toLowerCase()) {
-        // @ts-ignore
-        const merkleTreeUser = merkleTree.claims[address];
-        this.userAddress = address;
-        this.rewardIndex = merkleTreeUser.index;
-        this.rewardAmount = merkleTreeUser.amount;
+    merkleTreeAddresses.forEach((merkleTreeUser, index) => {
+      if (equalsAddresses(merkleTreeUser.address, walletStore.accountAddress)) {
+        this.merkleRoot = merkleTree.root;
+        this.userAddress = merkleTreeUser.address;
+        this.rewardIndex = index;
+        this.rewardAmount = Number(merkleTreeUser.amount);
         this.rewardMerkleProof = merkleTreeUser.proof;
       }
     });
+    if (this.userAddress) {
+      await this.cumulativeClaimed();
+    }
   }
 
   /**
@@ -153,7 +157,13 @@ class DistributionStore extends BaseStore {
   get userRewardAmount() {
     const walletStore: WalletStore = this.getStore('Wallet');
     // eslint-disable-next-line radix
-    return walletStore.fromWei(parseInt(String(this.rewardAmount)).toString());
+    return Number(walletStore.fromWei(parseInt(String(this.rewardAmount)).toString())) - Number(this.claimedRewards);
+  }
+
+  @computed
+  get userEligibleRewards() {
+    // eslint-disable-next-line radix
+    return Number(this.userRewardAmount) + Number(this.claimedRewards);
   }
 }
 

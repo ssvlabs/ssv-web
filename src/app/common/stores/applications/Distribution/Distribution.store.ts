@@ -69,7 +69,7 @@ class DistributionStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       const result = await contract.methods.cumulativeClaimed(this.userAddress).call();
       this.claimedRewards = walletStore.fromWei(parseInt(String(result)).toString());
-      resolve(result);
+      resolve(this.claimedRewards);
     });
   }
 

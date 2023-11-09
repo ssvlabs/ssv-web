@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         boxShadow: '0 3px 12px 0 rgba(0, 0, 0, 0.06)',
         zIndex: 99999999,
         top: 15,
-        right: 10,
+        right: -20,
     },
     MevRelayCardText: {
         color: theme.colors.black,

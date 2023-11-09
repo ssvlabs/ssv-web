@@ -39,6 +39,9 @@ export const NETWORKS = {
   HOLESKY: HOLESKY_NETWORK_ID,
 };
 
+export const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
+
+
 /**
  * Check if network is in list of other networks
  * @param network number or hex representation string
@@ -166,3 +169,7 @@ export const getCurrentNetwork = () => {
 };
 
 export const networkTitle = getCurrentNetwork().networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
+
+export const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
+  return toHexString(network.networkId).toLowerCase() !== '0x1';
+});

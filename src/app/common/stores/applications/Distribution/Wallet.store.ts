@@ -224,7 +224,6 @@ class WalletStore extends BaseStore implements Wallet {
     } else {
       this.accountAddress = address;
       await this.distributionStore.eligibleForReward();
-      await this.distributionStore.checkIfClaimed();
     }
     this.setAccountDataLoaded(true);
   }

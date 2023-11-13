@@ -68,7 +68,7 @@ class DistributionStore extends BaseStore {
       const contract = this.distributionContract;
       const walletStore: WalletStore = this.getStore('Wallet');
       const result = await contract.methods.cumulativeClaimed(this.userAddress).call();
-      this.claimedRewards = walletStore.fromWei(parseInt(String(result)).toString());
+      this.claimedRewards = Number(walletStore.fromWei(parseInt(String(result)).toString()));
       resolve(this.claimedRewards);
     });
   }
@@ -157,13 +157,13 @@ class DistributionStore extends BaseStore {
   get userRewardAmount() {
     const walletStore: WalletStore = this.getStore('Wallet');
     // eslint-disable-next-line radix
-    return Number(walletStore.fromWei(parseInt(String(this.rewardAmount)).toString())) - Number(this.claimedRewards);
+    return Number(walletStore.fromWei(parseInt(String(this.rewardAmount)).toString())) - this.claimedRewards;
   }
 
   @computed
   get userEligibleRewards() {
     // eslint-disable-next-line radix
-    return Number(this.userRewardAmount) + Number(this.claimedRewards);
+    return this.userRewardAmount + this.claimedRewards;
   }
 }
 

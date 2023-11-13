@@ -28,7 +28,6 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'setterContractAddress'
   | 'getterContractAddress'>;
 
-
 export const MAINNET_NETWORK_ID = 1;
 export const GOERLI_NETWORK_ID = 5;
 export const HOLESKY_NETWORK_ID = 17000;
@@ -37,6 +36,12 @@ export const NETWORKS = {
   MAINNET: MAINNET_NETWORK_ID,
   GOERLI: GOERLI_NETWORK_ID,
   HOLESKY: HOLESKY_NETWORK_ID,
+};
+
+export const TOKEN_NAMES = {
+  [NETWORKS.MAINNET]: 'ETH',
+  [NETWORKS.GOERLI]: 'GoerliETH',
+  [NETWORKS.HOLESKY]: 'ETH',
 };
 
 export const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];

@@ -9,9 +9,9 @@ import ApiParams from '~lib/api/ApiParams';
 import { getImage } from '~lib/utils/filePath';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
-import Wallet from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -20,16 +20,8 @@ import {
   getCurrentNetwork,
   inNetworks,
   NETWORKS,
-  notIncludeMainnet, testNets,
+  notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
-
-const WALLET_CONNECTED = 'WalletConnected';
-
-const TOKEN_NAMES = {
-  [NETWORKS.MAINNET]: 'ETH',
-  [NETWORKS.GOERLI]: 'GoerliETH',
-  [NETWORKS.HOLESKY]: 'ETH',
-};
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;

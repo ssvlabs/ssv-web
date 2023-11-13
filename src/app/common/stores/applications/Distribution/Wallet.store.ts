@@ -7,22 +7,14 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
-import Wallet from '~app/common/stores/Abstracts/Wallet';
+import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import {
   changeCurrentNetwork, getCurrentNetwork,
   inNetworks,
-  NETWORKS, notIncludeMainnet, testNets,
+  NETWORKS, notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
-
-const WALLET_CONNECTED = 'WalletConnected';
-
-const TOKEN_NAMES = {
-  [NETWORKS.MAINNET]: 'ETH',
-  [NETWORKS.GOERLI]: 'GoerliETH',
-  [NETWORKS.HOLESKY]: 'ETH',
-};
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;

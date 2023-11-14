@@ -188,7 +188,7 @@ jobs:
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
-          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS }}
+          DISTRIBUTION_CONTRACT_ADDRESS: ${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}
 
       - name: Deploy stage claim
         if: github.ref == 'refs/heads/stage'

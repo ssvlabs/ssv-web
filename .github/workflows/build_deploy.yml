@@ -63,6 +63,17 @@ jobs:
             \"tokenAddress\": \"0x3a9f01091C446bdE031E39ea8354647AFef091E7\",
             \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_TESTNET }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_TESTNET }}\"
+          },
+          {
+            \"networkId\": 17000,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"holesky\",
+            \"api\": \"https://api.ssv.network/api\",
+            \"explorerUrl\": \"https://holesky.stage.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0xad45A78180961079BFaeEe349704F411dfF947C6\",
+            \"setterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
           }
         ]
 

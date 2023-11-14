@@ -27,10 +27,11 @@ class FaucetStore extends BaseStore {
     }
 
     async registerNewTransaction() {
+      const { networkId, apiVersion } = getCurrentNetwork();
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
             const faucetUrl = faucetApi;
-            this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress });
+            this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress, network: networkId, version: apiVersion });
             return { status: true };
         } catch (e: any) {
             return { status: false, type: e.response.data.error.message === 'Reached max transactions per day' ? 1 : 2 };

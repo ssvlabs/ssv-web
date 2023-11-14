@@ -64,7 +64,6 @@ const ValidatorWhiteHeader = (props: Props) => {
     });
     window.open(`${beaconchaBaseUrl}/validator/${validator.public_key}`);
   };
-  // console.log(props.withBackButton);
 
   return (
     <WhiteWrapper

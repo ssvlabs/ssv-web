@@ -833,7 +833,6 @@ class OperatorStore extends BaseStore {
                   action: 'register_tx',
                   label: 'success',
                 });
-                console.log(receipt.events);
                 this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
                 this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
                 resolve(true);

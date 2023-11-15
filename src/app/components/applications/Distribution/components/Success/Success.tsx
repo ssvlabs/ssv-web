@@ -30,6 +30,7 @@ const Success = () => {
 
   return (
     <BorderScreen
+      withoutNavigation
       body={[
         <Grid container className={classes.Wrapper}>
           <HeaderSubHeader

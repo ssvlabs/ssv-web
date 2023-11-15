@@ -213,6 +213,7 @@ class WalletStore extends BaseStore implements Wallet {
     window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
+      this.accountAddress = '';
     } else {
       this.accountAddress = address;
       await this.distributionStore.eligibleForReward();

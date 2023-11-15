@@ -9,6 +9,7 @@ const {
   getterContractAddress,
   explorerUrl,
   apiVersion,
+  distributionContract,
 } = getCurrentNetwork();
 
 const config = {
@@ -582,7 +583,7 @@ const config = {
       ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`],
     },
     SSV_DISTRIBUTION: {
-      ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),
+      ADDRESS: distributionContract,
       ABI: [{
         'inputs': [{ 'internalType': 'address', 'name': 'token_', 'type': 'address' }],
         'stateMutability': 'nonpayable',

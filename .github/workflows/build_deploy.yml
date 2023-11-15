@@ -25,7 +25,7 @@ jobs:
             \"explorerUrl\": \"https://explorer.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
-            \"distributionContract\": \""${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}\",
+            \"distributionContract\": \"${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}\",
             \"setterContractAddress\": \"${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
           },
@@ -50,7 +50,7 @@ jobs:
             \"api\": \"https://api.ssv.network/api\",
             \"explorerUrl\": \"https://explorer.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
-            \"distributionContract\": \""${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
+            \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
             \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
             \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
@@ -62,7 +62,7 @@ jobs:
             \"api\": \"https://api.ssv.network/api\",
             \"explorerUrl\": \"https://goerli.explorer.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
-            \"distributionContract\": \""${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_TESTNET }}\",
+            \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_TESTNET }}\",
             \"tokenAddress\": \"0x3a9f01091C446bdE031E39ea8354647AFef091E7\",
             \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_TESTNET }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_TESTNET }}\"

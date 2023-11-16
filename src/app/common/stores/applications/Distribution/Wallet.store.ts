@@ -7,6 +7,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
+import { distributionHelper } from '~lib/utils/distributionHelper';
 import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
@@ -15,6 +16,7 @@ import {
   inNetworks,
   NETWORKS, notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
+import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -28,7 +30,7 @@ class WalletStore extends BaseStore implements Wallet {
   accountDataLoaded: boolean = false;
 
   private contract: Contract | undefined;
-  private distributionStore: DistributionStore = this.getStore('Distribution');
+  private distributionStore: DistributionStore | DistributionTestnetStore | null = null;
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
   constructor() {
@@ -131,6 +133,8 @@ class WalletStore extends BaseStore implements Wallet {
     wallets.subscribe(async (update: any) => {
       if (update.length > 0) {
         const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
+        const { storeName } = distributionHelper(networkId);
+        this.distributionStore = this.getStore(storeName);
         const wallet = update[0];
         const address = update[0]?.accounts[0]?.address;
         await this.walletHandler(wallet);
@@ -213,9 +217,15 @@ class WalletStore extends BaseStore implements Wallet {
     window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
+      this.accountAddress = '';
     } else {
       this.accountAddress = address;
-      await this.distributionStore.eligibleForReward();
+      if (this.distributionStore) {
+        await this.distributionStore.eligibleForReward();
+        if (this.distributionStore instanceof DistributionTestnetStore && this.distributionStore.checkIfClaimed) {
+          await this.distributionStore.checkIfClaimed();
+        }
+      }
     }
     this.setAccountDataLoaded(true);
   }

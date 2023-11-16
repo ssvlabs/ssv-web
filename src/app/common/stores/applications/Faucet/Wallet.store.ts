@@ -155,10 +155,12 @@ class WalletStore extends BaseStore implements Wallet {
       const applicationStore: Application = this.getStore('Application');
       const faucetStore: FaucetStore = this.getStore('Faucet');
       const faucetUrl = `${faucetApi}/config`;
-      const response = (await axios.get(faucetUrl)).data;
-      faucetStore.amountToTransfer = response[0].amount_to_transfer;
-      // eslint-disable-next-line no-constant-condition
-      applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+      const response = (await axios.get(faucetUrl)).data.filter((data: any) => data.network === this.networkId?.toString());
+      if (response.length > 0) {
+        faucetStore.amountToTransfer = response[0].amount_to_transfer;
+        // eslint-disable-next-line no-constant-condition
+        applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+      }
     } catch {
       console.log('[ERROR]: fail to fetch faucet config');
     }
@@ -192,7 +194,7 @@ class WalletStore extends BaseStore implements Wallet {
       console.debug('Connecting wallet..');
       const result = await this.onboardSdk.connectWallet();
       if (result?.length > 0) {
-        const networkId = result[0].chains[0].id.replace('0x', '');
+        const networkId = result[0].chains[0].id;
         const wallet = result[0];
         const address = result[0].accounts[0].address;
         await this.walletHandler(wallet);
@@ -241,6 +243,7 @@ class WalletStore extends BaseStore implements Wallet {
     try {
       changeCurrentNetwork(Number(networkId));
       this.wrongNetwork =  networkId === undefined;
+      this.networkId = networkId;
     } catch (e) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage(String(e), 'error');

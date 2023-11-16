@@ -19,7 +19,7 @@ type Button = {
   options?: any[],
 };
 
-const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundColor?: string }) => {
+const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: Button[], backgroundColor?: string, excludeNetworks?: number[] }) => {
     const stores = useStores();
     const navigate = useNavigate();
     const wrapperRef = useRef(null);
@@ -106,7 +106,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }}>
           {buttons?.map((button, index) => {
               if (button?.options && button?.options?.length > 0) {
-                  return <AppLinksToggle options={button?.options?.map((option: any) => ({ label: option.label, link: option.link, bottomLine: option.bottomLine || false }))} />;
+                  return <AppLinksToggle key={index} options={button?.options?.map((option: any) => ({ label: option.label, link: option.link, bottomLine: option.bottomLine || false }))} />;
               } else {
                   return (
                       <Grid
@@ -130,7 +130,7 @@ const AppBar = ({ buttons, backgroundColor }: { buttons?: Button[], backgroundCo
         <Grid item className={classes.GridItem}>
           <Grid item container style={{ alignItems: 'center' }}>
               <Grid item>
-                  <NetworkToggle />
+                  <NetworkToggle excludeNetworks={excludeNetworks} />
               </Grid>
             {!applicationStore.userGeo && (
               <Grid item>

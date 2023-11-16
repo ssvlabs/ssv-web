@@ -3,10 +3,12 @@ import Notify from 'bnc-notify';
 import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
 import injectedModule from '@web3-onboard/injected-wallets';
+import walletConnectModule from '@web3-onboard/walletconnect';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
+import { distributionHelper } from '~lib/utils/distributionHelper';
 import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
@@ -15,6 +17,7 @@ import {
   inNetworks,
   NETWORKS, notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
+import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -28,7 +31,7 @@ class WalletStore extends BaseStore implements Wallet {
   accountDataLoaded: boolean = false;
 
   private contract: Contract | undefined;
-  private distributionStore: DistributionStore = this.getStore('Distribution');
+  private distributionStore: DistributionStore | DistributionTestnetStore | null = null;
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
   constructor() {
@@ -76,11 +79,13 @@ class WalletStore extends BaseStore implements Wallet {
   initWalletHooks() {
     if (this.onboardSdk) return;
     const injected = injectedModule();
+    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
+
     const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
     this.onboardSdk = Onboard({
       theme: theme,
       apiKey: config.ONBOARD.API_KEY,
-      wallets: [injected],
+      wallets: [injected, walletConnect],
       disableFontDownload: true,
       connect: {
         autoConnectLastWallet: true,
@@ -131,6 +136,8 @@ class WalletStore extends BaseStore implements Wallet {
     wallets.subscribe(async (update: any) => {
       if (update.length > 0) {
         const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
+        const { storeName } = distributionHelper(networkId);
+        this.distributionStore = this.getStore(storeName);
         const wallet = update[0];
         const address = update[0]?.accounts[0]?.address;
         await this.walletHandler(wallet);
@@ -213,9 +220,15 @@ class WalletStore extends BaseStore implements Wallet {
     window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
+      this.accountAddress = '';
     } else {
       this.accountAddress = address;
-      await this.distributionStore.eligibleForReward();
+      if (this.distributionStore) {
+        await this.distributionStore.eligibleForReward();
+        if (this.distributionStore instanceof DistributionTestnetStore && this.distributionStore.checkIfClaimed) {
+          await this.distributionStore.checkIfClaimed();
+        }
+      }
     }
     this.setAccountDataLoaded(true);
   }

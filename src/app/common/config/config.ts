@@ -1,5 +1,6 @@
 import { ABI_VERSION } from '~app/common/config/abi';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
+import { distributionHelper } from '~lib/utils/distributionHelper';
 
 const {
   networkId,
@@ -10,6 +11,8 @@ const {
   explorerUrl,
   apiVersion,
 } = getCurrentNetwork();
+
+const { abi, contract } = distributionHelper(networkId);
 
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
@@ -185,6 +188,7 @@ const config = {
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
     NETWORK_ID: networkId,
+    PROJECT_ID: 'c93804911b583e5cacf856eee58655e6',
   },
   COIN_KEY: {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
@@ -582,100 +586,8 @@ const config = {
       ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`],
     },
     SSV_DISTRIBUTION: {
-      ADDRESS: String(process.env.REACT_APP_DISTRIBUTION_CONTRACT_ADDRESS),
-      ABI: [{
-        'inputs': [{ 'internalType': 'address', 'name': 'token_', 'type': 'address' }],
-        'stateMutability': 'nonpayable',
-        'type': 'constructor',
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': false,
-          'internalType': 'address',
-          'name': 'account',
-          'type': 'address',
-        }, { 'indexed': false, 'internalType': 'uint256', 'name': 'amount', 'type': 'uint256' }],
-        'name': 'Claimed',
-        'type': 'event',
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': false,
-          'internalType': 'bytes32',
-          'name': 'oldMerkleRoot',
-          'type': 'bytes32',
-        }, { 'indexed': false, 'internalType': 'bytes32', 'name': 'newMerkleRoot', 'type': 'bytes32' }],
-        'name': 'MerkelRootUpdated',
-        'type': 'event',
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'previousOwner',
-          'type': 'address',
-        }, { 'indexed': true, 'internalType': 'address', 'name': 'newOwner', 'type': 'address' }],
-        'name': 'OwnershipTransferred',
-        'type': 'event',
-      }, {
-        'inputs': [{ 'internalType': 'address', 'name': 'account', 'type': 'address' }, {
-          'internalType': 'uint256',
-          'name': 'cumulativeAmount',
-          'type': 'uint256',
-        }, { 'internalType': 'bytes32', 'name': 'expectedMerkleRoot', 'type': 'bytes32' }, {
-          'internalType': 'bytes32[]',
-          'name': 'merkleProof',
-          'type': 'bytes32[]',
-        }], 'name': 'claim', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function',
-      }, {
-        'inputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-        'name': 'cumulativeClaimed',
-        'outputs': [{ 'internalType': 'uint256', 'name': '', 'type': 'uint256' }],
-        'stateMutability': 'view',
-        'type': 'function',
-      }, {
-        'inputs': [],
-        'name': 'merkleRoot',
-        'outputs': [{ 'internalType': 'bytes32', 'name': '', 'type': 'bytes32' }],
-        'stateMutability': 'view',
-        'type': 'function',
-      }, {
-        'inputs': [],
-        'name': 'owner',
-        'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-        'stateMutability': 'view',
-        'type': 'function',
-      }, {
-        'inputs': [],
-        'name': 'renounceOwnership',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      }, {
-        'inputs': [{ 'internalType': 'bytes32', 'name': 'merkleRoot_', 'type': 'bytes32' }],
-        'name': 'setMerkleRoot',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      }, {
-        'inputs': [],
-        'name': 'token',
-        'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-        'stateMutability': 'view',
-        'type': 'function',
-      }, {
-        'inputs': [{ 'internalType': 'address', 'name': 'newOwner', 'type': 'address' }],
-        'name': 'transferOwnership',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      }, {
-        'inputs': [{ 'internalType': 'address', 'name': 'recipient', 'type': 'address' }],
-        'name': 'withdrawTo',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function',
-      }],
+      ADDRESS: contract,
+      ABI: abi,
     },
   },
 };

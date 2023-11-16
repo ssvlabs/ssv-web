@@ -5,7 +5,7 @@ import { getCurrentNetwork, NetworkDataType, NETWORKS_DATA } from '~lib/utils/en
 import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 
-const NetworkToggle = () => {
+const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
     const [currentNetwork] = useState(getCurrentNetwork());
     const classes = useStyles({ logo: currentNetwork.logo });
@@ -36,7 +36,7 @@ const NetworkToggle = () => {
             </Grid>
             {showNetworks && <Grid item className={classes.OptionsWrapper}>
                 <Grid ref={optionsRef}  container item className={classes.Options}>
-                    {NETWORKS_DATA.map((network: NetworkDataType) => <NetworkOption key={`${network.networkId}_${network.apiVersion}`} network={network}
+                    {NETWORKS_DATA.filter((network: NetworkDataType) => !excludeNetworks.includes(Number(network.networkId))).map((network: NetworkDataType) => <NetworkOption key={`${network.networkId}_${network.apiVersion}`} network={network}
                     />)}
                 </Grid>
             </Grid>}

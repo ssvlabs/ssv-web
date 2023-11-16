@@ -188,6 +188,7 @@ const config = {
   ONBOARD: {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
     NETWORK_ID: networkId,
+    PROJECT_ID: 'c93804911b583e5cacf856eee58655e6',
   },
   COIN_KEY: {
     COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,

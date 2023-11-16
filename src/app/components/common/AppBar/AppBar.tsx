@@ -106,7 +106,7 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
         <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }}>
           {buttons?.map((button, index) => {
               if (button?.options && button?.options?.length > 0) {
-                  return <AppLinksToggle options={button?.options?.map((option: any) => ({ label: option.label, link: option.link, bottomLine: option.bottomLine || false }))} />;
+                  return <AppLinksToggle key={index} options={button?.options?.map((option: any) => ({ label: option.label, link: option.link, bottomLine: option.bottomLine || false }))} />;
               } else {
                   return (
                       <Grid

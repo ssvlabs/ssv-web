@@ -13,6 +13,7 @@ import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { changeCurrentNetwork, getCurrentNetwork, NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
+import walletConnectModule from '@web3-onboard/walletconnect';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -73,12 +74,13 @@ class WalletStore extends BaseStore implements Wallet {
    */
   initWalletHooks() {
     const injected = injectedModule();
+    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
     const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
 
     this.onboardSdk = Onboard({
       theme: theme,
       apiKey: config.ONBOARD.API_KEY,
-      wallets: [injected],
+      wallets: [injected, walletConnect],
       disableFontDownload: true,
       connect: {
         autoConnectLastWallet: true,

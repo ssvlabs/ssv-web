@@ -3,6 +3,7 @@ import Notify from 'bnc-notify';
 import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
 import injectedModule from '@web3-onboard/injected-wallets';
+import walletConnectModule from '@web3-onboard/walletconnect';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
@@ -78,11 +79,13 @@ class WalletStore extends BaseStore implements Wallet {
   initWalletHooks() {
     if (this.onboardSdk) return;
     const injected = injectedModule();
+    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
+
     const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
     this.onboardSdk = Onboard({
       theme: theme,
       apiKey: config.ONBOARD.API_KEY,
-      wallets: [injected],
+      wallets: [injected, walletConnect],
       disableFontDownload: true,
       connect: {
         autoConnectLastWallet: true,

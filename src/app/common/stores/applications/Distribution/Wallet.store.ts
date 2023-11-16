@@ -79,7 +79,7 @@ class WalletStore extends BaseStore implements Wallet {
   initWalletHooks() {
     if (this.onboardSdk) return;
     const injected = injectedModule();
-    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [1, 5, 17000] });
+    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
 
     const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
     this.onboardSdk = Onboard({

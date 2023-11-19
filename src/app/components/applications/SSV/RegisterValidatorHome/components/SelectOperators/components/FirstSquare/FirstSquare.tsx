@@ -84,6 +84,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     };
 
     const response = await Operator.getInstance().getOperators(payload);
+    const maxValidators = await operatorStore.getMaxValidators();
+    response.operators.map((operator: any) => {
+      const result = maxValidators - operator.validators_count;
+      if (result <= config.GLOBAL_VARIABLE.BUFFER_VALIDATORS_COUNT) {
+        operator.validators_count = maxValidators;
+      }
+    });
     if (response?.pagination?.page > 1) {
       const operatorListInString = operatorsData.map(operator => operator.id);
       const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));
@@ -197,11 +204,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
           <StyledCell>
             <Grid container>
               <Grid item>{operator.validators_count}</Grid>
-              {reachedMaxValidators && (
-                <Grid item style={{ marginLeft: 4 }}>
-                  <ToolTip text={'Operator reached  maximum amount of validators'}/>
-                </Grid>
-              )}
             </Grid>
           </StyledCell>
           <StyledCell>
@@ -220,7 +222,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
               <Grid item
                     className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
               {disabled && !isPrivateOperator && (
-                <Grid item style={{ alignSelf: 'center' }}>
+                <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
                   <ToolTip text={'Operator reached  maximum amount of validators'}/>
                 </Grid>
               )}

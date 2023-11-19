@@ -96,8 +96,9 @@ class OperatorStore extends BaseStore {
 
     makeObservable(this, {
       stats: computed,
-      initUser: action.bound,
       operators: observable,
+      initUser: action.bound,
+      clusterSize: observable,
       operatorsFees: observable,
       estimationGas: observable,
       maxFeeIncrease: observable,
@@ -108,7 +109,6 @@ class OperatorStore extends BaseStore {
       getOperatorFee: action.bound,
       removeOperator: action.bound,
       loadingOperators: observable,
-      clusterSize: observable,
       addNewOperator: action.bound,
       selectOperator: action.bound,
       processOperatorId: observable,
@@ -118,6 +118,7 @@ class OperatorStore extends BaseStore {
       selectOperators: action.bound,
       operatorCurrentFee: observable,
       unselectOperator: action.bound,
+      getMaxValidators: action.bound,
       clearOperatorData: action.bound,
       dollarEstimationGas: observable,
       updateOperatorFee: action.bound,
@@ -207,14 +208,21 @@ class OperatorStore extends BaseStore {
   }
 
   /**
-   * Check if operator registrable
+   * Get max validators count
    */
-  async isOperatorRegistrable(validatorsRegisteredCount: number) {
+  async getMaxValidators() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {
       await contract.methods.getValidatorsPerOperatorLimit().call().then((maxValidators: number) => this.operatorValidatorsLimit = maxValidators);
     }
+    return this.operatorValidatorsLimit;
+  }
+
+  /**
+   * Check if operator registrable
+   */
+  isOperatorRegistrable(validatorsRegisteredCount: number) {
     return this.operatorValidatorsLimit > validatorsRegisteredCount;
   }
 

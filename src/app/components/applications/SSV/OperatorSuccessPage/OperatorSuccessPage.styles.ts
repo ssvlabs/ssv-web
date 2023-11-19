@@ -11,14 +11,17 @@ export const useStyles = makeStyles((theme: Theme) => ({
     color: theme.colors.gray40,
   },
   Wrapper: {
+    width: '100%',
     position: 'relative',
   },
   BoxesWrapper: {
     gap: 20,
+    width: '100%',
     marginBottom: 24,
   },
   BoxWrapper: {
     gap: 8,
+    width: '100%',
     minHeight: 84,
     padding: 16,
     fontSize: 16,

@@ -84,13 +84,8 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     };
 
     const response = await Operator.getInstance().getOperators(payload);
-    const maxValidators = await operatorStore.getMaxValidators();
-    response.operators.map((operator: any) => {
-      const result = maxValidators - operator.validators_count;
-      if (result <= config.GLOBAL_VARIABLE.BUFFER_VALIDATORS_COUNT) {
-        operator.validators_count = maxValidators;
-      }
-    });
+    const maxValidators = await operatorStore.getOperatorValidatorsLimit();
+    response.operators.map((operator: any) => operator.validators_count = Math.min(operator.validators_count + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE, maxValidators));
     if (response?.pagination?.page > 1) {
       const operatorListInString = operatorsData.map(operator => operator.id);
       const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));

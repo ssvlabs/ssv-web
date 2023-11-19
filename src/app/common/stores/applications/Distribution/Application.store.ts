@@ -25,7 +25,7 @@ class ApplicationStore extends BaseStore implements Application {
   transactionPendingPopUp: boolean = false;
   appTitle: string = 'SSV Network Distribution';
   strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
-  locationRestrictionEnabled: boolean = false;
+  locationRestrictionEnabled: boolean = true;
 
   constructor() {
     super();
@@ -74,7 +74,8 @@ class ApplicationStore extends BaseStore implements Application {
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const walletStore: WalletStore = this.getStore('Wallet');
-    walletStore.onboardSdk.config({ darkMode: isDarkMode });
+    const theme = isDarkMode ? 'dark' : 'light';
+    walletStore?.onboardSdk?.state.actions.updateTheme(theme);
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }

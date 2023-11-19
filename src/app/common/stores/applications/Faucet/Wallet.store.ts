@@ -1,17 +1,19 @@
 import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
-import Onboard from 'bnc-onboard';
+import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
+import injectedModule from '@web3-onboard/injected-wallets';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
+import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
-import Wallet from '~app/common/stores/Abstracts/Wallet';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
-import { wallets } from '~app/common/stores/utilis/wallets';
 import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
+import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { changeCurrentNetwork, getCurrentNetwork, NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
+import walletConnectModule from '@web3-onboard/walletconnect';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -44,6 +46,7 @@ class WalletStore extends BaseStore implements Wallet {
       ssvBalance: observable,
       encodeKey: action.bound,
       decodeKey: action.bound,
+      changeNetwork: action.bound,
       isWrongNetwork: computed,
       wrongNetwork: observable,
       getterContract: computed,
@@ -70,22 +73,72 @@ class WalletStore extends BaseStore implements Wallet {
    * @url https://docs.blocknative.com/onboard#initialization
    */
   initWalletHooks() {
-    this.faucetStore;
-    if (this.onboardSdk) return;
-    const connectionConfig = {
-      dappId: config.ONBOARD.API_KEY,
-      networkId: 5,
-      walletSelect: {
-        wallets,
+    const injected = injectedModule();
+    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
+    const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
+
+    this.onboardSdk = Onboard({
+      theme: theme,
+      apiKey: config.ONBOARD.API_KEY,
+      wallets: [injected, walletConnect],
+      disableFontDownload: true,
+      connect: {
+        autoConnectLastWallet: true,
+        showSidebar: false,
+        removeIDontHaveAWalletInfoLink: true,
+        removeWhereIsMyWalletWarning: true,
       },
-      subscriptions: {
-        wallet: this.walletHandler,
-        address: this.addressHandler,
-        network: this.networkHandler,
+      notify: {
+        enabled: false,
       },
-    };
-    console.debug('OnBoard SDK Config:', connectionConfig);
-    this.onboardSdk = Onboard(connectionConfig);
+      accountCenter: {
+        mobile: {
+          enabled: false,
+        },
+        desktop: {
+          enabled: false,
+        },
+      },
+      chains: [
+        {
+          id: NETWORKS.MAINNET,
+          token: TOKEN_NAMES[NETWORKS.MAINNET],
+          label: 'Ethereum Mainnet',
+        },
+        {
+          id: NETWORKS.GOERLI,
+          token: TOKEN_NAMES[NETWORKS.GOERLI],
+          label: 'Goerli testnet',
+        },
+        {
+          id: NETWORKS.HOLESKY,
+          label: 'Holesky testnet',
+          token: TOKEN_NAMES[NETWORKS.HOLESKY],
+        },
+      ],
+      appMetadata: {
+        name: 'SSV Network',
+        icon: getImage('ssvIcons/logo.svg'),
+        logo: getImage('ssvIcons/logo.svg'),
+        description: 'SSV Network',
+        recommendedInjectedWallets: [
+          { name: 'MetaMask', url: 'https://metamask.io' },
+        ],
+      },
+    });
+    const wallets = this.onboardSdk.state.select('wallets');
+    wallets.subscribe(async (update: any) => {
+      if (update.length > 0) {
+        const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
+        const wallet = update[0];
+        const address = update[0]?.accounts[0]?.address;
+        await this.walletHandler(wallet);
+        await this.networkHandler(networkId);
+        await this.addressHandler(address);
+      } else if (this.accountAddress && update.length === 0) {
+        await this.addressHandler(undefined);
+      }
+    });
     const notifyOptions = {
       dappId: config.ONBOARD.API_KEY,
       networkId: 5,
@@ -104,10 +157,12 @@ class WalletStore extends BaseStore implements Wallet {
       const applicationStore: Application = this.getStore('Application');
       const faucetStore: FaucetStore = this.getStore('Faucet');
       const faucetUrl = `${faucetApi}/config`;
-      const response = (await axios.get(faucetUrl)).data;
-      faucetStore.amountToTransfer = response[0].amount_to_transfer;
-      // eslint-disable-next-line no-constant-condition
-      applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+      const response = (await axios.get(faucetUrl)).data.filter((data: any) => data.network === this.networkId?.toString());
+      if (response.length > 0) {
+        faucetStore.amountToTransfer = response[0].amount_to_transfer;
+        // eslint-disable-next-line no-constant-condition
+        applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+      }
     } catch {
       console.log('[ERROR]: fail to fetch faucet config');
     }
@@ -127,12 +182,9 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    const selectedWallet: string | null = window.localStorage.getItem('selectedWallet');
-    if (selectedWallet && selectedWallet !== 'undefined') {
-      await this.onboardSdk.walletSelect(selectedWallet);
-      await this.onboardSdk.walletCheck();
-    } else {
-      this.setAccountDataLoaded(true);
+    const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
+      await this.addressHandler(undefined);
     }
   }
 
@@ -142,8 +194,15 @@ class WalletStore extends BaseStore implements Wallet {
   async connect() {
     try {
       console.debug('Connecting wallet..');
-      await this.onboardSdk.walletSelect();
-      await this.onboardSdk.walletCheck();
+      const result = await this.onboardSdk.connectWallet();
+      if (result?.length > 0) {
+        const networkId = result[0].chains[0].id;
+        const wallet = result[0];
+        const address = result[0].accounts[0].address;
+        await this.walletHandler(wallet);
+        await this.networkHandler(Number(networkId));
+        await this.addressHandler(address);
+      }
     } catch (error: any) {
       const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
       this.notificationsStore.showMessage(message, 'error');
@@ -156,15 +215,13 @@ class WalletStore extends BaseStore implements Wallet {
    * User address handler
    * @param address: string
    */
-  async addressHandler(address: string) {
+  async addressHandler(address: string | undefined) {
     this.setAccountDataLoaded(false);
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
     } else {
       this.accountAddress = address;
       await this.initializeUserInfo();
-      // await this.distributionStore.eligibleForReward();
-      // await this.distributionStore.checkIfClaimed();
     }
     this.setAccountDataLoaded(true);
   }
@@ -185,9 +242,15 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async networkHandler(networkId: any) {
-    console.log('networkId: ', networkId);
-    this.networkId = networkId;
-    this.wrongNetwork = networkId !== 5 && networkId !== undefined;
+    try {
+      changeCurrentNetwork(Number(networkId));
+      this.wrongNetwork =  networkId === undefined;
+      this.networkId = networkId;
+    } catch (e) {
+      this.wrongNetwork = true;
+      this.notificationsStore.showMessage(String(e), 'error');
+      return;
+    }
   }
 
   /**
@@ -215,6 +278,10 @@ class WalletStore extends BaseStore implements Wallet {
   setAccountDataLoaded = (status: boolean): void => {
     this.accountDataLoaded = status;
   };
+
+  async changeNetwork(networkId: string | number) {
+    await this.onboardSdk.setChain({ chainId: networkId });
+  }
 
   get connected() {
     return this.accountAddress;

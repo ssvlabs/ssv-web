@@ -778,7 +778,6 @@ class ValidatorStore extends BaseStore {
       const walletStore: WalletStore = this.getStore('Wallet');
       await accountStore.getOwnerNonce(walletStore.accountAddress);
       const { ownerNonce } = accountStore;
-      console.log(`Current registration nonce: ${ownerNonce}`);
       // @ts-ignore
       const parsedFile = JSON.parse(fileJson);
       const { payload } = parsedFile;

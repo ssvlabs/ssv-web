@@ -1,6 +1,8 @@
 import { Contract } from 'web3-eth-contract';
 import BaseStore from '~app/common/stores/BaseStore';
 
+export const WALLET_CONNECTED = 'WalletConnected';
+
 export default abstract class Wallet extends BaseStore {
   web3: any;
   wallet: any;

@@ -3,37 +3,26 @@ import Notify from 'bnc-notify';
 import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
 import injectedModule from '@web3-onboard/injected-wallets';
+import walletConnectModule from '@web3-onboard/walletconnect';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import { getImage } from '~lib/utils/filePath';
 import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
-import Wallet from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import {
   changeCurrentNetwork,
   getCurrentNetwork,
-  GOERLI_NETWORK_ID,
-  HOLESKY_NETWORK_ID,
   inNetworks,
-  NetworkDataType,
   NETWORKS,
-  NETWORKS_DATA,
-  toHexString,
+  notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
-
-const WALLET_CONNECTED = 'WalletConnected';
-
-const TOKEN_NAMES = {
-  [NETWORKS.MAINNET]: 'ETH',
-  [NETWORKS.GOERLI]: 'GoerliETH',
-  [NETWORKS.HOLESKY]: 'ETH',
-};
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -93,12 +82,13 @@ class WalletStore extends BaseStore implements Wallet {
    */
   initWalletHooks() {
     const injected = injectedModule();
+    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
     const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
 
     this.onboardSdk = Onboard({
       theme: theme,
       apiKey: config.ONBOARD.API_KEY,
-      wallets: [injected],
+      wallets: [injected, walletConnect],
       disableFontDownload: true,
       connect: {
         autoConnectLastWallet: true,
@@ -312,10 +302,6 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId
    */
   onNetworkChangeCallback(networkId: any) {
-    const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
-      return toHexString(network.networkId).toLowerCase() !== '0x1';
-    });
-    const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
     if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Holesky', 'error');

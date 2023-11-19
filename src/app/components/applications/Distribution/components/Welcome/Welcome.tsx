@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
+import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
@@ -14,7 +15,9 @@ const Welcome = () => {
     const classes = useStyles();
     const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
-    
+    const { networkId } = getCurrentNetwork();
+    const titleNetwork = networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
+
     const connectToWallet = () => {
         if (walletStore.connected) {
             return applicationStore.showWalletPopUp(true);
@@ -27,7 +30,7 @@ const Welcome = () => {
         withoutNavigation
         body={[
           <Grid container>
-            <HeaderSubHeader title={'Claim Testnet Rewards'}
+            <HeaderSubHeader title={`Claim ${titleNetwork} Rewards`}
               subtitle={'Connect your wallet to check your rewards eligibility'} />
             <Grid container item className={classes.ImageWrapper} />
             <PrimaryButton

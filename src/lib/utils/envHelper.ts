@@ -28,7 +28,6 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'setterContractAddress'
   | 'getterContractAddress'>;
 
-
 export const MAINNET_NETWORK_ID = 1;
 export const GOERLI_NETWORK_ID = 5;
 export const HOLESKY_NETWORK_ID = 17000;
@@ -38,6 +37,15 @@ export const NETWORKS = {
   GOERLI: GOERLI_NETWORK_ID,
   HOLESKY: HOLESKY_NETWORK_ID,
 };
+
+export const TOKEN_NAMES = {
+  [NETWORKS.MAINNET]: 'ETH',
+  [NETWORKS.GOERLI]: 'GoerliETH',
+  [NETWORKS.HOLESKY]: 'ETH',
+};
+
+export const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
+
 
 /**
  * Check if network is in list of other networks
@@ -129,6 +137,8 @@ export const ENV = (): IENVS => {
   return _envs[parseInt(String(finalNetworkId), 10)];
 };
 
+export const transactionLink = (txHash: string) => `${ENV().ETHERSCAN_URL}/tx/${txHash}`;
+
 export const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
 
 export const changeCurrentNetwork = (networkId: number, version?: string) => {
@@ -162,3 +172,9 @@ export const getCurrentNetwork = () => {
   const networkId = NETWORKS_DATA[0].networkId;
   return { ...NETWORKS_DATA[0], ...NETWORK_VARIABLES[networkId] };
 };
+
+export const networkTitle = getCurrentNetwork().networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
+
+export const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
+  return toHexString(network.networkId).toLowerCase() !== '0x1';
+});

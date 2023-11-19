@@ -15,7 +15,6 @@ const TransactionPendingPopUp = () => {
     const stores = useStores();
     const classes = useStyles();
     const applicationStore: ApplicationStore = stores.Application;
-    const { ETHERSCAN_URL } = ENV();
 
     return (
       <Dialog className={classes.DialogWrapper} aria-labelledby="simple-dialog-title" open={applicationStore.transactionPendingPopUp}>
@@ -30,7 +29,7 @@ const TransactionPendingPopUp = () => {
             </Grid>
             <AddressKeyInput whiteBackgroundColor withCopy address={applicationStore.txHash} />
           </Grid>
-          <LinkText text={'View on Etherscan'} link={`${ETHERSCAN_URL}/tx/${applicationStore.txHash}`} />
+          <LinkText text={'View on Etherscan'} link={`${ENV().ETHERSCAN_URL}/tx/${applicationStore.txHash}`} />
         </Grid>
       </Dialog>
     );

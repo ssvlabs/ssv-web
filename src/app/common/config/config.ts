@@ -148,7 +148,6 @@ const config = {
     SSV_WEB_SITE: 'https://ssv.network/',
     TWITTER_LINK: 'https://twitter.com/ssv_network',
     GOVERNANCE_FORUM_LINK: 'https://forum.ssv.network/',
-    ETHER_SCAN_LINK: process.env.REACT_APP_ETHER_SCAN_URL,
     DISCORD_LINK: 'https://discord.gg/ssvnetworkofficial',
     TERMS_OF_USE_LINK: 'https://ssv.network/terms-of-use/',
     PRIVACY_POLICY_LINK: 'https://ssv.network/privacy-policy/',

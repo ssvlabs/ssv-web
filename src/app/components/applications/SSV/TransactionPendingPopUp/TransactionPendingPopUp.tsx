@@ -5,7 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import { ENV } from '~lib/utils/envHelper';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -14,7 +14,6 @@ import { useStyles } from '~app/components/applications/SSV/TransactionPendingPo
 const TransactionPendingPopUp = () => {
     const stores = useStores();
     const classes = useStyles();
-    const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
 
     return (
@@ -30,7 +29,7 @@ const TransactionPendingPopUp = () => {
             </Grid>
             <AddressKeyInput whiteBackgroundColor withCopy address={applicationStore.txHash} />
           </Grid>
-          <LinkText text={'View on Etherscan'} link={`https://${walletStore.networkId === 5 ? 'goerli.' : ''}etherscan.io/tx/${applicationStore.txHash}`} />
+          <LinkText text={'View on Etherscan'} link={`${ENV().ETHERSCAN_URL}/tx/${applicationStore.txHash}`} />
         </Grid>
       </Dialog>
     );

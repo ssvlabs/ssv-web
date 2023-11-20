@@ -215,7 +215,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
             <Grid item xs={12}>
               <ErrorMessage text={
                 <Grid item xs={12}>One of your chosen operators has reached its maximum validator capacity. Please
-                  select an alternative operator
+                  select an alternative operator.
                 </Grid>}/>
             </Grid>
           )}

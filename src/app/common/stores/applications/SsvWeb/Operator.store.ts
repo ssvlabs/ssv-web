@@ -137,7 +137,6 @@ class OperatorStore extends BaseStore {
       clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
-      validatorsPerOperatorLimit: action.bound,
       getOperatorValidatorsLimit: action.bound,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
@@ -335,19 +334,8 @@ class OperatorStore extends BaseStore {
   }
 
   /**
-   * get validators per operator limit
+   * Get operator balance
    */
-  async validatorsPerOperatorLimit(): Promise<any> {
-    // return new Promise((resolve) => {
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const contract: Contract = walletStore.getterContract;
-    //     contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
-    //         this.operatorValidatorsLimit = parseInt(response, 10);
-    //         resolve(true);
-    //     }).catch(() => resolve(true));
-    // });
-  }
-
   async getOperatorBalance(id: number): Promise<any> {
     return new Promise((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');

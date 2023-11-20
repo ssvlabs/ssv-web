@@ -182,17 +182,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                 </Grid>
               </Grid>
             ) : ''}
-            {clusterExist && (
-              <Grid item xs={12}>
-                <ErrorMessage text={
-                  <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
-                    <LinkText
-                      text={'cluster page'}
-                      onClick={openSingleCluster}/>
-                    &nbsp;and click “Add Validator”.
-                  </Grid>}/>
-              </Grid>
-            )}
           </Grid>
         </Grid>,
         <Grid container>
@@ -209,6 +198,17 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
               />
             </Grid>
           </Grid>
+          {clusterExist && (
+            <Grid item xs={12}>
+              <ErrorMessage text={
+                <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
+                  <LinkText
+                    text={'cluster page'}
+                    onClick={openSingleCluster}/>
+                  &nbsp;and click “Add Validator”.
+                </Grid>}/>
+            </Grid>
+          )}
           {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>

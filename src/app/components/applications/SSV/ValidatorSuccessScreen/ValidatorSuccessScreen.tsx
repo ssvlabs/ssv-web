@@ -70,7 +70,7 @@ const ValidatorSuccessScreen = () => {
             <Grid container item className={classes.ClusterID}>
               <Typography>Validator Cluster {longStringShorten(clusterHash, 4, undefined, { '': /^0x/ })}</Typography>
               {/* need to add link to "read more on clusters" */}
-              <Tooltip text={<Grid>Clusters represent a unique set of 4 operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid>} />
+              <Tooltip text={<Grid>Clusters represent a unique set of operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid>} />
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
               {Object.values(operatorStore.selectedOperators).map((operator: any, index: number ) => {

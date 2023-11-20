@@ -102,7 +102,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
+    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => !operatorStore.isOperatorRegistrable(operator.validators_count));
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
+    setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
   }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   useEffect(() => {
@@ -146,10 +148,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                 {clusterBox.map((index: number) => {
                   if (operatorStore.selectedOperators[index]) {
                     const operator = operatorStore.selectedOperators[index];
-                    const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
-                    if (reachedMaxValidators && !operatorHasMaxCountValidators) {
-                      setOperatorHasMaxCountValidators(reachedMaxValidators);
-                    }
                     return (
                       <Grid key={index} container className={classes.SelectedOperatorBox}>
                         <Grid className={classes.DeleteOperator} onClick={() => {
@@ -216,7 +214,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
           {operatorHasMaxCountValidators && (
             <Grid item xs={12}>
               <ErrorMessage text={
-                <Grid item xs={12}>One of your chosen operators has reached its maximum validator capacity. Please select an alternative operator
+                <Grid item xs={12}>One of your chosen operators has reached its maximum validator capacity. Please
+                  select an alternative operator
                 </Grid>}/>
             </Grid>
           )}

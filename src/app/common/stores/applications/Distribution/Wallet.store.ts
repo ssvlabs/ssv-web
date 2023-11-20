@@ -254,7 +254,11 @@ class WalletStore extends BaseStore implements Wallet {
       this.notificationsStore.showMessage('Please change network to Holesky', 'error');
     } else {
       try {
-        changeCurrentNetwork(Number(networkId));
+        const chainId = networkId === NETWORKS.HOLESKY ? NETWORKS.MAINNET : networkId;
+        if (networkId === NETWORKS.HOLESKY) {
+          await this.changeNetwork(chainId);
+        }
+        changeCurrentNetwork(chainId);
       } catch (e) {
         this.wrongNetwork = true;
         this.notificationsStore.showMessage(String(e), 'error');

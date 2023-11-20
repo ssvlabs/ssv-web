@@ -96,8 +96,9 @@ class OperatorStore extends BaseStore {
 
     makeObservable(this, {
       stats: computed,
-      initUser: action.bound,
       operators: observable,
+      initUser: action.bound,
+      clusterSize: observable,
       operatorsFees: observable,
       estimationGas: observable,
       maxFeeIncrease: observable,
@@ -108,7 +109,6 @@ class OperatorStore extends BaseStore {
       getOperatorFee: action.bound,
       removeOperator: action.bound,
       loadingOperators: observable,
-      clusterSize: observable,
       addNewOperator: action.bound,
       selectOperator: action.bound,
       processOperatorId: observable,
@@ -137,7 +137,7 @@ class OperatorStore extends BaseStore {
       clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
-      validatorsPerOperatorLimit: action.bound,
+      getOperatorValidatorsLimit: action.bound,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
       updateOperatorAddressWhitelist: observable,
@@ -207,14 +207,21 @@ class OperatorStore extends BaseStore {
   }
 
   /**
-   * Check if operator registrable
+   * Get max validators count
    */
-  async isOperatorRegistrable(validatorsRegisteredCount: number) {
+  async getOperatorValidatorsLimit(): Promise<number> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {
-      await contract.methods.getValidatorsPerOperatorLimit().call().then((maxValidators: number) => this.operatorValidatorsLimit = maxValidators);
+      this.operatorValidatorsLimit = await contract.methods.getValidatorsPerOperatorLimit().call();
     }
+    return this.operatorValidatorsLimit;
+  }
+
+  /**
+   * Check if operator registrable
+   */
+  isOperatorRegistrable(validatorsRegisteredCount: number) {
     return this.operatorValidatorsLimit > validatorsRegisteredCount;
   }
 
@@ -327,19 +334,8 @@ class OperatorStore extends BaseStore {
   }
 
   /**
-   * get validators per operator limit
+   * Get operator balance
    */
-  async validatorsPerOperatorLimit(): Promise<any> {
-    // return new Promise((resolve) => {
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const contract: Contract = walletStore.getterContract;
-    //     contract.methods.getValidatorsPerOperatorLimit().call().then((response: any) => {
-    //         this.operatorValidatorsLimit = parseInt(response, 10);
-    //         resolve(true);
-    //     }).catch(() => resolve(true));
-    // });
-  }
-
   async getOperatorBalance(id: number): Promise<any> {
     return new Promise((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');

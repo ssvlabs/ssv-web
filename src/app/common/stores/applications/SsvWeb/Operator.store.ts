@@ -210,7 +210,7 @@ class OperatorStore extends BaseStore {
   /**
    * Get max validators count
    */
-  async getOperatorValidatorsLimit() {
+  async getOperatorValidatorsLimit(): Promise<number> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {

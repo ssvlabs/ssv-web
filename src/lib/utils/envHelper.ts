@@ -44,6 +44,12 @@ export const TOKEN_NAMES = {
   [NETWORKS.HOLESKY]: 'ETH',
 };
 
+export const NETWORK_NAMES = {
+  [NETWORKS.MAINNET]: 'Mainnet',
+  [NETWORKS.GOERLI]: 'Goerli',
+  [NETWORKS.HOLESKY]: 'Holesky',
+};
+
 export const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
 
 
@@ -168,12 +174,24 @@ export const getCurrentNetwork = () => {
     const networkId = NETWORKS_DATA[value].networkId;
     return { ...NETWORKS_DATA[value], ...NETWORK_VARIABLES[networkId] };
   }
-  window.localStorage.setItem('current_network', '0');
-  const networkId = NETWORKS_DATA[0].networkId;
-  return { ...NETWORKS_DATA[0], ...NETWORK_VARIABLES[networkId] };
+  if (!value && process.env.REACT_APP_FAUCET_PAGE) {
+    const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
+    return saveNetwork(holeskyIndex);
+  }
+  return saveNetwork(0);
 };
 
-export const networkTitle = getCurrentNetwork().networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
+export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];
+
+const saveNetwork = (index: number) => {
+  window.localStorage.setItem('current_network', index.toString());
+  const networkId = NETWORKS_DATA[index].networkId;
+  return { ...NETWORKS_DATA[index], ...NETWORK_VARIABLES[networkId] };
+};
+
+export const isMainnet = getCurrentNetwork().networkId === NETWORKS.MAINNET;
+
+export const networkTitle = isMainnet ? 'Mainnet' : 'Testnet';
 
 export const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
   return toHexString(network.networkId).toLowerCase() !== '0x1';

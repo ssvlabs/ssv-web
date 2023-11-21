@@ -218,6 +218,7 @@ class WalletStore extends BaseStore implements Wallet {
   async addressHandler(address: string | undefined) {
     this.setAccountDataLoaded(false);
     if (address === undefined) {
+      this.accountAddress = '';
       window.localStorage.removeItem('selectedWallet');
     } else {
       this.accountAddress = address;
@@ -242,13 +243,19 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async networkHandler(networkId: any) {
-    try {
-      changeCurrentNetwork(Number(networkId));
-      this.wrongNetwork =  networkId === undefined;
-      this.networkId = networkId;
-    } catch (e) {
+    if (networkId !== NETWORKS.MAINNET) {
+      try {
+        changeCurrentNetwork(Number(networkId));
+        this.wrongNetwork = networkId === undefined;
+        this.networkId = networkId;
+      } catch (e) {
+        this.wrongNetwork = true;
+        this.notificationsStore.showMessage(String(e), 'error');
+        return;
+      }
+    } else {
       this.wrongNetwork = true;
-      this.notificationsStore.showMessage(String(e), 'error');
+      this.notificationsStore.showMessage('Please change network', 'error');
       return;
     }
   }

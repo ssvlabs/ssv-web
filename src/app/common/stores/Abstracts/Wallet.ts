@@ -49,5 +49,8 @@ export default abstract class Wallet extends BaseStore {
   public abstract checkConnectedWallet(): void;
 
   // eslint-disable-next-line no-unused-vars
+  public abstract changeNetwork(networkId: string | number): void;
+
+  // eslint-disable-next-line no-unused-vars
   public abstract BN(s: any): any;
 }

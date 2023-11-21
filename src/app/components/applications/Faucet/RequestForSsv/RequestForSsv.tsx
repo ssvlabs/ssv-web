@@ -6,6 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
+import { currentNetworkName } from '~lib/utils/envHelper';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -59,7 +60,7 @@ const RequestForSsv = () => {
       <BorderScreen
         blackHeader
         withoutNavigation
-        header={'SSV Faucet Goerli Testnet'}
+        header={`SSV Faucet ${currentNetworkName()} Testnet`}
         body={[
           <Grid container className={classes.Wrapper}>
             <Grid item xs={12}>

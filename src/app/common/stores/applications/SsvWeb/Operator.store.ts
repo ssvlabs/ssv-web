@@ -38,7 +38,7 @@ export interface IOperator {
   dkg_address?: string,
   mev_relays?: string,
   autoSelected?: boolean
-  validatorsCount?: number,
+  validators_count: number,
   verified_operator?: boolean,
 }
 

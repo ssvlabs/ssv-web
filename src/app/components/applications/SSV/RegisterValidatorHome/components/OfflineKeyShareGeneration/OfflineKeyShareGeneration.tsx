@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { osName, isWindows } from 'react-device-detect';
+import { isWindows, osName } from 'react-device-detect';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -21,6 +21,7 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
@@ -164,6 +165,8 @@ const OfflineKeyShareGeneration = () => {
     return true;
   };
 
+  const enableDesktopAppKeysharesGeneration = getLocalStorageFlagValue(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION);
+
   const MainScreen =
     <BorderScreen
       blackHeader
@@ -185,7 +188,7 @@ const OfflineKeyShareGeneration = () => {
               <Grid>
                 <Grid container
                       item
-                      className={`${classes.Box} ${classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
+                      className={`${classes.Box} ${enableDesktopAppKeysharesGeneration ? '' : classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
                       onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
                   <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
                   <Grid className={classes.OptionTextWrapper}>

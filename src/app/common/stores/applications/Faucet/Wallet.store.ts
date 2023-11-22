@@ -8,7 +8,7 @@ import BaseStore from '~app/common/stores/BaseStore';
 import { initOnboard } from '~lib/utils/onboardHelper';
 import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
-import { changeCurrentNetwork, getCurrentNetwork } from '~lib/utils/envHelper';
+import { changeCurrentNetwork, getCurrentNetwork, isMainnet } from '~lib/utils/envHelper';
 import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
@@ -190,7 +190,7 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async networkHandler(networkId: any) {
-    if (networkId !== NETWORKS.MAINNET) {
+    if (!isMainnet) {
       try {
         changeCurrentNetwork(Number(networkId));
         this.wrongNetwork = networkId === undefined;

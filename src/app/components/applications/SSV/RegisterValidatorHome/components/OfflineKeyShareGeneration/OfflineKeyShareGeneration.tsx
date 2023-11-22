@@ -143,7 +143,7 @@ const OfflineKeyShareGeneration = () => {
 
   const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
   const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
-  const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
+  const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DESKTOP_APP || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
   const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && confirmedWithdrawalAddress;
   const buttonLabel = buttonLabelCondition ? 'Next' : 'Change Operators';
   const submitFunctionCondition = selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg;
@@ -184,17 +184,17 @@ const OfflineKeyShareGeneration = () => {
               <Typography className={classes.BlueText}>Command Line Interface</Typography>
               <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
             </Grid>
-            <Tooltip title="Coming soon..." placement="top-end" children={
+            <Tooltip disableHoverListener={enableDesktopAppKeysharesGeneration} title="Coming soon..." placement="top-end" children={
               <Grid>
                 <Grid container
                       item
                       className={`${classes.Box} ${enableDesktopAppKeysharesGeneration ? '' : classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
                       onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
                   <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
-                  <Grid className={classes.OptionTextWrapper}>
+                  {/*<Grid className={classes.OptionTextWrapper}>*/}
                     <Typography className={classes.BlueText}>Desktop App</Typography>
                     <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
-                  </Grid>
+                  {/*</Grid>*/}
                 </Grid>
               </Grid>}/>
             {isNotMainnet && <Grid container item

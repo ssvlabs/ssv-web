@@ -169,12 +169,12 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
 
 export const getCurrentNetwork = () => {
   if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) throw new Error('Provide network data');
-  const value = window.localStorage.getItem('current_network');
-  if (value && NETWORKS_DATA.length > 1) {
-    const networkId = NETWORKS_DATA[value].networkId;
-    return { ...NETWORKS_DATA[value], ...NETWORK_VARIABLES[networkId] };
+  const currentNetworkIndex = window.localStorage.getItem('current_network');
+  if (currentNetworkIndex && NETWORKS_DATA.length > 1) {
+    const networkId = NETWORKS_DATA[currentNetworkIndex].networkId;
+    return { ...NETWORKS_DATA[currentNetworkIndex], ...NETWORK_VARIABLES[networkId] };
   }
-  if (!value && process.env.REACT_APP_FAUCET_PAGE) {
+  if (!currentNetworkIndex && process.env.REACT_APP_FAUCET_PAGE) {
     const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
     return saveNetwork(holeskyIndex);
   }

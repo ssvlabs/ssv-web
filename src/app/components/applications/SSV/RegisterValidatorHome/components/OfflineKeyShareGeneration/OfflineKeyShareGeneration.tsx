@@ -191,10 +191,8 @@ const OfflineKeyShareGeneration = () => {
                       className={`${classes.Box} ${enableDesktopAppKeysharesGeneration ? '' : classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
                       onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
                   <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
-                  {/*<Grid className={classes.OptionTextWrapper}>*/}
                     <Typography className={classes.BlueText}>Desktop App</Typography>
                     <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
-                  {/*</Grid>*/}
                 </Grid>
               </Grid>}/>
             {isNotMainnet && <Grid container item

@@ -1,19 +1,16 @@
 import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
-import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
-import injectedModule from '@web3-onboard/injected-wallets';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
+import { initOnboard } from '~lib/utils/onboardHelper';
 import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
+import { changeCurrentNetwork, getCurrentNetwork } from '~lib/utils/envHelper';
 import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { changeCurrentNetwork, getCurrentNetwork, NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
-import walletConnectModule from '@web3-onboard/walletconnect';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -73,59 +70,9 @@ class WalletStore extends BaseStore implements Wallet {
    * @url https://docs.blocknative.com/onboard#initialization
    */
   initWalletHooks() {
-    const injected = injectedModule();
-    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
-    const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
 
-    this.onboardSdk = Onboard({
-      theme: theme,
-      apiKey: config.ONBOARD.API_KEY,
-      wallets: [injected, walletConnect],
-      disableFontDownload: true,
-      connect: {
-        autoConnectLastWallet: true,
-        showSidebar: false,
-        removeIDontHaveAWalletInfoLink: true,
-        removeWhereIsMyWalletWarning: true,
-      },
-      notify: {
-        enabled: false,
-      },
-      accountCenter: {
-        mobile: {
-          enabled: false,
-        },
-        desktop: {
-          enabled: false,
-        },
-      },
-      chains: [
-        {
-          id: NETWORKS.MAINNET,
-          token: TOKEN_NAMES[NETWORKS.MAINNET],
-          label: 'Ethereum Mainnet',
-        },
-        {
-          id: NETWORKS.GOERLI,
-          token: TOKEN_NAMES[NETWORKS.GOERLI],
-          label: 'Goerli testnet',
-        },
-        {
-          id: NETWORKS.HOLESKY,
-          label: 'Holesky testnet',
-          token: TOKEN_NAMES[NETWORKS.HOLESKY],
-        },
-      ],
-      appMetadata: {
-        name: 'SSV Network',
-        icon: getImage('ssvIcons/logo.svg'),
-        logo: getImage('ssvIcons/logo.svg'),
-        description: 'SSV Network',
-        recommendedInjectedWallets: [
-          { name: 'MetaMask', url: 'https://metamask.io' },
-        ],
-      },
-    });
+    this.onboardSdk = initOnboard();
+
     const wallets = this.onboardSdk.state.select('wallets');
     wallets.subscribe(async (update: any) => {
       if (update.length > 0) {

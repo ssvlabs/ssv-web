@@ -18,18 +18,6 @@ jobs:
       STAGE_SSV_NETWORKS: >
         [
           {
-            \"networkId\": 5,
-            \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"prater\",
-            \"api\": \"https://api.stage.ssv.network/api\",
-            \"explorerUrl\": \"https://explorer.stage.ssv.network\",
-            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0x6471F70b932390f527c6403773D082A0Db8e8A9F\",
-            \"distributionContract\": \"${{ secrets.STAGE_DISTRIBUTION_CONTRACT_ADDRESS }}\",
-            \"setterContractAddress\": \"${{ secrets.STAGE_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.STAGE_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-          },
-          {
             \"networkId\": 17000,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"holesky\",
@@ -72,7 +60,7 @@ jobs:
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"holesky\",
             \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://holesky.stage.ssv.network\",
+            \"explorerUrl\": \"https://holesky.explorer.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0xad45A78180961079BFaeEe349704F411dfF947C6\",
             \"setterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",

@@ -72,7 +72,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     opacity: (props: any) => props.hasMevRelay ? 'none' : '40%',
-    backgroundImage: (props: any) => `url(/images/mevs/${props.mevIcon}.svg)`,
+    backgroundImage: (props: any) => `url(/images/mevs/${props.mevIcon}${theme.darkMode ? '-dark' : ''}.svg)`,
   },
   MevRelayBadgeText: { fontSize: 14, fontWeight: 500 },
 }));

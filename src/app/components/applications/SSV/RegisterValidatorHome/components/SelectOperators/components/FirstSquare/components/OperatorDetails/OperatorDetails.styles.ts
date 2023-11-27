@@ -24,6 +24,11 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(2),
     backgroundImage: `url(/images/copy/${theme.darkMode ? 'dark' : 'gray'}.svg)`,
   },
+  OperatorDetailsWrapper: {
+    gap: 12,
+    display: 'flex',
+    alignItems: 'center',
+  },
   OperatorLogo: {
     width: (props: any) => props.logoSize ? props.logoSize : 40,
     height: (props: any) => props.logoSize ? props.logoSize : 40,

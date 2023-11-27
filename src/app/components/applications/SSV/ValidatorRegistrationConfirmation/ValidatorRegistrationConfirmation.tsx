@@ -133,7 +133,7 @@ const ValidatorRegistrationConfirmation = () => {
         return (
             <Grid key={index} container item xs={12} className={classes.Row}>
               <Grid item>
-                <OperatorDetails fullOperatorName operator={operator}/>
+                <OperatorDetails isFullOperatorName operator={operator}/>
               </Grid>
               <Grid item xs>
                 <SsvAndSubTitle

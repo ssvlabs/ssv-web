@@ -24,11 +24,11 @@ type Props = {
   logoSize?: number;
   nameFontSize?: number;
   idFontSize?: number;
-  fullOperatorName?: boolean;
+  isFullOperatorName?: boolean;
 };
 
 const OperatorDetails = (props: Props) => {
-  const { gray80, operator, withCopy, withoutExplorer, setOpenExplorerRefs, logoSize, nameFontSize, idFontSize, fullOperatorName } = props;
+  const { gray80, operator, withCopy, withoutExplorer, setOpenExplorerRefs, logoSize, nameFontSize, idFontSize, isFullOperatorName } = props;
   const stores = useStores();
   const notificationsStore: NotificationsStore = stores.Notifications;
   const classes = useStyles({
@@ -67,7 +67,7 @@ const OperatorDetails = (props: Props) => {
         </Grid>
         <Grid item className={classes.TextWrapper}>
           <Grid item className={classes.Name}>
-            {operatorName.length > 18 && !fullOperatorName ? <AnchorTooltip title={operatorName} placement={'top'}>
+            {operatorName.length > 18 && !isFullOperatorName ? <AnchorTooltip title={operatorName} placement={'top'}>
               {truncateText(operatorName, 18)}
             </AnchorTooltip> : operatorName}
           </Grid>

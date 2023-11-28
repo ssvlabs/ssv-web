@@ -28,6 +28,8 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'setterContractAddress'
   | 'getterContractAddress'>;
 
+const FIRST_NETWORK_INDEX = 0;
+
 export const MAINNET_NETWORK_ID = 1;
 export const GOERLI_NETWORK_ID = 5;
 export const HOLESKY_NETWORK_ID = 17000;
@@ -178,7 +180,7 @@ export const getCurrentNetwork = () => {
     const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
     return saveNetwork(holeskyIndex);
   }
-  return saveNetwork(0);
+  return saveNetwork(FIRST_NETWORK_INDEX);
 };
 
 export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];

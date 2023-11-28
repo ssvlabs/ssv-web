@@ -45,12 +45,11 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
-
+  const [operatorHasMaxCountValidators, setOperatorHasMaxCountValidators] = useState(false);
   const operatorHasMevRelays = allEqual(Object.values(operatorStore.selectedOperators), 'mev_relays');
   const operatorCount = Object.values(operatorStore.selectedOperators).length;
   const clusterSize = clusterBox.length;
   const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
-
 
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
@@ -86,7 +85,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   };
 
   const disableButton = (): boolean => {
-    return clusterExist || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
+    return operatorHasMaxCountValidators || clusterExist || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
       // @ts-ignore
       if (!previousOperatorsIds.includes(operator.id)) acc = true;
       return acc;
@@ -103,7 +102,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
+    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => !operatorStore.isOperatorRegistrable(operator.validators_count));
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
+    setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
   }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   useEffect(() => {
@@ -151,6 +152,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                       <Grid key={index} container className={classes.SelectedOperatorBox}>
                         <Grid className={classes.DeleteOperator} onClick={() => {
                           removeOperator(index);
+                          setOperatorHasMaxCountValidators(false);
                         }}><Grid className={classes.whiteLine}/></Grid>
                         <Grid item>
                           <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} operator={operator}
@@ -182,17 +184,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                 </Grid>
               </Grid>
             ) : ''}
-            {clusterExist && (
-              <Grid item xs={12}>
-                <ErrorMessage text={
-                  <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
-                    <LinkText
-                      text={'cluster page'}
-                      onClick={openSingleCluster}/>
-                    &nbsp;and click “Add Validator”.
-                  </Grid>}/>
-              </Grid>
-            )}
           </Grid>
         </Grid>,
         <Grid container>
@@ -209,6 +200,25 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
               />
             </Grid>
           </Grid>
+          {clusterExist && (
+            <Grid item xs={12}>
+              <ErrorMessage text={
+                <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
+                  <LinkText
+                    text={'cluster page'}
+                    onClick={openSingleCluster}/>
+                  &nbsp;and click “Add Validator”.
+                </Grid>}/>
+            </Grid>
+          )}
+          {operatorHasMaxCountValidators && (
+            <Grid item xs={12}>
+              <ErrorMessage text={
+                <Grid item xs={12}>One of your chosen operators has reached its maximum validator capacity. Please
+                  select an alternative operator.
+                </Grid>}/>
+            </Grid>
+          )}
           {!allSelectedOperatorsVerified && !clusterExist && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>

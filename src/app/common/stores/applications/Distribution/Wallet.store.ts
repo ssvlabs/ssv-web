@@ -1,13 +1,10 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
-import Onboard from '@web3-onboard/core';
 import { Contract } from 'web3-eth-contract';
-import injectedModule from '@web3-onboard/injected-wallets';
-import walletConnectModule from '@web3-onboard/walletconnect';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import { getImage } from '~lib/utils/filePath';
 import BaseStore from '~app/common/stores/BaseStore';
+import { initOnboard } from '~lib/utils/onboardHelper';
 import { distributionHelper } from '~lib/utils/distributionHelper';
 import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -15,7 +12,7 @@ import DistributionStore from '~app/common/stores/applications/Distribution/Dist
 import {
   changeCurrentNetwork, getCurrentNetwork,
   inNetworks,
-  NETWORKS, notIncludeMainnet, testNets, TOKEN_NAMES,
+  NETWORKS, notIncludeMainnet, testNets,
 } from '~lib/utils/envHelper';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 
@@ -78,59 +75,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   initWalletHooks() {
     if (this.onboardSdk) return;
-    const injected = injectedModule();
-    const walletConnect = walletConnectModule({ projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
-
-    const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
-    this.onboardSdk = Onboard({
-      theme: theme,
-      apiKey: config.ONBOARD.API_KEY,
-      wallets: [injected, walletConnect],
-      disableFontDownload: true,
-      connect: {
-        autoConnectLastWallet: true,
-        showSidebar: false,
-        removeIDontHaveAWalletInfoLink: true,
-        removeWhereIsMyWalletWarning: true,
-      },
-      notify: {
-        enabled: false,
-      },
-      accountCenter: {
-        mobile: {
-          enabled: false,
-        },
-        desktop: {
-          enabled: false,
-        },
-      },
-      chains: [
-        {
-          id: NETWORKS.MAINNET,
-          token: TOKEN_NAMES[NETWORKS.MAINNET],
-          label: 'Ethereum Mainnet',
-        },
-        {
-          id: NETWORKS.GOERLI,
-          token: TOKEN_NAMES[NETWORKS.GOERLI],
-          label: 'Goerli testnet',
-        },
-        {
-          id: NETWORKS.HOLESKY,
-          label: 'Holesky testnet',
-          token: TOKEN_NAMES[NETWORKS.HOLESKY],
-        },
-      ],
-      appMetadata: {
-        name: 'SSV Network',
-        icon: getImage('ssvIcons/logo.svg'),
-        logo: getImage('ssvIcons/logo.svg'),
-        description: 'SSV Network',
-        recommendedInjectedWallets: [
-          { name: 'MetaMask', url: 'https://metamask.io' },
-        ],
-      },
-    });
+    this.onboardSdk = initOnboard();
 
     const wallets = this.onboardSdk.state.select('wallets');
     wallets.subscribe(async (update: any) => {
@@ -254,7 +199,11 @@ class WalletStore extends BaseStore implements Wallet {
       this.notificationsStore.showMessage('Please change network to Holesky', 'error');
     } else {
       try {
-        changeCurrentNetwork(Number(networkId));
+        const chainId = networkId === NETWORKS.HOLESKY ? NETWORKS.MAINNET : networkId;
+        if (networkId === NETWORKS.HOLESKY) {
+          await this.changeNetwork(chainId);
+        }
+        changeCurrentNetwork(chainId);
       } catch (e) {
         this.wrongNetwork = true;
         this.notificationsStore.showMessage(String(e), 'error');

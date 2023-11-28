@@ -52,10 +52,10 @@ const SetOperatorFee = () => {
               </Grid>
             </Grid>,
             <Grid className={classes.Wrapper}>
-              <Typography className={classes.GreyHeader}>Things that will help you out:</Typography>
+              <Typography className={classes.GreyHeader}>Next step:</Typography>
               <Grid container className={classes.BoxesWrapper}>
                 <Grid className={classes.BoxWrapper} xs={12}>
-                  <LinkText text={'Monitor your node'} link={config.links.MONITOR_YOUR_NODE_URL} /> to improve your operator performance and uptime.
+                  <LinkText text={'Enable MEV'} link={config.links.MONITOR_YOUR_NODE_URL} />to propose MEV blocks for the validators you manage.
                 </Grid>
               </Grid>
               <PrimaryButton disable={false} text={'Manage Operator'} submitFunction={moveToMyAccount}/>

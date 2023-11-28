@@ -14,7 +14,7 @@ const smallerText = {
 
 export const useStyles = makeStyles((theme: Theme) => ({
   Box: {
-    width: 280,
+    width: 260,
     height: 118,
     borderRadius: 8,
     cursor: 'pointer',
@@ -23,6 +23,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    textWrap: 'wrap',
     border: `solid 1px ${theme.colors.primaryBlue}`,
   },
   Disable: {
@@ -89,6 +90,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   BlueText: {
     ...text,
+    marginLeft: '10%',
+    marginRight: '10%',
     color: theme.colors.primaryBlue,
   },
   AdditionalGrayText: {

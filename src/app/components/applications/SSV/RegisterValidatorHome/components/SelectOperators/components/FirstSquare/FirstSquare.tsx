@@ -84,6 +84,8 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     };
 
     const response = await Operator.getInstance().getOperators(payload);
+    const maxValidators = await operatorStore.getOperatorValidatorsLimit();
+    response.operators.map((operator: any) => operator.validators_count = Math.min(operator.validators_count + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE, maxValidators));
     if (response?.pagination?.page > 1) {
       const operatorListInString = operatorsData.map(operator => operator.id);
       const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));
@@ -173,7 +175,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       const isSelected = operatorStore.isOperatorSelected(operator.id);
       const reachedMaxValidators = !operatorStore.isOperatorRegistrable(operator.validators_count);
       const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress);
-      const disabled = reachedMaxValidators || isDeleted || isPrivateOperator;
+      const disabled = isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;
       const mevRelays = operator?.mev_relays || '';
@@ -198,7 +200,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
             <Grid container>
               <Grid item>{operator.validators_count}</Grid>
               {reachedMaxValidators && (
-                <Grid item style={{ marginLeft: 4 }}>
+                <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
                   <ToolTip text={'Operator reached  maximum amount of validators'}/>
                 </Grid>
               )}
@@ -219,11 +221,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
             <Grid container>
               <Grid item
                     className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
-              {disabled && !isPrivateOperator && (
-                <Grid item style={{ alignSelf: 'center' }}>
-                  <ToolTip text={'Operator reached  maximum amount of validators'}/>
-                </Grid>
-              )}
             </Grid>
           </StyledCell>
           <StyledCell>

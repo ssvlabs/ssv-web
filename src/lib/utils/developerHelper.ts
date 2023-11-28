@@ -20,7 +20,9 @@ export const DEVELOPER_FLAGS = {
   USE_HARDCODED_GAS_LIMIT: 'useHardcodedGasLimit',
   UPLOAD_KEYSHARE_UNSAFE_MODE: 'uploadKeyShareUnsafeMode',
   ENABLE_TEST_DISTRIBUTION_FLOW: 'enableTestDistributionFlowFeatureFlag',
+  ENABLE_DESKTOP_APP_KEYSHARES_GENERATION: 'enableDesktopAppKeysharesGeneration',
 };
+
 export const developerFlagsInfo = {
   [DEVELOPER_FLAGS.SHOW_HELP]: {
     'description': 'Show/Hide Developer Help',
@@ -36,6 +38,10 @@ export const developerFlagsInfo = {
   },
   [DEVELOPER_FLAGS.ENABLE_TEST_DISTRIBUTION_FLOW]: {
     'description': 'Use testing contract (make sure you provide the contract on local storage as (testContract=0x....1234))',
+    'values': ['0', '1'],
+  },
+  [DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION]: {
+    'description': 'Enable keyshares generation using desktop application',
     'values': ['0', '1'],
   },
 };

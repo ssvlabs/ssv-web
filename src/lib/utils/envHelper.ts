@@ -18,6 +18,7 @@ export type NetworkDataType = {
   contractToken: string;
   getterContractAddress: string;
   setterContractAddress: string;
+  insufficientBalanceUrl: string;
 };
 
 type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
@@ -26,6 +27,7 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'apiNetwork'
   | 'contractToken'
   | 'setterContractAddress'
+  | 'insufficientBalanceUrl'
   | 'getterContractAddress'>;
 
 const FIRST_NETWORK_INDEX = 0;
@@ -116,27 +118,41 @@ const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: num
 
 export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
 
+export const getCurrentNetwork = () => {
+  if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) throw new Error('Provide network data');
+  const currentNetworkIndex = window.localStorage.getItem('current_network');
+  if (currentNetworkIndex && NETWORKS_DATA.length > 1) {
+    const networkId = NETWORKS_DATA[currentNetworkIndex].networkId;
+    return { ...NETWORKS_DATA[currentNetworkIndex], ...NETWORK_VARIABLES[networkId] };
+  }
+  if (!currentNetworkIndex && process.env.REACT_APP_FAUCET_PAGE) {
+    const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
+    return saveNetwork(holeskyIndex);
+  }
+  return saveNetwork(FIRST_NETWORK_INDEX);
+};
+
 const _envs = {
   [NETWORKS.GOERLI]: {
     NETWORK: 'prater',
     BEACONCHA_URL: 'https://prater.beaconcha.in',
     LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://goerli.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
+    INSUFFICIENT_BALANCE_URL: getCurrentNetwork().insufficientBalanceUrl,
   },
   [NETWORKS.HOLESKY]: {
     NETWORK: 'holesky',
     BEACONCHA_URL: 'https://holesky.beaconcha.in',
     LAUNCHPAD_URL: 'https://holesky.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://holesky.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
+    INSUFFICIENT_BALANCE_URL: getCurrentNetwork().insufficientBalanceUrl,
   },
   [NETWORKS.MAINNET]: {
     NETWORK: 'mainnet',
     BEACONCHA_URL: 'https://beaconcha.in',
     LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://coinmarketcap.com/currencies/ssv-network/#Markets',
+    INSUFFICIENT_BALANCE_URL: getCurrentNetwork().insufficientBalanceUrl,
   },
 };
 
@@ -167,20 +183,6 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
   if (Number(value) === networkIndex) return;
   window.localStorage.setItem('current_network', String(networkIndex));
   window.location.reload();
-};
-
-export const getCurrentNetwork = () => {
-  if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) throw new Error('Provide network data');
-  const currentNetworkIndex = window.localStorage.getItem('current_network');
-  if (currentNetworkIndex && NETWORKS_DATA.length > 1) {
-    const networkId = NETWORKS_DATA[currentNetworkIndex].networkId;
-    return { ...NETWORKS_DATA[currentNetworkIndex], ...NETWORK_VARIABLES[networkId] };
-  }
-  if (!currentNetworkIndex && process.env.REACT_APP_FAUCET_PAGE) {
-    const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
-    return saveNetwork(holeskyIndex);
-  }
-  return saveNetwork(FIRST_NETWORK_INDEX);
 };
 
 export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];

@@ -3,6 +3,7 @@ import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
@@ -97,7 +98,7 @@ const ValidatorRegistrationConfirmation = () => {
             Insufficient SSV balance. There is not enough SSV in your wallet.
           </Grid>
           <Grid item>
-            <LinkText text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
+            <LinkText text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
           </Grid>
         </Grid>
     )}

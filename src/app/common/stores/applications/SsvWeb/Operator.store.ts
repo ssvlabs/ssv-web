@@ -137,7 +137,7 @@ class OperatorStore extends BaseStore {
       clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
-      getOperatorValidatorsLimit: action.bound,
+      updateOperatorValidatorsLimit: action.bound,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
       updateOperatorAddressWhitelist: observable,
@@ -209,20 +209,20 @@ class OperatorStore extends BaseStore {
   /**
    * Get max validators count
    */
-  async getOperatorValidatorsLimit(): Promise<number> {
+  async updateOperatorValidatorsLimit(): Promise<void> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {
       this.operatorValidatorsLimit = await contract.methods.getValidatorsPerOperatorLimit().call();
     }
-    return this.operatorValidatorsLimit;
   }
 
   /**
    * Check if operator registrable
    */
-  isOperatorRegistrable(validatorsRegisteredCount: number) {
-    return this.operatorValidatorsLimit > validatorsRegisteredCount;
+  isOperatorRegistrable(validatorsRegisteredCount: number): boolean {
+    const result = Math.min(validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE, this.operatorValidatorsLimit);
+    return this.operatorValidatorsLimit > result;
   }
 
   /**

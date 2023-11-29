@@ -74,6 +74,7 @@ class ApplicationStore extends BaseStore implements Application {
       this.switchDarkMode(false);
     }
 
+    console.info('Checking "locationRestrictionDisabled" in localStorage to adjust "locationRestrictionEnabled" flag');
     if (window && window.localStorage && window.localStorage.getItem('locationRestrictionDisabled')) {
       this.locationRestrictionEnabled = false;
     }

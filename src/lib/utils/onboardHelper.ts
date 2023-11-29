@@ -7,7 +7,11 @@ import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 
 export const initOnboard = () => {
   const injected = injectedModule();
-  const walletConnect = walletConnectModule({ dappUrl: 'https://app.ssv.network/', projectId: config.ONBOARD.PROJECT_ID, optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY] });
+  const walletConnect = walletConnectModule({
+    dappUrl: 'https://app.ssv.network/',
+    projectId: config.ONBOARD.PROJECT_ID,
+    optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY],
+  });
   const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
 
   return Onboard({
@@ -34,18 +38,22 @@ export const initOnboard = () => {
     chains: [
       {
         id: NETWORKS.MAINNET,
-        token: TOKEN_NAMES[NETWORKS.MAINNET],
         label: 'Ethereum Mainnet',
+        token: TOKEN_NAMES[NETWORKS.MAINNET],
       },
       {
         id: NETWORKS.GOERLI,
-        token: TOKEN_NAMES[NETWORKS.GOERLI],
         label: 'Goerli testnet',
+        token: TOKEN_NAMES[NETWORKS.GOERLI],
+        rpcUrl: 'https://ethereum-goerli.publicnode.com',
+        publicRpcUrl: 'https://ethereum-goerli.publicnode.com',
       },
       {
         id: NETWORKS.HOLESKY,
         label: 'Holesky testnet',
         token: TOKEN_NAMES[NETWORKS.HOLESKY],
+        rpcUrl: 'https://ethereum-holesky.publicnode.com',
+        publicRpcUrl: 'https://ethereum-holesky.publicnode.com',
       },
     ],
     appMetadata: {

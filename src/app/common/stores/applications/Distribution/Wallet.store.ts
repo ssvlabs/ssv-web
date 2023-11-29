@@ -10,9 +10,12 @@ import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import {
-  changeCurrentNetwork, getCurrentNetwork,
+  changeCurrentNetwork,
+  getCurrentNetwork,
   inNetworks,
-  NETWORKS, notIncludeMainnet, testNets,
+  NETWORKS,
+  notIncludeMainnet,
+  testNets,
 } from '~lib/utils/envHelper';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 
@@ -77,8 +80,10 @@ class WalletStore extends BaseStore implements Wallet {
     if (this.onboardSdk) return;
     this.onboardSdk = initOnboard();
 
-    const wallets = this.onboardSdk.state.select('wallets');
+    const wallets = this.onboardSdk.state.select();
     wallets.subscribe(async (update: any) => {
+      console.warn('Wallet subscription data:', update);
+      update = update.wallets;
       if (update.length > 0) {
         const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
         const { storeName } = distributionHelper(networkId);

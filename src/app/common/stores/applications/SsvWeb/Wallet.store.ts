@@ -17,7 +17,9 @@ import {
   changeCurrentNetwork,
   getCurrentNetwork,
   inNetworks,
-  notIncludeMainnet, testNets, TOKEN_NAMES,
+  notIncludeMainnet,
+  testNets,
+  TOKEN_NAMES,
 } from '~lib/utils/envHelper';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -77,11 +79,13 @@ class WalletStore extends BaseStore implements Wallet {
    * @url https://docs.blocknative.com/onboard#initialization
    */
   initWalletHooks() {
-
+    if (this.onboardSdk) return;
     this.onboardSdk = initOnboard();
 
-    const wallets = this.onboardSdk.state.select('wallets');
+    const wallets = this.onboardSdk.state.select();
     wallets.subscribe(async (update: any) => {
+      console.warn('Wallet subscription data:', update);
+      update = update.wallets;
       if (update.length > 0) {
         const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
         const balance = update[0]?.accounts[0]?.balance ? update[0]?.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;

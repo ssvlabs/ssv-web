@@ -1,3 +1,5 @@
+import { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+
 export interface IENVS {
   NETWORK: string,
   BEACONCHA_URL: string,
@@ -166,7 +168,10 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
   }
   if (Number(value) === networkIndex) return;
   window.localStorage.setItem('current_network', String(networkIndex));
-  window.location.reload();
+  const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+  if (walletConnected && !JSON.parse(walletConnected)) {
+    window.location.reload();
+  }
 };
 
 export const getCurrentNetwork = () => {

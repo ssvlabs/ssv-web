@@ -8,7 +8,7 @@ import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 export const initOnboard = () => {
   const injected = injectedModule();
   const walletConnect = walletConnectModule({
-    dappUrl: 'https://app.ssv.network/',
+    dappUrl: window.location.origin,
     projectId: config.ONBOARD.PROJECT_ID,
     optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY],
   });

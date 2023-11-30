@@ -34,7 +34,7 @@ class FaucetStore extends BaseStore {
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress, network: networkId, version: apiVersion });
             return { status: true };
         } catch (e: any) {
-            return { status: false, type: e.response.data.error.message === 'Reached max transactions per day' ? 1 : 2 };
+            return { status: false, type: e.response.data.error.message === config.FAUCET.REACHED_MAX_TRANSACTIONS ? config.FAUCET.REACHED_MAX_TRANSACTIONS : config.FAUCET.FAUCET_DEPLETED };
         }
     }
 

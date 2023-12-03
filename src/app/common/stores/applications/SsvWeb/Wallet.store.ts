@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
+import { ethers } from 'ethers';
 import { Contract } from 'web3-eth-contract';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
@@ -36,6 +37,7 @@ class WalletStore extends BaseStore implements Wallet {
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
+  etherProvider: ethers.providers.Web3Provider | null = null;
 
   constructor() {
     super();
@@ -68,6 +70,25 @@ class WalletStore extends BaseStore implements Wallet {
       onAccountAddressChangeCallback: action.bound,
     });
     this.initWalletHooks();
+  }
+
+  public getProvider(force: boolean = false): any {
+    if (!this.etherProvider || force) {
+      this.etherProvider = new ethers.providers.Web3Provider(this.wallet.provider);
+    }
+    return this.etherProvider;
+  }
+
+  public getSigner() {
+    return this.getProvider().getSigner();
+  }
+
+  public sendTransaction(args: Record<string, number | string>): Promise<any> {
+    const signer = this.getSigner();
+    if (!signer) {
+      throw new Error('Signer is not defined');
+    }
+    return signer.sendTransaction(args).wait();
   }
 
   BN(s: any) {

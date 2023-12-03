@@ -188,7 +188,7 @@ export const getCurrentNetwork = () => {
   return saveNetwork(FIRST_NETWORK_INDEX);
 };
 
-export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];
+export const currentNetworkName = () => NETWORK_NAMES[getCurrentNetwork().networkId];
 
 const saveNetwork = (index: number) => {
   window.localStorage.setItem('current_network', index.toString());

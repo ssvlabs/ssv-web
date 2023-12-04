@@ -1,4 +1,5 @@
 import Onboard from '@web3-onboard/core';
+import safeWallet from '@web3-onboard/gnosis';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import config from '~app/common/config';
@@ -13,11 +14,16 @@ export const initOnboard = () => {
     optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY],
   });
   const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
+  const safeWalletInstance = safeWallet();
 
   return Onboard({
     theme: theme,
     apiKey: config.ONBOARD.API_KEY,
-    wallets: [injected, walletConnect],
+    wallets: [
+      injected,
+      walletConnect,
+      safeWalletInstance,
+    ],
     disableFontDownload: true,
     connect: {
       autoConnectLastWallet: true,

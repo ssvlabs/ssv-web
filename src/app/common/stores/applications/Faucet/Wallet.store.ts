@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
-import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -181,6 +181,8 @@ class WalletStore extends BaseStore implements Wallet {
     }
     this.setAccountDataLoaded(true);
   }
+
+  getSigner(){}
 
   /**
    * Callback for connected wallet

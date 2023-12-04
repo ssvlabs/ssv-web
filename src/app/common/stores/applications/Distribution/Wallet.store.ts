@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
-import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -127,6 +127,9 @@ class WalletStore extends BaseStore implements Wallet {
     if (!amount) return '0';
     return this.web3.utils.toWei(amount.toString(), 'ether');
   }
+
+  getSigner(){}
+
 
   /**
    * Check wallet cache and connect

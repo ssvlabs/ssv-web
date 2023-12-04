@@ -1,4 +1,4 @@
-import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import BaseStore from '~app/common/stores/BaseStore';
 
 export const WALLET_CONNECTED = 'WalletConnected';
@@ -31,6 +31,7 @@ export default abstract class Wallet extends BaseStore {
   public abstract connect(): void;
 
   public abstract initializeUserInfo(): void;
+  public abstract getSigner(): any;
 
   // eslint-disable-next-line no-unused-vars
   public abstract decodeKey(publicKey: string): string;

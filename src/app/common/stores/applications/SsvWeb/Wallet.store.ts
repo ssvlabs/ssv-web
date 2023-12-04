@@ -1,7 +1,6 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
-import { ethers } from 'ethers';
-import { Contract } from 'web3-eth-contract';
+import { ethers, Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
@@ -35,9 +34,9 @@ class WalletStore extends BaseStore implements Wallet {
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
+  etherProvider: ethers.providers.Web3Provider | null = null;
   private operatorStore: OperatorStore = this.getStore('Operator');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
-  etherProvider: ethers.providers.Web3Provider | null = null;
 
   constructor() {
     super();
@@ -46,6 +45,7 @@ class WalletStore extends BaseStore implements Wallet {
       wallet: observable,
       connected: computed,
       toWei: action.bound,
+      getSigner: action.bound,
       networkId: observable,
       notifySdk: observable,
       connect: action.bound,
@@ -81,14 +81,6 @@ class WalletStore extends BaseStore implements Wallet {
 
   public getSigner() {
     return this.getProvider().getSigner();
-  }
-
-  public sendTransaction(args: Record<string, number | string>): Promise<any> {
-    const signer = this.getSigner();
-    if (!signer) {
-      throw new Error('Signer is not defined');
-    }
-    return signer.sendTransaction(args).wait();
   }
 
   BN(s: any) {
@@ -327,7 +319,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (!this.viewContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-      this.viewContract = new this.web3.eth.Contract(abi, contractAddress);
+      this.viewContract = new ethers.Contract(contractAddress, abi, this.getSigner());
     }
     // @ts-ignore
     return this.viewContract;
@@ -337,7 +329,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (!this.networkContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
-      this.networkContract = new this.web3.eth.Contract(abi, contractAddress);
+      this.networkContract = new ethers.Contract(contractAddress, abi, this.getSigner());
     }
     // @ts-ignore
     return this.networkContract;

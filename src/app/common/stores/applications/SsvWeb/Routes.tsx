@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import React, { lazy, Suspense } from 'react';
-import { Route, Routes as Wrapper } from 'react-router-dom';
+import { Route, Routes as Wrapper, useLocation } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
-import { SsvAppBar } from '~app/components/common/AppBar';
+import { SsvAppBar, MigrationAppBar } from '~app/components/common/AppBar';
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
 const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
@@ -45,68 +45,69 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 
 const Migration = lazy(() => import('~app/components/applications/SSV/Migration/Migration'));
 
+const ssvRoutes = config.routes.SSV;
+
+const dashboardRoutes: any = [
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE, Component: ImportFile },
+  { path: ssvRoutes.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE, Component: ImportFile, keyShares: true  },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.REACTIVATE, Component: ReactivateCluster },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR_DASHBOARD, Component: OperatorDashboard },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA, Component: EditOperatorDetails },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SLASHING_WARNING, Component: SlashingWarning },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares  },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE, Component: UploadKeyStore },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CHOOSE_OPERATORS, Component: EditValidator },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS, Component: ConfirmOperatorsChange },
+  { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION, Component: MetadataConfirmationPage },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
+  { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, Component: ConfirmOperatorsChange },
+];
+
+const operatorRoutes = [
+  { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, Component: SetOperatorFee },
+  { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, Component: OperatorSuccessPage },
+  { path: ssvRoutes.OPERATOR.GENERATE_KEYS, Component: GenerateOperatorKeys },
+  { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation },
+];
+
+
+const validatorsRoutes = [
+  { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportFile },
+  { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
+  { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
+  { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, Component: SlashingWarning },
+  { path: ssvRoutes.VALIDATOR.FUNDING_PERIOD_PAGE, Component: FundingPeriod },
+  { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
+  { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, Component: DepositViaLaunchpad },
+  { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.START, Component: GenerateKeyShares },
+  { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
+  { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
+  { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
+  { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
+  { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
+];
+
 const Routes: any = () => {
-  const ssvRoutes = config.routes.SSV;
-
-  const dashboardRoutes: any = [
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
-    { path: ssvRoutes.MY_ACCOUNT.MIGRATION.START_MIGRATION, Component: Migration },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE, Component: ImportFile },
-    { path: ssvRoutes.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE, Component: ImportFile, keyShares: true  },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.REACTIVATE, Component: ReactivateCluster },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR_DASHBOARD, Component: OperatorDashboard },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA, Component: EditOperatorDetails },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SLASHING_WARNING, Component: SlashingWarning },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares  },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE, Component: UploadKeyStore },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CHOOSE_OPERATORS, Component: EditValidator },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS, Component: ConfirmOperatorsChange },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION, Component: MetadataConfirmationPage },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.CONFIRM_TRANSACTION, Component: ConfirmOperatorsChange },
-  ];
-
-  const operatorRoutes = [
-    { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, Component: SetOperatorFee },
-    { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, Component: OperatorSuccessPage },
-    { path: ssvRoutes.OPERATOR.GENERATE_KEYS, Component: GenerateOperatorKeys },
-    { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation },
-  ];
-
-
-  const validatorsRoutes = [
-    { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportFile },
-    { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
-    { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
-    { path: ssvRoutes.VALIDATOR.SLASHING_WARNING, Component: SlashingWarning },
-    { path: ssvRoutes.VALIDATOR.FUNDING_PERIOD_PAGE, Component: FundingPeriod },
-    { path: ssvRoutes.VALIDATOR.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
-    { path: ssvRoutes.VALIDATOR.DEPOSIT_VALIDATOR, Component: DepositViaLaunchpad },
-    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.START, Component: GenerateKeyShares },
-    { path: ssvRoutes.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, Component: AccountBalanceAndFee },
-    { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
-    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
-    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
-    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
-  ];
-
+  const location = useLocation();
+  const isMigrationPath = location.pathname === config.routes.SSV.MIGRATION;
   return (
       <Layout>
-        <SsvAppBar/>
+        {isMigrationPath ? <MigrationAppBar /> : <SsvAppBar />}
         <Suspense fallback={<div className="container"></div>}>
           <Wrapper>
             <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
@@ -130,6 +131,7 @@ const Routes: any = () => {
                 return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
               })}
             </Route>
+            <Route path={ssvRoutes.MIGRATION} element={<Migration />} />
           </Wrapper>
         </Suspense>
       </Layout>

@@ -19,7 +19,7 @@ type Button = {
   options?: any[],
 };
 
-const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: Button[], backgroundColor?: string, excludeNetworks?: number[] }) => {
+const AppBar = ({ buttons, backgroundColor, excludeNetworks = [], customComponent = null }: { buttons?: Button[], backgroundColor?: string, excludeNetworks?: number[]; customComponent?: any }) => {
     const stores = useStores();
     const navigate = useNavigate();
     const wrapperRef = useRef(null);
@@ -103,7 +103,8 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
             className={classes.AppBarIcon}
           />
         </Grid>
-        <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }}>
+        <Grid item container xs className={classes.GridItem} style={{ gap: 40, marginLeft: 40 }} justifyContent={!!customComponent ? 'center' : 'flex-start'}>
+          {customComponent}
           {buttons?.map((button, index) => {
               if (button?.options && button?.options?.length > 0) {
                   return <AppLinksToggle key={index} options={button?.options?.map((option: any) => ({ label: option.label, link: option.link, bottomLine: option.bottomLine || false }))} />;

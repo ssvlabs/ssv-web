@@ -37,6 +37,8 @@ const App = () => {
   const location = useLocation();
   const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
 
+  const isMigrationPath = location.pathname === config.routes.SSV.MIGRATION;
+
   useEffect(() => {
     document.title = applicationStore.appTitle;
   });
@@ -44,7 +46,7 @@ const App = () => {
   useEffect(() => {
     if (!applicationStore.locationRestrictionEnabled) {
       console.debug('Skipping location restriction functionality in this app.');
-      walletStore.checkConnectedWallet();
+      walletStore.checkConnectedWallet(isMigrationPath);
     } else {
       checkUserCountryRestriction().then((res: any) => {
         if (res.restricted) {
@@ -53,7 +55,7 @@ const App = () => {
           applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
         } else {
-          walletStore.checkConnectedWallet();
+          walletStore.checkConnectedWallet(isMigrationPath);
         }
       });
     }

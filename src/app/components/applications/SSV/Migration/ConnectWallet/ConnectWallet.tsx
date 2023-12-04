@@ -26,6 +26,7 @@ const ConnectWallet = ({ nextStep }: { nextStep: Function }) => {
         <BorderScreen
             sectionClass={classes.ExtendWrapper}
             wrapperClass={classes.CustomWrapper}
+            withoutNavigation
             body={[
                 <Grid className={classes.MigrationWrapper}>
                    <Grid className={classes.TextWrapper}>

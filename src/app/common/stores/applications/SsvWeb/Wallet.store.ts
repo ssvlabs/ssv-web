@@ -139,13 +139,10 @@ class WalletStore extends BaseStore implements Wallet {
     return this.web3.utils.toWei(amount.toString(), 'ether');
   }
 
-  /**
-   * Check wallet cache and connect
-   */
-  async checkConnectedWallet() {
+  async checkConnectedWallet(isMigration?: boolean) {
     const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
     if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
-      await this.onAccountAddressChangeCallback(undefined);
+      await this.onAccountAddressChangeCallback(undefined, isMigration);
     }
   }
 
@@ -174,11 +171,7 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  /**
-   * User address handler
-   * @param address
-   */
-  async onAccountAddressChangeCallback(address: string | undefined) {
+  async onAccountAddressChangeCallback(address: string | undefined, isMigration?: boolean) {
     this.setAccountDataLoaded(false);
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -186,7 +179,7 @@ class WalletStore extends BaseStore implements Wallet {
     window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined || !this.wallet?.label) {
       ssvStore.clearUserSyncInterval();
-      await this.resetUser();
+      await this.resetUser(isMigration);
       setTimeout(() => {
         this.setAccountDataLoaded(true);
       }, 1000);
@@ -204,6 +197,8 @@ class WalletStore extends BaseStore implements Wallet {
         applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
       } else if (myAccountStore?.ownerAddressOperators?.length) {
         applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+      } else if (isMigration) {
+        applicationStore.strategyRedirect = config.routes.SSV.MIGRATION;
       } else {
         applicationStore.strategyRedirect = config.routes.SSV.ROOT;
       }
@@ -213,7 +208,7 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  async resetUser() {
+  async resetUser(isMigration?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
@@ -222,7 +217,7 @@ class WalletStore extends BaseStore implements Wallet {
     myAccountStore.clearIntervals();
     window.localStorage.removeItem('params');
     window.localStorage.removeItem('selectedWallet');
-    applicationStore.strategyRedirect = config.routes.SSV.ROOT;
+    applicationStore.strategyRedirect = isMigration ? config.routes.SSV.MIGRATION : config.routes.SSV.ROOT;
   }
 
   /**
@@ -284,7 +279,7 @@ class WalletStore extends BaseStore implements Wallet {
 
   /**
    * Set Account loaded
-   * @param status: boolean
+   * @param status
    */
   setAccountDataLoaded = (status: boolean): void => {
     this.accountDataLoaded = status;

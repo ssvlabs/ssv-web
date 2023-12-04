@@ -347,6 +347,7 @@ class OperatorStore extends BaseStore {
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     await this.syncOperatorFeeInfo(operatorId);
     const operatorDataBefore = {
       operatorFutureFee: this.operatorFutureFee,
@@ -402,9 +403,10 @@ class OperatorStore extends BaseStore {
             }
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
+        notificationsStore.showMessage(e.message, 'error');
         resolve(false);
       }
     });
@@ -488,6 +490,7 @@ class OperatorStore extends BaseStore {
   async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
@@ -545,6 +548,7 @@ class OperatorStore extends BaseStore {
         console.debug('Contract Error', e.message);
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
+        notificationsStore.showMessage(e.message, 'error');
         resolve(false);
       }
     });
@@ -553,6 +557,7 @@ class OperatorStore extends BaseStore {
   async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
@@ -605,6 +610,7 @@ class OperatorStore extends BaseStore {
         console.debug('Contract Error', e.message);
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
+        notificationsStore.showMessage(e.message, 'error');
         resolve(false);
       }
     });
@@ -616,6 +622,7 @@ class OperatorStore extends BaseStore {
    */
   async approveOperatorFee(operatorId: number): Promise<boolean> {
     const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
@@ -675,6 +682,7 @@ class OperatorStore extends BaseStore {
         console.debug('Contract Error', e.message);
         applicationStore.setIsLoading(false);
         applicationStore.showTransactionPendingPopUp(false);
+        notificationsStore.showMessage(e.message, 'error');
         resolve(false);
       }
     });

@@ -246,6 +246,7 @@ class ValidatorStore extends BaseStore {
 
   async addNewValidator() {
     const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
         const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
@@ -309,6 +310,7 @@ class ValidatorStore extends BaseStore {
         });
         console.debug('Contract Error', e.message);
         applicationStore.setIsLoading(false);
+        notificationsStore.showMessage(e.message, 'error');
         resolve(false);
       }
     });

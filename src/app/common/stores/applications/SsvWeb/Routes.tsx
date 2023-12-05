@@ -104,7 +104,7 @@ const validatorsRoutes = [
 
 const Routes: any = () => {
   const location = useLocation();
-  const isMigrationPath = location.pathname === config.routes.SSV.MIGRATION;
+  const isMigrationPath = location.pathname === ssvRoutes.MIGRATION;
   return (
       <Layout>
         {isMigrationPath ? <MigrationAppBar /> : <SsvAppBar />}

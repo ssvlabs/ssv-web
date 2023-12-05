@@ -129,19 +129,19 @@ class OperatorStore extends BaseStore {
       getSelectedOperatorsFee: computed,
       selectedEnoughOperators: computed,
       unselectAllOperators: action.bound,
-      isOperatorRegistrable: action.bound,
+      clearOperatorFeeInfo: action.bound,
       operatorValidatorsLimit: observable,
       getSetOperatorFeePeriod: observable,
       operatorApprovalEndTime: observable,
       cancelChangeFeeProcess: action.bound,
-      clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
-      updateOperatorValidatorsLimit: action.bound,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
       updateOperatorAddressWhitelist: observable,
       newOperatorRegisterSuccessfully: observable,
+      updateOperatorValidatorsLimit: action.bound,
+      operatorReachedValidatorsLimit: action.bound,
     });
   }
 
@@ -220,9 +220,8 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  isOperatorRegistrable(validatorsRegisteredCount: number): boolean {
-    const result = Math.min(validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE, this.operatorValidatorsLimit);
-    return this.operatorValidatorsLimit > result;
+  operatorReachedValidatorsLimit(validatorsRegisteredCount: number): boolean {
+    return this.operatorValidatorsLimit <= validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE;
   }
 
   /**

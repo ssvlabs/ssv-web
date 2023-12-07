@@ -11,7 +11,7 @@ const ConnectWallet = ({ nextStep }: { nextStep: Function }) => {
     const classes = useStyles();
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const [buttonLabel, setButtonLabel] = useState(walletStore.connected ? 'Register Validators' : 'Connect wallet');
+    const [buttonLabel, setButtonLabel] = useState(walletStore.connected ? 'Next' : 'Connect Wallet');
 
     const connectToWallet = () => {
         if (walletStore.connected) {

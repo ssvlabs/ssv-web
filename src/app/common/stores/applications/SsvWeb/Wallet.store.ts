@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
-import { Contract } from 'web3-eth-contract';
+import { ethers, Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
@@ -17,7 +17,9 @@ import {
   changeCurrentNetwork,
   getCurrentNetwork,
   inNetworks,
-  notIncludeMainnet, testNets, TOKEN_NAMES,
+  notIncludeMainnet,
+  testNets,
+  TOKEN_NAMES,
 } from '~lib/utils/envHelper';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -32,6 +34,7 @@ class WalletStore extends BaseStore implements Wallet {
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
+  etherProvider: ethers.providers.Web3Provider | null = null;
   private operatorStore: OperatorStore = this.getStore('Operator');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
@@ -42,6 +45,7 @@ class WalletStore extends BaseStore implements Wallet {
       wallet: observable,
       connected: computed,
       toWei: action.bound,
+      getSigner: action.bound,
       networkId: observable,
       notifySdk: observable,
       connect: action.bound,
@@ -68,6 +72,17 @@ class WalletStore extends BaseStore implements Wallet {
     this.initWalletHooks();
   }
 
+  public getProvider(force: boolean = false): any {
+    if (!this.etherProvider || force) {
+      this.etherProvider = new ethers.providers.Web3Provider(this.wallet.provider);
+    }
+    return this.etherProvider;
+  }
+
+  public getSigner() {
+    return this.getProvider().getSigner();
+  }
+
   BN(s: any) {
     return new this.web3.utils.BN(s);
   }
@@ -77,11 +92,13 @@ class WalletStore extends BaseStore implements Wallet {
    * @url https://docs.blocknative.com/onboard#initialization
    */
   initWalletHooks() {
-
+    if (this.onboardSdk) return;
     this.onboardSdk = initOnboard();
 
-    const wallets = this.onboardSdk.state.select('wallets');
+    const wallets = this.onboardSdk.state.select();
     wallets.subscribe(async (update: any) => {
+      console.warn('Wallet subscription data:', update);
+      update = update.wallets;
       if (update.length > 0) {
         const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
         const balance = update[0]?.accounts[0]?.balance ? update[0]?.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
@@ -302,7 +319,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (!this.viewContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-      this.viewContract = new this.web3.eth.Contract(abi, contractAddress);
+      this.viewContract = new ethers.Contract(contractAddress, abi, this.getSigner());
     }
     // @ts-ignore
     return this.viewContract;
@@ -312,7 +329,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (!this.networkContract) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
-      this.networkContract = new this.web3.eth.Contract(abi, contractAddress);
+      this.networkContract = new ethers.Contract(contractAddress, abi, this.getSigner());
     }
     // @ts-ignore
     return this.networkContract;

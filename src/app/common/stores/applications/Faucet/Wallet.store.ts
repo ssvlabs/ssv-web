@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
-import { Contract } from 'ethers';
+import { Contract } from 'web3-eth-contract';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -73,10 +73,8 @@ class WalletStore extends BaseStore implements Wallet {
 
     this.onboardSdk = initOnboard();
 
-    const wallets = this.onboardSdk.state.select();
+    const wallets = this.onboardSdk.state.select('wallets');
     wallets.subscribe(async (update: any) => {
-      console.warn('Wallet subscription data:', update);
-      update = update.wallets;
       if (update.length > 0) {
         const networkId = parseInt(String(update[0]?.chains[0]?.id), 16);
         const wallet = update[0];
@@ -181,8 +179,6 @@ class WalletStore extends BaseStore implements Wallet {
     }
     this.setAccountDataLoaded(true);
   }
-
-  getSigner(){}
 
   /**
    * Callback for connected wallet

@@ -305,7 +305,7 @@ class OperatorStore extends BaseStore {
                 const operator = await Operator.getInstance().getOperator(operatorId);
                 const changed = operator.address_whitelist.toString() === address.toString();
                 if (changed) {
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
@@ -383,7 +383,7 @@ class OperatorStore extends BaseStore {
                   operatorDataBefore,
                 );
                 if (changed) {
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
@@ -525,7 +525,7 @@ class OperatorStore extends BaseStore {
                   operatorDataBefore,
                 );
                 if (changed) {
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
@@ -590,7 +590,7 @@ class OperatorStore extends BaseStore {
                   operatorBefore,
                 );
                 if (changed) {
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
@@ -658,7 +658,7 @@ class OperatorStore extends BaseStore {
                   operatorBefore,
                 );
                 if (changed) {
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }

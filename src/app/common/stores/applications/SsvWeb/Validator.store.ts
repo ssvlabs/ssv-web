@@ -1,20 +1,22 @@
 import Decimal from 'decimal.js';
-import { Contract } from 'ethers';
-import { KeyShares, SSVKeys } from 'ssv-keys';
+import { Contract } from 'web3-eth-contract';
+import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
+import { GasGroup } from '~app/common/config/gasLimits';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { getFixedGasLimit, getRegisterValidatorGasLimit } from '~lib/utils/gasLimitHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -132,45 +134,52 @@ class ValidatorStore extends BaseStore {
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract: Contract = walletStore.setterContract;
+    const ownerAddress: string = walletStore.accountAddress;
+    const gasLimit = getFixedGasLimit(GasGroup.REMOVE_VALIDATOR);
+
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // @ts-ignore
     const operatorsIds = validator.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
     validator.publicKey = validator.public_key.startsWith('0x') ? validator.public_key : `0x${validator.public_key}`;
     const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(validator.operators));
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      try {
-        const tx = await contract.removeValidator(validator.publicKey, operatorsIds, clusterData);
-        if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
+      // eslint-disable-next-line no-param-reassign
+      await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gas: gasLimit })
+        .on('receipt', async () => {
           ApiParams.initStorage(true);
           let iterations = 0;
           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
             // Reached maximum iterations
             if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // eslint-disable-next-line no-await-in-loop
               await this.refreshOperatorsAndClusters(resolve, true);
               break;
             }
             iterations += 1;
+            // eslint-disable-next-line no-await-in-loop
             if (!(await myAccountStore.checkEntityInAccount('cluster', 'public_key', validator.publicKey.replace(/^(0x)/gi, '')))) {
+              // eslint-disable-next-line no-await-in-loop
               await this.refreshOperatorsAndClusters(resolve, true);
               break;
             } else {
               console.log('Validator is still in API..');
             }
+            // eslint-disable-next-line no-await-in-loop
             await myAccountStore.delay();
           }
-        }
-      } catch (e: any) {
-        applicationStore.setIsLoading(false);
-        notificationsStore.showMessage(e.message, 'error');
-        applicationStore.showTransactionPendingPopUp(false);
-        resolve(false);
-      }
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          applicationStore.setIsLoading(false);
+          notificationsStore.showMessage(error.message, 'error');
+          applicationStore.showTransactionPendingPopUp(false);
+          resolve(false);
+        });
     });
   }
 
@@ -194,7 +203,7 @@ class ValidatorStore extends BaseStore {
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
 
-      const response = await contract.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
+      const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
         .on('receipt', async (receipt: any) => {
           // eslint-disable-next-line no-prototype-builtins
           const event: boolean = receipt.hasOwnProperty('events');
@@ -245,33 +254,36 @@ class ValidatorStore extends BaseStore {
   }
 
   async addNewValidator() {
-    const applicationStore: ApplicationStore = this.getStore('Application');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
-      try {
-        const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
-        const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-        const contract: Contract = walletStore.setterContract;
+      const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
+      const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const clusterStore: ClusterStore = this.getStore('Cluster');
+      const processStore: ProcessStore = this.getStore('Process');
+      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+      const applicationStore: ApplicationStore = this.getStore('Application');
+      const notificationsStore: NotificationsStore = this.getStore('Notifications');
+      const contract: Contract = walletStore.setterContract;
+      const ownerAddress: string = walletStore.accountAddress;
 
-        if (!payload) {
-          resolve(false);
-          return;
-        }
+      if (!payload) {
+        resolve(false);
+        return;
+      }
 
-        this.newValidatorReceipt = null;
+      const clusterHash = clusterStore.getClusterHash(payload.get(OPERATOR_IDS));
+      const response = await Validator.getInstance().getClusterData(clusterHash);
+      const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
+      const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.get(OPERATOR_IDS).length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
 
-        console.debug('Add Validator Payload: ', payload);
+      this.newValidatorReceipt = null;
 
-        let tx = await contract.registerValidator(...payload.values());
+      console.debug('Add Validator Payload: ', payload);
 
-        if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
+      // Send add operator transaction
+      contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: gasLimit })
+        .on('receipt', async (receipt: any) => {
+          // eslint-disable-next-line no-prototype-builtins
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             this.keyStoreFile = null;
@@ -287,57 +299,77 @@ class ValidatorStore extends BaseStore {
             while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
               // Reached maximum iterations
               if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // eslint-disable-next-line no-await-in-loop
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               }
               iterations += 1;
+              // eslint-disable-next-line no-await-in-loop
               if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
+                // eslint-disable-next-line no-await-in-loop
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               } else {
                 console.log('Validator is still not in API..');
               }
+              // eslint-disable-next-line no-await-in-loop
               await myAccountStore.delay();
             }
           }
-        }
-      } catch (e: any) {
-        const isRejected: boolean = e.hasOwnProperty('code');
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'register_tx',
-          label: isRejected ? 'rejected' : 'error',
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const isRejected: boolean = error.hasOwnProperty('code');
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'validator_register',
+            action: 'register_tx',
+            label: isRejected ? 'rejected' : 'error',
+          });
+          console.debug('Contract Error', error.message);
+          applicationStore.setIsLoading(false);
+          resolve(false);
+        })
+        .catch((error: any) => {
+          applicationStore.setIsLoading(false);
+          if (error) {
+            notificationsStore.showMessage(error.message, 'error');
+            GoogleTagManager.getInstance().sendEvent({
+              category: 'validator_register',
+              action: 'register_tx',
+              label: 'error',
+            });
+            resolve(false);
+          }
+          console.debug('Contract Error', error);
+          resolve(true);
         });
-        console.debug('Contract Error', e.message);
-        applicationStore.setIsLoading(false);
-        notificationsStore.showMessage(e.message, 'error');
-        resolve(false);
-      }
     });
   }
 
   async reactivateCluster(amount: string) {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const applicationStore: ApplicationStore = this.getStore('Application');
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      try {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const clusterStore: ClusterStore = this.getStore('Cluster');
-        const processStore: ProcessStore = this.getStore('Process');
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-        const contract: Contract = walletStore.setterContract;
-        const process: SingleCluster = <SingleCluster>processStore.process;
-        const cluster = process.item;
-        // @ts-ignore
-        const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
-        const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-        const tx = await contract.reactivate(operatorsIds, walletStore.toWei(amount), clusterData);
-        if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const clusterStore: ClusterStore = this.getStore('Cluster');
+      const processStore: ProcessStore = this.getStore('Process');
+      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+      const applicationStore: ApplicationStore = this.getStore('Application');
+      const notificationsStore: NotificationsStore = this.getStore('Notifications');
+      const contract: Contract = walletStore.setterContract;
+      const process: SingleCluster = <SingleCluster>processStore.process;
+      const cluster = process.item;
+      const ownerAddress: string = walletStore.accountAddress;
+      // @ts-ignore
+      const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
+      const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
+      const gasLimit = getFixedGasLimit(GasGroup.REACTIVATE_CLUSTER);
+      contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gas: gasLimit })
+        .on('receipt', async (receipt: any) => {
+          // eslint-disable-next-line no-prototype-builtins
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             this.keyStoreFile = null;
@@ -352,32 +384,54 @@ class ValidatorStore extends BaseStore {
             while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
               // Reached maximum iterations
               if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // eslint-disable-next-line no-await-in-loop
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               }
               iterations += 1;
+              // eslint-disable-next-line no-await-in-loop
               if (await myAccountStore.checkEntityInAccount('cluster', 'active', true)) {
+                // eslint-disable-next-line no-await-in-loop
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               } else {
                 console.log('Validator is still not in API..');
               }
+              // eslint-disable-next-line no-await-in-loop
               await myAccountStore.delay();
             }
           }
-        }
-      } catch (e: any) {
-        const isRejected: boolean = e.hasOwnProperty('code');
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'single_cluster',
-          action: 'reactivate_cluster',
-          label: isRejected ? 'rejected' : 'error',
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const isRejected: boolean = error.hasOwnProperty('code');
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'single_cluster',
+            action: 'reactivate_cluster',
+            label: isRejected ? 'rejected' : 'error',
+          });
+          console.debug('Contract Error', error.message);
+          applicationStore.setIsLoading(false);
+          resolve(false);
+        })
+        .catch((error: any) => {
+          applicationStore.setIsLoading(false);
+          if (error) {
+            notificationsStore.showMessage(error.message, 'error');
+            GoogleTagManager.getInstance().sendEvent({
+              label: 'error',
+              category: 'single_cluster',
+              action: 'reactivate_cluster',
+            });
+            resolve(false);
+          }
+          console.debug('Contract Error', error);
+          resolve(true);
         });
-        console.debug('Contract Error', e.message);
-        notificationsStore.showMessage(e.message, 'error');
-        applicationStore.setIsLoading(false);
-        resolve(false);
-      }
     });
   }
 
@@ -406,25 +460,12 @@ class ValidatorStore extends BaseStore {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
           let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-          if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
+          if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
             liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
           }
           totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
         let keysharePayload;
-        console.warn({
-          keysharesPayload: {
-            metadata: {
-              publicKey: threshold.publicKey,
-              operators,
-              encryptedShares,
-            }, extra: {
-              ownerAddress: accountAddress,
-              ownerNonce: ownerNonce,
-              privateKey: this.keyStorePrivateKey,
-            },
-          },
-        });
         try {
           keysharePayload = await keyShares.buildPayload({
             publicKey: threshold.publicKey,
@@ -467,10 +508,10 @@ class ValidatorStore extends BaseStore {
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
       if ('fundingPeriod' in process) {
-        const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+        const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
         let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-        if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
+        if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
           liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
         }
         totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
@@ -569,14 +610,12 @@ class ValidatorStore extends BaseStore {
     const processStore: ProcessStore = this.getStore('Process');
     const accountStore: AccountStore = this.getStore('Account');
     const { ownerNonce } = accountStore;
-    const {
-      OK_RESPONSE,
+    const { OK_RESPONSE,
       OPERATOR_NOT_EXIST_RESPONSE,
       OPERATOR_NOT_MATCHING_RESPONSE,
       CATCH_ERROR_RESPONSE,
       VALIDATOR_EXIST_RESPONSE,
-      VALIDATOR_PUBLIC_KEY_ERROR,
-    } = translations.VALIDATOR.KEYSHARE_RESPONSE;
+      VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
     try {
       const fileJson = await this.keyShareFile?.text();
       const operatorStore: OperatorStore = this.getStore('Operator');
@@ -593,7 +632,7 @@ class ValidatorStore extends BaseStore {
       }
       if (processStore.secondRegistration) {
         const process: SingleCluster = processStore.process;
-        const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id).sort();
+        const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
         if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
           return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
         }
@@ -608,11 +647,7 @@ class ValidatorStore extends BaseStore {
       }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.sharesData, {
-        ownerAddress: walletStore.accountAddress,
-        ownerNonce: ownerNonce,
-        publicKey: payload.publicKey,
-      });
+      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {
@@ -637,7 +672,7 @@ class ValidatorStore extends BaseStore {
       }
       this.newValidatorReceipt = null;
       // Send add operator transaction
-      contract.registerValidator(...payload.values()).send({ from: ownerAddress, gas: null })
+      contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: null })
         .on('receipt', async (receipt: any) => {
           // eslint-disable-next-line no-prototype-builtins
           const event: boolean = receipt.hasOwnProperty('events');
@@ -732,8 +767,7 @@ class ValidatorStore extends BaseStore {
     const PUBLIC_KEY_ERROR_ID = 5;
     const keyShares = new KeyShares();
     const accountStore: AccountStore = this.getStore('Account');
-    const {
-      OK_RESPONSE,
+    const { OK_RESPONSE,
       CATCH_ERROR_RESPONSE,
       VALIDATOR_EXIST_RESPONSE,
       VALIDATOR_PUBLIC_KEY_ERROR,
@@ -760,11 +794,7 @@ class ValidatorStore extends BaseStore {
       operatorStore.selectOperators(selectedOperators);
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.sharesData, {
-        ownerAddress: walletStore.accountAddress,
-        ownerNonce: ownerNonce,
-        publicKey: payload.publicKey,
-      });
+      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {

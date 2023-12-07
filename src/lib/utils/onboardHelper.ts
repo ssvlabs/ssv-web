@@ -51,15 +51,11 @@ export const initOnboard = () => {
         id: NETWORKS.GOERLI,
         label: 'Goerli testnet',
         token: TOKEN_NAMES[NETWORKS.GOERLI],
-        rpcUrl: 'https://ethereum-goerli.publicnode.com',
-        publicRpcUrl: 'https://ethereum-goerli.publicnode.com',
       },
       {
         id: NETWORKS.HOLESKY,
         label: 'Holesky testnet',
         token: TOKEN_NAMES[NETWORKS.HOLESKY],
-        rpcUrl: 'https://ethereum-holesky.publicnode.com',
-        publicRpcUrl: 'https://ethereum-holesky.publicnode.com',
       },
     ],
     appMetadata: {

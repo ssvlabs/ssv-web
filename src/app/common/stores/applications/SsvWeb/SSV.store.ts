@@ -71,6 +71,7 @@ class SsvStore extends BaseStore {
       getBalanceFromDepositContract: action.bound,
     });
   }
+
   /**
    * Returns instance of SSV contract
    */
@@ -177,6 +178,7 @@ class SsvStore extends BaseStore {
   prepareSsvAmountToTransfer(amountInWei: string): string {
     return new Decimal(amountInWei).dividedBy(10000000).floor().mul(10000000).toFixed().toString();
   }
+
   /**
    * Deposit ssv
    * @param amount
@@ -189,10 +191,15 @@ class SsvStore extends BaseStore {
       const clusterStore: ClusterStore = this.getStore('Cluster');
       const process: SingleCluster = processStore.getProcess;
       const cluster = process.item;
-      const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
+      const operatorsIds = cluster.operators.map((operator: {
+        id: any;
+      }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
       const ssvAmount = this.prepareSsvAmountToTransfer(walletStore.toWei(amount));
-      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({ from: this.accountAddress, gas: gasLimit })
+      walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({
+        from: this.accountAddress,
+        gas: gasLimit,
+      })
         .on('receipt', async () => {
           resolve(true);
         })
@@ -277,7 +284,9 @@ class SsvStore extends BaseStore {
         let contractFunction: null;
         if (processStore.isValidatorFlow) {
           const cluster: SingleCluster = process.item;
-          const operatorsIds = cluster.operators.map((operator: { id: any; }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
+          const operatorsIds = cluster.operators.map((operator: {
+            id: any;
+          }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
           const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
           // @ts-ignore
           const newBalance = walletStore.fromWei(cluster.balance) - Number(amount);
@@ -362,6 +371,7 @@ class SsvStore extends BaseStore {
     this.approvedAllowance = allowance;
     this.userGaveAllowance = allowance !== '0';
   }
+
   /**
    * Set allowance to get CDT from user account.
    */
@@ -434,46 +444,13 @@ class SsvStore extends BaseStore {
       console.log(e.message);
     }
   }
+
   /**
    * Get new account burn rate
    */
   getNewAccountBurnRate(oldOperatorsFee: number, newOperatorsFee: number): number {
     return this.accountBurnRate - oldOperatorsFee + newOperatorsFee;
   }
-
-  // /**
-  //  * @url https://docs.metamask.io/guide/registering-your-token.html
-  //  */
-  // registerSSVTokenInMetamask() {
-  //     return new Promise((resolve, reject) => {
-  //         return this.getStore('Wallet').web3.currentProvider.send({
-  //             method: 'wallet_watchAsset',
-  //             params: {
-  //                 type: 'ERC20',
-  //                 options: {
-  //                     address: this.getContractAddress('ssv'),
-  //                     symbol: 'SSV',
-  //                     decimals: 18,
-  //                 },
-  //             },
-  //         }, (error: any, success: any) => {
-  //             if (error) {
-  //                 reject(error);
-  //             } else {
-  //                 resolve(success);
-  //             }
-  //         });
-  //     }).then((success: any) => {
-  //         if (!success) {
-  //             this.getStore('Notifications')
-  //                 .showMessage('Can not add SSV to wallet!', 'error');
-  //         }
-  //     }).catch((error: any) => {
-  //         console.error('Can not add SSV token to wallet', error);
-  //         this.getStore('Notifications')
-  //             .showMessage(`Can not add SSV to wallet: ${error.message}`, 'error');
-  //     });
-  // }
 }
 
 export default SsvStore;

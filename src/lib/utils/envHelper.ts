@@ -1,3 +1,5 @@
+import { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+
 export interface IENVS {
   NETWORK: string,
   BEACONCHA_URL: string,
@@ -27,6 +29,8 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'contractToken'
   | 'setterContractAddress'
   | 'getterContractAddress'>;
+
+const FIRST_NETWORK_INDEX = 0;
 
 export const MAINNET_NETWORK_ID = 1;
 export const GOERLI_NETWORK_ID = 5;
@@ -164,7 +168,10 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
   }
   if (Number(value) === networkIndex) return;
   window.localStorage.setItem('current_network', String(networkIndex));
-  window.location.reload();
+  const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+  if (walletConnected && !JSON.parse(walletConnected)) {
+    window.location.reload();
+  }
 };
 
 export const getCurrentNetwork = () => {
@@ -178,10 +185,10 @@ export const getCurrentNetwork = () => {
     const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
     return saveNetwork(holeskyIndex);
   }
-  return saveNetwork(0);
+  return saveNetwork(FIRST_NETWORK_INDEX);
 };
 
-export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];
+export const currentNetworkName = () => NETWORK_NAMES[getCurrentNetwork().networkId];
 
 const saveNetwork = (index: number) => {
   window.localStorage.setItem('current_network', index.toString());

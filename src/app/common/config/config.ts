@@ -174,10 +174,6 @@ const config = {
     DARK: 'dark',
     LIGHT: 'light',
   },
-  FAUCET: {
-    FAUCET_DEPLETED: 'Depleted',
-    REACHED_MAX_TRANSACTIONS: 'Reached max transactions per day',
-  },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {
       GAS_PRICE: process.env.REACT_APP_GAS_PRICE,

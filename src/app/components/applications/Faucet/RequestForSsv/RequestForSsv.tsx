@@ -7,6 +7,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
 import { currentNetworkName } from '~lib/utils/envHelper';
+import translations from '~app/common/config/translations';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -43,11 +44,11 @@ const RequestForSsv = () => {
     applicationStore.setIsLoading(true);
     const response = await faucetStore.registerNewTransaction();
     if (!response.status) {
-      if (response.type === config.FAUCET.FAUCET_DEPLETED) {
+      if (response.type === translations.FAUCET.FAUCET_DEPLETED) {
         applicationStore.setIsLoading(false);
         navigate(config.routes.FAUCET.DEPLETED);
       } else {
-        setError(config.FAUCET.REACHED_MAX_TRANSACTIONS);
+        setError(translations.FAUCET.REACHED_MAX_TRANSACTIONS);
         setReachedMaxTransactionPerDay(true);
         applicationStore.setIsLoading(false);
         setButtonText('Request');

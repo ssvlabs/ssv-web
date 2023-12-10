@@ -4,6 +4,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
+import translations from '../../../config/translations';
 
 const { faucetApi } = getCurrentNetwork();
 
@@ -34,7 +35,7 @@ class FaucetStore extends BaseStore {
             this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress, network: networkId, version: apiVersion });
             return { status: true };
         } catch (e: any) {
-            return { status: false, type: e.response.data.error.message === config.FAUCET.REACHED_MAX_TRANSACTIONS ? config.FAUCET.REACHED_MAX_TRANSACTIONS : config.FAUCET.FAUCET_DEPLETED };
+            return { status: false, type: e.response.data.error.message === translations.FAUCET.REACHED_MAX_TRANSACTIONS ? translations.FAUCET.REACHED_MAX_TRANSACTIONS : translations.FAUCET.FAUCET_DEPLETED };
         }
     }
 

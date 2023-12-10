@@ -1,5 +1,4 @@
-import { Theme } from '@mui/material/styles';
-import { createTheme } from '@mui/material/styles';
+import { createTheme, Theme } from '@mui/material/styles';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
@@ -73,6 +72,11 @@ class ApplicationStore extends BaseStore implements Application {
       this.switchDarkMode(true);
     } else {
       this.switchDarkMode(false);
+    }
+
+    console.info('Checking "locationRestrictionDisabled" in localStorage to adjust "locationRestrictionEnabled" flag');
+    if (window && window.localStorage && window.localStorage.getItem('locationRestrictionDisabled')) {
+      this.locationRestrictionEnabled = false;
     }
   }
 

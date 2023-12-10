@@ -1,3 +1,5 @@
+import { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+
 export interface IENVS {
   NETWORK: string,
   BEACONCHA_URL: string,
@@ -214,10 +216,28 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
   }
   if (Number(value) === networkIndex) return;
   window.localStorage.setItem('current_network', String(networkIndex));
-  window.location.reload();
+  const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+  if (walletConnected && !JSON.parse(walletConnected)) {
+    window.location.reload();
+  }
 };
 
-export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];
+
+export const getCurrentNetwork = () => {
+  if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) throw new Error('Provide network data');
+  const currentNetworkIndex = window.localStorage.getItem('current_network');
+  if (currentNetworkIndex && NETWORKS_DATA.length > 1) {
+    const networkId = NETWORKS_DATA[currentNetworkIndex].networkId;
+    return { ...NETWORKS_DATA[currentNetworkIndex], ...NETWORK_VARIABLES[networkId] };
+  }
+  if (!currentNetworkIndex && process.env.REACT_APP_FAUCET_PAGE) {
+    const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
+    return saveNetwork(holeskyIndex);
+  }
+  return saveNetwork(FIRST_NETWORK_INDEX);
+};
+
+export const currentNetworkName = () => NETWORK_NAMES[getCurrentNetwork().networkId];
 
 export const isMainnet = getCurrentNetwork().networkId === NETWORKS.MAINNET;
 

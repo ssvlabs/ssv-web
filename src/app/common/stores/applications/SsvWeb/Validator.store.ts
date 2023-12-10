@@ -147,39 +147,39 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       // eslint-disable-next-line no-param-reassign
       await contract.methods.removeValidator(validator.publicKey, operatorsIds, clusterData).send({ from: ownerAddress, gas: gasLimit })
-          .on('receipt', async () => {
-            ApiParams.initStorage(true);
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
+        .on('receipt', async () => {
+          ApiParams.initStorage(true);
+          let iterations = 0;
+          while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+            // Reached maximum iterations
+            if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
               // eslint-disable-next-line no-await-in-loop
-              if (!(await myAccountStore.checkEntityInAccount('cluster', 'public_key', validator.publicKey.replace(/^(0x)/gi, '')))) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Validator is still in API..');
-              }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
+              await this.refreshOperatorsAndClusters(resolve, true);
+              break;
             }
-          })
-          .on('transactionHash', (txHash: string) => {
-            applicationStore.txHash = txHash;
-            applicationStore.showTransactionPendingPopUp(true);
-          })
-          .on('error', (error: any) => {
-            applicationStore.setIsLoading(false);
-            notificationsStore.showMessage(error.message, 'error');
-            applicationStore.showTransactionPendingPopUp(false);
-            resolve(false);
-          });
+            iterations += 1;
+            // eslint-disable-next-line no-await-in-loop
+            if (!(await myAccountStore.checkEntityInAccount('cluster', 'public_key', validator.publicKey.replace(/^(0x)/gi, '')))) {
+              // eslint-disable-next-line no-await-in-loop
+              await this.refreshOperatorsAndClusters(resolve, true);
+              break;
+            } else {
+              console.log('Validator is still in API..');
+            }
+            // eslint-disable-next-line no-await-in-loop
+            await myAccountStore.delay();
+          }
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          applicationStore.setIsLoading(false);
+          notificationsStore.showMessage(error.message, 'error');
+          applicationStore.showTransactionPendingPopUp(false);
+          resolve(false);
+        });
     });
   }
 
@@ -204,51 +204,51 @@ class ValidatorStore extends BaseStore {
       const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
 
       const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
-          .on('receipt', async (receipt: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const event: boolean = receipt.hasOwnProperty('events');
-            if (event) {
-              this.keyStoreFile = null;
-              this.newValidatorReceipt = payload.get(OPERATOR_IDS);
-              console.debug('Contract Receipt', receipt);
-              let iterations = 0;
-              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
+        .on('receipt', async (receipt: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const event: boolean = receipt.hasOwnProperty('events');
+          if (event) {
+            this.keyStoreFile = null;
+            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
+            console.debug('Contract Receipt', receipt);
+            let iterations = 0;
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // Reached maximum iterations
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
                 // eslint-disable-next-line no-await-in-loop
-                const changed = await myAccountStore.checkEntityChangedInAccount(
-                    async () => {
-                      return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-                    },
-                    validatorBefore,
-                );
-                if (changed) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                } else {
-                  console.log('Validator still not updated in API..');
-                }
-                // eslint-disable-next-line no-await-in-loop
-                await myAccountStore.delay();
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
               }
+              iterations += 1;
+              // eslint-disable-next-line no-await-in-loop
+              const changed = await myAccountStore.checkEntityChangedInAccount(
+                async () => {
+                  return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+                },
+                validatorBefore,
+              );
+              if (changed) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              } else {
+                console.log('Validator still not updated in API..');
+              }
+              // eslint-disable-next-line no-await-in-loop
+              await myAccountStore.delay();
             }
-          })
-          .on('transactionHash', (txHash: string) => {
-            applicationStore.txHash = txHash;
-            applicationStore.showTransactionPendingPopUp(true);
-          })
-          .on('error', (error: any) => {
-            console.debug('Contract Error', error.message);
-            applicationStore.setIsLoading(false);
-            applicationStore.showTransactionPendingPopUp(false);
-            resolve(false);
-          });
+          }
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          console.debug('Contract Error', error.message);
+          applicationStore.setIsLoading(false);
+          applicationStore.showTransactionPendingPopUp(false);
+          resolve(false);
+        });
       console.log(response);
     });
   }
@@ -282,71 +282,71 @@ class ValidatorStore extends BaseStore {
 
       // Send add operator transaction
       contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: gasLimit })
-          .on('receipt', async (receipt: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const event: boolean = receipt.hasOwnProperty('events');
-            if (event) {
-              this.keyStoreFile = null;
-              this.newValidatorReceipt = payload.get(OPERATOR_IDS);
-              GoogleTagManager.getInstance().sendEvent({
-                category: 'validator_register',
-                action: 'register_tx',
-                label: 'success',
-              });
-              console.debug('Contract Receipt', receipt);
-              resolve(true);
-              let iterations = 0;
-              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
-                if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                } else {
-                  console.log('Validator is still not in API..');
-                }
-                // eslint-disable-next-line no-await-in-loop
-                await myAccountStore.delay();
-              }
-            }
-          })
-          .on('transactionHash', (txHash: string) => {
-            applicationStore.txHash = txHash;
-            applicationStore.showTransactionPendingPopUp(true);
-          })
-          .on('error', (error: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const isRejected: boolean = error.hasOwnProperty('code');
+        .on('receipt', async (receipt: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const event: boolean = receipt.hasOwnProperty('events');
+          if (event) {
+            this.keyStoreFile = null;
+            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             GoogleTagManager.getInstance().sendEvent({
               category: 'validator_register',
               action: 'register_tx',
-              label: isRejected ? 'rejected' : 'error',
+              label: 'success',
             });
-            console.debug('Contract Error', error.message);
-            applicationStore.setIsLoading(false);
-            resolve(false);
-          })
-          .catch((error: any) => {
-            applicationStore.setIsLoading(false);
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-              GoogleTagManager.getInstance().sendEvent({
-                category: 'validator_register',
-                action: 'register_tx',
-                label: 'error',
-              });
-              resolve(false);
-            }
-            console.debug('Contract Error', error);
+            console.debug('Contract Receipt', receipt);
             resolve(true);
+            let iterations = 0;
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // Reached maximum iterations
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              }
+              iterations += 1;
+              // eslint-disable-next-line no-await-in-loop
+              if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              } else {
+                console.log('Validator is still not in API..');
+              }
+              // eslint-disable-next-line no-await-in-loop
+              await myAccountStore.delay();
+            }
+          }
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const isRejected: boolean = error.hasOwnProperty('code');
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'validator_register',
+            action: 'register_tx',
+            label: isRejected ? 'rejected' : 'error',
           });
+          console.debug('Contract Error', error.message);
+          applicationStore.setIsLoading(false);
+          resolve(false);
+        })
+        .catch((error: any) => {
+          applicationStore.setIsLoading(false);
+          if (error) {
+            notificationsStore.showMessage(error.message, 'error');
+            GoogleTagManager.getInstance().sendEvent({
+              category: 'validator_register',
+              action: 'register_tx',
+              label: 'error',
+            });
+            resolve(false);
+          }
+          console.debug('Contract Error', error);
+          resolve(true);
+        });
     });
   }
 
@@ -368,70 +368,70 @@ class ValidatorStore extends BaseStore {
       const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
       const gasLimit = getFixedGasLimit(GasGroup.REACTIVATE_CLUSTER);
       contract.methods.reactivate(operatorsIds, walletStore.toWei(amount), clusterData).send({ from: ownerAddress, gas: gasLimit })
-          .on('receipt', async (receipt: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const event: boolean = receipt.hasOwnProperty('events');
-            if (event) {
-              this.keyStoreFile = null;
-              GoogleTagManager.getInstance().sendEvent({
-                label: 'success',
-                category: 'single_cluster',
-                action: 'reactivate_cluster',
-              });
-              console.debug('Contract Receipt', receipt);
-              resolve(true);
-              let iterations = 0;
-              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
-                if (await myAccountStore.checkEntityInAccount('cluster', 'active', true)) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                } else {
-                  console.log('Validator is still not in API..');
-                }
-                // eslint-disable-next-line no-await-in-loop
-                await myAccountStore.delay();
-              }
-            }
-          })
-          .on('transactionHash', (txHash: string) => {
-            applicationStore.txHash = txHash;
-            applicationStore.showTransactionPendingPopUp(true);
-          })
-          .on('error', (error: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const isRejected: boolean = error.hasOwnProperty('code');
+        .on('receipt', async (receipt: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const event: boolean = receipt.hasOwnProperty('events');
+          if (event) {
+            this.keyStoreFile = null;
             GoogleTagManager.getInstance().sendEvent({
+              label: 'success',
               category: 'single_cluster',
               action: 'reactivate_cluster',
-              label: isRejected ? 'rejected' : 'error',
             });
-            console.debug('Contract Error', error.message);
-            applicationStore.setIsLoading(false);
-            resolve(false);
-          })
-          .catch((error: any) => {
-            applicationStore.setIsLoading(false);
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-              GoogleTagManager.getInstance().sendEvent({
-                label: 'error',
-                category: 'single_cluster',
-                action: 'reactivate_cluster',
-              });
-              resolve(false);
-            }
-            console.debug('Contract Error', error);
+            console.debug('Contract Receipt', receipt);
             resolve(true);
+            let iterations = 0;
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // Reached maximum iterations
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              }
+              iterations += 1;
+              // eslint-disable-next-line no-await-in-loop
+              if (await myAccountStore.checkEntityInAccount('cluster', 'active', true)) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              } else {
+                console.log('Validator is still not in API..');
+              }
+              // eslint-disable-next-line no-await-in-loop
+              await myAccountStore.delay();
+            }
+          }
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const isRejected: boolean = error.hasOwnProperty('code');
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'single_cluster',
+            action: 'reactivate_cluster',
+            label: isRejected ? 'rejected' : 'error',
           });
+          console.debug('Contract Error', error.message);
+          applicationStore.setIsLoading(false);
+          resolve(false);
+        })
+        .catch((error: any) => {
+          applicationStore.setIsLoading(false);
+          if (error) {
+            notificationsStore.showMessage(error.message, 'error');
+            GoogleTagManager.getInstance().sendEvent({
+              label: 'error',
+              category: 'single_cluster',
+              action: 'reactivate_cluster',
+            });
+            resolve(false);
+          }
+          console.debug('Contract Error', error);
+          resolve(true);
+        });
     });
   }
 
@@ -484,10 +484,10 @@ class ValidatorStore extends BaseStore {
         }
 
         const payload = this.createPayload(this.keyStorePublicKey,
-            keysharePayload.operatorIds,
-            keysharePayload.sharesData || keysharePayload.shares,
-            `${totalCost}`,
-            await clusterStore.getClusterData(clusterStore.getClusterHash(operators.map(item => item.id))));
+          keysharePayload.operatorIds,
+          keysharePayload.sharesData || keysharePayload.shares,
+          `${totalCost}`,
+          await clusterStore.getClusterData(clusterStore.getClusterHash(operators.map(item => item.id))));
 
         resolve(payload);
       } catch (e: any) {
@@ -518,9 +518,9 @@ class ValidatorStore extends BaseStore {
       }
       try {
         const payload = this.createPayload(this.keySharePublicKey,
-            this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-            this.keySharePayload?.sharesData, `${totalCost}`,
-            await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
+          this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
+          this.keySharePayload?.sharesData, `${totalCost}`,
+          await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
         resolve(payload);
       } catch (e: any) {
         console.log(e.message);
@@ -574,19 +574,19 @@ class ValidatorStore extends BaseStore {
       myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
     ])
-        .then(() => {
-          applicationStore.setIsLoading(false);
-          applicationStore.showTransactionPendingPopUp(false);
-          resolve(true);
-        })
-        .catch((error) => {
-          applicationStore.setIsLoading(false);
-          if (showError) {
-            notificationsStore.showMessage(error.message, 'error');
-          }
-          applicationStore.showTransactionPendingPopUp(false);
-          resolve(false);
-        });
+      .then(() => {
+        applicationStore.setIsLoading(false);
+        applicationStore.showTransactionPendingPopUp(false);
+        resolve(true);
+      })
+      .catch((error) => {
+        applicationStore.setIsLoading(false);
+        if (showError) {
+          notificationsStore.showMessage(error.message, 'error');
+        }
+        applicationStore.showTransactionPendingPopUp(false);
+        resolve(false);
+      });
   }
 
   async getKeyStorePublicKey(): Promise<string> {
@@ -611,11 +611,11 @@ class ValidatorStore extends BaseStore {
     const accountStore: AccountStore = this.getStore('Account');
     const { ownerNonce } = accountStore;
     const { OK_RESPONSE,
-            OPERATOR_NOT_EXIST_RESPONSE,
-            OPERATOR_NOT_MATCHING_RESPONSE,
-            CATCH_ERROR_RESPONSE,
-            VALIDATOR_EXIST_RESPONSE,
-            VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
+      OPERATOR_NOT_EXIST_RESPONSE,
+      OPERATOR_NOT_MATCHING_RESPONSE,
+      CATCH_ERROR_RESPONSE,
+      VALIDATOR_EXIST_RESPONSE,
+      VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
     try {
       const fileJson = await this.keyShareFile?.text();
       const operatorStore: OperatorStore = this.getStore('Operator');
@@ -673,71 +673,71 @@ class ValidatorStore extends BaseStore {
       this.newValidatorReceipt = null;
       // Send add operator transaction
       contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: null })
-          .on('receipt', async (receipt: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const event: boolean = receipt.hasOwnProperty('events');
-            if (event) {
-              this.keyStoreFile = null;
-              this.newValidatorReceipt = payload.get(OPERATOR_IDS);
-              GoogleTagManager.getInstance().sendEvent({
-                category: 'validator_register',
-                action: 'register_tx',
-                label: 'success',
-              });
-              console.debug('Contract Receipt', receipt);
-              resolve(true);
-              let iterations = 0;
-              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
-                if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                } else {
-                  console.log('Validator is still not in API..');
-                }
-                // eslint-disable-next-line no-await-in-loop
-                await myAccountStore.delay();
-              }
-            }
-          })
-          .on('transactionHash', (txHash: string) => {
-            applicationStore.txHash = txHash;
-            applicationStore.showTransactionPendingPopUp(true);
-          })
-          .on('error', (error: any) => {
-            // eslint-disable-next-line no-prototype-builtins
-            const isRejected: boolean = error.hasOwnProperty('code');
+        .on('receipt', async (receipt: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const event: boolean = receipt.hasOwnProperty('events');
+          if (event) {
+            this.keyStoreFile = null;
+            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             GoogleTagManager.getInstance().sendEvent({
               category: 'validator_register',
               action: 'register_tx',
-              label: isRejected ? 'rejected' : 'error',
+              label: 'success',
             });
-            console.debug('Contract Error', error.message);
-            applicationStore.setIsLoading(false);
-            resolve(false);
-          })
-          .catch((error: any) => {
-            applicationStore.setIsLoading(false);
-            if (error) {
-              notificationsStore.showMessage(error.message, 'error');
-              GoogleTagManager.getInstance().sendEvent({
-                category: 'validator_register',
-                action: 'register_tx',
-                label: 'error',
-              });
-              resolve(false);
-            }
-            console.debug('Contract Error', error);
+            console.debug('Contract Receipt', receipt);
             resolve(true);
+            let iterations = 0;
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // Reached maximum iterations
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              }
+              iterations += 1;
+              // eslint-disable-next-line no-await-in-loop
+              if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
+                // eslint-disable-next-line no-await-in-loop
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              } else {
+                console.log('Validator is still not in API..');
+              }
+              // eslint-disable-next-line no-await-in-loop
+              await myAccountStore.delay();
+            }
+          }
+        })
+        .on('transactionHash', (txHash: string) => {
+          applicationStore.txHash = txHash;
+          applicationStore.showTransactionPendingPopUp(true);
+        })
+        .on('error', (error: any) => {
+          // eslint-disable-next-line no-prototype-builtins
+          const isRejected: boolean = error.hasOwnProperty('code');
+          GoogleTagManager.getInstance().sendEvent({
+            category: 'validator_register',
+            action: 'register_tx',
+            label: isRejected ? 'rejected' : 'error',
           });
+          console.debug('Contract Error', error.message);
+          applicationStore.setIsLoading(false);
+          resolve(false);
+        })
+        .catch((error: any) => {
+          applicationStore.setIsLoading(false);
+          if (error) {
+            notificationsStore.showMessage(error.message, 'error');
+            GoogleTagManager.getInstance().sendEvent({
+              category: 'validator_register',
+              action: 'register_tx',
+              label: 'error',
+            });
+            resolve(false);
+          }
+          console.debug('Contract Error', error);
+          resolve(true);
+        });
     });
   }
 
@@ -750,9 +750,9 @@ class ValidatorStore extends BaseStore {
     try {
       const amountInWei = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(totalCost));
       const payload = this.createPayload(this.keySharePublicKey,
-          this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-          this.keySharePayload?.sharesData, `${amountInWei}`,
-          await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
+        this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
+        this.keySharePayload?.sharesData, `${amountInWei}`,
+        await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
       return payload;
     } catch (e: any) {
       console.log(e.message);

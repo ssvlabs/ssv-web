@@ -59,7 +59,7 @@ class ClusterStore extends BaseStore {
     const clusterBurnRate =  parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
     return clusterBurnRate * newAmountOfValidators;
   }
-  
+
   async isClusterLiquidated(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);

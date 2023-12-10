@@ -293,38 +293,37 @@ class OperatorStore extends BaseStore {
         const applicationStore: ApplicationStore = this.getStore('Application');
         const gasLimit = getFixedGasLimit(GasGroup.DECLARE_OPERATOR_FEE);
         const contractInstance = walletStore.setterContract;
-        await contractInstance.methods.setOperatorWhitelist(operatorId, address).send({ from: walletStore.accountAddress, gas: gasLimit })
-            .on('receipt', async (receipt: any) => {
-              const event: boolean = receipt.hasOwnProperty('events');
-              if (event) {
-                let iterations = 0;
-                while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                    await this.refreshOperatorsAndClusters(resolve, true);
-                    break;
-                  }
-                  iterations += 1;
-                  const operator = await Operator.getInstance().getOperator(operatorId);
-                  const changed = operator.address_whitelist.toString() === address.toString();
-                  if (changed) {
-                    await this.refreshOperatorsAndClusters(resolve, true);
-                    break;
-                  } else {
-                    console.log('Operator is still not updated in API..');
-                  }
+        await contractInstance.methods.setOperatorWhitelist(operatorId, address).send({
+          from: walletStore.accountAddress,
+          gas: gasLimit,
+        })
+          .on('receipt', async (receipt: any) => {
+            const event: boolean = receipt.hasOwnProperty('events');
+            if (event) {
+              let iterations = 0;
+              while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                const operator = await Operator.getInstance().getOperator(operatorId);
+                const changed = operator.address_whitelist.toString() === address.toString();
+                if (changed) {
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
+                } else {
+                  console.log('Operator is still not updated in API..');
                 }
+                iterations += 1;
               }
-            })
-            .on('transactionHash', (txHash: string) => {
-              applicationStore.txHash = txHash;
-              applicationStore.showTransactionPendingPopUp(true);
-            })
-            .on('error', (error: any) => {
-              console.debug('Contract Error', error.message);
-              applicationStore.setIsLoading(false);
-              applicationStore.showTransactionPendingPopUp(false);
-              resolve(false);
-            });
+              await this.refreshOperatorsAndClusters(resolve, true);
+            }
+          })
+          .on('transactionHash', (txHash: string) => {
+            applicationStore.txHash = txHash;
+            applicationStore.showTransactionPendingPopUp(true);
+          })
+          .on('error', (error: any) => {
+            console.debug('Contract Error', error.message);
+            applicationStore.setIsLoading(false);
+            applicationStore.showTransactionPendingPopUp(false);
+            resolve(false);
+          });
       } catch (e: any) {
         console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
         console.log(e.message);
@@ -366,23 +365,13 @@ class OperatorStore extends BaseStore {
         const contract: Contract = walletStore.setterContract;
         contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
-            // eslint-disable-next-line no-prototype-builtins
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
               ApiParams.initStorage(true);
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
                 const changed = await myAccountStore.checkEntityChangedInAccount(
-                  // eslint-disable-next-line @typescript-eslint/no-loop-func
                   async () => {
                     await this.syncOperatorFeeInfo(operatorId);
                     return {
@@ -394,15 +383,14 @@ class OperatorStore extends BaseStore {
                   operatorDataBefore,
                 );
                 if (changed) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
-                // eslint-disable-next-line no-await-in-loop
+                iterations += 1;
                 await myAccountStore.delay();
               }
+              await this.refreshOperatorsAndClusters(resolve, true);
             }
           })
           .on('transactionHash', (txHash: string) => {
@@ -525,11 +513,6 @@ class OperatorStore extends BaseStore {
             if (event) {
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
                 const changed = await myAccountStore.checkEntityChangedInAccount(
                   async () => {
                     await this.syncOperatorFeeInfo(operatorId);
@@ -542,13 +525,14 @@ class OperatorStore extends BaseStore {
                   operatorDataBefore,
                 );
                 if (changed) {
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
+                iterations += 1;
                 await myAccountStore.delay();
               }
+              await this.refreshOperatorsAndClusters(resolve, true);
             }
           })
           .on('transactionHash', (txHash: string) => {
@@ -595,11 +579,6 @@ class OperatorStore extends BaseStore {
             if (event) {
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
                 const changed = await myAccountStore.checkEntityChangedInAccount(
                   async () => {
                     const operatorAfter = await Operator.getInstance().getOperator(operatorId);
@@ -611,13 +590,14 @@ class OperatorStore extends BaseStore {
                   operatorBefore,
                 );
                 if (changed) {
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
+                iterations += 1;
                 await myAccountStore.delay();
               }
+              await this.refreshOperatorsAndClusters(resolve, true);
             }
           })
           .on('transactionHash', (txHash: string) => {
@@ -666,16 +646,7 @@ class OperatorStore extends BaseStore {
             if (event) {
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
                 const changed = await myAccountStore.checkEntityChangedInAccount(
-                  // eslint-disable-next-line @typescript-eslint/no-loop-func
                   async () => {
                     const operatorAfter = await Operator.getInstance().getOperator(operatorId);
                     return {
@@ -687,15 +658,14 @@ class OperatorStore extends BaseStore {
                   operatorBefore,
                 );
                 if (changed) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
+                  iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
                 } else {
                   console.log('Operator is still not updated in API..');
                 }
-                // eslint-disable-next-line no-await-in-loop
+                iterations += 1;
                 await myAccountStore.delay();
               }
+              await this.refreshOperatorsAndClusters(resolve, true);
             }
           })
           .on('transactionHash', (txHash: string) => {
@@ -742,24 +712,15 @@ class OperatorStore extends BaseStore {
               console.debug('Contract Receipt', receipt);
               let iterations = 0;
               while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // Reached maximum iterations
-                if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
-                  break;
-                }
-                iterations += 1;
-                // eslint-disable-next-line no-await-in-loop
                 if (!(await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(operatorId), 10)))) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await this.refreshOperatorsAndClusters(resolve, true);
                   break;
                 } else {
                   console.log('Operator is still in API..');
                 }
-                // eslint-disable-next-line no-await-in-loop
+                iterations += 1;
                 await myAccountStore.delay();
               }
+              await this.refreshOperatorsAndClusters(resolve, true);
             }
           })
           .on('transactionHash', (txHash: string) => {

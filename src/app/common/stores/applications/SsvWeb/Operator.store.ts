@@ -129,19 +129,19 @@ class OperatorStore extends BaseStore {
       getSelectedOperatorsFee: computed,
       selectedEnoughOperators: computed,
       unselectAllOperators: action.bound,
-      isOperatorRegistrable: action.bound,
+      clearOperatorFeeInfo: action.bound,
       operatorValidatorsLimit: observable,
       getSetOperatorFeePeriod: observable,
       operatorApprovalEndTime: observable,
       cancelChangeFeeProcess: action.bound,
-      clearOperatorFeeInfo: action.bound,
       declaredOperatorFeePeriod: observable,
       operatorApprovalBeginTime: observable,
-      getOperatorValidatorsLimit: action.bound,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
       updateOperatorAddressWhitelist: observable,
       newOperatorRegisterSuccessfully: observable,
+      updateOperatorValidatorsLimit: action.bound,
+      hasOperatorReachedValidatorLimit: action.bound,
     });
   }
 
@@ -209,20 +209,19 @@ class OperatorStore extends BaseStore {
   /**
    * Get max validators count
    */
-  async getOperatorValidatorsLimit(): Promise<number> {
+  async updateOperatorValidatorsLimit(): Promise<void> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {
       this.operatorValidatorsLimit = await contract.methods.getValidatorsPerOperatorLimit().call();
     }
-    return this.operatorValidatorsLimit;
   }
 
   /**
    * Check if operator registrable
    */
-  isOperatorRegistrable(validatorsRegisteredCount: number) {
-    return this.operatorValidatorsLimit > validatorsRegisteredCount;
+  hasOperatorReachedValidatorLimit(validatorsRegisteredCount: number): boolean {
+    return this.operatorValidatorsLimit <= validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE;
   }
 
   /**

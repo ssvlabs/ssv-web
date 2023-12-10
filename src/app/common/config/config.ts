@@ -170,6 +170,10 @@ const config = {
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/operator-user-guides/operator-node/configuring-mev',
     DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting',
   },
+  THEMES: {
+    DARK: 'dark',
+    LIGHT: 'light',
+  },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {
       GAS_PRICE: process.env.REACT_APP_GAS_PRICE,

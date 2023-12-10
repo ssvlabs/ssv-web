@@ -20,6 +20,7 @@ export type NetworkDataType = {
   contractToken: string;
   getterContractAddress: string;
   setterContractAddress: string;
+  insufficientBalanceUrl: string;
 };
 
 type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
@@ -28,6 +29,7 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'apiNetwork'
   | 'contractToken'
   | 'setterContractAddress'
+  | 'insufficientBalanceUrl'
   | 'getterContractAddress'>;
 
 const FIRST_NETWORK_INDEX = 0;
@@ -118,27 +120,73 @@ const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: num
 
 export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
 
+/**
+ * Stores the given network index in local storage and retrieves the corresponding network configuration.
+ * @param {number} index - The index of the network to store and retrieve.
+ * @returns The network configuration object.
+ */
+const storeAndRetrieveNetwork = (index: number) => {
+  window.localStorage.setItem('current_network', index.toString());
+  const network = NETWORKS_DATA[index];
+  return { ...network, ...NETWORK_VARIABLES[network.networkId] };
+};
+
+/**
+ * Retrieves the current network configuration.
+ * Throws an error if network data is not provided and network data checks are enabled.
+ * Selects the network based on the stored index, defaults to a specific network for faucet pages,
+ * or defaults to the first network if no index is found.
+ */
+export const getCurrentNetwork = () => {
+  // Validate network data availability
+  if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) {
+    throw new Error('Network data is required but not provided.');
+  }
+
+  let networkIndex: string | number | null = window.localStorage.getItem('current_network');
+
+  // Convert the network index from string to number if it exists
+  networkIndex = networkIndex ? Number(networkIndex) : null;
+
+  // Determine the network index based on conditions
+  if (!networkIndex) {
+    if (process.env.REACT_APP_FAUCET_PAGE) {
+      // Default to a specific network for faucet apps without a stored network index
+      networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => network.networkId === NETWORKS.HOLESKY);
+    } else {
+      // Default to the first network if no index is found
+      networkIndex = FIRST_NETWORK_INDEX;
+    }
+  } else if (!NETWORKS_DATA[networkIndex] || NETWORKS_DATA.length <= 1) {
+    // Fall back to the first network if the stored index is invalid or there is only one network
+    networkIndex = FIRST_NETWORK_INDEX;
+  }
+
+  // Retrieve and return the network configuration using the determined index
+  return storeAndRetrieveNetwork(Number(networkIndex));
+};
+
 const _envs = {
   [NETWORKS.GOERLI]: {
     NETWORK: 'prater',
     BEACONCHA_URL: 'https://prater.beaconcha.in',
     LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://goerli.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
+    INSUFFICIENT_BALANCE_URL: getCurrentNetwork().insufficientBalanceUrl,
   },
   [NETWORKS.HOLESKY]: {
     NETWORK: 'holesky',
     BEACONCHA_URL: 'https://holesky.beaconcha.in',
     LAUNCHPAD_URL: 'https://holesky.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://holesky.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
+    INSUFFICIENT_BALANCE_URL: getCurrentNetwork().insufficientBalanceUrl,
   },
   [NETWORKS.MAINNET]: {
     NETWORK: 'mainnet',
     BEACONCHA_URL: 'https://beaconcha.in',
     LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://coinmarketcap.com/currencies/ssv-network/#Markets',
+    INSUFFICIENT_BALANCE_URL: getCurrentNetwork().insufficientBalanceUrl,
   },
 };
 
@@ -174,27 +222,7 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
   }
 };
 
-export const getCurrentNetwork = () => {
-  if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) throw new Error('Provide network data');
-  const currentNetworkIndex = window.localStorage.getItem('current_network');
-  if (currentNetworkIndex && NETWORKS_DATA.length > 1) {
-    const networkId = NETWORKS_DATA[currentNetworkIndex].networkId;
-    return { ...NETWORKS_DATA[currentNetworkIndex], ...NETWORK_VARIABLES[networkId] };
-  }
-  if (!currentNetworkIndex && process.env.REACT_APP_FAUCET_PAGE) {
-    const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
-    return saveNetwork(holeskyIndex);
-  }
-  return saveNetwork(FIRST_NETWORK_INDEX);
-};
-
 export const currentNetworkName = () => NETWORK_NAMES[getCurrentNetwork().networkId];
-
-const saveNetwork = (index: number) => {
-  window.localStorage.setItem('current_network', index.toString());
-  const networkId = NETWORKS_DATA[index].networkId;
-  return { ...NETWORKS_DATA[index], ...NETWORK_VARIABLES[networkId] };
-};
 
 export const isMainnet = getCurrentNetwork().networkId === NETWORKS.MAINNET;
 

@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
@@ -57,7 +58,7 @@ const FundingNewValidator = () => {
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         link: {
           text: 'Need SSV?',
-          path: 'https://faucet.ssv.network',
+          path: ENV().INSUFFICIENT_BALANCE_URL,
         },
       });
       setShowErrorMessage(true);

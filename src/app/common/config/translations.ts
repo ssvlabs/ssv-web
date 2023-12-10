@@ -172,6 +172,10 @@ const translations = {
   NA_DISPLAY:{
     TOOLTIP_TEXT: 'Balance and runway are pending calculation, please check again in a few minutes',
   },
+  FAUCET: {
+    FAUCET_DEPLETED: 'Depleted',
+    REACHED_MAX_TRANSACTIONS: 'Reached max transactions per day',
+  },
 };
 
 export default translations;

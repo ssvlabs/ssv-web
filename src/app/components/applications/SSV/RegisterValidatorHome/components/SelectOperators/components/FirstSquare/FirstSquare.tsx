@@ -172,7 +172,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       const isDeleted = operator.is_deleted;
       const hasValidators = operator.validators_count !== 0;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
-      const reachedMaxValidators = operatorStore.operatorReachedValidatorsLimit(operator.validators_count);
+      const reachedMaxValidators = operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count);
       const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress);
       const disabled = isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;

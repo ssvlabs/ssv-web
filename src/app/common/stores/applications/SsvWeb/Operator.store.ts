@@ -141,7 +141,7 @@ class OperatorStore extends BaseStore {
       updateOperatorAddressWhitelist: observable,
       newOperatorRegisterSuccessfully: observable,
       updateOperatorValidatorsLimit: action.bound,
-      operatorReachedValidatorsLimit: action.bound,
+      hasOperatorReachedValidatorLimit: action.bound,
     });
   }
 
@@ -220,7 +220,7 @@ class OperatorStore extends BaseStore {
   /**
    * Check if operator registrable
    */
-  operatorReachedValidatorsLimit(validatorsRegisteredCount: number): boolean {
+  hasOperatorReachedValidatorLimit(validatorsRegisteredCount: number): boolean {
     return this.operatorValidatorsLimit <= validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE;
   }
 

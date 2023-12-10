@@ -102,7 +102,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
-    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.operatorReachedValidatorsLimit(operator.validators_count));
+    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
     setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
   }, [JSON.stringify(operatorStore.selectedOperators)]);

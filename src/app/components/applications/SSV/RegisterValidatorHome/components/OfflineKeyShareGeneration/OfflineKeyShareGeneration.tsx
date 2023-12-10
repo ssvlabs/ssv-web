@@ -36,6 +36,8 @@ const OFFLINE_FLOWS = {
 };
 
 const XS = 12;
+const MIN_VALIDATORS_COUNT = 1;
+const MAX_VALIDATORS_COUNT = 100;
 
 const OfflineKeyShareGeneration = () => {
   const stores = useStores();
@@ -57,6 +59,8 @@ const OfflineKeyShareGeneration = () => {
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
   const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
   const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
+  const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
+  const [isInvalidValidatorsCount, setIsInvalidValidatorsCount] = useState(false);
 
   const confirmWithdrawalAddressHandler = () => {
     if (!addressValidationError.shouldDisplay && withdrawalAddress) {
@@ -92,14 +96,21 @@ const OfflineKeyShareGeneration = () => {
     operatorsKeys: [],
   });
 
-  const operatorsInfo = Object.values(operatorStore.selectedOperators).map((operator: any) => ({
-    id: operator.id,
-    public_key: operator.public_key,
-    ip: operator.dkg_address,
-  }));
+  const getOperatorsData = () => {
+    const operatorsInfo = Object.values(operatorStore.selectedOperators).map((operator: any) => ({
+      id: operator.id,
+      public_key: operator.public_key,
+      ip: operator.dkg_address,
+    }));
+    let jsonOperatorInfo = JSON.stringify(operatorsInfo);
+    if (isWindows) {
+      jsonOperatorInfo = jsonOperatorInfo.replace(/"/g, '\\"');
+    }
+    return jsonOperatorInfo;
+  };
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-  const dkgCliCommand = `docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo '${JSON.stringify(operatorsInfo)}' --network ${apiNetwork} --generateInitiatorKey --outputPath /data`;
+  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:latest & docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" /app init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo '${getOperatorsData()}' --network ${apiNetwork} --generateInitiatorKeyIfNotExisting --validators ${validatorsCount} --outputPath /data`;
 
   const instructions = [
     {
@@ -141,16 +152,29 @@ const OfflineKeyShareGeneration = () => {
     setConfirmedWithdrawalAddress(false);
   };
 
+  const changeValidatorsCountHandler = (e: any) => {
+    const { value } = e.target;
+    if (Number(value) >= MIN_VALIDATORS_COUNT && Number(value) <= MAX_VALIDATORS_COUNT) {
+      setIsInvalidValidatorsCount(false);
+    } else {
+      setIsInvalidValidatorsCount(true);
+      setTextCopied(false);
+    }
+    setValidatorsCount(Number(value));
+  };
+
   const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
   const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
   const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DESKTOP_APP || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
-  const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && confirmedWithdrawalAddress;
+  const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && confirmedWithdrawalAddress && !isInvalidValidatorsCount;
   const buttonLabel = buttonLabelCondition ? 'Next' : 'Change Operators';
   const submitFunctionCondition = selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg;
 
   const disabledCondition = () => {
-    if (selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg) {
+    if (selectedBox === OFFLINE_FLOWS.COMMAND_LINE) {
       return !textCopied;
+    } else if (selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg) {
+      return !textCopied || isInvalidValidatorsCount;
     } else if (selectedBox === 0) {
       return true;
     } else {
@@ -184,15 +208,16 @@ const OfflineKeyShareGeneration = () => {
               <Typography className={classes.BlueText}>Command Line Interface</Typography>
               <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
             </Grid>
-            <Tooltip disableHoverListener={enableDesktopAppKeysharesGeneration} title="Coming soon..." placement="top-end" children={
+            <Tooltip disableHoverListener={enableDesktopAppKeysharesGeneration} title="Coming soon..."
+                     placement="top-end" children={
               <Grid>
                 <Grid container
                       item
                       className={`${classes.Box} ${enableDesktopAppKeysharesGeneration ? '' : classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
                       onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}>
                   <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`}/>
-                    <Typography className={classes.BlueText}>Desktop App</Typography>
-                    <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
+                  <Typography className={classes.BlueText}>Desktop App</Typography>
+                  <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
                 </Grid>
               </Grid>}/>
             {isNotMainnet && <Grid container item
@@ -236,10 +261,19 @@ const OfflineKeyShareGeneration = () => {
               </Grid>
               <Grid className={classes.DkgSectionWrapper}>
                 <Typography className={classes.DkgTitle}>Instructions</Typography>
-                <Grid className={classes.DkgText}>1. Set Withdrawal Address <CustomTooltip
+                <Grid className={classes.DkgText}>1. Select how many validators to generate</Grid>
+                <Grid className={classes.DkgWithdrawAddressWrapper}>
+                  <TextInput value={validatorsCount}
+                             onChangeCallback={changeValidatorsCountHandler}/>
+                  {isInvalidValidatorsCount &&
+                    <Typography className={classes.DkgErrorMessage}>Validators count must be a number between
+                      1-100.</Typography>}
+                </Grid>
+              </Grid>
+              <Grid className={classes.DkgSectionWrapper}>
+                <Grid className={classes.DkgText}>2. Set Withdrawal Address <CustomTooltip
                   text={'Ethereum address to receive staking rewards and principle staked ETH. Please note that this cannot be changed in the future.'}/></Grid>
                 <Grid className={classes.DkgWithdrawAddressWrapper}>
-                  <Typography className={classes.DkgInputLabel}>Withdrawal Address</Typography>
                   <TextInput value={withdrawalAddress}
                              onChangeCallback={changeWithdrawalAddressHandler}
                              sideButton={true}

@@ -1,6 +1,6 @@
 import { Contract } from 'web3-eth-contract';
 import { observable, makeObservable } from 'mobx';
-import Account from '~lib/api/Account';
+import { getAccountData } from '~lib/api/account.service';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -47,7 +47,7 @@ class AccountStore extends BaseStore  {
 
   async getFeeRecipientAddress(ownerAddress: string) {
     const result: any = await new Promise(resolve => {
-      const res = Account.getInstance().getAccountData(ownerAddress);
+      const res = getAccountData(ownerAddress);
       resolve(res);
     });
     if (result.data.recipientAddress) {
@@ -59,7 +59,7 @@ class AccountStore extends BaseStore  {
 
   async getOwnerNonce(ownerAddress: string) {
     const result: any = await new Promise(resolve => {
-      const res = Account.getInstance().getAccountData(ownerAddress);
+      const res = getAccountData(ownerAddress);
       resolve(res);
     });
     if (result.data) {

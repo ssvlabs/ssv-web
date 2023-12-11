@@ -3,7 +3,7 @@ import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
-import Validator from '~lib/api/Validator';
+import { getValidator, clustersByOwnerAddress } from '~lib/api/validator.service';
 import { ENV } from '~lib/utils/envHelper';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -168,7 +168,7 @@ class MyAccountStore extends BaseStore {
   }
 
   async getValidator(publicKey: string, skipRetry?: boolean): Promise<any> {
-    const validator = await Validator.getInstance().getValidator(publicKey, skipRetry);
+    const validator = await getValidator(publicKey, skipRetry);
     const validatorPublicKey = `0x${validator.public_key}`;
     const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
     // eslint-disable-next-line no-await-in-loop
@@ -195,7 +195,7 @@ class MyAccountStore extends BaseStore {
     if (!walletStore.accountAddress) return [];
     const { page, per_page } = this.ownerAddressClustersPagination;
     const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? per_page)}`;
-    const response = await Validator.getInstance().clustersByOwnerAddress(query, true);
+    const response = await clustersByOwnerAddress(query, true);
     if (!response) return [];
     // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;

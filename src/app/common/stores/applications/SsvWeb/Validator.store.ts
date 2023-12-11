@@ -4,7 +4,7 @@ import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
-import Validator from '~lib/api/Validator';
+import { getValidator, getClusterData } from '~lib/api/validator.service';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { GasGroup } from '~app/common/config/gasLimits';
@@ -201,7 +201,7 @@ class ValidatorStore extends BaseStore {
         return;
       }
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+      const validatorBefore = await getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
 
       const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
         .on('receipt', async (receipt: any) => {
@@ -223,7 +223,7 @@ class ValidatorStore extends BaseStore {
               // eslint-disable-next-line no-await-in-loop
               const changed = await myAccountStore.checkEntityChangedInAccount(
                 async () => {
-                  return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+                  return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
                 },
                 validatorBefore,
               );
@@ -272,7 +272,7 @@ class ValidatorStore extends BaseStore {
       }
 
       const clusterHash = clusterStore.getClusterHash(payload.get(OPERATOR_IDS));
-      const response = await Validator.getInstance().getClusterData(clusterHash);
+      const response = await getClusterData(clusterHash);
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.get(OPERATOR_IDS).length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
 
@@ -539,7 +539,7 @@ class ValidatorStore extends BaseStore {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;
       this.keyStorePublicKey = await this.getKeyStorePublicKey();
-      this.validatorPublicKeyExist = !!(await Validator.getInstance().getValidator(this.keyStorePublicKey, true));
+      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey, true));
     } catch (e: any) {
       console.log(e.message);
     }
@@ -645,7 +645,7 @@ class ValidatorStore extends BaseStore {
         // @ts-ignore
         operatorStore.selectOperators(selectedOperators);
       }
-      const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
+      const validatorExist = !!(await getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
       await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
@@ -792,7 +792,7 @@ class ValidatorStore extends BaseStore {
       const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
       // @ts-ignore
       operatorStore.selectOperators(selectedOperators);
-      const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
+      const validatorExist = !!(await getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
       await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };

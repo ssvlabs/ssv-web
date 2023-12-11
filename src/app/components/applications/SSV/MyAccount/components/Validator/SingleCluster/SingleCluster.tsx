@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
+import { validatorsByClusterHash } from '~lib/api/validator.service';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
@@ -49,7 +49,7 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -100,7 +100,7 @@ const SingleCluster = () => {
   };
   const onChangePage = _.debounce( async (newPage: number) =>  {
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);

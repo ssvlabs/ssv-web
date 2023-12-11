@@ -3,7 +3,7 @@ import { keccak256 } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
+import { getClusterData } from '~lib/api/validator.service';
 import BaseStore from '~app/common/stores/BaseStore';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -101,7 +101,7 @@ class ClusterStore extends BaseStore {
 
   async getClusterData(clusterHash: string, fullData = false) {
     try {
-      const response = await Validator.getInstance().getClusterData(clusterHash);
+      const response = await getClusterData(clusterHash);
       const clusterData = response.cluster;
       if (clusterData === null) {
         return {

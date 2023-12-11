@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
@@ -9,9 +9,7 @@ import { BrowserView, MobileView } from 'react-device-detect';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import Routes from '~app/Routes/Routes';
 import config from '~app/common/config';
-import { useStyles } from '~app/App.styles';
 import { globalStyle } from '~app/globalStyle';
-import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import BarMessage from '~app/components/common/BarMessage';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -19,17 +17,31 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
+import { getColors } from '../themes';
+import { ssvLoader } from '../../public/images';
 
-declare global {
-  interface Window {
-    ethereum: any;
-    web3: any;
-  }
-}
+const LoaderWrapper = styled.div<{ theme: any }>`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  background-color: ${({ theme }) => theme.loaderColor};
+`;
+
+const Loader = styled.img`
+  width: 200px;
+`;
 
 const App = () => {
+  const [theme, setTheme] = useState<any>({});
   const stores = useStores();
-  const classes = useStyles();
   const navigate = useNavigate();
   const GlobalStyle = globalStyle();
   const walletStore: WalletStore = stores.Wallet;
@@ -65,25 +77,31 @@ const App = () => {
     }
   }, [walletStore?.accountDataLoaded]);
 
+  useEffect(() => {
+    setTheme({ colors: getColors({ isDarkTheme: applicationStore.darkMode }) });
+  }, [applicationStore.darkMode]);
+
   return (
       <StyledEngineProvider injectFirst>
         <DeveloperHelper />
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
-            <GlobalStyle/>
-            {!walletStore?.accountDataLoaded && (
-                <Grid container className={classes.LoaderWrapper}>
-                  <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
-                </Grid>
-            )}
-            <BarMessage/>
-            <BrowserView>
-              {walletStore?.accountDataLoaded && <Routes/>}
-            </BrowserView>
+            <ScThemeProvider theme={theme}>
+              <GlobalStyle/>
+              {!walletStore?.accountDataLoaded && (
+                  <LoaderWrapper>
+                    <Loader src={ssvLoader} />
+                  </LoaderWrapper>
+              )}
+              <BarMessage/>
+              <BrowserView>
+                {walletStore?.accountDataLoaded && <Routes/>}
+              </BrowserView>
             <MobileView>
-              <MobileNotSupported/>
-            </MobileView>
-            <CssBaseline/>
+                <MobileNotSupported/>
+              </MobileView>
+              <CssBaseline/>
+            </ScThemeProvider>
           </ThemeProviderLegacy>
         </ThemeProvider>
       </StyledEngineProvider>

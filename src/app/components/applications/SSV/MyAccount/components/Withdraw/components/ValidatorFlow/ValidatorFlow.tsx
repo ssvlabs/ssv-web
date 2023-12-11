@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
-import Validator from '~lib/api/Validator';
+import { clusterByHash } from '~lib/api/validator.service';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
@@ -75,7 +75,7 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
+    const response = await clusterByHash(clusterStore.getClusterHash(cluster.operators));
     const newCluster = response.cluster;
     newCluster.validator_count = newCluster.validatorCount;
     newCluster.operators = cluster.operators;

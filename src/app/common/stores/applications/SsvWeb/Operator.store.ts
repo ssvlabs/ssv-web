@@ -14,7 +14,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
+import { getCurrentNetwork, isMainnet, NETWORKS } from '~lib/utils/envHelper';
 
 export interface NewOperator {
   id: string,
@@ -281,6 +281,26 @@ class OperatorStore extends BaseStore {
       this.clearOperatorFeeInfo();
     }
   }
+
+  /**
+   * Check if operator is whitelisted
+   * @param accountAddress queried account
+   */
+  async isOperatorWhitelisted(accountAddress: string): Promise<boolean> {
+    if (!isMainnet) {
+      return true;
+    }
+    const walletStore: WalletStore = this.getStore('Wallet');
+    const contract: Contract = walletStore.setterContract;
+    try {
+      const response = await contract.methods.getRegisterAuth(accountAddress).call();
+      return response.authOperators;
+    }
+  catch (e: any) {
+    console.error(`Failed to check if operator ${accountAddress} is whitelisted: ${e.message}`);
+    return false;
+  }
+}
 
   /**
    * update operator address whitelist

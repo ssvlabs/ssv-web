@@ -130,6 +130,8 @@ const translations = {
       TOOL_TIP_ADDRESS: 'The operator’s admin address for management purposes.',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
+      WARNING: 'The SSV network currently operates as a permissioned network, where operator registration' +
+        ' is limited to those who have been whitelisted. Stay tuned to SSV Network announcements for updates on the transition to a permissionless network.',
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',

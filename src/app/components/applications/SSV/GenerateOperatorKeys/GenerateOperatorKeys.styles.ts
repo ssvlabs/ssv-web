@@ -20,4 +20,17 @@ export const useStyles = makeStyles((theme: Theme) => ({
             color: 'red !important',
         },
     },
+    WarningMessage: {
+      gap: 8,
+      fontSize: 14,
+      borderRadius: 2,
+      fontWeight: 500,
+      lineHeight: 1.62,
+      color: theme.colors.gray90,
+      padding: theme.spacing(3, 4),
+      marginBottom: 35,
+      backgroundColor: 'rgba(255, 210, 10, 0.2)',
+      border: `solid 1px ${theme.colors.warning}`,
+      justifyContent: 'space-between',
+    },
 }));

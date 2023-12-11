@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import { observable, makeObservable } from 'mobx';
-import { getAccountData } from '~lib/api/account.service';
 import BaseStore from '~app/common/stores/BaseStore';
+import { getAccountData } from '~lib/api/account.service';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 

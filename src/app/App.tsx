@@ -17,7 +17,7 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
-import { getColors } from '../themes';
+import { getColors } from '~root/themes';
 import { ssvLoader } from '../../public/images';
 
 const LoaderWrapper = styled.div<{ theme: any }>`

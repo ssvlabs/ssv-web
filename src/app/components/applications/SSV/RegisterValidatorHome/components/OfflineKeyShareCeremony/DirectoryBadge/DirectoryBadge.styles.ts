@@ -24,7 +24,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundImage: 'url(/images/folder/folder.svg)',
+    backgroundImage: `url(/images/folder/folder-${theme.darkMode ? 'dark' : 'light'}.svg)`,
   },
   Text: {
     fontFamily: 'Inconsolata !important',

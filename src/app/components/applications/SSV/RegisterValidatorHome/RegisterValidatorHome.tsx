@@ -13,14 +13,6 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
-import ValidatorsList from '~app/components/applications/SSV/RegisterValidatorHome/components/ValidatorsList';
-
-const tmp = [{
-  ownerNonce: '4',
-  ownerAddress: '0x43A95270F87Ea7d353aD0E75c7Ba3d6970940b25',
-  publicKey: '0x942b511e461d1bb7f2339348c3c14f41c6541e5d4cadab0e93c1b2e999e4dd1613879217399e57e5fa6373c851e1b6fe',
-  operators: [{ id: 11, operatorKey: 'aaa' }],
-}];
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
@@ -65,7 +57,6 @@ const RegisterValidatorHome = () => {
               </Grid>;
             })}
           </Grid>
-          <ValidatorsList keyShares={tmp} />,
           <PrimaryButton text={'Next'} submitFunction={moveToSelectOperators} withoutLoader/>
           <Grid container item style={{ marginTop: 16, gap: 4 }}>
             <Typography className={`${classes.GrayText} ${classes.Gray90Text}`}>Don't have a validator?</Typography>

@@ -105,6 +105,14 @@ const translations = {
       TITLE: 'Welcome to the SSV Network!',
       DESCRIPTION: 'With every new operator, our network grows stronger.',
     },
+    REGISTER: {
+      HEADER: 'Validators',
+      SUB_HEADER: 'You must sign a registration transaction for each validator separately.',
+      PUBLIC_KEY: 'Public Key',
+      CONFIRM: 'Confirm Registration',
+      REGISTERED: 'Registered',
+      ERROR: 'Incorrect owner-nonce',
+    },
   },
   HOME: {
     TITLE: 'Join the SSV Network',

@@ -5,3 +5,7 @@ export { default as copyGray } from './copy/gray.svg';
 export { default as beaconDark } from './beacon/dark.svg';
 export { default as beaconLight } from './beacon/light.svg';
 export { default as beaconBlue } from './beacon/blue.svg';
+export { default as checkmarkOk } from './checkmark/verified.svg';
+export { default as chevronRight } from './chevron_right.svg';
+export { default as errorIcon } from './error.svg';
+export { default as clock } from './clock.svg';

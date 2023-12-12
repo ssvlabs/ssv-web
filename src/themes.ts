@@ -1,4 +1,5 @@
 const getColors = ({ isDarkTheme }: { isDarkTheme: boolean }) => ({
+  isDarkTheme: isDarkTheme,
   gray0: isDarkTheme ? '#062031' : '#f9fbfc',
   gray10: isDarkTheme ? '#011627' : '#f4f7fa',
   gray20: isDarkTheme ? '#34455a' : '#e6eaf7',
@@ -30,8 +31,10 @@ const getColors = ({ isDarkTheme }: { isDarkTheme: boolean }) => ({
   primaryErrorRegular: isDarkTheme ? 'rgba(236, 28, 38, 0.32)' : 'rgba(236, 28, 38, 0.12)',
   primarySuccessRegularOpacity: isDarkTheme ? 'rgba(8, 200, 88, 0.32)' : 'rgba(8, 200, 88, 0.16)',
   warning: '#ffd20a',
+  activeBackground: 'rgba(232, 246, 254, 0.60)',
   loaderColor: isDarkTheme ? 'rgba(0, 0, 0, 1)' : 'rgba(255, 255, 255, 1)',
-  isDarkTheme: isDarkTheme,
+  pale12: isDarkTheme ? 'rgba(236, 28, 38, 0.2)' : 'rgba(236, 28, 38, 0.05)',
+  pale16: 'rgba(8, 200, 88, 0.16)',
 });
 
 export { getColors };

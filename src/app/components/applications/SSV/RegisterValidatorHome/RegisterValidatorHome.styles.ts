@@ -39,4 +39,20 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: 1.62,
     color: theme.colors.gray80,
   },
+  TooltipText: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: theme.colors.white,
+    display: 'flex',
+    flexDirection: 'row',
+    whiteSpace: 'nowrap',
+  },
+  TooltipLink: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: theme.colors.tint40,
+    textDecoration: 'underline',
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+  },
 }));

@@ -91,7 +91,7 @@ class DistributionStore extends BaseStore {
     await this.cleanState();
     // @ts-ignore
 
-    const merkleTreeAddresses: IMerkleTreeData[] = (await this.fetchMerkleTree()).data;
+    const merkleTreeAddresses: IMerkleTreeData[] = (await this.fetchMerkleTree())?.data ?? [];
     const walletStore: WalletStore = this.getStore('Wallet');
     merkleTreeAddresses.forEach((merkleTreeUser, index) => {
       if (equalsAddresses(merkleTreeUser.address, walletStore.accountAddress)) {
@@ -107,7 +107,7 @@ class DistributionStore extends BaseStore {
     }
   }
 
-  async fetchMerkleTree(): Promise<IMerkleTree>{
+  async fetchMerkleTree(): Promise<IMerkleTree | null>{
     const { api } = getCurrentNetwork();
     const merkleTreeUrl = `${api}/incentivization/merkle-tree`;
     try {
@@ -119,7 +119,8 @@ class DistributionStore extends BaseStore {
       return data.tree;
     }
     catch (error) {
-      throw new Error('Failed to check reward eligibility');
+      console.log('Failed to check reward eligibility');
+      return null;
     }
   }
 

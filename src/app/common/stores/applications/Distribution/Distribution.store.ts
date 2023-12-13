@@ -7,6 +7,9 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import merkleTree from '~app/components/applications/Distribution/assets/merkleTree.json';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
+import { getCurrentNetwork } from '~lib/utils/envHelper';
+import { IMerkleData, IMerkleTree } from '~app/model/merkleTree.model';
+
 
 /**
  * Base store provides singe source of true
@@ -87,7 +90,8 @@ class DistributionStore extends BaseStore {
   async eligibleForReward() {
     await this.cleanState();
     // @ts-ignore
-    const merkleTreeAddresses = merkleTree.data;
+
+    const merkleTreeAddresses: IMerkleTreeData[] = (await this.fetchMerkleTree()).data;
     const walletStore: WalletStore = this.getStore('Wallet');
     merkleTreeAddresses.forEach((merkleTreeUser, index) => {
       if (equalsAddresses(merkleTreeUser.address, walletStore.accountAddress)) {
@@ -100,6 +104,22 @@ class DistributionStore extends BaseStore {
     });
     if (this.userAddress) {
       await this.cumulativeClaimed();
+    }
+  }
+
+  async fetchMerkleTree(): Promise<IMerkleTree>{
+    const { api } = getCurrentNetwork();
+    const merkleTreeUrl = `${api}/incentivization/merkle-tree`;
+    try {
+      const response = await fetch(merkleTreeUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data: IMerkleData = await response.json();
+      return data.tree;
+    }
+    catch (error) {
+      throw new Error('Failed to check reward eligibility');
     }
   }
 

@@ -8,6 +8,7 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPopUp.styles';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { cleanLocalStorage } from '~lib/utils/onboardHelper';
 
 const WalletPopUp = () => {
     const stores = useStores();
@@ -16,6 +17,7 @@ const WalletPopUp = () => {
     const walletStore: WalletStore = stores.Wallet;
 
     const changeWallet = async () => {
+        cleanLocalStorage();
         applicationStore.showWalletPopUp(false);
         const [primaryWallet] = walletStore.onboardSdk.state.get().wallets;
         await walletStore.onboardSdk.disconnectWallet({ label: primaryWallet.label });

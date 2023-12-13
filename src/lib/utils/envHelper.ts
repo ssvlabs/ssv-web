@@ -1,4 +1,4 @@
-import { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+// import { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 
 export interface IENVS {
   NETWORK: string,
@@ -216,10 +216,10 @@ export const changeCurrentNetwork = (networkId: number, version?: string) => {
   }
   if (Number(value) === networkIndex) return;
   window.localStorage.setItem('current_network', String(networkIndex));
-  const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
-  if (walletConnected && !JSON.parse(walletConnected)) {
+  // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+  // if (walletConnected && !JSON.parse(walletConnected)) {
     window.location.reload();
-  }
+  // }
 };
 
 export const currentNetworkName = () => NETWORK_NAMES[getCurrentNetwork().networkId];

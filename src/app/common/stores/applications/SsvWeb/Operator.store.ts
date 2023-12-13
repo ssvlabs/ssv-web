@@ -1,6 +1,7 @@
 import Decimal from 'decimal.js';
-import { sha256 } from 'js-sha256';
-import { Contract } from 'web3-eth-contract';
+// import { sha256 } from 'js-sha256';
+// import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
@@ -11,7 +12,7 @@ import { getFixedGasLimit } from '~lib/utils/gasLimitHelper';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+// import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { getCurrentNetwork, isMainnet, NETWORKS } from '~lib/utils/envHelper';
@@ -213,7 +214,7 @@ class OperatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     if (this.operatorValidatorsLimit === 0) {
-      this.operatorValidatorsLimit = await contract.methods.getValidatorsPerOperatorLimit().call();
+      this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
     }
   }
 
@@ -237,10 +238,10 @@ class OperatorStore extends BaseStore {
   async initUser() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
-    const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.methods.getOperatorFeePeriods().call();
+    const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.getOperatorFeePeriods();
     this.getSetOperatorFeePeriod = Number(executeOperatorFeePeriod);
     this.declaredOperatorFeePeriod = Number(declareOperatorFeePeriod);
-    this.maxFeeIncrease = Number(await walletStore.getterContract.methods.getOperatorFeeIncreaseLimit().call()) / 100;
+    this.maxFeeIncrease = Number(await walletStore.getterContract.getOperatorFeeIncreaseLimit()) / 100;
   }
 
   /**
@@ -264,8 +265,8 @@ class OperatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.getterContract;
     try {
-      this.operatorCurrentFee = await contract.methods.getOperatorFee(operatorId).call();
-      const response = await contract.methods.getOperatorDeclaredFee(operatorId).call();
+      this.operatorCurrentFee = await contract.getOperatorFee(operatorId);
+      const response = await contract.getOperatorDeclaredFee(operatorId);
       const testNets = [NETWORKS.GOERLI, NETWORKS.HOLESKY];
       if (response['0'] && testNets.indexOf(getCurrentNetwork().networkId) !== -1) {
         this.operatorFutureFee = response['1'];
@@ -293,7 +294,7 @@ class OperatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract: Contract = walletStore.setterContract;
     try {
-      const response = await contract.methods.getRegisterAuth(accountAddress).call();
+      const response = await contract.getRegisterAuth(accountAddress);
       return response.authOperators;
     }
   catch (e: any) {
@@ -312,7 +313,7 @@ class OperatorStore extends BaseStore {
         const applicationStore: ApplicationStore = this.getStore('Application');
         const gasLimit = getFixedGasLimit(GasGroup.DECLARE_OPERATOR_FEE);
         const contractInstance = walletStore.setterContract;
-        await contractInstance.methods.setOperatorWhitelist(operatorId, address).send({
+        await contractInstance.setOperatorWhitelist(operatorId, address).send({
           from: walletStore.accountAddress,
           gas: gasLimit,
         })
@@ -358,7 +359,7 @@ class OperatorStore extends BaseStore {
     return new Promise((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       const contract: Contract = walletStore.getterContract;
-      contract.methods.getOperatorEarnings(id).call().then((response: any) => {
+      contract.getOperatorEarnings(id).then((response: any) => {
         resolve(walletStore.fromWei(response));
       }).catch(() => resolve(true));
     });
@@ -382,7 +383,7 @@ class OperatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const applicationStore: ApplicationStore = this.getStore('Application');
         const contract: Contract = walletStore.setterContract;
-        contract.methods.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
+        contract.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
           .on('receipt', async (receipt: any) => {
             const event: boolean = receipt.hasOwnProperty('events');
             if (event) {
@@ -434,7 +435,7 @@ class OperatorStore extends BaseStore {
     return new Promise((resolve) => {
       const walletStore: WalletStore = this.getStore('Wallet');
       const contract: Contract = walletStore.getterContract;
-      contract.methods.validatorsPerOperatorCount(operatorId).call().then((response: any) => {
+      contract.validatorsPerOperatorCount(operatorId).then((response: any) => {
         resolve(response);
       });
     });
@@ -463,7 +464,7 @@ class OperatorStore extends BaseStore {
       try {
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.getterContract;
-        contract.methods.getOperatorFee(publicKey).call().then((response: any) => {
+        contract.getOperatorFee(publicKey).then((response: any) => {
           const ssv = walletStore.fromWei(response);
           this.operatorsFees[publicKey] = { ssv, dollar: 0 };
           resolve(ssv);
@@ -490,7 +491,7 @@ class OperatorStore extends BaseStore {
     try {
       const walletStore: WalletStore = this.getStore('Wallet');
       const networkContract = walletStore.getterContract;
-      const response = await networkContract.methods.totalEarningsOf(operatorId).call();
+      const response = await networkContract.totalEarningsOf(operatorId);
       return walletStore.fromWei(response.toString());
     } catch (e: any) {
       return 0;
@@ -522,7 +523,7 @@ class OperatorStore extends BaseStore {
           operatorApprovalEndTime: this.operatorApprovalEndTime,
           operatorApprovalBeginTime: this.operatorApprovalBeginTime,
         };
-        await contractInstance.methods.declareOperatorFee(operatorId, formattedFee).send({
+        await contractInstance.declareOperatorFee(operatorId, formattedFee).send({
           from: walletStore.accountAddress,
           gas: gasLimit,
         })
@@ -588,7 +589,7 @@ class OperatorStore extends BaseStore {
         );
         const { id, fee } = await Operator.getInstance().getOperator(operatorId);
         const operatorBefore = { id, fee };
-        await contractInstance.methods.reduceOperatorFee(operatorId, formattedFee).send({
+        await contractInstance.reduceOperatorFee(operatorId, formattedFee).send({
           from: walletStore.accountAddress,
           gas: gasLimit,
         })
@@ -655,7 +656,7 @@ class OperatorStore extends BaseStore {
           previous_fee: operatorBefore.previous_fee,
         };
 
-        await walletStore.setterContract.methods.executeOperatorFee(operatorId).send({
+        await walletStore.setterContract.executeOperatorFee(operatorId).send({
           from: walletStore.accountAddress,
           gas: gasLimit,
         })
@@ -719,7 +720,7 @@ class OperatorStore extends BaseStore {
 
       // eslint-disable-next-line no-async-promise-executor
       return await new Promise(async (resolve) => {
-        await contractInstance.methods.removeOperator(operatorId).send({
+        await contractInstance.removeOperator(operatorId).send({
           from: walletStore.accountAddress,
           gas: gasLimit,
         })
@@ -764,8 +765,8 @@ class OperatorStore extends BaseStore {
    * @param getGasEstimation
    */
   async addNewOperator(getGasEstimation: boolean = false) {
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    myAccountStore;
+    getGasEstimation;
+    // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     // eslint-disable-next-line no-async-promise-executor
@@ -775,9 +776,9 @@ class OperatorStore extends BaseStore {
         const ssvStore: SsvStore = this.getStore('SSV');
         const walletStore: WalletStore = this.getStore('Wallet');
         const contract: Contract = walletStore.setterContract;
-        const address: string = this.newOperatorKeys.address;
+        // const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
-        const gasLimit = getFixedGasLimit(GasGroup.REGISTER_OPERATOR);
+        // const gasLimit = getFixedGasLimit(GasGroup.REGISTER_OPERATOR);
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
@@ -787,66 +788,93 @@ class OperatorStore extends BaseStore {
         );
 
         console.debug('Register Operator Transaction Data:', payload);
-        if (getGasEstimation) {
-          const gasAmount = await contract.methods.registerOperator(...payload).estimateGas({ from: walletStore.accountAddress });
-          this.estimationGas = gasAmount * 0.000000001;
-          if (config.FEATURE.DOLLAR_CALCULATION) {
-            resolve(true);
-          } else {
-            this.dollarEstimationGas = 0;
+
+        console.warn('[addNewOperator] debug 1');
+        try {
+          const tx = await contract.registerOperator(...payload);
+          if (tx.hash) {
+            applicationStore.txHash = tx.hash;
+            applicationStore.showTransactionPendingPopUp(true);
+          }
+          console.warn('[addNewOperator] debug 2');
+          const receipt = await tx.wait();
+          console.warn('[addNewOperator] debug 3', receipt);
+          if (receipt.blockHash) {
+            applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
           }
-        } else {
-          contract.methods.registerOperator(...payload)
-            .send({ from: address, gas: gasLimit })
-            .on('receipt', async (receipt: any) => {
-              // eslint-disable-next-line no-prototype-builtins
-              const events: boolean = receipt.hasOwnProperty('events');
-              if (events) {
-                console.debug('Contract Receipt', receipt);
-                GoogleTagManager.getInstance().sendEvent({
-                  category: 'operator_register',
-                  action: 'register_tx',
-                  label: 'success',
-                });
-                this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
-                this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
-                resolve(true);
-              }
-            })
-            .on('transactionHash', (txHash: string) => {
-              applicationStore.txHash = txHash;
-              applicationStore.showTransactionPendingPopUp(true);
-            })
-            .on('error', (error: any) => {
-              // eslint-disable-next-line no-prototype-builtins
-              const isRejected: boolean = error.hasOwnProperty('code');
-              GoogleTagManager.getInstance().sendEvent({
-                category: 'operator_register',
-                action: 'register_tx',
-                label: isRejected ? 'rejected' : 'error',
-              });
-              applicationStore.setIsLoading(false);
-              applicationStore.showTransactionPendingPopUp(false);
-              notificationsStore.showMessage(error.message, 'error');
-              resolve(false);
-            })
-            .catch((error: any) => {
-              applicationStore.setIsLoading(false);
-              applicationStore.showTransactionPendingPopUp(false);
-              if (error) {
-                notificationsStore.showMessage(error.message, 'error');
-                GoogleTagManager.getInstance().sendEvent({
-                  category: 'operator_register',
-                  action: 'register_tx',
-                  label: 'error',
-                });
-                resolve(false);
-              }
-              console.debug('Contract Error', error);
-              resolve(true);
-            });
+        } catch (err: any) {
+          console.error(`Error during setting fee recipient: ${err.message}`);
+          notificationsStore.showMessage(err.message, 'error');
+          resolve(false);
         }
+        // const gas = await tx.estimateGas();
+        // console.warn('[addNewOperator] debug 3', gas);
+
+        // if (getGasEstimation && false) {
+        //   this.estimationGas = gas * 0.000000001;
+        //   if (config.FEATURE.DOLLAR_CALCULATION) {
+        //     resolve(true);
+        //   } else {
+        //     this.dollarEstimationGas = 0;
+        //     resolve(true);
+        //   }
+        //   return;
+        // }
+
+          // .on('Transfer', async (data: any) => {
+          //   console.warn('[addNewOperator] debug TRANSFER', data);
+          // })
+          // .on('receipt', async (receipt: any) => {
+          //   // eslint-disable-next-line no-prototype-builtins
+          //   const events: boolean = receipt.hasOwnProperty('events');
+          //   if (events) {
+          //     console.debug('Contract Receipt', receipt);
+          //     GoogleTagManager.getInstance().sendEvent({
+          //       category: 'operator_register',
+          //       action: 'register_tx',
+          //       label: 'success',
+          //     });
+          //     this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
+          //     this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
+          //     resolve(true);
+          //   }
+          //   console.warn('[addNewOperator] debug 5');
+          // })
+          // .on('*', (txHash: any) => {
+          //   console.warn('[addNewOperator] debug 6', txHash);
+          //   // applicationStore.txHash = txHash;
+          //   applicationStore.showTransactionPendingPopUp(true);
+          // })
+          // .on('error', (error: any) => {
+          //   console.warn('[addNewOperator] debug 7');
+          //   // eslint-disable-next-line no-prototype-builtins
+          //   const isRejected: boolean = error.hasOwnProperty('code');
+          //   GoogleTagManager.getInstance().sendEvent({
+          //     category: 'operator_register',
+          //     action: 'register_tx',
+          //     label: isRejected ? 'rejected' : 'error',
+          //   });
+          //   applicationStore.setIsLoading(false);
+          //   applicationStore.showTransactionPendingPopUp(false);
+          //   notificationsStore.showMessage(error.message, 'error');
+          //   resolve(false);
+          // })
+          // .catch((error: any) => {
+          //   applicationStore.setIsLoading(false);
+          //   applicationStore.showTransactionPendingPopUp(false);
+          //   if (error) {
+          //     notificationsStore.showMessage(error.message, 'error');
+          //     GoogleTagManager.getInstance().sendEvent({
+          //       category: 'operator_register',
+          //       action: 'register_tx',
+          //       label: 'error',
+          //     });
+          //     resolve(false);
+          //   }
+          //   console.debug('Contract Error', error);
+          //   resolve(true);
+          // })
       } catch (e) {
         // eslint-disable-next-line prefer-promise-reject-errors
         reject(false);

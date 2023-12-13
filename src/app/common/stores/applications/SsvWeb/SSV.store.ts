@@ -1,5 +1,6 @@
 import Decimal from 'decimal.js';
-import { Contract } from 'web3-eth-contract';
+// import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -30,7 +31,8 @@ class SsvStore extends BaseStore {
   userLiquidated: boolean = false;
 
   // Contracts
-  ssvContractInstance: Contract | null = null;
+   ssvContractInstance: Contract | null = null;
+  private syncingUser: boolean = false;
 
   constructor() {
     super();
@@ -115,22 +117,53 @@ class SsvStore extends BaseStore {
    * Init User Interval
    */
   async userSyncInterval() {
-    if (!this.accountAddress) return;
-    await this.checkAllowance();
-    await this.getNetworkFees();
-    // await this.checkIfLiquidated();
-    // await this.getAccountBurnRate();
-    await this.getBalanceFromSsvContract();
-    // await this.getBalanceFromDepositContract();
+    if (!this.getStore('Wallet').wallet?.provider) {
+      console.warn('getNetworkFees no wallet yet');
+      return;
+    }
+    if (!this.accountAddress) {
+      console.warn('getNetworkFees no account address');
+      return;
+    }
+    if (this.syncingUser) {
+      console.warn('getNetworkFees already syncing');
+      return;
+    }
+
+    this.syncingUser = true;
+    try {
+      console.warn('userSyncInterval before');
+      // await Promise.race([
+      //   Promise.all([
+      //     this.getNetworkFees(),
+      //     this.getBalanceFromSsvContract(),
+      //     this.checkAllowance(),
+      //   ]),
+      //   new Promise((_, reject) => setTimeout(reject, 5000)),
+      // ]);
+      await this.getNetworkFees();
+      await this.getBalanceFromSsvContract();
+      await this.checkAllowance();
+      console.warn('userSyncInterval after');
+    } catch (e) {
+      console.warn('userSyncInterval error', e);
+    } finally {
+      console.warn('userSyncInterval finally remove syncing flag');
+      this.syncingUser = false;
+    }
   }
 
   /**
    * Init User
    */
   async initUser() {
-    clearInterval(this.accountInterval);
-    await this.userSyncInterval();
-    this.accountInterval = setInterval(this.userSyncInterval, 2000);
+    this.clearUserSyncInterval();
+    // setTimeout(() => {
+      console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      this.userSyncInterval().finally(() => {
+        this.accountInterval = setInterval(this.userSyncInterval, 15000);
+      });
+    // }, 1000);
   }
 
   clearUserSyncInterval() {
@@ -247,6 +280,7 @@ class SsvStore extends BaseStore {
    * Get account balance on ssv contract
    */
   async getBalanceFromSsvContract(): Promise<any> {
+    // const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
     const balance = await this.ssvContract.methods.balanceOf(this.accountAddress).call();
     const walletStore = this.getStore('Wallet');
     this.walletSsvBalance = parseFloat(String(walletStore.fromWei(balance, 'ether')));
@@ -362,12 +396,34 @@ class SsvStore extends BaseStore {
    *  Call userAllowance function in order to know if it has been set or not for SSV contract by user account.
    */
   async checkAllowance(): Promise<void> {
+    // console.warn('[DIRECT] checkAllowance before');
+    // const provider = 'https://ethereum-holesky.publicnode.com';
+    // const web3Provider = new Web3.providers.HttpProvider(provider);
+    // const web3 = new Web3(web3Provider);
+    // const contract = new web3.eth.Contract(
+    //   config.CONTRACTS.SSV_TOKEN.ABI,
+    //   this.getContractAddress('ssv_token'),
+    // );
+    // const customAllowance = await contract.methods.allowance(
+    //   // @ts-ignore
+    //   this.accountAddress,
+    //   // @ts-ignore
+    //   this.getContractAddress('ssv_network_setter'),
+    // ).call();
+    //
+    // console.warn({
+    //   allowance: customAllowance,
+    // });
+    // console.warn('[DIRECT] checkAllowance after');
+
+    console.warn('checkAllowance before');
     const allowance = await this.ssvContract
       .methods
       .allowance(
         this.accountAddress,
         this.getContractAddress('ssv_network_setter'),
       ).call();
+    console.warn('checkAllowance after');
     this.approvedAllowance = allowance;
     this.userGaveAllowance = allowance !== '0';
   }
@@ -422,11 +478,24 @@ class SsvStore extends BaseStore {
   async getNetworkFees() {
     const walletStore: WalletStore = this.getStore('Wallet');
     const networkContract = walletStore.getterContract;
-    const liquidationCollateral = await networkContract.methods.getLiquidationThresholdPeriod().call();
-    const networkFee = await networkContract.methods.getNetworkFee().call();
-    const minimumLiquidationCollateral = await networkContract.methods.getMinimumLiquidationCollateral().call();
+
+    if (!networkContract)  {
+      console.warn('getNetworkFees no network contract yet');
+      return;
+    }
+
+    console.warn('getNetworkFees 1');
+    const liquidationCollateral = await networkContract.getLiquidationThresholdPeriod();
+    console.warn('getNetworkFees 2');
+    const networkFee = await networkContract.getNetworkFee();
+    console.warn('getNetworkFees 3');
+    const minimumLiquidationCollateral = await networkContract.getMinimumLiquidationCollateral();
+    console.warn('getNetworkFees 4');
     // hardcoded should be replaced
     this.networkFee = walletStore.fromWei(networkFee);
+    console.warn({
+      notNativeNetworkFee: this.networkFee,
+    });
     this.liquidationCollateralPeriod = Number(liquidationCollateral);
     this.minimumLiquidationCollateral = walletStore.fromWei(minimumLiquidationCollateral);
   }

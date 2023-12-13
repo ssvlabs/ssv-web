@@ -1,6 +1,7 @@
 import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
-import { Contract } from 'web3-eth-contract';
+// import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';

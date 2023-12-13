@@ -6,12 +6,7 @@ export interface IMerkleData {
 
 export interface IMerkleTree {
   root: string,
-  data: IMerkleTreeData
-}
-
-export interface IMerkleTree {
-  root: string,
-  data: IMerkleTreeData
+  data: IMerkleTreeData[]
 }
 
 export interface IMerkleTreeData {

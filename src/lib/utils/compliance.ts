@@ -36,7 +36,19 @@ const getCurrentLocation = async (): Promise<string[]> => {
     return !!name;
   };
 
-  const countryGetters = [
+  const shuffleArray = ( arr: any[] ) => {
+    const shuffledArray = arr.slice();
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      // Generate a random index from 0 to i
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+
+      // Swap elements at randomIndex and i
+      [shuffledArray[i], shuffledArray[randomIndex]] = [shuffledArray[randomIndex], shuffledArray[i]];
+    }
+    return shuffledArray;
+  };
+
+  const countryGetters = shuffleArray([
     {
       url: 'https://api.ipregistry.co/?key=szh9vdbsf64ez2bk',
       callback: ({ data }: { data: any }): string[] => {
@@ -70,7 +82,7 @@ const getCurrentLocation = async (): Promise<string[]> => {
         return [data?.country_name, data?.city].filter(filterEmpty);
       },
     },
-  ];
+  ]);
   for (let i = 0; i < countryGetters.length; i += 1) {
     const countryGetter = countryGetters[i];
     try {

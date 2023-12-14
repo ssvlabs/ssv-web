@@ -44,26 +44,25 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.warn({
-      walletStore,
-    });
-    if (walletStore) {
+    if (web3Onboard) {
+      console.warn({ web3Onboard });
       walletStore.onboardSdk = web3Onboard;
-    }
-    if (!applicationStore.locationRestrictionEnabled) {
-      console.debug('Skipping location restriction functionality in this app.');
-      web3Onboard && walletStore.checkConnectedWallet();
-    } else {
-      checkUserCountryRestriction().then((res: any) => {
-        if (res.restricted) {
-          walletStore.accountDataLoaded = true;
-          applicationStore.userGeo = res.userGeo;
-          applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
-        } else {
-          web3Onboard && walletStore.checkConnectedWallet();
-        }
-      });
+
+      if (!applicationStore.locationRestrictionEnabled) {
+        console.debug('Skipping location restriction functionality in this app.');
+        // web3Onboard && walletStore.checkConnectedWallet();
+      } else {
+        checkUserCountryRestriction().then((res: any) => {
+          if (res.restricted) {
+            walletStore.accountDataLoaded = true;
+            applicationStore.userGeo = res.userGeo;
+            applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+            navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+          } else {
+            // web3Onboard && walletStore.checkConnectedWallet();
+          }
+        });
+      }
     }
   }, [web3Onboard]);
 

@@ -1,6 +1,7 @@
 import Decimal from 'decimal.js';
+
 // import { Contract } from 'web3-eth-contract';
-import { Contract } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';
@@ -22,6 +23,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
+// import { getRegisterValidatorGasLimit } from '~lib/utils/gasLimitHelper';
 
 type KeyShareError = {
   id: number,
@@ -302,6 +304,9 @@ class ValidatorStore extends BaseStore {
   async addNewValidator() {
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    // const clusterStore: ClusterStore = this.getStore('Cluster');
+    // const processStore: ProcessStore = this.getStore('Process');
+
     return new Promise(async (resolve) => {
       try {
         const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
@@ -318,8 +323,26 @@ class ValidatorStore extends BaseStore {
         this.newValidatorReceipt = null;
 
         console.debug('Add Validator Payload: ', payload);
+        // const clusterHash = clusterStore.getClusterHash(payload.get(OPERATOR_IDS));
+        // const response = await Validator.getInstance().getClusterData(clusterHash);
+        // const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
+        // const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.get(OPERATOR_IDS).length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
+        const gasLimit = 4075000;
 
+        const provider = new ethers.providers.Web3Provider(walletStore.wallet.provider, 'any');
+        console.warn('[addNewValidator] Estimating gas price');
+        const gasPrice = await provider.getGasPrice();
+        console.warn('[addNewValidator] Estimating gas limit. Gas price: ', gasPrice);
+        // const gasLimit = await contract.estimateGas.registerValidator(...payload.values());
+        const txParams = {
+          gasLimit,
+          gasPrice,
+          // safeTxGas: gasPrice,
+        };
+        console.warn(txParams);
+        // let tx = await contract.registerValidator(...payload.values(), txParams);
         let tx = await contract.registerValidator(...payload.values());
+
 
         if (tx.hash) {
           applicationStore.txHash = tx.hash;

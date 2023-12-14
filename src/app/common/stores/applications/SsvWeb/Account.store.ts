@@ -85,7 +85,7 @@ class AccountStore extends BaseStore  {
       const res = Account.getInstance().getAccountData(ownerAddress);
       resolve(res);
     });
-    if (result.data) {
+    if (result?.data) {
       this.ownerNonce = Number(result.data.nonce);
     }
   }

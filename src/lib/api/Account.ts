@@ -21,7 +21,7 @@ class Account {
     async getAccountData(publicKey: string) {
         try {
             const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${web3.utils.toChecksumAddress(publicKey)}`;
-            return await this.getData(url);
+            return await this.getData(url, false);
         } catch (e) {
             return null;
         }

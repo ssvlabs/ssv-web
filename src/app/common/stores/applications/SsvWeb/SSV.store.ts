@@ -79,10 +79,12 @@ class SsvStore extends BaseStore {
    */
   get ssvContract(): Contract {
     if (!this.ssvContractInstance) {
-      // const walletStore: WalletStore = this.getStore('Wallet');
+      const walletStore: WalletStore = this.getStore('Wallet');
+      const provider = new ethers.providers.Web3Provider(walletStore.wallet.provider, 'any');
       this.ssvContractInstance = new ethers.Contract(
         this.getContractAddress('ssv_token'),
         config.CONTRACTS.SSV_TOKEN.ABI,
+        provider.getSigner(),
       );
     }
     return <Contract> this.ssvContractInstance;
@@ -148,8 +150,8 @@ class SsvStore extends BaseStore {
       console.log('check allownace');
       await this.checkAllowance();
       console.warn('userSyncInterval after');
-    } catch (e) {
-      console.warn('userSyncInterval error', e);
+    } catch (e: any) {
+      console.warn('userSyncInterval error', e?.message);
     } finally {
       console.warn('userSyncInterval finally remove syncing flag');
       this.syncingUser = false;
@@ -303,12 +305,7 @@ class SsvStore extends BaseStore {
    * Get account balance on ssv contract
    */
   async getBalanceFromSsvContract(): Promise<any> {
-    console.log('getBalanc');
-    console.log(this.ssvContract);
-    console.log(await this.ssvContract.balanceOf(this.accountAddress));
     const balance = await this.ssvContract.balanceOf(this.accountAddress);
-    console.log('BALANCE');
-    console.log(await this.ssvContract.balanceOf(this.accountAddress));
     const walletStore = this.getStore('Wallet');
     this.walletSsvBalance = parseFloat(String(walletStore.fromWei(balance, 'ether')));
   }
@@ -589,19 +586,27 @@ class SsvStore extends BaseStore {
     }
 
     console.warn('getNetworkFees 1');
-    const liquidationCollateral = await networkContract.getLiquidationThresholdPeriod();
+    if (this.liquidationCollateralPeriod === 0) {
+      this.liquidationCollateralPeriod = Number(await networkContract.getLiquidationThresholdPeriod());
+    } else {
+      console.warn('this.liquidationCollateralPeriod:', this.liquidationCollateralPeriod);
+    }
+
     console.warn('getNetworkFees 2');
-    const networkFee = await networkContract.getNetworkFee();
+    if (this.networkFee === 0) {
+      this.networkFee = walletStore.fromWei(await networkContract.getNetworkFee());
+    } else {
+      console.warn('this.networkFee:', this.networkFee);
+    }
+
     console.warn('getNetworkFees 3');
-    const minimumLiquidationCollateral = await networkContract.getMinimumLiquidationCollateral();
+    if (this.minimumLiquidationCollateral === 0) {
+      const minimumLiquidationCollateral = await networkContract.getMinimumLiquidationCollateral();
+      this.minimumLiquidationCollateral = walletStore.fromWei(minimumLiquidationCollateral);
+    } else {
+      console.warn('this.minimumLiquidationCollateral:', this.minimumLiquidationCollateral);
+    }
     console.warn('getNetworkFees 4');
-    // hardcoded should be replaced
-    this.networkFee = walletStore.fromWei(networkFee);
-    console.warn({
-      notNativeNetworkFee: this.networkFee,
-    });
-    this.liquidationCollateralPeriod = Number(liquidationCollateral);
-    this.minimumLiquidationCollateral = walletStore.fromWei(minimumLiquidationCollateral);
   }
 
   /**

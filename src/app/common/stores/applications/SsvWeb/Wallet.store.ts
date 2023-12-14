@@ -10,7 +10,8 @@ import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+// import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+import Wallet from '~app/common/stores/Abstracts/Wallet';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -83,6 +84,7 @@ class WalletStore extends BaseStore implements Wallet {
       const networkId = parseInt(String(connectedChain.id), 16);
       const balance = wallet.accounts[0]?.balance ? wallet.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
       const address = wallet.accounts[0]?.address;
+      console.warn('<<<<<<<<<<<<< Wallet address >>>>>>>>>>>>>', address);
       await this.onWalletConnectedCallback(wallet);
       this.onNetworkChangeCallback(networkId);
       await this.onBalanceChangeCallback(balance);
@@ -94,7 +96,8 @@ class WalletStore extends BaseStore implements Wallet {
       };
       // @ts-ignore
       this.notifySdk = Notify(notifyOptions);
-    } else if (this.accountAddress && !wallet) {
+    } else {
+      console.warn('<<<<<<<<<<<<<<<<<<<<<<<< initWallet: no address >>>>>>>>>>>>>>>>>>>>>>>>');
       await this.onAccountAddressChangeCallback(undefined);
     }
   }
@@ -148,10 +151,13 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
-    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
-      await this.onAccountAddressChangeCallback(undefined);
-    }
+    await this.onAccountAddressChangeCallback(this.wallet?.address || undefined);
+    // console.warn('checkConnectedWallet 1');
+    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+    // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
+    //   console.warn('checkConnectedWallet 2');
+    //   await this.onAccountAddressChangeCallback(undefined);
+    // }
   }
 
   async disconnect() {
@@ -214,14 +220,16 @@ class WalletStore extends BaseStore implements Wallet {
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const ssvStore: SsvStore = this.getStore('SSV');
-    window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
+    // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined || !this.wallet?.label) {
+      console.warn('onAccountAddressChangeCallback: Wallet disconnected');
       ssvStore.clearUserSyncInterval();
       await this.resetUser();
       setTimeout(() => {
         this.setAccountDataLoaded(true);
       }, 1000);
     } else {
+      console.warn('onAccountAddressChangeCallback: Wallet connected');
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
       this.accountAddress = address;
@@ -276,14 +284,15 @@ class WalletStore extends BaseStore implements Wallet {
   /**
    * User Network handler
    * @param networkId
+   * @param apiVersion
    */
-  onNetworkChangeCallback(networkId: any) {
+  onNetworkChangeCallback(networkId: number, apiVersion?: string) {
     if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Holesky', 'error');
     } else {
       try {
-        changeCurrentNetwork(Number(networkId));
+        changeCurrentNetwork(Number(networkId), apiVersion);
       } catch (e) {
         this.wrongNetwork = true;
         this.notificationsStore.showMessage(String(e), 'error');

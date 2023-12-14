@@ -21,7 +21,7 @@ export const useOnboard = () => {
   const stores = useStores();
   const walletStore: Wallet = stores.Wallet;
   const [{ wallet, connecting }] = useConnectWallet();
-  const [{ connectedChain }] = useSetChain();
+  const [{ chains, connectedChain }, setChain] = useSetChain();
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
 
   // Keep provider unchanged for wallet
@@ -40,9 +40,13 @@ export const useOnboard = () => {
     if (connectedChain && wallet?.accounts[0]) {
       walletStore.initWallet(wallet, connectedChain);
     }
-  }, [wallet, connectedChain]);
+    if (web3Onboard && !wallet?.accounts[0]) {
+      walletStore.initWallet(null, null);
+    }
+  }, [web3Onboard, wallet?.accounts[0], connectedChain?.id]);
 
   return {
+    setChain,
     web3Onboard,
     wallet,
     provider,

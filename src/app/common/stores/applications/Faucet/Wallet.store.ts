@@ -11,7 +11,8 @@ import BaseStore from '~app/common/stores/BaseStore';
 import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import { changeCurrentNetwork, getCurrentNetwork, isMainnet, NETWORKS } from '~lib/utils/envHelper';
-import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+import Wallet from '~app/common/stores/Abstracts/Wallet';
+// import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -130,10 +131,11 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
-    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
-      await this.addressHandler(undefined);
-    }
+    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+    // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
+    //   await this.addressHandler(undefined);
+    // }
+    this.onAccountAddressChangeCallback(this.wallet?.address || undefined);
   }
 
   /**
@@ -281,7 +283,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  onNetworkChangeCallback(networkId: number): void {
+  onNetworkChangeCallback(networkId: number, apiVersion?: string): void {
   }
 }
 

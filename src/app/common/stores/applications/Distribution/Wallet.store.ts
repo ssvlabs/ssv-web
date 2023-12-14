@@ -7,7 +7,8 @@ import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { distributionHelper } from '~lib/utils/distributionHelper';
-import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+import Wallet from '~app/common/stores/Abstracts/Wallet';
+// import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import {
@@ -118,10 +119,11 @@ class WalletStore extends BaseStore implements Wallet {
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
-    if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
-      await this.addressHandler(undefined);
-    }
+    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
+    // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
+    //   await this.addressHandler(undefined);
+    // }
+    this.onAccountAddressChangeCallback(this.wallet?.address || undefined);
   }
 
   /**
@@ -153,7 +155,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async addressHandler(address: string | undefined) {
     this.setAccountDataLoaded(false);
-    window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
+    // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
       this.accountAddress = '';
@@ -271,7 +273,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  onNetworkChangeCallback(networkId: number): void {
+  onNetworkChangeCallback(networkId: number, apiVersion?: string): void {
   }
 }
 

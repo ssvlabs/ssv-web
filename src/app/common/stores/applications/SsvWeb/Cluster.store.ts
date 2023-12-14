@@ -44,7 +44,8 @@ class ClusterStore extends BaseStore {
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
-      const balance = await contract.methods.getBalance(walletStore.accountAddress, operatorsIds, clusterData).call();
+      // const balance = await contract.methods.getBalance(walletStore.accountAddress, operatorsIds, clusterData).call();
+      const balance = await contract.getBalance(walletStore.accountAddress, operatorsIds, clusterData);
       return balance;
     } catch (e) {
       return 0;
@@ -68,7 +69,8 @@ class ClusterStore extends BaseStore {
     const clusterData: any = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
-      const isLiquidated = await contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
+      // const isLiquidated = await contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
+      const isLiquidated = await contract.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData);
       return isLiquidated;
     } catch (e) {
       return false;
@@ -81,7 +83,8 @@ class ClusterStore extends BaseStore {
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     try {
-      const burnRate = await contract.methods.getBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
+      const burnRate = await contract.getBurnRate(walletStore.accountAddress, operatorsIds, clusterData);
+      // const burnRate = await contract.methods.getBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
       return burnRate;
     } catch (e) {
       return 0;

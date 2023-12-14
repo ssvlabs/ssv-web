@@ -1,4 +1,4 @@
-import Onboard from '@web3-onboard/core';
+import Onboard, { InitOptions, OnboardAPI } from '@web3-onboard/core';
 import safeWallet from '@web3-onboard/gnosis';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
@@ -6,17 +6,30 @@ import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 
-export const initOnboard = () => {
-  const injected = injectedModule();
-  const walletConnect = walletConnectModule({
-    dappUrl: window.location.origin,
-    projectId: config.ONBOARD.PROJECT_ID,
-    optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY],
-  });
-  const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
-  const safeWalletInstance = safeWallet();
+export const cleanLocalStorage = () => {
+  return;
+  // const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
+  // const currentNetwork = window.localStorage.getItem('current_network');
+  // window.localStorage.clear();
+  // if (locationRestrictionDisabled) {
+  //   window.localStorage.setItem('locationRestrictionDisabled', '1');
+  // }
+  // if (currentNetwork) {
+  //   window.localStorage.setItem('current_network', currentNetwork);
+  // }
+};
 
-  return Onboard({
+const injected = injectedModule();
+const walletConnect = walletConnectModule({
+  dappUrl: window.location.origin,
+  projectId: config.ONBOARD.PROJECT_ID,
+  optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY],
+});
+const safeWalletInstance = safeWallet();
+
+const initOnboardOptions = () => {
+  const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
+  return {
     theme: theme,
     apiKey: config.ONBOARD.API_KEY,
     wallets: [
@@ -56,6 +69,16 @@ export const initOnboard = () => {
         id: NETWORKS.HOLESKY,
         label: 'Holesky testnet',
         token: TOKEN_NAMES[NETWORKS.HOLESKY],
+        // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
+        // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',
+        // rpcUrl: 'https://ethereum-holesky.publicnode.com',
+        // publicRpcUrl: 'https://ethereum-holesky.publicnode.com',
+        // rpcUrl: 'https://newest-fragrant-sponge.ethereum-holesky.quiknode.pro/626e253896d20dd8a3cf447cb286c3fc1755f511/',
+        // publicRpcUrl: 'https://newest-fragrant-sponge.ethereum-holesky.quiknode.pro/626e253896d20dd8a3cf447cb286c3fc1755f511/',
+        // rpcUrl: 'https://operators-holesky.testnet.fi/api/rpc?chainId=17000',
+        // publicRpcUrl: 'https://operators-holesky.testnet.fi/api/rpc?chainId=17000',
+        // rpcUrl: window.localStorage.getItem('rpcUrl') || undefined,
+        // publicRpcUrl: window.localStorage.getItem('publicRpcUrl') || undefined,
       },
     ],
     appMetadata: {
@@ -72,5 +95,15 @@ export const initOnboard = () => {
         privacyUrl: 'https://ssv.network/privacy-policy/',
       },
     },
-  });
+  };
+};
+
+// OLD
+const initOnboard = (): OnboardAPI => {
+  return Onboard(initOnboardOptions() as InitOptions);
+};
+
+export {
+  initOnboardOptions,
+  initOnboard,
 };

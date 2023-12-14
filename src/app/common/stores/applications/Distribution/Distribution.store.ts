@@ -1,4 +1,5 @@
-import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
+// import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import { equalsAddresses } from '~lib/utils/strings';

@@ -11,6 +11,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
+import { useConnectWallet } from '@web3-onboard/react';
 
 const Welcome = () => {
   const stores = useStores();
@@ -18,12 +19,17 @@ const Welcome = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
+  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+  const connectWallet = useConnectWallet();
 
   const connectToWallet = () => {
     if (walletStore.connected) {
       return applicationStore.showWalletPopUp(true);
     }
-    return walletStore.connect();
+    console.log('connectWallet before');
+    connectWallet[1]();
+    console.log('connectWallet after');
+    // return walletStore.connect();
   };
 
   return (

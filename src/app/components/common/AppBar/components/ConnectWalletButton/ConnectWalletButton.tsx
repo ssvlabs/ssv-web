@@ -6,6 +6,7 @@ import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './ConnectWalletButton.styles';
+import { useConnectWallet } from '@web3-onboard/react';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
@@ -15,12 +16,16 @@ const ConnectWalletButton = () => {
     walletConnected: walletStore.connected,
     whiteAppBar: applicationStore.whiteNavBarBackground,
   });
+  const connectWallet = useConnectWallet();
 
   const onClick = () => {
     if (walletStore.connected) {
       return applicationStore.showWalletPopUp(true);
     }
-    return walletStore.connect();
+    console.log('connectWallet before');
+    connectWallet[1]();
+    console.log('connectWallet after');
+    // return walletStore.connect();
   };
 
   let icon;

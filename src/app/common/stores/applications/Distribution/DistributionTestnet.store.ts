@@ -1,4 +1,5 @@
-import { Contract } from 'web3-eth-contract';
+// import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';

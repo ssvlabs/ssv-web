@@ -130,6 +130,8 @@ const translations = {
       TOOL_TIP_ADDRESS: 'The operator’s admin address for management purposes.',
       TITLE: 'Register Operator',
       DESCRIPTION: 'Register to the networks registry to enable others to discover and select you as one of their validator’s operators.',
+      WARNING: 'The SSV network currently operates as a permissioned network, where operator registration' +
+        ' is limited to those who have been whitelisted. Stay tuned to SSV Network announcements for updates on the transition to a permissionless network.',
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',
@@ -171,6 +173,10 @@ const translations = {
   },
   NA_DISPLAY:{
     TOOLTIP_TEXT: 'Balance and runway are pending calculation, please check again in a few minutes',
+  },
+  FAUCET: {
+    FAUCET_DEPLETED: 'Depleted',
+    REACHED_MAX_TRANSACTIONS: 'Reached max transactions per day',
   },
 };
 

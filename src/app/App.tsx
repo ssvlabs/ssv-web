@@ -19,6 +19,7 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
+import { useOnboard } from './hooks/useOnboard';
 
 declare global {
   interface Window {
@@ -36,28 +37,34 @@ const App = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const location = useLocation();
   const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
+  const { web3Onboard } = useOnboard();
 
   useEffect(() => {
     document.title = applicationStore.appTitle;
   });
 
   useEffect(() => {
-    if (!applicationStore.locationRestrictionEnabled) {
-      console.debug('Skipping location restriction functionality in this app.');
-      walletStore.checkConnectedWallet();
-    } else {
-      checkUserCountryRestriction().then((res: any) => {
-        if (res.restricted) {
-          walletStore.accountDataLoaded = true;
-          applicationStore.userGeo = res.userGeo;
-          applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
-        } else {
-          walletStore.checkConnectedWallet();
-        }
-      });
+    if (web3Onboard) {
+      console.warn({ web3Onboard });
+      walletStore.onboardSdk = web3Onboard;
+
+      if (!applicationStore.locationRestrictionEnabled) {
+        console.debug('Skipping location restriction functionality in this app.');
+        // web3Onboard && walletStore.checkConnectedWallet();
+      } else {
+        checkUserCountryRestriction().then((res: any) => {
+          if (res.restricted) {
+            walletStore.accountDataLoaded = true;
+            applicationStore.userGeo = res.userGeo;
+            applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+            navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+          } else {
+            // web3Onboard && walletStore.checkConnectedWallet();
+          }
+        });
+      }
     }
-  }, []);
+  }, [web3Onboard]);
 
   useEffect(() => {
     if (walletStore?.accountDataLoaded && !unsafeMode) {

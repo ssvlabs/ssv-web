@@ -18,7 +18,10 @@ module.exports = function (proxy, allowedHosts) {
     host,
     proxy,
     hot: true,
-    allowedHosts,
+    allowedHosts: [
+      ...allowedHosts,
+      'b0d3-31-154-29-254.ngrok-free.app',
+    ],
     compress: true,
     https: getHttpsConfig(),
     historyApiFallback: { disableDotRule: true, index: paths.publicUrlOrPath },

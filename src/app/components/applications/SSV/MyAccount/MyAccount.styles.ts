@@ -27,6 +27,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.colors.white,
     boxShadow: '0 3px 12px 0 rgba(0, 0, 0, 0.06)',
   },
+  OperatorName: {
+    color: theme.colors.black,
+  },
   OperatorId: {
     fontSize: 14,
     fontWeight: 500,

@@ -39,7 +39,7 @@ module.exports = {
     'newline-per-chained-call': 0,
     'no-confusing-arrow': 0,
     'no-console': 0,
-    'no-unused-vars': 2,
+    'no-unused-vars': 0,
     'no-use-before-define': 0,
     'prefer-template': 2,
     'prefer-destructuring': 0,
@@ -100,6 +100,7 @@ module.exports = {
     '@typescript-eslint/lines-between-class-members': 0,
     '@typescript-eslint/no-unused-expressions': 0,
     '@typescript-eslint/naming-convention': 0,
+    '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/brace-style': 0,
   },
   parserOptions: {

@@ -29,7 +29,9 @@ const getRestrictedLocations = async () => {
  */
 const getCurrentLocation = async (): Promise<string[]> => {
   const fetchLocation = async (requestUri: string, getCountryCallback: any) => {
-    return getCountryCallback(await axios.get(requestUri, { timeout: 2000 }));
+    return axios.get(requestUri, { timeout: 2000 })
+      .then( resp => getCountryCallback(resp))
+      .catch( e => console.error(`Failed to detect location from ${requestUri}. Error ${e}`));
   };
 
   const filterEmpty = (name: undefined | null | string) => {
@@ -50,7 +52,16 @@ const getCurrentLocation = async (): Promise<string[]> => {
 
   const countryGetters = shuffleArray([
     {
-      url: 'https://api.ipregistry.co/?key=szh9vdbsf64ez2bk',
+      url: 'https://api.ipgeolocation.io/ipgeo?apiKey=ac26520f1aaa44408bbeb25f9071a91d',
+      callback: ({ data }: { data: any }): string[] => {
+        return [
+          data.country_name,
+          data.city,
+        ].filter(filterEmpty);
+      },
+    },
+    {
+      url: 'https://api.ipregistry.co/?key=tshvuvexipx89ca8',
       callback: ({ data }: { data: any }): string[] => {
         return [
           data.location?.country?.name,
@@ -85,17 +96,12 @@ const getCurrentLocation = async (): Promise<string[]> => {
   ]);
   for (let i = 0; i < countryGetters.length; i += 1) {
     const countryGetter = countryGetters[i];
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const currentLocation = await fetchLocation(
-        countryGetter.url,
-        countryGetter.callback,
-      );
-      if (currentLocation) {
-        return currentLocation;
-      }
-    } catch (error) {
-      console.error('Detecting location failed using:', countryGetter.url);
+    const currentLocation = await fetchLocation(
+      countryGetter.url,
+      countryGetter.callback,
+    );
+    if (currentLocation) {
+      return currentLocation;
     }
   }
   return [];
@@ -117,6 +123,7 @@ export const checkUserCountryRestriction = async (): Promise<any> => {
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   const restrictIgnoreFlag = getLocalStorageFlagValue();
+  let restricted = true;
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
   if (networkId === NETWORKS.MAINNET) {
@@ -125,8 +132,9 @@ export const checkUserCountryRestriction = async (): Promise<any> => {
         if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
           return { restricted: true, userGeo: userLocation[0] || '' };
         }
+        restricted = false;
       }
     }
   }
-  return { restricted: false, userGeo: userLocation[0] || '' };
+  return { restricted, userGeo: userLocation[0] || '' };
 };

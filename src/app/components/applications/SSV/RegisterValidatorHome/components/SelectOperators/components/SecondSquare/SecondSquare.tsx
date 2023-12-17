@@ -162,7 +162,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                           <SsvAndSubTitle fontSize={14}
                                           ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
-                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
+                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay} key={mevRelay}
                                                                                           hasMevRelay={operator.mev_relays?.includes(mevRelay)}/>)}
                           </Grid>
                         </Grid>

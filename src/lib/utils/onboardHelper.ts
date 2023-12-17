@@ -7,16 +7,15 @@ import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 
 export const cleanLocalStorage = () => {
-  return;
-  // const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
-  // const currentNetwork = window.localStorage.getItem('current_network');
-  // window.localStorage.clear();
-  // if (locationRestrictionDisabled) {
-  //   window.localStorage.setItem('locationRestrictionDisabled', '1');
-  // }
-  // if (currentNetwork) {
-  //   window.localStorage.setItem('current_network', currentNetwork);
-  // }
+  const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
+  const currentNetwork = window.localStorage.getItem('current_network');
+  window.localStorage.clear();
+  if (locationRestrictionDisabled) {
+    window.localStorage.setItem('locationRestrictionDisabled', '1');
+  }
+  if (currentNetwork) {
+    window.localStorage.setItem('current_network', currentNetwork);
+  }
 };
 
 const injected = injectedModule();

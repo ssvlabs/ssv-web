@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { InitOptions, OnboardAPI } from '@web3-onboard/core';
+import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
@@ -19,16 +21,12 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
-import { useOnboard } from './hooks/useOnboard';
+import { initOnboardOptions } from '~lib/utils/onboardHelper';
 
-declare global {
-  interface Window {
-    ethereum: any;
-    web3: any;
-  }
-}
+const onboardInstance = init(initOnboardOptions() as InitOptions);
 
 const App = () => {
+  const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -36,41 +34,32 @@ const App = () => {
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
   const location = useLocation();
-  const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
-  const { web3Onboard } = useOnboard();
+  // const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
 
   useEffect(() => {
+    setWeb3Onboard(onboardInstance);
     document.title = applicationStore.appTitle;
-  });
+  }, []);
 
   useEffect(() => {
     if (web3Onboard) {
-      console.warn({ web3Onboard });
       walletStore.onboardSdk = web3Onboard;
 
       if (!applicationStore.locationRestrictionEnabled) {
         console.debug('Skipping location restriction functionality in this app.');
-        // web3Onboard && walletStore.checkConnectedWallet();
       } else {
         checkUserCountryRestriction().then((res: any) => {
           if (res.restricted) {
-            walletStore.accountDataLoaded = true;
             applicationStore.userGeo = res.userGeo;
             applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
             navigate(config.routes.COUNTRY_NOT_SUPPORTED);
           } else {
-            // web3Onboard && walletStore.checkConnectedWallet();
+            navigate(applicationStore.strategyRedirect);
           }
         });
       }
     }
   }, [web3Onboard]);
-
-  useEffect(() => {
-    if (walletStore?.accountDataLoaded && !unsafeMode) {
-      navigate(applicationStore.strategyRedirect);
-    }
-  }, [walletStore?.accountDataLoaded]);
 
   return (
       <StyledEngineProvider injectFirst>
@@ -78,14 +67,14 @@ const App = () => {
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
             <GlobalStyle/>
-            {!walletStore?.accountDataLoaded && (
+            {!onboardInstance && (
                 <Grid container className={classes.LoaderWrapper}>
-                  <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
+                  <img className={classes.Loader} src={getImage('ssv-loader.svg')} alt=""/>
                 </Grid>
             )}
             <BarMessage/>
             <BrowserView>
-              {walletStore?.accountDataLoaded && <Routes/>}
+              {onboardInstance && <Web3OnboardProvider web3Onboard={onboardInstance}><Routes/></Web3OnboardProvider>}
             </BrowserView>
             <MobileView>
               <MobileNotSupported/>

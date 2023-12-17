@@ -41,7 +41,9 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             //     await walletStore.onboardSdk.disconnectWallet({ label: wallet.label });
             //     await walletStore.onboardSdk.connectWallet();
             // } else {
-        await setChain({ chainId: networkId });
+        if (walletStore.wallet) {
+            await setChain({ chainId: networkId });
+        }
             // }
         // }
         walletStore.onNetworkChangeCallback(networkId, apiVersion);

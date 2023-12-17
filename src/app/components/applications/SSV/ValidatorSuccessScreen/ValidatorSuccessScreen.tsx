@@ -74,7 +74,7 @@ const ValidatorSuccessScreen = () => {
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
               {Object.values(operatorStore.selectedOperators).map((operator: any, index: number ) => {
-                return <Grid container item className={classes.Operator}>
+                return <Grid container item className={classes.Operator} key={index}>
                   <Grid item
                         container
                         onMouseLeave={handleGridLeave}

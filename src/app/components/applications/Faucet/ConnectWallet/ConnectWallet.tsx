@@ -18,7 +18,8 @@ const ConnectWallet = () => {
 
   useEffect(() => {
       if (isMainnet && walletStore.connected) {
-          walletStore.changeNetwork(NETWORKS.HOLESKY);
+        // TODO use useSetChain hook instead
+          // walletStore.changeNetwork(NETWORKS.HOLESKY);
       }
   }, []);
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
@@ -12,6 +13,8 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const [currentNetwork] = useState(getCurrentNetwork());
     const classes = useStyles({ logo: currentNetwork.logo });
     const [showNetworks, setShowNetworks] = useState(false);
+    const [_, setChain] = useSetChain();
+    // const [{ wallet }, _connect, disconnect] = useConnectWallet();
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
 
@@ -33,9 +36,15 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     };
 
     const onOptionClick = async ({ networkId, apiVersion }: any) => {
-      // await walletStore.onboardSdk.setChain({ chainId: `${networkId}` }).then(() => {
+        // if (walletStore.wallet) {
+            // if (wallet && wallet.label === 'WalletConnect') {
+            //     await walletStore.onboardSdk.disconnectWallet({ label: wallet.label });
+            //     await walletStore.onboardSdk.connectWallet();
+            // } else {
+        await setChain({ chainId: networkId });
+            // }
+        // }
         walletStore.onNetworkChangeCallback(networkId, apiVersion);
-      // });
     };
 
     return (

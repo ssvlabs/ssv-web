@@ -277,7 +277,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get getterContract(): Contract {
-    if (!this.viewContract && this.wallet.provider) {
+    if (!this.viewContract && this.wallet && this.wallet.provider) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
       console.warn('Creating new getter contract', {
@@ -293,7 +293,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   get setterContract(): Contract {
-    if (!this.networkContract) {
+    if (!this.networkContract && this.wallet && this.wallet.provider) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
       console.warn({ abi, contractAddress });
@@ -301,6 +301,7 @@ class WalletStore extends BaseStore implements Wallet {
       const provider = new ethers.providers.Web3Provider(this.wallet.provider, 'any');
       this.networkContract = new Contract(contractAddress, abi, provider.getSigner());
     }
+    // @ts-ignore
     return this.networkContract;
   }
 

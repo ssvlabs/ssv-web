@@ -29,8 +29,7 @@ class WalletStore extends BaseStore implements Wallet {
   onboardSdk: any = null;
   accountAddress: string = '';
   wrongNetwork: boolean = false;
-  networkId: number | null = null;
-  accountDataLoaded: boolean = false;
+  networkId: number = 1;
   private viewContract: Contract | undefined;
   private networkContract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
@@ -59,13 +58,9 @@ class WalletStore extends BaseStore implements Wallet {
       setterContract: computed,
       accountAddress: observable,
       initWallet: action.bound,
-      accountDataLoaded: observable,
       initializeUserInfo: action.bound,
-      setAccountDataLoaded: action.bound,
-      checkConnectedWallet: action.bound,
       onBalanceChangeCallback: action.bound,
       onNetworkChangeCallback: action.bound,
-      onWalletConnectedCallback: action.bound,
       onAccountAddressChangeCallback: action.bound,
     });
   }
@@ -74,18 +69,13 @@ class WalletStore extends BaseStore implements Wallet {
     return new this.web3.utils.BN(s);
   }
 
-  /**
-   * Initialize SDK
-   * @url https://docs.blocknative.com/onboard#initialization
-   */
   async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
     if (wallet && connectedChain) {
-      this.wallet = wallet;
       const networkId = parseInt(String(connectedChain.id), 16);
       const balance = wallet.accounts[0]?.balance ? wallet.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
       const address = wallet.accounts[0]?.address;
-      console.warn('<<<<<<<<<<<<< Wallet address >>>>>>>>>>>>>', address);
-      await this.onWalletConnectedCallback(wallet);
+      this.wallet = wallet;
+      this.web3 = new Web3(wallet.provider);
       this.onNetworkChangeCallback(networkId);
       await this.onBalanceChangeCallback(balance);
       await this.onAccountAddressChangeCallback(address);
@@ -97,7 +87,6 @@ class WalletStore extends BaseStore implements Wallet {
       // @ts-ignore
       this.notifySdk = Notify(notifyOptions);
     } else {
-      console.warn('<<<<<<<<<<<<<<<<<<<<<<<< initWallet: no address >>>>>>>>>>>>>>>>>>>>>>>>');
       await this.onAccountAddressChangeCallback(undefined);
     }
   }
@@ -134,10 +123,6 @@ class WalletStore extends BaseStore implements Wallet {
     return parseFloat(this.web3.utils.fromWei(amount.toString(), 'ether'));
   }
 
-  async changeNetwork(networkId: string | number) {
-    await this.onboardSdk.setChain({ chainId: networkId });
-  }
-
   toWei(amount?: number | string): string {
     if (!amount) return '0';
     // eslint-disable-next-line no-param-reassign
@@ -145,30 +130,6 @@ class WalletStore extends BaseStore implements Wallet {
     // eslint-disable-next-line no-param-reassign
     if (typeof amount === 'string') amount = amount.slice(0, 16);
     return this.web3.utils.toWei(amount.toString(), 'ether');
-  }
-
-  /**
-   * Check wallet cache and connect
-   */
-  async checkConnectedWallet() {
-    await this.onAccountAddressChangeCallback(this.wallet?.address || undefined);
-    // console.warn('checkConnectedWallet 1');
-    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
-    // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
-    //   console.warn('checkConnectedWallet 2');
-    //   await this.onAccountAddressChangeCallback(undefined);
-    // }
-  }
-
-  async disconnect() {
-    console.warn('Disconnecting wallet..');
-    return;
-    // const [primaryWallet] = this?.onboardSdk?.state?.get().wallets;
-    // if (primaryWallet) {
-    //   await this?.onboardSdk?.disconnectWallet({ label: primaryWallet.label }).catch((e: any) => {
-    //     console.error('Error disconnecting wallet', e);
-    //   });
-    // }
   }
 
   /**
@@ -216,7 +177,6 @@ class WalletStore extends BaseStore implements Wallet {
    * @param address
    */
   async onAccountAddressChangeCallback(address: string | undefined) {
-    this.setAccountDataLoaded(false);
     const applicationStore: Application = this.getStore('Application');
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const ssvStore: SsvStore = this.getStore('SSV');
@@ -225,9 +185,6 @@ class WalletStore extends BaseStore implements Wallet {
       console.warn('onAccountAddressChangeCallback: Wallet disconnected');
       ssvStore.clearUserSyncInterval();
       await this.resetUser();
-      setTimeout(() => {
-        this.setAccountDataLoaded(true);
-      }, 1000);
     } else {
       console.warn('onAccountAddressChangeCallback: Wallet connected');
       this.ssvStore.clearSettings();
@@ -248,7 +205,6 @@ class WalletStore extends BaseStore implements Wallet {
       }
       if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
-      this.setAccountDataLoaded(true);
     }
   }
 
@@ -262,16 +218,6 @@ class WalletStore extends BaseStore implements Wallet {
     window.localStorage.removeItem('params');
     window.localStorage.removeItem('selectedWallet');
     applicationStore.strategyRedirect = config.routes.SSV.ROOT;
-  }
-
-  /**
-   * Callback for connected wallet
-   * @param wallet
-   */
-  async onWalletConnectedCallback(wallet: any) {
-    this.wallet = wallet;
-    this.web3 = new Web3(wallet.provider);
-    console.debug('Wallet Connected:', wallet);
   }
 
   /**
@@ -321,14 +267,6 @@ class WalletStore extends BaseStore implements Wallet {
     if (!key) return '';
     return this.web3?.eth.abi.decodeParameter('string', key);
   }
-
-  /**
-   * Set Account loaded
-   * @param status: boolean
-   */
-  setAccountDataLoaded = (status: boolean): void => {
-    this.accountDataLoaded = status;
-  };
 
   get connected() {
     return this.accountAddress;

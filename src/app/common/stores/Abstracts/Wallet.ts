@@ -14,7 +14,6 @@ export default abstract class Wallet extends BaseStore {
   accountAddress: string;
   isWrongNetwork: boolean;
   networkId: number | null;
-  accountDataLoaded: boolean;
 
   protected constructor() {
     super();
@@ -23,7 +22,6 @@ export default abstract class Wallet extends BaseStore {
     this.networkId = null;
     this.accountAddress = '';
     this.isWrongNetwork = false;
-    this.accountDataLoaded = false;
   }
 
   public abstract get getterContract(): Contract;
@@ -56,11 +54,6 @@ export default abstract class Wallet extends BaseStore {
 
   // eslint-disable-next-line no-unused-vars
   public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): void;
-
-  public abstract checkConnectedWallet(): void;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract changeNetwork(networkId: string | number): void;
 
   // eslint-disable-next-line no-unused-vars
   public abstract BN(s: any): any;

@@ -47,12 +47,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         walletStore.onNetworkChangeCallback(networkId, apiVersion);
     };
 
-    const onOptionClick = async ({ networkId, apiVersion }: any) => {
-      // await walletStore.onboardSdk.setChain({ chainId: `${networkId}` }).then(() => {
-        walletStore.onNetworkChangeCallback(networkId, apiVersion);
-      // });
-    };
-
     return (
         <Grid>
           <Grid item container className={classes.NetworkToggleWrapper} onClick={switchShowNetworks}>

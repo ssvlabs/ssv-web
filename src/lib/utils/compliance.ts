@@ -123,18 +123,19 @@ export const checkUserCountryRestriction = async (): Promise<any> => {
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   const restrictIgnoreFlag = getLocalStorageFlagValue();
-  let restricted = true;
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
+  if (!userLocation.length) {
+    return { restricted: true, userGeo:  'Unknown' };
+  }
   if (networkId === NETWORKS.MAINNET) {
     for (const location of userLocation) {
       for (const restrictedLocation of restrictedLocations) {
         if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1 && !restrictIgnoreFlag) {
           return { restricted: true, userGeo: userLocation[0] || '' };
         }
-        restricted = false;
       }
     }
   }
-  return { restricted, userGeo: userLocation[0] || '' };
+  return { restricted: true, userGeo: userLocation[0] || '' };
 };

@@ -36,16 +36,17 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     };
 
     const onOptionClick = async ({ networkId, apiVersion }: any) => {
-        // if (walletStore.wallet) {
-            // if (wallet && wallet.label === 'WalletConnect') {
-            //     await walletStore.onboardSdk.disconnectWallet({ label: wallet.label });
-            //     await walletStore.onboardSdk.connectWallet();
-            // } else {
         if (walletStore.wallet) {
-            await setChain({ chainId: networkId });
-        }
-            // }
+            if (walletStore.wallet && walletStore.wallet.label === 'WalletConnect') {
+                await walletStore.onboardSdk.disconnectWallet({ label: walletStore.wallet.label });
+                await walletStore.onboardSdk.connectWallet();
+            } else {
+        // if (walletStore.wallet) {
+                await setChain({ chainId: networkId });
         // }
+            }
+        }
+        setShowNetworks(false);
         walletStore.onNetworkChangeCallback(networkId, apiVersion);
     };
 

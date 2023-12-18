@@ -16,14 +16,18 @@ const ConnectWalletButton = () => {
     walletConnected: walletStore.connected,
     whiteAppBar: applicationStore.whiteNavBarBackground,
   });
-  const connectWallet = useConnectWallet();
+  const [_, connect] = useConnectWallet();
 
-  const onClick = () => {
-    if (walletStore.connected) {
+  const onClick = async () => {
+    if (walletStore.wallet) {
       return applicationStore.showWalletPopUp(true);
     }
     console.log('connectWallet before');
-    connectWallet[1]();
+    try {
+      await connect();
+    } catch (e) {
+      console.error(e);
+    }
     console.log('connectWallet after');
     // return walletStore.connect();
   };

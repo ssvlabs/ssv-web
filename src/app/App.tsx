@@ -21,9 +21,9 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
-import { initOnboardOptions } from '~lib/utils/onboardHelper';
+import { tmp } from '~lib/utils/onboardHelper';
 
-const onboardInstance = init(initOnboardOptions() as InitOptions);
+const onboardInstance = init(tmp);
 
 const App = () => {
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
@@ -67,14 +67,14 @@ const App = () => {
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
             <GlobalStyle/>
-            {!onboardInstance && (
+            {!web3Onboard && (
                 <Grid container className={classes.LoaderWrapper}>
                   <img className={classes.Loader} src={getImage('ssv-loader.svg')} alt=""/>
                 </Grid>
             )}
             <BarMessage/>
             <BrowserView>
-              {onboardInstance && <Web3OnboardProvider web3Onboard={onboardInstance}><Routes/></Web3OnboardProvider>}
+              {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
             </BrowserView>
             <MobileView>
               <MobileNotSupported/>

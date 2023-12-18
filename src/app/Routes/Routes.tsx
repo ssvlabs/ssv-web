@@ -16,13 +16,12 @@ const Routes = () => {
     useEffect(() => {
       if (connectedChain && wallet?.accounts[0]) {
         walletStore.initWallet(wallet, connectedChain);
-      }
-      if (!wallet?.accounts[0]) {
+      } else if (!wallet?.accounts[0]) {
         walletStore.initWallet(null, null);
       }
-    }, [wallet?.accounts[0], connectedChain?.id]);
+    }, [wallet?.accounts[0], connectedChain]);
 
     return <ApplicationRoutes />;
 };
 
-export default observer(Routes);
+export default Routes;

@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js';
-// import { Contract } from 'web3-eth-contract';
 import { Contract, ethers } from 'ethers';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import config from '~app/common/config';
@@ -31,7 +30,7 @@ class SsvStore extends BaseStore {
   userLiquidated: boolean = false;
 
   // Contracts
-   ssvContractInstance: Contract | null = null;
+  ssvContractInstance: Contract | null = null;
   private syncingUser: boolean = false;
 
   constructor() {
@@ -60,7 +59,6 @@ class SsvStore extends BaseStore {
       approveAllowance: action.bound,
       ssvContractInstance: observable,
       activateValidator: action.bound,
-      getContractAddress: action.bound,
       getAccountBurnRate: action.bound,
       clearUserSyncInterval: action.bound,
       getNewAccountBurnRate: action.bound,
@@ -81,11 +79,7 @@ class SsvStore extends BaseStore {
     if (!this.ssvContractInstance) {
       const walletStore: WalletStore = this.getStore('Wallet');
       const provider = new ethers.providers.Web3Provider(walletStore.wallet.provider, 'any');
-      this.ssvContractInstance = new ethers.Contract(
-        this.getContractAddress('ssv_token'),
-        config.CONTRACTS.SSV_TOKEN.ABI,
-        provider.getSigner(),
-      );
+      this.ssvContractInstance = new Contract(config.CONTRACTS.SSV_TOKEN.ADDRESS, config.CONTRACTS.SSV_TOKEN.ABI, provider.getSigner());
     }
     return <Contract> this.ssvContractInstance;
   }
@@ -120,34 +114,23 @@ class SsvStore extends BaseStore {
    */
   async userSyncInterval() {
     if (!this.getStore('Wallet').wallet?.provider) {
-      console.warn('getNetworkFees no wallet yet');
+      console.warn('userSyncInterval no wallet yet');
       return;
     }
     if (!this.accountAddress) {
-      console.warn('getNetworkFees no account address');
+      console.warn('userSyncInterval no account address');
       return;
     }
     if (this.syncingUser) {
-      console.warn('getNetworkFees already syncing');
+      console.warn('userSyncInterval already syncing');
       return;
     }
 
     this.syncingUser = true;
     try {
       console.warn('userSyncInterval before');
-      // await Promise.race([
-      //   Promise.all([
-      //     this.getNetworkFees(),
-      //     this.getBalanceFromSsvContract(),
-      //     this.checkAllowance(),
-      //   ]),
-      //   new Promise((_, reject) => setTimeout(reject, 5000)),
-      // ]);
-      console.log('network fees');
       await this.getNetworkFees();
-      console.log('balanceFrom');
       await this.getBalanceFromSsvContract();
-      console.log('check allownace');
       await this.checkAllowance();
       console.warn('userSyncInterval after');
     } catch (e: any) {
@@ -163,12 +146,11 @@ class SsvStore extends BaseStore {
    */
   async initUser() {
     this.clearUserSyncInterval();
-    // setTimeout(() => {
+    setTimeout(async () => {
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      this.userSyncInterval().finally(() => {
-        this.accountInterval = setInterval(this.userSyncInterval, 15000);
-      });
-    // }, 1000);
+      this.accountInterval = setInterval(this.userSyncInterval, 15000);
+      await this.userSyncInterval();
+    }, 1000);
   }
 
   clearUserSyncInterval() {
@@ -196,18 +178,6 @@ class SsvStore extends BaseStore {
       });
     });
   };
-
-  /**
-   * Gets the contract address regarding the testnet/mainnet flag in url search params.
-   * By default mainnet is used.
-   * If testnet used - show warning in the top of the page.
-   * @param contract
-   */
-  getContractAddress(contract: string): string {
-    const contractType = String(contract).toUpperCase();
-    // @ts-ignore
-    return config.CONTRACTS[contractType].ADDRESS;
-  }
 
   /**
    * amount in wei
@@ -305,7 +275,10 @@ class SsvStore extends BaseStore {
    * Get account balance on ssv contract
    */
   async getBalanceFromSsvContract(): Promise<any> {
-    const balance = await this.ssvContract.balanceOf(this.accountAddress);
+    console.warn('<<<<<<<<<<<<<<<<<<<< getBalanceFromSsvContract before >>>>>>>>>>>>>>>>>>>');
+    console.warn('<<<<<<<<<<<<<<<<<<<< this.accountAddress >>>>>>>>>>>>>>>>>>>', this.accountAddress);
+    const balance = await this.ssvContract.balanceOf('');
+    console.warn('<<<<<<<<<<<<<<<<<<<< getBalanceFromSsvContract before >>>>>>>>>>>>>>>>>>>');
     const walletStore = this.getStore('Wallet');
     this.walletSsvBalance = parseFloat(String(walletStore.fromWei(balance, 'ether')));
   }
@@ -498,11 +471,7 @@ class SsvStore extends BaseStore {
     // console.warn('[DIRECT] checkAllowance after');
 
     console.warn('checkAllowance before');
-    const allowance = await this.ssvContract
-      .allowance(
-        this.accountAddress,
-        this.getContractAddress('ssv_network_setter'),
-      );
+    const allowance = await this.ssvContract.allowance(this.accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
     this.approvedAllowance = allowance;
     this.userGaveAllowance = allowance !== '0';
   }
@@ -510,14 +479,13 @@ class SsvStore extends BaseStore {
   /**
    * Set allowance to get CDT from user account.
    */
-  async approveAllowance(estimate: boolean = false, callBack?: () => void): Promise<any> {
-    estimate;
+  async approveAllowance(callBack?: () => void): Promise<any> {
     return new Promise((async (resolve) => {
       const weiValue = String('115792089237316195423570985008687907853269984665640564039457584007913129639935'); // amount ? this.getStore('Wallet').web3.utils.toWei(ssvValue, 'ether') : ssvValue;
       const walletStore: WalletStore = this.getStore('Wallet');
 
       try {
-        const tx = await this.ssvContract.approve(this.getContractAddress('ssv_network_setter'), weiValue);
+        const tx = await this.ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, weiValue);
         if (tx.hash) {
           callBack && callBack();
           walletStore.notifySdk.hash(tx.hash);
@@ -619,7 +587,7 @@ class SsvStore extends BaseStore {
       this.accountBurnRate = this.getStore('Wallet').web3.utils.fromWei(burnRate);
     } catch (e: any) {
       // TODO: handle error
-      console.log(e.message);
+      console.error(e.message);
     }
   }
 

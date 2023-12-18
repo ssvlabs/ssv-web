@@ -71,13 +71,14 @@ class WalletStore extends BaseStore implements Wallet {
 
   async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
     if (wallet && connectedChain) {
+      console.warn('<<<<<<<<<<<<<<<<< initiating wallet >>>>>>>>>>>>>>>>>>>>>>>>>>>>');
       const networkId = parseInt(String(connectedChain.id), 16);
       const balance = wallet.accounts[0]?.balance ? wallet.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
       const address = wallet.accounts[0]?.address;
       this.wallet = wallet;
       this.web3 = new Web3(wallet.provider);
       this.onNetworkChangeCallback(networkId);
-      await this.onBalanceChangeCallback(balance);
+      // await this.onBalanceChangeCallback(balance);
       await this.onAccountAddressChangeCallback(address);
       const notifyOptions = {
         networkId,
@@ -95,24 +96,26 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize Account data from contract
    */
   async initializeUserInfo() {
-    if (this.initializingUserInfo > 0) {
-      this.initializingUserInfo++;
-      return;
-    }
-    this.initializingUserInfo++;
-    try {
-      // await this.operatorStore.validatorsPerOperatorLimit();
-      await this.ssvStore.initUser();
-      await this.operatorStore.initUser();
-    } catch (e: any) {
-      console.log(e.message);
-    } finally {
-      this.initializingUserInfo--;
-      if (this.initializingUserInfo > 0) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        await this.initializeUserInfo();
-      }
-    }
+    // if (this.initializingUserInfo > 0) {
+    //   this.initializingUserInfo++;
+    //   return;
+    // }
+    // this.initializingUserInfo++;
+    // try {
+    //   // await this.operatorStore.validatorsPerOperatorLimit();
+    //   await this.ssvStore.initUser();
+    //   await this.operatorStore.initUser();
+    // } catch (e: any) {
+    //   console.log(e.message);
+    // } finally {
+    //   this.initializingUserInfo--;
+    //   if (this.initializingUserInfo > 0) {
+    //     await new Promise((resolve) => setTimeout(resolve, 1000));
+    //     await this.initializeUserInfo();
+    //   }
+    // }
+    await this.ssvStore.initUser();
+    await this.operatorStore.initUser();
   }
 
   fromWei(amount?: number | string): number {
@@ -224,7 +227,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Fetch user balances and fees
    */
   async onBalanceChangeCallback(balance: any) {
-    if (balance) await this.initializeUserInfo();
+    // if (balance) await this.initializeUserInfo();
   }
 
   /**
@@ -280,10 +283,7 @@ class WalletStore extends BaseStore implements Wallet {
     if (!this.viewContract && this.wallet && this.wallet.provider) {
       const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
       const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-      console.warn('Creating new getter contract', {
-        abi,
-        contractAddress,
-      });
+      console.warn('Creating new getter contract', { abi, contractAddress });
       // this.viewContract = new this.web3.eth.Contract(abi, contractAddress);
       const provider = new ethers.providers.Web3Provider(this.wallet.provider, 'any');
       this.viewContract = new Contract(contractAddress, abi, provider.getSigner());

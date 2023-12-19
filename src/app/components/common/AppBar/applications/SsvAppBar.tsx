@@ -32,6 +32,15 @@ const SsvAppBar = () => {
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
       }
     }
+    else {
+      if (myAccountStore?.ownerAddressClusters?.length) {
+        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+      } else if (myAccountStore?.ownerAddressOperators?.length) {
+        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+      } else {
+        applicationStore.strategyRedirect = config.routes.SSV.ROOT;
+      }
+    }
   };
   const openDocs = () => {
     GoogleTagManager.getInstance().sendEvent({

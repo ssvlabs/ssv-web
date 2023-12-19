@@ -21,6 +21,7 @@ const WalletPopUp = () => {
         applicationStore.showWalletPopUp(false);
         const [primaryWallet] = walletStore.onboardSdk.state.get().wallets;
         await walletStore.onboardSdk.disconnectWallet({ label: primaryWallet.label });
+        walletStore.initWallet(null, null);
         await walletStore.onboardSdk.connectWallet();
     };
 

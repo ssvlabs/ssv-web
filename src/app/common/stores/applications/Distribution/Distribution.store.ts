@@ -9,6 +9,7 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
 import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { IMerkleData, IMerkleTreeData } from '~app/model/merkleTree.model';
+import { fromWei } from '~root/services/conversions.service';
 
 
 /**
@@ -69,9 +70,8 @@ class DistributionStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const contract = this.distributionContract;
-      const walletStore: WalletStore = this.getStore('Wallet');
       const result = await contract.methods.cumulativeClaimed(this.userAddress).call();
-      this.claimedRewards = Number(walletStore.fromWei(parseInt(String(result)).toString()));
+      this.claimedRewards = Number(fromWei(parseInt(String(result)).toString()));
       resolve(this.claimedRewards);
     });
   }
@@ -176,9 +176,8 @@ class DistributionStore extends BaseStore {
 
   @computed
   get userRewardAmount() {
-    const walletStore: WalletStore = this.getStore('Wallet');
     // eslint-disable-next-line radix
-    return Number(walletStore.fromWei(parseInt(String(this.rewardAmount)).toString())) - this.claimedRewards;
+    return Number(fromWei(parseInt(String(this.rewardAmount)).toString())) - this.claimedRewards;
   }
 
   @computed

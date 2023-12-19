@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react';
+import { configure } from 'mobx';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -24,6 +25,11 @@ import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib
 import { tmp } from '~lib/utils/onboardHelper';
 
 const onboardInstance = init(tmp);
+
+configure({ enforceActions: 'never' });
+
+// @ts-ignore
+window.localStorage.setItem('locationRestrictionDisabled', 1);
 
 const App = () => {
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);

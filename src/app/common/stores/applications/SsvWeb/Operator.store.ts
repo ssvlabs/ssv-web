@@ -9,13 +9,14 @@ import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 // import { GasGroup } from '~app/common/config/gasLimits';
 // import { getFixedGasLimit } from '~lib/utils/gasLimitHelper';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 // import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { getCurrentNetwork, isMainnet, NETWORKS } from '~lib/utils/envHelper';
+import { getGetterContract, getSetterContract } from '~root/services/contracts.service';
+import { fromWei, toWei } from '~root/services/conversions.service';
 
 export interface NewOperator {
   id: string,
@@ -181,9 +182,8 @@ class OperatorStore extends BaseStore {
   }
 
   get getSelectedOperatorsFee(): number {
-    const walletStore: WalletStore = this.getStore('Wallet');
     return Object.values(this.selectedOperators).reduce(
-      (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+      (previousValue: number, currentValue: IOperator) => previousValue + fromWei(currentValue.fee),
       0,
     );
   }
@@ -211,8 +211,7 @@ class OperatorStore extends BaseStore {
    * Get max validators count
    */
   async updateOperatorValidatorsLimit(): Promise<void> {
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.getterContract;
+    const contract = getGetterContract();
     if (this.operatorValidatorsLimit === 0) {
       this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
     }
@@ -236,12 +235,11 @@ class OperatorStore extends BaseStore {
    * Check if operator registrable
    */
   async initUser() {
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.getterContract;
+    const contract = getGetterContract();
     const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.getOperatorFeePeriods();
     this.getSetOperatorFeePeriod = Number(executeOperatorFeePeriod);
     this.declaredOperatorFeePeriod = Number(declareOperatorFeePeriod);
-    this.maxFeeIncrease = Number(await walletStore.getterContract.getOperatorFeeIncreaseLimit()) / 100;
+    this.maxFeeIncrease = Number(await contract.getOperatorFeeIncreaseLimit()) / 100;
   }
 
   /**
@@ -262,8 +260,7 @@ class OperatorStore extends BaseStore {
    * Check if operator registrable
    */
   async syncOperatorFeeInfo(operatorId: number) {
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.getterContract;
+    const contract = getGetterContract();
     try {
       this.operatorCurrentFee = await contract.getOperatorFee(operatorId);
       const response = await contract.getOperatorDeclaredFee(operatorId);
@@ -291,8 +288,7 @@ class OperatorStore extends BaseStore {
     if (!isMainnet) {
       return true;
     }
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.setterContract;
+    const contract = getSetterContract();
     try {
       const response = await contract.getRegisterAuth(accountAddress);
       return response.authOperators;
@@ -311,8 +307,7 @@ class OperatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contractInstance = walletStore.setterContract;
+        const contractInstance = getSetterContract();
         const tx = await contractInstance.setOperatorWhitelist(operatorId, address);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
@@ -398,10 +393,9 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorBalance(id: number): Promise<any> {
     return new Promise((resolve) => {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      const contract: Contract = walletStore.getterContract;
+      const contract = getGetterContract();
       contract.getOperatorEarnings(id).then((response: any) => {
-        resolve(walletStore.fromWei(response));
+        resolve(fromWei(response));
       }).catch(() => resolve(true));
     });
   }
@@ -421,8 +415,7 @@ class OperatorStore extends BaseStore {
     };
     return new Promise(async (resolve) => {
       try {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.setterContract;
+        const contract: Contract = getSetterContract();
         const tx = await contract.cancelDeclaredOperatorFee(operatorId);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
@@ -539,8 +532,7 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorValidatorsCount(operatorId: number): Promise<any> {
     return new Promise((resolve) => {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      const contract: Contract = walletStore.getterContract;
+      const contract = getGetterContract();
       contract.validatorsPerOperatorCount(operatorId).then((response: any) => {
         resolve(response);
       });
@@ -568,10 +560,9 @@ class OperatorStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       try {
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.getterContract;
+        const contract = getGetterContract();
         contract.getOperatorFee(publicKey).then((response: any) => {
-          const ssv = walletStore.fromWei(response);
+          const ssv = fromWei(response);
           this.operatorsFees[publicKey] = { ssv, dollar: 0 };
           resolve(ssv);
         });
@@ -595,10 +586,9 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorRevenue(operatorId: number): Promise<any> {
     try {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      const networkContract = walletStore.getterContract;
-      const response = await networkContract.totalEarningsOf(operatorId);
-      return walletStore.fromWei(response.toString());
+      const contract = getGetterContract();
+      const response = await contract.totalEarningsOf(operatorId);
+      return fromWei(response.toString());
     } catch (e: any) {
       return 0;
     }
@@ -616,10 +606,9 @@ class OperatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contractInstance = walletStore.setterContract;
+        const contractInstance = getSetterContract();
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
-          walletStore.toWei(
+          toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
           ),
         );
@@ -750,10 +739,9 @@ class OperatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contractInstance = walletStore.setterContract;
+        const contractInstance = getSetterContract();
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
-          walletStore.toWei(
+          toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
           ),
         );
@@ -875,7 +863,6 @@ class OperatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
-        const walletStore: WalletStore = this.getStore('Wallet');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         let operatorBefore = await Operator.getInstance().getOperator(operatorId);
         // const gasLimit = getFixedGasLimit(GasGroup.EXECUTE_OPERATOR_FEE);
@@ -884,8 +871,8 @@ class OperatorStore extends BaseStore {
           declared_fee: operatorBefore.declared_fee,
           previous_fee: operatorBefore.previous_fee,
         };
-
-        const tx = await walletStore.setterContract.executeOperatorFee(operatorId);
+        const contract = getSetterContract();
+        const tx = await contract.executeOperatorFee(operatorId);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
           applicationStore.showTransactionPendingPopUp(true);
@@ -1007,8 +994,7 @@ class OperatorStore extends BaseStore {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const contractInstance = walletStore.setterContract;
+    const contractInstance = getSetterContract();
     return new Promise(async (resolve) => {
       try {
         const tx = await contractInstance.removeOperator(operatorId);
@@ -1115,8 +1101,7 @@ class OperatorStore extends BaseStore {
       try {
         const payload: any[] = [];
         const ssvStore: SsvStore = this.getStore('SSV');
-        const walletStore: WalletStore = this.getStore('Wallet');
-        const contract: Contract = walletStore.setterContract;
+        const contract: Contract = getSetterContract();
         // const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
         // const gasLimit = getFixedGasLimit(GasGroup.REGISTER_OPERATOR);
@@ -1125,7 +1110,7 @@ class OperatorStore extends BaseStore {
         // Send add operator transaction
         payload.push(
           transaction.pubKey,
-          ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(feePerBlock)),
+          ssvStore.prepareSsvAmountToTransfer(toWei(feePerBlock)),
         );
 
         console.debug('Register Operator Transaction Data:', payload);

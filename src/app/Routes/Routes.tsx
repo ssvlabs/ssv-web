@@ -4,6 +4,7 @@ import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { initGetterContract, initSetterContract, initSsvContract } from '~root/services/contracts.service';
 
 const Routes = () => {
     const stores = useStores();
@@ -14,12 +15,20 @@ const Routes = () => {
     const ApplicationRoutes = applicationStore.applicationRoutes();
 
     useEffect(() => {
-      if (connectedChain && wallet?.accounts[0]) {
+      if (connectedChain && wallet?.accounts[0] && !walletStore.wallet) {
         walletStore.initWallet(wallet, connectedChain);
-      } else if (!wallet?.accounts[0]) {
-        walletStore.initWallet(null, null);
       }
     }, [wallet?.accounts[0], connectedChain]);
+
+  useEffect(() => {
+    if (wallet?.provider) {
+      console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<< contracts initiation >>>>>>>>>>>>>>>>>>>>>>>>>>');
+      initGetterContract({ provider: wallet.provider });
+      initSetterContract({ provider: wallet.provider });
+      initSsvContract({ provider: wallet.provider });
+      walletStore.initializeUserInfo();
+    }
+  }, [wallet?.provider]);
 
     return <ApplicationRoutes />;
 };

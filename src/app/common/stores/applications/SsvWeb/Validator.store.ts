@@ -23,6 +23,8 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
+import { getSetterContract } from '~root/services/contracts.service';
+import { toWei } from '~root/services/conversions.service';
 // import { getRegisterValidatorGasLimit } from '~lib/utils/gasLimitHelper';
 
 type KeyShareError = {
@@ -132,11 +134,10 @@ class ValidatorStore extends BaseStore {
    * Add new validator
    */
   async removeValidator(validator: any): Promise<boolean> {
-    const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const contract: Contract = walletStore.setterContract;
+    const contract = getSetterContract();
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // @ts-ignore
@@ -240,7 +241,7 @@ class ValidatorStore extends BaseStore {
       const { KEYSTORE_PUBLIC_KEY, OPERATOR_IDS } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const contract: Contract = walletStore.setterContract;
+      const contract = getSetterContract();
       const payload: Map<string, any> | false = await this.createKeystorePayload(true);
       if (!payload) {
         applicationStore.setIsLoading(false);
@@ -313,7 +314,7 @@ class ValidatorStore extends BaseStore {
         const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const walletStore: WalletStore = this.getStore('Wallet');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-        const contract: Contract = walletStore.setterContract;
+        const contract = getSetterContract();
 
         if (!payload) {
           resolve(false);
@@ -493,17 +494,16 @@ class ValidatorStore extends BaseStore {
     const applicationStore: ApplicationStore = this.getStore('Application');
     return new Promise(async (resolve) => {
       try {
-        const walletStore: WalletStore = this.getStore('Wallet');
         const clusterStore: ClusterStore = this.getStore('Cluster');
         const processStore: ProcessStore = this.getStore('Process');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-        const contract: Contract = walletStore.setterContract;
+        const contract = getSetterContract();
         const process: SingleCluster = <SingleCluster>processStore.process;
         const cluster = process.item;
         // @ts-ignore
         const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
         const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-        const tx = await contract.reactivate(operatorsIds, walletStore.toWei(amount), clusterData);
+        const tx = await contract.reactivate(operatorsIds, toWei(amount), clusterData);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
           applicationStore.showTransactionPendingPopUp(true);
@@ -653,7 +653,7 @@ class ValidatorStore extends BaseStore {
         const { accountAddress } = walletStore;
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
-        let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
+        let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
         if ('fundingPeriod' in process) {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
@@ -661,7 +661,7 @@ class ValidatorStore extends BaseStore {
           if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
             liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
           }
-          totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
+          totalCost = ssvStore.prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
         let keysharePayload;
         try {
@@ -704,7 +704,7 @@ class ValidatorStore extends BaseStore {
       const processStore: ProcessStore = this.getStore('Process');
       const operatorStore: OperatorStore = this.getStore('Operator');
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-      let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(process.registerValidator?.depositAmount)) : 0;
+      let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
       if ('fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
@@ -712,7 +712,7 @@ class ValidatorStore extends BaseStore {
         if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
           liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
         }
-        totalCost = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
+        totalCost = ssvStore.prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
       }
       try {
         const payload = this.createPayload(this.keySharePublicKey,
@@ -861,7 +861,7 @@ class ValidatorStore extends BaseStore {
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      const contract: Contract = walletStore.setterContract;
+      const contract = getSetterContract();
       const ownerAddress: string = walletStore.accountAddress;
 
       if (!payload) {
@@ -940,13 +940,11 @@ class ValidatorStore extends BaseStore {
   }
 
   async createKeySharePayloadUnsafe(update: boolean = false): Promise<Map<string, any> | false> {
-    update;
     const ssvStore: SsvStore = this.getStore('SSV');
-    const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const totalCost = 8;
     try {
-      const amountInWei = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(totalCost));
+      const amountInWei = ssvStore.prepareSsvAmountToTransfer(toWei(totalCost));
       const payload = this.createPayload(this.keySharePublicKey,
         this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
         this.keySharePayload?.sharesData, `${amountInWei}`,

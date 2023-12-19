@@ -24,9 +24,6 @@ export default abstract class Wallet extends BaseStore {
     this.isWrongNetwork = false;
   }
 
-  public abstract get getterContract(): Contract;
-  public abstract get setterContract(): Contract;
-
   // eslint-disable-next-line no-unused-vars
   public abstract onBalanceChangeCallback(balance: string): void;
 
@@ -45,12 +42,6 @@ export default abstract class Wallet extends BaseStore {
 
   // eslint-disable-next-line no-unused-vars
   public abstract encodeKey(publicKey: string): string;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract fromWei(amount?: string): number;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract toWei(amount?: number | string): string;
 
   // eslint-disable-next-line no-unused-vars
   public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): void;

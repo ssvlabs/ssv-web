@@ -8,17 +8,16 @@ import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Balance/Balance.styles';
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
+import { fromWei } from '~root/services/conversions.service';
 
 const Balance = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles();
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
@@ -74,7 +73,7 @@ const Balance = () => {
           {cluster.balance || cluster.isLiquidated ?
               (<Grid item xs={12}
                  className={cluster.runWay < 30 ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
-            {formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV
+            {formatNumberToUi(fromWei(cluster.balance))} SSV
           </Grid>) : (<NaDisplay size={28} weight={800} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
             {/* ~$449.52 */}

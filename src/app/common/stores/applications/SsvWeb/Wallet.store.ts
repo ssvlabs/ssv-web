@@ -1,12 +1,9 @@
-import Web3 from 'web3';
 import Notify from 'bnc-notify';
 import { Contract, ethers } from 'ethers';
-// import { Contract } from 'web3-eth-contract';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
-import { roundNumber } from '~lib/utils/numbers';
 import BaseStore from '~app/common/stores/BaseStore';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -21,6 +18,7 @@ import {
   inNetworks,
   notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
+import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -43,19 +41,15 @@ class WalletStore extends BaseStore implements Wallet {
       web3: observable,
       wallet: observable,
       connected: computed,
-      toWei: action.bound,
       networkId: observable,
       notifySdk: observable,
       connect: action.bound,
-      fromWei: action.bound,
       onboardSdk: observable,
       decodeKey: action.bound,
       resetUser: action.bound,
       encodeKey: action.bound,
       isWrongNetwork: computed,
       wrongNetwork: observable,
-      getterContract: computed,
-      setterContract: computed,
       accountAddress: observable,
       initWallet: action.bound,
       initializeUserInfo: action.bound,
@@ -71,13 +65,14 @@ class WalletStore extends BaseStore implements Wallet {
 
   async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
     if (wallet && connectedChain) {
+      console.warn('<<<<<<<<<<<<<<<<< initiating wallet >>>>>>>>>>>>>>>>>>>>>>>>>>>>');
       const networkId = parseInt(String(connectedChain.id), 16);
       const balance = wallet.accounts[0]?.balance ? wallet.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
       const address = wallet.accounts[0]?.address;
       this.wallet = wallet;
-      this.web3 = new Web3(wallet.provider);
+      // this.web3 = new Web3(wallet.provider);
       this.onNetworkChangeCallback(networkId);
-      await this.onBalanceChangeCallback(balance);
+      // await this.onBalanceChangeCallback(balance);
       await this.onAccountAddressChangeCallback(address);
       const notifyOptions = {
         networkId,
@@ -95,41 +90,26 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize Account data from contract
    */
   async initializeUserInfo() {
-    if (this.initializingUserInfo > 0) {
-      this.initializingUserInfo++;
-      return;
-    }
-    this.initializingUserInfo++;
-    try {
-      // await this.operatorStore.validatorsPerOperatorLimit();
-      await this.ssvStore.initUser();
-      await this.operatorStore.initUser();
-    } catch (e: any) {
-      console.log(e.message);
-    } finally {
-      this.initializingUserInfo--;
-      if (this.initializingUserInfo > 0) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        await this.initializeUserInfo();
-      }
-    }
-  }
-
-  fromWei(amount?: number | string): number {
-    if (!amount) return 0;
-    if (typeof amount === 'number' && amount === 0) return 0;
-    if (typeof amount === 'string' && Number(amount) === 0) return 0;
-
-    return parseFloat(this.web3.utils.fromWei(amount.toString(), 'ether'));
-  }
-
-  toWei(amount?: number | string): string {
-    if (!amount) return '0';
-    // eslint-disable-next-line no-param-reassign
-    if (typeof amount === 'number') amount = roundNumber(amount, 16);
-    // eslint-disable-next-line no-param-reassign
-    if (typeof amount === 'string') amount = amount.slice(0, 16);
-    return this.web3.utils.toWei(amount.toString(), 'ether');
+    // if (this.initializingUserInfo > 0) {
+    //   this.initializingUserInfo++;
+    //   return;
+    // }
+    // this.initializingUserInfo++;
+    // try {
+    //   // await this.operatorStore.validatorsPerOperatorLimit();
+    //   await this.ssvStore.initUser();
+    //   await this.operatorStore.initUser();
+    // } catch (e: any) {
+    //   console.log(e.message);
+    // } finally {
+    //   this.initializingUserInfo--;
+    //   if (this.initializingUserInfo > 0) {
+    //     await new Promise((resolve) => setTimeout(resolve, 1000));
+    //     await this.initializeUserInfo();
+    //   }
+    // }
+    await this.ssvStore.initUser();
+    await this.operatorStore.initUser();
   }
 
   /**
@@ -192,7 +172,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.accountAddress = address;
       ApiParams.cleanStorage();
       await Promise.all([
-        this.initializeUserInfo(),
         myAccountStore.getOwnerAddressOperators({}),
         myAccountStore.getOwnerAddressClusters({}),
       ]);
@@ -212,7 +191,9 @@ class WalletStore extends BaseStore implements Wallet {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
+    this.wallet = null;
     this.ssvStore.clearSettings();
+    this.ssvStore.clearUserSyncInterval();
     this.operatorStore.clearSettings();
     myAccountStore.clearIntervals();
     window.localStorage.removeItem('params');
@@ -224,7 +205,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Fetch user balances and fees
    */
   async onBalanceChangeCallback(balance: any) {
-    if (balance) await this.initializeUserInfo();
+    // if (balance) await this.initializeUserInfo();
   }
 
   /**
@@ -256,7 +237,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   encodeKey(key?: string) {
     if (!key) return '';
-    return this.web3?.eth.abi.encodeParameter('string', key);
+    return encodeParameter('string', key);
   }
 
   /**
@@ -265,7 +246,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   decodeKey(key?: string) {
     if (!key) return '';
-    return this.web3?.eth.abi.decodeParameter('string', key);
+    return decodeParameter('string', key);
   }
 
   get connected() {
@@ -275,36 +256,6 @@ class WalletStore extends BaseStore implements Wallet {
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
   }
-
-  get getterContract(): Contract {
-    if (!this.viewContract && this.wallet && this.wallet.provider) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-      console.warn('Creating new getter contract', {
-        abi,
-        contractAddress,
-      });
-      // this.viewContract = new this.web3.eth.Contract(abi, contractAddress);
-      const provider = new ethers.providers.Web3Provider(this.wallet.provider, 'any');
-      this.viewContract = new Contract(contractAddress, abi, provider.getSigner());
-    }
-    // @ts-ignore
-    return this.viewContract;
-  }
-
-  get setterContract(): Contract {
-    if (!this.networkContract && this.wallet && this.wallet.provider) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
-      console.warn({ abi, contractAddress });
-      // this.networkContract = new this.web3.eth.Contract(abi, contractAddress);
-      const provider = new ethers.providers.Web3Provider(this.wallet.provider, 'any');
-      this.networkContract = new Contract(contractAddress, abi, provider.getSigner());
-    }
-    // @ts-ignore
-    return this.networkContract;
-  }
-
 }
 
 export default WalletStore;

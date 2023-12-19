@@ -6141,7 +6141,7 @@
     "@web3-onboard/core" "^2.21.2"
     use-sync-external-store "1.0.0"
 
-"@web3-onboard/walletconnect@^2.5.0":
+"@web3-onboard/walletconnect@^2.5.1":
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/@web3-onboard/walletconnect/-/walletconnect-2.5.1.tgz#9d7d22a36a445838a0f29b2106db98f6fd1bc668"
   integrity sha512-BwzZQmv2lbZmZ3+3kbRTga9QngUhCnJWzfeKw5MuYf1nnuFHigboghyF0x2gmCUMcpeEXBhwYu+nVs1AUhnDVA==

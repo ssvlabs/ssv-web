@@ -22,12 +22,12 @@ const Welcome = () => {
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
   const connectWallet = useConnectWallet();
 
-  const connectToWallet = () => {
+  const connectToWallet = async () => {
     if (walletStore.connected) {
       return applicationStore.showWalletPopUp(true);
     }
     console.log('connectWallet before');
-    connectWallet[1]();
+    await connectWallet[1]();
     console.log('connectWallet after');
     // return walletStore.connect();
   };

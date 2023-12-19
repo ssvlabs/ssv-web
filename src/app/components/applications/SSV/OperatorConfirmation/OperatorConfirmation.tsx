@@ -53,7 +53,7 @@ const OperatorConfirmation = () => {
               <Grid container style={{ gap: 34 }}>
                 <Grid container item>
                   <Grid item className={classes.SubHeader}>Operator Key</Grid>
-                  <AddressKeyInput address={walletStore.decodeKey(operatorStore.newOperatorKeys.pubKey)}/>
+                  <AddressKeyInput address={walletStore.decodeKey(operatorStore.newOperatorKeys.publicKey)}/>
                 </Grid>
                 <Grid container item>
                   <Grid item xs={6}>

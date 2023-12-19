@@ -24,6 +24,7 @@ import RemainingDays from '~app/components/applications/SSV/MyAccount/common/Rem
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt/OperatorsReceipt.style';
+import { fromWei } from '~root/services/conversions.service';
 
 type Props = {
   operators: any,
@@ -53,7 +54,7 @@ const OperatorsReceipt = (props: Props) => {
   }
 
   const oldOperatorsFee = previousOperators?.reduce(
-    (previousValue: number, currentValue: IOperator) => previousValue + walletStore.fromWei(currentValue.fee),
+    (previousValue: number, currentValue: IOperator) => previousValue + fromWei(currentValue.fee),
     0,
   );
 
@@ -61,7 +62,7 @@ const OperatorsReceipt = (props: Props) => {
     (previousValue: number, currentValue: IOperator) => {
       if (currentValue.ownerAddress !== walletStore.accountAddress) {
         // eslint-disable-next-line no-param-reassign
-        previousValue += walletStore.fromWei(currentValue.fee);
+        previousValue += fromWei(currentValue.fee);
       }
       return previousValue;
     }, 0,
@@ -126,7 +127,7 @@ const OperatorsReceipt = (props: Props) => {
               </Grid>
               <Grid item xs>
                 <SsvAndSubTitle gray80={currentOperators}
-                  ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}
+                  ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}
                   subText={'/year'} />
               </Grid>
             </Grid>

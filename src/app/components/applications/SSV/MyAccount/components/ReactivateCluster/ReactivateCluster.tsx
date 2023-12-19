@@ -16,11 +16,11 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import { fromWei } from '~root/services/conversions.service';
 
 const ReactivateCluster = () => {
   const options = [
@@ -32,7 +32,6 @@ const ReactivateCluster = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
@@ -47,7 +46,7 @@ const ReactivateCluster = () => {
 
   const isCustomPayment = checkedOption.id === 3;
   const operatorsFee = Object.values(cluster.operators).reduce(
-        (previousValue: number, currentValue: any) => previousValue + walletStore.fromWei(currentValue.fee),
+        (previousValue: number, currentValue: any) => previousValue + fromWei(currentValue.fee),
         0,
     ) * validatorCount;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;

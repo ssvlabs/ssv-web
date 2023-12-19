@@ -5,12 +5,12 @@ import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProgressBar from '~app/components/applications/SSV/MyAccount/common/ProgressBar/ProgressBar';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/RemainingDays/RemainingDays.styles';
 import LiquidationStateError
   from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
+import { toWei } from '~root/services/conversions.service';
 
 type Props = {
   cluster?: any,
@@ -23,7 +23,6 @@ type Props = {
 
 const RemainingDays = (props: Props) => {
   const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
   const { cluster, gray80, operatorChange, disableWarning = false } = props;
 
@@ -32,7 +31,7 @@ const RemainingDays = (props: Props) => {
   let warningLiquidationState: boolean = cluster.runWay < 30;
 
   if (typeof cluster.newBalance !== 'undefined' || typeof cluster.newBurnRate !== 'undefined') {
-    newRemainingDays = clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(cluster.newBalance) });
+    newRemainingDays = clusterStore.getClusterRunWay({ ...cluster, balance: toWei(cluster.newBalance) });
     withdrawState = cluster.runWay > newRemainingDays;
     warningLiquidationState = newRemainingDays < 30;
   }

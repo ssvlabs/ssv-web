@@ -7,7 +7,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -19,14 +18,13 @@ import ToggleDashboards
   from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-
+import { fromWei } from '~root/services/conversions.service';
 
 const OperatorDashboard = () => {
   const stores = useStores();
   const classes = useStyles({});
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -73,7 +71,7 @@ const OperatorDashboard = () => {
         // @ts-ignore
         <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
         <SsvAndSubTitle
-            ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} leftTextAlign />,
+            ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))} leftTextAlign />,
         operator.validators_count,
     );
   });
@@ -97,7 +95,7 @@ const OperatorDashboard = () => {
     await myAccountStore.getOwnerAddressOperators({ forcePage: newPage });
     setLoadingOperators(false);
   }, 200);
-  
+
   const sortByStatus = (arr: any) => {
     return arr.sort((a: any, b: any) => {
       if (a.status === 'Inactive') {

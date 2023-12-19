@@ -1,7 +1,5 @@
 import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
-// import { Contract } from 'web3-eth-contract';
-import { Contract } from 'ethers';
 import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
@@ -10,6 +8,8 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { getGetterContract } from '~root/services/contracts.service';
+import { encodePacked, fromWei } from '~root/services/conversions.service';
 
 const annotations = {
   getClusterData: action.bound,
@@ -34,13 +34,13 @@ class ClusterStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const ownerAddress: string = walletStore.accountAddress;
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    return keccak256(walletStore.web3.utils.encodePacked(ownerAddress, ...operatorsIds));
+    return keccak256(encodePacked(ownerAddress, ...operatorsIds));
   }
 
   async getClusterBalance(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    const contract: Contract = walletStore.getterContract;
+    const contract = getGetterContract();
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
@@ -53,9 +53,8 @@ class ClusterStore extends BaseStore {
   }
 
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
-    const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
-    const operatorsFeePerYear = cluster.operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))), [0]);
+    const operatorsFeePerYear = cluster.operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))), [0]);
     const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
     const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
     const clusterBurnRate =  parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
@@ -65,7 +64,7 @@ class ClusterStore extends BaseStore {
   async isClusterLiquidated(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    const contract: Contract = walletStore.getterContract;
+    const contract = getGetterContract();
     const clusterData: any = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
@@ -79,7 +78,7 @@ class ClusterStore extends BaseStore {
 
   async getClusterBurnRate(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const contract: Contract = walletStore.getterContract;
+    const contract = getGetterContract();
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     try {
@@ -93,14 +92,13 @@ class ClusterStore extends BaseStore {
 
   getClusterRunWay(cluster: any) {
     const ssvStore: SsvStore = this.getStore('SSV');
-    const walletStore: WalletStore = this.getStore('Wallet');
     const liquidationCollateral = ssvStore.liquidationCollateralPeriod / config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
-    const burnRatePerDay = walletStore.fromWei(cluster.burnRate) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
+    const burnRatePerDay = fromWei(cluster.burnRate) * config.GLOBAL_VARIABLE.BLOCKS_PER_DAY;
     let liquidationCollateralCost = burnRatePerDay * liquidationCollateral;
     if (liquidationCollateralCost < ssvStore.minimumLiquidationCollateral) {
       liquidationCollateralCost = ssvStore.minimumLiquidationCollateral;
     }
-    return Math.max((walletStore.fromWei(cluster.balance) - liquidationCollateralCost) / burnRatePerDay, 0);
+    return Math.max((fromWei(cluster.balance) - liquidationCollateralCost) / burnRatePerDay, 0);
   }
 
   async getClusterData(clusterHash: string, fullData = false) {

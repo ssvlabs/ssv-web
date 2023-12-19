@@ -37,6 +37,7 @@ import ClusterSize
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
 import MevCounterBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
+import { fromWei } from '~root/services/conversions.service';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,
@@ -84,7 +85,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     };
 
     const response = await Operator.getInstance().getOperators(payload);
-    await operatorStore.updateOperatorValidatorsLimit();
     if (response?.pagination?.page > 1) {
       const operatorListInString = operatorsData.map(operator => operator.id);
       const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));
@@ -114,13 +114,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     }
   };
 
-  const redirectTo = (pubKey: string) => {
+  const redirectTo = (publicKey: string) => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
       action: 'click',
       label: 'operator',
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${pubKey}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${publicKey}`, '_blank');
   };
 
   const sortHandler = (sortType: string) => {
@@ -219,7 +219,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
           <StyledCell>
             <Grid container>
               <Grid item
-                    className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))} SSV</Grid>
+                    className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))} SSV</Grid>
             </Grid>
           </StyledCell>
           <StyledCell>
@@ -280,7 +280,9 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   }, [searchInput, sortBy, sortOrder, filterBy]);
 
   useEffect(() => {
-    getOperators(operatorsPagination.page);
+    getOperators(operatorsPagination.page).then(async () => {
+      await operatorStore.updateOperatorValidatorsLimit();
+    });
   }, [operatorsPagination.page]);
 
   return (

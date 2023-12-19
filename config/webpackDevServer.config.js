@@ -21,6 +21,7 @@ module.exports = function (proxy, allowedHosts) {
     allowedHosts: [
       ...allowedHosts,
       'b0d3-31-154-29-254.ngrok-free.app',
+      '3d75-31-154-29-254.ngrok-free.app'
     ],
     compress: true,
     https: getHttpsConfig(),

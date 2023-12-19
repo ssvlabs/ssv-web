@@ -258,6 +258,11 @@ class OperatorStore extends BaseStore {
     this.clearOperatorData();
   }
 
+  getOperatorId() {
+    const operatorStore: OperatorStore = this.getStore('Operator');
+    return operatorStore.newOperatorKeys.id;
+  }
+
   /**
    * Check if operator registrable
    */
@@ -1141,6 +1146,7 @@ class OperatorStore extends BaseStore {
           const receipt = await tx.wait();
           console.warn('[addNewOperator] debug 3', receipt);
           if (receipt.blockHash) {
+            this.newOperatorKeys.id = String(parseInt(receipt.events[0].args.operatorId));
             applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
           }

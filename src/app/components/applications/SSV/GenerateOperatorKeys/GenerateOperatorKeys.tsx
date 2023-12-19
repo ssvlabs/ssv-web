@@ -67,7 +67,7 @@ const GenerateOperatorKeys = () => {
       fee: 0,
       id: '0',
       address: walletStore.accountAddress,
-      pubKey: walletStore.encodeKey(inputsData.publicKey),
+      publicKey: walletStore.encodeKey(inputsData.publicKey),
     };
     operatorStore.setOperatorKeys(operatorKeys);
     const isExists = await validateOperatorPublicKey(inputsData.publicKey);

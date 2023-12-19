@@ -38,10 +38,10 @@ export default abstract class Wallet extends BaseStore {
   public abstract initializeUserInfo(): void;
 
   // eslint-disable-next-line no-unused-vars
-  public abstract decodeKey(publicKey: string): string;
+  public abstract decodeKey(publicKey: string): any;
 
   // eslint-disable-next-line no-unused-vars
-  public abstract encodeKey(publicKey: string): string;
+  public abstract encodeKey(publicKey: string): any;
 
   // eslint-disable-next-line no-unused-vars
   public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): void;

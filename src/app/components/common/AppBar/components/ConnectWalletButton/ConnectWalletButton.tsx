@@ -1,6 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
+import { useNavigate } from 'react-router-dom';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -17,6 +18,7 @@ const ConnectWalletButton = () => {
     whiteAppBar: applicationStore.whiteNavBarBackground,
   });
   const [_, connect] = useConnectWallet();
+  const navigate = useNavigate();
 
   const onClick = async () => {
     if (walletStore.wallet) {
@@ -24,7 +26,9 @@ const ConnectWalletButton = () => {
     } else {
       console.log('connectWallet before');
       try {
-        const connectedWallets = await connect();
+        await connect().then(() => {
+          navigate('/join');
+        });
       } catch (e) {
         console.error(e);
       }

@@ -18,6 +18,7 @@ import {
   inNetworks,
   notIncludeMainnet, testNets, TOKEN_NAMES,
 } from '~lib/utils/envHelper';
+import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -236,7 +237,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   encodeKey(key?: string) {
     if (!key) return '';
-    return this.web3?.eth.abi.encodeParameter('string', key);
+    return encodeParameter('string', key);
   }
 
   /**
@@ -245,7 +246,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   decodeKey(key?: string) {
     if (!key) return '';
-    return this.web3?.eth.abi.decodeParameter('string', key);
+    return decodeParameter('string', key);
   }
 
   get connected() {

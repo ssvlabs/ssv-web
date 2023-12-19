@@ -109,6 +109,7 @@ const Routes: any = () => {
         <SsvAppBar/>
         <Suspense fallback={<div className="container"></div>}>
           <Wrapper>
+            <Route path={'/'} element={<Welcome />} />
             <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
             <Route path={ssvRoutes.ROOT} element={<Welcome />} />
             <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>

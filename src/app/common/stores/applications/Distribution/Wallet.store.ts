@@ -17,6 +17,7 @@ import {
   NETWORKS, notIncludeMainnet, testNets,
 } from '~lib/utils/envHelper';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
+import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -212,7 +213,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   encodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3.eth.abi.encodeParameter('string', operatorKey);
+    return encodeParameter('string', operatorKey);
   }
 
   /**
@@ -221,7 +222,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   decodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3?.eth.abi.decodeParameter('string', operatorKey);
+    return decodeParameter('string', operatorKey);
   }
 
   /**

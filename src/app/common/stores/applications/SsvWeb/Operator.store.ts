@@ -21,7 +21,7 @@ import { fromWei, toWei } from '~root/services/conversions.service';
 export interface NewOperator {
   id: string,
   fee: number,
-  pubKey: string,
+  publicKey: string,
   address: string,
 }
 
@@ -81,7 +81,7 @@ class OperatorStore extends BaseStore {
   declaredOperatorFeePeriod: null | number = null;
   operatorApprovalBeginTime: null | number = null;
 
-  newOperatorKeys: NewOperator = { pubKey: '', address: '', fee: 0, id: '0' };
+  newOperatorKeys: NewOperator = { publicKey: '', address: '', fee: 0, id: '0' };
   newOperatorRegisterSuccessfully: string = '';
 
   estimationGas: number = 0;
@@ -546,7 +546,7 @@ class OperatorStore extends BaseStore {
     this.newOperatorKeys = {
       fee: 0,
       id: '0',
-      pubKey: '',
+      publicKey: '',
       address: '',
     };
     this.newOperatorRegisterSuccessfully = '';
@@ -1109,7 +1109,7 @@ class OperatorStore extends BaseStore {
 
         // Send add operator transaction
         payload.push(
-          transaction.pubKey,
+          transaction.publicKey,
           ssvStore.prepareSsvAmountToTransfer(toWei(feePerBlock)),
         );
 
@@ -1162,7 +1162,7 @@ class OperatorStore extends BaseStore {
           //       label: 'success',
           //     });
           //     this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
-          //     this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.pubKey));
+          //     this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.publicKey));
           //     resolve(true);
           //   }
           //   console.warn('[addNewOperator] debug 5');

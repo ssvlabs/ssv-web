@@ -265,7 +265,8 @@ class SsvStore extends BaseStore {
     console.warn('<<<<<<<<<<<<<<<<<<<< getBalanceFromSsvContract before >>>>>>>>>>>>>>>>>>>');
     console.warn('<<<<<<<<<<<<<<<<<<<< this.accountAddress >>>>>>>>>>>>>>>>>>>', this.accountAddress);
     const ssvContract = getSsvContract();
-    const balance = await ssvContract.balanceOf('');
+    const balance = await ssvContract.balanceOf(this.accountAddress);
+    console.warn('<<<<<<<<<<<<<<<<<<<< getBalanceFromSsvContract >>>>>>>>>>>>>>>>>>>', balance);
     console.warn('<<<<<<<<<<<<<<<<<<<< getBalanceFromSsvContract before >>>>>>>>>>>>>>>>>>>');
     this.walletSsvBalance = parseFloat(String(fromWei(balance)));
   }

@@ -1,4 +1,4 @@
-import { utils } from 'web3';
+import Web3, { utils } from 'web3';
 import { roundNumber } from '~lib/utils/numbers';
 
 const fromWei = (amount?: number | string): number => {
@@ -20,4 +20,14 @@ const toWei = (amount?: number | string): string => {
 
 const encodePacked = utils.encodePacked;
 
-export { fromWei, toWei, encodePacked };
+const web3 = new Web3();
+
+const encodeParameter = (type: string, value: any) => {
+  return web3.eth.abi.encodeParameter(type, value);
+};
+
+const decodeParameter = (type: string, value: any) => {
+  return web3.eth.abi.decodeParameter(type, value);
+};
+
+export { fromWei, toWei, encodePacked, encodeParameter, decodeParameter };

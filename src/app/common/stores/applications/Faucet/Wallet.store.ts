@@ -14,6 +14,7 @@ import { changeCurrentNetwork, getCurrentNetwork, isMainnet, NETWORKS } from '~l
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 // import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -214,20 +215,20 @@ class WalletStore extends BaseStore implements Wallet {
 
   /**
    * User address handler
-   * @param operatorKey: string
+   * @param operatorKey
    */
   encodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3.eth.abi.encodeParameter('string', operatorKey);
+    return encodeParameter('string', operatorKey);
   }
 
   /**
    * User address handler
-   * @param operatorKey: string
+   * @param operatorKey
    */
   decodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3?.eth.abi.decodeParameter('string', operatorKey);
+    return decodeParameter('string', operatorKey);
   }
 
   /**

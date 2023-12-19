@@ -9,6 +9,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/common/Button/Button.styles';
+import { toWei } from '~root/services/conversions.service';
 
 type ButtonParams = {
     text: string,
@@ -40,7 +41,7 @@ const Button = (props: ButtonParams) => {
             setApprovalProcess(true);
             return;
         }
-        if (totalAmount && Number(walletStore.toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
+        if (totalAmount && Number(toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
             setApprovalProcess(true);
             return;
         }
@@ -62,9 +63,9 @@ const Button = (props: ButtonParams) => {
     const allowNetworkContract = async () => {
         setAllowanceButtonDisable(true);
         setApproveButtonText('Waiting...');
-        const userGavePermission = await ssvStore.approveAllowance(false, handlePendingTransaction);
+        const userGavePermission = await ssvStore.approveAllowance(handlePendingTransaction);
         await ssvStore.checkAllowance();
-        if (Number(walletStore.toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
+        if (Number(toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
             setApproveButtonText('Approve SSV');
             setAllowanceButtonDisable(false);
             return;

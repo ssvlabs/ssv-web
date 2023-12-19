@@ -17,6 +17,7 @@ import {
   NETWORKS, notIncludeMainnet, testNets,
 } from '~lib/utils/envHelper';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
+import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -52,8 +53,6 @@ class WalletStore extends BaseStore implements Wallet {
       encodeKey: action.bound,
       wrongNetwork: observable,
       isWrongNetwork: computed,
-      getterContract: computed,
-      setterContract: computed,
       accountAddress: observable,
       walletHandler: action.bound,
       addressHandler: action.bound,
@@ -214,7 +213,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   encodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3.eth.abi.encodeParameter('string', operatorKey);
+    return encodeParameter('string', operatorKey);
   }
 
   /**
@@ -223,7 +222,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   decodeKey(operatorKey?: string) {
     if (!operatorKey) return '';
-    return this.web3?.eth.abi.decodeParameter('string', operatorKey);
+    return decodeParameter('string', operatorKey);
   }
 
   /**
@@ -240,28 +239,6 @@ class WalletStore extends BaseStore implements Wallet {
 
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
-  }
-
-  get getterContract(): Contract {
-    if (!this.contract && this.wallet.provider) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-      const provider = new ethers.providers.Web3Provider(this.wallet.provider, 'any');
-      this.contract = new Contract(contractAddress, abi, provider.getSigner());
-      // this.contract = new this.web3.eth.Contract(abi, contractAddress);
-    }
-    // @ts-ignore
-    return this.contract;
-  }
-
-  get setterContract(): Contract {
-    if (!this.contract) {
-      const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
-      const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-      this.contract = new this.web3.eth.Contract(abi, contractAddress);
-    }
-    // @ts-ignore
-    return this.contract;
   }
 
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars

@@ -12,17 +12,16 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
+import { fromWei } from '~root/services/conversions.service';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const [futureFee, setFutureFee] = useState(0);
@@ -55,9 +54,9 @@ const CancelUpdateFee = () => {
   };
 
   // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorCurrentFee)));
+  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(fromWei(operatorStore.operatorCurrentFee)));
   // @ts-ignore
-  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(futureFee)));
+  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(fromWei(futureFee)));
 
   if (successPage) {
     return (

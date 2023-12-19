@@ -21,12 +21,12 @@ const Welcome = () => {
   const connectWallet = useConnectWallet();
     const titleNetwork = networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
 
-    const connectToWallet = () => {
+    const connectToWallet = async () => {
       if (walletStore.connected) {
           return applicationStore.showWalletPopUp(true);
       }
       console.log('connectWallet before');
-      connectWallet[1]();
+      await connectWallet[1]();
       console.log('connectWallet after');
       // return walletStore.connect();
     };

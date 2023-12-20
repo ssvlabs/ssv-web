@@ -258,7 +258,10 @@ class OperatorStore extends BaseStore {
     this.clearOperatorData();
   }
 
-  getOperatorId() {
+  /**
+   * Retrieves the operator id
+   */
+  get getOperatorId(): string {
     const operatorStore: OperatorStore = this.getStore('Operator');
     return operatorStore.newOperatorKeys.id;
   }

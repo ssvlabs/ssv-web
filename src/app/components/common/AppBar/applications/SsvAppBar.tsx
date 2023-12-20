@@ -40,6 +40,7 @@ const SsvAppBar = () => {
       } else {
         applicationStore.strategyRedirect = config.routes.SSV.ROOT;
       }
+      navigate(applicationStore.strategyRedirect);
     }
   };
   const openDocs = () => {

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import InputLabel from '~app/components/common/InputLabel';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -15,13 +14,14 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import { useStyles } from '~app/components/applications/Distribution/components/Claim/Claim.styles';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const EligibleScreen = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
-  const { networkId } = getCurrentNetwork();
+  const { networkId } = getStoredNetwork();
   const distributionStore: DistributionStore | DistributionTestnetStore = useDistributionStore(networkId);
 
   const claimRewards = async () => {

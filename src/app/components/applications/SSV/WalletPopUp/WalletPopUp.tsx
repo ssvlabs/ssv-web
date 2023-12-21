@@ -3,13 +3,13 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPopUp.styles';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { cleanLocalStorage } from '~lib/utils/onboardHelper';
 
 const WalletPopUp = () => {
     const stores = useStores();
@@ -17,15 +17,17 @@ const WalletPopUp = () => {
     const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
     const navigate = useNavigate();
+    const [{ wallet }, connect, disconnect] = useConnectWallet();
 
     const changeWallet = async () => {
-        cleanLocalStorage();
+        // cleanLocalStorage();
         applicationStore.showWalletPopUp(false);
-        const [primaryWallet] = walletStore.onboardSdk.state.get().wallets;
-        await walletStore.onboardSdk.disconnectWallet({ label: primaryWallet.label });
-        walletStore.initWallet(null, null);
+        if (wallet) {
+            await disconnect({ label: wallet.label });
+        }
+        await walletStore.initWallet(null, null);
+        await connect();
         navigate(applicationStore.strategyRedirect);
-        // await walletStore.onboardSdk.connectWallet();
     };
 
     const closePopUp = () => {

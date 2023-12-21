@@ -1,6 +1,6 @@
 import { ABI_VERSION } from '~app/common/config/abi';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { distributionHelper } from '~lib/utils/distributionHelper';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const {
   networkId,
@@ -10,9 +10,12 @@ const {
   getterContractAddress,
   explorerUrl,
   apiVersion,
-} = getCurrentNetwork();
+} = getStoredNetwork();
 
-const { abi, contract } = distributionHelper(networkId);
+const {
+  abi,
+  // contract,
+} = distributionHelper(networkId);
 
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
@@ -590,7 +593,8 @@ const config = {
       ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`],
     },
     SSV_DISTRIBUTION: {
-      ADDRESS: contract,
+      // ADDRESS: contract,
+      ADDRESS: '',
       ABI: abi,
     },
   },

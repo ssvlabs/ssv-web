@@ -23,8 +23,9 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-import { getSetterContract } from '~root/services/contracts.service';
 import { toWei } from '~root/services/conversions.service';
+import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
 // import { getRegisterValidatorGasLimit } from '~lib/utils/gasLimitHelper';
 
 type KeyShareError = {
@@ -137,7 +138,7 @@ class ValidatorStore extends BaseStore {
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const contract = getSetterContract();
+    const contract = getContractByName(EContractName.SETTER);
     applicationStore.setIsLoading(true);
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     // @ts-ignore
@@ -241,7 +242,7 @@ class ValidatorStore extends BaseStore {
       const { KEYSTORE_PUBLIC_KEY, OPERATOR_IDS } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const contract = getSetterContract();
+      const contract = getContractByName(EContractName.SETTER);
       const payload: Map<string, any> | false = await this.createKeystorePayload(true);
       if (!payload) {
         applicationStore.setIsLoading(false);
@@ -314,7 +315,7 @@ class ValidatorStore extends BaseStore {
         const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const walletStore: WalletStore = this.getStore('Wallet');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-        const contract = getSetterContract();
+        const contract = getContractByName(EContractName.SETTER);
 
         if (!payload) {
           resolve(false);
@@ -497,7 +498,7 @@ class ValidatorStore extends BaseStore {
         const clusterStore: ClusterStore = this.getStore('Cluster');
         const processStore: ProcessStore = this.getStore('Process');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-        const contract = getSetterContract();
+        const contract = getContractByName(EContractName.SETTER);
         const process: SingleCluster = <SingleCluster>processStore.process;
         const cluster = process.item;
         // @ts-ignore
@@ -861,7 +862,7 @@ class ValidatorStore extends BaseStore {
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      const contract = getSetterContract();
+      const contract = getContractByName(EContractName.SETTER);
       const ownerAddress: string = walletStore.accountAddress;
 
       if (!payload) {

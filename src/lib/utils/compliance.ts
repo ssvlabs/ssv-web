@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from '~app/common/config';
-import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
+import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 
 const DEV_MODE_ON = 1;
 const DEV_IGNORE_COUNTRY_RESTRICTION = 'DEV_IGNORE_COUNTRY_RESTRICTION';
@@ -101,7 +101,7 @@ export const getLocalStorageFlagValue = () => {
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
-  const { networkId } = getCurrentNetwork();
+  const { networkId } = getStoredNetwork();
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   const restrictIgnoreFlag = getLocalStorageFlagValue();

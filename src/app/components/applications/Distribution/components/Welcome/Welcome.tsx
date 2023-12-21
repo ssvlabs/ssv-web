@@ -4,19 +4,19 @@ import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
-import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
 import { useConnectWallet } from '@web3-onboard/react';
+import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 
 const Welcome = () => {
     const stores = useStores();
     const classes = useStyles();
     const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
-    const { networkId } = getCurrentNetwork();
+    const { networkId } = getStoredNetwork();
     // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
   const connectWallet = useConnectWallet();
     const titleNetwork = networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';

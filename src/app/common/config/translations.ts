@@ -2,7 +2,20 @@ const translations = {
   VALIDATOR: {
     HOME: {
       TITLE: 'Run a Distributed Validator',
+      SUB_TITLE: 'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.',
       DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
+      PREREQUISITES: [
+        'An active Ethereum validator (deposited to Beacon Chain)',
+        'SSV tokens to cover operational fees',
+      ],
+      BUTTON: {
+        NEW_KEYS: 'Generate new key shares',
+        EXISTING_KEYS: 'I already have key shares',
+      },
+      TOOLTIP: {
+        TEXT: 'Don\'t have a validator? ',
+        LINK_TEXT: 'Create via Ethereum Launchpad',
+      },
     },
     CREATE: {
       TITLE: 'Create Validator via Ethereum Launchpad',

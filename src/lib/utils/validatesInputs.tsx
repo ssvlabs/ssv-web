@@ -46,6 +46,18 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
   callback(response);
 };
 
+export const validateValidatorsCount = (value: string, callback: React.Dispatch<ErrorObject>): void => {
+  const response = { shouldDisplay: true, errorMessage: '' };
+  console.log(value !== '1');
+  if (value !== '1'){
+    response.errorMessage = 'Only 1 validator is allowed';
+  } else {
+    response.shouldDisplay = false;
+  }
+  callback(response);
+};
+
+
 export const validateFeeInput = (value: string, callback: Function): void => {
   // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
   const response = { shouldDisplay: false, errorMessage: '' };

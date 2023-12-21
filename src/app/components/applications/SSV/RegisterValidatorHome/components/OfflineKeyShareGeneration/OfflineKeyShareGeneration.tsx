@@ -5,13 +5,13 @@ import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { isWindows, osName } from 'react-device-detect';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
-import { validateAddressInput } from '~lib/utils/validatesInputs';
+import { validateAddressInput, validateValidatorsCount } from '~lib/utils/validatesInputs';
 import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
@@ -49,6 +49,8 @@ const OfflineKeyShareGeneration = () => {
   const [textCopied, setTextCopied] = useState(false);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
   const [addressValidationError, setAddressValidationError] = useState({ shouldDisplay: true, errorMessage: '' });
+  const [validatorsCount, setValidatorsCount] = useState(1);
+  const [validatorsCountError, setValidatorsCountError] = useState({ shouldDisplay: true, errorMessage: '' });
   const notificationsStore: NotificationsStore = stores.Notifications;
   const { ownerNonce } = accountStore;
   const { accountAddress } = walletStore;
@@ -141,7 +143,14 @@ const OfflineKeyShareGeneration = () => {
     setConfirmedWithdrawalAddress(false);
   };
 
-  const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && confirmedWithdrawalAddress);
+  const validatorsCountHandler = (e: any) => {
+    const { value } = e.target;
+    setValidatorsCount(value);
+    validateValidatorsCount(value, setValidatorsCountError);
+    setTextCopied(false);
+  };
+
+  const showCopyButtonCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || (selectedBox === OFFLINE_FLOWS.DKG && withdrawalAddress && !addressValidationError.shouldDisplay && !validatorsCountError.shouldDisplay && confirmedWithdrawalAddress);
   const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
   const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DESKTOP_APP || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
   const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && confirmedWithdrawalAddress;
@@ -171,7 +180,7 @@ const OfflineKeyShareGeneration = () => {
     <BorderScreen
       blackHeader
       withoutNavigation={processStore.secondRegistration}
-      header={'How do you want to generate your keyshares?'}
+      header={translations.VALIDATOR.DISTRIBUTE_OFFLINE.TITLE}
       overFlow={'none'}
       width={isNotMainnet ? 872 : undefined}
       body={[
@@ -236,10 +245,20 @@ const OfflineKeyShareGeneration = () => {
               </Grid>
               <Grid className={classes.DkgSectionWrapper}>
                 <Typography className={classes.DkgTitle}>Instructions</Typography>
-                <Grid className={classes.DkgText}>1. Set Withdrawal Address <CustomTooltip
+                <Grid className={classes.DkgText}>1. Select how many validators to generate </Grid>
+                <Grid className={classes.DkgWithdrawAddressWrapper}>
+                  <Typography className={classes.DkgInputLabel}></Typography>
+                  <TextInput value={validatorsCount}
+                             onChangeCallback={validatorsCountHandler}
+                             sideButton={false}
+                             sideButtonDisabled={true}/>
+                  {validatorsCountError.errorMessage &&
+                      <Typography className={classes.DkgErrorMessage}>{validatorsCountError.errorMessage}</Typography>}
+                </Grid>
+                <Grid className={classes.DkgText}>2. Set Withdrawal Address <CustomTooltip
                   text={'Ethereum address to receive staking rewards and principle staked ETH. Please note that this cannot be changed in the future.'}/></Grid>
                 <Grid className={classes.DkgWithdrawAddressWrapper}>
-                  <Typography className={classes.DkgInputLabel}>Withdrawal Address</Typography>
+                  <Typography className={classes.DkgInputLabel}></Typography>
                   <TextInput value={withdrawalAddress}
                              onChangeCallback={changeWithdrawalAddressHandler}
                              sideButton={true}

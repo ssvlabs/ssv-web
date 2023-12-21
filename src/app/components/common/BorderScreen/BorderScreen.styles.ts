@@ -4,6 +4,7 @@ import screenSizes from '~lib/utils/screenSizes';
 
 export const useStyles = makeStyles((theme: Theme) => ({
   BorderScreenWrapper: {
+    marginBottom: 73,
     width: (props: any) => props.width ?? 648,
     margin: 'auto',
     marginTop: (props: any) => props.marginTop ?? 32,

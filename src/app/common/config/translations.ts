@@ -63,6 +63,12 @@ const translations = {
         INVALID_PASSWORD: 'Invalid keystore file password.',
       },
     },
+    DISTRIBUTE_OFFLINE: {
+      TITLE: 'How do you want to generate your keyshares?',
+      DKG: {
+
+      },
+    },
     KEYSHARE_RESPONSE: {
       OK_RESPONSE:{
         name: '',

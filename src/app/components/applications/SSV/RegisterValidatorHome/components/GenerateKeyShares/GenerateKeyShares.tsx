@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
@@ -14,11 +13,12 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares/GenerateKeyShares.styles';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const GenerateKeyShares = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  const { networkId } = getCurrentNetwork();
+  const { networkId } = getStoredNetwork();
   const classes = useStyles({ networkId });
   const walletStore: WalletStore = stores.Wallet;
   const accountStore: AccountStore = stores.Account;

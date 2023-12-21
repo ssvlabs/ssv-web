@@ -1,8 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -11,7 +11,6 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
-import { useConnectWallet } from '@web3-onboard/react';
 
 const Welcome = () => {
   const stores = useStores();
@@ -20,14 +19,13 @@ const Welcome = () => {
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  const connectWallet = useConnectWallet();
-
+  const [_, connect] = useConnectWallet();
   const connectToWallet = async () => {
     if (walletStore.connected) {
       return applicationStore.showWalletPopUp(true);
     }
     console.log('connectWallet before');
-    await connectWallet[1]();
+    await connect();
     console.log('connectWallet after');
     // return walletStore.connect();
   };
@@ -82,4 +80,4 @@ const Welcome = () => {
   );
 };
 
-export default observer(Welcome);
+export default Welcome;

@@ -1,55 +1,44 @@
-// import { ethers } from 'ethers';
-// import { useEffect, useMemo, useState } from 'react';
-// import { InitOptions, OnboardAPI } from '@web3-onboard/core';
-// import { init, useConnectWallet, useSetChain } from '@web3-onboard/react';
-//
-// import { useStores } from '~app/hooks/useStores';
-// import Wallet from '~app/common/stores/Abstracts/Wallet';
-// import { initOnboardOptions } from '~lib/utils/onboardHelper';
-//
-//
-// export interface SendTransactionProps {
-//   toAddress: string;
-//   value: any;
-//   gasPrice?: any;
-//   gasLimit?: any;
-// }
-//
-// const onboardInstance = init(initOnboardOptions() as InitOptions);
-//
-// export const useOnboard = () => {
-//   const stores = useStores();
-//   const walletStore: Wallet = stores.Wallet;
-//   const [{ wallet, connecting }] = useConnectWallet();
-//   const [{ chains, connectedChain }, setChain] = useSetChain();
-//   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
-//
-//   // Keep provider unchanged for wallet
-//   const provider = useMemo(() => {
-//     if (!wallet?.provider) {
-//       return null;
-//     }
-//     return new ethers.providers.Web3Provider(wallet.provider, 'any');
-//   }, [wallet?.provider]);
-//
-//   useEffect(() => {
-//     setWeb3Onboard(onboardInstance);
-//   }, []);
-//
-//   useEffect(() => {
-//     if (connectedChain && wallet?.accounts[0]) {
-//       walletStore.initWallet(wallet, connectedChain);
-//     }
-//     if (web3Onboard && !wallet?.accounts[0]) {
-//       walletStore.initWallet(null, null);
-//     }
-//   }, [web3Onboard, wallet?.accounts[0], connectedChain?.id]);
-//
-//   return {
-//     setChain,
-//     web3Onboard,
-//     wallet,
-//     provider,
-//     connecting,
-//   };
-// };
+import { useEffect, useMemo } from 'react';
+import { useConnectWallet, useSetChain } from '@web3-onboard/react';
+import { useStores } from '~app/hooks/useStores';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import { initContracts } from '~root/services/contracts.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+
+const useOnboard = () => {
+  const stores = useStores();
+  const [{ wallet }, connect, disconnect] = useConnectWallet();
+  const [{ connectedChain }] = useSetChain();
+  const applicationStore: ApplicationStore = stores.Application;
+  const walletStore: WalletStore = stores.Wallet;
+
+  useEffect(() => {
+    if (connectedChain?.id && wallet?.accounts[0]) {
+      if (wallet.provider) {
+        initContracts({ provider: wallet.provider, network: getStoredNetwork() });
+        walletStore.initWallet(wallet, connectedChain);
+      }
+    }
+  }, [wallet?.accounts[0], connectedChain]);
+
+  const disconnectWallet = async () => {
+    if (wallet) {
+      console.warn('useOnboard::disconnectWallet: before');
+      await disconnect({ label: wallet.label });
+      walletStore.initWallet(null, null);
+      console.warn('useOnboard::disconnectWallet: done');
+    }
+  };
+
+  const isWalletConnect = () => wallet?.label === 'WalletConnect';
+
+  return {
+    wallet,
+    disconnectWallet,
+    isWalletConnect,
+    useSetChain,
+  };
+};
+
+export default useOnboard;

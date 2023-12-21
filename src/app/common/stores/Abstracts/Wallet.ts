@@ -31,7 +31,7 @@ export default abstract class Wallet extends BaseStore {
   public abstract onAccountAddressChangeCallback(address: string): void;
 
   // eslint-disable-next-line no-unused-vars
-  public abstract onNetworkChangeCallback(networkId: number, apiVersion?: string): void;
+  public abstract setNetwork(networkId: number, apiVersion?: string): void;
 
   public abstract connect(): void;
 

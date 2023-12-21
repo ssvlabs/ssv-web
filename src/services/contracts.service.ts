@@ -1,83 +1,95 @@
-import { EIP1193Provider } from '@web3-onboard/core';
 import { Contract, ethers } from 'ethers';
+import { EIP1193Provider } from '@web3-onboard/core';
 import config from '~app/common/config';
-import { fromWei } from '~root/services/conversions.service';
+import { EContractName } from '~app/model/contracts.model';
+import { NetworkInfo } from '~root/providers/networkInfo.provider';
 
-let getterContract: Contract;
-let setterContract: Contract;
-let ssvContract: Contract;
+let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
 
-const initGetterContract = ({ provider }: { provider: EIP1193Provider })=> {
+const initGetterContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo })=> {
   const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
-  const contractAddress: string = config.CONTRACTS.SSV_NETWORK_GETTER.ADDRESS;
-  console.warn('Creating new getter contract', { abi, contractAddress });
-  const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-  getterContract = new Contract(contractAddress, abi, ethProvider.getSigner());
+  const contractAddress = network.getterContractAddress;
+  if (contracts[EContractName.GETTER] && contracts[EContractName.GETTER].address === contractAddress) {
+    console.warn('Getter contract already exists', { abi, contractAddress });
+    return;
+  }
+
+  if (contractAddress) {
+    console.warn('Creating new getter contract', { abi, contractAddress });
+    const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+    contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
+  } else {
+    console.warn('No getter contract address found');
+  }
 };
 
-const getGetterContract = () => getterContract;
-
-const initSetterContract = ({ provider }: { provider: EIP1193Provider }) => {
+const initSetterContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
-  const contractAddress: string = config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS;
-  console.warn({ abi, contractAddress });
-  const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-  setterContract = new Contract(contractAddress, abi, ethProvider.getSigner());
+  const contractAddress = network.setterContractAddress;
+  if (contracts[EContractName.SETTER] && contracts[EContractName.SETTER].address === contractAddress) {
+    console.warn('Setter contract already exists', { abi, contractAddress });
+    return;
+  }
+
+  if (contractAddress) {
+    console.warn('Creating new setter contract', { abi, contractAddress });
+    const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+    contracts[EContractName.SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
+  } else {
+    console.warn('No setter contract address found');
+  }
 };
 
-const getSetterContract = () => setterContract;
-
-const initSsvContract = ({ provider }: { provider: EIP1193Provider }) => {
+const initTokenContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+  const abi: any = config.CONTRACTS.SSV_TOKEN.ABI;
   const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-  ssvContract = new Contract(config.CONTRACTS.SSV_TOKEN.ADDRESS, config.CONTRACTS.SSV_TOKEN.ABI, ethProvider.getSigner());
+  const contractAddress = network.tokenAddress;
+  if (contracts[EContractName.TOKEN] && contracts[EContractName.TOKEN].address === contractAddress) {
+    console.warn('Token contract already exists', { abi, contractAddress });
+    return;
+  }
+  if (contractAddress) {
+    console.warn('Creating new token contract', { abi, contractAddress });
+    contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, ethProvider.getSigner());
+  } else {
+    console.warn('No token contract address found');
+  }
 };
 
-const getSsvContract = () => ssvContract;
-
-const getNetworkFees = async () => {
-  const contract = getGetterContract();
-  console.warn('🔴 getNetworkFees2 1');
-
-  let networkFee = 0;
-  let liquidationCollateralPeriod = 0;
-  let minimumLiquidationCollateral = 0;
-
-  if (networkFee === 0) {
-    networkFee = fromWei(await contract.getNetworkFee().catch((e: any) => console.warn('🔴 getNetworkFees2 2 error', e)));
+const initDistributionContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+  const abi: any = config.CONTRACTS.SSV_DISTRIBUTION.ABI;
+  const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+  const contractAddress = network.distributionContractAddress;
+  if (contractAddress) {
+    if (contracts[EContractName.DISTRIBUTION] && contracts[EContractName.DISTRIBUTION].address === contractAddress) {
+      console.warn('Distribution contract already exists', { abi, contractAddress });
+      return;
+    }
+    console.warn('Creating new distribution contract', { abi, contractAddress });
+    contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, ethProvider.getSigner());
   } else {
-    console.warn('🔴 networkFee2:', networkFee);
+    console.warn('No distribution contract address found');
   }
+};
 
-  if (liquidationCollateralPeriod === 0) {
-    liquidationCollateralPeriod = Number(await contract.getLiquidationThresholdPeriod());
-  } else {
-    console.warn('🔴 liquidationCollateralPeriod2:', liquidationCollateralPeriod);
-  }
+const getContractByName = (name: EContractName) => contracts[name];
 
-  console.warn('🔴 getNetworkFees2 3');
-  if (minimumLiquidationCollateral === 0) {
-    minimumLiquidationCollateral = await contract.getMinimumLiquidationCollateral();
-    minimumLiquidationCollateral = fromWei(minimumLiquidationCollateral);
-  } else {
-    console.warn('🔴 minimumLiquidationCollateral2:', minimumLiquidationCollateral);
-  }
-  console.warn('🔴 getNetworkFees2 4');
+/**
+ * Crucial to call this only when then network object has been changed
+ */
+const initContracts = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+  initGetterContract({ provider, network });
+  initSetterContract({ provider, network });
+  initTokenContract({ provider, network });
+  initDistributionContract({ provider, network });
+};
 
-  const result = {
-    networkFee,
-    liquidationCollateralPeriod,
-    minimumLiquidationCollateral,
-  };
-  console.warn(result);
-  return result;
+const resetContracts = () => {
+  contracts = {} as Record<EContractName, Contract>;
 };
 
 export {
-  initGetterContract,
-  initSetterContract,
-  initSsvContract,
-  getGetterContract,
-  getSetterContract,
-  getSsvContract,
-  getNetworkFees,
+  initContracts,
+  resetContracts,
+  getContractByName,
 };

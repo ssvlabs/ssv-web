@@ -1,23 +1,18 @@
 import Web3 from 'web3';
 import Notify from 'bnc-notify';
-// import { Contract } from 'web3-eth-contract';
 import { Contract, ethers } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import { distributionHelper } from '~lib/utils/distributionHelper';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
-// import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
+import { distributionHelper } from '~lib/utils/distributionHelper';
+import { inNetworks, NETWORKS, testNets } from '~lib/utils/envHelper';
+import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
-import {
-  changeCurrentNetwork, getCurrentNetwork,
-  inNetworks,
-  NETWORKS, notIncludeMainnet, testNets,
-} from '~lib/utils/envHelper';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
-import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
+import { isMainnetSupported } from '~root/providers/networkInfo.provider';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -74,6 +69,7 @@ class WalletStore extends BaseStore implements Wallet {
    * @url https://docs.blocknative.com/onboard#initialization
    */
   async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
+    // TODO: refactor
     if (wallet && connectedChain) {
       const networkId = parseInt(String(connectedChain.id), 16);
       const { storeName } = distributionHelper(networkId);
@@ -84,7 +80,7 @@ class WalletStore extends BaseStore implements Wallet {
       await this.addressHandler(address);
 
       const notifyOptions = {
-        networkId,
+        networkId: Number(connectedChain.id),
         dappId: config.ONBOARD.API_KEY,
         desktopPosition: 'topRight',
       };
@@ -186,7 +182,7 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId: any
    */
   async networkHandler(networkId: any) {
-    if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
+    if (!isMainnetSupported() && networkId !== undefined && !inNetworks(networkId, testNets)) {
       this.wrongNetwork = true;
       this.notificationsStore.showMessage('Please change network to Holesky', 'error');
     } else {
@@ -195,13 +191,13 @@ class WalletStore extends BaseStore implements Wallet {
         if (networkId === NETWORKS.HOLESKY) {
           await this.changeNetwork(chainId);
         }
-        changeCurrentNetwork(chainId);
+        // TODO: change to new set network
+        // changeCurrentNetwork(chainId);
       } catch (e) {
         this.wrongNetwork = true;
         this.notificationsStore.showMessage(String(e), 'error');
         return;
       }
-      config.links.SSV_API_ENDPOINT = getCurrentNetwork().api;
       this.wrongNetwork = false;
       this.networkId = networkId;
     }
@@ -250,7 +246,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  onNetworkChangeCallback(networkId: number, apiVersion?: string): void {
+  setNetwork(networkId: number, apiVersion?: string): void {
   }
 }
 

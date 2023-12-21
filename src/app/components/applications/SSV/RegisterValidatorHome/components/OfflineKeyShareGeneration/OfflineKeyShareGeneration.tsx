@@ -12,7 +12,6 @@ import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
-import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -28,6 +27,7 @@ import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
+import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -52,7 +52,7 @@ const OfflineKeyShareGeneration = () => {
   const notificationsStore: NotificationsStore = stores.Notifications;
   const { ownerNonce } = accountStore;
   const { accountAddress } = walletStore;
-  const { apiNetwork, networkId } = getCurrentNetwork();
+  const { apiNetwork, networkId } = getStoredNetwork();
   const isNotMainnet = networkId !== NETWORKS.MAINNET;
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
   const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));

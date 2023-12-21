@@ -2,15 +2,12 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useStores } from '~app/hooks/useStores';
-import { changeCurrentNetwork, NetworkDataType } from '~lib/utils/envHelper';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { NETWORK_VARIABLES } from '~root/providers/networkInfo.provider';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 
-const NetworkOption = ({ network, onClick }: { network: NetworkDataType, onClick: any }) => {
+const NetworkOption = ({ networkId, apiVersion, onClick }: { networkId: number; apiVersion: string; onClick: any }) => {
   const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
-  const { networkId, optionLabel, logo, apiVersion } = network;
-
+  const { optionLabel, logo } = NETWORK_VARIABLES[`${networkId}_${apiVersion}`];
   const classes = useStyles({ logo });
 
   return (

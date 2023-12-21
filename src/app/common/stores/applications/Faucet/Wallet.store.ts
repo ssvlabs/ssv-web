@@ -1,20 +1,18 @@
 import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
-// import { Contract } from 'web3-eth-contract';
 import { Contract, ethers } from 'ethers';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
-// import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
-import { changeCurrentNetwork, getCurrentNetwork, isMainnet, NETWORKS } from '~lib/utils/envHelper';
+import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
-// import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -85,7 +83,7 @@ class WalletStore extends BaseStore implements Wallet {
       }
       await this.addressHandler(address);
       const notifyOptions = {
-        networkId,
+        networkId: Number(connectedChain.id),
         dappId: config.ONBOARD.API_KEY,
         desktopPosition: 'topRight',
       };
@@ -101,7 +99,7 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async initializeUserInfo() {
     try {
-      const { faucetApi } = getCurrentNetwork();
+      const { faucetApi } = getStoredNetwork();
       const applicationStore: Application = this.getStore('Application');
       const faucetStore: FaucetStore = this.getStore('Faucet');
       const faucetUrl = `${faucetApi}/config`;
@@ -198,7 +196,8 @@ class WalletStore extends BaseStore implements Wallet {
   async networkHandler(networkId: any) {
     if (!isMainnet) {
       try {
-        changeCurrentNetwork(Number(networkId));
+        // TODO: refactor
+        // changeCurrentNetwork(Number(networkId));
         this.wrongNetwork = networkId === undefined;
         this.networkId = networkId;
       } catch (e) {
@@ -260,7 +259,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  onNetworkChangeCallback(networkId: number, apiVersion?: string): void {
+  setNetwork(networkId: number, apiVersion?: string): void {
   }
 }
 

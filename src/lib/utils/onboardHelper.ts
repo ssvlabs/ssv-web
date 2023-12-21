@@ -22,7 +22,7 @@ const injected = injectedModule();
 const walletConnect = walletConnectModule({
   dappUrl: window.location.origin,
   projectId: config.ONBOARD.PROJECT_ID,
-  optionalChains: [NETWORKS.MAINNET, NETWORKS.GOERLI, NETWORKS.HOLESKY],
+  optionalChains: [Number(NETWORKS.MAINNET), Number(NETWORKS.GOERLI), Number(NETWORKS.HOLESKY)],
 });
 const safeWalletInstance = safeWallet();
 
@@ -66,14 +66,14 @@ const tmp = {
       token: TOKEN_NAMES[NETWORKS.GOERLI],
     },
     {
-      id: 17000,
+      id: NETWORKS.HOLESKY,
       label: 'Holesky',
       token: 'ETH',
-      rpcUrl: 'https://cool-prettiest-daylight.ethereum-holesky.quiknode.pro/0d8ffe59dc7865022b15bc0d56692593416330ab/',
+      // rpcUrl: 'https://cool-prettiest-daylight.ethereum-holesky.quiknode.pro/0d8ffe59dc7865022b15bc0d56692593416330ab/',
       // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',
-      // rpcUrl: 'https://ethereum-holesky.publicnode.com',
-      // publicRpcUrl: 'https://ethereum-holesky.publicnode.com',
+      rpcUrl: 'https://ethereum-holesky.publicnode.com',
+      publicRpcUrl: 'https://ethereum-holesky.publicnode.com',
       // rpcUrl: 'https://newest-fragrant-sponge.ethereum-holesky.quiknode.pro/626e253896d20dd8a3cf447cb286c3fc1755f511/',
       // publicRpcUrl: 'https://newest-fragrant-sponge.ethereum-holesky.quiknode.pro/626e253896d20dd8a3cf447cb286c3fc1755f511/',
       // rpcUrl: 'https://operators-holesky.testnet.fi/api/rpc?chainId=17000',

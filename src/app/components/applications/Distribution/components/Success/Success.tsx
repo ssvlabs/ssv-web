@@ -9,14 +9,15 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useDistributionStore } from '~app/hooks/useDistributionStore';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import { getCurrentNetwork, networkTitle, transactionLink } from '~lib/utils/envHelper';
+import { networkTitle, transactionLink } from '~lib/utils/envHelper';
 import ApplicationStore from '~app/common/stores/applications/Distribution/Application.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const Success = () => {
-  const { networkId } = getCurrentNetwork();
+  const { networkId } = getStoredNetwork();
   const stores = useStores();
   const classes = useStyles();
   const applicationStore: ApplicationStore = stores.Application;

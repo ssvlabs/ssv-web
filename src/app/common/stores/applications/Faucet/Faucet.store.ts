@@ -2,11 +2,11 @@ import axios from 'axios';
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 import translations from '../../../config/translations';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
-const { faucetApi } = getCurrentNetwork();
+const { faucetApi } = getStoredNetwork();
 
 class FaucetStore extends BaseStore {
     amountToTransfer: any;
@@ -28,7 +28,7 @@ class FaucetStore extends BaseStore {
     }
 
     async registerNewTransaction() {
-      const { networkId, apiVersion } = getCurrentNetwork();
+      const { networkId, apiVersion } = getStoredNetwork();
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
             const faucetUrl = faucetApi;

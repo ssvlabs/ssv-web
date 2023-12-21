@@ -1,22 +1,20 @@
 import Decimal from 'decimal.js';
-// import { sha256 } from 'js-sha256';
-// import { Contract } from 'web3-eth-contract';
 import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
-// import { GasGroup } from '~app/common/config/gasLimits';
-// import { getFixedGasLimit } from '~lib/utils/gasLimitHelper';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-// import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { getCurrentNetwork, isMainnet, NETWORKS } from '~lib/utils/envHelper';
-import { getGetterContract, getSetterContract } from '~root/services/contracts.service';
+import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
+
 import { fromWei, toWei } from '~root/services/conversions.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
 
 export interface NewOperator {
   id: string,
@@ -211,7 +209,7 @@ class OperatorStore extends BaseStore {
    * Get max validators count
    */
   async updateOperatorValidatorsLimit(): Promise<void> {
-    const contract = getGetterContract();
+    const contract = getContractByName(EContractName.GETTER);
     if (this.operatorValidatorsLimit === 0) {
       this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
     }
@@ -235,7 +233,8 @@ class OperatorStore extends BaseStore {
    * Check if operator registrable
    */
   async initUser() {
-    const contract = getGetterContract();
+    const contract = getContractByName(EContractName.GETTER);
+    if (!contract) return;
     const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.getOperatorFeePeriods();
     this.getSetOperatorFeePeriod = Number(executeOperatorFeePeriod);
     this.declaredOperatorFeePeriod = Number(declareOperatorFeePeriod);
@@ -260,12 +259,12 @@ class OperatorStore extends BaseStore {
    * Check if operator registrable
    */
   async syncOperatorFeeInfo(operatorId: number) {
-    const contract = getGetterContract();
+    const contract = getContractByName(EContractName.GETTER);
     try {
       this.operatorCurrentFee = await contract.getOperatorFee(operatorId);
       const response = await contract.getOperatorDeclaredFee(operatorId);
       const testNets = [NETWORKS.GOERLI, NETWORKS.HOLESKY];
-      if (response['0'] && testNets.indexOf(getCurrentNetwork().networkId) !== -1) {
+      if (response['0'] && testNets.indexOf(getStoredNetwork().networkId) !== -1) {
         this.operatorFutureFee = response['1'];
         this.operatorApprovalBeginTime = response['2'];
         this.operatorApprovalEndTime = response['3'];
@@ -288,7 +287,7 @@ class OperatorStore extends BaseStore {
     if (!isMainnet) {
       return true;
     }
-    const contract = getSetterContract();
+    const contract = getContractByName(EContractName.SETTER);
     try {
       const response = await contract.getRegisterAuth(accountAddress);
       return response.authOperators;
@@ -307,7 +306,7 @@ class OperatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
-        const contractInstance = getSetterContract();
+        const contractInstance = getContractByName(EContractName.SETTER);
         const tx = await contractInstance.setOperatorWhitelist(operatorId, address);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
@@ -393,7 +392,7 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorBalance(id: number): Promise<any> {
     return new Promise((resolve) => {
-      const contract = getGetterContract();
+      const contract = getContractByName(EContractName.GETTER);
       contract.getOperatorEarnings(id).then((response: any) => {
         resolve(fromWei(response));
       }).catch(() => resolve(true));
@@ -415,7 +414,7 @@ class OperatorStore extends BaseStore {
     };
     return new Promise(async (resolve) => {
       try {
-        const contract: Contract = getSetterContract();
+        const contract: Contract = getContractByName(EContractName.SETTER);
         const tx = await contract.cancelDeclaredOperatorFee(operatorId);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
@@ -532,7 +531,7 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorValidatorsCount(operatorId: number): Promise<any> {
     return new Promise((resolve) => {
-      const contract = getGetterContract();
+      const contract = getContractByName(EContractName.GETTER);
       contract.validatorsPerOperatorCount(operatorId).then((response: any) => {
         resolve(response);
       });
@@ -560,7 +559,7 @@ class OperatorStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       try {
-        const contract = getGetterContract();
+        const contract = getContractByName(EContractName.GETTER);
         contract.getOperatorFee(publicKey).then((response: any) => {
           const ssv = fromWei(response);
           this.operatorsFees[publicKey] = { ssv, dollar: 0 };
@@ -586,7 +585,7 @@ class OperatorStore extends BaseStore {
    */
   async getOperatorRevenue(operatorId: number): Promise<any> {
     try {
-      const contract = getGetterContract();
+      const contract = getContractByName(EContractName.GETTER);
       const response = await contract.totalEarningsOf(operatorId);
       return fromWei(response.toString());
     } catch (e: any) {
@@ -606,7 +605,7 @@ class OperatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
-        const contractInstance = getSetterContract();
+        const contractInstance = getContractByName(EContractName.SETTER);
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
@@ -739,7 +738,7 @@ class OperatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const ssvStore: SsvStore = this.getStore('SSV');
-        const contractInstance = getSetterContract();
+        const contractInstance = getContractByName(EContractName.SETTER);
         const formattedFee = ssvStore.prepareSsvAmountToTransfer(
           toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
@@ -871,7 +870,7 @@ class OperatorStore extends BaseStore {
           declared_fee: operatorBefore.declared_fee,
           previous_fee: operatorBefore.previous_fee,
         };
-        const contract = getSetterContract();
+        const contract = getContractByName(EContractName.SETTER);
         const tx = await contract.executeOperatorFee(operatorId);
         if (tx.hash) {
           applicationStore.txHash = tx.hash;
@@ -994,7 +993,7 @@ class OperatorStore extends BaseStore {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const contractInstance = getSetterContract();
+    const contractInstance = getContractByName(EContractName.SETTER);
     return new Promise(async (resolve) => {
       try {
         const tx = await contractInstance.removeOperator(operatorId);
@@ -1087,12 +1086,7 @@ class OperatorStore extends BaseStore {
     // }
   }
 
-  /**
-   * Add new operator
-   * @param getGasEstimation
-   */
-  async addNewOperator(getGasEstimation: boolean = false) {
-    getGasEstimation;
+  async addNewOperator() {
     // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -1101,7 +1095,7 @@ class OperatorStore extends BaseStore {
       try {
         const payload: any[] = [];
         const ssvStore: SsvStore = this.getStore('SSV');
-        const contract: Contract = getSetterContract();
+        const contract: Contract = getContractByName(EContractName.SETTER);
         // const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
         // const gasLimit = getFixedGasLimit(GasGroup.REGISTER_OPERATOR);
@@ -1277,3 +1271,4 @@ class OperatorStore extends BaseStore {
 }
 
 export default OperatorStore;
+

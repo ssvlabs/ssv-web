@@ -32,7 +32,7 @@ const OperatorConfirmation = () => {
     try {
       applicationStore.setIsLoading(true);
       setActionButtonText('Waiting for confirmation...');
-      const operatorAdded = await operatorStore.addNewOperator(false);
+      const operatorAdded = await operatorStore.addNewOperator();
       if (operatorAdded) navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
       setActionButtonText('Register Operator');
     } catch (e: any) {

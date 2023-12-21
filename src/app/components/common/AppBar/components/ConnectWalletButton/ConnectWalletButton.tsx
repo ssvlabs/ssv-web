@@ -2,12 +2,12 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './ConnectWalletButton.styles';
-import { useConnectWallet } from '@web3-onboard/react';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
@@ -17,22 +17,15 @@ const ConnectWalletButton = () => {
     walletConnected: walletStore.connected,
     whiteAppBar: applicationStore.whiteNavBarBackground,
   });
-  const [_, connect] = useConnectWallet();
+  const [{ wallet }, connect] = useConnectWallet();
   const navigate = useNavigate();
 
   const onClick = async () => {
     if (walletStore.wallet) {
       applicationStore.showWalletPopUp(true);
     } else {
-      console.log('connectWallet before');
-      try {
-        await connect().then(() => {
-          navigate('/join');
-        });
-      } catch (e) {
-        console.error(e);
-      }
-      console.log('connectWallet after');
+      await connect();
+      navigate('/join');
     }
   };
 

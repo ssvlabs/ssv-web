@@ -1,5 +1,4 @@
 import { Contract } from 'ethers';
-// import { Contract } from 'web3-eth-contract';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import { equalsAddresses } from '~lib/utils/strings';
@@ -7,9 +6,9 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { IMerkleData, IMerkleTreeData } from '~app/model/merkleTree.model';
 import { fromWei } from '~root/services/conversions.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 
 /**
@@ -108,7 +107,7 @@ class DistributionStore extends BaseStore {
   }
 
   async fetchMerkleTreeStructure(): Promise<IMerkleData | null>{
-    const { api } = getCurrentNetwork();
+    const { api } = getStoredNetwork();
     const merkleTreeUrl = `${api}/incentivization/merkle-tree`;
     try {
       const response = await fetch(merkleTreeUrl);

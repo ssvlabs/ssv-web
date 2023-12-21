@@ -8,8 +8,9 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { getGetterContract } from '~root/services/contracts.service';
+import { getContractByName } from '~root/services/contracts.service';
 import { encodePacked, fromWei } from '~root/services/conversions.service';
+import { EContractName } from '~app/model/contracts.model';
 
 const annotations = {
   getClusterData: action.bound,
@@ -40,7 +41,7 @@ class ClusterStore extends BaseStore {
   async getClusterBalance(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    const contract = getGetterContract();
+    const contract = getContractByName(EContractName.GETTER);
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
@@ -64,7 +65,7 @@ class ClusterStore extends BaseStore {
   async isClusterLiquidated(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const operatorsIds = this.getSortedOperatorsIds(operators);
-    const contract = getGetterContract();
+    const contract = getContractByName(EContractName.GETTER);
     const clusterData: any = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
@@ -78,7 +79,7 @@ class ClusterStore extends BaseStore {
 
   async getClusterBurnRate(operators: any[], injectedClusterData?: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const contract = getGetterContract();
+    const contract = getContractByName(EContractName.GETTER);
     const operatorsIds = this.getSortedOperatorsIds(operators);
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     try {

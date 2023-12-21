@@ -1,10 +1,9 @@
-// import { Contract } from 'web3-eth-contract';
-import { Contract } from 'ethers';
 import { observable, makeObservable } from 'mobx';
 import Account from '~lib/api/Account';
 import BaseStore from '~app/common/stores/BaseStore';
+import { EContractName } from '~app/model/contracts.model';
+import { getContractByName } from '~root/services/contracts.service';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { getSetterContract } from '~root/services/contracts.service';
 
 class AccountStore extends BaseStore  {
   recipientAddress: string = '';
@@ -21,7 +20,7 @@ class AccountStore extends BaseStore  {
   async setFeeRecipient(feeRecipient: string): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
       const applicationStore: ApplicationStore = this.getStore('Application');
-      const contract = getSetterContract();
+      const contract = getContractByName(EContractName.SETTER);
       try {
         const tx = await contract.setFeeRecipientAddress(feeRecipient);
         if (tx.hash) {

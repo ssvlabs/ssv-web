@@ -1,23 +1,14 @@
 import Notify from 'bnc-notify';
-import { Contract, ethers } from 'ethers';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
+import Wallet from '~app/common/stores/Abstracts/Wallet';
 import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-// import Wallet, { WALLET_CONNECTED } from '~app/common/stores/Abstracts/Wallet';
-import Wallet from '~app/common/stores/Abstracts/Wallet';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import {
-  changeCurrentNetwork,
-  getCurrentNetwork,
-  inNetworks,
-  notIncludeMainnet, testNets, TOKEN_NAMES,
-} from '~lib/utils/envHelper';
 import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -28,12 +19,8 @@ class WalletStore extends BaseStore implements Wallet {
   accountAddress: string = '';
   wrongNetwork: boolean = false;
   networkId: number = 1;
-  private viewContract: Contract | undefined;
-  private networkContract: Contract | undefined;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
-  private notificationsStore: NotificationsStore = this.getStore('Notifications');
-  private initializingUserInfo: number = 0;
 
   constructor() {
     super();
@@ -54,7 +41,6 @@ class WalletStore extends BaseStore implements Wallet {
       initWallet: action.bound,
       initializeUserInfo: action.bound,
       onBalanceChangeCallback: action.bound,
-      onNetworkChangeCallback: action.bound,
       onAccountAddressChangeCallback: action.bound,
     });
   }
@@ -65,111 +51,25 @@ class WalletStore extends BaseStore implements Wallet {
 
   async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
     if (wallet && connectedChain) {
-      console.warn('<<<<<<<<<<<<<<<<< initiating wallet >>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      const networkId = parseInt(String(connectedChain.id), 16);
-      const balance = wallet.accounts[0]?.balance ? wallet.accounts[0]?.balance[TOKEN_NAMES[networkId]] : undefined;
-      const address = wallet.accounts[0]?.address;
+      console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
       this.wallet = wallet;
-      // this.web3 = new Web3(wallet.provider);
-      this.onNetworkChangeCallback(networkId);
-      // await this.onBalanceChangeCallback(balance);
-      await this.onAccountAddressChangeCallback(address);
       const notifyOptions = {
-        networkId,
+        networkId: Number(connectedChain.id),
         dappId: config.ONBOARD.API_KEY,
         desktopPosition: 'topRight',
       };
       // @ts-ignore
       this.notifySdk = Notify(notifyOptions);
-    } else {
-      await this.onAccountAddressChangeCallback(undefined);
-    }
-  }
-
-  /**
-   * Initialize Account data from contract
-   */
-  async initializeUserInfo() {
-    // if (this.initializingUserInfo > 0) {
-    //   this.initializingUserInfo++;
-    //   return;
-    // }
-    // this.initializingUserInfo++;
-    // try {
-    //   // await this.operatorStore.validatorsPerOperatorLimit();
-    //   await this.ssvStore.initUser();
-    //   await this.operatorStore.initUser();
-    // } catch (e: any) {
-    //   console.log(e.message);
-    // } finally {
-    //   this.initializingUserInfo--;
-    //   if (this.initializingUserInfo > 0) {
-    //     await new Promise((resolve) => setTimeout(resolve, 1000));
-    //     await this.initializeUserInfo();
-    //   }
-    // }
-    await this.ssvStore.initUser();
-    await this.operatorStore.initUser();
-  }
-
-  /**
-   * Connect wallet
-   */
-  async connect() {
-    return;
-    // try {
-    //   console.debug('Connecting wallet..');
-    //   // await this.disconnect();
-    //   // cleanLocalStorage();
-    //   if (this.wallet) {
-    //     return;
-    //   }
-    //   const result = await this.onboardSdk.connectWallet();
-    //   console.warn({
-    //     result,
-    //     onboardSdk: this.onboardSdk,
-    //   });
-    //   if (result?.length > 0) {
-    //     const networkId = result[0].chains[0].id;
-    //     let balance = 0;
-    //     try {
-    //       balance = result[0].accounts[0]?.balance[TOKEN_NAMES[networkId]];
-    //     } catch (e) {
-    //       balance = 0;
-    //     }
-    //     const wallet = result[0];
-    //     const address = result[0].accounts[0].address;
-    //     await this.onWalletConnectedCallback(wallet);
-    //     this.onNetworkChangeCallback(Number(networkId));
-    //     await this.onBalanceChangeCallback(balance || 0);
-    //     await this.onAccountAddressChangeCallback(address);
-    //   }
-    // } catch (error: any) {
-    //   const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
-    //   this.notificationsStore.showMessage(message, 'error');
-    //   console.error('Connecting to wallet error:', error);
-    //   return false;
-    // }
-  }
-
-  /**
-   * User address handler
-   * @param address
-   */
-  async onAccountAddressChangeCallback(address: string | undefined) {
-    const applicationStore: Application = this.getStore('Application');
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const ssvStore: SsvStore = this.getStore('SSV');
-    // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
-    if (address === undefined || !this.wallet?.label) {
-      console.warn('onAccountAddressChangeCallback: Wallet disconnected');
-      ssvStore.clearUserSyncInterval();
-      await this.resetUser();
-    } else {
-      console.warn('onAccountAddressChangeCallback: Wallet connected');
+      // TODO: review this
+      await this.initializeUserInfo();
+      // TODO: what with this?
+      // await this.onAccountAddressChangeCallback(wallet.accounts[0]?.address);
+      const applicationStore: Application = this.getStore('Application');
+      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+      // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
-      this.accountAddress = address;
+      this.accountAddress = wallet.accounts[0]?.address;
       ApiParams.cleanStorage();
       await Promise.all([
         myAccountStore.getOwnerAddressOperators({}),
@@ -184,8 +84,32 @@ class WalletStore extends BaseStore implements Wallet {
       }
       if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
+
+
+    } else {
+      this.ssvStore.clearUserSyncInterval();
+      await this.resetUser();
     }
   }
+
+  /**
+   * Initialize Account data from contract
+   */
+  async initializeUserInfo() {
+    await this.ssvStore.initUser();
+    await this.operatorStore.initUser();
+  }
+
+  // TODO: delete
+  async connect() {
+    return;
+  }
+
+  /**
+   * User address handler
+   * @param address
+   */
+  async onAccountAddressChangeCallback(address: string) {}
 
   async resetUser() {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -201,9 +125,7 @@ class WalletStore extends BaseStore implements Wallet {
     applicationStore.strategyRedirect = config.routes.SSV.ROOT;
   }
 
-  /**
-   * Fetch user balances and fees
-   */
+  // TODO: delete
   async onBalanceChangeCallback(balance: any) {
     // if (balance) await this.initializeUserInfo();
   }
@@ -213,22 +135,12 @@ class WalletStore extends BaseStore implements Wallet {
    * @param networkId
    * @param apiVersion
    */
-  onNetworkChangeCallback(networkId: number, apiVersion?: string) {
-    if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
-      this.wrongNetwork = true;
-      this.notificationsStore.showMessage('Please change network to Holesky', 'error');
-    } else {
-      try {
-        changeCurrentNetwork(Number(networkId), apiVersion);
-      } catch (e) {
-        this.wrongNetwork = true;
-        this.notificationsStore.showMessage(String(e), 'error');
-        return;
-      }
-      config.links.SSV_API_ENDPOINT = getCurrentNetwork().api;
-      this.wrongNetwork = false;
-      this.networkId = networkId;
-    }
+  setNetwork(networkId: number, apiVersion?: string) {
+    // TODO: move this out to listener
+    // if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
+    //   this.wrongNetwork = true;
+    //   this.notificationsStore.showMessage('Please change network to Holesky', 'error');
+    // }
   }
 
   /**

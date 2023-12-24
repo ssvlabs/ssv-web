@@ -52,7 +52,7 @@ const SetOperatorFee = () => {
   };
 
   const removeLeadingZeros = (num: string): string =>  {
-    let stripped = num.replace(/^0+/, '');
+    let stripped = num.toString().replace(/^0+(?!\.)/, '');
     return stripped === '' ? '0' : stripped;
   };
 

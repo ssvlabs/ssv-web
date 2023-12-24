@@ -24,8 +24,11 @@ const ConnectWalletButton = () => {
     if (walletStore.wallet) {
       applicationStore.showWalletPopUp(true);
     } else {
-      await connect();
-      navigate('/join');
+      await connect().then(() => {
+        navigate('/join');
+      }).catch((error) => {
+        console.error('ConnectWalletButton:', error);
+      });
     }
   };
 

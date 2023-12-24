@@ -45,10 +45,6 @@ class WalletStore extends BaseStore implements Wallet {
     });
   }
 
-  BN(s: any) {
-    return new this.web3.utils.BN(s);
-  }
-
   async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
     if (wallet && connectedChain) {
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);

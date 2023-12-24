@@ -45,7 +45,4 @@ export default abstract class Wallet extends BaseStore {
 
   // eslint-disable-next-line no-unused-vars
   public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): void;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract BN(s: any): any;
 }

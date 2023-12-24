@@ -15,12 +15,13 @@ const useOnboard = () => {
 
   useEffect(() => {
     if (connectedChain?.id && wallet?.accounts[0]) {
-      if (wallet.provider) {
-        initContracts({ provider: wallet.provider, network: getStoredNetwork() });
-        walletStore.initWallet(wallet, connectedChain);
-      }
+      console.warn('useOnboard::useEffect: connectedChain?.id && wallet?.accounts[0]', connectedChain?.id, wallet?.accounts[0]);
+      // if (wallet.provider) {
+      //   initContracts({ provider: wallet.provider, network: getStoredNetwork() });
+      //   walletStore.initWallet(wallet, connectedChain);
+      // }
     }
-  }, [wallet?.accounts[0], connectedChain]);
+  }, [wallet?.accounts[0]?.address, connectedChain?.id]);
 
   const disconnectWallet = async () => {
     if (wallet) {

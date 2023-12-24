@@ -49,8 +49,6 @@ const App = () => {
 
   useEffect(() => {
     if (web3Onboard) {
-      walletStore.onboardSdk = web3Onboard;
-
       if (!applicationStore.locationRestrictionEnabled) {
         console.debug('Skipping location restriction functionality in this app.');
       } else {

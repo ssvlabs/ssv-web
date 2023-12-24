@@ -109,7 +109,7 @@ class ApplicationStore extends BaseStore implements Application {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const theme = isDarkMode ? 'dark' : 'light';
     const walletStore: WalletStore = this.getStore('Wallet');
-    walletStore?.onboardSdk?.state.actions.updateTheme(theme);
+    // walletStore?.onboardSdk?.state.actions.updateTheme(theme);
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }

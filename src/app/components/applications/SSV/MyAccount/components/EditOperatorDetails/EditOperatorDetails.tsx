@@ -16,6 +16,8 @@ import ProcessStore, { SingleOperator } from '~app/common/stores/applications/Ss
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
+import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
 
 const EditOperatorDetails = () => {
     const stores = useStores();
@@ -59,7 +61,8 @@ const EditOperatorDetails = () => {
             applicationStore.setIsLoading(true);
             let signatureHash;
             try {
-                signatureHash = await walletStore.web3.eth.personal.sign(rawDataToValidate, walletStore.accountAddress);
+                const contract = getContractByName(EContractName.SETTER);
+                signatureHash = await contract.signer.signMessage(rawDataToValidate);
                 setErrorMessage(['']);
             } catch (e: any){
                 console.log(`Error message: ${e.message}`);

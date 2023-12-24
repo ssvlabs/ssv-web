@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import useOnboard from '~app/hooks/useOnboard';
 import { useNavigate } from 'react-router-dom';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import {
@@ -11,7 +10,6 @@ import {
     toHexString,
 } from '~root/providers/networkInfo.provider';
 import { useStores } from '~app/hooks/useStores';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
@@ -113,8 +111,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         if (isWalletConnect()) {
             await disconnectWallet();
             await connect();
-            window.location.href = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
-            // navigate('/join');
             return;
         }
 
@@ -136,7 +132,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         // changeNetwork(getNetworkInfoIndexByNetworkId(Number(network.networkId)));
         // navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         // navigate('/join');
-        window.location.href = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
     };
 
     return (

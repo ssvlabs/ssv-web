@@ -47,9 +47,7 @@ const PAYLOAD_KEYS = {
 
 // eslint-disable-next-line no-unused-vars
 enum Mode {
-  // eslint-disable-next-line no-unused-vars
   KEYSHARE = 0,
-  // eslint-disable-next-line no-unused-vars
   KEYSTORE = 1,
 }
 
@@ -79,6 +77,8 @@ class ValidatorStore extends BaseStore {
   // general
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
+  // @observable
+  // isMultiSharesMode: boolean = false;
 
   // Key Stores flow
   keyStorePublicKey: string = '';
@@ -95,6 +95,11 @@ class ValidatorStore extends BaseStore {
     super();
     makeObservable(this, annotations);
   }
+
+  // @action.bound
+  // setMultiSharesMode(validatorsCount: number) {
+  //   this.isMultiSharesMode = validatorsCount > 1;
+  // }
 
   clearKeyStoreFlowData() {
     this.keyStorePublicKey = '';
@@ -654,154 +659,6 @@ class ValidatorStore extends BaseStore {
       return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
     }
   }
-
-  async addNewValidatorUnsafe() {
-    return new Promise(async (resolve) => {
-      const payload: Map<string, any> | false = await this.createKeySharePayloadUnsafe();
-      const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
-      const walletStore: WalletStore = this.getStore('Wallet');
-      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      const applicationStore: ApplicationStore = this.getStore('Application');
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      const contract: Contract = walletStore.setterContract;
-      const ownerAddress: string = walletStore.accountAddress;
-
-      if (!payload) {
-        resolve(false);
-        return;
-      }
-      this.newValidatorReceipt = null;
-      // Send add operator transaction
-      contract.methods.registerValidator(...payload.values()).send({ from: ownerAddress, gas: null })
-        .on('receipt', async (receipt: any) => {
-          // eslint-disable-next-line no-prototype-builtins
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
-            GoogleTagManager.getInstance().sendEvent({
-              category: 'validator_register',
-              action: 'register_tx',
-              label: 'success',
-            });
-            console.debug('Contract Receipt', receipt);
-            resolve(true);
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              // eslint-disable-next-line no-await-in-loop
-              if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Validator is still not in API..');
-              }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
-            }
-          }
-        })
-        .on('transactionHash', (txHash: string) => {
-          applicationStore.txHash = txHash;
-          applicationStore.showTransactionPendingPopUp(true);
-        })
-        .on('error', (error: any) => {
-          // eslint-disable-next-line no-prototype-builtins
-          const isRejected: boolean = error.hasOwnProperty('code');
-          GoogleTagManager.getInstance().sendEvent({
-            category: 'validator_register',
-            action: 'register_tx',
-            label: isRejected ? 'rejected' : 'error',
-          });
-          console.debug('Contract Error', error.message);
-          applicationStore.setIsLoading(false);
-          resolve(false);
-        })
-        .catch((error: any) => {
-          applicationStore.setIsLoading(false);
-          if (error) {
-            notificationsStore.showMessage(error.message, 'error');
-            GoogleTagManager.getInstance().sendEvent({
-              category: 'validator_register',
-              action: 'register_tx',
-              label: 'error',
-            });
-            resolve(false);
-          }
-          console.debug('Contract Error', error);
-          resolve(true);
-        });
-    });
-  }
-
-  async createKeySharePayloadUnsafe(update: boolean = false): Promise<Map<string, any> | false> {
-    update;
-    const ssvStore: SsvStore = this.getStore('SSV');
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const clusterStore: ClusterStore = this.getStore('Cluster');
-    const totalCost = 8;
-    try {
-      const amountInWei = ssvStore.prepareSsvAmountToTransfer(walletStore.toWei(totalCost));
-      const payload = this.createPayload(this.keySharePublicKey,
-        this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-        this.keySharePayload?.sharesData, `${amountInWei}`,
-        await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
-      return payload;
-    } catch (e: any) {
-      console.log(e.message);
-      return false;
-    }
-  }
-
-  async validateKeySharePayloadUnsafe(): Promise<KeyShareError> {
-    const OK_RESPONSE_ID = 0;
-    const ERROR_RESPONSE_ID = 4;
-    const VALIDATOR_EXIST_ID = 3;
-    const PUBLIC_KEY_ERROR_ID = 5;
-    const keyShares = new KeyShares();
-    const accountStore: AccountStore = this.getStore('Account');
-    const { OK_RESPONSE,
-      CATCH_ERROR_RESPONSE,
-      VALIDATOR_EXIST_RESPONSE,
-      VALIDATOR_PUBLIC_KEY_ERROR,
-    } = translations.VALIDATOR.KEYSHARE_RESPONSE;
-    try {
-      const fileJson = await this.keyShareFile?.text();
-      const operatorStore: OperatorStore = this.getStore('Operator');
-      const walletStore: WalletStore = this.getStore('Wallet');
-      await accountStore.getOwnerNonce(walletStore.accountAddress);
-      const { ownerNonce } = accountStore;
-      // @ts-ignore
-      const parsedFile = JSON.parse(fileJson);
-      const { payload } = parsedFile;
-      this.keySharePayload = payload;
-      this.keySharePublicKey = payload.publicKey;
-      const keyShareOperators = payload.operatorIds.sort();
-
-      if (this.keySharePublicKey.length !== 98) {
-        return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
-      }
-
-      const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-      // @ts-ignore
-      operatorStore.selectOperators(selectedOperators);
-      const validatorExist = !!(await getValidator(payload.publicKey, true));
-      if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
-      return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
-      // @ts-ignore
-    } catch (e: any) {
-      return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
-    }
-  }
-
 
   createPayload(publicKey: string, operatorIds: number[], sharesData: string, totalCost: string, clusterData: ClusterDataType) {
     const payload = new Map<string, any>();

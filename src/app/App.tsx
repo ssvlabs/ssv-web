@@ -16,7 +16,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
-import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
+import DeveloperHelper from '~lib/utils/developerHelper';
 import { getColors } from '~root/themes';
 import { ssvLoader } from '../../public/images';
 
@@ -46,8 +46,6 @@ const App = () => {
   const GlobalStyle = globalStyle();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
-  const location = useLocation();
-  const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
 
   useEffect(() => {
     document.title = applicationStore.appTitle;
@@ -72,7 +70,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (walletStore?.accountDataLoaded && !unsafeMode) {
+    if (walletStore?.accountDataLoaded) {
       navigate(applicationStore.strategyRedirect);
     }
   }, [walletStore?.accountDataLoaded]);

@@ -13,7 +13,6 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 
 type ValidationError = {
@@ -27,7 +26,6 @@ const KeyShareFlow = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const inputRef = useRef(null);
-  const location = useLocation();
   const removeButtons = useRef(null);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -40,7 +38,6 @@ const KeyShareFlow = () => {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
     false: () => navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING),
   };
-  const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
 
   useEffect(() => {
     validatorStore.clearKeyShareFlowData();
@@ -49,7 +46,7 @@ const KeyShareFlow = () => {
   const fileHandler = (file: any) => {
     setProcessFile(true);
     validatorStore.setKeyShareFile(file, async () => {
-      const response = unsafeMode ? await validatorStore.validateKeySharePayloadUnsafe() : await validatorStore.validateKeySharePayload();
+      const response = await validatorStore.validateKeySharePayload();
       console.log(response);
       setValidationError(response);
       setProcessFile(false);
@@ -124,9 +121,6 @@ const KeyShareFlow = () => {
   const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
 
   const submitHandler = async () => {
-    if (unsafeMode) {
-      return submitHandlerUnsafeMode();
-    }
     try {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
@@ -142,33 +136,11 @@ const KeyShareFlow = () => {
     applicationStore.setIsLoading(false);
   };
 
-  const submitHandlerUnsafeMode = async () => {
-    try {
-      const response = await validatorStore.addNewValidatorUnsafe();
-      if (response) {
-        applicationStore.showTransactionPendingPopUp(false);
-        navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE);
-      } else {
-        applicationStore.showTransactionPendingPopUp(false);
-      }
-      applicationStore.setIsLoading(false);
-    } catch (error: any) {
-      console.log('catch');
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'validator_register',
-        action: 'upload_file',
-        label: 'invalid_file',
-      });
-      setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
-    }
-    applicationStore.setIsLoading(false);
-  };
-
   const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
   const MainScreen = <BorderScreen
       blackHeader
-      withoutNavigation={!unsafeMode && processStore.secondRegistration}
+      withoutNavigation={processStore.secondRegistration}
       header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
       body={[
         <Grid item container>
@@ -181,7 +153,7 @@ const KeyShareFlow = () => {
       ]}
   />;
 
-  if (!unsafeMode && processStore.secondRegistration) {
+  if (processStore.secondRegistration) {
     return (
         <Grid container>
           <NewWhiteWrapper

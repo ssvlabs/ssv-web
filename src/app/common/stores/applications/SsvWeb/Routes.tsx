@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react';
 import React, { lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
@@ -137,4 +136,4 @@ const Routes: any = () => {
   );
 };
 
-export default observer(Routes);
+export default Routes;

@@ -48,7 +48,6 @@ class ApplicationStore extends BaseStore implements Application {
       switchDarkMode: action.bound,
       showWalletPopUp: action.bound,
       walletConnectivity: observable,
-      applicationRoutes: action.bound,
       displayToolBarMenu: action.bound,
       transactionPendingPopUp: observable,
       setWalletConnectivity: action.bound,
@@ -82,10 +81,6 @@ class ApplicationStore extends BaseStore implements Application {
 
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
-  }
-
-  applicationRoutes() {
-    return require('~app/common/stores/applications/Distribution/Routes').default;
   }
 
   showTransactionPendingPopUp(status: boolean) {

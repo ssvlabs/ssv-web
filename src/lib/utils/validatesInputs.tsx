@@ -3,8 +3,8 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { compareNumbers } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import LinkText from '~app/components/common/LinkText/LinkText';
+import { isAddress } from '~root/services/conversions.service';
 
 interface ErrorObject {
   errorMessage: any,
@@ -29,14 +29,13 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
 };
 
 export const validateAddressInput = (value: string, callback: React.Dispatch<ErrorObject>, skipEmpty: boolean = false, fieldName: string = 'Operator address'): void => {
-  const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');
   const response = { shouldDisplay: true, errorMessage: '' };
   const regx = /^[A-Za-z0-9]+$/;
   if (value.length === 0 && skipEmpty) {
     response.shouldDisplay = false;
   } else if (value.length === 0) {
     response.errorMessage = `Please enter an ${fieldName.toLowerCase()}.`;
-  } else if ((value.length !== 42 && value.startsWith('0x')) || (value.length !== 40 && !value.startsWith('0x')) || (!walletStore.web3.utils.isAddress(value))) {
+  } else if ((value.length !== 42 && value.startsWith('0x')) || (value.length !== 40 && !value.startsWith('0x')) || (!isAddress(value))) {
     response.errorMessage = `${fieldName} must be a valid address format.`;
   } else if (!regx.test(value)) {
     response.errorMessage = `${fieldName} should contain only alphanumeric characters.`;

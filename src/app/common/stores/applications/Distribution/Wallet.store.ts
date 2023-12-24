@@ -60,10 +60,6 @@ class WalletStore extends BaseStore implements Wallet {
     });
   }
 
-  BN(s: any) {
-    return new this.web3.utils.BN(s);
-  }
-
   /**
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization

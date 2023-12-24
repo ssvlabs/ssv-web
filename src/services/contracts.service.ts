@@ -74,6 +74,10 @@ const initDistributionContract = ({ provider, network }: { provider: EIP1193Prov
 
 const getContractByName = (name: EContractName) => contracts[name];
 
+const resetContracts = () => {
+  contracts = {} as Record<EContractName, Contract>;
+};
+
 /**
  * Crucial to call this only when then network object has been changed
  */
@@ -82,10 +86,6 @@ const initContracts = ({ provider, network }: { provider: EIP1193Provider; netwo
   initSetterContract({ provider, network });
   initTokenContract({ provider, network });
   initDistributionContract({ provider, network });
-};
-
-const resetContracts = () => {
-  contracts = {} as Record<EContractName, Contract>;
 };
 
 export {

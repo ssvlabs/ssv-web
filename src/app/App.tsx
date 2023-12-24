@@ -51,6 +51,7 @@ const App = () => {
     if (web3Onboard) {
       if (!applicationStore.locationRestrictionEnabled) {
         console.debug('Skipping location restriction functionality in this app.');
+        applicationStore.userGeo = '';
       } else {
         checkUserCountryRestriction().then((res: any) => {
           if (res.restricted) {

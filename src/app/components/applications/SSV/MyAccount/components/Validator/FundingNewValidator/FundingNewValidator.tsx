@@ -164,8 +164,7 @@ const FundingNewValidator = () => {
                                    className={`${classes.OptionBox} ${isChecked(option.id) ? classes.SelectedBox : ''}`}
                                    onClick={() => checkBox(option.id)}>
                         <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
-                          {isChecked(option.id) ? <Grid item className={classes.CheckedCircle}/> :
-                              <Grid item className={classes.CheckCircle}/>}
+                          <Grid item className={isChecked(option.id) ? classes.CheckedCircle : classes.CheckCircle} />
                           <Grid item className={classes.TimeText}>{option.timeText}</Grid>
                         </Grid>
                         {isCustom && <TextInput value={depositSSV}

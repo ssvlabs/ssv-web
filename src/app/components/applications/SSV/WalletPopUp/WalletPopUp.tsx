@@ -21,10 +21,10 @@ const WalletPopUp = () => {
 
     const changeWallet = async () => {
         // cleanLocalStorage();
-        applicationStore.showWalletPopUp(false);
         if (wallet) {
             await disconnect({ label: wallet.label });
         }
+        applicationStore.showWalletPopUp(false);
         await walletStore.initWallet(null, null);
         await connect();
         navigate(applicationStore.strategyRedirect);

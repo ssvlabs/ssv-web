@@ -65,7 +65,6 @@ const changeNetwork = (index: number): NetworkInfo => {
   // Get network info from its index in switcher
   if (!networks[index]) {
     index = 0;
-    console.warn('Network index is not valid. Switching to default network');
   }
   localStorage.setItem('networkSwitcherIndex', `${index}`);
   console.warn('Saved network index', index);
@@ -79,7 +78,6 @@ const getStoredNetwork = () => {
   if (!networks[savedNetworkIndex]) {
     savedNetworkIndex = 0;
     localStorage.setItem('networkSwitcherIndex', `${savedNetworkIndex}`);
-    console.warn('Network index is not valid. Switching to first network');
   }
   return networks[savedNetworkIndex];
 };

@@ -256,6 +256,14 @@ class OperatorStore extends BaseStore {
   }
 
   /**
+   * Retrieves the operator id
+   */
+  get getOperatorId(): string {
+    const operatorStore: OperatorStore = this.getStore('Operator');
+    return operatorStore.newOperatorKeys.id;
+  }
+
+  /**
    * Check if operator registrable
    */
   async syncOperatorFeeInfo(operatorId: number) {
@@ -1120,6 +1128,7 @@ class OperatorStore extends BaseStore {
           const receipt = await tx.wait();
           console.warn('[addNewOperator] debug 3', receipt);
           if (receipt.blockHash) {
+            this.newOperatorKeys.id = String(parseInt(receipt.events[0].args.operatorId));
             applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
           }

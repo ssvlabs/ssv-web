@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import Web3, { utils } from 'web3';
 import { roundNumber } from '~lib/utils/numbers';
 
@@ -30,4 +31,6 @@ const decodeParameter = (type: string, value: any) => {
   return web3.eth.abi.decodeParameter(type, value);
 };
 
-export { fromWei, toWei, encodePacked, encodeParameter, decodeParameter };
+const isAddress = (address: string) => ethers.utils.isAddress(address);
+
+export { fromWei, toWei, encodePacked, encodeParameter, decodeParameter, isAddress };

@@ -33,6 +33,4 @@ export default abstract class Application {
   public abstract showTransactionPendingPopUp(status: boolean): void;
 
   public abstract switchDarkMode(): void;
-
-  public abstract applicationRoutes(): any;
 }

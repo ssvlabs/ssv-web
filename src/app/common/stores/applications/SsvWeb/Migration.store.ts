@@ -5,7 +5,7 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { KeySharesItem } from 'ssv-keys/src/lib/KeyShares/KeySharesItem';
+import { KeySharesItem } from 'ssv-keys';
 
 class MigrationStore extends BaseStore  {
     migrationFile: File | null = null;

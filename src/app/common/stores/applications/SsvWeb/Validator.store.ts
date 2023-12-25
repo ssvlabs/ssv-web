@@ -21,7 +21,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-import { KeySharesItem } from 'ssv-keys/src/lib/KeyShares/KeySharesItem';
+import { KeySharesItem } from 'ssv-keys';
 
 type ClusterDataType = {
   active: boolean;
@@ -64,7 +64,6 @@ const annotations = {
   clearKeyShareFlowData: action.bound,
   clearKeyStoreFlowData: action.bound,
   validatorPublicKeyExist: observable,
-  processKeyShareFile: action.bound,
   isMultiSharesMode: observable,
   setMultiSharesMode: action.bound,
 };
@@ -73,7 +72,6 @@ class ValidatorStore extends BaseStore {
   // general
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
-  // @observable
   isMultiSharesMode: boolean = false;
 
   // Key Stores flow
@@ -92,7 +90,6 @@ class ValidatorStore extends BaseStore {
     makeObservable(this, annotations);
   }
 
-  // @action.bound
   setMultiSharesMode(validatorsCount: number) {
     this.isMultiSharesMode = validatorsCount > 1;
   }
@@ -477,15 +474,6 @@ class ValidatorStore extends BaseStore {
             ownerNonce: ownerNonce,
             privateKey: this.keyStorePrivateKey,
           });
-          // keysharePayload = await keyShares.buildPayload({
-          //   publicKey: threshold.publicKey,
-          //   operators,
-          //   encryptedShares,
-          // }, {
-          //   ownerAddress: accountAddress,
-          //   ownerNonce: ownerNonce,
-          //   privateKey: this.keyStorePrivateKey,
-          // });
         } catch (e: any) {
           console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
           console.log(threshold.publicKey);

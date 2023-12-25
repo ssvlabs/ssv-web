@@ -17,7 +17,7 @@ import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 
 export interface NewOperator {
-  id: string,
+  id: number,
   fee: number,
   publicKey: string,
   address: string,
@@ -79,7 +79,7 @@ class OperatorStore extends BaseStore {
   declaredOperatorFeePeriod: null | number = null;
   operatorApprovalBeginTime: null | number = null;
 
-  newOperatorKeys: NewOperator = { publicKey: '', address: '', fee: 0, id: '0' };
+  newOperatorKeys: NewOperator = { publicKey: '', address: '', fee: 0, id: 0 };
   newOperatorRegisterSuccessfully: string = '';
 
   estimationGas: number = 0;
@@ -258,7 +258,7 @@ class OperatorStore extends BaseStore {
   /**
    * Retrieves the operator id
    */
-  get getOperatorId(): string {
+  get getOperatorId(): number {
     const operatorStore: OperatorStore = this.getStore('Operator');
     return operatorStore.newOperatorKeys.id;
   }
@@ -552,7 +552,7 @@ class OperatorStore extends BaseStore {
   clearOperatorData() {
     this.newOperatorKeys = {
       fee: 0,
-      id: '0',
+      id: 0,
       publicKey: '',
       address: '',
     };
@@ -1128,7 +1128,7 @@ class OperatorStore extends BaseStore {
           const receipt = await tx.wait();
           console.warn('[addNewOperator] debug 3', receipt);
           if (receipt.blockHash) {
-            this.newOperatorKeys.id = String(parseInt(receipt.events[0].args.operatorId));
+            // this.newOperatorKeys.id = String(parseInt(receipt.events[0].args.operatorId));
             applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
           }

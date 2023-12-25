@@ -63,6 +63,7 @@ const OperatorConfirmation = () => {
           } catch (e) {
             console.error('Failed to get operator by public key', e);
           }
+          // eslint-disable-next-line @typescript-eslint/no-loop-func
           await new Promise((resolve) => setTimeout(resolve, 2000));
         }
         if (!operatorStore.newOperatorKeys.id) {

@@ -157,7 +157,7 @@ const ValidatorFlow = () => {
                   isLoading={isLoading}
                   checkboxesText={showCheckBox ? [checkBoxText] : []}
                   checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
-                  disable={buttonDisableCondition}
+                  disable={buttonDisableCondition || isLoading}
               />
               </TermsAndConditionsCheckbox>,
           ]}

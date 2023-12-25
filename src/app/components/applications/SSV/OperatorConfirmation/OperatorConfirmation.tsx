@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -10,6 +11,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import { decodeParameter } from '~root/services/conversions.service';
 import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
@@ -28,18 +30,52 @@ const OperatorConfirmation = () => {
   const { checkedCondition } = useTermsAndConditions();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
 
+  const disableLoadingStates = () => {
+    applicationStore.setIsLoading(false);
+    applicationStore.showTransactionPendingPopUp(false);
+  };
+
   const onRegisterClick = async () => {
     try {
       applicationStore.setIsLoading(true);
       setActionButtonText('Waiting for confirmation...');
       const operatorAdded = await operatorStore.addNewOperator();
-      if (operatorAdded) navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+      let publicKey = operatorStore.newOperatorKeys.publicKey;
+      if (operatorAdded) {
+        try  {
+          publicKey = String(decodeParameter('string', operatorStore.newOperatorKeys.publicKey));
+        } finally {
+          console.log('Decoded public key', publicKey);
+        }
+        for (let i = 0; i < 20 && !operatorStore.newOperatorKeys.id; i++) {
+          try {
+            const operator = await Operator.getInstance().getOperatorByPublicKey(publicKey, false);
+            console.log('Fetched operator by public key', operator);
+            if (operator?.data?.id) {
+              operatorStore.newOperatorKeys = {
+                ...operatorStore.newOperatorKeys,
+                id: operator.data.id,
+              };
+              disableLoadingStates();
+              navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+              return;
+            }
+          } catch (e) {
+            console.error('Failed to get operator by public key', e);
+          }
+          // eslint-disable-next-line @typescript-eslint/no-loop-func
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+        if (!operatorStore.newOperatorKeys.id) {
+          disableLoadingStates();
+          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+        }
+      }
       setActionButtonText('Register Operator');
     } catch (e: any) {
       setActionButtonText('Register Operator');
     }
-    applicationStore.setIsLoading(false);
-    applicationStore.showTransactionPendingPopUp(false);
+    disableLoadingStates();
   };
 
   return (

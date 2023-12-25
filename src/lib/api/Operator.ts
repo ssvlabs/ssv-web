@@ -85,10 +85,10 @@ class Operator {
     }
   }
 
-  async getOperatorByPublicKey(publicKey: string) {
+  async getOperatorByPublicKey(publicKey: string, skipRetry: boolean = true) {
     const url = `${getStoredNetwork().api}/operators/public_key/${publicKey}`;
     try {
-      return await this.getData(url, true);
+      return await this.getData(url, skipRetry);
     } catch (e) {
       return null;
     }

@@ -33,14 +33,15 @@ const OperatorDashboard = () => {
   const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
 
+  const fetchData = async () => {
+    for (const operator of myAccountStore.ownerAddressOperators) {
+      const balance = await operatorStore.getOperatorBalance(operator.id);
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      for (const operator of myAccountStore.ownerAddressOperators) {
-        const balance = await operatorStore.getOperatorBalance(operator.id);
-        // eslint-disable-next-line @typescript-eslint/no-loop-func
-        setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
-      }
-    };
     fetchData();
   }, [page]);
 

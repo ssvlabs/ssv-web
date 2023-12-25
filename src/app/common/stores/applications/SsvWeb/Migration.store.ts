@@ -1,4 +1,3 @@
-import { KeyShares } from 'ssv-keys';
 import { observable, makeObservable, action } from 'mobx';
 import Operator from '~lib/api/Operator';
 import { translations } from '~app/common/config';
@@ -6,6 +5,7 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { KeySharesItem } from 'ssv-keys/src/lib/KeyShares/KeySharesItem';
 
 class MigrationStore extends BaseStore  {
     migrationFile: File | null = null;
@@ -53,7 +53,7 @@ class MigrationStore extends BaseStore  {
         const PUBLIC_KEY_ERROR_ID = 5;
         const OPERATOR_NOT_EXIST_ID = 1;
         const OPERATOR_NOT_MATCHING_ID = 2;
-        const keyShares = new KeyShares();
+        const keyShares = new KeySharesItem();
         const accountStore: AccountStore = this.getStore('Account');
         const operatorStore: OperatorStore = this.getStore('Operator');
         const walletStore: WalletStore = this.getStore('Wallet');

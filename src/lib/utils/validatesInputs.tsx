@@ -46,11 +46,14 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
   callback(response);
 };
 
+const MIN_ALLOWED_VALIDATORS = 1;
+const MAX_ALLOWED_VALIDATORS = 100;
+
 export const validateValidatorsCount = (value: string, callback: React.Dispatch<ErrorObject>): void => {
   const response = { shouldDisplay: true, errorMessage: '' };
-  console.log(value !== '1');
-  if (value !== '1'){
-    response.errorMessage = 'Only 1 validator is allowed';
+  let num: number = Number(value);
+  if (isNaN(num) || num < MIN_ALLOWED_VALIDATORS || num > MAX_ALLOWED_VALIDATORS){
+    response.errorMessage = 'Invalid validators count. Only number between 1-100 allowed';
   } else {
     response.shouldDisplay = false;
   }

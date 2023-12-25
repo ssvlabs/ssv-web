@@ -21,13 +21,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-
-type KeyShareError = {
-  id: number,
-  name: string,
-  errorMessage: string,
-  subErrorMessage?: string,
-};
+import { KeySharesItem } from 'ssv-keys/src/lib/KeyShares/KeySharesItem';
 
 type ClusterDataType = {
   active: boolean;
@@ -70,7 +64,9 @@ const annotations = {
   clearKeyShareFlowData: action.bound,
   clearKeyStoreFlowData: action.bound,
   validatorPublicKeyExist: observable,
-  validateKeySharePayload: action.bound,
+  processKeyShareFile: action.bound,
+  isMultiSharesMode: observable,
+  setMultiSharesMode: action.bound,
 };
 
 class ValidatorStore extends BaseStore {
@@ -78,7 +74,7 @@ class ValidatorStore extends BaseStore {
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
   // @observable
-  // isMultiSharesMode: boolean = false;
+  isMultiSharesMode: boolean = false;
 
   // Key Stores flow
   keyStorePublicKey: string = '';
@@ -97,9 +93,9 @@ class ValidatorStore extends BaseStore {
   }
 
   // @action.bound
-  // setMultiSharesMode(validatorsCount: number) {
-  //   this.isMultiSharesMode = validatorsCount > 1;
-  // }
+  setMultiSharesMode(validatorsCount: number) {
+    this.isMultiSharesMode = validatorsCount > 1;
+  }
 
   clearKeyStoreFlowData() {
     this.keyStorePublicKey = '';
@@ -472,7 +468,7 @@ class ValidatorStore extends BaseStore {
         }
         let keysharePayload;
         try {
-          keysharePayload = await keyShares.buildPayload({
+          keysharePayload = await (new KeySharesItem()).buildPayload({
             publicKey: threshold.publicKey,
             operators,
             encryptedShares,
@@ -481,6 +477,15 @@ class ValidatorStore extends BaseStore {
             ownerNonce: ownerNonce,
             privateKey: this.keyStorePrivateKey,
           });
+          // keysharePayload = await keyShares.buildPayload({
+          //   publicKey: threshold.publicKey,
+          //   operators,
+          //   encryptedShares,
+          // }, {
+          //   ownerAddress: accountAddress,
+          //   ownerNonce: ownerNonce,
+          //   privateKey: this.keyStorePrivateKey,
+          // });
         } catch (e: any) {
           console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
           console.log(threshold.publicKey);
@@ -604,61 +609,63 @@ class ValidatorStore extends BaseStore {
     }
   }
 
-  async validateKeySharePayload(): Promise<KeyShareError> {
-    const OK_RESPONSE_ID = 0;
-    const ERROR_RESPONSE_ID = 4;
-    const VALIDATOR_EXIST_ID = 3;
-    const PUBLIC_KEY_ERROR_ID = 5;
-    const OPERATOR_NOT_EXIST_ID = 1;
-    const OPERATOR_NOT_MATCHING_ID = 2;
-    const keyShares = new KeyShares();
-    const processStore: ProcessStore = this.getStore('Process');
-    const accountStore: AccountStore = this.getStore('Account');
-    const { ownerNonce } = accountStore;
-    const { OK_RESPONSE,
-      OPERATOR_NOT_EXIST_RESPONSE,
-      OPERATOR_NOT_MATCHING_RESPONSE,
-      CATCH_ERROR_RESPONSE,
-      VALIDATOR_EXIST_RESPONSE,
-      VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
-    try {
-      const fileJson = await this.keyShareFile?.text();
-      const operatorStore: OperatorStore = this.getStore('Operator');
-      const walletStore: WalletStore = this.getStore('Wallet');
-      // @ts-ignore
-      const parsedFile = JSON.parse(fileJson);
-      const { payload, data } = parsedFile;
-      const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
-      this.keySharePayload = payload;
-      this.keySharePublicKey = payload.publicKey;
-      const keyShareOperators = payload.operatorIds.sort();
-      if (this.keySharePublicKey.length !== 98) {
-        return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
-      }
-      if (processStore.secondRegistration) {
-        const process: SingleCluster = processStore.process;
-        const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
-        if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
-          return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
-        }
-      } else {
-        const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-        if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
-        if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
-          return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
-        }
-        // @ts-ignore
-        operatorStore.selectOperators(selectedOperators);
-      }
-      const validatorExist = !!(await getValidator(payload.publicKey, true));
-      if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
-      return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
-      // @ts-ignore
-    } catch (e: any) {
-      return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
-    }
-  }
+  // async validateKeySharePayload(): Promise<KeyShareError> {
+  //   const OK_RESPONSE_ID = 0;
+  //   const ERROR_RESPONSE_ID = 4;
+  //   const VALIDATOR_EXIST_ID = 3;
+  //   const PUBLIC_KEY_ERROR_ID = 5;
+  //   const OPERATOR_NOT_EXIST_ID = 1;
+  //   const OPERATOR_NOT_MATCHING_ID = 2;
+  //   const keyShares = new KeyShares();
+  //   const processStore: ProcessStore = this.getStore('Process');
+  //   const accountStore: AccountStore = this.getStore('Account');
+  //   const { ownerNonce } = accountStore;
+  //   const { OK_RESPONSE,
+  //     OPERATOR_NOT_EXIST_RESPONSE,
+  //     OPERATOR_NOT_MATCHING_RESPONSE,
+  //     CATCH_ERROR_RESPONSE,
+  //     VALIDATOR_EXIST_RESPONSE,
+  //     VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
+  //   try {
+  //     const fileJson = await this.keyShareFile?.text();
+  //     const operatorStore: OperatorStore = this.getStore('Operator');
+  //     const walletStore: WalletStore = this.getStore('Wallet');
+  //     // @ts-ignore
+  //     const parsedFile = JSON.parse(fileJson);
+  //     const { payload, data } = parsedFile;
+  //     const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
+  //     this.keySharePayload = payload;
+  //     this.keySharePublicKey = payload.publicKey;
+  //     const keyShareOperators = payload.operatorIds.sort();
+  //     if (this.keySharePublicKey.length !== 98) {
+  //       return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
+  //     }
+  //     if (processStore.secondRegistration) {
+  //       const process: SingleCluster = processStore.process;
+  //       const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
+  //       if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
+  //         return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
+  //       }
+  //     } else {
+  //       const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
+  //       if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
+  //       if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+  //         return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
+  //       }
+  //       // @ts-ignore
+  //       operatorStore.selectOperators(selectedOperators);
+  //     }
+  //     const validatorExist = !!(await getValidator(payload.publicKey, true));
+  //     if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
+  //     await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
+  //     return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
+  //     // @ts-ignore
+  //   } catch (e: any) {
+  //     return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
+  //   }
+  // }
+
+
 
   createPayload(publicKey: string, operatorIds: number[], sharesData: string, totalCost: string, clusterData: ClusterDataType) {
     const payload = new Map<string, any>();

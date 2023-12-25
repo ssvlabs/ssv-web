@@ -28,6 +28,7 @@ import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -45,6 +46,7 @@ const OfflineKeyShareGeneration = () => {
   const accountStore: AccountStore = stores.Account;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
+  const validatorStore: ValidatorStore = stores.Validator;
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
@@ -144,9 +146,12 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const validatorsCountHandler = (e: any) => {
-    const { value } = e.target;
-    setValidatorsCount(value);
+    let { value } = e.target;
     validateValidatorsCount(value, setValidatorsCountError);
+    if (!validatorsCountError.shouldDisplay){
+      validatorStore.setMultiSharesMode(value);
+      setValidatorsCount(value);
+    }
     setTextCopied(false);
   };
 

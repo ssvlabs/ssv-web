@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStyles } from '../ImportFile.styles';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -10,16 +10,66 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
+import { KeyShares } from 'ssv-keys';
+import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 
-type ValidationError = {
-  id: number,
+
+// export type KeyShareSingle = {
+//   version: string,
+//   createdAt: string,
+//   data: KeySharesData,
+//   payload: KeySharesPayload
+// };
+
+export type KeyShareMulti = {
+  version: string,
+  createdAt: string,
+  shares: KeyShares
+};
+
+// export type Share = {
+//   data: ShareData,
+//   payload: SharePayload
+// };
+//
+// export type ShareData = {
+//   ownerNonce: number,
+//   ownerAddress: string,
+//   publicKey: string,
+//   operators: ShareOperatorData[]
+// };
+//
+// export type SharePayload = {
+//   publicKey: string,
+//   operatorIds: number[],
+//   sharesData: string,
+// };
+//
+// export type ShareOperatorData = {
+//   id: number,
+//   operatorKey: string
+// };
+
+export type KeyShareValidationResponse = {
+  id: KeyShareValidationResponseId,
+  name: string,
   errorMessage: string,
   subErrorMessage?: string,
 };
+
+export enum KeyShareValidationResponseId {
+  OK_RESPONSE_ID,
+  OPERATOR_NOT_EXIST_ID,
+  OPERATOR_NOT_MATCHING_ID,
+  VALIDATOR_EXIST_ID,
+  ERROR_RESPONSE_ID,
+  PUBLIC_KEY_ERROR_ID,
+}
+
 
 const KeyShareFlow = () => {
   const stores = useStores();
@@ -32,7 +82,7 @@ const KeyShareFlow = () => {
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const [processingFile, setProcessFile] = useState(false);
-  const [validationError, setValidationError] = useState<ValidationError>({ id: 0, errorMessage: '', subErrorMessage: '' });
+  const [validationError, setValidationError] = useState<KeyShareValidationResponse>({ id: KeyShareValidationResponseId.OK_RESPONSE_ID, name:'', errorMessage: '', subErrorMessage: '' });
   const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
   const slashingWarningNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
@@ -43,10 +93,109 @@ const KeyShareFlow = () => {
     validatorStore.clearKeyShareFlowData();
   }, []);
 
+  function getResponse(keyShareResponseId: KeyShareValidationResponseId, errorMsg?: string): KeyShareValidationResponse{
+    const { KEYSHARE_RESPONSE } = translations.VALIDATOR;
+    switch (keyShareResponseId) {
+      case KeyShareValidationResponseId.OK_RESPONSE_ID: {
+        return { ...KEYSHARE_RESPONSE.OK_RESPONSE, id: KeyShareValidationResponseId.OK_RESPONSE_ID };
+      }
+      case KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID: {
+        return { ...KEYSHARE_RESPONSE.OPERATOR_NOT_EXIST_RESPONSE, id: KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID };
+      }
+      case KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID: {
+        return { ...KEYSHARE_RESPONSE.OPERATOR_NOT_MATCHING_RESPONSE, id: KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID };
+      }
+      case KeyShareValidationResponseId.VALIDATOR_EXIST_ID: {
+        return { ...KEYSHARE_RESPONSE.VALIDATOR_EXIST_RESPONSE, id: KeyShareValidationResponseId.VALIDATOR_EXIST_ID };
+      }
+      case KeyShareValidationResponseId.ERROR_RESPONSE_ID: {
+        if (!errorMsg){
+          throw Error('Missing error message');
+        }
+        return { ...KEYSHARE_RESPONSE.CATCH_ERROR_RESPONSE, id: KeyShareValidationResponseId.ERROR_RESPONSE_ID, errorMessage: errorMsg };
+      }
+      case KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID: {
+        return { ...KEYSHARE_RESPONSE.VALIDATOR_PUBLIC_KEY_ERROR, id: KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID };
+      }
+    }
+  }
+
+  function parseToMultiShareFormat(fileJson: string): KeyShareMulti {
+    let parsedFile = JSON.parse(fileJson);
+    if (!('shares' in parsedFile)) {
+      parsedFile.shares = [{ data: parsedFile.data, payload: parsedFile.payload } ];
+    }
+    return parsedFile;
+    // const keyShareMulti: KeyShareMulti =  parsedFile; // Can also assign it to store for future use.
+  }
+
+  // function validateKeyShareFile(keyShareMulti: KeyShareMulti): KeyShareValidationResponse {
+  //   try {
+  //     for (let {payload, data} of keyShareMulti.shares) {
+  //       const keyShareOperators = payload.operatorIds.sort();
+  //       const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
+  //       if (payload.publicKey.length !== 98) {
+  //         return getResponse(KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID);
+  //       }
+  //       if (processStore.secondRegistration) {
+  //         const process: SingleCluster = processStore.process;
+  //         const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
+  //         if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
+  //           return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+  //         }
+  //       } else {
+  //         const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
+  //         if (!selectedOperators) {
+  //           return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
+  //         }
+  //         if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+  //           return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+  //         }
+  //         operatorStore.selectOperators(selectedOperators);
+  //       }
+  //       const validatorExist = !!(await getValidator(payload.publicKey, true));
+  //       if (validatorExist) {
+  //         return getResponse(KeyShareValidationResponseId.VALIDATOR_EXIST_ID);
+  //       }
+  //       await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
+  //     }
+  //     return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
+  //   }
+  //   catch (e: any) {
+  //     return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+  //   }
+  // }
+
+  function storeKeyShareData(keyShareMulti: KeyShares) {
+
+  }
+
+  async function processKeyShareFile(): Promise<KeyShareValidationResponse> {
+    const accountStore: AccountStore = useStores().getStore('Account');
+    const { ownerNonce } = accountStore;
+    try {
+      if (!validatorStore.keyShareFile) {
+        throw Error('KeyShares file undefined.');
+      }
+      const fileJson = await validatorStore.keyShareFile.text();
+      const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
+      const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
+      // const validationResponse: KeyShareValidationResponse = validateKeyShareFile(keyShareMulti);
+      // if(validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
+      //   return validationResponse
+      // }
+      storeKeyShareData(keyShares);
+      return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
+    } catch (e: any) {
+      console.log(e);
+      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+    }
+  }
+
   const fileHandler = (file: any) => {
     setProcessFile(true);
     validatorStore.setKeyShareFile(file, async () => {
-      const response = await validatorStore.validateKeySharePayload();
+      const response = await processKeyShareFile();
       console.log(response);
       setValidationError(response);
       setProcessFile(false);
@@ -56,7 +205,7 @@ const KeyShareFlow = () => {
   const removeFile = () => {
     setProcessFile(true);
     validatorStore.clearKeyShareFlowData();
-    setValidationError({ id: 0, errorMessage: '' });
+    setValidationError({ id: KeyShareValidationResponseId.ERROR_RESPONSE_ID, name: '', errorMessage: '' });
     validatorStore.keyShareFile = null;
     setProcessFile(false);
 

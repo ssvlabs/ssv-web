@@ -35,7 +35,6 @@ const GenerateOperatorKeys = () => {
   const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey });
   const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
-  const [hasWarning, setHasWarning] = useState(false);
 
   // Inputs validation
   useEffect(() => {
@@ -76,13 +75,6 @@ const GenerateOperatorKeys = () => {
     if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
     applicationStore.setIsLoading(false);
   };
-
-  useEffect(() => {
-     const setShowNotWhitelistedWarning = (async () => {
-       setHasWarning(!await operatorStore.isOperatorWhitelisted(walletStore.accountAddress));
-    });
-    setShowNotWhitelistedWarning();
-  }, [walletStore.accountAddress]);
 
   return (
     <BorderScreen
@@ -132,12 +124,7 @@ const GenerateOperatorKeys = () => {
             </Grid>
             {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST} />}
           </Grid>
-          {hasWarning && (
-              <Grid container item xs={12} className={classes.WarningMessage}>
-                {translations.OPERATOR.REGISTER.WARNING}
-              </Grid>
-          )}
-          <Button disable={!registerButtonEnabled || hasWarning} text={'Next'} onClick={onRegisterClick} />
+          <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
         </Grid>,
       ]}
     />

@@ -219,7 +219,8 @@ class OperatorStore extends BaseStore {
    * Check if operator registrable
    */
   hasOperatorReachedValidatorLimit(validatorsRegisteredCount: number): boolean {
-    return this.operatorValidatorsLimit <= validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE;
+    // return this.operatorValidatorsLimit <= validatorsRegisteredCount + config.GLOBAL_VARIABLE.OPERATOR_VALIDATORS_LIMIT_PRESERVE;
+    return this.operatorValidatorsLimit <= validatorsRegisteredCount;
   }
 
   /**

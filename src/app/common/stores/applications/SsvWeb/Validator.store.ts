@@ -22,6 +22,9 @@ import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 import { KeySharesItem } from 'ssv-keys';
+import {
+  KeyShareMulti,
+} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/KeyShares';
 
 type ClusterDataType = {
   active: boolean;
@@ -66,14 +69,18 @@ const annotations = {
   validatorPublicKeyExist: observable,
   isMultiSharesMode: observable,
   setMultiSharesMode: action.bound,
+  validatorsCount: observable,
+  processedKeyShare: observable,
+  setProcessedKeyShare: action.bound,
 };
 
 class ValidatorStore extends BaseStore {
   // general
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
-  isMultiSharesMode: boolean = false;
 
+
+  // TODO most likely most of these can be deleted.
   // Key Stores flow
   keyStorePublicKey: string = '';
   keyStorePrivateKey: string = '';
@@ -85,14 +92,27 @@ class ValidatorStore extends BaseStore {
   keySharePublicKey: string = '';
   keyShareFile: File | null = null;
 
+  // New key shares flow.
+  isMultiSharesMode: boolean = false;
+  processedKeyShare: KeyShares | null = null;
+  validatorsCount: number = 0;
+
   constructor() {
     super();
     makeObservable(this, annotations);
   }
 
+
   setMultiSharesMode(validatorsCount: number) {
     this.isMultiSharesMode = validatorsCount > 1;
+    this.validatorsCount = validatorsCount;
   }
+
+  setProcessedKeyShare(processedKeyShare: KeyShares){
+    this.processedKeyShare = processedKeyShare;
+  }
+
+
 
   clearKeyStoreFlowData() {
     this.keyStorePublicKey = '';
@@ -105,6 +125,10 @@ class ValidatorStore extends BaseStore {
     this.keyShareFile = null;
     this.keySharePublicKey = '';
     this.validatorPublicKeyExist = false;
+
+    this.isMultiSharesMode = false;
+    this.processedKeyShare = null;
+    this.validatorsCount = 0;
   }
 
   async extractKeyStoreData(keyStorePassword: string): Promise<any> {

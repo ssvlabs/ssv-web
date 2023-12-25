@@ -13,9 +13,11 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
-import { KeyShares } from 'ssv-keys';
+import { KeyShares, SSVKeysException } from 'ssv-keys';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
+// import { KeySharesPayload } from 'ssv-keys';
+// import { KeySharesData } from 'ssv-keys';
 
 
 // export type KeyShareSingle = {
@@ -121,17 +123,30 @@ const KeyShareFlow = () => {
   }
 
   function parseToMultiShareFormat(fileJson: string): KeyShareMulti {
+    // TODO replace with call to shares.unified() from ssv-key sdk, per defined the doc 'Multi and single shares specification'
     let parsedFile = JSON.parse(fileJson);
     if (!('shares' in parsedFile)) {
-      parsedFile.shares = [{ data: parsedFile.data, payload: parsedFile.payload } ];
+      parsedFile.shares = [{ data: parsedFile.data, payload: parsedFile.payload }];
+      delete parsedFile.data;
+      delete parsedFile.payload;
     }
     return parsedFile;
-    // const keyShareMulti: KeyShareMulti =  parsedFile; // Can also assign it to store for future use.
   }
 
   // function validateKeyShareFile(keyShareMulti: KeyShareMulti): KeyShareValidationResponse {
   //   try {
-  //     for (let {payload, data} of keyShareMulti.shares) {
+  //     for (let { payload: KeySharesPayload, data: KeySharesData } of keyShareMulti.shares) {
+  //
+  //     }
+  //   }
+  //   catch (e) {
+  //
+  //   }
+  // }
+
+  // function validateKeyShareFile(keyShareMulti: KeyShareMulti): KeyShareValidationResponse {
+  //   try {
+  //     for (let { payload, data } of keyShareMulti.shares) {
   //       const keyShareOperators = payload.operatorIds.sort();
   //       const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
   //       if (payload.publicKey.length !== 98) {
@@ -167,12 +182,10 @@ const KeyShareFlow = () => {
   // }
 
   function storeKeyShareData(keyShareMulti: KeyShares) {
-
+    validatorStore.setProcessedKeyShare(keyShareMulti);
   }
 
   async function processKeyShareFile(): Promise<KeyShareValidationResponse> {
-    const accountStore: AccountStore = useStores().getStore('Account');
-    const { ownerNonce } = accountStore;
     try {
       if (!validatorStore.keyShareFile) {
         throw Error('KeyShares file undefined.');
@@ -180,15 +193,20 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      // const validationResponse: KeyShareValidationResponse = validateKeyShareFile(keyShareMulti);
+      // const validationResponse: KeyShareValidationResponse = validateKeyShareFile(keyShareMulti); // TODO add validations according to PRD.
       // if(validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
       //   return validationResponse
       // }
       storeKeyShareData(keyShares);
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
-    } catch (e: any) {
+    }
+    catch (e: any) {
+      let errorMsg = 'Cannot process KeyShares file';
+      if (e instanceof SSVKeysException) {
+        errorMsg = e.message;
+      }
       console.log(e);
-      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, errorMsg);
     }
   }
 
@@ -205,7 +223,7 @@ const KeyShareFlow = () => {
   const removeFile = () => {
     setProcessFile(true);
     validatorStore.clearKeyShareFlowData();
-    setValidationError({ id: KeyShareValidationResponseId.ERROR_RESPONSE_ID, name: '', errorMessage: '' });
+    setValidationError({ id: KeyShareValidationResponseId.OK_RESPONSE_ID, name: '', errorMessage: '' });
     validatorStore.keyShareFile = null;
     setProcessFile(false);
 

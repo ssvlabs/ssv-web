@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
 import { useConnectWallet } from '@web3-onboard/react';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -23,11 +24,15 @@ const WalletPopUp = () => {
         // cleanLocalStorage();
         if (wallet) {
             await disconnect({ label: wallet.label });
+            await walletStore.initWallet(null, null);
         }
         applicationStore.showWalletPopUp(false);
-        await walletStore.initWallet(null, null);
-        await connect();
-        navigate(applicationStore.strategyRedirect);
+        // await walletStore.initWallet(null, null);
+        await connect().catch((error) => {
+            console.error('connect error', error);
+        }).then(() => {
+            navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+        });
     };
 
     const closePopUp = () => {

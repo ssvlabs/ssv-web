@@ -192,10 +192,10 @@ const KeyShareFlow = () => {
     return parsedFile;
   }
 
-  async function validateKeyShareFile(keyShareMulti: KeyShareMulti): Promise<KeyShareValidationResponse> {
-    const shares = keyShareMulti.shares.list();
+  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResponse> {
+    const shares = keyShareMulti.list();
     let consistentOperatorIds: number[] | null = [];
-    if (!shares){
+    if (!shares.length){
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     }
     consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
@@ -215,7 +215,7 @@ const KeyShareFlow = () => {
                 }
               } else {
                 const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperatorIds);
-                if (!selectedOperators) {
+                if (!selectedOperators.length) {
                   return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
                 }
                 else if (selectedOperators?.some((operator: IOperator) => !operatorPublicKeys?.includes(operator.public_key))) {
@@ -251,7 +251,7 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      const validationResponse: KeyShareValidationResponse = await validateKeyShareFile(keyShareMulti); // TODO add validations according to PRD.
+      const validationResponse: KeyShareValidationResponse = await validateKeyShareFile(keyShares); // TODO add validations according to PRD.
       if (validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
         return validationResponse;
       }

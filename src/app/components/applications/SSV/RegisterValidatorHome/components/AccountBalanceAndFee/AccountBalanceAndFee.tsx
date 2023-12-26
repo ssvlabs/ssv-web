@@ -75,7 +75,7 @@ const AccountBalanceAndFee = () => {
               disable={!firstCheckBox || !secondCheckBox}
               text={'Next'}
               submitFunction={() => {
-                navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START);
+                navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING);
               }}
           />
         </Grid>,

@@ -41,6 +41,10 @@ const translations = {
         // 'When you register a new validator to the network you are required to deposit sufficient balance for a year, but it\'s under your sole responsibility to make sure your account always holds enough balance for it\'s operation.',
       ],
     },
+    BULK_REGISTRATION: {
+      SELECTED_VALIDATORS: 'Selected Validators',
+      SELECTED_VALIDATORS_TOOLTIP: 'Bulk registration is capped at 50 validators per batch.',
+    },
     IMPORT: {
       TITLE: 'Enter Validator Key',
       KEY_SHARES_TITLE: 'Enter KeyShares File',

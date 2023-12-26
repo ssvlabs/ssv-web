@@ -609,7 +609,6 @@ class ValidatorStore extends BaseStore {
     const keyShares = new KeyShares();
     const processStore: ProcessStore = this.getStore('Process');
     const accountStore: AccountStore = this.getStore('Account');
-    const { ownerNonce } = accountStore;
     const { OK_RESPONSE,
       OPERATOR_NOT_EXIST_RESPONSE,
       OPERATOR_NOT_MATCHING_RESPONSE,
@@ -647,7 +646,9 @@ class ValidatorStore extends BaseStore {
       }
       const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
       if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
+      await accountStore.getOwnerNonce(walletStore.accountAddress);
+      const { ownerNonce } = accountStore;
+      await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce, publicKey: payload.publicKey } );
       return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
       // @ts-ignore
     } catch (e: any) {

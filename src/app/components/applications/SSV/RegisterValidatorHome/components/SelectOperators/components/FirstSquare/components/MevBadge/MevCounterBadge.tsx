@@ -11,8 +11,7 @@ const MevCounterBadge = ({ mevCount, mevRelaysList }: { mevCount: number | strin
   const [hoveredGrid, setHoveredGrid] = useState(false);
   const timeoutRef = useRef(null);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-
-  const classes = useStyles({ hasMevRelays: mevCount > 0, popUpTop: cursorPos.y + 15 });
+  const classes = useStyles({ hasMevRelays: Number(mevCount) > 0, popUpTop: cursorPos.y + 15 });
 
   const handleMouseMove = (event: any) => {
     if (hoveredGrid) {
@@ -47,7 +46,7 @@ const MevCounterBadge = ({ mevCount, mevRelaysList }: { mevCount: number | strin
             className={classes.BadgeCounterWrapper}>
         {mevCount}
       </Grid>
-      {hoveredGrid && mevCount > 0 && (
+      {hoveredGrid && Number(mevCount) > 0 && (
         <Grid className={classes.MevRelaysPopUp}>
           <Typography className={classes.MevRelaysTitle}>Supported MEV Relays</Typography>
           <Grid className={classes.MevRelaysContainer}>

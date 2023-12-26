@@ -52,7 +52,6 @@ const config = {
         WITHDRAW: '/my-account/withdraw',
         CLUSTER_DASHBOARD: '/my-account/clusters-dashboard',
         OPERATOR_DASHBOARD: '/my-account/operators-dashboard',
-        KEYSHARE_UPLOAD_UNSAFE: '/my-account/upload-keyshare-unsafe',
         OPERATOR: {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',

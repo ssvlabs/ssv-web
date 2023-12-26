@@ -38,10 +38,12 @@ const SlashingWarning = () => {
       header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
       body={[
         <Grid container>
-          <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-          <Grid item xs={12} className={classes.PublicKey}>
-            <ValidatorKeyInput withBeaconcha withCopy address={publicKey}/>
-          </Grid>
+          { validatorStore.isMultiSharesMode && <>
+            <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+            <Grid item xs={12} className={classes.PublicKey}>
+              <ValidatorKeyInput withBeaconcha withCopy address={publicKey}/>
+            </Grid>
+          </>}
           <Grid item xs={12} className={classes.Text}>
             Running a validator simultaneously to the SSV network will cause slashing to your validator.
           </Grid>

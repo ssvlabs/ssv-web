@@ -30,7 +30,7 @@ const KeyStoreFlow = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
-  const [processingFile, setProcessFile] = useState(false);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
   const slashingWarningNavigate = {
@@ -43,9 +43,9 @@ const KeyStoreFlow = () => {
   }, []);
 
   const fileHandler = (file: any) => {
-    setProcessFile(true);
+    setIsProcessingFile(true);
     validatorStore.setKeyStore(file, () => {
-      setProcessFile(false);
+      setIsProcessingFile(false);
     });
   };
 
@@ -70,10 +70,10 @@ const KeyStoreFlow = () => {
   };
 
   const removeFile = () => {
-    setProcessFile(true);
+    setIsProcessingFile(true);
     validatorStore.clearKeyStoreFlowData();
     validatorStore.keyStoreFile = null;
-    setProcessFile(false);
+    setIsProcessingFile(false);
 
     try {
       // @ts-ignore
@@ -132,55 +132,42 @@ const KeyStoreFlow = () => {
     }
   };
 
+  const sendTagManagerEvent = (category: string, action: string, label: string) => {
+    GoogleTagManager.getInstance().sendEvent({ category, action, label });};
+
   const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
 
   const submitHandler = async () => {
     applicationStore.setIsLoading(true);
     setTimeout(async () => {
       try {
-      await validatorStore.extractKeyStoreData(keyStorePassword);
-      isDeposited;
-      const deposited = true; // await isDeposited();
-      applicationStore.setIsLoading(false);
-      validatorStore.registrationMode = 1;
-      slashingWarningNavigate[`${processStore.secondRegistration}`]();
+        await validatorStore.extractKeyStoreData(keyStorePassword);
+        // TODO fix this dummy value.
+        const deposited = true; // await isDeposited();
+        applicationStore.setIsLoading(false);
+        validatorStore.registrationMode = 1;
+        slashingWarningNavigate[`${processStore.secondRegistration}`]();
         if (deposited) {
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'upload_file',
-          label: 'success',
-        });
-      } else {
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'upload_file',
-          label: 'not_deposited',
-        });
-        navigate(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
-      }
-    } catch (error: any) {
-      if (error.message === 'Invalid password') {
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'upload_file',
-          label: 'invalid_password',
-        });
-        setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
-      } else {
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'upload_file',
-          label: 'invalid_file',
-        });
-        setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
-      }
-      applicationStore.setIsLoading(false);
-    }}, 200);
+          sendTagManagerEvent('validator_register', 'upload_file', 'success');
+        } else {
+          sendTagManagerEvent('validator_register', 'upload_file', 'not_deposited');
+          navigate(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
+        }
+      } catch (error: any) {
+        if (error.message === 'Invalid password') {
+          sendTagManagerEvent('validator_register', 'upload_file', 'invalid_password');
+          setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
+        } else {
+          sendTagManagerEvent('validator_register', 'upload_file', 'invalid_file');
+          setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
+        }
+        applicationStore.setIsLoading(false);
+      }}, 200);
   };
 
 
-  const inputDisableConditions = !keyStoreFileIsJson || processingFile || validatorStore.validatorPublicKeyExist;
-  const buttonDisableConditions = processingFile || !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
+  const inputDisableConditions = !keyStoreFileIsJson || isProcessingFile || validatorStore.validatorPublicKeyExist;
+  const buttonDisableConditions = isProcessingFile || !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
   const MainScreen =  <BorderScreen
       blackHeader
@@ -194,7 +181,7 @@ const KeyStoreFlow = () => {
               fileHandler={fileHandler}
               fileImage={renderFileImage}
               removeButtons={removeButtons}
-              processingFile={processingFile}
+              processingFile={isProcessingFile}
           />
           <Grid container item xs={12}>
             <><InputLabel title="Keystore Password"/>

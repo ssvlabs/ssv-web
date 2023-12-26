@@ -3,23 +3,31 @@ import Grid from '@mui/material/Grid';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/components/common/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
+import styled from 'styled-components';
 
 type PreRequisiteType = {
   text: string;
   tooltip?: string;
   tooltipLinkText?: string;
 };
+
+
+const ButtonSeparator = styled.div`
+  width: 100%;
+  height: 12px;
+`;
+
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
@@ -31,18 +39,18 @@ const RegisterValidatorHome = () => {
 
   const preRequisites: PreRequisiteType[] = [
     {
-      text: 'An active Ethereum validator (deposited to Beacon Chain)',
-      tooltip: 'Don\'t have a validator?',
-      tooltipLinkText: 'Create via Ethereum Launchpad',
+      text: translations.VALIDATOR.HOME.PREREQUISITES[0],
+      tooltip: translations.VALIDATOR.HOME.TOOLTIP.TEXT,
+      tooltipLinkText: translations.VALIDATOR.HOME.TOOLTIP.LINK_TEXT,
     },
     {
-      text: 'SSV tokens to cover operational fees',
+      text: translations.VALIDATOR.HOME.PREREQUISITES[1],
     },
   ];
 
   useEffect(() => {
-    validatorStore.clearKeyStoreFlowData();
-  });
+      validatorStore.clearKeyStoreFlowData();
+  }, []);
 
   const createValidatorsLaunchpad = () => {
     navigate(config.routes.SSV.VALIDATOR.CREATE);
@@ -52,9 +60,9 @@ const RegisterValidatorHome = () => {
     processStore.setProcess({
       item: null,
       processName: 'register_validator',
-    }, 2);
-    operatorStore.unselectAllOperators();
-    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
+    }, ProcessType.Validator);
+    operatorStore.unselectAllOperators(); // TODO should later update these from the keyshares file info
+    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS); // TODO should later change this from the keyshares file info
     navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
   };
 
@@ -62,7 +70,7 @@ const RegisterValidatorHome = () => {
     processStore.setProcess({
       item: null,
       processName: 'register_validator',
-    }, 2);
+    }, ProcessType.Validator);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
   };
   
@@ -71,8 +79,8 @@ const RegisterValidatorHome = () => {
     <BorderScreen
       body={[
         <Grid container>
-          <HeaderSubHeader title={'Run a Distributed Validator'}
-                           subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
+          <HeaderSubHeader title={translations.VALIDATOR.HOME.TITLE}
+            subtitle={translations.VALIDATOR.HOME.SUB_TITLE}
           />
           <Typography className={classes.GrayText}>Prerequisites</Typography>
           <Grid container item style={{ gap: 8, marginBottom: 24 }}>
@@ -89,10 +97,9 @@ const RegisterValidatorHome = () => {
               </Grid>;
             })}
           </Grid>
-          <Grid container item style={{ gap: 12 }}>
-            <PrimaryButton text={'Generate new key shares'} submitFunction={moveToSelectOperators} withoutLoader/>
-            <SecondaryButton text={'I already have key shares'} submitFunction={moveToUploadKeyshare} noCamelCase withoutLoader/>
-          </Grid>
+          <PrimaryButton text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators} withoutLoader/>
+          <ButtonSeparator />
+            <SecondaryButton text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare} noCamelCase withoutLoader/>
         </Grid>,
       ]}
     />

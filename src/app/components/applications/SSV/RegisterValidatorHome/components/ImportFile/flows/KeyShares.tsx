@@ -12,7 +12,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
@@ -24,45 +24,16 @@ import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
 import { KeyShares, SSVKeysException } from 'ssv-keys';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
-// import { KeySharesPayload } from 'ssv-keys';
-// import { KeySharesData } from 'ssv-keys';
+import Operator from '~lib/api/Operator';
+import Validator from '~lib/api/Validator';
+import { AccountStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 
-
-// export type KeyShareSingle = {
-//   version: string,
-//   createdAt: string,
-//   data: KeySharesData,
-//   payload: KeySharesPayload
-// };
 
 export type KeyShareMulti = {
   version: string,
   createdAt: string,
   shares: KeyShares
 };
-
-// export type Share = {
-//   data: ShareData,
-//   payload: SharePayload
-// };
-//
-// export type ShareData = {
-//   ownerNonce: number,
-//   ownerAddress: string,
-//   publicKey: string,
-//   operators: ShareOperatorData[]
-// };
-//
-// export type SharePayload = {
-//   publicKey: string,
-//   operatorIds: number[],
-//   sharesData: string,
-// };
-//
-// export type ShareOperatorData = {
-//   id: number,
-//   operatorKey: string
-// };
 
 export type KeyShareValidationResponse = {
   id: KeyShareValidationResponseId,
@@ -78,6 +49,7 @@ export enum KeyShareValidationResponseId {
   VALIDATOR_EXIST_ID,
   ERROR_RESPONSE_ID,
   PUBLIC_KEY_ERROR_ID,
+  INCONSISTENT_OPERATOR_CLUSTER,
 }
 
 
@@ -165,6 +137,8 @@ const KeyShareFlow = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const operatorStore: OperatorStore = stores.Operator;
+  const walletStore: WalletStore = stores.Wallet;
+  const accountStore: AccountStore = stores.Account;
   const [errorMessage, setErrorMessage] = useState('');
   const [processingFile, setProcessFile] = useState(false);
   const [validatorsCount, setValidatorsCount] = useState(VALIDATORS_TEMPLATE.length); // TODO replace. should be updated in validator store.
@@ -175,6 +149,8 @@ const KeyShareFlow = () => {
     validatorStore.clearKeyShareFlowData();
   }, []);
 
+
+  // TODO this is better but still not good. improve later
   function getResponse(keyShareResponseId: KeyShareValidationResponseId, errorMsg?: string): KeyShareValidationResponse{
     const { KEYSHARE_RESPONSE } = translations.VALIDATOR;
     switch (keyShareResponseId) {
@@ -199,6 +175,9 @@ const KeyShareFlow = () => {
       case KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID: {
         return { ...KEYSHARE_RESPONSE.VALIDATOR_PUBLIC_KEY_ERROR, id: KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID };
       }
+      case KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER: {
+        return { ...KEYSHARE_RESPONSE.INCONSISTENT_OPERATOR_CLUSTER, id: KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER };
+      }
     }
   }
 
@@ -213,55 +192,52 @@ const KeyShareFlow = () => {
     return parsedFile;
   }
 
-  // function validateKeyShareFile(keyShareMulti: KeyShareMulti): KeyShareValidationResponse {
-  //   try {
-  //     for (let { payload: KeySharesPayload, data: KeySharesData } of keyShareMulti.shares) {
-  //
-  //     }
-  //   }
-  //   catch (e) {
-  //
-  //   }
-  // }
+  async function validateKeyShareFile(keyShareMulti: KeyShareMulti): Promise<KeyShareValidationResponse> {
+    const shares = keyShareMulti.shares.list();
+    let consistentOperatorIds: number[] | null = [];
+    if (!shares){
+      return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
+    }
+    consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
+    try {
+      for ( let keyShare of shares) {
+        let { payload, data } = keyShare;
+        const keyShareOperatorIds = payload.operatorIds.sort();
+        if (consistentOperatorIds !== keyShareOperatorIds) {
+          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+        }
+        const operatorPublicKeys = data.operators?.map((operator: any) => operator.operatorKey);
+              if (processStore.secondRegistration) {
+                const process: SingleCluster = processStore.process;
+                const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
+                if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperatorIds[index])) {
+                  return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+                }
+              } else {
+                const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperatorIds);
+                if (!selectedOperators) {
+                  return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
+                }
+                else if (selectedOperators?.some((operator: IOperator) => !operatorPublicKeys?.includes(operator.public_key))) {
+                  return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+                }
+                operatorStore.selectOperators(selectedOperators);
+              }
 
-  // function validateKeyShareFile(keyShareMulti: KeyShareMulti): KeyShareValidationResponse {
-  //   try {
-  //     for (let { payload, data } of keyShareMulti.shares) {
-  //       const keyShareOperators = payload.operatorIds.sort();
-  //       const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
-  //       if (payload.publicKey.length !== 98) {
-  //         return getResponse(KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID);
-  //       }
-  //       if (processStore.secondRegistration) {
-  //         const process: SingleCluster = processStore.process;
-  //         const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
-  //         if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
-  //           return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
-  //         }
-  //       } else {
-  //         const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-  //         if (!selectedOperators) {
-  //           return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
-  //         }
-  //         if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
-  //           return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
-  //         }
-  //         operatorStore.selectOperators(selectedOperators);
-  //       }
-  //       const validatorExist = !!(await getValidator(payload.publicKey, true));
-  //       if (validatorExist) {
-  //         return getResponse(KeyShareValidationResponseId.VALIDATOR_EXIST_ID);
-  //       }
-  //       await accountStore.getOwnerNonce(walletStore.accountAddress);
-  //       const { ownerNonce } = accountStore;
-  //       await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
-  //     }
-  //     return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
-  //   }
-  //   catch (e: any) {
-  //     return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
-  //   }
-  // }
+              const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
+              if (validatorExist) {
+                return getResponse(KeyShareValidationResponseId.VALIDATOR_EXIST_ID);
+              }
+              await accountStore.getOwnerNonce(walletStore.accountAddress);
+              const { ownerNonce } = accountStore;
+              await keyShare.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: ownerNonce, publicKey: payload.publicKey } );
+      }
+    }
+    catch (e) {
+      getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+    }
+    return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
+  }
 
   function storeKeyShareData(keyShareMulti: KeyShares) {
     validatorStore.setProcessedKeyShare(keyShareMulti);
@@ -275,10 +251,10 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      // const validationResponse: KeyShareValidationResponse = validateKeyShareFile(keyShareMulti); // TODO add validations according to PRD.
-      // if(validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
-      //   return validationResponse
-      // }
+      const validationResponse: KeyShareValidationResponse = await validateKeyShareFile(keyShareMulti); // TODO add validations according to PRD.
+      if (validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
+        return validationResponse;
+      }
       storeKeyShareData(keyShares);
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     }
@@ -287,7 +263,7 @@ const KeyShareFlow = () => {
       if (e instanceof SSVKeysException) {
         console.log('SSVKeysException validation error');
         errorMsg = e.message;
-        // TODO handle each exception seperatly
+        // TODO handle each exception seperatly?
       }
       console.log(e);
       return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, errorMsg);
@@ -398,7 +374,6 @@ const KeyShareFlow = () => {
     wrapperClass={classes.marginNone}
     body={[
       <Grid item container>
-        <Grid item xs={12} className={classes.SubHeader}>Upload the generated <b>keyshares.json</b> file below</Grid>
         <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText}
                      fileHandler={fileHandler} fileImage={renderFileImage}/>
         <Grid className={classes.SummaryWrapper}>

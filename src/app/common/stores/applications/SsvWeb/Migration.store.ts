@@ -77,10 +77,9 @@ class MigrationStore extends BaseStore  {
             }
                 const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
                 if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
-                if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+                if (selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
                     return { errorMessage: INVALID_OPERATOR_DETAILS.message, subErrorMessage: INVALID_OPERATOR_DETAILS.subErrorMessage, id: OPERATOR_NOT_MATCHING_ID };
                 }
-                // @ts-ignore
                 operatorStore.selectOperators(selectedOperators);
             const nonce = Number(ownerNonce) + index;
             await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: nonce, publicKey: payload.publicKey } );

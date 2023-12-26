@@ -35,7 +35,7 @@ const KeyStoreFlow = () => {
   const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
   const slashingWarningNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
-    false: () => navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING),
+    false: () => navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE),
   };
 
   useEffect(() => {

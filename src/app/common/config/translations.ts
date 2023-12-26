@@ -107,6 +107,10 @@ const translations = {
         name: 'ERROR', errorMessage: 'Wrong wallet connected', subErrorMessage: 'please connect to wallet',
       },
       INVALID_OPERATOR_DETAILS: { message: 'Invalid operator details', subErrorMessage: 'Please contact support' },
+      INCONSISTENT_OPERATOR_CLUSTER: {
+        name: 'ERROR',
+        errorMessage: 'The file contains key shares associated with different clusters. Please ensure that all key shares are consistent with the same operator cluster.',
+      },
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',

@@ -76,11 +76,10 @@ class MigrationStore extends BaseStore  {
                return { errorMessage: INCORRECT_OWNER_ADDRESS_ERROR.errorMessage, subErrorMessage: `${INCORRECT_OWNER_ADDRESS_ERROR.subErrorMessage} ${data.ownerAddress}`, id: OWNER_ADDRESS_NOT_MATCHING };
             }
                 const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-                if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
-                if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+                if (!selectedOperators.length) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
+                if (selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
                     return { errorMessage: INVALID_OPERATOR_DETAILS.message, subErrorMessage: INVALID_OPERATOR_DETAILS.subErrorMessage, id: OPERATOR_NOT_MATCHING_ID };
                 }
-                // @ts-ignore
                 operatorStore.selectOperators(selectedOperators);
             const nonce = Number(ownerNonce) + index;
             await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: nonce, publicKey: payload.publicKey } );

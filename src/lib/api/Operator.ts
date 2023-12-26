@@ -132,18 +132,18 @@ class Operator {
     }
   }
 
-  async getOperatorsByIds(operatorIds: number[]): Promise<IOperator[] | boolean> {
+  async getOperatorsByIds(operatorIds: number[]): Promise<IOperator[]> {
     try {
-      const promises = operatorIds.map(operatorId => this.getOperator(operatorId, true));
+      const promises = operatorIds.map(operatorId => this.getOperator(operatorId, false));
       const responses = await Promise.all(promises);
       for (let response of responses) {
         if (!response) {
-          return false;
+          return [];
         }
       }
       return responses;
     } catch (error) {
-      return false;
+      return [];
     }
   }
 

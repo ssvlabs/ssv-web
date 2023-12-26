@@ -49,6 +49,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   Header: {
     fontSize: 20,
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
     lineHeight: 1.4,
     fontWeight: 'bold',
     color: (props: any) => {

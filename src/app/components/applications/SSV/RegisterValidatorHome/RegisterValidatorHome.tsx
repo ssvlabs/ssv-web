@@ -5,14 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import LinkText from '~app/components/common/LinkText';
+import ToolTip from '~app/components/common/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
+import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
+
+type PreRequisiteType = {
+  text: string;
+  tooltip?: string;
+  tooltipLinkText?: string;
+};
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
@@ -22,14 +29,24 @@ const RegisterValidatorHome = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
 
-  const preRequisites = [
-      'An active Ethereum validator (deposited to Beacon Chain)',
-      'SSV tokens to cover operational fees',
+  const preRequisites: PreRequisiteType[] = [
+    {
+      text: 'An active Ethereum validator (deposited to Beacon Chain)',
+      tooltip: 'Don\'t have a validator?',
+      tooltipLinkText: 'Create via Ethereum Launchpad',
+    },
+    {
+      text: 'SSV tokens to cover operational fees',
+    },
   ];
 
   useEffect(() => {
-      validatorStore.clearKeyStoreFlowData();
+    validatorStore.clearKeyStoreFlowData();
   });
+
+  const createValidatorsLaunchpad = () => {
+    navigate(config.routes.SSV.VALIDATOR.CREATE);
+  };
 
   const moveToSelectOperators = () => {
     processStore.setProcess({
@@ -41,26 +58,40 @@ const RegisterValidatorHome = () => {
     navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
   };
 
+  const moveToUploadKeyshare = () => {
+    processStore.setProcess({
+      item: null,
+      processName: 'register_validator',
+    }, 2);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
+  };
+  
+
   return (
     <BorderScreen
       body={[
         <Grid container>
           <HeaderSubHeader title={'Run a Distributed Validator'}
-            subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
+                           subtitle={'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.'}
           />
           <Typography className={classes.GrayText}>Prerequisites</Typography>
           <Grid container item style={{ gap: 8, marginBottom: 24 }}>
-            {preRequisites.map((preRequisite: string, index: number)=>{
+            {preRequisites.map((preRequisite: PreRequisiteType, index: number) => {
               return <Grid container item key={index} style={{ alignItems: 'center', gap: 14 }}>
                 <Grid item className={classes.GreenV}></Grid>
-                <Typography className={classes.Text}>{preRequisite}</Typography>
+                <Typography className={classes.Text}>{preRequisite.text}</Typography>
+                {preRequisite.tooltip &&
+                  <ToolTip text={<Grid className={classes.TooltipText}>{preRequisite.tooltip}
+                    &nbsp;
+                    <Grid onClick={createValidatorsLaunchpad} className={classes.TooltipLink}>{preRequisite.tooltipLinkText}</Grid>
+                  </Grid>}/>
+                }
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton text={'Next'} submitFunction={moveToSelectOperators} withoutLoader/>
-          <Grid container item style={{ marginTop: 16, gap: 4 }}>
-            <Typography className={`${classes.GrayText} ${classes.Gray90Text}`}>Don't have a validator?</Typography>
-            <LinkText text={'Create via Ethereum Launchpad'} link={config.routes.SSV.VALIDATOR.CREATE} routePush />
+          <Grid container item style={{ gap: 12 }}>
+            <PrimaryButton text={'Generate new key shares'} submitFunction={moveToSelectOperators} withoutLoader/>
+            <SecondaryButton text={'I already have key shares'} submitFunction={moveToUploadKeyshare} noCamelCase withoutLoader/>
           </Grid>
         </Grid>,
       ]}

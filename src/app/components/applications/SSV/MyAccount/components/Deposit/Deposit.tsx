@@ -14,7 +14,7 @@ import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -47,7 +47,13 @@ const Deposit = () => {
       });
         await myAccountStore.getOwnerAddressClusters({});
         applicationStore.setIsLoading(false);
-      if (success) navigate(-1);
+      if (success) {
+        processStore.setProcess({
+          processName: 'single_cluster',
+          item: { ...cluster, balance: cluster.balance },
+        }, ProcessType.Validator);
+        navigate(-1);
+      }
     }).catch((error) => {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',

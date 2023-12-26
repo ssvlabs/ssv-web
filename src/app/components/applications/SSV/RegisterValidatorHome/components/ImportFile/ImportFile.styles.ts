@@ -96,6 +96,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     gap: 5.69,
   },
   KeysharesWrapper:{
+    marginTop: 24,
     display: 'flex',
     justifyContent: 'center',
     gap: 24,

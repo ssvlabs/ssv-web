@@ -72,7 +72,7 @@ const OfflineKeyShareGeneration = () => {
 
   const goToNextPage = (selectedBoxIndex: number, isSecondRegistration: boolean) => {
     if (selectedBoxIndex === OFFLINE_FLOWS.DKG) {
-      navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
+      navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY);
       return;
     }
     if (isSecondRegistration) {

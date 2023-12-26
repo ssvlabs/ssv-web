@@ -1,8 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -18,12 +18,16 @@ const Welcome = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
-
-  const connectToWallet = () => {
+  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+  const [_, connect] = useConnectWallet();
+  const connectToWallet = async () => {
     if (walletStore.connected) {
       return applicationStore.showWalletPopUp(true);
     }
-    return walletStore.connect();
+    console.log('connectWallet before');
+    await connect();
+    console.log('connectWallet after');
+    // return walletStore.connect();
   };
 
   return (
@@ -76,4 +80,4 @@ const Welcome = () => {
   );
 };
 
-export default observer(Welcome);
+export default Welcome;

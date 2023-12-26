@@ -1,6 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
+import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -15,12 +17,19 @@ const ConnectWalletButton = () => {
     walletConnected: walletStore.connected,
     whiteAppBar: applicationStore.whiteNavBarBackground,
   });
+  const [{ wallet }, connect] = useConnectWallet();
+  const navigate = useNavigate();
 
-  const onClick = () => {
-    if (walletStore.connected) {
-      return applicationStore.showWalletPopUp(true);
+  const onClick = async () => {
+    if (walletStore.wallet) {
+      applicationStore.showWalletPopUp(true);
+    } else {
+      await connect().then(() => {
+        navigate('/join');
+      }).catch((error) => {
+        console.error('ConnectWalletButton:', error);
+      });
     }
-    return walletStore.connect();
   };
 
   let icon;
@@ -41,17 +50,12 @@ const ConnectWalletButton = () => {
     }
   }
 
-  const walletDisplayName = (address: string) => {
-    if (!address) {
-      return '';
-    }
-    return `${address.substr(0, 6)}...${address.substr(address.length - 4, 4)}`;
-  };
+  const walletDisplayName = (address: string) => `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 
   return (
     <Grid item container className={classes.ConnectWalletWrapper} onClick={onClick}>
-      {!walletStore.connected && <Grid item>Connect Wallet</Grid>}
-      {walletStore.connected && (
+      {!walletStore.accountAddress && <Grid item>Connect Wallet</Grid>}
+      {walletStore.accountAddress && (
         <Grid item container>
           <Grid item><img className={classes.WalletImage} src={icon}
                           alt={`Connected to ${walletStore.wallet.name}`}/></Grid>

@@ -1,12 +1,15 @@
-import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import { equalsAddresses } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import merkleTree from '~app/components/applications/Distribution/assets/merkleTree.json';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
+import { IMerkleData, IMerkleTreeData } from '~app/model/merkleTree.model';
+import { fromWei } from '~root/services/conversions.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+
 
 /**
  * Base store provides singe source of true
@@ -66,9 +69,8 @@ class DistributionStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const contract = this.distributionContract;
-      const walletStore: WalletStore = this.getStore('Wallet');
       const result = await contract.methods.cumulativeClaimed(this.userAddress).call();
-      this.claimedRewards = Number(walletStore.fromWei(parseInt(String(result)).toString()));
+      this.claimedRewards = Number(fromWei(parseInt(String(result)).toString()));
       resolve(this.claimedRewards);
     });
   }
@@ -87,11 +89,12 @@ class DistributionStore extends BaseStore {
   async eligibleForReward() {
     await this.cleanState();
     // @ts-ignore
-    const merkleTreeAddresses = merkleTree.data;
+
+    const merkle = await this.fetchMerkleTreeStructure();
     const walletStore: WalletStore = this.getStore('Wallet');
-    merkleTreeAddresses.forEach((merkleTreeUser, index) => {
+      merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
       if (equalsAddresses(merkleTreeUser.address, walletStore.accountAddress)) {
-        this.merkleRoot = merkleTree.root;
+        this.merkleRoot = merkle.tree.root;
         this.userAddress = merkleTreeUser.address;
         this.rewardIndex = index;
         this.rewardAmount = Number(merkleTreeUser.amount);
@@ -100,6 +103,23 @@ class DistributionStore extends BaseStore {
     });
     if (this.userAddress) {
       await this.cumulativeClaimed();
+    }
+  }
+
+  async fetchMerkleTreeStructure(): Promise<IMerkleData | null>{
+    const { api } = getStoredNetwork();
+    const merkleTreeUrl = `${api}/incentivization/merkle-tree`;
+    try {
+      const response = await fetch(merkleTreeUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data: IMerkleData = await response.json();
+      return data;
+    }
+    catch (error) {
+      console.log('Failed to check reward eligibility');
+      return null;
     }
   }
 
@@ -155,9 +175,8 @@ class DistributionStore extends BaseStore {
 
   @computed
   get userRewardAmount() {
-    const walletStore: WalletStore = this.getStore('Wallet');
     // eslint-disable-next-line radix
-    return Number(walletStore.fromWei(parseInt(String(this.rewardAmount)).toString())) - this.claimedRewards;
+    return Number(fromWei(parseInt(String(this.rewardAmount)).toString())) - this.claimedRewards;
   }
 
   @computed

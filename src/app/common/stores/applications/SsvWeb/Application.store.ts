@@ -52,7 +52,6 @@ class ApplicationStore extends BaseStore implements Application {
       switchDarkMode: action.bound,
       showWalletPopUp: action.bound,
       walletConnectivity: observable,
-      applicationRoutes: action.bound,
       setTransactionHash: action.bound,
       displayToolBarMenu: action.bound,
       whiteNavBarBackground: observable,
@@ -110,23 +109,13 @@ class ApplicationStore extends BaseStore implements Application {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const theme = isDarkMode ? 'dark' : 'light';
     const walletStore: WalletStore = this.getStore('Wallet');
-    walletStore?.onboardSdk?.state.actions.updateTheme(theme);
+    // walletStore?.onboardSdk?.state.actions.updateTheme(theme);
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
   displayToolBarMenu(status: boolean) {
     this.toolBarMenu = status;
-  }
-
-  applicationRoutes() {
-    try {
-      return require('~app/common/stores/applications/SsvWeb/Routes').default;
-    } catch (e: any) {
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log(e.message);
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    }
   }
 
   showWalletPopUp(status: boolean) {

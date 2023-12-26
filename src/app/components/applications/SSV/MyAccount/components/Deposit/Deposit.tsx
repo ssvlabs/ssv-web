@@ -11,7 +11,6 @@ import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
@@ -19,19 +18,19 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import { fromWei, toWei } from '~root/services/conversions.service';
 
 const Deposit = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
-  const clusterBalance = walletStore.fromWei(cluster.balance);
+  const clusterBalance = fromWei(cluster.balance);
   const applicationStore: ApplicationStore = stores.Application;
   const [inputValue, setInputValue] = useState('');
   const { checkedCondition } = useTermsAndConditions();
@@ -116,7 +115,7 @@ const Deposit = () => {
               ),
               (
                   <>
-                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: walletStore.toWei(newBalance) }) }}/>
+                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: toWei(newBalance) }) }}/>
                   </>
               ),
             ]}

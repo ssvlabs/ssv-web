@@ -10,7 +10,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/OperatorId/OperatorId.styles';
 
 type Props = {
-  id: string,
+  id: number,
   text?: string,
   successPage?: boolean,
   withoutExplorer?: boolean,
@@ -23,7 +23,7 @@ const OperatorId = (props: Props) => {
   const notificationsStore: NotificationsStore = stores.Notifications;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(props.id);
+    navigator.clipboard.writeText(String(props.id));
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 

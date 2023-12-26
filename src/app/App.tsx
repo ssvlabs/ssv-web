@@ -1,7 +1,10 @@
 import { observer } from 'mobx-react';
+import { configure } from 'mobx';
 import Grid from '@mui/material/Grid';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { InitOptions, OnboardAPI } from '@web3-onboard/core';
+import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
@@ -19,51 +22,49 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper, { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
+import { tmp } from '~lib/utils/onboardHelper';
 
-declare global {
-  interface Window {
-    ethereum: any;
-    web3: any;
-  }
-}
+const onboardInstance = init(tmp);
+
+configure({ enforceActions: 'never' });
+
+// @ts-ignore
+window.localStorage.setItem('locationRestrictionDisabled', 1);
 
 const App = () => {
+  const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const GlobalStyle = globalStyle();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
-  const location = useLocation();
-  const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
+  // const location = useLocation();
+  // const unsafeMode = getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE) && location.pathname === config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE;
 
   useEffect(() => {
+    setWeb3Onboard(onboardInstance);
     document.title = applicationStore.appTitle;
-  });
-
-  useEffect(() => {
-    if (!applicationStore.locationRestrictionEnabled) {
-      console.debug('Skipping location restriction functionality in this app.');
-      walletStore.checkConnectedWallet();
-    } else {
-      checkUserCountryRestriction().then((res: any) => {
-        if (res.restricted) {
-          walletStore.accountDataLoaded = true;
-          applicationStore.userGeo = res.userGeo;
-          applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
-        } else {
-          walletStore.checkConnectedWallet();
-        }
-      });
-    }
   }, []);
 
   useEffect(() => {
-    if (walletStore?.accountDataLoaded && !unsafeMode) {
-      navigate(applicationStore.strategyRedirect);
+    if (web3Onboard) {
+      if (!applicationStore.locationRestrictionEnabled) {
+        console.debug('Skipping location restriction functionality in this app.');
+        applicationStore.userGeo = '';
+      } else {
+        checkUserCountryRestriction().then((res: any) => {
+          if (res.restricted) {
+            applicationStore.userGeo = res.userGeo;
+            applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
+            navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+          } else {
+            navigate(applicationStore.strategyRedirect);
+          }
+        });
+      }
     }
-  }, [walletStore?.accountDataLoaded]);
+  }, [web3Onboard]);
 
   return (
       <StyledEngineProvider injectFirst>
@@ -71,14 +72,14 @@ const App = () => {
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
             <GlobalStyle/>
-            {!walletStore?.accountDataLoaded && (
+            {!web3Onboard && (
                 <Grid container className={classes.LoaderWrapper}>
-                  <img className={classes.Loader} src={getImage('ssv-loader.svg')}/>
+                  <img className={classes.Loader} src={getImage('ssv-loader.svg')} alt=""/>
                 </Grid>
             )}
             <BarMessage/>
             <BrowserView>
-              {walletStore?.accountDataLoaded && <Routes/>}
+              {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
             </BrowserView>
             <MobileView>
               <MobileNotSupported/>

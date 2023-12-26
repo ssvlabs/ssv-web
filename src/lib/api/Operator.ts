@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 type OperatorsListQuery = {
@@ -29,7 +30,7 @@ class Operator {
 
   static getInstance(): Operator {
     if (!Operator.instance) {
-      Operator.instance = new Operator(config.links.SSV_API_ENDPOINT);
+      Operator.instance = new Operator(getStoredNetwork().api);
     }
     return Operator.instance;
   }
@@ -42,7 +43,7 @@ class Operator {
    * Get operators by owner Address
    */
   async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 8, ownerAddress: string, skipRetry?: boolean) {
-    const url = `${config.links.SSV_API_ENDPOINT}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
+    const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
     try {
       this.ownerAddress = ownerAddress;
       return await this.getData(url, skipRetry);
@@ -56,7 +57,7 @@ class Operator {
    */
   async getOperators(props: OperatorsListQuery, skipRetry?: boolean) {
     const { page, perPage, type, ordering, search, dkgEnabled } = props;
-    let url = `${String(config.links.SSV_API_ENDPOINT)}/operators?`;
+    let url = `${getStoredNetwork().api}/operators?`;
     if (search) url += `search=${search}&`;
     if (ordering) url += `ordering=${ordering}&`;
     if (page) url += `page=${page}&`;
@@ -76,7 +77,7 @@ class Operator {
    * Get operator
    */
   async getOperator(operatorId: number | string, skipRetry?: boolean) {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
+    const url = `${getStoredNetwork().api}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
     try {
       return await this.getData(url, skipRetry);
     } catch (e) {
@@ -84,17 +85,17 @@ class Operator {
     }
   }
 
-  async getOperatorByPublicKey(publicKey: string) {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/public_key/${publicKey}`;
+  async getOperatorByPublicKey(publicKey: string, skipRetry: boolean = true) {
+    const url = `${getStoredNetwork().api}/operators/public_key/${publicKey}`;
     try {
-      return await this.getData(url, true);
+      return await this.getData(url, skipRetry);
     } catch (e) {
       return null;
     }
   }
 
   async updateOperatorName(operatorId: string, signature: string, operatorName: string) {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
+    const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
     try {
       return (await axios.put(url, {
         operatorName,
@@ -106,7 +107,7 @@ class Operator {
   }
 
   async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/${operatorId}/metadata`;
+    const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
       return (await axios.put(url, {
         ...operatorMetadata,
         signature,
@@ -114,7 +115,7 @@ class Operator {
   }
 
   async getOperatorNodes(layer: number): Promise<[]> {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/nodes/${layer}`;
+    const url = `${getStoredNetwork().api}/operators/nodes/${layer}`;
     try {
       return await this.getData(url, true);
     } catch (e) {
@@ -123,7 +124,7 @@ class Operator {
   }
 
   async getOperatorAvailableLocations(): Promise<[]> {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/operators/locations`;
+    const url = `${getStoredNetwork().api}/operators/locations`;
     try {
       return await this.getData(url, true);
     } catch (e) {
@@ -152,7 +153,7 @@ class Operator {
    */
   async getOperatorValidators(props: OperatorValidatorListQuery, skipRetry?: boolean) {
     const { page, perPage, operatorId } = props;
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+    const url = `${getStoredNetwork().api}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
     try {
       return await this.getData(url, skipRetry);
     } catch (e) {

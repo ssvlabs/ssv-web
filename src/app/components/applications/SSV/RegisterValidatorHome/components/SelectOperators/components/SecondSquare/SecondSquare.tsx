@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import WarningBox from '~app/components/common/WarningBox';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { MEV_RELAYS } from '~lib/utils/operatorMetadataHelper';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -28,13 +27,13 @@ import MevIcon
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import { fromWei } from '~root/services/conversions.service';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
@@ -160,9 +159,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                         </Grid>
                         <Grid item className={classes.FeeAndMevRelaysWrapper}>
                           <SsvAndSubTitle fontSize={14}
-                                          ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}/>
+                                          ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
-                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
+                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay} key={mevRelay}
                                                                                           hasMevRelay={operator.mev_relays?.includes(mevRelay)}/>)}
                           </Grid>
                         </Grid>

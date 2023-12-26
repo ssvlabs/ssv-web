@@ -2,6 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
+import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -14,12 +16,18 @@ const WalletPopUp = () => {
     const classes = useStyles();
     const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
+    const navigate = useNavigate();
+    const [{ wallet }, connect, disconnect] = useConnectWallet();
 
     const changeWallet = async () => {
+        // cleanLocalStorage();
+        if (wallet) {
+            await disconnect({ label: wallet.label });
+        }
         applicationStore.showWalletPopUp(false);
-        const [primaryWallet] = walletStore.onboardSdk.state.get().wallets;
-        await walletStore.onboardSdk.disconnectWallet({ label: primaryWallet.label });
-        await walletStore.onboardSdk.connectWallet();
+        await walletStore.initWallet(null, null);
+        await connect();
+        navigate(applicationStore.strategyRedirect);
     };
 
     const closePopUp = () => {

@@ -15,11 +15,11 @@ import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import { fromWei, toWei } from '~root/services/conversions.service';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -28,7 +28,6 @@ const FundingNewValidator = () => {
   const OPTION_USE_CURRENT_BALANCE = 1;
   const ssvStore: SsvStore = stores.SSV;
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const process: SingleCluster = processStore.getProcess;
@@ -40,8 +39,8 @@ const FundingNewValidator = () => {
   const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
-    burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
-    balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + Number(depositSSV)),
+    burnRate: toWei(parseFloat(newBurnRate.toString())),
+    balance: toWei(fromWei(cluster.balance) + Number(depositSSV)),
   });
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
@@ -140,7 +139,7 @@ const FundingNewValidator = () => {
                     </Grid>
                     <Grid container item style={{ gap: 8 }}>
                       <Typography
-                          className={classes.Bold}>{formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV</Typography>
+                          className={classes.Bold}>{formatNumberToUi(fromWei(cluster.balance))} SSV</Typography>
                       <Typography className={`${classes.Bold} ${classes.LessBold}`}>{ssvChanged()}</Typography>
                     </Grid>
                   </Grid>
@@ -165,8 +164,7 @@ const FundingNewValidator = () => {
                                    className={`${classes.OptionBox} ${isChecked(option.id) ? classes.SelectedBox : ''}`}
                                    onClick={() => checkBox(option.id)}>
                         <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
-                          {isChecked(option.id) ? <Grid item className={classes.CheckedCircle}/> :
-                              <Grid item className={classes.CheckCircle}/>}
+                          <Grid item className={isChecked(option.id) ? classes.CheckedCircle : classes.CheckCircle} />
                           <Grid item className={classes.TimeText}>{option.timeText}</Grid>
                         </Grid>
                         {isCustom && <TextInput value={depositSSV}

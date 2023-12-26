@@ -39,7 +39,7 @@ const LinkText = ({ textSize, style, text, onClick, link, className, routePush, 
   };
 
   return (
-    <Typography style={style} className={className ?? classes.Link} onClick={openLink}>{text}</Typography>
+    <Typography component="div" style={style} className={className ?? classes.Link} onClick={openLink}>{text}</Typography>
   );
 };
 

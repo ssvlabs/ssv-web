@@ -8,7 +8,6 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -18,6 +17,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import ChangeFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
 import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import DecreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
+import { fromWei } from '~root/services/conversions.service';
 
 export type UpdateFeeProps = {
   error: ErrorType;
@@ -45,7 +45,6 @@ const UpdateFee = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const [operator, setOperator] = useState<any>(null);
   const applicationStore: ApplicationStore = stores.Application;
@@ -63,7 +62,7 @@ const UpdateFee = () => {
     applicationStore.setIsLoading(true);
     Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
-        const operatorFee = ssvStore.getFeeForYear(walletStore.fromWei(response.fee));
+        const operatorFee = ssvStore.getFeeForYear(fromWei(response.fee));
         setOperator(response);
         setOldFee(Number(operatorFee));
         if (!operatorStore.operatorFutureFee) {
@@ -71,7 +70,7 @@ const UpdateFee = () => {
         }
         await operatorStore.syncOperatorFeeInfo(response.id);
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
-          setNewFee(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operatorStore.operatorFutureFee))));
+          setNewFee(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operatorStore.operatorFutureFee))));
           setCurrentFlowStep(FeeUpdateSteps.INCREASE);
         } else {
           setCurrentFlowStep(FeeUpdateSteps.START);
@@ -105,7 +104,7 @@ const UpdateFee = () => {
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    validateFeeUpdate(Number(formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
+    validateFeeUpdate(Number(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
   };
 
   const onNextHandler = () => {

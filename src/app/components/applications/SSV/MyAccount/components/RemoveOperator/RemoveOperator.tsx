@@ -9,6 +9,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
@@ -26,6 +27,7 @@ const RemoveOperator = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: RegisterOperator = processStore.process;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles({ isLoading: applicationStore.isLoading });
 
@@ -119,7 +121,11 @@ const RemoveOperator = () => {
     applicationStore.setIsLoading(true);
     const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
     applicationStore.setIsLoading(false);
-    if (isRemoved) navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+    if (isRemoved) {
+      myAccountStore.getOwnerAddressOperators({ forcePage: 1 }).finally(() => {
+        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+      });
+    }
   };
 
   return (

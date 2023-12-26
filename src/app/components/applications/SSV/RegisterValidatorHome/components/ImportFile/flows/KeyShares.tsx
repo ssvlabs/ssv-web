@@ -170,10 +170,6 @@ const KeyShareFlow = () => {
   const [validatorsCount, setValidatorsCount] = useState(VALIDATORS_TEMPLATE.length); // TODO replace. should be updated in validator store.
   const [validationError, setValidationError] = useState<KeyShareValidationResponse>({ id: KeyShareValidationResponseId.OK_RESPONSE_ID, name:'', errorMessage: '', subErrorMessage: '' });
   const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
-  const slashingWarningNavigate = {
-    true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
-    false: () => navigate(config.routes.SSV.VALIDATOR.SLASHING_WARNING),
-  };
 
   useEffect(() => {
     validatorStore.clearKeyShareFlowData();
@@ -289,7 +285,9 @@ const KeyShareFlow = () => {
     catch (e: any) {
       let errorMsg = 'Cannot process KeyShares file';
       if (e instanceof SSVKeysException) {
+        console.log('SSVKeysException validation error');
         errorMsg = e.message;
+        // TODO handle each exception seperatly
       }
       console.log(e);
       return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, errorMsg);
@@ -379,7 +377,7 @@ const KeyShareFlow = () => {
     try {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
-      slashingWarningNavigate[`${processStore.secondRegistration}`]();
+      navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
     } catch (error: any) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',

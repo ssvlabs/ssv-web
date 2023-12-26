@@ -2,36 +2,45 @@ import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
-    Text: {
-        fontSize: 16,
-        fontWeight: 500,
-        lineHeight: 1.62,
-        marginBottom: 24,
-        color: theme.colors.gray80,
-    },
-    Link: {
-        fontSize: 14,
-        cursor: 'pointer',
-        textDecoration: 'underline',
-        color: theme.colors.primaryBlue,
-    },
-    GreyHeader: {
-        fontSize: 14,
-        marginTop: 4,
-        marginBottom: 8,
-        lineHeight: 1.14,
-        fontWeight: 500,
-        color: theme.colors.gray40,
-    },
-    BigGreyHeader: {
-        fontSize: 14,
-        marginTop: 4,
-        marginBottom: 8,
-        lineHeight: 1.14,
-        fontWeight: 600,
-        color: theme.colors.gray40,
-    },
-    BiggerFont: {
-        fontSize: 16,
-    },
+  Wrapper: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  Title: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: theme.colors.gray40,
+  },
+  Value: {
+    fontSize: 16,
+    fontWeight: 500,
+    color: theme.colors.gray90,
+  },
+  FundingSummaryColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  },
+  FeeColumn: {
+    marginLeft: 80,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  ValidatorsColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  SubtotalColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
 }));
+

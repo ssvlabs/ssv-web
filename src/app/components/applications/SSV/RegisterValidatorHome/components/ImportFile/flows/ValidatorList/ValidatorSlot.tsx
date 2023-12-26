@@ -9,6 +9,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList.styles';
+import { longStringShorten, truncateText } from '~lib/utils/strings';
 
 const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelected }: {
   validatorPublicKey: string,
@@ -37,7 +38,7 @@ const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelecte
   return (
     <Grid
       className={`${classes.ValidatorSlotWrapper} ${isSelected && classes.SelectedValidatorSlot} ${errorMessage && classes.ErrorValidatorSlot}`}>
-      <Typography className={classes.ValidatorKeyWrapper}>{validatorPublicKey}<ImageDiv
+      <Typography className={classes.ValidatorKeyWrapper}>{longStringShorten(validatorPublicKey, 6, 4)}<ImageDiv
         onClick={() => copyToClipboard(validatorPublicKey)} image={'copy'} width={24} height={24}/>
         <ImageDiv onClick={() => openBeaconcha(validatorPublicKey)} image={'beacon'} width={24} height={24}/>
       </Typography>

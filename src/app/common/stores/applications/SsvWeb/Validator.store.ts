@@ -111,9 +111,11 @@ class ValidatorStore extends BaseStore {
 
   setProcessedKeyShare(processedKeyShare: KeyShares){
     this.processedKeyShare = processedKeyShare;
+    this.validatorsCount = processedKeyShare.list().length;
   }
 
   clearKeyStoreFlowData() {
+    this.setMultiSharesMode(0);
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
     this.newValidatorReceipt = null;

@@ -41,7 +41,8 @@ const ValidatorRegistrationConfirmation = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const process: RegisterValidator | SingleCluster = processStore.process;
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
-  const [actionButtonText, setActionButtonText] = useState('Register Validator');
+  const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
+  const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
@@ -79,7 +80,7 @@ const ValidatorRegistrationConfirmation = () => {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
       applicationStore.showTransactionPendingPopUp(false);
-      setActionButtonText('Register Validator');
+      setActionButtonText(actionButtonDefaultText);
     }
     applicationStore.setIsLoading(false);
   };
@@ -119,8 +120,11 @@ const ValidatorRegistrationConfirmation = () => {
   </Grid>;
 
   const screenBody = [<Grid container>
-    <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-    <ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey} />
+    { !validatorStore.isMultiSharesMode && <>
+			<Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+			<ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey} />
+		</>}
+
     <Grid container item xs={12} className={classes.RowWrapper}>
       <Grid item className={classes.SubHeader}>Selected Operators</Grid>
       {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {

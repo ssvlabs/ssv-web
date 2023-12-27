@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +18,7 @@ import { initContracts, resetContracts } from '~root/services/contracts.service'
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
@@ -24,21 +26,19 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const { apiVersion, networkId } = networks[selectedNetworkIndex];
     const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
     const [showNetworks, setShowNetworks] = useState(false);
-    // const { disconnectWallet, useSetChain, isWalletConnect } = useOnboard();
     const [{ wallet }, connect, disconnect] = useConnectWallet();
     const [{ connectedChain }, setChain] = useSetChain();
     const stores = useStores();
     const navigate = useNavigate();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const applicationStore: ApplicationStore = stores.Application;
 
     const disconnectWallet = async () => {
-        console.warn('useOnboard::disconnectWallet: before');
         if (wallet) {
             await disconnect({ label: wallet.label });
         }
         await walletStore.initWallet(null, null);
-        console.warn('useOnboard::disconnectWallet: done');
     };
 
     const isWalletConnect = () => wallet?.label === 'WalletConnect';
@@ -94,6 +94,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             return;
         }
 
+        applicationStore.shouldCheckCompliance = index === 0;
         // Change network in local storage
         ssvStore.clearUserSyncInterval();
         resetContracts();
@@ -163,4 +164,4 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     );
 };
 
-export default NetworkToggle;
+export default observer(NetworkToggle);

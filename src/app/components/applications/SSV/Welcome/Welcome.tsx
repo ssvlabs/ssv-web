@@ -22,12 +22,10 @@ const Welcome = () => {
   const [_, connect] = useConnectWallet();
   const connectToWallet = async () => {
     if (walletStore.connected) {
-      return applicationStore.showWalletPopUp(true);
+      applicationStore.showWalletPopUp(true);
+    } else {
+      await connect();
     }
-    console.log('connectWallet before');
-    await connect();
-    console.log('connectWallet after');
-    // return walletStore.connect();
   };
 
   return (

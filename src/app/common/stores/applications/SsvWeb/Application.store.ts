@@ -26,9 +26,8 @@ class ApplicationStore extends BaseStore implements Application {
   walletConnectivity: boolean = false;
   whiteNavBarBackground: boolean = false;
   transactionPendingPopUp: boolean = false;
-  appTitle: string = 'SSV Network';
   strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
-  locationRestrictionEnabled: boolean = true;
+  shouldCheckCompliance: boolean = true;
 
   constructor() {
     super();
@@ -38,7 +37,6 @@ class ApplicationStore extends BaseStore implements Application {
       userGeo: observable,
       isLoading: computed,
       darkMode: observable,
-      appTitle: observable,
       isDarkMode: computed,
       localStorage: computed,
       toolBarMenu: observable,
@@ -60,6 +58,7 @@ class ApplicationStore extends BaseStore implements Application {
       setWalletConnectivity: action.bound,
       setWhiteNavBarBackground: action.bound,
       showTransactionPendingPopUp: action.bound,
+      shouldCheckCompliance: observable,
     });
 
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
@@ -71,11 +70,6 @@ class ApplicationStore extends BaseStore implements Application {
       this.switchDarkMode(true);
     } else {
       this.switchDarkMode(false);
-    }
-
-    console.info('Checking "locationRestrictionDisabled" in localStorage to adjust "locationRestrictionEnabled" flag');
-    if (window && window.localStorage && window.localStorage.getItem('locationRestrictionDisabled')) {
-      this.locationRestrictionEnabled = false;
     }
   }
 

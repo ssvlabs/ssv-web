@@ -17,18 +17,15 @@ const Welcome = () => {
     const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
     const { networkId } = getStoredNetwork();
-    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  const connectWallet = useConnectWallet();
+    const [_, connect] = useConnectWallet();
     const titleNetwork = networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
 
     const connectToWallet = async () => {
       if (walletStore.connected) {
-          return applicationStore.showWalletPopUp(true);
+          applicationStore.showWalletPopUp(true);
+      } else {
+        await connect();
       }
-      console.log('connectWallet before');
-      await connectWallet[1]();
-      console.log('connectWallet after');
-      // return walletStore.connect();
     };
 
     return (

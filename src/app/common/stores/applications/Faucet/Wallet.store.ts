@@ -253,10 +253,6 @@ class WalletStore extends BaseStore implements Wallet {
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
   onBalanceChangeCallback(balance: string): void {
   }
-
-  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  setNetwork(networkId: number, apiVersion?: string): void {
-  }
 }
 
 export default WalletStore;

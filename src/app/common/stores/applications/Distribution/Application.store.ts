@@ -23,9 +23,8 @@ class ApplicationStore extends BaseStore implements Application {
   walletConnectivity: boolean = false;
   strategyName: string = 'distribution';
   transactionPendingPopUp: boolean = false;
-  appTitle: string = 'SSV Network Distribution';
   strategyRedirect: string = config.routes.DISTRIBUTION.ROOT;
-  locationRestrictionEnabled: boolean = true;
+  shouldCheckCompliance: boolean = true;
 
   constructor() {
     super();
@@ -35,7 +34,6 @@ class ApplicationStore extends BaseStore implements Application {
       txHash: observable,
       userGeo: observable,
       isLoading: computed,
-      appTitle: observable,
       darkMode: observable,
       isDarkMode: computed,
       localStorage: computed,
@@ -52,6 +50,7 @@ class ApplicationStore extends BaseStore implements Application {
       transactionPendingPopUp: observable,
       setWalletConnectivity: action.bound,
       showTransactionPendingPopUp: action.bound,
+      shouldCheckCompliance: observable,
     });
 
     const darkModeSaved = this.localStorage.getItem('isDarkMode');

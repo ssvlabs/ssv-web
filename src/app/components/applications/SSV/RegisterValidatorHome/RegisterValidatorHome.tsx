@@ -28,6 +28,16 @@ const ButtonSeparator = styled.div`
   height: 12px;
 `;
 
+const preRequisites: PreRequisiteType[] = [
+  {
+    text: translations.VALIDATOR.HOME.PREREQUISITES[0],
+    tooltip: translations.VALIDATOR.HOME.TOOLTIP.TEXT,
+    tooltipLinkText: translations.VALIDATOR.HOME.TOOLTIP.LINK_TEXT,
+  },
+  {
+    text: translations.VALIDATOR.HOME.PREREQUISITES[1],
+  },
+];
 
 const RegisterValidatorHome = () => {
   const classes = useStyles();
@@ -36,17 +46,6 @@ const RegisterValidatorHome = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
-
-  const preRequisites: PreRequisiteType[] = [
-    {
-      text: translations.VALIDATOR.HOME.PREREQUISITES[0],
-      tooltip: translations.VALIDATOR.HOME.TOOLTIP.TEXT,
-      tooltipLinkText: translations.VALIDATOR.HOME.TOOLTIP.LINK_TEXT,
-    },
-    {
-      text: translations.VALIDATOR.HOME.PREREQUISITES[1],
-    },
-  ];
 
   useEffect(() => {
       validatorStore.clearKeyStoreFlowData();

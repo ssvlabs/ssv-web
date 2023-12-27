@@ -26,7 +26,6 @@ const ClusterSize = ({ currentClusterSize, changeClusterSize }: { currentCluster
         <Grid className={classes.ClusterSizeWrapper}>
             <Typography className={classes.Title}>Cluster Size</Typography>
             {sizes.map((size: number, index: number) => <Grid key={`${size}${index}`} onClick={() => clusterSizeHandler(size)} className={`${classes.ClusterSizeButton} ${size === currentClusterSize && classes.ChosenClusterSize}`}>{size}</Grid>)}
-            /*{sizes.map((size: number, index: number) => <Grid key={index} onClick={() => clusterSizeHandler(size)} className={`${classes.ClusterSizeButton} ${size === currentClusterSize && classes.ChosenClusterSize}`}>{size}</Grid>)}*/
         </Grid>
     );
 };

@@ -50,7 +50,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (window && window.localStorage && window.localStorage.getItem('locationRestrictionDisabled')) {
+    if (window?.localStorage.getItem('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
       applicationStore.userGeo = '';
     } else {

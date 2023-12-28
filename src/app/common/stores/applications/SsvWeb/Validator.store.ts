@@ -59,6 +59,7 @@ const annotations = {
   addNewValidator: action.bound,
   keyStorePublicKey: observable,
   keySharePublicKey: observable,
+  setKeySharePublicKey: action.bound,
   removeValidator: action.bound,
   setKeyShareFile: action.bound,
   keyStorePrivateKey: observable,
@@ -80,8 +81,6 @@ class ValidatorStore extends BaseStore {
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
 
-
-  // TODO most likely most of these can be deleted.
   // Key Stores flow
   keyStorePublicKey: string = '';
   keyStorePrivateKey: string = '';
@@ -101,6 +100,10 @@ class ValidatorStore extends BaseStore {
   constructor() {
     super();
     makeObservable(this, annotations);
+  }
+
+  setKeySharePublicKey(keySharePublicKey: string) {
+    this.keySharePublicKey = keySharePublicKey;
   }
 
 

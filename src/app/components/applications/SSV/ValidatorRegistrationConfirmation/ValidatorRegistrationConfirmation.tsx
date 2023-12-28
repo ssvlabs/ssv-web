@@ -27,6 +27,14 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { fromWei } from '~root/services/conversions.service';
+import styled from 'styled-components';
+
+const ValidatorHeaderCount = styled.div`
+  background-color: #F0F9FE;
+  border-radius: 4px;
+  padding: 2px 4px;
+  color: #0792e8;
+`;
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -155,14 +163,18 @@ const ValidatorRegistrationConfirmation = () => {
   if (!processStore.secondRegistration) screenBody.push(<FundingSummary liquidationCollateralCost={liquidationCollateralCost} />);
   if (!processStore.secondRegistration) screenBody.push(TotalSection);
 
+
   const MainScreen = <BorderScreen
-      blackHeader
-      marginTop={32}
-      sectionClass={classes.Section}
-      header={translations.VALIDATOR.CONFIRMATION.TITLE}
-      withoutNavigation={processStore.secondRegistration}
-      body={screenBody}
+    blackHeader
+    marginTop={32}
+    sectionClass={classes.Section}
+    header={translations.VALIDATOR.CONFIRMATION.TITLE}
+    withoutNavigation={processStore.secondRegistration}
+    body={screenBody}
+    sideElement={<ValidatorHeaderCount>{`${validatorStore.validatorsCount} Validators`}</ValidatorHeaderCount>}
   />;
+
+
 
   const SecondaryScreen = <BorderScreen
       marginTop={16}

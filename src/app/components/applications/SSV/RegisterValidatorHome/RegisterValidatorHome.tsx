@@ -1,20 +1,20 @@
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useEffect } from 'react';
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import config, { translations } from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/components/common/ToolTip';
+import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
-import styled from 'styled-components';
 
 type PreRequisiteType = {
   text: string;

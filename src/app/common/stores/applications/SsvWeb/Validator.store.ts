@@ -1,19 +1,18 @@
 import Decimal from 'decimal.js';
-
-// import { Contract } from 'web3-eth-contract';
-import { Contract, ethers } from 'ethers';
+import { ethers } from 'ethers';
+import { KeySharesItem } from 'ssv-keys';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
-import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import Validator from '~lib/api/Validator';
-import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-// import { GasGroup } from '~app/common/config/gasLimits';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
+import { EContractName } from '~app/model/contracts.model';
+import { toWei } from '~root/services/conversions.service';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -22,10 +21,6 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-import { KeySharesItem } from 'ssv-keys';
-import { toWei } from '~root/services/conversions.service';
-import { getContractByName } from '~root/services/contracts.service';
-import { EContractName } from '~app/model/contracts.model';
 
 type ClusterDataType = {
   active: boolean;
@@ -109,7 +104,6 @@ class ValidatorStore extends BaseStore {
   setKeySharePublicKey(keySharePublicKey: string) {
     this.keySharePublicKey = keySharePublicKey;
   }
-
 
   setMultiSharesMode(validatorsCount: number) {
     this.isMultiSharesMode = validatorsCount > 1;

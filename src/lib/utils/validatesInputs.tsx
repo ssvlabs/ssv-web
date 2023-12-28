@@ -3,8 +3,8 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { compareNumbers } from '~lib/utils/numbers';
-import LinkText from '~app/components/common/LinkText/LinkText';
 import { isAddress } from '~root/services/conversions.service';
+import LinkText from '~app/components/common/LinkText/LinkText';
 
 interface ErrorObject {
   errorMessage: any,
@@ -44,21 +44,6 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
   }
   callback(response);
 };
-
-const MIN_ALLOWED_VALIDATORS = 1;
-const MAX_ALLOWED_VALIDATORS = 100;
-
-export const validateValidatorsCount = (value: string, callback: React.Dispatch<ErrorObject>): void => {
-  const response = { shouldDisplay: true, errorMessage: '' };
-  let num: number = Number(value);
-  if (isNaN(num) || num < MIN_ALLOWED_VALIDATORS || num > MAX_ALLOWED_VALIDATORS){
-    response.errorMessage = 'Invalid validators count. Only number between 1-100 allowed';
-  } else {
-    response.shouldDisplay = false;
-  }
-  callback(response);
-};
-
 
 export const validateFeeInput = (value: string, callback: Function): void => {
   // const walletStore: WalletStore = WalletStore.getInstance().getStore('Wallet');

@@ -70,7 +70,7 @@ const translations = {
     DISTRIBUTE_OFFLINE: {
       TITLE: 'How do you want to generate your keyshares?',
       DKG: {
-
+          VALIDATOR_COUNT_ERROR: 'Invalid validators count. Only number between 1-100 allowed',
       },
     },
     KEYSHARE_RESPONSE: {

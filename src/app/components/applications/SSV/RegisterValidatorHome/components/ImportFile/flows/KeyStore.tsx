@@ -34,8 +34,8 @@ const KeyStoreFlow = () => {
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
   const slashingWarningNavigate = {
-    true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
-    false: () => navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE),
+    'true': () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
+    'false': () => navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE),
   };
 
   useEffect(() => {
@@ -133,7 +133,8 @@ const KeyStoreFlow = () => {
   };
 
   const sendTagManagerEvent = (category: string, action: string, label: string) => {
-    GoogleTagManager.getInstance().sendEvent({ category, action, label });};
+    GoogleTagManager.getInstance().sendEvent({ category, action, label });
+  };
 
   const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
 

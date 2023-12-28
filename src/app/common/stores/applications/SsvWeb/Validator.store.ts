@@ -60,6 +60,7 @@ const annotations = {
   addNewValidator: action.bound,
   keyStorePublicKey: observable,
   keySharePublicKey: observable,
+  setKeySharePublicKey: action.bound,
   removeValidator: action.bound,
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
@@ -83,8 +84,6 @@ class ValidatorStore extends BaseStore {
   registrationMode: Mode = 0;
   newValidatorReceipt: any = null;
 
-
-  // TODO most likely most of these can be deleted.
   // Key Stores flow
   keyStorePublicKey: string = '';
   keyStorePrivateKey: string = '';
@@ -105,6 +104,10 @@ class ValidatorStore extends BaseStore {
   constructor() {
     super();
     makeObservable(this, annotations);
+  }
+
+  setKeySharePublicKey(keySharePublicKey: string) {
+    this.keySharePublicKey = keySharePublicKey;
   }
 
 
@@ -910,63 +913,6 @@ class ValidatorStore extends BaseStore {
       return '';
     }
   }
-
-  // async validateKeySharePayload(): Promise<KeyShareError> {
-  //   const OK_RESPONSE_ID = 0;
-  //   const ERROR_RESPONSE_ID = 4;
-  //   const VALIDATOR_EXIST_ID = 3;
-  //   const PUBLIC_KEY_ERROR_ID = 5;
-  //   const OPERATOR_NOT_EXIST_ID = 1;
-  //   const OPERATOR_NOT_MATCHING_ID = 2;
-  //   const keyShares = new KeyShares();
-  //   const processStore: ProcessStore = this.getStore('Process');
-  //   const accountStore: AccountStore = this.getStore('Account');
-  //   const { OK_RESPONSE,
-  //     OPERATOR_NOT_EXIST_RESPONSE,
-  //     OPERATOR_NOT_MATCHING_RESPONSE,
-  //     CATCH_ERROR_RESPONSE,
-  //     VALIDATOR_EXIST_RESPONSE,
-  //     VALIDATOR_PUBLIC_KEY_ERROR } = translations.VALIDATOR.KEYSHARE_RESPONSE;
-  //   try {
-  //     const fileJson = await this.keyShareFile?.text();
-  //     const operatorStore: OperatorStore = this.getStore('Operator');
-  //     const walletStore: WalletStore = this.getStore('Wallet');
-  //     // @ts-ignore
-  //     const parsedFile = JSON.parse(fileJson);
-  //     const { payload, data } = parsedFile;
-  //     const operatorPublicKeys = data.operators.map((operator: any) => operator.operatorKey);
-  //     this.keySharePayload = payload;
-  //     this.keySharePublicKey = payload.publicKey;
-  //     const keyShareOperators = payload.operatorIds.sort();
-  //     if (this.keySharePublicKey.length !== 98) {
-  //       return { ...VALIDATOR_PUBLIC_KEY_ERROR, id: PUBLIC_KEY_ERROR_ID };
-  //     }
-  //     if (processStore.secondRegistration) {
-  //       const process: SingleCluster = processStore.process;
-  //       const clusterOperatorsIds = process.item.operators.map((operator: any) => operator.id ).sort();
-  //       if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperators[index])) {
-  //         return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
-  //       }
-  //     } else {
-  //       const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-  //       if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
-  //       if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
-  //         return { ...OPERATOR_NOT_MATCHING_RESPONSE, id: OPERATOR_NOT_MATCHING_ID };
-  //       }
-  //       // @ts-ignore
-  //       operatorStore.selectOperators(selectedOperators);
-  //     }
-  //     const validatorExist = !!(await Validator.getInstance().getValidator(payload.publicKey, true));
-  //     if (validatorExist) return { ...VALIDATOR_EXIST_RESPONSE, id: VALIDATOR_EXIST_ID };
-  //     await accountStore.getOwnerNonce(walletStore.accountAddress);
-  //     const { ownerNonce } = accountStore;
-  //     await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce, publicKey: payload.publicKey } );
-  //     return { ...OK_RESPONSE, id: OK_RESPONSE_ID };
-  //     // @ts-ignore
-  //   } catch (e: any) {
-  //     return { ...CATCH_ERROR_RESPONSE, id: ERROR_RESPONSE_ID, errorMessage: e.message };
-  //   }
-  // }
 
   createPayload(publicKey: string | string[], operatorIds: number[] | number[][], sharesData: string | string[], totalCost: string | string[], clusterData: ClusterDataType) {
     const payload = new Map<string, any>();

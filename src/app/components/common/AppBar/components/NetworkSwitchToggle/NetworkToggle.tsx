@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
+import config from '~app/common/config';
 import {
     getNetworkInfoIndexByNetworkId,
     getStoredNetwork,
@@ -109,8 +110,17 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         // In wallet connect mode - disconnect and connect again
         if (isWalletConnect()) {
             await disconnectWallet();
+            navigate('/join');
             await connect();
             return;
+        }
+
+        if (!connectedChain?.id) {
+            const result = await connect();
+            if (!result) {
+                console.error('NetworkToggle: Error connecting wallet');
+                return;
+            }
         }
 
         // Set chain works only in not wallet connect mode
@@ -122,15 +132,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             console.error('NetworkToggle: Error setting chain');
             return;
         }
-
-        const result = await connect();
-        if (!result) {
-            console.error('NetworkToggle: Error connecting wallet');
-        }
-
-        // changeNetwork(getNetworkInfoIndexByNetworkId(Number(network.networkId)));
-        // navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-        // navigate('/join');
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     };
 
     return (

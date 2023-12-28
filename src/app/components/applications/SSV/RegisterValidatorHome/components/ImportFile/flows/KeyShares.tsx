@@ -152,9 +152,6 @@ const KeyShareFlow = () => {
     if (!shares.length) {
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     }
-    if (shares.length > 1) {
-      validatorStore.setMultiSharesMode(shares.length);
-    }
     consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
     try {
       for (let keyShare of shares) {
@@ -201,6 +198,13 @@ const KeyShareFlow = () => {
 
   async function storeKeyShareData(keyShareMulti: KeyShares) {
     validatorStore.setProcessedKeyShare(keyShareMulti);
+    const keyShares = keyShareMulti.list();
+    if (keyShares.length == 1){
+      validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
+    }
+    if (keyShares.length > 1) {
+      validatorStore.setMultiSharesMode(keyShares.length);
+    }
     await accountStore.getOwnerNonce(walletStore.accountAddress);
     const { ownerNonce } = accountStore;
     const validators: Record<string, ValidatorType> = {};

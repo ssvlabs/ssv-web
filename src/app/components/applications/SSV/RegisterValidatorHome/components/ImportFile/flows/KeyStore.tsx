@@ -147,6 +147,7 @@ const KeyStoreFlow = () => {
         const deposited = true; // await isDeposited();
         applicationStore.setIsLoading(false);
         validatorStore.registrationMode = 1;
+        validatorStore.setMultiSharesMode(1);
         slashingWarningNavigate[`${processStore.secondRegistration}`]();
         if (deposited) {
           sendTagManagerEvent('validator_register', 'upload_file', 'success');

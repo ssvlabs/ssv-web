@@ -52,6 +52,7 @@ enum Mode {
 const annotations = {
   isJsonFile: action.bound,
   keyStoreFile: observable,
+  registerValidatorsPublicKeys: observable,
   keyShareFile: observable,
   setKeyStore: action.bound,
   registrationMode: observable,
@@ -61,12 +62,14 @@ const annotations = {
   keySharePublicKey: observable,
   removeValidator: action.bound,
   setKeyShareFile: action.bound,
+  setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
   newValidatorReceipt: observable,
   extractKeyStoreData: action.bound,
   getKeyStorePublicKey: action.bound,
   clearKeyShareFlowData: action.bound,
   clearKeyStoreFlowData: action.bound,
+  bulkRegistration: action.bound,
   validatorPublicKeyExist: observable,
   isMultiSharesMode: observable,
   setMultiSharesMode: action.bound,
@@ -97,6 +100,7 @@ class ValidatorStore extends BaseStore {
   isMultiSharesMode: boolean = false;
   processedKeyShare: KeyShares | null = null;
   validatorsCount: number = 0;
+  registerValidatorsPublicKeys: string[] = [];
 
   constructor() {
     super();
@@ -109,7 +113,11 @@ class ValidatorStore extends BaseStore {
     this.validatorsCount = validatorsCount;
   }
 
-  setProcessedKeyShare(processedKeyShare: KeyShares){
+  setRegisterValidatorsPublicKeys(validatorPublicKeys: string[]) {
+    this.registerValidatorsPublicKeys = validatorPublicKeys;
+  }
+
+  setProcessedKeyShare(processedKeyShare: KeyShares) {
     this.processedKeyShare = processedKeyShare;
     this.validatorsCount = processedKeyShare.list().length;
   }
@@ -320,6 +328,73 @@ class ValidatorStore extends BaseStore {
     });
   }
 
+  async bulkRegistration() {
+    const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    return new Promise(async (resolve) => {
+      try {
+        const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
+        const contract = getContractByName(EContractName.SETTER);
+        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+        const payload = await this.createKeySharePayload();
+        if (!payload) {
+          resolve(false);
+          return;
+        }
+        let tx = await contract.bulkRegisterValidator(...payload.values());
+
+        if (tx.hash) {
+          applicationStore.txHash = tx.hash;
+          applicationStore.showTransactionPendingPopUp(true);
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          const event: boolean = receipt.hasOwnProperty('events');
+          if (event) {
+            this.keyStoreFile = null;
+            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
+            GoogleTagManager.getInstance().sendEvent({
+              category: 'validators_register',
+              action: 'register_tx',
+              label: 'success',
+            });
+            console.debug('Contract Receipt', receipt);
+            resolve(true);
+            let iterations = 0;
+            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+              // Reached maximum iterations
+              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              }
+              iterations += 1;
+              if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
+                await this.refreshOperatorsAndClusters(resolve, true);
+                break;
+              } else {
+                console.log('Validator is still not in API..');
+              }
+              await myAccountStore.delay();
+            }
+          }
+        }
+        resolve(true);
+      } catch (e: any) {
+        console.log(e.data);
+        const isRejected: boolean = e.hasOwnProperty('code');
+        GoogleTagManager.getInstance().sendEvent({
+          category: 'validator_register',
+          action: 'register_tx',
+          label: isRejected ? 'rejected' : 'error',
+        });
+        console.debug('Contract Error', e.message);
+        applicationStore.setIsLoading(false);
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      }
+    });
+  }
+
   async addNewValidator() {
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
@@ -333,7 +408,6 @@ class ValidatorStore extends BaseStore {
         const walletStore: WalletStore = this.getStore('Wallet');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const contract = getContractByName(EContractName.SETTER);
-
         if (!payload) {
           resolve(false);
           return;
@@ -676,7 +750,7 @@ class ValidatorStore extends BaseStore {
           const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
           let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-          if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+          if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
             liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
           }
           totalCost = ssvStore.prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
@@ -724,20 +798,42 @@ class ValidatorStore extends BaseStore {
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       let totalCost = 'registerValidator' in process ? ssvStore.prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
       if (process && 'fundingPeriod' in process) {
-        const networkCost = propertyCostByPeriod(ssvStore.networkFee,  process.fundingPeriod);
+        const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
         let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-        if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+        if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
           liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
         }
-        totalCost = ssvStore.prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
+        totalCost = ssvStore.prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(this.isMultiSharesMode ? this.validatorsCount : 1).toString()));
       }
       try {
-        const payload = this.createPayload(this.keySharePublicKey,
-          this.keySharePayload?.operatorIds.map(Number).sort((a: number, b: number) => a - b),
-          this.keySharePayload?.sharesData, `${totalCost}`,
-          await clusterStore.getClusterData(clusterStore.getClusterHash(this.keySharePayload?.operatorIds.sort())));
-        resolve(payload);
+        const keysharePayload = this.processedKeyShare?.list().find((keyShare: any) => this.registerValidatorsPublicKeys.includes(keyShare.payload.publicKey))?.payload;
+        let publicKeys;
+        let sharesData;
+        const operatorIds = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => operator.id).sort((a: number, b: number) => a - b);
+
+        const keyShares = this.processedKeyShare?.list();
+
+        if (this.isMultiSharesMode && keyShares && keyShares.length > 1) {
+          const filteredKeyShares = keyShares.filter((keyShare: any) => this.registerValidatorsPublicKeys.includes(keyShare.payload.publicKey));
+          publicKeys = filteredKeyShares.map((keyShare) => keyShare.payload.publicKey);
+          sharesData = filteredKeyShares.map((keyShare) => keyShare.payload.sharesData);
+        } else if (keysharePayload) {
+          publicKeys = keysharePayload?.publicKey;
+          sharesData = keysharePayload.sharesData;
+        } else {
+          publicKeys = '';
+          sharesData = [];
+        }
+
+        if (keysharePayload) {
+          const payload = this.createPayload(
+            publicKeys,
+            operatorIds,
+            sharesData, `${totalCost}`,
+            await clusterStore.getClusterData(clusterStore.getClusterHash(operatorIds)));
+          resolve(payload);
+        }
       } catch (e: any) {
         console.log(e.message);
         resolve(false);
@@ -872,7 +968,7 @@ class ValidatorStore extends BaseStore {
   //   }
   // }
 
-  createPayload(publicKey: string, operatorIds: number[], sharesData: string, totalCost: string, clusterData: ClusterDataType) {
+  createPayload(publicKey: string | string[], operatorIds: number[] | number[][], sharesData: string | string[], totalCost: string | string[], clusterData: ClusterDataType) {
     const payload = new Map<string, any>();
     payload.set('keyStorePublicKey', publicKey);
     payload.set('operatorIds', operatorIds);

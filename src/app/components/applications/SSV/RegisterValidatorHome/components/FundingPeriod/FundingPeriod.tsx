@@ -51,7 +51,7 @@ const FundingPeriod = () => {
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
-  const totalAmount = formatNumberToUi(validatorStore.isMultiSharesMode ? Number(totalCost.toFixed(18)) * validatorStore.validatorsCount : totalCost.toFixed(18));
+  const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
 
   const getDisableStateCondition = () => {
     if (isCustomPayment) {
@@ -92,7 +92,7 @@ const FundingPeriod = () => {
                             className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
                     </Grid>
                     <Grid item
-                          className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
+                          className={classes.SsvPrice}>{formatNumberToUi(Number(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV</Grid>
                     {isCustom && <TextInput value={customPeriod}
                                             onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
                                             extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}

@@ -74,7 +74,7 @@ const ValidatorRegistrationConfirmation = () => {
     // }
 
     console.log(`mode is: ${validatorStore.registrationMode}`);
-    const response = await validatorStore.addNewValidator();
+    const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration() : await validatorStore.addNewValidator();
     if (response) {
       applicationStore.showTransactionPendingPopUp(false);
       successPageNavigate[`${processStore.secondRegistration}`]();

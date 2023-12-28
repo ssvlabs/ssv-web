@@ -4,7 +4,12 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList.styles';
 
-const ValidatorCounter = ({ countOfValidators, changeValidatorsCount, maxCount }: { countOfValidators: number, maxCount: number, changeValidatorsCount: Function }) => {
+const ValidatorCounter = ({ countOfValidators, maxCount, unselectLastValidator, selectLastValidValidator }: {
+  countOfValidators: number,
+  maxCount: number,
+  unselectLastValidator: Function,
+  selectLastValidValidator: Function
+}) => {
   const [reachedMinCount, setReachedMinCount] = useState(false);
   const [reachedMaxCount, setReachedMaxCount] = useState(false);
   const classes = useStyles({ reachedMinCount, reachedMaxCount });
@@ -12,17 +17,16 @@ const ValidatorCounter = ({ countOfValidators, changeValidatorsCount, maxCount }
   useEffect(() => {
     setReachedMaxCount(countOfValidators === maxCount);
     setReachedMinCount(countOfValidators === 0);
-    changeValidatorsCount(countOfValidators);
   }, [countOfValidators]);
 
   const increaseCount = () => {
     if (countOfValidators < maxCount) {
-      changeValidatorsCount((prevCount: number) => prevCount + 1);
+      selectLastValidValidator();
     }
   };
   const decreaseCount = () => {
     if (countOfValidators > 0) {
-      changeValidatorsCount((prevCount: number) => prevCount - 1);
+      unselectLastValidator();
     }
   };
 

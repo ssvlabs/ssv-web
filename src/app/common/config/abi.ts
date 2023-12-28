@@ -2182,6 +2182,11 @@ export const ABI_VERSION = {
       },
       {
         'inputs': [],
+        'name': 'PublicKeysSharesLengthMismatch',
+        'type': 'error',
+      },
+      {
+        'inputs': [],
         'name': 'SameFeeChangeNotAllowed',
         'type': 'error',
       },
@@ -2899,15 +2904,21 @@ export const ABI_VERSION = {
         'inputs': [
           {
             'indexed': true,
-            'internalType': 'bytes',
-            'name': 'publicKey',
-            'type': 'bytes',
+            'internalType': 'address',
+            'name': 'owner',
+            'type': 'address',
           },
           {
             'indexed': false,
             'internalType': 'uint64[]',
             'name': 'operatorIds',
             'type': 'uint64[]',
+          },
+          {
+            'indexed': false,
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
           },
         ],
         'name': 'ValidatorExited',
@@ -2978,6 +2989,66 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'acceptOwnership',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
+          {
+            'internalType': 'bytes[]',
+            'name': 'sharesData',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint256',
+            'name': 'amount',
+            'type': 'uint256',
+          },
+          {
+            'components': [
+              {
+                'internalType': 'uint32',
+                'name': 'validatorCount',
+                'type': 'uint32',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'networkFeeIndex',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'index',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'bool',
+                'name': 'active',
+                'type': 'bool',
+              },
+              {
+                'internalType': 'uint256',
+                'name': 'balance',
+                'type': 'uint256',
+              },
+            ],
+            'internalType': 'struct ISSVNetworkCore.Cluster',
+            'name': 'cluster',
+            'type': 'tuple',
+          },
+        ],
+        'name': 'bulkRegisterValidator',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function',
@@ -3370,7 +3441,7 @@ export const ABI_VERSION = {
           },
           {
             'internalType': 'bytes',
-            'name': 'sharesData',
+            'name': 'shares',
             'type': 'bytes',
           },
           {
@@ -8010,103 +8081,103 @@ export const ABI_VERSION = {
 export const DISTRIBUTION_ABI_VERSION = {
   [NETWORKS.MAINNET]: [
     {
-    'inputs': [
-      {
+      'inputs': [
+        {
+          'internalType': 'address',
+          'name': 'token_',
+          'type': 'address',
+        }],
+      'stateMutability': 'nonpayable',
+      'type': 'constructor',
+    }, {
+      'anonymous': false,
+      'inputs': [{
+        'indexed': false,
         'internalType': 'address',
-        'name': 'token_',
+        'name': 'account',
         'type': 'address',
-      }],
-    'stateMutability': 'nonpayable',
-    'type': 'constructor',
-  }, {
-    'anonymous': false,
-    'inputs': [{
-      'indexed': false,
-      'internalType': 'address',
-      'name': 'account',
-      'type': 'address',
-    }, { 'indexed': false, 'internalType': 'uint256', 'name': 'amount', 'type': 'uint256' }],
-    'name': 'Claimed',
-    'type': 'event',
-  }, {
-    'anonymous': false,
-    'inputs': [{
-      'indexed': false,
-      'internalType': 'bytes32',
-      'name': 'oldMerkleRoot',
-      'type': 'bytes32',
-    }, { 'indexed': false, 'internalType': 'bytes32', 'name': 'newMerkleRoot', 'type': 'bytes32' }],
-    'name': 'MerkelRootUpdated',
-    'type': 'event',
-  }, {
-    'anonymous': false,
-    'inputs': [{
-      'indexed': true,
-      'internalType': 'address',
-      'name': 'previousOwner',
-      'type': 'address',
-    }, { 'indexed': true, 'internalType': 'address', 'name': 'newOwner', 'type': 'address' }],
-    'name': 'OwnershipTransferred',
-    'type': 'event',
-  }, {
-    'inputs': [{ 'internalType': 'address', 'name': 'account', 'type': 'address' }, {
-      'internalType': 'uint256',
-      'name': 'cumulativeAmount',
-      'type': 'uint256',
-    }, { 'internalType': 'bytes32', 'name': 'expectedMerkleRoot', 'type': 'bytes32' }, {
-      'internalType': 'bytes32[]',
-      'name': 'merkleProof',
-      'type': 'bytes32[]',
-    }], 'name': 'claim', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function',
-  }, {
-    'inputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-    'name': 'cumulativeClaimed',
-    'outputs': [{ 'internalType': 'uint256', 'name': '', 'type': 'uint256' }],
-    'stateMutability': 'view',
-    'type': 'function',
-  }, {
-    'inputs': [],
-    'name': 'merkleRoot',
-    'outputs': [{ 'internalType': 'bytes32', 'name': '', 'type': 'bytes32' }],
-    'stateMutability': 'view',
-    'type': 'function',
-  }, {
-    'inputs': [],
-    'name': 'owner',
-    'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-    'stateMutability': 'view',
-    'type': 'function',
-  }, {
-    'inputs': [],
-    'name': 'renounceOwnership',
-    'outputs': [],
-    'stateMutability': 'nonpayable',
-    'type': 'function',
-  }, {
-    'inputs': [{ 'internalType': 'bytes32', 'name': 'merkleRoot_', 'type': 'bytes32' }],
-    'name': 'setMerkleRoot',
-    'outputs': [],
-    'stateMutability': 'nonpayable',
-    'type': 'function',
-  }, {
-    'inputs': [],
-    'name': 'token',
-    'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-    'stateMutability': 'view',
-    'type': 'function',
-  }, {
-    'inputs': [{ 'internalType': 'address', 'name': 'newOwner', 'type': 'address' }],
-    'name': 'transferOwnership',
-    'outputs': [],
-    'stateMutability': 'nonpayable',
-    'type': 'function',
-  }, {
-    'inputs': [{ 'internalType': 'address', 'name': 'recipient', 'type': 'address' }],
-    'name': 'withdrawTo',
-    'outputs': [],
-    'stateMutability': 'nonpayable',
-    'type': 'function',
-  }],
+      }, { 'indexed': false, 'internalType': 'uint256', 'name': 'amount', 'type': 'uint256' }],
+      'name': 'Claimed',
+      'type': 'event',
+    }, {
+      'anonymous': false,
+      'inputs': [{
+        'indexed': false,
+        'internalType': 'bytes32',
+        'name': 'oldMerkleRoot',
+        'type': 'bytes32',
+      }, { 'indexed': false, 'internalType': 'bytes32', 'name': 'newMerkleRoot', 'type': 'bytes32' }],
+      'name': 'MerkelRootUpdated',
+      'type': 'event',
+    }, {
+      'anonymous': false,
+      'inputs': [{
+        'indexed': true,
+        'internalType': 'address',
+        'name': 'previousOwner',
+        'type': 'address',
+      }, { 'indexed': true, 'internalType': 'address', 'name': 'newOwner', 'type': 'address' }],
+      'name': 'OwnershipTransferred',
+      'type': 'event',
+    }, {
+      'inputs': [{ 'internalType': 'address', 'name': 'account', 'type': 'address' }, {
+        'internalType': 'uint256',
+        'name': 'cumulativeAmount',
+        'type': 'uint256',
+      }, { 'internalType': 'bytes32', 'name': 'expectedMerkleRoot', 'type': 'bytes32' }, {
+        'internalType': 'bytes32[]',
+        'name': 'merkleProof',
+        'type': 'bytes32[]',
+      }], 'name': 'claim', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function',
+    }, {
+      'inputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
+      'name': 'cumulativeClaimed',
+      'outputs': [{ 'internalType': 'uint256', 'name': '', 'type': 'uint256' }],
+      'stateMutability': 'view',
+      'type': 'function',
+    }, {
+      'inputs': [],
+      'name': 'merkleRoot',
+      'outputs': [{ 'internalType': 'bytes32', 'name': '', 'type': 'bytes32' }],
+      'stateMutability': 'view',
+      'type': 'function',
+    }, {
+      'inputs': [],
+      'name': 'owner',
+      'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
+      'stateMutability': 'view',
+      'type': 'function',
+    }, {
+      'inputs': [],
+      'name': 'renounceOwnership',
+      'outputs': [],
+      'stateMutability': 'nonpayable',
+      'type': 'function',
+    }, {
+      'inputs': [{ 'internalType': 'bytes32', 'name': 'merkleRoot_', 'type': 'bytes32' }],
+      'name': 'setMerkleRoot',
+      'outputs': [],
+      'stateMutability': 'nonpayable',
+      'type': 'function',
+    }, {
+      'inputs': [],
+      'name': 'token',
+      'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
+      'stateMutability': 'view',
+      'type': 'function',
+    }, {
+      'inputs': [{ 'internalType': 'address', 'name': 'newOwner', 'type': 'address' }],
+      'name': 'transferOwnership',
+      'outputs': [],
+      'stateMutability': 'nonpayable',
+      'type': 'function',
+    }, {
+      'inputs': [{ 'internalType': 'address', 'name': 'recipient', 'type': 'address' }],
+      'name': 'withdrawTo',
+      'outputs': [],
+      'stateMutability': 'nonpayable',
+      'type': 'function',
+    }],
   [NETWORKS.GOERLI]: [
     {
       'inputs': [

@@ -16,11 +16,6 @@ import { useSetChain } from '@web3-onboard/react';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { NETWORKS } from '~lib/utils/envHelper';
 
-//General -  Mainnet/Testnet --> Single/Multi --> chainId --> route mapping?
-// Now:
-// Mainnet - will always single(old route mapping)
-// other - always new.
-
 type NavigationRoutes = {
   [mode in EBulkMode]: Record<string, string | Record<number, string>>;
 };

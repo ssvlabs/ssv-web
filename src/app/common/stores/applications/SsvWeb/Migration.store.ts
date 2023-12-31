@@ -1,5 +1,5 @@
-import { KeyShares } from 'ssv-keys';
 import { observable, makeObservable, action } from 'mobx';
+import { KeySharesItem } from 'ssv-keys';
 import Operator from '~lib/api/Operator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -53,7 +53,7 @@ class MigrationStore extends BaseStore  {
         const PUBLIC_KEY_ERROR_ID = 5;
         const OPERATOR_NOT_EXIST_ID = 1;
         const OPERATOR_NOT_MATCHING_ID = 2;
-        const keyShares = new KeyShares();
+        const keyShares = new KeySharesItem();
         const accountStore: AccountStore = this.getStore('Account');
         const operatorStore: OperatorStore = this.getStore('Operator');
         const walletStore: WalletStore = this.getStore('Wallet');
@@ -76,11 +76,10 @@ class MigrationStore extends BaseStore  {
                return { errorMessage: INCORRECT_OWNER_ADDRESS_ERROR.errorMessage, subErrorMessage: `${INCORRECT_OWNER_ADDRESS_ERROR.subErrorMessage} ${data.ownerAddress}`, id: OWNER_ADDRESS_NOT_MATCHING };
             }
                 const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
-                if (!selectedOperators) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
-                if (typeof selectedOperators !== 'boolean' && selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
+                if (!selectedOperators.length) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
+                if (selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
                     return { errorMessage: INVALID_OPERATOR_DETAILS.message, subErrorMessage: INVALID_OPERATOR_DETAILS.subErrorMessage, id: OPERATOR_NOT_MATCHING_ID };
                 }
-                // @ts-ignore
                 operatorStore.selectOperators(selectedOperators);
             const nonce = Number(ownerNonce) + index;
             await keyShares.validateSingleShares(payload.sharesData, { ownerAddress: walletStore.accountAddress, ownerNonce: nonce, publicKey: payload.publicKey } );

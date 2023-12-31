@@ -3,7 +3,7 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     Link: {
-        fontSize: 16,
+        fontSize: (props: any) => props.textSize ? props.textSize : 16,
         cursor: 'pointer',
         display: 'inline-block',
         overflowWrap: 'break-word',

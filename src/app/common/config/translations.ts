@@ -2,7 +2,20 @@ const translations = {
   VALIDATOR: {
     HOME: {
       TITLE: 'Run a Distributed Validator',
+      SUB_TITLE: 'Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity.',
       DESCRIPTION: 'Any validator can run on the SSV network: create a new validator or import your existing one to begin.',
+      PREREQUISITES: [
+        'An active Ethereum validator (deposited to Beacon Chain)',
+        'SSV tokens to cover operational fees',
+      ],
+      BUTTON: {
+        NEW_KEYS: 'Generate new key shares',
+        EXISTING_KEYS: 'I already have key shares',
+      },
+      TOOLTIP: {
+        TEXT: 'Don\'t have a validator? ',
+        LINK_TEXT: 'Create via Ethereum Launchpad',
+      },
     },
     CREATE: {
       TITLE: 'Create Validator via Ethereum Launchpad',
@@ -41,6 +54,10 @@ const translations = {
         // 'When you register a new validator to the network you are required to deposit sufficient balance for a year, but it\'s under your sole responsibility to make sure your account always holds enough balance for it\'s operation.',
       ],
     },
+    BULK_REGISTRATION: {
+      SELECTED_VALIDATORS: 'Selected Validators',
+      SELECTED_VALIDATORS_TOOLTIP: 'Bulk registration is capped at 50 validators per batch.',
+    },
     IMPORT: {
       TITLE: 'Enter Validator Key',
       KEY_SHARES_TITLE: 'Enter KeyShares File',
@@ -48,6 +65,12 @@ const translations = {
       FILE_ERRORS: {
         INVALID_FILE: 'Invalid file type.',
         INVALID_PASSWORD: 'Invalid keystore file password.',
+      },
+    },
+    DISTRIBUTE_OFFLINE: {
+      TITLE: 'How do you want to generate your keyshares?',
+      DKG: {
+          VALIDATOR_COUNT_ERROR: 'Invalid validators count. Only number between 1-100 allowed',
       },
     },
     KEYSHARE_RESPONSE: {
@@ -84,6 +107,10 @@ const translations = {
         name: 'ERROR', errorMessage: 'Wrong wallet connected', subErrorMessage: 'please connect to wallet',
       },
       INVALID_OPERATOR_DETAILS: { message: 'Invalid operator details', subErrorMessage: 'Please contact support' },
+      INCONSISTENT_OPERATOR_CLUSTER: {
+        name: 'ERROR',
+        errorMessage: 'The file contains key shares associated with different clusters. Please ensure that all key shares are consistent with the same operator cluster.',
+      },
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',

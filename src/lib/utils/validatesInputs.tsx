@@ -3,8 +3,8 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import { compareNumbers } from '~lib/utils/numbers';
-import LinkText from '~app/components/common/LinkText/LinkText';
 import { isAddress } from '~root/services/conversions.service';
+import LinkText from '~app/components/common/LinkText/LinkText';
 
 interface ErrorObject {
   errorMessage: any,

@@ -21,7 +21,9 @@ import Dashboard from '~app/components/applications/SSV/MyAccount/components/Das
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
-import ClusterWarnings from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+import ClusterWarnings
+  from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -38,9 +40,13 @@ const ClusterDashboard = () => {
   const [loadingCluster, setLoadingClusters] = useState(false);
   const [loadingFeeRecipient, setLoadingFeeRecipient] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
+  const { getNextNavigation } = validatorRegistrationFlow(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
 
   const moveToRegisterValidator = () => {
-    navigate(config.routes.SSV.VALIDATOR.HOME);
+    const nextRoute = getNextNavigation(EValidatorFlowAction.ADD_CLUSTER);
+    console.log(`$$$$$$$$$$$$ ${nextRoute} $$$$$$$$$$$$`);
+    // nextRouteRetriever.validatorRegistrationFlow(nextRoute);
+    navigate(nextRoute);
   };
 
   const handleGridHover = (index: string) => {
@@ -58,11 +64,11 @@ const ClusterDashboard = () => {
   };
 
   const createData = (
-      clusterID: string,
-      operators: JSX.Element,
-      validators: number,
-      operational_runway: string | JSX.Element,
-      runWayError: JSX.Element | undefined,
+    clusterID: string,
+    operators: JSX.Element,
+    validators: number,
+    operational_runway: string | JSX.Element,
+    runWayError: JSX.Element | undefined,
   ) => {
     return { clusterID, operators, validators, operational_runway, runWayError };
   };
@@ -73,31 +79,31 @@ const ClusterDashboard = () => {
     const remainingDaysValue = formatNumberToUi(cluster.runWay, true);
     const remainingDays = +remainingDaysValue > 0 ? `${remainingDaysValue} Days` : remainingDaysValue;
     return createData(
-        longStringShorten(clusterStore.getClusterHash(cluster.operators).slice(2), 4),
-        <Grid container style={{ gap: 8 }}>
-          {cluster.operators.map((operator: any, index: number) => {
-            return <Grid item
-                         container
-                         key={index}
-                         onMouseLeave={handleGridLeave}
-                         className={classes.CircleImageOperatorWrapper}
-                         onMouseEnter={() => handleGridHover(clusterStore.getClusterHash(cluster.operators) + operator.id)}
-            >
-              {(hoveredGrid === clusterStore.getClusterHash(cluster.operators) + operator.id) && (
-                  <OperatorCard operator={operator} />
-              )}
-              <OperatorCircleImage operatorLogo={operator.logo} />
-            </Grid>;
-          })}
-        </Grid>,
-        cluster.validator_count,
-        isNaN(cluster.runWay) ? (
-            <NaDisplay text={translations.NA_DISPLAY.TOOLTIP_TEXT} tooltipClassExtend={classes.TooltipCustomSize} />
-        ) : remainingDays,
-        <ClusterWarnings cluster={cluster} />,
+      longStringShorten(clusterStore.getClusterHash(cluster.operators).slice(2), 4),
+      <Grid container style={{ gap: 8 }}>
+        {cluster.operators.map((operator: any, index: number) => {
+          return <Grid item
+                       container
+                       key={index}
+                       onMouseLeave={handleGridLeave}
+                       className={classes.CircleImageOperatorWrapper}
+                       onMouseEnter={() => handleGridHover(clusterStore.getClusterHash(cluster.operators) + operator.id)}
+          >
+            {(hoveredGrid === clusterStore.getClusterHash(cluster.operators) + operator.id) && (
+              <OperatorCard operator={operator}/>
+            )}
+            <OperatorCircleImage operatorLogo={operator.logo}/>
+          </Grid>;
+        })}
+      </Grid>,
+      cluster.validator_count,
+      isNaN(cluster.runWay) ? (
+        <NaDisplay text={translations.NA_DISPLAY.TOOLTIP_TEXT} tooltipClassExtend={classes.TooltipCustomSize}/>
+      ) : remainingDays,
+      <ClusterWarnings cluster={cluster}/>,
     );
   });
-  
+
   const openSingleCluster = (listIndex: string) => {
     processStore.setProcess({
       processName: 'single_cluster',
@@ -114,7 +120,7 @@ const ClusterDashboard = () => {
     });
   };
 
-  const onChangePage = _.debounce( async (newPage: number) =>  {
+  const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingClusters(true);
     await myAccountStore.getOwnerAddressClusters({ forcePage: newPage });
     setLoadingClusters(false);
@@ -126,44 +132,49 @@ const ClusterDashboard = () => {
     if (indexCluster.runWay < 30) return applicationStore.darkMode ? 'rgba(255, 210, 10, 0.2)' : '#FDFBF0';
   };
 
+
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
-        <ToggleDashboards title={'Validator Clusters'} />
+        <ToggleDashboards title={'Validator Clusters'}/>
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
-          {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={() => !loadingFeeRecipient && moveToFeeRecipient()}>
+          {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`}
+                                     onClick={() => !loadingFeeRecipient && moveToFeeRecipient()}>
             Fee Address
-            {loadingFeeRecipient ? <CircularProgress className={classes.SpinnerWrapper} thickness={6} size={16} /> : <Grid item className={classes.Pencil}/>}
+            {loadingFeeRecipient ? <CircularProgress className={classes.SpinnerWrapper} thickness={6} size={16}/> :
+              <Grid item className={classes.Pencil}/>}
           </Grid>)}
           <Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>
         </Grid>
       </Grid>
       <Dashboard
-          disable
-          rows={rows}
-          loading={loadingCluster}
-          noItemsText={'No Clusters'}
-          rowBackgroundColor={rowBackgroundColor}
-          paginationActions={{
-            page,
-            count: total,
-            onChangePage,
-            totalPages: pages,
-            rowsPerPage: per_page,
-          }}
-          rowsAction={openSingleCluster}
-          columns={[
-            { name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid> },
-            { name: 'Operators' },
-            { name: 'Validators' },
-            { name: 'Est Operational Runway' },
-            { name: '' },
-          ]}
+        disable
+        rows={rows}
+        loading={loadingCluster}
+        noItemsText={'No Clusters'}
+        rowBackgroundColor={rowBackgroundColor}
+        paginationActions={{
+          page,
+          count: total,
+          onChangePage,
+          totalPages: pages,
+          rowsPerPage: per_page,
+        }}
+        rowsAction={openSingleCluster}
+        columns={[
+          {
+            name: 'Cluster ID', tooltip: <Grid>Clusters represent a unique set of operators who operate your
+              validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid>,
+          },
+          { name: 'Operators' },
+          { name: 'Validators' },
+          { name: 'Est Operational Runway' },
+          { name: '' },
+        ]}
       />
     </Grid>
   );
 };
-
 
 
 export default observer(ClusterDashboard);

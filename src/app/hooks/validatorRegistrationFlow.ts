@@ -2,9 +2,11 @@
  * Temporary implementation to have different routing flow per network and env.
  * Usage:
  *
- * const { getNextNavigation } = validatorRegistrationFlow(config.routes.SSV.....); Call with your current location
+ * import { useLocation } from 'react-router-dom';
+ * const location = useLocation();
+ * const { getNextNavigation } = validatorRegistrationFlow(location.pathName); Call with your current location
  *
- * const nextRoute = getNextNavigation(EValidatorFlowAction.ADD_CLUSTER); Call getNextNavigation with the action.
+ * const nextRoute = getNextNavigation(EValidatorFlowAction.ADD_CLUSTER); Call getNextNavigation with the action (if there are multiple options.)
  * navigate(nextRoute);
  * */
 
@@ -32,6 +34,10 @@ export enum EValidatorFlowAction {
   ADD_CLUSTER,
   GENERATE_NEW_SHARE,
   ALREADY_HAVE_SHARES,
+  GENERATE_KEY_SHARES_ONLINE,
+  GENERATE_KEY_SHARES_OFFLINE,
+  OFFLINE_CLI,
+  OFFLINE_DKG,
 }
 
 const NETWORK_TO_BULK_MODE = {
@@ -41,7 +47,7 @@ const NETWORK_TO_BULK_MODE = {
 };
 
 const BULK_MODE_TO_ROUTES: NavigationRoutes = {
-  [EBulkMode.SINGLE]: {},
+  [EBulkMode.SINGLE]: { [config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT]: config.routes.SSV.VALIDATOR.HOME },
   [EBulkMode.MULTI]: {
     [config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT]: config.routes.SSV.VALIDATOR.HOME,
     [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD]: { [EValidatorFlowAction.ADD_CLUSTER]: config.routes.SSV.VALIDATOR.HOME },
@@ -49,6 +55,22 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
       [EValidatorFlowAction.GENERATE_NEW_SHARE]: config.routes.SSV.VALIDATOR.SELECT_OPERATORS,
       [EValidatorFlowAction.ALREADY_HAVE_SHARES]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
     },
+    [config.routes.SSV.VALIDATOR.SELECT_OPERATORS]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START,
+    [config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
+    [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START]: {
+      [EValidatorFlowAction.GENERATE_KEY_SHARES_ONLINE]: config.routes.SSV.VALIDATOR.IMPORT,
+      [EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE,
+    },
+    [config.routes.SSV.VALIDATOR.IMPORT]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
+    [config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE]: config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE,
+    [config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE]: config.routes.SSV.VALIDATOR.SLASHING_WARNING,
+    [config.routes.SSV.VALIDATOR.SLASHING_WARNING]: config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE,
+    [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE]: {
+      [EValidatorFlowAction.OFFLINE_CLI]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES,
+      [EValidatorFlowAction.OFFLINE_DKG]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY,
+    },
+    [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
+    [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
 
   },
 };
@@ -70,8 +92,12 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     if (action !== undefined) {
       nextRoute = nextAvailableRoutes[action];
     }
-    // @ts-ignore
-    return nextRoute;
+    if (typeof nextRoute === 'string') {
+      console.log(` $$$$$$$$$$ ${nextRoute} $$$$$$$$$$`);
+      return nextRoute;
+    } else {
+      throw Error('Route undefined');
+    }
   };
 
   return { getNextNavigation };

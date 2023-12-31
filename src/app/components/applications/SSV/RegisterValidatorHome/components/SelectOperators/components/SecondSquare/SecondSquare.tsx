@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { allEqual } from '~lib/utils/arrays';
 import { useStores } from '~app/hooks/useStores';
@@ -28,11 +28,14 @@ import MevIcon
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei } from '~root/services/conversions.service';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
+  const location = useLocation();
+  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
@@ -71,7 +74,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     if (editPage) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START);
+      navigate(getNextNavigation());
     }
   };
 
@@ -161,7 +164,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                           <SsvAndSubTitle fontSize={14}
                                           ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
-                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay} key={mevRelay}
+                            {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
+                                                                                          key={mevRelay}
                                                                                           hasMevRelay={operator.mev_relays?.includes(mevRelay)}/>)}
                           </Grid>
                         </Grid>
@@ -239,9 +243,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
             </Grid>
           )}
           {!operatorHasMevRelays &&
-            <WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
-                        textLink={'Learn more'}
-                        link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
+						<WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
+												textLink={'Learn more'}
+												link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
                          submitFunction={onSelectOperatorsClick}/>
         </Grid>,

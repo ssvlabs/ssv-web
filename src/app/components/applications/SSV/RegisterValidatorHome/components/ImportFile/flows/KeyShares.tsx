@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { KeyShares, SSVKeysException } from 'ssv-keys';
 import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { equalsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
@@ -30,6 +30,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 
 
 export type KeyShareMulti = {
@@ -67,6 +68,8 @@ const KeyShareFlow = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
@@ -386,7 +389,7 @@ const KeyShareFlow = () => {
     try {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
-      navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
+      navigate(getNextNavigation());
       validatorStore.setMultiSharesMode(validatorsCount);
       validatorStore.setRegisterValidatorsPublicKeys(Object.values(validatorsList).filter((validator: any) => validator.isSelected).map((validator: any) => validator.publicKey));
     } catch (error: any) {
@@ -412,23 +415,23 @@ const KeyShareFlow = () => {
           removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText}
           fileHandler={fileHandler} fileImage={renderFileImage}/>
         {Object.values(validatorsList).length > 0 && !processingFile && <Grid className={classes.SummaryWrapper}>
-          <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
-          <Grid className={classes.SummaryInfoFieldWrapper}>
-            <Typography className={classes.SummaryText}>Validators</Typography>
-            <Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
-          </Grid>
-          <Grid
-            className={classes.SummaryInfoFieldWrapper}>
-            <Typography className={classes.SummaryText}>Operators</Typography>
-            <Grid className={classes.OperatorsWrapper}>
+					<Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
+					<Grid className={classes.SummaryInfoFieldWrapper}>
+						<Typography className={classes.SummaryText}>Validators</Typography>
+						<Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
+					</Grid>
+					<Grid
+						className={classes.SummaryInfoFieldWrapper}>
+						<Typography className={classes.SummaryText}>Operators</Typography>
+						<Grid className={classes.OperatorsWrapper}>
               {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <OperatorData
                 operatorLogo={operator.logo} operatorId={operator.id}/>)}
-            </Grid>
-          </Grid>
-        </Grid>}
+						</Grid>
+					</Grid>
+				</Grid>}
         <Grid container item xs={12}>
           {!validatorStore.isMultiSharesMode &&
-            <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>}
+						<PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>}
         </Grid>
       </Grid>,
     ]}
@@ -447,7 +450,7 @@ const KeyShareFlow = () => {
     tooltipText={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP} body={[
     <Grid item container>
       {ownerNonceIssueCondition && <ErrorMessage
-        text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText
+				text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText
           textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK}
           text={'registration nonce'}/>.<br/> Please split the
           validator keys to new key shares aligned with the correct one.</Typography>}/>}

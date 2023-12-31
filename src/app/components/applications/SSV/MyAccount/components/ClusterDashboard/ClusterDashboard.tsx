@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -29,6 +29,7 @@ const ClusterDashboard = () => {
   const stores = useStores();
   const classes = useStyles({});
   const navigate = useNavigate();
+  const location = useLocation();
   const timeoutRef = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
@@ -40,13 +41,10 @@ const ClusterDashboard = () => {
   const [loadingCluster, setLoadingClusters] = useState(false);
   const [loadingFeeRecipient, setLoadingFeeRecipient] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
-  const { getNextNavigation } = validatorRegistrationFlow(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   const moveToRegisterValidator = () => {
-    const nextRoute = getNextNavigation(EValidatorFlowAction.ADD_CLUSTER);
-    console.log(`$$$$$$$$$$$$ ${nextRoute} $$$$$$$$$$$$`);
-    // nextRouteRetriever.validatorRegistrationFlow(nextRoute);
-    navigate(nextRoute);
+    navigate(getNextNavigation(EValidatorFlowAction.ADD_CLUSTER));
   };
 
   const handleGridHover = (index: string) => {
@@ -73,7 +71,11 @@ const ClusterDashboard = () => {
     return { clusterID, operators, validators, operational_runway, runWayError };
   };
 
-  const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: { runWay: number; }, b: { runWay: number; }) => a.runWay - b.runWay);
+  const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: {
+    runWay: number;
+  }, b: {
+    runWay: number;
+  }) => a.runWay - b.runWay);
 
   const rows = sortedClusters.map((cluster: any) => {
     const remainingDaysValue = formatNumberToUi(cluster.runWay, true);

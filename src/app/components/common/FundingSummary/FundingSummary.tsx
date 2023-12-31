@@ -25,6 +25,12 @@ const FundingSummeryColumns = {
   SUBTOTAL: 'Subtotal',
 };
 
+enum PaymentId {
+  OPERATOR_FEE = 1,
+  NETWORK_FEE = 2,
+  LIQUIDATION_COLLATERAL = 3,
+}
+
 const FundingSummary = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
@@ -35,9 +41,9 @@ const FundingSummary = (props: Props) => {
     const process: RegisterValidator = processStore.process as RegisterValidator;
     const daysPeriod = props.days ?? process.fundingPeriod;
     const payments = [
-      { id: 1, name: 'Operator fee' },
-      { id: 2, name: 'Network fee' },
-      { id: 3, name: 'Liquidation collateral' },
+      { id: PaymentId.OPERATOR_FEE, name: 'Operator fee' },
+      { id: PaymentId.NETWORK_FEE, name: 'Network fee' },
+      { id: PaymentId.LIQUIDATION_COLLATERAL, name: 'Liquidation collateral' },
     ];
 
     const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
@@ -46,11 +52,11 @@ const FundingSummary = (props: Props) => {
 
     const paymentsValue = (paymentId: number | string): string => {
       switch (Number(paymentId)) {
-        case 1:
+        case PaymentId.OPERATOR_FEE:
           return formatNumberToUi(operatorsCost);
-        case 2:
+        case PaymentId.NETWORK_FEE:
           return formatNumberToUi(networkCost);
-        case 3:
+        case PaymentId.LIQUIDATION_COLLATERAL:
           return formatNumberToUi(liquidationCollateralCost);
         default:
           return '';

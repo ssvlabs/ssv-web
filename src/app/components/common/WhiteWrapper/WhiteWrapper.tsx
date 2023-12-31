@@ -14,6 +14,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styles';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import ValidatorStore from '../../../common/stores/applications/SsvWeb/Validator.store';
 
 type Props = {
   header: any,
@@ -48,13 +49,14 @@ const WhiteWrapper = (props: Props) => {
     withBackButton = true,
   } = props;
   const applicationStore: ApplicationStore = stores.Application;
+  const validatorStore: ValidatorStore = stores.Validator;
   const settingsRef = useRef(null);
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   const cancelProcess = () => {
-    applicationStore.cancelProcess();
+    validatorStore.clearKeyStoreFlowData();
     GoogleTagManager.getInstance().sendEvent({
       category: 'cancel',
       action: 'click',

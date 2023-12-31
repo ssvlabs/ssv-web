@@ -1,7 +1,5 @@
-import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
-import { Contract, ethers } from 'ethers';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
@@ -11,11 +9,9 @@ import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 class WalletStore extends BaseStore implements Wallet {
-  web3: any = null;
   wallet: any = null;
   ssvBalance: any = 0;
   notifySdk: any = null;
@@ -23,39 +19,26 @@ class WalletStore extends BaseStore implements Wallet {
   accountAddress: string = '';
   wrongNetwork: boolean = false;
   networkId: number | null = null;
-  accountDataLoaded: boolean = false;
 
-  private contract: Contract | undefined;
-  private faucetStore: FaucetStore = this.getStore('Faucet');
   private notificationsStore: NotificationsStore = this.getStore('Notifications');
 
   constructor() {
     super();
 
     makeObservable(this, {
-      web3: observable,
       wallet: observable,
-      toWei: action.bound,
-      connected: computed,
       notifySdk: observable,
-      connect: action.bound,
-      fromWei: action.bound,
       networkId: observable,
       onboardSdk: observable,
       ssvBalance: observable,
-      encodeKey: action.bound,
-      decodeKey: action.bound,
       changeNetwork: action.bound,
       isWrongNetwork: computed,
       wrongNetwork: observable,
       accountAddress: observable,
-      walletHandler: action.bound,
       networkHandler: action.bound,
       addressHandler: action.bound,
-      accountDataLoaded: observable,
       initWallet: action.bound,
       initializeUserInfo: action.bound,
-      setAccountDataLoaded: action.bound,
       checkConnectedWallet: action.bound,
     });
   }
@@ -69,7 +52,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.wallet = wallet;
       const networkId = parseInt(String(connectedChain.id), 16);
       const address = wallet.accounts[0]?.address;
-      await this.walletHandler(wallet);
       if (Number(networkId) !== NETWORKS.MAINNET) {
         this.wrongNetwork = false;
         await this.networkHandler(networkId);
@@ -110,51 +92,12 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  fromWei(amount?: string): number {
-    if (!amount) return 0;
-    return this.web3.utils.fromWei(amount, 'ether');
-  }
-
-  toWei(amount?: number): string {
-    if (!amount) return '0';
-    return this.web3.utils.toWei(amount.toString(), 'ether');
-  }
-
   /**
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
     // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
     //   await this.addressHandler(undefined);
-    // }
-    this.onAccountAddressChangeCallback(this.wallet?.address || undefined);
-  }
-
-  /**
-   * Connect wallet
-   */
-  async connect() {
-    return;
-    // try {
-    //   console.debug('Connecting wallet..');
-    //   if (this.wallet) {
-    //     return;
-    //   }
-    //   const result = await this.onboardSdk.connectWallet();
-    //   if (result?.length > 0) {
-    //     const networkId = result[0].chains[0].id;
-    //     const wallet = result[0];
-    //     const address = result[0].accounts[0].address;
-    //     await this.walletHandler(wallet);
-    //     await this.networkHandler(Number(networkId));
-    //     await this.addressHandler(address);
-    //   }
-    // } catch (error: any) {
-    //   const message = error.message ?? 'Unknown errorMessage during connecting to wallet';
-    //   this.notificationsStore.showMessage(message, 'error');
-    //   console.error('Connecting to wallet error:', message);
-    //   return false;
     // }
   }
 
@@ -163,7 +106,6 @@ class WalletStore extends BaseStore implements Wallet {
    * @param address: string
    */
   async addressHandler(address: string | undefined) {
-    this.setAccountDataLoaded(false);
     if (address === undefined) {
       this.accountAddress = '';
       window.localStorage.removeItem('selectedWallet');
@@ -171,18 +113,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.accountAddress = address;
       await this.initializeUserInfo();
     }
-    this.setAccountDataLoaded(true);
-  }
-
-  /**
-   * Callback for connected wallet
-   * @param wallet: any
-   */
-  async walletHandler(wallet: any) {
-    this.wallet = wallet;
-    this.web3 = new Web3(wallet.provider);
-    console.debug('Wallet Connected:', wallet);
-    window.localStorage.setItem('selectedWallet', wallet.name);
   }
 
   /**
@@ -208,50 +138,12 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  /**
-   * User address handler
-   * @param operatorKey
-   */
-  encodeKey(operatorKey?: string) {
-    if (!operatorKey) return '';
-    return encodeParameter('string', operatorKey);
-  }
-
-  /**
-   * User address handler
-   * @param operatorKey
-   */
-  decodeKey(operatorKey?: string) {
-    if (!operatorKey) return '';
-    return decodeParameter('string', operatorKey);
-  }
-
-  /**
-   * Set Account loaded
-   * @param status: boolean
-   */
-  setAccountDataLoaded = (status: boolean): void => {
-    this.accountDataLoaded = status;
-  };
-
   async changeNetwork(networkId: string | number) {
     await this.onboardSdk.setChain({ chainId: networkId });
   }
 
-  get connected() {
-    return this.accountAddress;
-  }
-
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
-  }
-
-  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  onAccountAddressChangeCallback(address: string): void {
-  }
-
-  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  onBalanceChangeCallback(balance: string): void {
   }
 }
 

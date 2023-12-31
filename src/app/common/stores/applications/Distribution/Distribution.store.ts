@@ -165,10 +165,10 @@ class DistributionStore extends BaseStore {
   get distributionContract(): Contract {
     if (!this.distributionContractInstance) {
       const walletStore: WalletStore = this.getStore('Wallet');
-      this.distributionContractInstance = new walletStore.web3.eth.Contract(
-        config.CONTRACTS.SSV_DISTRIBUTION.ABI,
-        config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
-      );
+      // this.distributionContractInstance = new walletStore.web3.eth.Contract(
+      //   config.CONTRACTS.SSV_DISTRIBUTION.ABI,
+      //   config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
+      // );
     }
     return <Contract> this.distributionContractInstance;
   }

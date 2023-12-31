@@ -20,8 +20,8 @@ const Routes: any = () => {
       <DistributionAppBar/>
       <Wrapper>
         <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported/>}/>
-        {walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<Claim/>}/>}
-        {!walletStore.connected && <Route path={config.routes.DISTRIBUTION.ROOT} element={<DistributionWelcome/>}/>}
+        {walletStore.wallet && <Route path={config.routes.DISTRIBUTION.ROOT} element={<Claim/>}/>}
+        {!walletStore.wallet && <Route path={config.routes.DISTRIBUTION.ROOT} element={<DistributionWelcome/>}/>}
         <Route path={config.routes.DISTRIBUTION.SUCCESS} element={<Success/>}/>
       </Wrapper>
     </Layout>

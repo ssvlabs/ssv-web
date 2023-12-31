@@ -21,7 +21,7 @@ const Welcome = () => {
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
   const [_, connect] = useConnectWallet();
   const connectToWallet = async () => {
-    if (walletStore.connected) {
+    if (!!walletStore.wallet) {
       applicationStore.showWalletPopUp(true);
     } else {
       await connect();
@@ -43,7 +43,7 @@ const Welcome = () => {
                 withVerifyConnection
                 text={'Distribute Validator'}
                 submitFunction={() => {
-                  walletStore.connected && navigate(config.routes.SSV.VALIDATOR.HOME);
+                  walletStore.wallet && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
               />
             </Grid>
@@ -52,19 +52,19 @@ const Welcome = () => {
                 withVerifyConnection
                 text={'Join as Operator'}
                 submitFunction={() => {
-                  walletStore.connected && navigate(config.routes.SSV.OPERATOR.HOME);
+                  walletStore.wallet && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}
               />
             </Grid>
           </Grid>
-          {!walletStore.connected && false && (
+          {!walletStore.wallet && false && (
             <Grid container item className={classes.OrLineWrapper}>
               <Grid item className={classes.Line} xs />
               <Grid item className={classes.Or}>OR</Grid>
               <Grid item className={classes.Line} xs />
             </Grid>
           )}
-          {!walletStore.connected && false && (
+          {!walletStore.wallet && false && (
             <PrimaryButton
               withVerifyConnection
               text={'Connect Wallet'}

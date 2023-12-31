@@ -1,5 +1,4 @@
 import React, { lazy, Suspense, useEffect } from 'react';
-import { useConnectWallet } from '@web3-onboard/react';
 import { Route, Routes as Wrapper, useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
@@ -49,7 +48,6 @@ const Migration = lazy(() => import('~app/components/applications/SSV/Migration/
 const Routes: any = () => {
   const stores = useStores();
   const location = useLocation();
-  const [{ wallet }] = useConnectWallet();
   const navigate = useNavigate();
   const ssvRoutes = config.routes.SSV;
   const walletStore = stores.Wallet;

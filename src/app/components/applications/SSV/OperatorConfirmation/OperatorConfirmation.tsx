@@ -7,7 +7,6 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import config, { translations } from '~app/common/config';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -24,7 +23,6 @@ const OperatorConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const applicationStore: ApplicationStore = stores.Application;
   const { checkedCondition } = useTermsAndConditions();
@@ -89,7 +87,7 @@ const OperatorConfirmation = () => {
               <Grid container style={{ gap: 34 }}>
                 <Grid container item>
                   <Grid item className={classes.SubHeader}>Operator Key</Grid>
-                  <AddressKeyInput address={walletStore.decodeKey(operatorStore.newOperatorKeys.publicKey)}/>
+                  <AddressKeyInput address={decodeParameter('string', operatorStore.newOperatorKeys.publicKey)}/>
                 </Grid>
                 <Grid container item>
                   <Grid item xs={6}>

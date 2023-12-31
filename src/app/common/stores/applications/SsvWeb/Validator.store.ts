@@ -1,7 +1,5 @@
 import Decimal from 'decimal.js';
-
-// import { Contract } from 'web3-eth-contract';
-import { Contract, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import Operator from '~lib/api/Operator';

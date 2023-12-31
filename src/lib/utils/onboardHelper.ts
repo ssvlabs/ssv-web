@@ -1,4 +1,3 @@
-import Onboard, { InitOptions, OnboardAPI } from '@web3-onboard/core';
 import safeWallet from '@web3-onboard/gnosis';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';

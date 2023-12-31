@@ -11,7 +11,6 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 class WalletStore extends BaseStore implements Wallet {
-  web3: any = null;
   wallet: any = null;
   notifySdk: any = null;
   onboardSdk: any = null;
@@ -24,7 +23,6 @@ class WalletStore extends BaseStore implements Wallet {
   constructor() {
     super();
     makeObservable(this, {
-      web3: observable,
       wallet: observable,
       networkId: observable,
       notifySdk: observable,
@@ -53,7 +51,6 @@ class WalletStore extends BaseStore implements Wallet {
       await this.initializeUserInfo();
       const applicationStore: Application = this.getStore('Application');
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
       this.accountAddress = wallet.accounts[0]?.address;

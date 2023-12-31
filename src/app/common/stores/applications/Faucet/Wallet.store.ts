@@ -1,4 +1,3 @@
-import Web3 from 'web3';
 import axios from 'axios';
 import Notify from 'bnc-notify';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
@@ -13,7 +12,6 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 class WalletStore extends BaseStore implements Wallet {
-  web3: any = null;
   wallet: any = null;
   ssvBalance: any = 0;
   notifySdk: any = null;
@@ -28,11 +26,8 @@ class WalletStore extends BaseStore implements Wallet {
     super();
 
     makeObservable(this, {
-      web3: observable,
       wallet: observable,
-      toWei: action.bound,
       notifySdk: observable,
-      fromWei: action.bound,
       networkId: observable,
       onboardSdk: observable,
       ssvBalance: observable,
@@ -40,7 +35,6 @@ class WalletStore extends BaseStore implements Wallet {
       isWrongNetwork: computed,
       wrongNetwork: observable,
       accountAddress: observable,
-      walletHandler: action.bound,
       networkHandler: action.bound,
       addressHandler: action.bound,
       initWallet: action.bound,
@@ -58,7 +52,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.wallet = wallet;
       const networkId = parseInt(String(connectedChain.id), 16);
       const address = wallet.accounts[0]?.address;
-      await this.walletHandler(wallet);
       if (Number(networkId) !== NETWORKS.MAINNET) {
         this.wrongNetwork = false;
         await this.networkHandler(networkId);
@@ -99,21 +92,10 @@ class WalletStore extends BaseStore implements Wallet {
     }
   }
 
-  fromWei(amount?: string): number {
-    if (!amount) return 0;
-    return this.web3.utils.fromWei(amount, 'ether');
-  }
-
-  toWei(amount?: number): string {
-    if (!amount) return '0';
-    return this.web3.utils.toWei(amount.toString(), 'ether');
-  }
-
   /**
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
     // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
     //   await this.addressHandler(undefined);
     // }
@@ -131,15 +113,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.accountAddress = address;
       await this.initializeUserInfo();
     }
-  }
-
-  /**
-   * Callback for connected wallet
-   * @param wallet: any
-   */
-  async walletHandler(wallet: any) {
-    this.wallet = wallet;
-    this.web3 = new Web3(wallet.provider);
   }
 
   /**

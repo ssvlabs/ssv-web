@@ -1,4 +1,3 @@
-import Web3 from 'web3';
 import Notify from 'bnc-notify';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
@@ -13,7 +12,6 @@ import DistributionTestnetStore from '~app/common/stores/applications/Distributi
 import { isMainnetSupported } from '~root/providers/networkInfo.provider';
 
 class WalletStore extends BaseStore implements Wallet {
-  web3: any = null;
   wallet: any = null;
   ssvBalance: any = 0;
   notifySdk: any = null;
@@ -29,19 +27,15 @@ class WalletStore extends BaseStore implements Wallet {
     super();
 
     makeObservable(this, {
-      web3: observable,
       wallet: observable,
-      toWei: action.bound,
       notifySdk: observable,
       networkId: observable,
-      fromWei: action.bound,
       ssvBalance: observable,
       onboardSdk: observable,
       changeNetwork: action.bound,
       wrongNetwork: observable,
       isWrongNetwork: computed,
       accountAddress: observable,
-      walletHandler: action.bound,
       addressHandler: action.bound,
       networkHandler: action.bound,
       initWallet: action.bound,
@@ -61,7 +55,6 @@ class WalletStore extends BaseStore implements Wallet {
       const { storeName } = distributionHelper(networkId);
       this.distributionStore = this.getStore(storeName);
       const address = wallet?.accounts[0]?.address;
-      await this.walletHandler(wallet);
       await this.networkHandler(networkId);
       await this.addressHandler(address);
 
@@ -86,21 +79,10 @@ class WalletStore extends BaseStore implements Wallet {
     await this.onboardSdk.setChain({ chainId: networkId });
   }
 
-  fromWei(amount?: string): number {
-    if (!amount) return 0;
-    return this.web3.utils.fromWei(amount, 'ether');
-  }
-
-  toWei(amount?: number): string {
-    if (!amount) return '0';
-    return this.web3.utils.toWei(amount.toString(), 'ether');
-  }
-
   /**
    * Check wallet cache and connect
    */
   async checkConnectedWallet() {
-    // const walletConnected = window.localStorage.getItem(WALLET_CONNECTED);
     // if (!walletConnected || walletConnected && !JSON.parse(walletConnected)) {
     //   await this.addressHandler(undefined);
     // }
@@ -111,7 +93,6 @@ class WalletStore extends BaseStore implements Wallet {
    * @param address: string
    */
   async addressHandler(address: string | undefined) {
-    // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
     if (address === undefined) {
       window.localStorage.removeItem('selectedWallet');
       this.accountAddress = '';
@@ -124,15 +105,6 @@ class WalletStore extends BaseStore implements Wallet {
         }
       }
     }
-  }
-
-  /**
-   * Callback for connected wallet
-   * @param wallet: any
-   */
-  async walletHandler(wallet: any) {
-    this.wallet = wallet;
-    this.web3 = new Web3(wallet.provider);
   }
 
   /**

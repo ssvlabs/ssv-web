@@ -1,10 +1,9 @@
 import React from 'react';
 import { sha256 } from 'js-sha256';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from './NameAndAddress.styles';
+import { decodeParameter } from '~root/services/conversions.service';
 
 type Props = {
     name?: string,
@@ -16,9 +15,7 @@ type Props = {
 const NameAndAddress = (props: Props) => {
     const { name, address, styleWrapperClass, styleNameClass, styleAddressClass } = props;
     const classes = useStyles();
-    const stores = useStores();
-    const walletStore: WalletStore = stores.Wallet;
-    const shaPublicKey = address ?? `0x${longStringShorten(sha256(walletStore.decodeKey(address ?? '')), 4)}`;
+    const shaPublicKey = address ?? `0x${longStringShorten(sha256(decodeParameter('string', address ?? '')), 4)}`;
 
     return (
       <Grid container item className={styleWrapperClass}>

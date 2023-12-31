@@ -1,4 +1,3 @@
-// import { Contract } from 'web3-eth-contract';
 import { Contract } from 'ethers';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
@@ -142,11 +141,11 @@ class DistributionTestnetStore extends BaseStore {
   @computed
   get distributionContract(): Contract {
     if (!this.distributionContractInstance) {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      this.distributionContractInstance = new walletStore.web3.eth.Contract(
-        config.CONTRACTS.SSV_DISTRIBUTION.ABI,
-        config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
-      );
+      // const walletStore: WalletStore = this.getStore('Wallet');
+      // this.distributionContractInstance = new walletStore.web3.eth.Contract(
+      //   config.CONTRACTS.SSV_DISTRIBUTION.ABI,
+      //   config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
+      // );
     }
     return <Contract> this.distributionContractInstance;
   }

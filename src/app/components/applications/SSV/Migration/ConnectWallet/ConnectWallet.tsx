@@ -6,7 +6,7 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/SSV/Migration/ConnectWallet/ConnectWallet.styles';
-
+// TODO: reduce to single component for wallet connection
 const ConnectWallet = ({ nextStep }: { nextStep: Function }) => {
     const classes = useStyles();
     const stores = useStores();

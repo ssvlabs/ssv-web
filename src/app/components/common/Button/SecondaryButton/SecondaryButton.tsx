@@ -27,13 +27,14 @@ const SecondaryButton = (props: Props) => {
     const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection } = props;
     const classes = useStyles({ noCamelCase });
 
+    // TODO: reduce to single component for wallet connection
     const submit = async () => {
         if (walletStore.isWrongNetwork) {
             notificationsStore.showMessage('Please change network to Goerli', 'error');
             return;
         }
-        if (withVerifyConnection && !walletStore.connected) {
-            await walletStore.connect();
+        if (withVerifyConnection && !walletStore.wallet) {
+            // await walletStore.connect();
         }
         submitFunction();
     };

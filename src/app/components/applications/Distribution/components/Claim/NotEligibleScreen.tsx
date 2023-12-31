@@ -17,7 +17,7 @@ const NotEligibleScreen = () => {
   const walletStore: WalletStore = stores.Wallet;
 
   const claimRewards = async () => {
-      await walletStore.connect();
+      // await walletStore.connect();
       return;
   };
 

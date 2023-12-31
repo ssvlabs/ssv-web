@@ -44,10 +44,11 @@ const PrimaryButton = (props: Props) => {
     //     };
     // }, [applicationStore.isLoading, disable, submitFunction]);
 
+    // TODO: reduce to single component for wallet connection
     const submitHandler = async () => {
         if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
-        if (withVerifyConnection && !walletStore.connected) {
-            await walletStore.connect();
+        if (withVerifyConnection && !walletStore.wallet) {
+            // await walletStore.connect();
         }
         await submitFunction();
     };

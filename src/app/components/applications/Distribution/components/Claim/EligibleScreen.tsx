@@ -26,7 +26,7 @@ const EligibleScreen = () => {
 
   const claimRewards = async () => {
     if (!distributionStore.userAddress || distributionStore.claimed) {
-      await walletStore.connect();
+      // await walletStore.connect();
       return;
     }
     const succeed = await distributionStore.claimRewards();

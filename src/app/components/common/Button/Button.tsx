@@ -49,8 +49,9 @@ const Button = (props: ButtonParams) => {
       }
     }, [ssvStore.userGaveAllowance, withAllowance, isApprovalProcess, totalAmount]);
 
+    // TODO: reduce to single component for wallet connection
     const checkWalletConnected = async (onClickCallBack: any) => {
-        if (!walletStore.connected) walletStore.connect();
+        // if (!walletStore.wallet) walletStore.connect();
         if (walletStore.isWrongNetwork) {
             // await walletStore.networkHandler(10);
         } else if (onClickCallBack) onClickCallBack();
@@ -87,7 +88,7 @@ const Button = (props: ButtonParams) => {
             errorButton={errorButton}
             isLoading={isLoading}
             submitFunction={() => { checkWalletConnected(onClick); }}
-            text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
+            text={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
           />
         );
     };
@@ -109,7 +110,7 @@ const Button = (props: ButtonParams) => {
                 dataTestId={testId}
                 disable={!userAllowance || disable}
                 submitFunction={() => { checkWalletConnected(onClick); }}
-                text={walletStore.connected ? text : translations.CTA_BUTTON.CONNECT}
+                text={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
               />
             </Grid>
             <Grid container item xs={12}>

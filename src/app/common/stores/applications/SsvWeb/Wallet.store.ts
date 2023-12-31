@@ -9,7 +9,6 @@ import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import { decodeParameter, encodeParameter } from '~root/services/conversions.service';
 
 class WalletStore extends BaseStore implements Wallet {
   web3: any = null;
@@ -27,21 +26,15 @@ class WalletStore extends BaseStore implements Wallet {
     makeObservable(this, {
       web3: observable,
       wallet: observable,
-      connected: computed,
       networkId: observable,
       notifySdk: observable,
-      connect: action.bound,
       onboardSdk: observable,
-      decodeKey: action.bound,
       resetUser: action.bound,
-      encodeKey: action.bound,
       isWrongNetwork: computed,
       wrongNetwork: observable,
       accountAddress: observable,
       initWallet: action.bound,
       initializeUserInfo: action.bound,
-      onBalanceChangeCallback: action.bound,
-      onAccountAddressChangeCallback: action.bound,
     });
   }
 
@@ -58,8 +51,6 @@ class WalletStore extends BaseStore implements Wallet {
       this.notifySdk = Notify(notifyOptions);
       // TODO: review this
       await this.initializeUserInfo();
-      // TODO: what with this?
-      // await this.onAccountAddressChangeCallback(wallet.accounts[0]?.address);
       const applicationStore: Application = this.getStore('Application');
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       // window.localStorage.setItem(WALLET_CONNECTED, JSON.stringify(!!address));
@@ -80,10 +71,7 @@ class WalletStore extends BaseStore implements Wallet {
       }
       if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
-
-
     } else {
-      this.ssvStore.clearUserSyncInterval();
       await this.resetUser();
     }
   }
@@ -96,18 +84,8 @@ class WalletStore extends BaseStore implements Wallet {
     await this.operatorStore.initUser();
   }
 
-  // TODO: delete
-  async connect() {
-    return;
-  }
-
-  /**
-   * User address handler
-   * @param address
-   */
-  async onAccountAddressChangeCallback(address: string) {}
-
   async resetUser() {
+    this.ssvStore.clearUserSyncInterval();
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
@@ -121,11 +99,6 @@ class WalletStore extends BaseStore implements Wallet {
     applicationStore.strategyRedirect = config.routes.SSV.ROOT;
   }
 
-  // TODO: delete
-  async onBalanceChangeCallback(balance: any) {
-    // if (balance) await this.initializeUserInfo();
-  }
-
   /**
    * User Network handler
    * @param networkId
@@ -137,28 +110,6 @@ class WalletStore extends BaseStore implements Wallet {
     //   this.wrongNetwork = true;
     //   this.notificationsStore.showMessage('Please change network to Holesky', 'error');
     // }
-  }
-
-  /**
-   * encode key
-   * @param key
-   */
-  encodeKey(key?: string) {
-    if (!key) return '';
-    return encodeParameter('string', key);
-  }
-
-  /**
-   * decode key
-   * @param key
-   */
-  decodeKey(key?: string) {
-    if (!key) return '';
-    return decodeParameter('string', key);
-  }
-
-  get connected() {
-    return this.accountAddress;
   }
 
   get isWrongNetwork(): boolean {

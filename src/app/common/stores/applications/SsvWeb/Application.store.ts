@@ -18,12 +18,9 @@ class ApplicationStore extends BaseStore implements Application {
   txHash: string = '';
   userGeo: string = '';
   darkMode: boolean = false;
-  toolBarMenu: boolean = false;
   walletPopUp: boolean = false;
   strategyName: string = 'ssv-web';
   isShowingLoading: boolean = false;
-  runningProcess: string = 'ssv-web';
-  walletConnectivity: boolean = false;
   whiteNavBarBackground: boolean = false;
   transactionPendingPopUp: boolean = false;
   strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
@@ -39,23 +36,16 @@ class ApplicationStore extends BaseStore implements Application {
       darkMode: observable,
       isDarkMode: computed,
       localStorage: computed,
-      toolBarMenu: observable,
       walletPopUp: observable,
       strategyName: observable,
-      runningProcess: observable,
       setIsLoading: action.bound,
-      cancelProcess: action.bound,
       strategyRedirect: observable,
       isShowingLoading: observable,
       switchDarkMode: action.bound,
       showWalletPopUp: action.bound,
-      walletConnectivity: observable,
       setTransactionHash: action.bound,
-      displayToolBarMenu: action.bound,
       whiteNavBarBackground: observable,
       transactionPendingPopUp: observable,
-      setApplicationProcess: action.bound,
-      setWalletConnectivity: action.bound,
       setWhiteNavBarBackground: action.bound,
       showTransactionPendingPopUp: action.bound,
       shouldCheckCompliance: observable,
@@ -71,10 +61,6 @@ class ApplicationStore extends BaseStore implements Application {
     } else {
       this.switchDarkMode(false);
     }
-  }
-
-  setApplicationProcess(process: string) {
-    this.runningProcess = process;
   }
 
   setTransactionHash(txHash: string) {
@@ -93,12 +79,6 @@ class ApplicationStore extends BaseStore implements Application {
     this.whiteNavBarBackground = status;
   }
 
-  cancelProcess() {
-    const validatorStore: ValidatorStore = this.getStore('Validator');
-    validatorStore.clearKeyStoreFlowData();
-    this.runningProcess = '';
-  }
-
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const theme = isDarkMode ? 'dark' : 'light';
@@ -108,16 +88,8 @@ class ApplicationStore extends BaseStore implements Application {
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  displayToolBarMenu(status: boolean) {
-    this.toolBarMenu = status;
-  }
-
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
-  }
-
-  setWalletConnectivity(show: boolean) {
-    this.walletConnectivity = show;
   }
 
   get localStorage() {

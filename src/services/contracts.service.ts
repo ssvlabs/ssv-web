@@ -10,12 +10,12 @@ const initGetterContract = ({ provider, network }: { provider: EIP1193Provider; 
   const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
   const contractAddress = network.getterContractAddress;
   if (contracts[EContractName.GETTER] && contracts[EContractName.GETTER].address === contractAddress) {
-    console.warn('Getter contract already exists', { abi, contractAddress });
+    // console.warn('Getter contract already exists', { abi, contractAddress });
     return;
   }
 
   if (contractAddress) {
-    console.warn('Creating new getter contract', { abi, contractAddress });
+    // console.warn('Creating new getter contract', { abi, contractAddress });
     const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
     contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
   } else {
@@ -27,12 +27,12 @@ const initSetterContract = ({ provider, network }: { provider: EIP1193Provider; 
   const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
   const contractAddress = network.setterContractAddress;
   if (contracts[EContractName.SETTER] && contracts[EContractName.SETTER].address === contractAddress) {
-    console.warn('Setter contract already exists', { abi, contractAddress });
+    // console.warn('Setter contract already exists', { abi, contractAddress });
     return;
   }
 
   if (contractAddress) {
-    console.warn('Creating new setter contract', { abi, contractAddress });
+    // console.warn('Creating new setter contract', { abi, contractAddress });
     const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
     contracts[EContractName.SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
   } else {
@@ -49,7 +49,7 @@ const initTokenContract = ({ provider, network }: { provider: EIP1193Provider; n
     return;
   }
   if (contractAddress) {
-    console.warn('Creating new token contract', { abi, contractAddress });
+    // console.warn('Creating new token contract', { abi, contractAddress });
     contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, ethProvider.getSigner());
   } else {
     console.warn('No token contract address found');
@@ -65,7 +65,7 @@ const initDistributionContract = ({ provider, network }: { provider: EIP1193Prov
       console.warn('Distribution contract already exists', { abi, contractAddress });
       return;
     }
-    console.warn('Creating new distribution contract', { abi, contractAddress });
+    // console.warn('Creating new distribution contract', { abi, contractAddress });
     contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, ethProvider.getSigner());
   } else {
     console.warn('No distribution contract address found');

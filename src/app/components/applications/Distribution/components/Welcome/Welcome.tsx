@@ -21,7 +21,7 @@ const Welcome = () => {
     const titleNetwork = networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
 
     const connectToWallet = async () => {
-      if (walletStore.connected) {
+      if (!!walletStore.wallet) {
           applicationStore.showWalletPopUp(true);
       } else {
         await connect();

@@ -449,16 +449,19 @@ class SsvStore extends BaseStore {
   /**
    * Set allowance to get CDT from user account.
    */
-  async approveAllowance(callBack?: () => void): Promise<any> {
-    return new Promise((async (resolve) => {
+  async approveAllowance(callBack?: CallableFunction): Promise<any> {
+    return new Promise((async (resolve, reject) => {
       const weiValue = String('115792089237316195423570985008687907853269984665640564039457584007913129639935'); // amount ? toWei(ssvValue, 'ether') : ssvValue;
       const walletStore: WalletStore = this.getStore('Wallet');
       const ssvContract = getContractByName(EContractName.TOKEN);
       try {
         const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, weiValue);
         if (tx.hash) {
-          callBack && callBack();
-          walletStore.notifySdk.hash(tx.hash);
+          callBack && callBack({
+            txHash: tx.hash,
+          });
+        } else {
+          return reject('Transaction hash is not defined');
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {

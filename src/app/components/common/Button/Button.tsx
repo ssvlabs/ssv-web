@@ -10,6 +10,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/common/Button/Button.styles';
 import { toWei } from '~root/services/conversions.service';
+import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 
 type ButtonParams = {
     text: string,
@@ -29,6 +30,7 @@ const Button = (props: ButtonParams) => {
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
+    const applicationStore: ApplicationStore = stores.Application;
     const [userAllowance, setUserAllowance] = useState(false);
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
@@ -57,27 +59,36 @@ const Button = (props: ButtonParams) => {
         } else if (onClickCallBack) onClickCallBack();
     };
 
-    const handlePendingTransaction = () => {
+    const handlePendingTransaction = ({ txHash }: { txHash: string }) => {
         setApproveButtonText('Approving…');
+        applicationStore.txHash = txHash;
+        applicationStore.showTransactionPendingPopUp(true);
+        walletStore.notifySdk.hash(txHash);
     };
 
     const allowNetworkContract = async () => {
-        setAllowanceButtonDisable(true);
-        setApproveButtonText('Waiting...');
-        const userGavePermission = await ssvStore.approveAllowance(handlePendingTransaction);
-        await ssvStore.checkAllowance();
-        if (Number(toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
+        try {
+            setAllowanceButtonDisable(true);
+            setApproveButtonText('Waiting...');
+            const userGavePermission = await ssvStore.approveAllowance(handlePendingTransaction);
+            await ssvStore.checkAllowance();
+            if (Number(toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
+                setApproveButtonText('Approve SSV');
+                return;
+            }
+            if (userGavePermission) {
+                setApproveButtonText('Approved');
+                setUserAllowance(true);
+            } else {
+                setApproveButtonText(approveButtonText);
+            }
+        } catch (e) {
+            console.error('Error while approving allowance', e);
             setApproveButtonText('Approve SSV');
+        } finally {
             setAllowanceButtonDisable(false);
-            return;
+            applicationStore.showTransactionPendingPopUp(false);
         }
-        if (userGavePermission) {
-            setApproveButtonText('Approved');
-            setUserAllowance(true);
-        } else {
-            setApproveButtonText(approveButtonText);
-        }
-        setAllowanceButtonDisable(false);
     };
 
     const regularButton = () => {

@@ -1,7 +1,8 @@
 import Grid from '@mui/material/Grid';
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
@@ -27,7 +28,6 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { fromWei } from '~root/services/conversions.service';
-import styled from 'styled-components';
 
 const ValidatorHeaderCount = styled.div`
   background-color: #F0F9FE;
@@ -43,7 +43,7 @@ const ValidatorRegistrationConfirmation = () => {
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const { checkedCondition } = useTermsAndConditions();
+  const { checkedCondition: acceptedTerms } = useTermsAndConditions();
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
@@ -51,6 +51,8 @@ const ValidatorRegistrationConfirmation = () => {
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
+  const [checkingUserInfo, setCheckingUserInfo] = useState(false);
+  const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
@@ -65,23 +67,22 @@ const ValidatorRegistrationConfirmation = () => {
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE),
   };
 
+  useEffect(() => {
+    // In any case, even if checked before, check user info right before the registration
+    if (!checkingUserInfo) {
+      setCheckingUserInfo(true);
+      ssvStore.userSyncInterval().finally(() => setCheckingUserInfo(false));
+    }
+  }, [ssvStore.approvedAllowance]);
+
+  useEffect(() => {
+    setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo);
+  }, [acceptedTerms, checkingUserInfo]);
+
   const onRegisterValidatorClick = async () => {
     applicationStore.setIsLoading(true);
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
-    // const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
-    // /* eslint-disable no-await-in-loop */
-    // for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-    //   const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
-    //   if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
-    //     setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
-    //     setActionButtonText('Register Validator');
-    //     applicationStore.setIsLoading(false);
-    //     return;
-    //   }
-    // }
-
-    console.log(`mode is: ${validatorStore.registrationMode}`);
     const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration() : await validatorStore.addNewValidator();
     if (response) {
       applicationStore.showTransactionPendingPopUp(false);
@@ -121,7 +122,7 @@ const ValidatorRegistrationConfirmation = () => {
           text={actionButtonText}
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
-          disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance || !checkedCondition}
+          disable={registerButtonDisabled}
           totalAmount={totalAmountOfSsv}
         />
       </TermsAndConditionsCheckbox>
@@ -163,7 +164,6 @@ const ValidatorRegistrationConfirmation = () => {
     liquidationCollateralCost={liquidationCollateralCost}/>);
   if (!processStore.secondRegistration) screenBody.push(TotalSection);
 
-
   const MainScreen = <BorderScreen
     blackHeader
     marginTop={32}
@@ -173,7 +173,6 @@ const ValidatorRegistrationConfirmation = () => {
     body={screenBody}
     sideElement={<ValidatorHeaderCount>{`${validatorStore.validatorsCount} Validators`}</ValidatorHeaderCount>}
   />;
-
 
   const SecondaryScreen = <BorderScreen
     marginTop={16}

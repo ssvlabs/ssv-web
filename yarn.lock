@@ -20601,9 +20601,9 @@ ssri@^8.0.1:
   dependencies:
     minipass "^3.1.1"
 
-"ssv-keys@https://github.com/bloxapp/ssv-keys.git":
-  version "1.0.4"
-  resolved "https://github.com/bloxapp/ssv-keys.git#dbd59394f702fb00d7836f7d19dd92925b4e353f"
+"ssv-keys@https://github.com/bloxapp/ssv-keys.git#1.0.9":
+  version "1.0.9"
+  resolved "https://github.com/bloxapp/ssv-keys.git#1db8735e49eb101318683b0a0d81b967b273e1d6"
   dependencies:
     "@types/figlet" "^1.5.4"
     "@types/underscore" "^1.11.4"

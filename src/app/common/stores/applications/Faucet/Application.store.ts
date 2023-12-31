@@ -17,11 +17,9 @@ class ApplicationStore extends BaseStore implements Application {
   txHash: string = '';
   userGeo: string = '';
   darkMode: boolean = false;
-  toolBarMenu: boolean = false;
   walletPopUp: boolean = false;
   strategyName: string = 'faucet';
   isShowingLoading: boolean = false;
-  walletConnectivity: boolean = false;
   transactionPendingPopUp: boolean = false;
   strategyRedirect: string = config.routes.FAUCET.ROOT;
   shouldCheckCompliance: boolean = true;
@@ -37,7 +35,6 @@ class ApplicationStore extends BaseStore implements Application {
       isLoading: computed,
       isDarkMode: computed,
       localStorage: computed,
-      toolBarMenu: observable,
       walletPopUp: observable,
       strategyName: observable,
       setIsLoading: action.bound,
@@ -45,10 +42,7 @@ class ApplicationStore extends BaseStore implements Application {
       isShowingLoading: observable,
       strategyRedirect: observable,
       showWalletPopUp: action.bound,
-      walletConnectivity: observable,
-      displayToolBarMenu: action.bound,
       transactionPendingPopUp: observable,
-      setWalletConnectivity: action.bound,
       showTransactionPendingPopUp: action.bound,
       shouldCheckCompliance: observable,
     });
@@ -78,20 +72,12 @@ class ApplicationStore extends BaseStore implements Application {
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  displayToolBarMenu(status: boolean) {
-    this.toolBarMenu = status;
-  }
-
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
   }
 
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
-  }
-
-  setWalletConnectivity(show: boolean) {
-    this.walletConnectivity = show;
   }
 
   get localStorage() {

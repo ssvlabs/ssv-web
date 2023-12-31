@@ -7,7 +7,6 @@ import { useStores } from '~app/hooks/useStores';
 import AppLinksToggle from '~app/components/common/AppLinksToggle';
 import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 import NetworkToggle from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
@@ -30,7 +29,6 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
     const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     // @ts-ignore
     const classes = useStyles({ backgroundColor });
-    const uploadKeyshareUnsafeMode = !!getLocalStorageFlagValue(DEVELOPER_FLAGS.UPLOAD_KEYSHARE_UNSAFE_MODE);
 
     useEffect(() => {
         /**
@@ -120,12 +118,6 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
                   );
               }
           })}
-           {uploadKeyshareUnsafeMode && <Grid
-            item
-            onClick={() => navigate(config.routes.SSV.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE)}
-            className={classes.Button}>
-            Upload keyshare (unsafe)
-           </Grid>}
         </Grid>
         <Grid item className={classes.GridItem}>
           <Grid item container style={{ alignItems: 'center' }}>

@@ -1,7 +1,8 @@
 import Grid from '@mui/material/Grid';
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
@@ -28,6 +29,13 @@ import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { fromWei } from '~root/services/conversions.service';
 
+const ValidatorHeaderCount = styled.div`
+  background-color: #F0F9FE;
+  border-radius: 4px;
+  padding: 2px 4px;
+  color: #0792e8;
+`;
+
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -35,18 +43,21 @@ const ValidatorRegistrationConfirmation = () => {
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const { checkedCondition } = useTermsAndConditions();
+  const { checkedCondition: acceptedTerms } = useTermsAndConditions();
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const process: RegisterValidator | SingleCluster = processStore.process;
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
-  const [actionButtonText, setActionButtonText] = useState('Register Validator');
+  const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
+  const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
+  const [checkingUserInfo, setCheckingUserInfo] = useState(false);
+  const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
   let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-  if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+  if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
     liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
   }
   const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
@@ -56,30 +67,29 @@ const ValidatorRegistrationConfirmation = () => {
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE),
   };
 
+  useEffect(() => {
+    // In any case, even if checked before, check user info right before the registration
+    if (!checkingUserInfo) {
+      setCheckingUserInfo(true);
+      ssvStore.userSyncInterval().finally(() => setCheckingUserInfo(false));
+    }
+  }, [String(ssvStore.approvedAllowance)]);
+
+  useEffect(() => {
+    setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo);
+  }, [acceptedTerms, checkingUserInfo]);
+
   const onRegisterValidatorClick = async () => {
     applicationStore.setIsLoading(true);
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
-    // const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators);
-    // /* eslint-disable no-await-in-loop */
-    // for (let i = 0; i < selectedOperatorsKeys.length; i += 1) {
-    //   const operatorValidators = await operatorStore.getOperatorValidatorsCount(selectedOperatorsKeys[i].id);
-    //   if (!operatorStore.isOperatorRegistrable(operatorValidators)) {
-    //     setErrorMessage(`Operator ${selectedOperatorsKeys[i].name} has reached it’s validator’s limit cap. Please choose a different operator.`);
-    //     setActionButtonText('Register Validator');
-    //     applicationStore.setIsLoading(false);
-    //     return;
-    //   }
-    // }
-
-    console.log(`mode is: ${validatorStore.registrationMode}`);
-    const response = await validatorStore.addNewValidator();
+    const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration() : await validatorStore.addNewValidator();
     if (response) {
       applicationStore.showTransactionPendingPopUp(false);
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
       applicationStore.showTransactionPendingPopUp(false);
-      setActionButtonText('Register Validator');
+      setActionButtonText(actionButtonDefaultText);
     }
     applicationStore.setIsLoading(false);
   };
@@ -89,17 +99,18 @@ const ValidatorRegistrationConfirmation = () => {
       <NameAndAddress name={'Total'}/>
     </Grid>
     <Grid item style={{ marginBottom: 20 }}>
-      <Grid className={classes.TotalSSV}>{'registerValidator' in process ? process.registerValidator?.depositAmount : totalAmountOfSsv} SSV</Grid>
+      <Grid
+        className={classes.TotalSSV}>{'registerValidator' in process ? process.registerValidator?.depositAmount : totalAmountOfSsv} SSV</Grid>
     </Grid>
     {Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
-        <Grid container item className={classes.InsufficientBalanceWrapper}>
-          <Grid item xs>
-            Insufficient SSV balance. There is not enough SSV in your wallet.
-          </Grid>
-          <Grid item>
-            <LinkText text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
-          </Grid>
+      <Grid container item className={classes.InsufficientBalanceWrapper}>
+        <Grid item xs>
+          Insufficient SSV balance. There is not enough SSV in your wallet.
         </Grid>
+        <Grid item>
+          <LinkText text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
+        </Grid>
+      </Grid>
     )}
 
     {errorMessage && <ErrorMessage text={errorMessage}/>}
@@ -111,91 +122,95 @@ const ValidatorRegistrationConfirmation = () => {
           text={actionButtonText}
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
-          disable={Number(totalAmountOfSsv) > ssvStore.walletSsvBalance || !checkedCondition}
+          disable={registerButtonDisabled}
           totalAmount={totalAmountOfSsv}
-      />
+        />
       </TermsAndConditionsCheckbox>
     </Grid>
   </Grid>;
 
   const screenBody = [<Grid container>
-    <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-    <ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey} />
+    {!validatorStore.isMultiSharesMode && <>
+			<Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+			<ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey}/>
+		</>}
+
     <Grid container item xs={12} className={classes.RowWrapper}>
       <Grid item className={classes.SubHeader}>Selected Operators</Grid>
       {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
         const operatorCost = processStore.secondRegistration
-            ? formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))
-            : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
-
+          ? formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))
+          : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
         const operatorCostPeriod = processStore.secondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;
-
         return (
-            <Grid key={index} container item xs={12} className={classes.Row}>
-              <Grid item>
-                <OperatorDetails isFullOperatorName operator={operator}/>
-              </Grid>
-              <Grid item xs>
-                <SsvAndSubTitle
-                    ssv={formatNumberToUi(operatorCost)}
-                    subText={operatorCostPeriod}
-                />
-              </Grid>
+          <Grid key={index} container item xs={12} className={classes.Row}>
+            <Grid item>
+              <OperatorDetails isFullOperatorName operator={operator}/>
             </Grid>
+            <Grid item xs>
+              <SsvAndSubTitle
+                ssv={formatNumberToUi(operatorCost)}
+                subText={operatorCostPeriod}
+              />
+            </Grid>
+          </Grid>
         );
       })}
     </Grid>
   </Grid>,
   ];
 
-  if (!processStore.secondRegistration) screenBody.push(<FundingSummary liquidationCollateralCost={liquidationCollateralCost} />);
+  if (!processStore.secondRegistration) screenBody.push(<FundingSummary
+    liquidationCollateralCost={liquidationCollateralCost}/>);
   if (!processStore.secondRegistration) screenBody.push(TotalSection);
 
   const MainScreen = <BorderScreen
-      blackHeader
-      marginTop={32}
-      sectionClass={classes.Section}
-      header={translations.VALIDATOR.CONFIRMATION.TITLE}
-      withoutNavigation={processStore.secondRegistration}
-      body={screenBody}
+    blackHeader
+    marginTop={32}
+    sectionClass={classes.Section}
+    header={translations.VALIDATOR.CONFIRMATION.TITLE}
+    withoutNavigation={processStore.secondRegistration}
+    body={screenBody}
+    sideElement={<ValidatorHeaderCount>{`${validatorStore.validatorsCount} Validators`}</ValidatorHeaderCount>}
   />;
 
   const SecondaryScreen = <BorderScreen
-      marginTop={16}
-      withoutNavigation
-      sectionClass={classes.SecondaryScreenSection}
-      body={[
-          <Grid container>
-            <Grid item className={classes.SubHeader}>Transaction Summary</Grid>
-            <Grid container style={{ justifyContent: 'space-between' }}>
-              <Grid item>
-                <NameAndAddress name={'SSV Deposit'} />
-              </Grid>
-              <Grid item>
-                <NameAndAddress name={`${'registerValidator' in process ? process.registerValidator?.depositAmount : 0} SSV`} />
-              </Grid>
-            </Grid>
-          </Grid>,
-        TotalSection,
-      ]}
+    marginTop={16}
+    withoutNavigation
+    sectionClass={classes.SecondaryScreenSection}
+    body={[
+      <Grid container>
+        <Grid item className={classes.SubHeader}>Transaction Summary</Grid>
+        <Grid container style={{ justifyContent: 'space-between' }}>
+          <Grid item>
+            <NameAndAddress name={'SSV Deposit'}/>
+          </Grid>
+          <Grid item>
+            <NameAndAddress
+              name={`${'registerValidator' in process ? process.registerValidator?.depositAmount : 0} SSV`}/>
+          </Grid>
+        </Grid>
+      </Grid>,
+      TotalSection,
+    ]}
   />;
 
   if (processStore.secondRegistration) {
     return (
+      <Grid container>
+        <NewWhiteWrapper
+          type={0}
+          header={'Cluster'}
+        />
         <Grid container>
-          <NewWhiteWrapper
-              type={0}
-              header={'Cluster'}
-          />
-          <Grid container>
-            <Grid item xs={12}>
-              {MainScreen}
-            </Grid>
-            <Grid item xs={12}>
-              {SecondaryScreen}
-            </Grid>
+          <Grid item xs={12}>
+            {MainScreen}
+          </Grid>
+          <Grid item xs={12}>
+            {SecondaryScreen}
           </Grid>
         </Grid>
+      </Grid>
     );
   }
 

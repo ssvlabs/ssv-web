@@ -71,7 +71,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     if (editPage) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
+      navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START);
     }
   };
 

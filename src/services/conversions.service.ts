@@ -27,8 +27,8 @@ const encodeParameter = (type: string, value: any) => {
   return web3.eth.abi.encodeParameter(type, value);
 };
 
-const decodeParameter = (type: string, value: any) => {
-  return web3.eth.abi.decodeParameter(type, value);
+const decodeParameter = (type: string, value: any): string => {
+  return web3.eth.abi.decodeParameter(type, value) as string;
 };
 
 const isAddress = (address: string) => ethers.utils.isAddress(address);

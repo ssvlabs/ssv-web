@@ -14,7 +14,7 @@ const ConnectWalletButton = () => {
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles({
-    walletConnected: walletStore.connected,
+    walletConnected: !!walletStore.wallet,
     whiteAppBar: applicationStore.whiteNavBarBackground,
   });
   const [{ wallet }, connect] = useConnectWallet();

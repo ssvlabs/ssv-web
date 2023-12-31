@@ -32,7 +32,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
     padding: 10,
     zIndex: 9999,
     fontSize: 12,
-    maxWidth: 350,
+    maxWidth: 400,
     fontWeight: 500,
     lineHeight: 1.62,
     textAlign: 'left',

@@ -1,5 +1,4 @@
 import React, { lazy, Suspense, useEffect } from 'react';
-import { useConnectWallet } from '@web3-onboard/react';
 import { Route, Routes as Wrapper, useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
@@ -49,7 +48,6 @@ const Migration = lazy(() => import('~app/components/applications/SSV/Migration/
 const Routes: any = () => {
   const stores = useStores();
   const location = useLocation();
-  const [{ wallet }] = useConnectWallet();
   const navigate = useNavigate();
   const ssvRoutes = config.routes.SSV;
   const walletStore = stores.Wallet;
@@ -65,7 +63,6 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE, Component: ImportFile },
-    { path: ssvRoutes.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE, Component: ImportFile, keyShares: true  },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.REACTIVATE, Component: ReactivateCluster },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR_DASHBOARD, Component: OperatorDashboard },

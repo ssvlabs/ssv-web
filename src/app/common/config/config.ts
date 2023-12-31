@@ -52,7 +52,6 @@ const config = {
         WITHDRAW: '/my-account/withdraw',
         CLUSTER_DASHBOARD: '/my-account/clusters-dashboard',
         OPERATOR_DASHBOARD: '/my-account/operators-dashboard',
-        KEYSHARE_UPLOAD_UNSAFE: '/my-account/upload-keyshare-unsafe',
         OPERATOR: {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
@@ -171,6 +170,7 @@ const config = {
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/operator-user-guides/operator-node/configuring-mev',
+    INCORRECT_OWNER_NONCE_LINK: 'https://docs.ssv.network/developers/tools/cluster-scanner#_x7nzjlwu00d0',
     DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting',
   },
   THEMES: {
@@ -190,6 +190,7 @@ const config = {
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
     OPERATOR_VALIDATORS_LIMIT_PRESERVE: 5,
     MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
+    MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION: 50,
     DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000',
   },
   ONBOARD: {

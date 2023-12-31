@@ -31,7 +31,7 @@ class ClusterStore extends BaseStore {
     return operators.map(operator => operator.id).map(Number).sort((a: number, b: number) => a - b);
   }
 
-  getClusterHash(operators: any[]) {
+  getClusterHash(operators: any) {
     const walletStore: WalletStore = this.getStore('Wallet');
     const ownerAddress: string = walletStore.accountAddress;
     const operatorsIds = this.getSortedOperatorsIds(operators);

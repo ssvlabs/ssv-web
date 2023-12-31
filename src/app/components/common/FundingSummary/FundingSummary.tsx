@@ -3,11 +3,9 @@ import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import LinkText from '~app/components/common/LinkText';
-import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
@@ -20,77 +18,79 @@ type Props = {
   liquidationCollateralCost?: number | Decimal,
 };
 
-const FundingSummary = (props: Props) => {
-  const stores = useStores();
-  const classes = useStyles();
-  const ssvStore: SsvStore = stores.SSV;
-  const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
-  const process: RegisterValidator = processStore.process as RegisterValidator;
-  const daysPeriod = props.days ?? process.fundingPeriod;
-  const payments = [
-    { id: 1, name: 'Operator fee' },
-    { id: 2, name: 'Network fee' },
-    { id: 3, name: 'Liquidation collateral' },
-  ];
+const FundingSummeryColumns = {
+  FUNDING_SUMMARY: 'Funding Summary',
+  FEE: 'Fee (365 Days)',
+  VALIDATORS: 'Validators',
+  SUBTOTAL: 'Subtotal',
+};
 
-  const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
-  const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
-  const liquidationCollateralCost = props.liquidationCollateralCost ?? new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-
-  const paymentsValue = (paymentId: number): string => {
-    switch (paymentId) {
-      case 1:
-        return formatNumberToUi(operatorsCost);
-      case 2:
-        return formatNumberToUi(networkCost);
-      case 3:
-        return formatNumberToUi(liquidationCollateralCost);
-      default:
-        return '';
-    }
-  };
-
-  return (
-      <Grid container>
-        <Typography className={classes.BigGreyHeader}>Funding Summary</Typography>
-        {payments.map((payment: { id: number, name: string }, index: number) => {
-          const paymentValue = paymentsValue(payment.id);
-          const isLast = payment.id === 3;
-          const isSecond = payment.id === 2;
-          isSecond;
-          return <Grid key={index} container item>
-            <Grid container item xs style={{ gap: 8, marginBottom: index !== 2 ? 8 : 0 }}>
-              <Grid item>
-                <Typography className={classes.Text} style={{ marginBottom: 0 }}>{payment.name}</Typography>
-              </Grid>
-              <Grid item style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {isLast ? <Tooltip
-                        text={<Grid>Collateral in the form of SSV tokens,
-                          which will be lost at the event of your cluster insolvency
-                          (inability to cover your validator&apos;s operational costs). <LinkText
-                              text={'Read more on liquidations'}
-                              link={config.links.MORE_ON_LIQUIDATION_LINK}/></Grid>}/> :
-                    <Typography
-                        className={`${classes.GreyHeader} ${classes.BiggerFont}`}>x {formatNumberToUi(daysPeriod, true)} Days</Typography>
-                }
-                {isSecond && <Tooltip
-                    text={<Grid>Fees charged for using the network. Fees are
-                      determined by the DAO and are used for network growth and expansion. <LinkText
-                          text={'Read more on fees'}
-                          link={config.links.MORE_ON_FEES}/></Grid>}/>
-                }
-              </Grid>
-            </Grid>
-            <Grid item xs>
-              <Typography className={classes.Text}
-                          style={{ textAlign: 'right', marginBottom: 0 }}>{paymentValue} SSV</Typography>
-            </Grid>
-          </Grid>;
-        })}
-      </Grid>
-  );
+enum PaymentId {
+  OPERATOR_FEE = 1,
+  NETWORK_FEE = 2,
+  LIQUIDATION_COLLATERAL = 3,
 }
-  ;
 
-  export default observer(FundingSummary);
+const FundingSummary = (props: Props) => {
+    const stores = useStores();
+    const classes = useStyles();
+    const ssvStore: SsvStore = stores.SSV;
+    const processStore: ProcessStore = stores.Process;
+    const operatorStore: OperatorStore = stores.Operator;
+    const validatorStore: ValidatorStore = stores.Validator;
+    const process: RegisterValidator = processStore.process as RegisterValidator;
+    const daysPeriod = props.days ?? process.fundingPeriod;
+    const payments = [
+      { id: PaymentId.OPERATOR_FEE, name: 'Operator fee' },
+      { id: PaymentId.NETWORK_FEE, name: 'Network fee' },
+      { id: PaymentId.LIQUIDATION_COLLATERAL, name: 'Liquidation collateral' },
+    ];
+
+    const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
+    const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
+    const liquidationCollateralCost = props.liquidationCollateralCost ?? new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+
+    const paymentsValue = (paymentId: number | string): string => {
+      switch (Number(paymentId)) {
+        case PaymentId.OPERATOR_FEE:
+          return formatNumberToUi(operatorsCost);
+        case PaymentId.NETWORK_FEE:
+          return formatNumberToUi(networkCost);
+        case PaymentId.LIQUIDATION_COLLATERAL:
+          return formatNumberToUi(liquidationCollateralCost);
+        default:
+          return '';
+      }
+    };
+
+    const mandatoryColumns = validatorStore.isMultiSharesMode ? Object.values(FundingSummeryColumns) : Object.values(FundingSummeryColumns).filter((flow: string) => flow !== FundingSummeryColumns.FEE && flow !== FundingSummeryColumns.VALIDATORS);
+
+    const columnValues = {
+      [FundingSummeryColumns.FUNDING_SUMMARY]: (value: string | number) => payments.find(payment => payment.id === value)?.name,
+      [FundingSummeryColumns.FEE]: (value: string | number) => `${paymentsValue(Number(value))} SSV`,
+      [FundingSummeryColumns.VALIDATORS]: () => validatorStore.validatorsCount,
+      [FundingSummeryColumns.SUBTOTAL]: (value: string | number) => `${validatorStore.isMultiSharesMode ? Number(paymentsValue(value)) * validatorStore.validatorsCount : paymentsValue(value)} SSV`,
+    };
+
+    const columnStyles: any = {
+      [FundingSummeryColumns.FUNDING_SUMMARY]: classes.FundingSummaryColumn,
+      [FundingSummeryColumns.FEE]: classes.FeeColumn,
+      [FundingSummeryColumns.VALIDATORS]: classes.ValidatorsColumn,
+      [FundingSummeryColumns.SUBTOTAL]: classes.SubtotalColumn,
+    };
+
+    return (
+      <Grid className={classes.Wrapper}>
+        {mandatoryColumns.map((fundingSummeryColumnName: string) =>
+          <Grid className={columnStyles[fundingSummeryColumnName]}>
+            <Typography className={classes.Title}>{fundingSummeryColumnName}</Typography>
+            {payments.map((payment: any) => <Typography
+              className={classes.Value}>{columnValues[fundingSummeryColumnName](payment.id)}</Typography>)}
+          </Grid>,
+        )}
+      </Grid>
+    );
+  }
+;
+
+export default observer(FundingSummary);

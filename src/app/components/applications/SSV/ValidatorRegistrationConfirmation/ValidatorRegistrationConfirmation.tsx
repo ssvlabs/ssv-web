@@ -73,7 +73,7 @@ const ValidatorRegistrationConfirmation = () => {
       setCheckingUserInfo(true);
       ssvStore.userSyncInterval().finally(() => setCheckingUserInfo(false));
     }
-  }, [ssvStore.approvedAllowance]);
+  }, [String(ssvStore.approvedAllowance)]);
 
   useEffect(() => {
     setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo);

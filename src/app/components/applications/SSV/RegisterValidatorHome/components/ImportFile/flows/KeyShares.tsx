@@ -163,10 +163,16 @@ const KeyShareFlow = () => {
         if (consistentOperatorIds.toString() !== keyShareOperatorIds.toString()) {
           return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
         }
-        const operatorPublicKeys = data.operators?.map((operator: { id: number, operatorKey: string }) => operator.operatorKey);
+        const operatorPublicKeys = data.operators?.map((operator: {
+          id: number,
+          operatorKey: string
+        }) => operator.operatorKey);
         if (processStore.secondRegistration) {
           const process: SingleCluster = processStore.process;
-          const clusterOperatorsIds = process.item.operators.map((operator: { id: number, operatorKey: string }) => operator.id).sort();
+          const clusterOperatorsIds = process.item.operators.map((operator: {
+            id: number,
+            operatorKey: string
+          }) => operator.id).sort();
           if (!clusterOperatorsIds.every((val: number, index: number) => val === keyShareOperatorIds[index])) {
             return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
           }
@@ -200,7 +206,7 @@ const KeyShareFlow = () => {
   async function storeKeyShareData(keyShareMulti: KeyShares) {
     validatorStore.setProcessedKeyShare(keyShareMulti);
     const keyShares = keyShareMulti.list();
-    if (keyShares.length == 1){
+    if (keyShares.length == 1) {
       validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
     }
     await accountStore.getOwnerNonce(walletStore.accountAddress);
@@ -242,7 +248,7 @@ const KeyShareFlow = () => {
         indexToSkip = i;
         incorrectNonceFlag = true;
       }
-      if (incorrectNonceFlag && indexToSkip !== i) {
+      if (incorrectNonceFlag && indexToSkip !== i || validators[validatorsArray[i].publicKey].ownerNonce !== ownerNonce + i && !validators[validatorsArray[i].publicKey].registered) {
         validators[validatorsArray[i].publicKey].errorMessage = 'Incorrect owner-nonce';
         validators[validatorsArray[i].publicKey].isSelected = false;
       }
@@ -394,7 +400,7 @@ const KeyShareFlow = () => {
     applicationStore.setIsLoading(false);
   };
 
-  const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist;
+  const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || validatorStore.isMultiSharesMode && !validatorsCount;
   const MainScreen = <BorderScreen
     blackHeader
     withoutNavigation={processStore.secondRegistration}
@@ -436,7 +442,7 @@ const KeyShareFlow = () => {
     sideElement={<ValidatorCounter
       selectLastValidValidator={selectLastValidValidator}
       unselectLastValidator={unselectLastValidator}
-      maxCount={ownerNonceIssueCondition ? 0 : Object.values(validatorsList).length}
+      maxCount={ownerNonceIssueCondition ? 0 : config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION}
       countOfValidators={ownerNonceIssueCondition ? 0 : validatorsCount}/>}
     tooltipText={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP} body={[
     <Grid item container>

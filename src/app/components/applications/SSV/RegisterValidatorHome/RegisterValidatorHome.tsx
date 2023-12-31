@@ -48,7 +48,7 @@ const RegisterValidatorHome = () => {
   const validatorStore: ValidatorStore = stores.Validator;
 
   useEffect(() => {
-      validatorStore.clearKeyStoreFlowData();
+    validatorStore.clearKeyStoreFlowData();
   }, []);
 
   const createValidatorsLaunchpad = () => {
@@ -60,8 +60,8 @@ const RegisterValidatorHome = () => {
       item: null,
       processName: 'register_validator',
     }, ProcessType.Validator);
-    operatorStore.unselectAllOperators(); // TODO should later update these from the keyshares file info
-    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS); // TODO should later change this from the keyshares file info
+    operatorStore.unselectAllOperators();
+    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
     navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
   };
 
@@ -72,14 +72,14 @@ const RegisterValidatorHome = () => {
     }, ProcessType.Validator);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
   };
-  
+
 
   return (
     <BorderScreen
       body={[
         <Grid container>
           <HeaderSubHeader title={translations.VALIDATOR.HOME.TITLE}
-            subtitle={translations.VALIDATOR.HOME.SUB_TITLE}
+                           subtitle={translations.VALIDATOR.HOME.SUB_TITLE}
           />
           <Typography className={classes.GrayText}>Prerequisites</Typography>
           <Grid container item style={{ gap: 8, marginBottom: 24 }}>
@@ -88,17 +88,20 @@ const RegisterValidatorHome = () => {
                 <Grid item className={classes.GreenV}></Grid>
                 <Typography className={classes.Text}>{preRequisite.text}</Typography>
                 {preRequisite.tooltip &&
-                  <ToolTip text={<Grid className={classes.TooltipText}>{preRequisite.tooltip}
+									<ToolTip text={<Grid className={classes.TooltipText}>{preRequisite.tooltip}
                     &nbsp;
-                    <Grid onClick={createValidatorsLaunchpad} className={classes.TooltipLink}>{preRequisite.tooltipLinkText}</Grid>
+                    <Grid onClick={createValidatorsLaunchpad}
+                          className={classes.TooltipLink}>{preRequisite.tooltipLinkText}</Grid>
                   </Grid>}/>
                 }
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators} withoutLoader/>
-          <ButtonSeparator />
-            <SecondaryButton text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare} noCamelCase withoutLoader/>
+          <PrimaryButton text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators}
+                         withoutLoader/>
+          <ButtonSeparator/>
+          <SecondaryButton text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare}
+                           noCamelCase withoutLoader/>
         </Grid>,
       ]}
     />

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import ToolTip from '~app/components/common/ToolTip';
@@ -15,6 +15,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
+import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow';
 
 type PreRequisiteType = {
   text: string;
@@ -43,9 +44,11 @@ const RegisterValidatorHome = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
+  const location = useLocation();
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
+  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -62,7 +65,7 @@ const RegisterValidatorHome = () => {
     }, ProcessType.Validator);
     operatorStore.unselectAllOperators();
     operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
-    navigate(config.routes.SSV.VALIDATOR.SELECT_OPERATORS);
+    navigate(getNextNavigation(EValidatorFlowAction.GENERATE_NEW_SHARE));
   };
 
   const moveToUploadKeyshare = () => {
@@ -70,7 +73,7 @@ const RegisterValidatorHome = () => {
       item: null,
       processName: 'register_validator',
     }, ProcessType.Validator);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
+    navigate(getNextNavigation(EValidatorFlowAction.ALREADY_HAVE_SHARES));
   };
 
 

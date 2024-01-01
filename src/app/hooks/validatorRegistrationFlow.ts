@@ -10,7 +10,6 @@
  * navigate(nextRoute);
  * */
 
-
 import config from '~app/common/config';
 import { useSetChain } from '@web3-onboard/react';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
@@ -63,11 +62,9 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
       [EValidatorFlowAction.OFFLINE_CLI]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES,
       [EValidatorFlowAction.OFFLINE_DKG]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY,
     },
-    [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
+    [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES]: config.routes.SSV.VALIDATOR.SLASHING_WARNING,
     [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
   },
-
-
   [EBulkMode.MULTI]: {
     [config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT]: config.routes.SSV.VALIDATOR.HOME,
     [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD]: { [EValidatorFlowAction.ADD_CLUSTER]: config.routes.SSV.VALIDATOR.HOME },
@@ -103,7 +100,6 @@ const validatorRegistrationFlow = (currentRoute: string) => {
 
   const getNextNavigation = (action?: EValidatorFlowAction): string => {
     const currentNetwork: number = getCurrentNetwork();
-
     const currentBulkMode = NETWORK_TO_BULK_MODE[currentNetwork];
     const routeMappings = BULK_MODE_TO_ROUTES[currentBulkMode];
     const nextAvailableRoutes = routeMappings[currentRoute];
@@ -112,7 +108,6 @@ const validatorRegistrationFlow = (currentRoute: string) => {
       nextRoute = nextAvailableRoutes[action];
     }
     if (typeof nextRoute === 'string') {
-      console.log(` $$$$$$$$$$ ${nextRoute} $$$$$$$$$$`);
       return nextRoute;
     } else {
       throw Error('Route undefined');

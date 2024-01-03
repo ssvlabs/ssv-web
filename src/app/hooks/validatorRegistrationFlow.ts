@@ -19,7 +19,7 @@ type NavigationRoutes = {
   [mode in EBulkMode]: Record<string, string | Record<number, string>>;
 };
 
-enum EBulkMode {
+export enum EBulkMode {
   SINGLE,
   MULTI,
 }
@@ -36,7 +36,7 @@ export enum EValidatorFlowAction {
 
 const NETWORK_TO_BULK_MODE = {
   [NETWORKS.MAINNET]: EBulkMode.SINGLE,
-  [NETWORKS.HOLESKY]: EBulkMode.MULTI,
+  [NETWORKS.HOLESKY]: EBulkMode.SINGLE,
   [NETWORKS.GOERLI]: EBulkMode.MULTI,
 };
 
@@ -114,7 +114,15 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     }
   };
 
-  return { getNextNavigation };
+  /**
+   * Returns the expected Bulk Mode behavior per currently defined network/chain.
+   */
+  const getBulkMode = (): EBulkMode => {
+    const currentNetwork: number = getCurrentNetwork();
+    return NETWORK_TO_BULK_MODE[currentNetwork];
+  };
+
+  return { getNextNavigation, getBulkMode };
 };
 
 export default validatorRegistrationFlow;

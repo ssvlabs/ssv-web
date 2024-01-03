@@ -30,7 +30,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlow, { EBulkMode } from '~app/hooks/validatorRegistrationFlow';
 
 
 export type KeyShareMulti = {
@@ -69,7 +69,7 @@ const KeyShareFlow = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation, getBulkMode } = validatorRegistrationFlow(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
@@ -404,6 +404,33 @@ const KeyShareFlow = () => {
   };
 
   const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || validatorStore.isMultiSharesMode && !validatorsCount;
+
+  const MainMultiKeyShare = <Grid className={classes.SummaryWrapper}>
+    <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
+    <Grid className={classes.SummaryInfoFieldWrapper}>
+      <Typography className={classes.SummaryText}>Validators</Typography>
+      <Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
+    </Grid>
+    <Grid
+      className={classes.SummaryInfoFieldWrapper}>
+      <Typography className={classes.SummaryText}>Operators</Typography>
+      <Grid className={classes.OperatorsWrapper}>
+        {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <OperatorData
+          operatorLogo={operator.logo} operatorId={operator.id}/>)}
+      </Grid>
+    </Grid>
+  </Grid>;
+
+  const MainSingleKeyShare = <Grid container item xs={12}>
+    {
+      <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>}
+  </Grid>;
+
+  const getKeyShareComponent = (single: JSX.Element, multi: JSX.Element): JSX.Element => {
+    return getBulkMode() === EBulkMode.MULTI ? multi : single;
+  };
+
+
   const MainScreen = <BorderScreen
     blackHeader
     withoutNavigation={processStore.secondRegistration}
@@ -414,25 +441,7 @@ const KeyShareFlow = () => {
         <ImportInput
           removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText}
           fileHandler={fileHandler} fileImage={renderFileImage}/>
-        {Object.values(validatorsList).length > 0 && !processingFile && <Grid className={classes.SummaryWrapper}>
-					<Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
-					<Grid className={classes.SummaryInfoFieldWrapper}>
-						<Typography className={classes.SummaryText}>Validators</Typography>
-						<Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
-					</Grid>
-					<Grid
-						className={classes.SummaryInfoFieldWrapper}>
-						<Typography className={classes.SummaryText}>Operators</Typography>
-						<Grid className={classes.OperatorsWrapper}>
-              {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <OperatorData
-                operatorLogo={operator.logo} operatorId={operator.id}/>)}
-						</Grid>
-					</Grid>
-				</Grid>}
-        <Grid container item xs={12}>
-          {!validatorStore.isMultiSharesMode &&
-						<PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>}
-        </Grid>
+        {Object.values(validatorsList).length > 0 && !processingFile && getKeyShareComponent(MainSingleKeyShare, MainMultiKeyShare)}
       </Grid>,
     ]}
   />;
@@ -470,14 +479,14 @@ const KeyShareFlow = () => {
           header={'Cluster'}
         />
         {MainScreen}
-        {validatorStore.isMultiSharesMode && !processingFile && SecondScreen}
+        {validatorStore.isMultiSharesMode && !processingFile && getKeyShareComponent(<></>, SecondScreen)}
       </Grid>
     );
   }
 
   return <Grid className={classes.KeysharesWrapper}>
     {MainScreen}
-    {validatorStore.isMultiSharesMode && !processingFile && SecondScreen}
+    {validatorStore.isMultiSharesMode && !processingFile && getKeyShareComponent(<></>, SecondScreen)}
   </Grid>;
 };
 

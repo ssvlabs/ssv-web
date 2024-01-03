@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     height: 504,
     border: `1px solid ${theme.colors.gray30}`,
     borderRadius: 8,
-    overflowY: 'scroll',
+    overflowY: 'auto',
     marginBottom: 32,
     // backgroundColor: 'red',
   },
@@ -32,7 +32,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'space-between',
   },
   SelectedValidatorSlot: {
-    backgroundColor: '#F0F9FE',
+    backgroundColor: theme.colors.tint90,
     border: `1px solid ${theme.colors.primaryBlue}`,
   },
   ErrorValidatorSlot: {
@@ -101,6 +101,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
+    color: theme.colors.gray90,
   },
   PlusIcon: {
     width: 16,

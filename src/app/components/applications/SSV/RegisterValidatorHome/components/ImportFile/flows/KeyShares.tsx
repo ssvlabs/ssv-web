@@ -207,26 +207,30 @@ const KeyShareFlow = () => {
   }
 
   async function storeKeyShareData(keyShareMulti: KeyShares) {
-    validatorStore.setProcessedKeyShare(keyShareMulti);
-    const keyShares = keyShareMulti.list();
-    if (keyShares.length == 1) {
-      validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
-    }
-    await accountStore.getOwnerNonce(walletStore.accountAddress);
-    const { ownerNonce } = accountStore;
-    const validators: Record<string, ValidatorType> = {};
-    keyShareMulti.list().forEach((keyShare: any) => {
-      validators[keyShare.data.publicKey] = {
-        ownerNonce: keyShare.data.ownerNonce,
-        publicKey: keyShare.data.publicKey,
-        registered: false,
-        errorMessage: '',
-        isSelected: false,
-      };
-    });
+    try {
+      validatorStore.setProcessedKeyShare(keyShareMulti);
+      const keyShares = keyShareMulti.list();
+      if (keyShares.length == 1) {
+        validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
+      }
+      await accountStore.getOwnerNonce(walletStore.accountAddress);
+      const { ownerNonce } = accountStore;
+      const validators: Record<string, ValidatorType> = {};
 
-    const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
-      try {
+      keyShareMulti.list().forEach((keyShare: any) => {
+        validators[keyShare.data.publicKey] = {
+          ownerNonce: keyShare.data.ownerNonce,
+          publicKey: keyShare.data.publicKey,
+          registered: false,
+          errorMessage: '',
+          isSelected: false,
+        };
+      });
+
+
+
+      const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve) => {
+        // try {
         const res = await Validator.getInstance().getValidator(validator.publicKey);
         if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
           validators[`0x${res.public_key}`].registered = true;
@@ -234,31 +238,56 @@ const KeyShareFlow = () => {
         if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
           validators[validator.publicKey].isSelected = true;
         }
+
+
         resolve(res);
-      } catch (err) {
-        console.log(err);
-      }
-    }));
+        // } catch (err) {
+        //   console.log(err);
+        //   resolve(false);
+        // }
+      }));
 
-    await Promise.all(promises);
+      // try {
+      await Promise.all(promises);
+      // } catch (err) {
+      //   console.log('inAllPromisses catch');
+      //   console.log(err);
+      // }
 
-    let incorrectNonceFlag = false;
+      let currentNonce = ownerNonce;
 
-    for (let i = 0; i < Object.values(validators).length; i++) {
-      let indexToSkip = 0;
-      const validatorsArray: ValidatorType[] = Object.values(validators);
-      if (i > 0 && validatorsArray && !validatorsArray[i - 1].registered && validatorsArray[i]?.registered) {
-        indexToSkip = i;
-        incorrectNonceFlag = true;
+      let incorrectNonceFlag = false;
+
+
+      for (let i = 0; i < Object.values(validators).length; i++) {
+        let indexToSkip = 0;
+        const validatorsArray: ValidatorType[] = Object.values(validators);
+        if (i > 0 && validatorsArray && !validatorsArray[i - 1].registered && validatorsArray[i].registered) {
+          indexToSkip = i;
+          incorrectNonceFlag = true;
+        }
+
+        if (incorrectNonceFlag && indexToSkip !== i && !validators[validatorsArray[i].publicKey].registered || i > 0 &&
+          validatorsArray[i - 1].errorMessage && !validators[validatorsArray[i].publicKey].registered ||
+          currentNonce !== validators[validatorsArray[i].publicKey].ownerNonce && !validators[validatorsArray[i].publicKey].registered
+        ) {
+          validators[validatorsArray[i].publicKey].errorMessage = 'Incorrect owner-nonce';
+          validators[validatorsArray[i].publicKey].isSelected = false;
+        }
+        if (!validatorsArray[i].registered) {
+          currentNonce += 1;
+        }
+
+        if (validators[validatorsArray[i].publicKey].isSelected && i >= config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION) {
+          validators[validatorsArray[i].publicKey].isSelected = false;
+        }
       }
-      if (incorrectNonceFlag && indexToSkip !== i || validators[validatorsArray[i].publicKey].ownerNonce !== ownerNonce + i && !validators[validatorsArray[i].publicKey].registered) {
-        validators[validatorsArray[i].publicKey].errorMessage = 'Incorrect owner-nonce';
-        validators[validatorsArray[i].publicKey].isSelected = false;
-      }
+
+      setValidatorsList(validators);
+      setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length > config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION : Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
+    } catch (err) {
+      console.log(err);
     }
-
-    setValidatorsList(validators);
-    setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
   }
 
   const selectLastValidValidator = () => {
@@ -296,10 +325,8 @@ const KeyShareFlow = () => {
     } catch (e: any) {
       let errorMsg = 'Cannot process KeyShares file';
       if (e instanceof SSVKeysException) {
-        console.log('SSVKeysException validation error');
         errorMsg = e.message;
       }
-      console.log(e);
       setValidatorsList({});
       setValidatorsCount(0);
       return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, errorMsg);
@@ -389,9 +416,15 @@ const KeyShareFlow = () => {
     try {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
+      if (validatorsCount === 1) {
+
+      }
       navigate(getNextNavigation());
       validatorStore.setMultiSharesMode(validatorsCount);
       validatorStore.setRegisterValidatorsPublicKeys(Object.values(validatorsList).filter((validator: any) => validator.isSelected).map((validator: any) => validator.publicKey));
+      if (validatorsCount === 1) {
+        validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
+      }
     } catch (error: any) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',
@@ -415,23 +448,25 @@ const KeyShareFlow = () => {
           removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText}
           fileHandler={fileHandler} fileImage={renderFileImage}/>
         {Object.values(validatorsList).length > 0 && !processingFile && <Grid className={classes.SummaryWrapper}>
-					<Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
-					<Grid className={classes.SummaryInfoFieldWrapper}>
-						<Typography className={classes.SummaryText}>Validators</Typography>
-						<Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
-					</Grid>
-					<Grid
-						className={classes.SummaryInfoFieldWrapper}>
-						<Typography className={classes.SummaryText}>Operators</Typography>
-						<Grid className={classes.OperatorsWrapper}>
-              {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => <OperatorData
-                operatorLogo={operator.logo} operatorId={operator.id}/>)}
-						</Grid>
-					</Grid>
-				</Grid>}
+          <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
+          <Grid className={classes.SummaryInfoFieldWrapper}>
+            <Typography className={classes.SummaryText}>Validators</Typography>
+            <Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
+          </Grid>
+          <Grid
+            className={classes.SummaryInfoFieldWrapper}>
+            <Typography className={classes.SummaryText}>Operators</Typography>
+            <Grid className={classes.OperatorsWrapper}>
+              {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+                return (< OperatorData
+                  operatorLogo={operator.logo} operatorId={operator.id}/>);
+              })}
+            </Grid>
+          </Grid>
+        </Grid>}
         <Grid container item xs={12}>
           {!validatorStore.isMultiSharesMode &&
-						<PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>}
+            <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>}
         </Grid>
       </Grid>,
     ]}
@@ -450,7 +485,7 @@ const KeyShareFlow = () => {
     tooltipText={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP} body={[
     <Grid item container>
       {ownerNonceIssueCondition && <ErrorMessage
-				text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText
+        text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText
           textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK}
           text={'registration nonce'}/>.<br/> Please split the
           validator keys to new key shares aligned with the correct one.</Typography>}/>}

@@ -15,7 +15,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
-import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlowHook, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow.hook';
 
 type PreRequisiteType = {
   text: string;
@@ -48,7 +48,7 @@ const RegisterValidatorHome = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
-  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation } = validatorRegistrationFlowHook(location.pathname);
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();

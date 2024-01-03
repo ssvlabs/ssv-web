@@ -21,14 +21,14 @@ import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlowHook from '~app/hooks/validatorRegistrationFlow.hook';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation } = validatorRegistrationFlowHook(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const processStore: ProcessStore = stores.Process;

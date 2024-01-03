@@ -4,7 +4,7 @@
  *
  * import { useLocation } from 'react-router-dom';
  * const location = useLocation();
- * const { getNextNavigation } = validatorRegistrationFlow(location.pathName); Call with your current location
+ * const { getNextNavigation } = validatorRegistrationFlowHook(location.pathName); Call with your current location
  *
  * const nextRoute = getNextNavigation(EValidatorFlowAction.ADD_CLUSTER); Call getNextNavigation with the action (if there are multiple options.)
  * navigate(nextRoute);
@@ -37,7 +37,7 @@ export enum EValidatorFlowAction {
 const NETWORK_TO_BULK_MODE = {
   [NETWORKS.MAINNET]: EBulkMode.SINGLE,
   [NETWORKS.HOLESKY]: EBulkMode.MULTI,
-  [NETWORKS.GOERLI]: EBulkMode.MULTI,
+  [NETWORKS.GOERLI]: EBulkMode.SINGLE,
 };
 
 const BULK_MODE_TO_ROUTES: NavigationRoutes = {
@@ -91,7 +91,7 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
   },
 };
 
-const validatorRegistrationFlow = (currentRoute: string) => {
+const validatorRegistrationFlowHook = (currentRoute: string) => {
   const [{ connectedChain }] = useSetChain();
 
   const getCurrentNetwork = (): number => {
@@ -117,4 +117,4 @@ const validatorRegistrationFlow = (currentRoute: string) => {
   return { getNextNavigation };
 };
 
-export default validatorRegistrationFlow;
+export default validatorRegistrationFlowHook;

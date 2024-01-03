@@ -23,7 +23,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
-import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlowHook, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow.hook';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -41,7 +41,7 @@ const ClusterDashboard = () => {
   const [loadingCluster, setLoadingClusters] = useState(false);
   const [loadingFeeRecipient, setLoadingFeeRecipient] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
-  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation } = validatorRegistrationFlowHook(location.pathname);
 
   const moveToRegisterValidator = () => {
     navigate(getNextNavigation(EValidatorFlowAction.ADD_CLUSTER));

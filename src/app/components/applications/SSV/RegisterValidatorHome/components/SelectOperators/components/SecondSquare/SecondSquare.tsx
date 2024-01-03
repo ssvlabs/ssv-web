@@ -28,14 +28,14 @@ import MevIcon
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei } from '~root/services/conversions.service';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlowHook from '~app/hooks/validatorRegistrationFlow.hook';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const location = useLocation();
-  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation } = validatorRegistrationFlowHook(location.pathname);
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;

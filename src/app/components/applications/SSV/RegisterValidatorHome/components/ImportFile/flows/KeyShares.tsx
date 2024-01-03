@@ -30,7 +30,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlowHook from '~app/hooks/validatorRegistrationFlow.hook';
 
 
 export type KeyShareMulti = {
@@ -69,7 +69,7 @@ const KeyShareFlow = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation } = validatorRegistrationFlowHook(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const walletStore: WalletStore = stores.Wallet;

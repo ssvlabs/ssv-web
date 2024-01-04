@@ -401,9 +401,6 @@ const KeyShareFlow = () => {
     try {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
-      if (validatorsCount === 1) {
-
-      }
       navigate(getNextNavigation());
       validatorStore.setMultiSharesMode(validatorsCount);
       validatorStore.setRegisterValidatorsPublicKeys(Object.values(validatorsList).filter((validator: any) => validator.isSelected).map((validator: any) => validator.publicKey));

@@ -30,7 +30,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow.hook';
 
 
 export type KeyShareMulti = {

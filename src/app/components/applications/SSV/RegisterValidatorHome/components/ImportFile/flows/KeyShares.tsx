@@ -16,7 +16,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow.hook';
 import { AccountStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -31,7 +31,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-     
+
 export type KeyShareMulti = {
   version: string,
   createdAt: string,
@@ -212,38 +212,44 @@ const KeyShareFlow = () => {
       if (keyShares.length == 1) {
         validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
       }
-      await accountStore.getOwnerNonce(walletStore.accountAddress);
-      const { ownerNonce } = accountStore;
-      const validators: Record<string, ValidatorType> = {};
 
-      keyShareMulti.list().forEach((keyShare: any) => {
-        validators[keyShare.data.publicKey] = {
-          ownerNonce: keyShare.data.ownerNonce,
-          publicKey: keyShare.data.publicKey,
+      const validators: Record<string, ValidatorType> = keyShareMulti.list().reduce((acc: Record<string, ValidatorType>, keyShare: any) => {
+        const { publicKey, ownerNonce } = keyShare.data;
+        acc[publicKey] = {
+          ownerNonce,
+          publicKey,
           registered: false,
           errorMessage: '',
           isSelected: false,
         };
-      });
+        return acc;
+      }, {});
 
-      const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve) => {
-        const res = await Validator.getInstance().getValidator(validator.publicKey, true);
-        if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
-          validators[`0x${res.public_key}`].registered = true;
-        }
-        if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
-          validators[validator.publicKey].isSelected = true;
-        }
+      await accountStore.getOwnerNonce(walletStore.accountAddress);
+      const { ownerNonce } = accountStore;
 
-        resolve(res);
+      const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
+        try {
+          const res = await Validator.getInstance().getValidator(validator.publicKey, true);
+          if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
+            validators[`0x${res.public_key}`].registered = true;
+          }
+          if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
+            validators[validator.publicKey].isSelected = true;
+          }
+          resolve(res);
+        } catch (e) {
+          reject(false);
+        }
       }));
       await Promise.all(promises);
 
       let currentNonce = ownerNonce;
       let incorrectNonceFlag = false;
+      const validatorsArray: ValidatorType[] = Object.values(validators);
+
       for (let i = 0; i < Object.values(validators).length; i++) {
         let indexToSkip = 0;
-        const validatorsArray: ValidatorType[] = Object.values(validators);
         const incorrectOwnerNonceCondition = incorrectNonceFlag && indexToSkip !== i && !validators[validatorsArray[i].publicKey].registered || i > 0 &&
           validatorsArray[i - 1].errorMessage && !validators[validatorsArray[i].publicKey].registered ||
           currentNonce !== validators[validatorsArray[i].publicKey].ownerNonce && !validators[validatorsArray[i].publicKey].registered;

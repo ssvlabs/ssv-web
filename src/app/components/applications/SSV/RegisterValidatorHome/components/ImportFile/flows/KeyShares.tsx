@@ -16,6 +16,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 import { AccountStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -30,7 +31,6 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 
 
 export type KeyShareMulti = {
@@ -227,11 +227,8 @@ const KeyShareFlow = () => {
         };
       });
 
-
-
       const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve) => {
-        // try {
-        const res = await Validator.getInstance().getValidator(validator.publicKey);
+        const res = await Validator.getInstance().getValidator(validator.publicKey, true);
         if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
           validators[`0x${res.public_key}`].registered = true;
         }
@@ -239,41 +236,29 @@ const KeyShareFlow = () => {
           validators[validator.publicKey].isSelected = true;
         }
 
-
         resolve(res);
-        // } catch (err) {
-        //   console.log(err);
-        //   resolve(false);
-        // }
       }));
-
-      // try {
       await Promise.all(promises);
-      // } catch (err) {
-      //   console.log('inAllPromisses catch');
-      //   console.log(err);
-      // }
 
       let currentNonce = ownerNonce;
-
       let incorrectNonceFlag = false;
-
-
       for (let i = 0; i < Object.values(validators).length; i++) {
         let indexToSkip = 0;
         const validatorsArray: ValidatorType[] = Object.values(validators);
+        const incorrectOwnerNonceCondition = incorrectNonceFlag && indexToSkip !== i && !validators[validatorsArray[i].publicKey].registered || i > 0 &&
+          validatorsArray[i - 1].errorMessage && !validators[validatorsArray[i].publicKey].registered ||
+          currentNonce !== validators[validatorsArray[i].publicKey].ownerNonce && !validators[validatorsArray[i].publicKey].registered;
+
         if (i > 0 && validatorsArray && !validatorsArray[i - 1].registered && validatorsArray[i].registered) {
           indexToSkip = i;
           incorrectNonceFlag = true;
         }
 
-        if (incorrectNonceFlag && indexToSkip !== i && !validators[validatorsArray[i].publicKey].registered || i > 0 &&
-          validatorsArray[i - 1].errorMessage && !validators[validatorsArray[i].publicKey].registered ||
-          currentNonce !== validators[validatorsArray[i].publicKey].ownerNonce && !validators[validatorsArray[i].publicKey].registered
-        ) {
-          validators[validatorsArray[i].publicKey].errorMessage = 'Incorrect owner-nonce';
+        if (incorrectOwnerNonceCondition) {
+          validators[validatorsArray[i].publicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
           validators[validatorsArray[i].publicKey].isSelected = false;
         }
+
         if (!validatorsArray[i].registered) {
           currentNonce += 1;
         }
@@ -459,6 +444,7 @@ const KeyShareFlow = () => {
             <Grid className={classes.OperatorsWrapper}>
               {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
                 return (< OperatorData
+                  key={operator.id}
                   operatorLogo={operator.logo} operatorId={operator.id}/>);
               })}
             </Grid>

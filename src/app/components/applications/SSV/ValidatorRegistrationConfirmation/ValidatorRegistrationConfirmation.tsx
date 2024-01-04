@@ -29,13 +29,6 @@ import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { fromWei } from '~root/services/conversions.service';
 
-const ValidatorHeaderCount = styled.div`
-  background-color: #F0F9FE;
-  border-radius: 4px;
-  padding: 2px 4px;
-  color: #0792e8;
-`;
-
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -100,7 +93,7 @@ const ValidatorRegistrationConfirmation = () => {
     </Grid>
     <Grid item style={{ marginBottom: 20 }}>
       <Grid
-        className={classes.TotalSSV}>{'registerValidator' in process ? process.registerValidator?.depositAmount : totalAmountOfSsv} SSV</Grid>
+        className={classes.TotalSSV}>{'registerValidator' in process ? process.registerValidator?.depositAmount : Number(totalAmountOfSsv) * validatorStore.validatorsCount} SSV</Grid>
     </Grid>
     {Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
       <Grid container item className={classes.InsufficientBalanceWrapper}>
@@ -171,7 +164,8 @@ const ValidatorRegistrationConfirmation = () => {
     header={translations.VALIDATOR.CONFIRMATION.TITLE}
     withoutNavigation={processStore.secondRegistration}
     body={screenBody}
-    sideElement={<ValidatorHeaderCount>{`${validatorStore.validatorsCount} Validators`}</ValidatorHeaderCount>}
+    sideElementShowCondition={validatorStore.validatorsCount > 1}
+    sideElement={<Grid className={classes.ValidatorHeaderCount}>{`${validatorStore.validatorsCount} Validators`}</Grid>}
   />;
 
   const SecondaryScreen = <BorderScreen

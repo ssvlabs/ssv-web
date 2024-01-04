@@ -23,7 +23,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
-import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow.hook';
 
 const ClusterDashboard = () => {
   const stores = useStores();

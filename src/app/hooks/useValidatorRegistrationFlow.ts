@@ -37,7 +37,7 @@ export enum EValidatorFlowAction {
 const NETWORK_TO_BULK_MODE = {
   [NETWORKS.MAINNET]: EBulkMode.SINGLE,
   [NETWORKS.HOLESKY]: EBulkMode.MULTI,
-  [NETWORKS.GOERLI]: EBulkMode.MULTI,
+  [NETWORKS.GOERLI]: EBulkMode.SINGLE,
 };
 
 const BULK_MODE_TO_ROUTES: NavigationRoutes = {

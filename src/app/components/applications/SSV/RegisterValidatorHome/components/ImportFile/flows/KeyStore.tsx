@@ -21,7 +21,7 @@ import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow.hook';
 
 const KeyStoreFlow = () => {
   const stores = useStores();

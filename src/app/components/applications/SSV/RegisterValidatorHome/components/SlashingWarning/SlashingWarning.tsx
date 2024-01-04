@@ -9,12 +9,12 @@ import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow.hook';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 
 const SlashingWarning = () => {
   const classes = useStyles();

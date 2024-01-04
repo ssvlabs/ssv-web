@@ -6,7 +6,7 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData.styles';
 
 const OperatorData = ({ operatorId, operatorLogo }: { operatorId: string, operatorLogo: string | undefined }) => {
-  const classes = useStyles( operatorLogo );
+  const classes = useStyles({ operatorLogo } );
 
   return (
     <Grid className={classes.Wrapper}>

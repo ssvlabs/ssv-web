@@ -24,6 +24,7 @@ type Props = {
   sideElement?: JSX.Element,
   withoutNavigation?: boolean,
   withoutBorderBottom?: boolean,
+  sideElementShowCondition?: boolean,
   onBackButtonClick?: () => void | null | undefined,
 };
 
@@ -50,6 +51,7 @@ const BorderScreen = (props: Props) => {
     wrapperHeight,
     tooltipText,
     sideElement,
+    sideElementShowCondition = true,
   } = props;
   const classes = useStyles({ overFlow, gray80, blackHeader, marginTop, width, wrapperHeight });
 
@@ -87,7 +89,7 @@ const BorderScreen = (props: Props) => {
                 </Grid>
               </Grid>
             )}
-            {sideElement && sideElement}
+            {sideElement && sideElementShowCondition && sideElement}
           </Grid>
         )}
         {body.map((section: any, index: number) => {

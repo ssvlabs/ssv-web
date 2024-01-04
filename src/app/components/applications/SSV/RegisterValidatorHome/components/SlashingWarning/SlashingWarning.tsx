@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
@@ -14,11 +14,14 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { getBulkKeyShareComponent } = validatorRegistrationFlow(location.pathname);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const [userAgreed, setUserAgreed] = useState(false);
@@ -32,46 +35,48 @@ const SlashingWarning = () => {
     }
   };
 
+  const SingleSlashingPublicKey = <>
+    <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+    <Grid item xs={12} className={classes.PublicKey}>
+      <ValidatorKeyInput withBeaconcha withCopy address={publicKey}/>
+    </Grid>
+  </>;
+
   const MainScreen = <BorderScreen
-      blackHeader
-      withoutNavigation={processStore.secondRegistration}
-      header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
-      body={[
-        <Grid container>
-          { !validatorStore.isMultiSharesMode && <>
-            <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-            <Grid item xs={12} className={classes.PublicKey}>
-              <ValidatorKeyInput withBeaconcha withCopy address={publicKey}/>
-            </Grid>
-          </>}
-          <Grid item xs={12} className={classes.Text}>
-            Running a validator simultaneously to the SSV network will cause slashing to your validator.
-          </Grid>
-          <Grid item xs={12} className={classes.Text}>
-            To avoid slashing, shut down your existing validator setup (if you have one) before importing your validator
-            to
-            run with our network.
-          </Grid>
-          <Checkbox
-              onClickCallBack={setUserAgreed}
-              text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
-          />
-          <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
-                         submitFunction={goToConfirmation}
-          />
-        </Grid>,
-      ]}
+    blackHeader
+    withoutNavigation={processStore.secondRegistration}
+    header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
+    body={[
+      <Grid container>
+        {!validatorStore.isMultiSharesMode && getBulkKeyShareComponent(SingleSlashingPublicKey, <></>)}
+        <Grid item xs={12} className={classes.Text}>
+          Running a validator simultaneously to the SSV network will cause slashing to your validator.
+        </Grid>
+        <Grid item xs={12} className={classes.Text}>
+          To avoid slashing, shut down your existing validator setup (if you have one) before importing your validator
+          to
+          run with our network.
+        </Grid>
+        <Checkbox
+          onClickCallBack={setUserAgreed}
+          text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
+        />
+        <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
+                       submitFunction={goToConfirmation}
+        />
+      </Grid>,
+    ]}
   />;
 
   if (processStore.secondRegistration) {
     return (
-        <Grid container>
-          <NewWhiteWrapper
-              type={0}
-              header={'Cluster'}
-          />
-          {MainScreen}
-        </Grid>
+      <Grid container>
+        <NewWhiteWrapper
+          type={0}
+          header={'Cluster'}
+        />
+        {MainScreen}
+      </Grid>
     );
   }
 

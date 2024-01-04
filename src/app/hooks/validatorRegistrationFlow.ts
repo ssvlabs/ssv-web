@@ -36,7 +36,7 @@ export enum EValidatorFlowAction {
 
 const NETWORK_TO_BULK_MODE = {
   [NETWORKS.MAINNET]: EBulkMode.SINGLE,
-  [NETWORKS.HOLESKY]: EBulkMode.SINGLE,
+  [NETWORKS.HOLESKY]: EBulkMode.MULTI,
   [NETWORKS.GOERLI]: EBulkMode.MULTI,
 };
 
@@ -122,7 +122,11 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     return NETWORK_TO_BULK_MODE[currentNetwork];
   };
 
-  return { getNextNavigation, getBulkMode };
+  const getBulkKeyShareComponent = (single: JSX.Element, multi: JSX.Element): JSX.Element => {
+    return getBulkMode() === EBulkMode.MULTI ? multi : single;
+  };
+
+  return { getNextNavigation, getBulkKeyShareComponent };
 };
 
 export default validatorRegistrationFlow;

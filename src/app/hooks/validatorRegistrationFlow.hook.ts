@@ -4,7 +4,7 @@
  *
  * import { useLocation } from 'react-router-dom';
  * const location = useLocation();
- * const { getNextNavigation } = validatorRegistrationFlowHook(location.pathName); Call with your current location
+ * const { getNextNavigation } = validatorRegistrationFlow(location.pathName); Call with your current location
  *
  * const nextRoute = getNextNavigation(EValidatorFlowAction.ADD_CLUSTER); Call getNextNavigation with the action (if there are multiple options.)
  * navigate(nextRoute);
@@ -91,7 +91,7 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
   },
 };
 
-const validatorRegistrationFlowHook = (currentRoute: string) => {
+const validatorRegistrationFlow = (currentRoute: string) => {
   const [{ connectedChain }] = useSetChain();
 
   const getCurrentNetwork = (): number => {
@@ -117,4 +117,4 @@ const validatorRegistrationFlowHook = (currentRoute: string) => {
   return { getNextNavigation };
 };
 
-export default validatorRegistrationFlowHook;
+export default validatorRegistrationFlow;

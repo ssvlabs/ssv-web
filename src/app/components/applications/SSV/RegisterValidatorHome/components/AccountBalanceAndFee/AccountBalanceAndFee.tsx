@@ -14,14 +14,14 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
-import validatorRegistrationFlowHook from '~app/hooks/validatorRegistrationFlow.hook';
+import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow.hook';
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getNextNavigation } = validatorRegistrationFlowHook(location.pathname);
+  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const processStore: ProcessStore = stores.Process;
   const [firstCheckBox, setFirstCheckBox] = useState(false);
   const [secondCheckBox, setSecondCheckBox] = useState(false);

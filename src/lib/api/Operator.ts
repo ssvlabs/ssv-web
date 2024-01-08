@@ -3,6 +3,7 @@ import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import httpService from '~root/services/HttpService';
 
 type OperatorsListQuery = {
   page?: number,
@@ -20,12 +21,16 @@ type OperatorValidatorListQuery = {
 };
 
 class Operator {
-  ownerAddress: string = '';
   private static instance: Operator;
+  ownerAddress: string = '';
   private readonly baseUrl: string = '';
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
+  }
+
+  static get NETWORK() {
+    return 'prater';
   }
 
   static getInstance(): Operator {
@@ -33,10 +38,6 @@ class Operator {
       Operator.instance = new Operator(getStoredNetwork().api);
     }
     return Operator.instance;
-  }
-
-  static get NETWORK() {
-    return 'prater';
   }
 
   /**
@@ -63,7 +64,7 @@ class Operator {
     if (page) url += `page=${page}&`;
     if (perPage) url += `perPage=${perPage}&`;
     if (type?.length) url += `type=${type.join(',')}&`;
-    if (dkgEnabled)url += 'has_dkg_address=true&';
+    if (dkgEnabled) url += 'has_dkg_address=true&';
     url += `ts=${new Date().getTime()}`;
 
     try {
@@ -106,12 +107,28 @@ class Operator {
     }
   }
 
+
+  // TODO - all these should be wrapped with a try catch. On catch the response should be logged and parsed. we should have a defined interface for http.
   async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
-    const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
-      return (await axios.put(url, {
-        ...operatorMetadata,
-        signature,
-      })).data;
+    const url = `http://localhost:3000/api/v4/holesky/operators/${operatorId}/metadata`;
+    const resp = await httpService.put(url, {
+      ...operatorMetadata,
+      signature,
+    });
+    return resp;
+
+
+    // const [err, resp] = await HttpService().put(url, {
+    //   ...operatorMetadata,
+    //   signature,
+    // });
+    // if (!err) {
+    //   return resp;
+    // }
+    // const response = await axios.put(url, {
+    //   ...operatorMetadata,
+    //   signature,
+    // });
   }
 
   async getOperatorNodes(layer: number): Promise<[]> {

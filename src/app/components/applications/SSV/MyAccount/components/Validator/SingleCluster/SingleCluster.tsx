@@ -96,7 +96,7 @@ const SingleCluster = () => {
   const addToCluster = () => {
     process.processName = 'cluster_registration';
     operatorStore.selectOperators(cluster.operators);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START);
   };
   const onChangePage = _.debounce( async (newPage: number) =>  {
     setLoadingValidators(true);

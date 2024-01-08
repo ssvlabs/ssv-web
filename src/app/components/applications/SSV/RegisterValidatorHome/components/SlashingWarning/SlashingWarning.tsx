@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
@@ -9,7 +9,6 @@ import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow.hook';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import {
@@ -20,8 +19,6 @@ const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { getBulkKeyShareComponent } = validatorRegistrationFlow(location.pathname);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const [userAgreed, setUserAgreed] = useState(false);
@@ -48,7 +45,7 @@ const SlashingWarning = () => {
     header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
     body={[
       <Grid container>
-        {!validatorStore.isMultiSharesMode && getBulkKeyShareComponent(SingleSlashingPublicKey, <></>)}
+        {!validatorStore.isMultiSharesMode && SingleSlashingPublicKey}
         <Grid item xs={12} className={classes.Text}>
           Running a validator simultaneously to the SSV network will cause slashing to your validator.
         </Grid>

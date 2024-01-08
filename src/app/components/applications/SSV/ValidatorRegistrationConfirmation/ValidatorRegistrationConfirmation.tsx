@@ -9,6 +9,7 @@ import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
+import { fromWei } from '~root/services/conversions.service';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -27,7 +28,6 @@ import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stor
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
-import { fromWei } from '~root/services/conversions.service';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();

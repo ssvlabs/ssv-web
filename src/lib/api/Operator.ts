@@ -3,7 +3,7 @@ import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { put } from '~root/services/HttpService';
+import { put } from '~root/services/httpApi.service';
 
 type OperatorsListQuery = {
   page?: number,
@@ -27,10 +27,6 @@ class Operator {
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
-  }
-
-  static get NETWORK() {
-    return 'prater';
   }
 
   static getInstance(): Operator {
@@ -110,25 +106,11 @@ class Operator {
 
   // TODO - all these should be wrapped with a try catch. On catch the response should be logged and parsed. we should have a defined interface for http.
   async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
-    const url = `http://localhost:3000/api/v4/holesky/operators/${operatorId}/metadata`;
-    const res = await put(url, {
+    const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
+    return await put(url, {
       ...operatorMetadata,
       signature,
     });
-    return res;
-
-
-    // const [err, resp] = await HttpService().put(url, {
-    //   ...operatorMetadata,
-    //   signature,
-    // });
-    // if (!err) {
-    //   return resp;
-    // }
-    // const response = await axios.put(url, {
-    //   ...operatorMetadata,
-    //   signature,
-    // });
   }
 
   async getOperatorNodes(layer: number): Promise<[]> {

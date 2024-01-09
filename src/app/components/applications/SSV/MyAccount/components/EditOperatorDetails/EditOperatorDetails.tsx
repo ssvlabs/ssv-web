@@ -8,7 +8,6 @@ import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
@@ -22,13 +21,12 @@ import OperatorMetadataStore, {
 } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import { HttpResult } from '~root/services/HttpService';
+import { HttpResult } from '~root/services/httpApi.service';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const applicationStore: ApplicationStore = stores.Application;
@@ -85,7 +83,7 @@ const EditOperatorDetails = () => {
         }
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
       } else if (updateOperatorResponse.result == HttpResult.FAIL) {
-        setErrorMessage([updateOperatorResponse.data.message]);
+        setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
         applicationStore.setIsLoading(false);
       }
       applicationStore.setIsLoading(false);

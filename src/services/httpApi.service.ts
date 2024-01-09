@@ -32,7 +32,11 @@ const put = async (url: string, data?: any, config?: AxiosRequestConfig): Promis
   }
 };
 
+function isSuccessful(httpResponse: IHttpResponse) {
+  return httpResponse.data && !httpResponse.error;
+}
+
 const post = () => {
 };
 
-export { put, HttpResult };
+export { put, HttpResult, isSuccessful };

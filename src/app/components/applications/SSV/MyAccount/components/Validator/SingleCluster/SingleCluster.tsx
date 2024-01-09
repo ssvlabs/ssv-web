@@ -97,6 +97,7 @@ const SingleCluster = () => {
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
+    process.registerValidator = { depositAmount: 0 };
     operatorStore.selectOperators(cluster.operators);
     navigate(getNextNavigation());
   };

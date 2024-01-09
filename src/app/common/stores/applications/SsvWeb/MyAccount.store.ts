@@ -203,58 +203,6 @@ class MyAccountStore extends BaseStore {
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validator_count > 0 || !cluster.isLiquidated);
     return this.ownerAddressClusters;
   }
-  //
-  // async getOwnerAddressValidators(
-  //   {
-  //                                     forcePage,
-  //                                     forcePerPage,
-  //                                     reFetchBeaconData,
-  //                                   }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean },
-  // ): Promise<any[]> {
-  //   const walletStore: WalletStore = this.getStore('Wallet');
-  //   if (!walletStore.accountAddress) return [];
-  //   const { page, perPage } = this.ownerAddressClustersPagination;
-  //   const query = `${walletStore.accountAddress}?ordering=public_key:asc&page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? perPage)}&operators=true`;
-  //   const response = await Validator.getInstance().clustersByOwnerAddress(query, true);
-  //   const responseValidators = response?.validators || [];
-  //
-  //   if (reFetchBeaconData) {
-  //     const validatorsPublicKey = responseValidators.map(({ public_key }: { public_key: string }) => public_key);
-  //     await this.getValidatorsBalances(validatorsPublicKey);
-  //     // eslint-disable-next-line no-restricted-syntax
-  //     for (const publicKey of validatorsPublicKey) {
-  //       // eslint-disable-next-line no-await-in-loop
-  //       await this.getValidatorPerformance(publicKey);
-  //     }
-  //   }
-  //   const extendedValidators = [];
-  //
-  //   // eslint-disable-next-line no-restricted-syntax
-  //   for (const validator of responseValidators) {
-  //     const validatorPublicKey = `0x${validator.public_key}`;
-  //     const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
-  //     // eslint-disable-next-line no-await-in-loop
-  //     const performance7days = this.beaconChaPerformances[validator.public_key] ? formatNumberFromBeaconcha(this.beaconChaPerformances[validator.public_key]?.performance7d) : 0;
-  //     // @ts-ignore
-  //     const apr = formatNumberToUi(((performance7days / 32) * 100) * config.GLOBAL_VARIABLE.NUMBERS_OF_WEEKS_IN_YEAR);
-  //     extendedValidators.push({
-  //       public_key: validator.public_key,
-  //       status: validator.status,
-  //       balance: validatorBalance,
-  //       apr,
-  //     });
-  //   }
-  //
-  //   if (!response) {
-  //     return this.ownerAddressClusters;
-  //   }
-  //
-  //   response.pagination.perPage = response?.pagination?.per_page;
-  //   this.ownerAddressClustersPagination = response.pagination;
-  //   this.ownerAddressClusters = extendedValidators;
-  //   this.lastUpdateValidators = Date.now();
-  //   return this.ownerAddressClusters;
-  // }
 
   async getValidatorsBalances(publicKeys: string[]): Promise<void> {
     try {

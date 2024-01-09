@@ -112,6 +112,7 @@ const FundingNewValidator = () => {
     process.registerValidator = { depositAmount: Number(depositSSV) };
     navigate(getNextNavigation());
   };
+
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.replace(/[^0-9.]/g, '').trim();
     const finalValue = value.toString().includes('.') ? value : Number(value);

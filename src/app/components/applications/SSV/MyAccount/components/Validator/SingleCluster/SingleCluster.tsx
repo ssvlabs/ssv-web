@@ -14,6 +14,7 @@ import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -45,6 +46,7 @@ const SingleCluster = () => {
   });
   const cluster = process?.item;
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated;
+  const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
@@ -96,8 +98,9 @@ const SingleCluster = () => {
   const addToCluster = () => {
     process.processName = 'cluster_registration';
     operatorStore.selectOperators(cluster.operators);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR);
+    navigate(getNextNavigation());
   };
+
   const onChangePage = _.debounce( async (newPage: number) =>  {
     setLoadingValidators(true);
     Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {

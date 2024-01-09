@@ -419,20 +419,24 @@ const KeyShareFlow = () => {
       applicationStore.setIsLoading(true);
       validatorStore.registrationMode = 0;
       let nextRouteAction = EValidatorFlowAction.FIRST_REGISTER;
-      validatorStore.setMultiSharesMode(validatorsCount);
       validatorStore.setRegisterValidatorsPublicKeys(Object.values(validatorsList).filter((validator: any) => validator.isSelected).map((validator: any) => validator.publicKey));
       if (validatorsCount === 1) {
         validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
       }
-      await clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
-        if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
-          processStore.setProcess({
-            item: clusterData,
-            processName: 'cluster_registration',
-          }, ProcessType.Validator);
-          nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
-        }
-      });
+      if (!processStore.secondRegistration) {
+        await clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
+          if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
+            processStore.setProcess({
+              item: clusterData,
+              processName: 'cluster_registration',
+            }, ProcessType.Validator);
+            nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
+          }
+        });
+      } else {
+        nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
+      }
+      validatorStore.setMultiSharesMode(validatorsCount);
       navigate(getNextNavigation(nextRouteAction));
     } catch (error: any) {
       GoogleTagManager.getInstance().sendEvent({
@@ -489,7 +493,7 @@ const KeyShareFlow = () => {
     withoutNavigation
     blackHeader
     header={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS}
-    wrapperClass={classes.marginTop}
+    wrapperClass={processStore.secondRegistration ? classes.marginNone : classes.marginTop}
     sideElement={<ValidatorCounter
       selectLastValidValidator={selectLastValidValidator}
       unselectLastValidator={unselectLastValidator}

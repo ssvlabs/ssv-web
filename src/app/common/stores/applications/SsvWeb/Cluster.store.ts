@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import { action, makeObservable } from 'mobx';
@@ -59,7 +60,7 @@ class ClusterStore extends BaseStore {
     const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(ssvStore.getFeeForYear(fromWei(operator.fee))), 0);
     const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
     const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
-    const clusterBurnRate =  parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
+    const clusterBurnRate = parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
     return clusterBurnRate * newAmountOfValidators;
   }
 
@@ -121,7 +122,7 @@ class ClusterStore extends BaseStore {
         const runWay: number = this.getClusterRunWay({ ...clusterData, burnRate });
         return { ...clusterData, isLiquidated, runWay, burnRate };
       } else {
-        return  {
+        return {
           validatorCount: clusterData.validatorCount,
           networkFeeIndex: clusterData.networkFeeIndex,
           index: clusterData.index,
@@ -144,8 +145,15 @@ class ClusterStore extends BaseStore {
       burnRate: burnRate,
       balance: newBalance,
     });
+
+    const keys = Object.keys(cluster);
+    let camelKeysCluster: any = {};
+    keys.forEach((key: string) => {
+      camelKeysCluster[_.camelCase(key)] = cluster[key];
+    });
+
     return {
-      ...cluster,
+      ...camelKeysCluster,
       runWay,
       burnRate,
       balance: newBalance,

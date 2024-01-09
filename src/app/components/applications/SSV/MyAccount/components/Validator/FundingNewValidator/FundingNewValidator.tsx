@@ -108,10 +108,11 @@ const FundingNewValidator = () => {
     if (Number(depositSSV) > 0) return <Typography className={classes.PositiveDays}>(+{depositSSV} SSV)</Typography>;
   };
 
-  const moveToNextPage = () => {
+  const moveToNextPage = async () => {
     process.registerValidator = { depositAmount: Number(depositSSV) };
     navigate(getNextNavigation());
   };
+
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.replace(/[^0-9.]/g, '').trim();
     const finalValue = value.toString().includes('.') ? value : Number(value);

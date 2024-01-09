@@ -103,8 +103,6 @@ class Operator {
     }
   }
 
-
-  // TODO - all these should be wrapped with a try catch. On catch the response should be logged and parsed. we should have a defined interface for http.
   async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
     const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
     return await put(url, {

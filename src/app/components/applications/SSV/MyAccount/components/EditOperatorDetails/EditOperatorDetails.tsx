@@ -22,7 +22,7 @@ import OperatorMetadataStore, {
 } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import httpService from '~root/services/HttpService';
+import { HttpResult } from '~root/services/HttpService';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
@@ -76,7 +76,7 @@ const EditOperatorDetails = () => {
         return;
       }
       const updateOperatorResponse = await Operator.getInstance().updateOperatorMetadata(operator.id, signatureHash, payload);
-      if (updateOperatorResponse.result == httpService.HttpResult.SUCCESS) {
+      if (updateOperatorResponse.result == HttpResult.SUCCESS) {
         const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
         applicationStore.setIsLoading(false);
         for (let key in updateOperatorResponse.data) {
@@ -84,7 +84,7 @@ const EditOperatorDetails = () => {
           selectedOperator[key] = updateOperatorResponse.data[key];
         }
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
-      } else if (updateOperatorResponse.result == httpService.HttpResult.FAIL) {
+      } else if (updateOperatorResponse.result == HttpResult.FAIL) {
         setErrorMessage([updateOperatorResponse.data.message]);
         applicationStore.setIsLoading(false);
       }

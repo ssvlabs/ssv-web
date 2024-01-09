@@ -72,7 +72,7 @@ const KeyShareFlow = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getBulkMode, getNextNavigation, getBulkKeyShareComponent } = validatorRegistrationFlow(location.pathname);
+  const { getNextNavigation, getBulkKeyShareComponent, isBulkMode } = validatorRegistrationFlow(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
@@ -159,7 +159,7 @@ const KeyShareFlow = () => {
     if (!shares.length) {
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     }
-    if (shares.length > 1 && getBulkMode() === EBulkMode.MULTI) {
+    if (shares.length > 1 && isBulkMode(EBulkMode.MULTI)) {
       validatorStore.setMultiSharesMode(shares.length);
     }
     consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
@@ -199,7 +199,7 @@ const KeyShareFlow = () => {
         }
         await accountStore.getOwnerNonce(walletStore.accountAddress);
         const { ownerNonce } = accountStore;
-        if (EBulkMode.SINGLE === getBulkMode() && i === 0 && ownerNonce !== data.ownerNonce) {
+        if (isBulkMode(EBulkMode.SINGLE) && i === 0 && ownerNonce !== data.ownerNonce) {
           return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE);
         }
         await keyShare.validateSingleShares(payload.sharesData, {
@@ -218,12 +218,12 @@ const KeyShareFlow = () => {
     try {
       validatorStore.setProcessedKeyShare(keyShareMulti);
       const keyShares = keyShareMulti.list();
-      if (keyShares.length === 1 && getBulkMode() === EBulkMode.SINGLE) {
+      if (keyShares.length === 1 && isBulkMode(EBulkMode.SINGLE)) {
         validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
       }
 
       const validators: Record<string, ValidatorType> = keyShareMulti.list().reduce((acc: Record<string, ValidatorType>, keyShare: any) => {
-        if (getBulkMode() === EBulkMode.SINGLE && Object.values(acc).length === 1) {
+        if (isBulkMode(EBulkMode.SINGLE) && Object.values(acc).length === 1) {
           return acc;
         }
         const { publicKey, ownerNonce } = keyShare.data;

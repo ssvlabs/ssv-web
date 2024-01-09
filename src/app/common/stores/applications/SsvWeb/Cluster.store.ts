@@ -4,7 +4,6 @@ import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
-import { formatNumberToUi } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { getContractByName } from '~root/services/contracts.service';
@@ -57,15 +56,10 @@ class ClusterStore extends BaseStore {
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
     const ssvStore: SsvStore = this.getStore('SSV');
     const operatorStore: OperatorStore = this.getStore('Operator');
-    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))), 0);
+    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(ssvStore.getFeeForYear(fromWei(operator.fee))), 0);
     const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
     const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
     const clusterBurnRate =  parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
-    console.log({ operatorsFeePerBlock });
-    console.log({ networkFeePerBlock });
-    console.log({ operatorsFeePerYear });
-    console.log({ clusterBurnRate });
-    console.log({ newAmountOfValidators });
     return clusterBurnRate * newAmountOfValidators;
   }
 

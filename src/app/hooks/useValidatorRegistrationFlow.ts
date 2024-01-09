@@ -68,10 +68,11 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
       [EValidatorFlowAction.FIRST_REGISTER]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
       [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR,
     },
+    [config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR]:  config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE,
     [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
   },
   [EBulkMode.MULTI]: {
-    [config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT]: config.routes.SSV.VALIDATOR.HOME,
+    [config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT]: config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START,
     [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD]: { [EValidatorFlowAction.ADD_CLUSTER]: config.routes.SSV.VALIDATOR.HOME },
     [config.routes.SSV.VALIDATOR.HOME]: {
       [EValidatorFlowAction.GENERATE_NEW_SHARE]: config.routes.SSV.VALIDATOR.SELECT_OPERATORS,
@@ -98,6 +99,7 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
       [EValidatorFlowAction.FIRST_REGISTER]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
       [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR,
     },
+    [config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR]:  config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE,
     [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
   },
 };
@@ -133,11 +135,13 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     return NETWORK_TO_BULK_MODE[currentNetwork];
   };
 
+  const isBulkMode = (mode: EBulkMode) => getBulkMode() === mode;
+
   const getBulkKeyShareComponent = (single: JSX.Element, multi: JSX.Element): JSX.Element => {
-    return getBulkMode() === EBulkMode.MULTI ? multi : single;
+    return isBulkMode(EBulkMode.MULTI) ? multi : single;
   };
 
-  return { getNextNavigation, getBulkKeyShareComponent, getBulkMode };
+  return { getNextNavigation, getBulkKeyShareComponent, getBulkMode, isBulkMode };
 };
 
 export default validatorRegistrationFlow;

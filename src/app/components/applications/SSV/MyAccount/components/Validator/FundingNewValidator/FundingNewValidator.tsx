@@ -108,7 +108,7 @@ const FundingNewValidator = () => {
     if (Number(depositSSV) > 0) return <Typography className={classes.PositiveDays}>(+{depositSSV} SSV)</Typography>;
   };
 
-  const moveToNextPage = async () => {
+  const moveToNextPage = () => {
     process.registerValidator = { depositAmount: Number(depositSSV) };
     navigate(getNextNavigation());
   };

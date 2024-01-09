@@ -98,7 +98,7 @@ const ClusterDashboard = () => {
           </Grid>;
         })}
       </Grid>,
-      cluster.validator_count,
+      cluster.validatorCount,
       isNaN(cluster.runWay) ? (
         <NaDisplay text={translations.NA_DISPLAY.TOOLTIP_TEXT} tooltipClassExtend={classes.TooltipCustomSize}/>
       ) : remainingDays,

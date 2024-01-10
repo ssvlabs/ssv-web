@@ -14,14 +14,14 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
+import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
+import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -38,10 +38,6 @@ const KeyStoreFlow = () => {
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
-  const slashingWarningNavigate = {
-    'true': () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SLASHING_WARNING),
-    'false': () => navigate(getNextNavigation()),
-  };
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -149,11 +145,12 @@ const KeyStoreFlow = () => {
       try {
         await validatorStore.extractKeyStoreData(keyStorePassword);
         // TODO fix this dummy value.
-        const deposited = true; // await isDeposited();
+        const deposited = true; // await isDeposited()
+        const nextRouteAction = processStore.secondRegistration ? EValidatorFlowAction.SECOND_REGISTER : EValidatorFlowAction.FIRST_REGISTER;
         applicationStore.setIsLoading(false);
         validatorStore.registrationMode = 1;
         validatorStore.setMultiSharesMode(1);
-        slashingWarningNavigate[`${processStore.secondRegistration}`]();
+        navigate(getNextNavigation(nextRouteAction));
         if (deposited) {
           sendTagManagerEvent('validator_register', 'upload_file', 'success');
         } else {

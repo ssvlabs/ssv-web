@@ -38,10 +38,10 @@ const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelecte
   return (
     <Grid
       className={`${classes.ValidatorSlotWrapper} ${isSelected && classes.SelectedValidatorSlot} ${errorMessage && classes.ErrorValidatorSlot}`}>
-      <Typography className={classes.ValidatorKeyWrapper}>{longStringShorten(validatorPublicKey, 6, 4)}<ImageDiv
+      <Grid className={classes.ValidatorKeyWrapper}>{longStringShorten(validatorPublicKey, 6, 4)}<ImageDiv
         onClick={() => copyToClipboard(validatorPublicKey)} image={'copy'} width={24} height={24}/>
         <ImageDiv onClick={() => openBeaconcha(validatorPublicKey)} image={'beacon'} width={24} height={24}/>
-      </Typography>
+      </Grid>
       {errorMessage && <Grid className={classes.ErrorBadge}>{errorMessage}</Grid>}
       {registered && <Grid className={classes.RegisteredBadge}>Registered</Grid>}
     </Grid>

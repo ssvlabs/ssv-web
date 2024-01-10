@@ -1,16 +1,17 @@
+import * as _ from 'lodash';
 import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { getContractByName } from '~root/services/contracts.service';
-import { encodePacked, fromWei } from '~root/services/conversions.service';
 import { EContractName } from '~app/model/contracts.model';
+import WalletStore from '~app/common/stores/Abstracts/Wallet';
+import { getContractByName } from '~root/services/contracts.service';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { encodePacked, fromWei } from '~root/services/conversions.service';
+import { OperatorStore } from '~app/common/stores/applications/SsvWeb/index';
+import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
 const annotations = {
   getClusterData: action.bound,
@@ -55,10 +56,11 @@ class ClusterStore extends BaseStore {
 
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
     const ssvStore: SsvStore = this.getStore('SSV');
-    const operatorsFeePerYear = cluster.operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))), [0]);
+    const operatorStore: OperatorStore = this.getStore('Operator');
+    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(ssvStore.getFeeForYear(fromWei(operator.fee))), 0);
     const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
     const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
-    const clusterBurnRate =  parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
+    const clusterBurnRate = parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
     return clusterBurnRate * newAmountOfValidators;
   }
 
@@ -120,7 +122,7 @@ class ClusterStore extends BaseStore {
         const runWay: number = this.getClusterRunWay({ ...clusterData, burnRate });
         return { ...clusterData, isLiquidated, runWay, burnRate };
       } else {
-        return  {
+        return {
           validatorCount: clusterData.validatorCount,
           networkFeeIndex: clusterData.networkFeeIndex,
           index: clusterData.index,
@@ -143,8 +145,15 @@ class ClusterStore extends BaseStore {
       burnRate: burnRate,
       balance: newBalance,
     });
+
+    const keys = Object.keys(cluster);
+    let camelKeysCluster: any = {};
+    keys.forEach((key: string) => {
+      camelKeysCluster[_.camelCase(key)] = cluster[key];
+    });
+
     return {
-      ...cluster,
+      ...camelKeysCluster,
       runWay,
       burnRate,
       balance: newBalance,

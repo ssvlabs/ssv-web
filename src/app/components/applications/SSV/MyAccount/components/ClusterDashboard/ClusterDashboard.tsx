@@ -21,9 +21,9 @@ import Dashboard from '~app/components/applications/SSV/MyAccount/components/Das
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
+import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
-import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/validatorRegistrationFlow';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -98,7 +98,7 @@ const ClusterDashboard = () => {
           </Grid>;
         })}
       </Grid>,
-      cluster.validator_count,
+      cluster.validatorCount,
       isNaN(cluster.runWay) ? (
         <NaDisplay text={translations.NA_DISPLAY.TOOLTIP_TEXT} tooltipClassExtend={classes.TooltipCustomSize}/>
       ) : remainingDays,

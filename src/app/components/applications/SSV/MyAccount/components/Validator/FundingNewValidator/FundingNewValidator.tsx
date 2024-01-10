@@ -14,12 +14,14 @@ import TextInput from '~app/components/common/TextInput';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
+import { fromWei, toWei } from '~root/services/conversions.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import { fromWei, toWei } from '~root/services/conversions.service';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -30,13 +32,15 @@ const FundingNewValidator = () => {
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
+  const validatorStore: ValidatorStore = stores.Validator;
   const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState<string | number>(0);
   const [errorMessage, setErrorMessage] = useState({ text:'', link: { text:'', path:'' } });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
-  const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
+  const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
+  const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validatorCount + newValidatorsCount);
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
     burnRate: toWei(parseFloat(newBurnRate.toString())),
@@ -45,6 +49,7 @@ const FundingNewValidator = () => {
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
   const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1;
+  const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
@@ -105,7 +110,7 @@ const FundingNewValidator = () => {
 
   const moveToNextPage = () => {
     process.registerValidator = { depositAmount: Number(depositSSV) };
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START);
+    navigate(getNextNavigation());
   };
 
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {

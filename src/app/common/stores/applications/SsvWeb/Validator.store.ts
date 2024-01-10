@@ -365,7 +365,7 @@ class ValidatorStore extends BaseStore {
                 break;
               }
               iterations += 1;
-              if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
+              if (await myAccountStore.checkEntityInAccount('cluster', 'validatorCount', payload.get(CLUSTER_DATA).validatorCount)) {
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               } else {
@@ -459,7 +459,7 @@ class ValidatorStore extends BaseStore {
                 break;
               }
               iterations += 1;
-              if (await myAccountStore.checkEntityInAccount('cluster', 'validator_count', payload.get(CLUSTER_DATA).validatorCount)) {
+              if (await myAccountStore.checkEntityInAccount('cluster', 'validatorCount', payload.get(CLUSTER_DATA).validatorCount)) {
                 await this.refreshOperatorsAndClusters(resolve, true);
                 break;
               } else {

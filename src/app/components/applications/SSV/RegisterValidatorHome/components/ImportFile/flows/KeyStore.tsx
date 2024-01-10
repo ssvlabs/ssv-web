@@ -14,6 +14,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
@@ -21,7 +22,6 @@ import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
-import validatorRegistrationFlow from '~app/hooks/validatorRegistrationFlow';
 
 const KeyStoreFlow = () => {
   const stores = useStores();

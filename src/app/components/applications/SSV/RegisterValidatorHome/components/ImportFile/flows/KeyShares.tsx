@@ -3,38 +3,35 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
 import { KeyShares, SSVKeysException } from 'ssv-keys';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Operator from '~lib/api/Operator';
 import Validator from '~lib/api/Validator';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { equalsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
+import WarningBox from '~app/components/common/WarningBox';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { AccountStore, ClusterStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import { AccountStore, ClusterStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
+import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorData
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData';
+import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import validatorRegistrationFlow, {
-  EBulkMode,
-  EValidatorFlowAction,
-} from '~app/hooks/useValidatorRegistrationFlow';
-
 
 export type KeyShareMulti = {
   version: string,
@@ -67,6 +64,13 @@ type ValidatorType = {
   isSelected: boolean,
 };
 
+type SelectedOperatorData = {
+  key:  string,
+  hasError: boolean,
+  operatorLogo: string,
+  operatorId: string,
+};
+
 const KeyShareFlow = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -82,10 +86,12 @@ const KeyShareFlow = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
+  const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [processingFile, setProcessFile] = useState(false);
   const [validatorsList, setValidatorsList] = useState({});
+  const [processingFile, setProcessFile] = useState(false);
   const [validatorsCount, setValidatorsCount] = useState(Object.values(validatorsList).length);
+  const [selectedOperatorsData, setSelectedOperatorsData] = useState<SelectedOperatorData[]>([]);
   const [validationError, setValidationError] = useState<KeyShareValidationResponse>({
     id: KeyShareValidationResponseId.OK_RESPONSE_ID,
     name: '',
@@ -93,6 +99,7 @@ const KeyShareFlow = () => {
     subErrorMessage: '',
   });
   const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
+  const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION);
 
   useEffect(() => {
     validatorStore.clearKeyShareFlowData();
@@ -256,9 +263,36 @@ const KeyShareFlow = () => {
       }));
       await Promise.all(promises);
 
+      const validatorsArray: ValidatorType[] = Object.values(validators);
       let currentNonce = ownerNonce;
       let incorrectNonceFlag = false;
-      const validatorsArray: ValidatorType[] = Object.values(validators);
+      let warningTextMessage = '';
+      let maxValidatorsCount = config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION;
+
+      const operatorsData: SelectedOperatorData[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
+        const availableValidatorsAmount = operatorStore.operatorValidatorsLimit - operator.validators_count;
+        let hasError = false;
+
+        if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount !== 0) {
+          warningTextMessage = `The number of validators you wish to onboard would exceed the maximum validator capacity for one of your selected operators. You may proceed with onboarding only ${availableValidatorsAmount} validators.`;
+          hasError = true;
+          if (availableValidatorsAmount < maxValidatorsCount) {
+            maxValidatorsCount = availableValidatorsAmount;
+          }
+        }
+        if (availableValidatorsAmount === 0) {
+          maxValidatorsCount = availableValidatorsAmount;
+          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
+          hasError = true;
+        }
+
+        return ({
+          key: operator.id.toString(),
+          hasError,
+          operatorLogo: operator.logo ?? '',
+          operatorId: operator.id.toString(),
+        });
+      });
 
       for (let i = 0; i < Object.values(validators).length; i++) {
         let indexToSkip = 0;
@@ -280,13 +314,16 @@ const KeyShareFlow = () => {
           currentNonce += 1;
         }
 
-        if (validators[validatorsArray[i].publicKey].isSelected && i >= config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION) {
+        if (validators[validatorsArray[i].publicKey].isSelected && i >= maxValidatorsCount) {
           validators[validatorsArray[i].publicKey].isSelected = false;
         }
       }
 
       setValidatorsList(validators);
-      setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length > config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION : Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
+      setWarningMessage(warningTextMessage);
+      setValidatorsCount(maxValidatorsCount);
+      setSelectedOperatorsData(operatorsData);
+      setMaxAvailableValidatorsCount(maxValidatorsCount);
     } catch (err) {
       console.log(err);
     }
@@ -460,13 +497,13 @@ const KeyShareFlow = () => {
       className={classes.SummaryInfoFieldWrapper}>
       <Typography className={classes.SummaryText}>Operators</Typography>
       <Grid className={classes.OperatorsWrapper}>
-        {Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
-          return (<OperatorData
-            key={operator.id}
-            operatorLogo={operator.logo} operatorId={operator.id}/>);
+        {selectedOperatorsData.map((operator: SelectedOperatorData) => {
+          return (<OperatorData {...operator}/>);
         })}
       </Grid>
     </Grid>
+    {warningMessage && <WarningBox
+      text={warningMessage}/>}
   </Grid>;
 
   const MainSingleKeyShare = <Grid container item xs={12}>
@@ -497,7 +534,7 @@ const KeyShareFlow = () => {
     sideElement={<ValidatorCounter
       selectLastValidValidator={selectLastValidValidator}
       unselectLastValidator={unselectLastValidator}
-      maxCount={ownerNonceIssueCondition ? 0 : config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION}
+      maxCount={ownerNonceIssueCondition ? 0 : maxAvailableValidatorsCount}
       countOfValidators={ownerNonceIssueCondition ? 0 : validatorsCount}/>}
     tooltipText={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP} body={[
     <Grid item container>

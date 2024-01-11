@@ -51,6 +51,7 @@ class WalletStore extends BaseStore implements Wallet {
       await this.initializeUserInfo();
       const applicationStore: Application = this.getStore('Application');
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+      const operatorStore: OperatorStore = this.getStore('Operator');
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
       this.accountAddress = wallet.accounts[0]?.address;
@@ -58,6 +59,7 @@ class WalletStore extends BaseStore implements Wallet {
       await Promise.all([
         myAccountStore.getOwnerAddressOperators({}),
         myAccountStore.getOwnerAddressClusters({}),
+        operatorStore.updateOperatorValidatorsLimit(),
       ]);
       if (myAccountStore?.ownerAddressClusters?.length) {
         applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;

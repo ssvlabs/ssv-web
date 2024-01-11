@@ -57,12 +57,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   DkgNotification: {
     gap: 20,
-    width: '100%',
+    width: 808,
     display: 'flex',
     flexDirection: 'column',
     fontSize: 14,
     fontWeight: 500,
-    padding: '12px 16px',
+    padding: '12px',
     color: theme.colors.gray90,
     border: `1px solid ${theme.colors.gray30}`,
     backgroundColor: theme.darkMode ? theme.colors.white : '#F8FCFF',
@@ -146,5 +146,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
   },
   SelectedBoxBorder: {
     border: `1px solid ${theme.colors.primaryBlue}`,
+  },
+  Line: {
+    width: '100%',
+    height: 1,
+    border: `1px solid ${theme.colors.gray30}`,
   },
 }));

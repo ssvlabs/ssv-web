@@ -3,6 +3,7 @@ import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { put } from '~root/services/httpApi.service';
 
 type OperatorsListQuery = {
   page?: number,
@@ -20,8 +21,8 @@ type OperatorValidatorListQuery = {
 };
 
 class Operator {
-  ownerAddress: string = '';
   private static instance: Operator;
+  ownerAddress: string = '';
   private readonly baseUrl: string = '';
 
   constructor(baseUrl: string) {
@@ -33,10 +34,6 @@ class Operator {
       Operator.instance = new Operator(getStoredNetwork().api);
     }
     return Operator.instance;
-  }
-
-  static get NETWORK() {
-    return 'prater';
   }
 
   /**
@@ -63,7 +60,7 @@ class Operator {
     if (page) url += `page=${page}&`;
     if (perPage) url += `perPage=${perPage}&`;
     if (type?.length) url += `type=${type.join(',')}&`;
-    if (dkgEnabled)url += 'has_dkg_address=true&';
+    if (dkgEnabled) url += 'has_dkg_address=true&';
     url += `ts=${new Date().getTime()}`;
 
     try {
@@ -108,10 +105,10 @@ class Operator {
 
   async updateOperatorMetadata(operatorId: string, signature: string, operatorMetadata: Record<string, any>) {
     const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
-      return (await axios.put(url, {
-        ...operatorMetadata,
-        signature,
-      })).data;
+    return await put(url, {
+      ...operatorMetadata,
+      signature,
+    });
   }
 
   async getOperatorNodes(layer: number): Promise<[]> {

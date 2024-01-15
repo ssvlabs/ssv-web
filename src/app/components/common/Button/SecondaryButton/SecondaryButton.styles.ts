@@ -12,7 +12,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         transition: 'none',
         color: theme.colors.primaryBlue,
         fontFamily: 'Manrope !important',
-        backgroundColor: theme.colors.tint90,
+        backgroundColor: (props: any) => !props.withoutBackgroundColor && theme.colors.tint90,
         textTransform: (props: any) => props.noCamelCase ? 'unset' : 'capitalize',
         '&:hover': {
             backgroundColor: theme.colors.tint80,

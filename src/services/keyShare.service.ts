@@ -105,6 +105,8 @@ export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, er
   }
 };
 
+export const getValidatorCountErrorMessage = (count: number): string => `The number of validators you wish to onboard would exceed the maximum validator capacity for one of your selected operators. You may proceed with onboarding only ${count} validators.`;
+
 export const createValidatorsRecord = (keyShareMulti: KeyShares) => keyShareMulti.list().reduce((acc: Record<string, ValidatorType>, keyShare: KeySharesItem) => {
   const { publicKey, ownerNonce } = keyShare.data;
   acc[publicKey as string] = {

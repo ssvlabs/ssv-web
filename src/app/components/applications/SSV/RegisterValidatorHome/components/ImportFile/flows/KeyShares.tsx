@@ -5,6 +5,15 @@ import Typography from '@mui/material/Typography';
 import { KeyShares, KeySharesItem, SSVKeysException } from 'ssv-keys';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Operator from '~lib/api/Operator';
+import {
+  createValidatorsRecord,
+  getResponse, getValidatorCountErrorMessage,
+  KeyShareMulti,
+  KeyShareValidationResponse, KeyShareValidationResponseId,
+  parseToMultiShareFormat, SelectedOperatorData,
+  validateConsistentOperatorIds,
+  ValidatorType,
+} from '~root/services/keyShare.service';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import { equalsAddresses } from '~lib/utils/strings';
@@ -32,13 +41,6 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import {
-  createValidatorsRecord,
-  getResponse, KeyShareMulti, KeyShareValidationResponse, KeyShareValidationResponseId,
-  parseToMultiShareFormat, SelectedOperatorData,
-  validateConsistentOperatorIds,
-  ValidatorType,
-} from '~root/services/keyShare.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -149,7 +151,7 @@ const KeyShareFlow = () => {
             hasError = true;
             if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
               previousSmallCount = availableValidatorsAmount;
-              warningTextMessage = `The number of validators you wish to onboard would exceed the maximum validator capacity for one of your selected operators. You may proceed with onboarding only ${availableValidatorsAmount} validators.`;
+              warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
               maxValidatorsCount = availableValidatorsAmount;
             }
           }

@@ -69,7 +69,7 @@ const FundingSummary = (props: Props) => {
       [FundingSummeryColumns.FUNDING_SUMMARY]: (value: string | number) => payments.find(payment => payment.id === value)?.name,
       [FundingSummeryColumns.FEE]: (value: string | number) => `${paymentsValue(Number(value).toFixed(2))} SSV`,
       [FundingSummeryColumns.VALIDATORS]: () => validatorStore.validatorsCount,
-      [FundingSummeryColumns.SUBTOTAL]: (value: string | number) => `${validatorStore.isMultiSharesMode ? formatNumberToUi(Number(Number(paymentsValue(value)) * validatorStore.validatorsCount).toFixed(2)) : paymentsValue(value)} SSV`,
+      [FundingSummeryColumns.SUBTOTAL]: (value: string | number) => `${validatorStore.isMultiSharesMode ? formatNumberToUi((Number(paymentsValue(value)) * validatorStore.validatorsCount).toFixed(2)) : paymentsValue(value)} SSV`,
     };
 
     const columnStyles: any = {

@@ -24,7 +24,7 @@ export interface NewOperator {
 }
 
 export interface IOperator {
-  id: string | number | any,
+  id: any,
   fee?: string,
   name: string,
   logo?: string,

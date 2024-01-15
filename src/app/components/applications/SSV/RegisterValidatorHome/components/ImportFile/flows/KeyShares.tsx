@@ -32,45 +32,13 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-
-export type KeyShareMulti = {
-  version: string,
-  createdAt: string,
-  shares: KeyShares
-};
-
-export type KeyShareValidationResponse = {
-  id: KeyShareValidationResponseId,
-  name: string,
-  errorMessage: string,
-  subErrorMessage?: string,
-};
-
-export enum KeyShareValidationResponseId {
-  OK_RESPONSE_ID,
-  OPERATOR_NOT_EXIST_ID,
-  OPERATOR_NOT_MATCHING_ID,
-  VALIDATOR_EXIST_ID,
-  ERROR_RESPONSE_ID,
-  PUBLIC_KEY_ERROR_ID,
-  INCONSISTENT_OPERATOR_CLUSTER,
-}
-
-type ValidatorType = {
-  ownerNonce: number,
-  publicKey: string,
-  registered: boolean,
-  errorMessage: string,
-  isSelected: boolean,
-  sharesData: string,
-};
-
-type SelectedOperatorData = {
-  key: string,
-  hasError: boolean,
-  operatorLogo: string,
-  operatorId: string,
-};
+import {
+  createValidatorsRecord,
+  getResponse, KeyShareMulti, KeyShareValidationResponse, KeyShareValidationResponseId,
+  parseToMultiShareFormat, SelectedOperatorData,
+  validateConsistentOperatorIds,
+  ValidatorType,
+} from '~root/services/keyShare.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -110,71 +78,6 @@ const KeyShareFlow = () => {
       validatorStore.clearKeyShareFlowData();
     }, []);
 
-    // TODO this is better but still not good. improve later
-    function getResponse(keyShareResponseId: KeyShareValidationResponseId, errorMsg?: string): KeyShareValidationResponse {
-      const { KEYSHARE_RESPONSE } = translations.VALIDATOR;
-      switch (keyShareResponseId) {
-        case KeyShareValidationResponseId.OK_RESPONSE_ID: {
-          return { ...KEYSHARE_RESPONSE.OK_RESPONSE, id: KeyShareValidationResponseId.OK_RESPONSE_ID };
-        }
-        case KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID: {
-          return {
-            ...KEYSHARE_RESPONSE.OPERATOR_NOT_EXIST_RESPONSE,
-            id: KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID,
-          };
-        }
-        case KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID: {
-          return {
-            ...KEYSHARE_RESPONSE.OPERATOR_NOT_MATCHING_RESPONSE,
-            id: KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID,
-          };
-        }
-        case KeyShareValidationResponseId.VALIDATOR_EXIST_ID: {
-          return { ...KEYSHARE_RESPONSE.VALIDATOR_EXIST_RESPONSE, id: KeyShareValidationResponseId.VALIDATOR_EXIST_ID };
-        }
-        case KeyShareValidationResponseId.ERROR_RESPONSE_ID: {
-          if (!errorMsg) {
-            throw Error('Missing error message');
-          }
-          return {
-            ...KEYSHARE_RESPONSE.CATCH_ERROR_RESPONSE,
-            id: KeyShareValidationResponseId.ERROR_RESPONSE_ID,
-            errorMessage: errorMsg,
-          };
-        }
-        case KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID: {
-          return { ...KEYSHARE_RESPONSE.VALIDATOR_PUBLIC_KEY_ERROR, id: KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID };
-        }
-        case KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER: {
-          return {
-            ...KEYSHARE_RESPONSE.INCONSISTENT_OPERATOR_CLUSTER,
-            id: KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER,
-          };
-        }
-      }
-    }
-
-    function parseToMultiShareFormat(fileJson: string): KeyShareMulti {
-      // TODO replace with call to shares.unified() from ssv-key sdk, per defined the doc 'Multi and single shares specification'
-      let parsedFile = JSON.parse(fileJson);
-      if (!('shares' in parsedFile)) {
-        parsedFile.shares = [{ data: parsedFile.data, payload: parsedFile.payload }];
-        delete parsedFile.data;
-        delete parsedFile.payload;
-      }
-      return parsedFile;
-    }
-
-    const validateConsistentOperatorIds = (keyShare: KeySharesItem, consistentOperatorIds: number[]) => {
-      const payloadOperatorIds = keyShare.payload.operatorIds.sort().toString();
-      const dataOperatorIds = keyShare.data.operators?.map((operator: {
-        id: number,
-        operatorKey: string
-      }) => operator.id).sort().toString();
-
-      return payloadOperatorIds === dataOperatorIds && dataOperatorIds === consistentOperatorIds.sort().toString();
-    };
-
     async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResponse> {
       const shares = keyShareMulti.list();
       try {
@@ -211,19 +114,7 @@ const KeyShareFlow = () => {
         if (keyShares.length === 1 && isBulkMode(EBulkMode.SINGLE)) {
           validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
         }
-        const validators: Record<string, ValidatorType> = keyShareMulti.list().reduce((acc: Record<string, ValidatorType>, keyShare: KeySharesItem) => {
-          const { publicKey, ownerNonce } = keyShare.data;
-          acc[publicKey as string] = {
-            ownerNonce: ownerNonce as number,
-            publicKey: publicKey as string,
-            registered: false,
-            errorMessage: '',
-            isSelected: false,
-            sharesData: keyShare.payload.sharesData as string,
-          };
-          return acc;
-        }, {});
-
+        const validators: Record<string, ValidatorType> = createValidatorsRecord(keyShareMulti);
         await accountStore.getOwnerNonce(walletStore.accountAddress);
         const { ownerNonce } = accountStore;
 
@@ -277,9 +168,10 @@ const KeyShareFlow = () => {
 
         for (let i = 0; i < Object.values(validators).length; i++) {
           let indexToSkip = 0;
-          const incorrectOwnerNonceCondition = incorrectNonceFlag && indexToSkip !== i && !validators[validatorsArray[i].publicKey].registered || i > 0 &&
-            validatorsArray[i - 1].errorMessage && !validators[validatorsArray[i].publicKey].registered ||
-            currentNonce !== validators[validatorsArray[i].publicKey].ownerNonce && !validators[validatorsArray[i].publicKey].registered;
+          const validatorPublicKey = validatorsArray[i].publicKey;
+          const incorrectOwnerNonceCondition = incorrectNonceFlag && indexToSkip !== i && !validators[validatorPublicKey].registered || i > 0 &&
+            validatorsArray[i - 1].errorMessage && !validators[validatorPublicKey].registered ||
+            currentNonce !== validators[validatorPublicKey].ownerNonce && !validators[validatorPublicKey].registered;
 
           if (i > 0 && validatorsArray && !validatorsArray[i - 1].registered && validatorsArray[i].registered) {
             indexToSkip = i;
@@ -287,12 +179,12 @@ const KeyShareFlow = () => {
           }
 
           if (incorrectOwnerNonceCondition) {
-            validators[validatorsArray[i].publicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
-            validators[validatorsArray[i].publicKey].isSelected = false;
+            validators[validatorPublicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
+            validators[validatorPublicKey].isSelected = false;
           }
 
-          if (validators[validatorsArray[i].publicKey].isSelected && currentNonce - ownerNonce >= maxValidatorsCount) {
-            validators[validatorsArray[i].publicKey].isSelected = false;
+          if (validators[validatorPublicKey].isSelected && currentNonce - ownerNonce >= maxValidatorsCount) {
+            validators[validatorPublicKey].isSelected = false;
           }
 
           if (!validatorsArray[i].registered) {

@@ -2,7 +2,6 @@ import Grid from '@mui/material/Grid';
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
@@ -153,7 +152,7 @@ const ValidatorRegistrationConfirmation = () => {
   </Grid>,
   ];
 
-  if (!processStore.secondRegistration) screenBody.push(<FundingSummary
+  if (!processStore.secondRegistration) screenBody.push(<FundingSummary networkCost={networkCost}
     liquidationCollateralCost={liquidationCollateralCost}/>);
   if (!processStore.secondRegistration) screenBody.push(TotalSection);
 

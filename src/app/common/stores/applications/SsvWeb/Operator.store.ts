@@ -1253,7 +1253,7 @@ class OperatorStore extends BaseStore {
    */
   selectOperators(operators: IOperator[]) {
     this.selectedOperators = {};
-    operators.forEach((value: IOperator, index: number) => {
+    operators.sort((operator: IOperator) => operator.id).forEach((value: IOperator, index: number) => {
       this.selectedOperators[index] = value;
     });
   }

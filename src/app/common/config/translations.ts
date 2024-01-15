@@ -134,6 +134,15 @@ const translations = {
       TITLE: 'Welcome to the SSV Network!',
       DESCRIPTION: 'With every new operator, our network grows stronger.',
     },
+    GENERATE_KEY_SHARES: {
+      ONLINE: 'Online',
+      OFFLINE: 'Offline',
+      GENERATE_KEY_SHARES: 'Generate Validator KeyShares',
+      SELECT_METHOD: 'Select your preferred method to split your key:',
+      ALREADY_HAVE_KEY_SHARES: 'I already have key shares',
+      SPLIT_VIA_WEB_APP: 'Split key via the webapp',
+      SPLIT_ON_COMPUTER: 'Split key on your computer',
+    },
   },
   HOME: {
     TITLE: 'Join the SSV Network',

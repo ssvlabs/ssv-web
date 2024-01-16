@@ -44,7 +44,7 @@ const ClusterDashboard = () => {
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   const moveToRegisterValidator = () => {
-    navigate(getNextNavigation(EValidatorFlowAction.ADD_CLUSTER));
+    navigate(getNextNavigation());
   };
 
   const handleGridHover = (index: string) => {

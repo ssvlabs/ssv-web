@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
@@ -22,9 +21,7 @@ type Props = {
 const NewRemainingDays = (props: Props) => {
   let errorType;
   let showError: boolean;
-  const stores = useStores();
   let warningLiquidationState: boolean;
-  stores;
   const { cluster, withdrawState, isInputFilled = null } = props;
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
   let remainingDays: number = clusterRunWay;

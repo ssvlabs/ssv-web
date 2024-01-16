@@ -10,16 +10,17 @@ export const useStyles = makeStyles((theme: Theme) => ({
   OperatorLogo: {
     width: 32,
     height: 32,
-    border: `1px solid ${theme.colors.gray20}`,
+    border: (props: any) => `1px solid ${props.hasError ? theme.colors.primaryError : theme.colors.gray20}`,
     borderRadius: '50%',
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
+    backgroundColor: (props: any) => props.hasError && theme.colors.primaryErrorRegular,
     backgroundImage: (props: any) => `url(${props?.operatorLogo || '/images/operator_default_background/circle_light.png'})`,
   },
   OperatorId: {
     fontSize: 10,
     fontWeight: 500,
-    color: theme.colors.gray40,
+    color: (props: any) =>  props.hasError ? theme.colors.primaryError : theme.colors.gray40,
   },
 }));

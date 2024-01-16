@@ -58,6 +58,7 @@ const translations = {
       SELECTED_VALIDATORS: 'Selected Validators',
       INCORRECT_OWNER_NONCE_ERROR_MESSAGE: 'Incorrect owner-nonce',
       SELECTED_VALIDATORS_TOOLTIP: 'Bulk registration is capped at 50 validators per batch.',
+      OPERATOR_REACHED_MAX_VALIDATORS: 'One of your chosen operators has reached its maximum validator capacity. Please select an alternative operator.',
     },
     IMPORT: {
       TITLE: 'Enter Validator Key',

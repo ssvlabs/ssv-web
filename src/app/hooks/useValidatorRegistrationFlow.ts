@@ -15,9 +15,7 @@ import { useSetChain } from '@web3-onboard/react';
 import { NETWORKS } from '~lib/utils/envHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
-type NavigationRoutes = {
-  [mode in EBulkMode]: Record<string, string | Record<number, string>>;
-};
+type NavigationRoutes = Record<string, string | Record<number, string>>;
 
 export enum EBulkMode {
   SINGLE,
@@ -42,7 +40,7 @@ const NETWORK_TO_BULK_MODE = {
   [NETWORKS.GOERLI]: EBulkMode.MULTI,
 };
 
-const BULK_MODE_TO_ROUTES: Record<string, string | Record<number, string>> = {
+const BULK_MODE_TO_ROUTES: NavigationRoutes = {
   [config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT]: config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START,
   [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD]: config.routes.SSV.VALIDATOR.HOME,
   [config.routes.SSV.VALIDATOR.HOME]: {

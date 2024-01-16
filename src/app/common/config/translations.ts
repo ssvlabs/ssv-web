@@ -58,6 +58,7 @@ const translations = {
       SELECTED_VALIDATORS: 'Selected Validators',
       INCORRECT_OWNER_NONCE_ERROR_MESSAGE: 'Incorrect owner-nonce',
       SELECTED_VALIDATORS_TOOLTIP: 'Bulk registration is capped at 50 validators per batch.',
+      OPERATOR_REACHED_MAX_VALIDATORS: 'One of your chosen operators has reached its maximum validator capacity. Please select an alternative operator.',
     },
     IMPORT: {
       TITLE: 'Enter Validator Key',
@@ -132,6 +133,15 @@ const translations = {
     SUCCESS: {
       TITLE: 'Welcome to the SSV Network!',
       DESCRIPTION: 'With every new operator, our network grows stronger.',
+    },
+    GENERATE_KEY_SHARES: {
+      ONLINE: 'Online',
+      OFFLINE: 'Offline',
+      GENERATE_KEY_SHARES: 'Generate Validator KeyShares',
+      SELECT_METHOD: 'Select your preferred method to split your key:',
+      ALREADY_HAVE_KEY_SHARES: 'I already have key shares',
+      SPLIT_VIA_WEB_APP: 'Split key via the webapp',
+      SPLIT_ON_COMPUTER: 'Split key on your computer',
     },
   },
   HOME: {

@@ -4,7 +4,6 @@ import { Theme } from '@mui/material/styles';
 export const useStyles = makeStyles((theme: Theme) => ({
   Wrapper: {
     gap: 10,
-    height: 47,
     fontSize: 14,
     borderRadius: 2,
     fontWeight: 500,

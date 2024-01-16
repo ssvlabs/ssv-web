@@ -198,7 +198,7 @@ const KeyShareFlow = () => {
             currentNonce += 1;
           }
         }
-        
+
         setValidatorsList(validators);
         setWarningMessage(warningTextMessage);
         setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);

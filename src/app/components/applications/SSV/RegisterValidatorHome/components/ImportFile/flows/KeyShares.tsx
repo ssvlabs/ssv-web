@@ -198,11 +198,10 @@ const KeyShareFlow = () => {
             currentNonce += 1;
           }
         }
-
-        maxValidatorsCount = maxValidatorsCount > config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION : maxValidatorsCount;
+        
         setValidatorsList(validators);
         setWarningMessage(warningTextMessage);
-        setValidatorsCount(maxValidatorsCount);
+        setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
         setSelectedOperatorsData(operatorsData);
         setMaxAvailableValidatorsCount(maxValidatorsCount);
       } catch (err) {

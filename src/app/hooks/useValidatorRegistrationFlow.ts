@@ -39,7 +39,7 @@ export enum EValidatorFlowAction {
 const NETWORK_TO_BULK_MODE = {
   [NETWORKS.MAINNET]: EBulkMode.SINGLE,
   [NETWORKS.HOLESKY]: EBulkMode.MULTI,
-  [NETWORKS.GOERLI]: EBulkMode.SINGLE,
+  [NETWORKS.GOERLI]: EBulkMode.MULTI,
 };
 
 const BULK_MODE_TO_ROUTES: Record<string, string | Record<number, string>> = {
@@ -88,14 +88,7 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     return connectedChain?.id !== null ? Number(connectedChain!.id) : getStoredNetwork().networkId;
   };
 
-  const getMaxValidatorsCountPerRegistration = () => {
-    const maxValidatorsForSingleMode = 1;
-
-    if (isBulkMode(EBulkMode.SINGLE)) {
-      return maxValidatorsForSingleMode;
-    }
-    return config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_PER_BULK_TRANSACTION;
-  };
+  const getMaxValidatorsCountPerRegistration = () => isBulkMode(EBulkMode.SINGLE) ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_SINGLE_FLOW : config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_MULTI_FLOW;
 
   const getNextNavigation = (action?: EValidatorFlowAction): string => {
     const nextAvailableRoutes = BULK_MODE_TO_ROUTES[currentRoute];

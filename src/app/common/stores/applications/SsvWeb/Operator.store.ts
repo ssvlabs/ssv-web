@@ -24,7 +24,7 @@ export interface NewOperator {
 }
 
 export interface IOperator {
-  id: any,
+  id: number,
   fee?: string,
   name: string,
   logo?: string,
@@ -1262,7 +1262,7 @@ class OperatorStore extends BaseStore {
    * Check if operator selected
    * @param id
    */
-  isOperatorSelected(id: string): boolean {
+  isOperatorSelected(id: number): boolean {
     let exist = false;
     Object.values(this.selectedOperators).forEach((operator: IOperator) => {
       if (operator.id === id) exist = true;

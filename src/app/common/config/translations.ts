@@ -57,8 +57,9 @@ const translations = {
     BULK_REGISTRATION: {
       SELECTED_VALIDATORS: 'Selected Validators',
       INCORRECT_OWNER_NONCE_ERROR_MESSAGE: 'Incorrect owner-nonce',
-      SELECTED_VALIDATORS_TOOLTIP: 'Bulk registration is capped at 50 validators per batch.',
+      SELECTED_VALIDATORS_TOOLTIP: (count: number) => `Bulk registration is capped at ${count} validators per batch.`,
       OPERATOR_REACHED_MAX_VALIDATORS: 'One of your chosen operators has reached its maximum validator capacity. Please select an alternative operator.',
+      OPERATOR_CLOSE_REACH_MAX_VALIDATORS: (count: number) => `The number of validators you wish to onboard would exceed the maximum validator capacity for one of your selected operators. You may proceed with onboarding only ${count} validators.`,
     },
     IMPORT: {
       TITLE: 'Enter Validator Key',

@@ -105,8 +105,10 @@ const KeyShareFlow = () => {
         }
         const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => operator.public_key);
         for (let keyShare of shares) {
-          const keyShareOperatorKeys = keyShare.data.operatorPublicKeys;
-          if (selectedOperatorsKeys.some((operatorKey: string) => !keyShareOperatorKeys.includes(operatorKey))) {
+          if (keyShare.data.operators?.some((operatorData: { id: number, operatorKey: string }) => {
+            const selectedOperator = Object.values(operatorStore.selectedOperators).find((selected: IOperator) => selected.id === operatorData.id);
+            return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
+          })) {
             return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
           }
         }

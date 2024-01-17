@@ -195,8 +195,7 @@ const KeyShareFlow = () => {
           if (validators[validatorPublicKey].isSelected && currentNonce - ownerNonce >= maxValidatorsCount) {
             validators[validatorPublicKey].isSelected = false;
           }
-
-          if (!validatorsArray[i].registered) {
+          if (!validatorsArray[i].registered && !incorrectOwnerNonceCondition) {
             await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
               ownerAddress: walletStore.accountAddress,
               ownerNonce: currentNonce,

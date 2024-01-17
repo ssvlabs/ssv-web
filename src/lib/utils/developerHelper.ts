@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+export const MAXIMUM_VALIDATOR_COUNT_FLAG =  'maximumValidatorCount';
+
 export const getLocalStorageFlagValue = (flagName: string) => {
   if (!window?.localStorage) {
     return null;

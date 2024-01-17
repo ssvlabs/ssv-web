@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Operator from '~lib/api/Operator';
 import {
   createValidatorsRecord,
-  getResponse, getValidatorCountErrorMessage,
+  getResponse, getTooltipText, getValidatorCountErrorMessage,
   KeyShareMulti,
   KeyShareValidationResponse, KeyShareValidationResponseId,
   parseToMultiShareFormat, SelectedOperatorData,
@@ -102,6 +102,13 @@ const KeyShareFlow = () => {
             return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
           }
           operatorStore.selectOperators(selectedOperators);
+        }
+        const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => operator.public_key);
+        for (let keyShare of shares) {
+          const keyShareOperatorKeys = keyShare.data.operatorPublicKeys;
+          if (selectedOperatorsKeys.some((operatorKey: string) => !keyShareOperatorKeys.includes(operatorKey))) {
+            return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+          }
         }
       } catch (e: any) {
         return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
@@ -202,7 +209,7 @@ const KeyShareFlow = () => {
         setValidatorsList(validators);
         setWarningMessage(warningTextMessage);
         setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
-        setSelectedOperatorsData(operatorsData);
+        setSelectedOperatorsData(operatorsData.sort((operatorA: SelectedOperatorData, operatorB: SelectedOperatorData) => Number(operatorA.operatorId) - Number(operatorB.operatorId)));
         setMaxAvailableValidatorsCount(maxValidatorsCount);
       } catch (err) {
         throw err;
@@ -411,7 +418,7 @@ const KeyShareFlow = () => {
         unselectLastValidator={unselectLastValidator}
         maxCount={ownerNonceIssueCondition ? 0 : maxAvailableValidatorsCount}
         countOfValidators={ownerNonceIssueCondition ? 0 : validatorsCount}/>}
-      tooltipText={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP} body={[
+      tooltipText={getTooltipText(maxAvailableValidatorsCount)} body={[
       <Grid item container>
         {ownerNonceIssueCondition && <ErrorMessage
           text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText

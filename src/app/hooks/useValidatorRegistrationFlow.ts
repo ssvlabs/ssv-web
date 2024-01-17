@@ -14,6 +14,7 @@ import config from '~app/common/config';
 import { useSetChain } from '@web3-onboard/react';
 import { NETWORKS } from '~lib/utils/envHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getLocalStorageFlagValue, MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 
 type NavigationRoutes = Record<string, string | Record<number, string>>;
 
@@ -91,7 +92,10 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     return connectedChain?.id !== null ? Number(connectedChain!.id) : getStoredNetwork().networkId;
   };
 
-  const getMaxValidatorsCountPerRegistration = () => isBulkMode(EBulkMode.SINGLE) ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_SINGLE_FLOW : config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_MULTI_FLOW;
+  const getMaxValidatorsCountPerRegistration = () => {
+    const maximumCount = getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG);
+    return isBulkMode(EBulkMode.SINGLE) ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_SINGLE_FLOW : Number(maximumCount) || config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_MULTI_FLOW;
+  };
 
   const getNextNavigation = (action?: EValidatorFlowAction): string => {
     const nextAvailableRoutes = BULK_MODE_TO_ROUTES[currentRoute];

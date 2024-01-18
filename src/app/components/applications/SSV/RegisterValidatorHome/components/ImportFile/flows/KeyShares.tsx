@@ -103,7 +103,7 @@ const KeyShareFlow = () => {
           }
           operatorStore.selectOperators(selectedOperators);
         }
-        const selectedOperatorsKeys = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => operator.public_key);
+
         for (let keyShare of shares) {
           if (keyShare.data.operators?.some((operatorData: { id: number, operatorKey: string }) => {
             const selectedOperator = Object.values(operatorStore.selectedOperators).find((selected: IOperator) => selected.id === operatorData.id);
@@ -250,13 +250,9 @@ const KeyShareFlow = () => {
         await storeKeyShareData(keyShares);
         return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
       } catch (e: any) {
-        let errorMsg = 'Cannot process KeyShares file';
-        if (e instanceof SSVKeysException) {
-          errorMsg = e.message;
-        }
         setValidatorsList({});
         setValidatorsCount(0);
-        return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, errorMsg);
+        return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, e?.message);
       }
     }
 

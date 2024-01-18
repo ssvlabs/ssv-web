@@ -252,7 +252,7 @@ const KeyShareFlow = () => {
       } catch (e: any) {
         setValidatorsList({});
         setValidatorsCount(0);
-        return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, e.message);
+        return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, e?.message);
       }
     }
 

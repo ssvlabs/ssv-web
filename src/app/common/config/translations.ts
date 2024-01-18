@@ -114,6 +114,10 @@ const translations = {
         name: 'ERROR',
         errorMessage: 'The file contains key shares associated with different clusters. Please ensure that all key shares are consistent with the same operator cluster.',
       },
+      DUPLICATED_KEY_SHARES: {
+        name: 'ERROR',
+        errorMessage: 'The file contains duplicated validator public keys. Please ensure that all public keys are unique.',
+      },
     },
     CONFIRMATION: {
       TITLE: 'Transaction Details',

@@ -111,6 +111,9 @@ export const getValidatorCountErrorMessage = (count: number): string => translat
 
 export const createValidatorsRecord = (keyShareMulti: KeyShares) => keyShareMulti.list().reduce((acc: Record<string, ValidatorType>, keyShare: KeySharesItem) => {
   const { publicKey, ownerNonce } = keyShare.data;
+  if (acc[publicKey as string]) {
+    throw new Error(translations.VALIDATOR.KEYSHARE_RESPONSE.DUPLICATED_KEY_SHARES.errorMessage);
+  }
   acc[publicKey as string] = {
     ownerNonce: ownerNonce as number,
     publicKey: publicKey as string,

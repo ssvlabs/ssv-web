@@ -77,6 +77,9 @@ const KeyShareFlow = () => {
     const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration());
 
     useEffect(() => {
+      if (!processStore.secondRegistration) {
+        operatorStore.unselectAllOperators();
+      }
       validatorStore.clearKeyShareFlowData();
     }, []);
 
@@ -370,6 +373,7 @@ const KeyShareFlow = () => {
       applicationStore.setIsLoading(false);
     };
 
+    const availableToRegisterValidatorsCount = Object.values(validatorsList).filter((validator: ValidatorType) => !validator.registered && !validator.errorMessage).length;
     const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || !validatorsCount;
     const MainMultiKeyShare = <Grid className={classes.SummaryWrapper}>
       <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
@@ -415,7 +419,7 @@ const KeyShareFlow = () => {
         unselectLastValidator={unselectLastValidator}
         maxCount={ownerNonceIssueCondition ? 0 : maxAvailableValidatorsCount}
         countOfValidators={ownerNonceIssueCondition ? 0 : validatorsCount}/>}
-      tooltipText={getTooltipText(maxAvailableValidatorsCount)} body={[
+      tooltipText={getTooltipText(maxAvailableValidatorsCount, maxAvailableValidatorsCount !== 0 && maxAvailableValidatorsCount < availableToRegisterValidatorsCount )} body={[
       <Grid item container>
         {ownerNonceIssueCondition && <ErrorMessage
           text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText

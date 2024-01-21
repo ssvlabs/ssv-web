@@ -52,7 +52,7 @@ const ValidatorRegistrationConfirmation = () => {
   if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
     liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
   }
-  const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString());
+  const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount).toString());
   const totalAmountOfSsv = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
@@ -92,7 +92,7 @@ const ValidatorRegistrationConfirmation = () => {
     </Grid>
     <Grid item style={{ marginBottom: 20 }}>
       <Grid
-        className={classes.TotalSSV}>{'registerValidator' in process ? process.registerValidator?.depositAmount : Number(totalAmountOfSsv) * validatorStore.validatorsCount} SSV</Grid>
+        className={classes.TotalSSV}>{Number(amountOfSsv)} SSV</Grid>
     </Grid>
     {Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
       <Grid container item className={classes.InsufficientBalanceWrapper}>

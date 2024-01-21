@@ -94,7 +94,7 @@ const validatorRegistrationFlow = (currentRoute: string) => {
 
   const getMaxValidatorsCountPerRegistration = () => {
     const maximumCount = getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG);
-    return isBulkMode(EBulkMode.SINGLE) ? config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_SINGLE_FLOW : Number(maximumCount) || config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_MULTI_FLOW;
+    return isBulkMode(EBulkMode.SINGLE) ? config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION : Number(maximumCount) || config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_MULTI_FLOW;
   };
 
   const getNextNavigation = (action?: EValidatorFlowAction): string => {

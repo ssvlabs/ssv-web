@@ -6,6 +6,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    position: 'relative',
+
   },
   OperatorLogo: {
     width: 32,
@@ -22,5 +24,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontSize: 10,
     fontWeight: 500,
     color: (props: any) =>  props.hasError ? theme.colors.primaryError : theme.colors.gray40,
+  },
+  OperatorCardExtendClass: {
+    left: -180,
   },
 }));

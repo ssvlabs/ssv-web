@@ -175,6 +175,8 @@ const KeyShareFlow = () => {
           return ({
             key: operator.id.toString(),
             hasError,
+            name: operator.name,
+            type: operator.type,
             operatorLogo: operator.logo ?? '',
             operatorId: operator.id.toString(),
           });

@@ -35,6 +35,8 @@ export type ValidatorType = {
 
 export type SelectedOperatorData = {
   key: string,
+  name: string,
+  type: string | undefined,
   hasError: boolean,
   operatorLogo: string,
   operatorId: string,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import OperatorCard from '~app/components/common/OperatorCard';
@@ -19,6 +19,14 @@ const OperatorData = ({
   const classes = useStyles({ operatorLogo, hasError });
   const timeoutRef = useRef(null);
   const [hoveredGrid, setHoveredGrid] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef?.current){
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleGridHover = () => {
     // @ts-ignore

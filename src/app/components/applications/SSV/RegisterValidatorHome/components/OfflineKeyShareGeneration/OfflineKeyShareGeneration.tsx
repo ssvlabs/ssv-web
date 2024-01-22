@@ -5,14 +5,13 @@ import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { isWindows, osName } from 'react-device-detect';
-import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
+import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
-import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
@@ -20,6 +19,7 @@ import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
+import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -83,7 +83,7 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const goToChangeOperators = () => {
-    navigate(-4);
+    navigate(-2);
   };
 
   const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
@@ -115,19 +115,19 @@ const OfflineKeyShareGeneration = () => {
   const instructions = [
     {
       id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [
-        <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
-                                                                        link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
-        '2. Launch your terminal',
-        '3. Navigate to the directory you downladed the CLI tool',
-        '4. Run the tool with the following command:',
+        <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.linkText}
+                                                                        link={config.links.SSV_KEYS_RELEASES_URL}/></Grid>,
+        translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.COMMAND_LINE_INSTRUCTIONS.secondStep,
+        translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.COMMAND_LINE_INSTRUCTIONS.thirdStep,
+        translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.COMMAND_LINE_INSTRUCTIONS.fourthStep,
       ],
     },
     {
       id: OFFLINE_FLOWS.DESKTOP_APP, instructions: [
-        <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={'SSV-Keys Github'}
-                                                                        link={'https://github.com/bloxapp/ssv-keys/releases'}/></Grid>,
-        '2.Run the Starkeys app',
-        '3. When prompted, copy and paste the following command:',
+        <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.linkText}
+                                                                        link={config.links.SSV_KEYS_RELEASES_URL}/></Grid>,
+        translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.DESKTOP_APP.secondStep,
+        translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.DESKTOP_APP.thirdStep,
       ],
     },
   ];
@@ -167,7 +167,7 @@ const OfflineKeyShareGeneration = () => {
   const commandCli = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
   const buttonLabelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DESKTOP_APP || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg || selectedBox === 0;
   const cliCommandPanelCondition = selectedBox === OFFLINE_FLOWS.COMMAND_LINE || selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && confirmedWithdrawalAddress && !isInvalidValidatorsCount;
-  const buttonLabel = buttonLabelCondition ? 'Next' : 'Change Operators';
+  const buttonLabel = buttonLabelCondition ? translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.BUTTON.NEXT : translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.BUTTON.CHANGE_OPERATORS;
   const submitFunctionCondition = selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg;
 
   const disabledCondition = () => {
@@ -195,7 +195,7 @@ const OfflineKeyShareGeneration = () => {
     <BorderScreen
       blackHeader
       withoutNavigation={processStore.secondRegistration}
-      header={'How do you want to generate your keyshares?'}
+      header={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.HEADER}
       overFlow={'none'}
       width={isNotMainnet ? 872 : undefined}
       body={[
@@ -255,8 +255,8 @@ const OfflineKeyShareGeneration = () => {
 							</Grid>
 							<Grid className={classes.DkgSectionWrapper}>
 								<Typography className={classes.DkgTitle}>Prerequisite</Typography>
-								<Grid className={classes.DkgText}><LinkText text={'Docker installed'}
-																														link={'https://docs.docker.com/engine/install/'}/>&nbsp;on
+								<Grid className={classes.DkgText}><LinkText text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.DOCKER_INSTALLED}
+																														link={config.links.DKG_DOCKER_INSTALL_URL}/>&nbsp;on
 									the machine hosting the DKG client</Grid>
 							</Grid>
 							<Grid className={classes.DkgSectionWrapper}>
@@ -272,7 +272,7 @@ const OfflineKeyShareGeneration = () => {
 							</Grid>
 							<Grid className={classes.DkgSectionWrapper}>
 								<Grid className={classes.DkgText}>2. Set Withdrawal Address <CustomTooltip
-									text={'Ethereum address to receive staking rewards and principle staked ETH. Please note that this cannot be changed in the future.'}/></Grid>
+									text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.DKG_WITHDRAWAL_ADDRESS}/></Grid>
 								<Grid className={classes.DkgWithdrawAddressWrapper}>
 									<TextInput value={withdrawalAddress}
 														 onChangeCallback={changeWithdrawalAddressHandler}
@@ -302,7 +302,7 @@ const OfflineKeyShareGeneration = () => {
 						</Grid>}
           {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
 						<ErrorMessage
-							text={'DKG method is unavailable because some of your selected operators have not provided a DKG endpoint. '}/>
+							text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.OPERATOR_DOESNT_SUPPORT_DKG_ERROR_TEXT}/>
             {Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => {
               if (a.dkg_address && !b.dkg_address) {
                 return 1;

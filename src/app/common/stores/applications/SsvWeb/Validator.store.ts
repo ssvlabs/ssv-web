@@ -131,7 +131,6 @@ class ValidatorStore extends BaseStore {
     this.keyShareFile = null;
     this.keySharePublicKey = '';
     this.validatorPublicKeyExist = false;
-
     this.isMultiSharesMode = false;
     this.processedKeyShare = null;
     this.validatorsCount = 0;

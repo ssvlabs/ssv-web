@@ -4,13 +4,13 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import { useStyles } from './FundingNewValidator.styles';
 import TextInput from '~app/components/common/TextInput';
+import config, { translations } from '~app/common/config';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
@@ -129,7 +129,7 @@ const FundingNewValidator = () => {
             blackHeader
             withConversion
             withoutNavigation
-            header={'Add Validator'}
+            header={translations.VALIDATOR.FUNDING_NEW_VALIDATOR.HEADER_TEXT}
             body={[
               <Grid container>
                 <Typography className={classes.Text}>Adding a new validator increases your operational costs and

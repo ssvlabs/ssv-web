@@ -17,6 +17,9 @@ const translations = {
         LINK_TEXT: 'Create via Ethereum Launchpad',
       },
     },
+    FUNDING_NEW_VALIDATOR: {
+      HEADER_TEXT: 'Select your validator funding period',
+    },
     CREATE: {
       TITLE: 'Create Validator via Ethereum Launchpad',
       DESCRIPTION: '',

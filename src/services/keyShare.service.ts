@@ -35,6 +35,8 @@ export type ValidatorType = {
 
 export type SelectedOperatorData = {
   key: string,
+  name: string,
+  type: string | undefined,
   hasError: boolean,
   operatorLogo: string,
   operatorId: string,
@@ -105,7 +107,7 @@ export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, er
   }
 };
 
-export const getTooltipText = (count: number) => translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP(count);
+export const getTooltipText = (count: number, condition: boolean): string | false => condition && translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS_TOOLTIP(count);
 
 export const getValidatorCountErrorMessage = (count: number): string => translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_CLOSE_REACH_MAX_VALIDATORS(count);
 

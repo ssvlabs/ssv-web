@@ -103,6 +103,18 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: 8,
     color: theme.colors.gray90,
   },
+  InnerInput: {
+    width: '100%',
+    border: 'none',
+    fontSize: 16,
+    fontWeight: 500,
+    color: theme.colors.gray90,
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    '&:focus' : {
+      border: 'none !important',
+    },
+  },
   PlusIcon: {
     width: 16,
     height: 16,

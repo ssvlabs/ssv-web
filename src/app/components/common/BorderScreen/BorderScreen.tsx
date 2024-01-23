@@ -14,7 +14,7 @@ type Props = {
   marginTop?: number,
   wrapperClass?: any,
   sectionClass?: any,
-  tooltipText?: string
+  tooltipText?: string | false
   blackHeader?: boolean,
   borderRadius?: string,
   bottomWrapper?: string,

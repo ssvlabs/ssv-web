@@ -17,12 +17,15 @@ const translations = {
         LINK_TEXT: 'Create via Ethereum Launchpad',
       },
     },
+    FUNDING_NEW_VALIDATOR: {
+      HEADER_TEXT: 'Select your validator funding period',
+    },
     CREATE: {
       TITLE: 'Create Validator via Ethereum Launchpad',
       DESCRIPTION: '',
       BODY_TEXT: [
-          'Follow Ethereum’s launchpad instructions to generate new keys and deposit your validator to the deposit contract.',
-          'Please note to backup your newly created validator files, you will need them for our setup.',
+        'Follow Ethereum’s launchpad instructions to generate new keys and deposit your validator to the deposit contract.',
+        'Please note to backup your newly created validator files, you will need them for our setup.',
       ],
     },
     DEPOSIT: {
@@ -41,7 +44,7 @@ const translations = {
         LIQUIDATE_MY_CLUSTER: 'Liquidate my cluster',
       },
       CHECKBOX: {
-        LIQUIDATION_RISK:  'I understand the risks of having my cluster liquidated.',
+        LIQUIDATION_RISK: 'I understand the risks of having my cluster liquidated.',
         LIQUIDATE_MY_CLUSTER: 'I understand that withdrawing this amount will liquidate my cluster.',
       },
     },
@@ -73,11 +76,32 @@ const translations = {
     DISTRIBUTE_OFFLINE: {
       TITLE: 'How do you want to generate your keyshares?',
       DKG: {
-          VALIDATOR_COUNT_ERROR: 'Invalid validators count. Only number between 1-100 allowed',
+        DOCKER_INSTALLED: 'Docker installed',
+        VALIDATOR_COUNT_ERROR: 'Invalid validators count. Only number between 1-100 allowed',
+        OPERATOR_DOESNT_SUPPORT_DKG_ERROR_TEXT: 'DKG method is unavailable because some of your selected operators have not provided a DKG endpoint.',
+        DKG_WITHDRAWAL_ADDRESS: 'Ethereum address to receive staking rewards and principle staked ETH. Please note that this cannot be changed in the future.',
       },
     },
+    OFFLINE_KEY_SHARE_GENERATION: {
+      linkText: 'SSV-Keys Github',
+      HEADER: 'How do you want to generate your keyshares?',
+      COMMAND_LINE_INSTRUCTIONS: {
+        secondStep: '2. Launch your terminal',
+        thirdStep: '3. Navigate to the directory you downloaded the CLI tool',
+        fourthStep: '4. Run the tool with the following command:',
+      },
+      DESKTOP_APP: {
+        secondStep: '2.Run the Starkeys app',
+        thirdStep: '3. When prompted, copy and paste the following command:',
+      },
+      BUTTON: {
+        NEXT: 'Next',
+        CHANGE_OPERATORS: 'Change Operators',
+      },
+
+    },
     KEYSHARE_RESPONSE: {
-      OK_RESPONSE:{
+      OK_RESPONSE: {
         name: '',
         errorMessage: '',
       },
@@ -85,15 +109,15 @@ const translations = {
         name: 'operator_not_exist',
         errorMessage: 'Operators data incorrect, check operator data and re-generate keyshares.json.',
       },
-      OPERATOR_NOT_MATCHING_RESPONSE : {
+      OPERATOR_NOT_MATCHING_RESPONSE: {
         name: 'operators_not_matching',
         errorMessage: 'Operator ID and Key mismatch,',
-        subErrorMessage:  'check operator data and re-generate keyshares.json',
+        subErrorMessage: 'check operator data and re-generate keyshares.json',
       },
       VALIDATOR_EXIST_RESPONSE: {
         name: 'validator_exit',
         errorMessage: 'Validator is already registered to the network, ',
-        subErrorMessage:  'please try a different keystore file.',
+        subErrorMessage: 'please try a different keystore file.',
       },
       CHECKSUM_ERROR_RESPONSE: {
         name: 'ERROR',
@@ -182,9 +206,7 @@ const translations = {
     HOME: {
       TITLE: 'Join the SSV Network Operators',
       DESCRIPTION: 'To join the network of operators you must run an SSV node. Setup your node, generate operator keys and register to the network.',
-      MENUS: {
-
-      },
+      MENUS: {},
     },
   },
   OPERATOR_METADATA: {
@@ -212,7 +234,7 @@ const translations = {
   CTA_BUTTON: {
     CONNECT: 'Connect to a wallet',
   },
-  NA_DISPLAY:{
+  NA_DISPLAY: {
     TOOLTIP_TEXT: 'Balance and runway are pending calculation, please check again in a few minutes',
   },
   FAUCET: {

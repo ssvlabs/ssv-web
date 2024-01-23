@@ -77,6 +77,9 @@ const KeyShareFlow = () => {
     const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration());
 
     useEffect(() => {
+      if (!processStore.secondRegistration) {
+        operatorStore.unselectAllOperators();
+      }
       validatorStore.clearKeyShareFlowData();
     }, []);
 
@@ -172,6 +175,8 @@ const KeyShareFlow = () => {
           return ({
             key: operator.id.toString(),
             hasError,
+            name: operator.name,
+            type: operator.type,
             operatorLogo: operator.logo ?? '',
             operatorId: operator.id.toString(),
           });
@@ -207,11 +212,12 @@ const KeyShareFlow = () => {
           }
         }
 
+        const selectedValidatorsCount = Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length;
         setValidatorsList(validators);
         setWarningMessage(warningTextMessage);
-        setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
+        setValidatorsCount(selectedValidatorsCount);
         setSelectedOperatorsData(operatorsData.sort((operatorA: SelectedOperatorData, operatorB: SelectedOperatorData) => Number(operatorA.operatorId) - Number(operatorB.operatorId)));
-        setMaxAvailableValidatorsCount(maxValidatorsCount);
+        setMaxAvailableValidatorsCount(selectedValidatorsCount < maxValidatorsCount ? selectedValidatorsCount : maxValidatorsCount);
       } catch (err) {
         throw err;
       }
@@ -233,6 +239,19 @@ const KeyShareFlow = () => {
       validators[lastSelectedValidator.publicKey].isSelected = false;
       setValidatorsCount((prevCount: number) => prevCount - 1);
       setValidatorsList(validators);
+    };
+
+    const changeCountOfValidators = (e: any): void => {
+      let { value } = e.target;
+      value = Number(value) === 0 ? config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION : value;
+      const validatorsInSelectCount = Math.abs(validatorsCount - Number(value));
+      for (let i = 0; i < validatorsInSelectCount; i++) {
+        if (Number(value) < validatorsCount) {
+          unselectLastValidator();
+        } else {
+          selectLastValidValidator();
+        }
+      }
     };
 
     async function processKeyShareFile(): Promise<KeyShareValidationResponse> {
@@ -370,6 +389,7 @@ const KeyShareFlow = () => {
       applicationStore.setIsLoading(false);
     };
 
+    const availableToRegisterValidatorsCount = Object.values(validatorsList).filter((validator: ValidatorType) => !validator.registered && !validator.errorMessage).length;
     const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || !validatorsCount;
     const MainMultiKeyShare = <Grid className={classes.SummaryWrapper}>
       <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
@@ -411,23 +431,25 @@ const KeyShareFlow = () => {
       header={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS}
       wrapperClass={processStore.secondRegistration ? classes.marginNone : classes.marginTop}
       sideElement={<ValidatorCounter
+        changeCountOfValidators={changeCountOfValidators}
         selectLastValidValidator={selectLastValidValidator}
         unselectLastValidator={unselectLastValidator}
         maxCount={ownerNonceIssueCondition ? 0 : maxAvailableValidatorsCount}
         countOfValidators={ownerNonceIssueCondition ? 0 : validatorsCount}/>}
-      tooltipText={getTooltipText(maxAvailableValidatorsCount)} body={[
-      <Grid item container>
-        {ownerNonceIssueCondition && <ErrorMessage
-          text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText
-            textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK}
-            text={'registration nonce'}/>.<br/> Please split the
-            validator keys to new key shares aligned with the correct one.</Typography>}/>}
-        <ValidatorList validatorsList={Object.values(validatorsList)}/>
-        <Grid container item xs={12}>
-          <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
-        </Grid>
-      </Grid>,
-    ]}
+      tooltipText={getTooltipText(maxAvailableValidatorsCount, maxAvailableValidatorsCount !== 0 && maxAvailableValidatorsCount < availableToRegisterValidatorsCount)}
+      body={[
+        <Grid item container>
+          {ownerNonceIssueCondition && <ErrorMessage
+            text={<Typography className={classes.ErrorMessageText}>Validators within this file have an incorrect <LinkText
+              textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK}
+              text={'registration nonce'}/>.<br/> Please split the
+              validator keys to new key shares aligned with the correct one.</Typography>}/>}
+          <ValidatorList validatorsList={Object.values(validatorsList)}/>
+          <Grid container item xs={12}>
+            <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
+          </Grid>
+        </Grid>,
+      ]}
     />;
 
     if (processStore.secondRegistration) {

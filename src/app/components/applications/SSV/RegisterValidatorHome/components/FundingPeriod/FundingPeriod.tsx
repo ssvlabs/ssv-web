@@ -55,7 +55,7 @@ const FundingPeriod = () => {
 
   const getDisableStateCondition = () => {
     if (isCustomPayment) {
-      return customPeriod <= 0 || isNaN(customPeriod);
+      return customPeriod <= 0 || isNaN(customPeriod) || insufficientBalance;
     }
     return insufficientBalance;
   };

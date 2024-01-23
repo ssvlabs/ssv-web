@@ -212,11 +212,12 @@ const KeyShareFlow = () => {
           }
         }
 
+        const selectedValidatorsCount = Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length;
         setValidatorsList(validators);
         setWarningMessage(warningTextMessage);
-        setValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length);
+        setValidatorsCount(selectedValidatorsCount);
         setSelectedOperatorsData(operatorsData.sort((operatorA: SelectedOperatorData, operatorB: SelectedOperatorData) => Number(operatorA.operatorId) - Number(operatorB.operatorId)));
-        setMaxAvailableValidatorsCount(Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length < maxValidatorsCount ? Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length : maxValidatorsCount);
+        setMaxAvailableValidatorsCount(selectedValidatorsCount < maxValidatorsCount ? selectedValidatorsCount : maxValidatorsCount);
       } catch (err) {
         throw err;
       }

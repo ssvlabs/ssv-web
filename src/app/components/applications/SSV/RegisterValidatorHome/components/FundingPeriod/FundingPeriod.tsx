@@ -55,7 +55,7 @@ const FundingPeriod = () => {
 
   const getDisableStateCondition = () => {
     if (isCustomPayment) {
-      return customPeriod <= 0 || isNaN(customPeriod);
+      return new Decimal(customPeriod).comparedTo(ssvStore.walletSsvBalance) === 1 || isNaN(customPeriod);
     }
     return insufficientBalance;
   };

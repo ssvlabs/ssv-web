@@ -14,7 +14,22 @@ const ValidatorCounter = ({ changeCountOfValidators, countOfValidators, maxCount
 }) => {
   const [reachedMinCount, setReachedMinCount] = useState(false);
   const [reachedMaxCount, setReachedMaxCount] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
   const classes = useStyles({ reachedMinCount, reachedMaxCount });
+
+  const handleFocus = () => {
+    setIsTyping(false);
+  };
+
+  const handleChange = (e: any) => {
+    if (!isTyping) {
+      changeCountOfValidators(Number(e.target.value.slice(-1)));
+      setIsTyping(true);
+    } else {
+      changeCountOfValidators(Number(e.target.value));
+    }
+  };
 
   useEffect(() => {
     setReachedMaxCount(countOfValidators === maxCount);
@@ -37,7 +52,7 @@ const ValidatorCounter = ({ changeCountOfValidators, countOfValidators, maxCount
       <Grid onClick={decreaseCount} className={`${classes.CounterButton} ${reachedMinCount && classes.DisabledButton}`}><Grid
         className={`${classes.MinusIcon} ${reachedMinCount && classes.DisabledMinus}`}/></Grid>
       <Grid className={classes.CounterWrapper}>
-        {maxCount ? <input onChange={changeCountOfValidators} className={classes.InnerInput} value={countOfValidators} /> : '-'}
+        {maxCount ? <input onChange={handleChange} onFocus={handleFocus} className={classes.InnerInput} value={countOfValidators} /> : '-'}
       </Grid>
       <Grid onClick={increaseCount} className={`${classes.CounterButton} ${reachedMaxCount && classes.DisabledButton}`}><Grid
         className={`${classes.PlusIcon} ${reachedMaxCount && classes.DisabledPlus}`}/></Grid>

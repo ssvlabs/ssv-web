@@ -5,10 +5,13 @@ import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 
-export const cleanLocalStorage = () => {
+export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
   const currentNetwork = window.localStorage.getItem('current_network');
   window.localStorage.clear();
+  document.cookie.split(';').forEach((c) => {
+    document.cookie = c.replace(/^ +/, '').replace(/=.*/, `=;expires=${  new Date(0).toUTCString()  };path=/`);
+  });
   if (locationRestrictionDisabled) {
     window.localStorage.setItem('locationRestrictionDisabled', '1');
   }

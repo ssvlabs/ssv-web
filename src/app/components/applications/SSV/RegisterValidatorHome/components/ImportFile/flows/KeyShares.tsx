@@ -241,9 +241,13 @@ const KeyShareFlow = () => {
       setValidatorsList(validators);
     };
 
-    const changeCountOfValidators = (e: any): void => {
-      let { value } = e.target;
-      value = Number(value) === 0 ? config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION : value;
+    const changeCountOfValidators = (value: number): void => {
+      if (Number(value) === 0) {
+        value = config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION;
+      }
+      if (Number(value) > maxAvailableValidatorsCount) {
+        value = maxAvailableValidatorsCount;
+      }
       const validatorsInSelectCount = Math.abs(validatorsCount - Number(value));
       for (let i = 0; i < validatorsInSelectCount; i++) {
         if (Number(value) < validatorsCount) {

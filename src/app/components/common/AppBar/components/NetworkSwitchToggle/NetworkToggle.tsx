@@ -72,10 +72,18 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             if (index < 0) {
                 index = getNetworkInfoIndexByNetworkId(network.networkId);
                 notificationsStore.showMessage(`Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
-                setChain({ chainId: toHexString(network.networkId) });
+                if (!isWalletConnect()) {
+                    setChain({ chainId: toHexString(network.networkId) });
+                    changeNetwork(index);
+                    setSelectedNetworkIndex(index);
+                } else {
+                    disconnectWallet();
+                    navigate('/join');
+                }
+            } else {
+                changeNetwork(index);
+                setSelectedNetworkIndex(index);
             }
-            changeNetwork(index);
-            setSelectedNetworkIndex(index);
         }
         if (wallet?.provider) {
             initContracts({ provider: wallet.provider, network: getStoredNetwork() });

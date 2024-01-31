@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useConnectWallet } from '@web3-onboard/react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { cleanLocalStorageAndCookie } from '~lib/utils/onboardHelper';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPopUp.styles';
@@ -21,10 +22,11 @@ const WalletPopUp = () => {
     const [{ wallet }, connect, disconnect] = useConnectWallet();
 
     const changeWallet = async () => {
-        // cleanLocalStorage();
+        cleanLocalStorageAndCookie();
         if (wallet) {
             await disconnect({ label: wallet.label });
             await walletStore.initWallet(null, null);
+            window.localStorage.clear();
         }
         applicationStore.showWalletPopUp(false);
         // await walletStore.initWallet(null, null);

@@ -14,11 +14,12 @@ import {
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
+import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
@@ -33,6 +34,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
+    const notificationsStore: NotificationsStore = stores.Notifications;
 
     const disconnectWallet = async () => {
         if (wallet) {
@@ -66,14 +68,22 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         if (connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId)) {
             ssvStore.clearUserSyncInterval();
             resetContracts();
-            const index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
-            changeNetwork(index);
-            setSelectedNetworkIndex(index);
-            // TODO: add listener to react on wallet changes outside of application
-            // if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
-            //   this.wrongNetwork = true;
-            //   this.notificationsStore.showMessage('Please change network to Holesky', 'error');
-            // }
+            let index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
+            if (index < 0) {
+                index = getNetworkInfoIndexByNetworkId(network.networkId);
+                notificationsStore.showMessage(`Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
+                if (!isWalletConnect()) {
+                    setChain({ chainId: toHexString(network.networkId) });
+                    changeNetwork(index);
+                    setSelectedNetworkIndex(index);
+                } else {
+                    disconnectWallet();
+                    navigate('/join');
+                }
+            } else {
+                changeNetwork(index);
+                setSelectedNetworkIndex(index);
+            }
         }
         if (wallet?.provider) {
             initContracts({ provider: wallet.provider, network: getStoredNetwork() });
@@ -82,7 +92,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             resetContracts();
             walletStore.initWallet(null, null);
         }
-    // }, [wallet?.accounts[0]?.address, connectedChain?.id]);
     }, [wallet, connectedChain]);
 
     const onOptionClick = async (index: number) => {

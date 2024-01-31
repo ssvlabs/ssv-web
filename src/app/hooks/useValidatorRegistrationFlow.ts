@@ -35,6 +35,13 @@ export enum EValidatorFlowAction {
   SECOND_REGISTER,
 }
 
+const MAX_VALIDATORS_PER_CLUSTER_SIZE: Record<number, number> = {
+  [config.GLOBAL_VARIABLE.CLUSTER_SIZES.QUAD_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.QUAD_CLUSTER,
+  [config.GLOBAL_VARIABLE.CLUSTER_SIZES.SEPT_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.SEPT_CLUSTER,
+  [config.GLOBAL_VARIABLE.CLUSTER_SIZES.DECA_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.DECA_CLUSTER,
+  [config.GLOBAL_VARIABLE.CLUSTER_SIZES.TRISKAIDEKA_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.TRISKAIDEKA_CLUSTER,
+};
+
 const NETWORK_TO_BULK_MODE = {
   [NETWORKS.MAINNET]: EBulkMode.SINGLE,
   [NETWORKS.HOLESKY]: EBulkMode.MULTI,
@@ -92,9 +99,18 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     return connectedChain?.id !== null ? Number(connectedChain!.id) : getStoredNetwork().networkId;
   };
 
-  const getMaxValidatorsCountPerRegistration = () => {
-    const maximumCount = getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG);
-    return isBulkMode(EBulkMode.SINGLE) ? config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION : Number(maximumCount) || config.GLOBAL_VARIABLE.MAX_VALIDATORS_COUNT_MULTI_FLOW;
+  const getMaxValidatorsCountPerRegistration = (clusterSize: number, walletLabel: string = '') => {
+    let maximumCount;
+    if (isBulkMode(EBulkMode.SINGLE) ) {
+      maximumCount = config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION;
+    } else {
+      if (walletLabel === 'WalletConnect') {
+        maximumCount = config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.WALLET_CONNECT;
+      } else {
+        maximumCount = Number(getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG)) || MAX_VALIDATORS_PER_CLUSTER_SIZE[clusterSize];
+      }
+    }
+    return maximumCount;
   };
 
   const getNextNavigation = (action?: EValidatorFlowAction): string => {

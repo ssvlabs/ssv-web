@@ -65,7 +65,8 @@ const OfflineKeyShareCeremony = () => {
                 validator on the Beacon Chain.</Typography>
             </Grid>
             <Grid>
-              <code className={classes.DkgCode}>keyshares-[validator-pubkey]-[owner-nonce]-[instance-id].json</code>
+              <code
+                className={classes.DkgCode}>keyshares-[validator-pubkey]-[owner-address]-[owner-nonce]-[instance-id].json</code>
               <Typography className={classes.DkgCodeText}> This file contains the keyshares necessary to register your
                 validator on the SSV Network.</Typography>
             </Grid>
@@ -73,8 +74,8 @@ const OfflineKeyShareCeremony = () => {
               <code className={classes.DkgCode}>instance_id.json</code>
               <Typography className={classes.DkgCodeText}>This file contains the ceremony identifier, which, in
                 combination with the <code className={classes.DkgCode}>initiator_encrypted_key.json </code> and <code
-                  className={classes.DkgCode}>initiator_password</code> files located in the <DirectoryBadge
-                  directoryPath={'config'}/> folder, are vital for resharing your validator with a
+                  className={classes.DkgCode}>initiator_password</code> files located in the directory the command was
+                initiated from folder, are vital for resharing your validator with a
                 different set of operators in the future.</Typography>
             </Grid>
             <Grid className={classes.Line}/>

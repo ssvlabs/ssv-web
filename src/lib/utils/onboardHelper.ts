@@ -7,16 +7,20 @@ import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 
 export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
-  const currentNetwork = window.localStorage.getItem('current_network');
+  const currentNetwork = window.localStorage.getItem('networkSwitcherIndex');
+  const isDarkMode = window.localStorage.getItem('isDarkMode');
   window.localStorage.clear();
   document.cookie.split(';').forEach((c) => {
     document.cookie = c.replace(/^ +/, '').replace(/=.*/, `=;expires=${  new Date(0).toUTCString()  };path=/`);
   });
-  if (locationRestrictionDisabled) {
+  if (locationRestrictionDisabled !== null) {
     window.localStorage.setItem('locationRestrictionDisabled', '1');
   }
-  if (currentNetwork) {
-    window.localStorage.setItem('current_network', currentNetwork);
+  if (currentNetwork !== null) {
+    window.localStorage.setItem('networkSwitcherIndex', currentNetwork);
+  }
+  if (isDarkMode !== null) {
+    window.localStorage.setItem('isDarkMode', isDarkMode);
   }
 };
 

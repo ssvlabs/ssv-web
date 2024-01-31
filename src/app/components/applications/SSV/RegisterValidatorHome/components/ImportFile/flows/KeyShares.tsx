@@ -75,8 +75,8 @@ const KeyShareFlow = () => {
       subErrorMessage: '',
     });
     const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
-  const [{ wallet }] = useConnectWallet();
-  const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label));
+    const [{ wallet }] = useConnectWallet();
+    const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label));
 
     useEffect(() => {
       if (!processStore.secondRegistration) {
@@ -248,7 +248,7 @@ const KeyShareFlow = () => {
       if (Number(value) === 0) {
         value = config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION;
       }
-      if (Math.min(value, maxAvailableValidatorsCount)) {
+      if ((Number(value) > maxAvailableValidatorsCount)) {
         value = maxAvailableValidatorsCount;
       }
       const validatorsInSelectCount = Math.abs(validatorsCount - Number(value));

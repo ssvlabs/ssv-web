@@ -41,6 +41,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
+import { useConnectWallet } from '@web3-onboard/react';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -74,7 +75,8 @@ const KeyShareFlow = () => {
       subErrorMessage: '',
     });
     const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
-    const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration());
+  const [{ wallet }] = useConnectWallet();
+  const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label));
 
     useEffect(() => {
       if (!processStore.secondRegistration) {
@@ -105,6 +107,7 @@ const KeyShareFlow = () => {
             return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
           }
           operatorStore.selectOperators(selectedOperators);
+          operatorStore.setClusterSize(selectedOperators.length);
         }
 
         for (let keyShare of shares) {
@@ -153,7 +156,7 @@ const KeyShareFlow = () => {
         let currentNonce = ownerNonce;
         let incorrectNonceFlag = false;
         let warningTextMessage = '';
-        let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration() ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration();
+        let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label) ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label);
         let previousSmallCount = validatorStore.validatorsCount;
 
         const operatorsData: SelectedOperatorData[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {

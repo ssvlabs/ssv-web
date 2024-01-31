@@ -1,56 +1,24 @@
-import { Contract } from 'web3-eth-contract';
+import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import BaseStore from '~app/common/stores/BaseStore';
 
-export const WALLET_CONNECTED = 'WalletConnected';
-
 export default abstract class Wallet extends BaseStore {
-  web3: any;
   wallet: any;
   notifySdk: any;
   onboardSdk: any;
-  connected: string;
   accountAddress: string;
   isWrongNetwork: boolean;
   networkId: number | null;
-  getterContract: Contract;
-  setterContract: Contract;
-  accountDataLoaded: boolean;
 
-  protected constructor(getContract: Contract) {
+  protected constructor() {
     super();
     this.wallet = null;
-    this.connected = '';
     this.networkId = null;
     this.accountAddress = '';
     this.isWrongNetwork = false;
-    this.accountDataLoaded = false;
-    this.getterContract = getContract;
-    this.setterContract = getContract;
   }
-
-  public abstract connect(): void;
 
   public abstract initializeUserInfo(): void;
 
   // eslint-disable-next-line no-unused-vars
-  public abstract decodeKey(publicKey: string): string;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract encodeKey(publicKey: string): string;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract fromWei(amount?: string): number;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract toWei(amount?: number | string): string;
-
-  public abstract initWalletHooks(): void;
-
-  public abstract checkConnectedWallet(): void;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract changeNetwork(networkId: string | number): void;
-
-  // eslint-disable-next-line no-unused-vars
-  public abstract BN(s: any): any;
+  public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): void;
 }

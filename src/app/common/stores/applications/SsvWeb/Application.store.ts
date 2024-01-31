@@ -1,5 +1,4 @@
-import { Theme } from '@mui/material/styles';
-import { createTheme } from '@mui/material/styles';
+import { createTheme, Theme } from '@mui/material/styles';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { AppTheme } from '~root/Theme';
 import config from '~app/common/config';
@@ -19,17 +18,13 @@ class ApplicationStore extends BaseStore implements Application {
   txHash: string = '';
   userGeo: string = '';
   darkMode: boolean = false;
-  toolBarMenu: boolean = false;
   walletPopUp: boolean = false;
   strategyName: string = 'ssv-web';
   isShowingLoading: boolean = false;
-  runningProcess: string = 'ssv-web';
-  walletConnectivity: boolean = false;
   whiteNavBarBackground: boolean = false;
   transactionPendingPopUp: boolean = false;
-  appTitle: string = 'SSV Network';
   strategyRedirect: string = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
-  locationRestrictionEnabled: boolean = true;
+  shouldCheckCompliance: boolean = true;
 
   constructor() {
     super();
@@ -39,29 +34,21 @@ class ApplicationStore extends BaseStore implements Application {
       userGeo: observable,
       isLoading: computed,
       darkMode: observable,
-      appTitle: observable,
       isDarkMode: computed,
       localStorage: computed,
-      toolBarMenu: observable,
       walletPopUp: observable,
       strategyName: observable,
-      runningProcess: observable,
       setIsLoading: action.bound,
-      cancelProcess: action.bound,
       strategyRedirect: observable,
       isShowingLoading: observable,
       switchDarkMode: action.bound,
       showWalletPopUp: action.bound,
-      walletConnectivity: observable,
-      applicationRoutes: action.bound,
       setTransactionHash: action.bound,
-      displayToolBarMenu: action.bound,
       whiteNavBarBackground: observable,
       transactionPendingPopUp: observable,
-      setApplicationProcess: action.bound,
-      setWalletConnectivity: action.bound,
       setWhiteNavBarBackground: action.bound,
       showTransactionPendingPopUp: action.bound,
+      shouldCheckCompliance: observable,
     });
 
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
@@ -74,10 +61,6 @@ class ApplicationStore extends BaseStore implements Application {
     } else {
       this.switchDarkMode(false);
     }
-  }
-
-  setApplicationProcess(process: string) {
-    this.runningProcess = process;
   }
 
   setTransactionHash(txHash: string) {
@@ -96,41 +79,17 @@ class ApplicationStore extends BaseStore implements Application {
     this.whiteNavBarBackground = status;
   }
 
-  cancelProcess() {
-    const validatorStore: ValidatorStore = this.getStore('Validator');
-    validatorStore.clearKeyStoreFlowData();
-    this.runningProcess = '';
-  }
-
   switchDarkMode(isDarkMode?: boolean) {
     this.darkMode = isDarkMode ?? !this.darkMode;
     const theme = isDarkMode ? 'dark' : 'light';
     const walletStore: WalletStore = this.getStore('Wallet');
-    walletStore?.onboardSdk?.state.actions.updateTheme(theme);
+    // walletStore?.onboardSdk?.state.actions.updateTheme(theme);
     this.localStorage.setItem('isDarkMode', this.darkMode ? '1' : '0');
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  displayToolBarMenu(status: boolean) {
-    this.toolBarMenu = status;
-  }
-
-  applicationRoutes() {
-    try {
-      return require('~app/common/stores/applications/SsvWeb/Routes').default;
-    } catch (e: any) {
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log(e.message);
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<applicationRoutes>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    }
-  }
-
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
-  }
-
-  setWalletConnectivity(show: boolean) {
-    this.walletConnectivity = show;
   }
 
   get localStorage() {

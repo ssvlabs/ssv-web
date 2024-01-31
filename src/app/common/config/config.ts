@@ -1,6 +1,6 @@
 import { ABI_VERSION } from '~app/common/config/abi';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
 import { distributionHelper } from '~lib/utils/distributionHelper';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const {
   networkId,
@@ -10,9 +10,12 @@ const {
   getterContractAddress,
   explorerUrl,
   apiVersion,
-} = getCurrentNetwork();
+} = getStoredNetwork();
 
-const { abi, contract } = distributionHelper(networkId);
+const {
+  abi,
+  // contract,
+} = distributionHelper(networkId);
 
 const config = {
   DEBUG: process.env.REACT_APP_DEBUG || false,
@@ -49,7 +52,6 @@ const config = {
         WITHDRAW: '/my-account/withdraw',
         CLUSTER_DASHBOARD: '/my-account/clusters-dashboard',
         OPERATOR_DASHBOARD: '/my-account/operators-dashboard',
-        KEYSHARE_UPLOAD_UNSAFE: '/my-account/upload-keyshare-unsafe',
         OPERATOR: {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
@@ -156,7 +158,9 @@ const config = {
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
+    DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
+    SSV_KEYS_RELEASES_URL: 'https://github.com/bloxapp/ssv-keys/releases',
     SSV_UPDATE_FEE_DOCS: 'https://docs.ssv.network/learn/operators/update-fee',
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
@@ -168,12 +172,30 @@ const config = {
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/operator-user-guides/operator-node/configuring-mev',
+    INCORRECT_OWNER_NONCE_LINK: 'https://docs.ssv.network/developers/tools/cluster-scanner#_x7nzjlwu00d0',
     DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting',
+  },
+  THEMES: {
+    DARK: 'dark',
+    LIGHT: 'light',
   },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {
       GAS_PRICE: process.env.REACT_APP_GAS_PRICE,
       GAS_LIMIT: process.env.REACT_APP_GAS_LIMIT,
+    },
+    CLUSTER_SIZES: {
+      QUAD_CLUSTER: 4,
+      SEPT_CLUSTER: 7,
+      DECA_CLUSTER: 10,
+      TRISKAIDEKA_CLUSTER: 13,
+    },
+    FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE: {
+      WALLET_CONNECT: 10,
+      QUAD_CLUSTER: 80,
+      SEPT_CLUSTER: 40,
+      DECA_CLUSTER: 30,
+      TRISKAIDEKA_CLUSTER: 20,
     },
     BLOCKS_PER_DAY: 7160,
     OPERATORS_PER_PAGE: 50,
@@ -183,6 +205,8 @@ const config = {
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
     OPERATOR_VALIDATORS_LIMIT_PRESERVE: 5,
     MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
+    MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION: 1,
+    MAX_VALIDATORS_COUNT_MULTI_FLOW: 50,
     DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000',
   },
   ONBOARD: {
@@ -196,386 +220,7 @@ const config = {
   CONTRACTS: {
     SSV_TOKEN: {
       ADDRESS: tokenAddress,
-      ABI: [
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'owner',
-              'type': 'address',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'Approval',
-          'type': 'event',
-        },
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'previousOwner',
-              'type': 'address',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'newOwner',
-              'type': 'address',
-            },
-          ],
-          'name': 'OwnershipTransferred',
-          'type': 'event',
-        },
-        {
-          'anonymous': false,
-          'inputs': [
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'from',
-              'type': 'address',
-            },
-            {
-              'indexed': true,
-              'internalType': 'address',
-              'name': 'to',
-              'type': 'address',
-            },
-            {
-              'indexed': false,
-              'internalType': 'uint256',
-              'name': 'value',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'Transfer',
-          'type': 'event',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'owner',
-              'type': 'address',
-            },
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-          ],
-          'name': 'allowance',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'approve',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'account',
-              'type': 'address',
-            },
-          ],
-          'name': 'balanceOf',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'burn',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'account',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'burnFrom',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'decimals',
-          'outputs': [
-            {
-              'internalType': 'uint8',
-              'name': '',
-              'type': 'uint8',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'subtractedValue',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'decreaseAllowance',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'spender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'addedValue',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'increaseAllowance',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'initialize',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'to',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'mint',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'name',
-          'outputs': [
-            {
-              'internalType': 'string',
-              'name': '',
-              'type': 'string',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'owner',
-          'outputs': [
-            {
-              'internalType': 'address',
-              'name': '',
-              'type': 'address',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'renounceOwnership',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'symbol',
-          'outputs': [
-            {
-              'internalType': 'string',
-              'name': '',
-              'type': 'string',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [],
-          'name': 'totalSupply',
-          'outputs': [
-            {
-              'internalType': 'uint256',
-              'name': '',
-              'type': 'uint256',
-            },
-          ],
-          'stateMutability': 'view',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'recipient',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'transfer',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'sender',
-              'type': 'address',
-            },
-            {
-              'internalType': 'address',
-              'name': 'recipient',
-              'type': 'address',
-            },
-            {
-              'internalType': 'uint256',
-              'name': 'amount',
-              'type': 'uint256',
-            },
-          ],
-          'name': 'transferFrom',
-          'outputs': [
-            {
-              'internalType': 'bool',
-              'name': '',
-              'type': 'bool',
-            },
-          ],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-        {
-          'inputs': [
-            {
-              'internalType': 'address',
-              'name': 'newOwner',
-              'type': 'address',
-            },
-          ],
-          'name': 'transferOwnership',
-          'outputs': [],
-          'stateMutability': 'nonpayable',
-          'type': 'function',
-        },
-      ],
+      ABI: ABI_VERSION.tokenContract,
     },
     SSV_NETWORK_SETTER: {
       ADDRESS: setterContractAddress,
@@ -586,7 +231,8 @@ const config = {
       ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`],
     },
     SSV_DISTRIBUTION: {
-      ADDRESS: contract,
+      // ADDRESS: contract,
+      ADDRESS: '',
       ABI: abi,
     },
   },

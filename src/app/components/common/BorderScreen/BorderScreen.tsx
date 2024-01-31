@@ -2,6 +2,7 @@ import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import BackNavigation from '~app/components/common/BackNavigation';
 import { useStyles } from './BorderScreen.styles';
+import Tooltip from '~app/components/common/ToolTip/ToolTip';
 
 type Props = {
   body: any,
@@ -10,17 +11,20 @@ type Props = {
   SideHeader?: any,
   gray80?: boolean,
   overFlow?: string,
-  width?: number | string,
   marginTop?: number,
-  wrapperHeight?: number,
   wrapperClass?: any,
   sectionClass?: any,
+  tooltipText?: string | false
   blackHeader?: boolean,
   borderRadius?: string,
   bottomWrapper?: string,
+  wrapperHeight?: number,
+  width?: number | string,
   withConversion?: boolean,
+  sideElement?: JSX.Element,
   withoutNavigation?: boolean,
   withoutBorderBottom?: boolean,
+  sideElementShowCondition?: boolean,
   onBackButtonClick?: () => void | null | undefined,
 };
 
@@ -45,6 +49,9 @@ const BorderScreen = (props: Props) => {
     withoutNavigation,
     withoutBorderBottom = false,
     wrapperHeight,
+    tooltipText,
+    sideElement,
+    sideElementShowCondition = true,
   } = props;
   const classes = useStyles({ overFlow, gray80, blackHeader, marginTop, width, wrapperHeight });
 
@@ -64,6 +71,7 @@ const BorderScreen = (props: Props) => {
           <Grid container item className={classes.HeaderSection} justifyContent={'space-between'}>
             <Grid item className={classes.Header} xs>
               {header}
+              {tooltipText && <Tooltip text={tooltipText}/>}
             </Grid>
             {SideHeader && !withConversion && <Grid item><SideHeader/></Grid>}
             {withConversion && false && (
@@ -81,6 +89,7 @@ const BorderScreen = (props: Props) => {
                 </Grid>
               </Grid>
             )}
+            {sideElement && sideElementShowCondition && sideElement}
           </Grid>
         )}
         {body.map((section: any, index: number) => {

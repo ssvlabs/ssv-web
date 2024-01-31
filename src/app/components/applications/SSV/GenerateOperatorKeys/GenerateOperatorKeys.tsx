@@ -14,6 +14,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import { encodeParameter } from '~root/services/conversions.service';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
@@ -64,10 +65,11 @@ const GenerateOperatorKeys = () => {
 
     const operatorKeys: NewOperator = {
       fee: 0,
-      id: '0',
+      id: 0,
       address: walletStore.accountAddress,
-      pubKey: walletStore.encodeKey(inputsData.publicKey),
+      publicKey: encodeParameter('string', inputsData.publicKey),
     };
+    operatorKeys.id = operatorStore.getOperatorId;
     operatorStore.setOperatorKeys(operatorKeys);
     const isExists = await validateOperatorPublicKey(inputsData.publicKey);
     setOperatorExist(isExists);

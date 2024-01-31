@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 class Validator {
   private static instance: Validator;
@@ -12,7 +13,7 @@ class Validator {
 
   static getInstance(): Validator {
     if (!Validator.instance) {
-      Validator.instance = new Validator(config.links.SSV_API_ENDPOINT);
+      Validator.instance = new Validator(getStoredNetwork().api);
     }
     return Validator.instance;
   }
@@ -23,7 +24,7 @@ class Validator {
 
   async getOwnerAddressCost(ownerAddress: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${config.links.SSV_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
+      const url = `${getStoredNetwork().api}/validators/owned_by/${ownerAddress}/cost`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;
@@ -32,7 +33,7 @@ class Validator {
 
   async clustersByOwnerAddress(query: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
+      const url = `${getStoredNetwork().api}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return { clusters: [], pagination: {} };
@@ -41,7 +42,7 @@ class Validator {
 
   async validatorsByClusterHash(page: number, ownerAddress: string, clusterHash: string, skipRetry?: boolean): Promise<any> {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/?&search=${clusterHash}&page=${page}&perPage=7&ts=${new Date().getTime()}`;
+      const url = `${getStoredNetwork().api}/validators/?&search=${clusterHash}&page=${page}&perPage=7&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return { clusters: [], pagination: {} };
@@ -50,7 +51,7 @@ class Validator {
 
   async clusterByHash(clusterHash: string): Promise<any> {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+      const url = `${getStoredNetwork().api}/clusters/${clusterHash}`;
       return await this.getData(url, true);
     } catch (e) {
       return { clusters: [], pagination: {} };
@@ -59,7 +60,7 @@ class Validator {
 
   async getClusterData(clusterHash: string): Promise<any> {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+      const url = `${getStoredNetwork().api}/clusters/${clusterHash}`;
       return await this.getData(url, true);
     } catch (e) {
       return null;
@@ -68,7 +69,7 @@ class Validator {
 
   async getValidator(publicKey: string, skipRetry?: boolean) {
     try {
-      const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+      const url = `${getStoredNetwork().api}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return null;

@@ -4,18 +4,21 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import { useStyles } from './FundingNewValidator.styles';
 import TextInput from '~app/components/common/TextInput';
+import config, { translations } from '~app/common/config';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
+import { fromWei, toWei } from '~root/services/conversions.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -27,24 +30,26 @@ const FundingNewValidator = () => {
   const OPTION_USE_CURRENT_BALANCE = 1;
   const ssvStore: SsvStore = stores.SSV;
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
+  const validatorStore: ValidatorStore = stores.Validator;
   const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState<string | number>(0);
   const [errorMessage, setErrorMessage] = useState({ text:'', link: { text:'', path:'' } });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
-  const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validator_count + 1);
+  const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
+  const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validatorCount + newValidatorsCount);
   const newRunWay = clusterStore.getClusterRunWay({
     ...cluster,
-    burnRate: walletStore.toWei(parseFloat(newBurnRate.toString())),
-    balance: walletStore.toWei(walletStore.fromWei(cluster.balance) + Number(depositSSV)),
+    burnRate: toWei(parseFloat(newBurnRate.toString())),
+    balance: toWei(fromWei(cluster.balance) + Number(depositSSV)),
   });
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
   const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1;
+  const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
@@ -57,7 +62,7 @@ const FundingNewValidator = () => {
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         link: {
           text: 'Need SSV?',
-          path: 'https://faucet.ssv.network',
+          path: ENV().INSUFFICIENT_BALANCE_URL,
         },
       });
       setShowErrorMessage(true);
@@ -105,7 +110,7 @@ const FundingNewValidator = () => {
 
   const moveToNextPage = () => {
     process.registerValidator = { depositAmount: Number(depositSSV) };
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START);
+    navigate(getNextNavigation());
   };
 
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +129,7 @@ const FundingNewValidator = () => {
             blackHeader
             withConversion
             withoutNavigation
-            header={'Add Validator'}
+            header={translations.VALIDATOR.FUNDING_NEW_VALIDATOR.HEADER_TEXT}
             body={[
               <Grid container>
                 <Typography className={classes.Text}>Adding a new validator increases your operational costs and
@@ -139,7 +144,7 @@ const FundingNewValidator = () => {
                     </Grid>
                     <Grid container item style={{ gap: 8 }}>
                       <Typography
-                          className={classes.Bold}>{formatNumberToUi(walletStore.fromWei(cluster.balance))} SSV</Typography>
+                          className={classes.Bold}>{formatNumberToUi(fromWei(cluster.balance))} SSV</Typography>
                       <Typography className={`${classes.Bold} ${classes.LessBold}`}>{ssvChanged()}</Typography>
                     </Grid>
                   </Grid>
@@ -164,8 +169,7 @@ const FundingNewValidator = () => {
                                    className={`${classes.OptionBox} ${isChecked(option.id) ? classes.SelectedBox : ''}`}
                                    onClick={() => checkBox(option.id)}>
                         <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
-                          {isChecked(option.id) ? <Grid item className={classes.CheckedCircle}/> :
-                              <Grid item className={classes.CheckCircle}/>}
+                          <Grid item className={isChecked(option.id) ? classes.CheckedCircle : classes.CheckCircle} />
                           <Grid item className={classes.TimeText}>{option.timeText}</Grid>
                         </Grid>
                         {isCustom && <TextInput value={depositSSV}

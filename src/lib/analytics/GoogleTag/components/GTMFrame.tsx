@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getCurrentNetwork } from '~lib/utils/envHelper';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 export const GOOGLE_TAG_MANAGER_URL = 'https://www.googletagmanager.com/gtm.js?id=';
 const GTMFrame = ({}) => {
   const [scriptCreated, setScriptCreated] = useState(false);
-  const currentNetwork = getCurrentNetwork();
+  const currentNetwork = getStoredNetwork();
 
   useEffect(() => {
     if (!scriptCreated) {

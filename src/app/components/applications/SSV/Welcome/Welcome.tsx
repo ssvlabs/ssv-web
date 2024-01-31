@@ -1,8 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -18,12 +18,14 @@ const Welcome = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
-
-  const connectToWallet = () => {
-    if (walletStore.connected) {
-      return applicationStore.showWalletPopUp(true);
+  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+  const [_, connect] = useConnectWallet();
+  const connectToWallet = async () => {
+    if (!!walletStore.wallet) {
+      applicationStore.showWalletPopUp(true);
+    } else {
+      await connect();
     }
-    return walletStore.connect();
   };
 
   return (
@@ -41,7 +43,7 @@ const Welcome = () => {
                 withVerifyConnection
                 text={'Distribute Validator'}
                 submitFunction={() => {
-                  walletStore.connected && navigate(config.routes.SSV.VALIDATOR.HOME);
+                  walletStore.wallet && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
               />
             </Grid>
@@ -50,19 +52,19 @@ const Welcome = () => {
                 withVerifyConnection
                 text={'Join as Operator'}
                 submitFunction={() => {
-                  walletStore.connected && navigate(config.routes.SSV.OPERATOR.HOME);
+                  walletStore.wallet && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}
               />
             </Grid>
           </Grid>
-          {!walletStore.connected && false && (
+          {!walletStore.wallet && false && (
             <Grid container item className={classes.OrLineWrapper}>
               <Grid item className={classes.Line} xs />
               <Grid item className={classes.Or}>OR</Grid>
               <Grid item className={classes.Line} xs />
             </Grid>
           )}
-          {!walletStore.connected && false && (
+          {!walletStore.wallet && false && (
             <PrimaryButton
               withVerifyConnection
               text={'Connect Wallet'}
@@ -76,4 +78,4 @@ const Welcome = () => {
   );
 };
 
-export default observer(Welcome);
+export default Welcome;

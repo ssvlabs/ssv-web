@@ -1,3 +1,9 @@
+/**
+ * TODO: remove this file entirely
+ */
+
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+
 export interface IENVS {
   NETWORK: string,
   BEACONCHA_URL: string,
@@ -18,6 +24,7 @@ export type NetworkDataType = {
   contractToken: string;
   getterContractAddress: string;
   setterContractAddress: string;
+  insufficientBalanceUrl: string;
 };
 
 type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
@@ -26,8 +33,10 @@ type NetworkDataFromEnvironmentType = Pick<NetworkDataType, 'networkId'
   | 'apiNetwork'
   | 'contractToken'
   | 'setterContractAddress'
+  | 'insufficientBalanceUrl'
   | 'getterContractAddress'>;
 
+// TODO: remove
 export const MAINNET_NETWORK_ID = 1;
 export const GOERLI_NETWORK_ID = 5;
 export const HOLESKY_NETWORK_ID = 17000;
@@ -86,113 +95,42 @@ export const API_VERSIONS = {
   V4: 'v4',
 };
 
-const NETWORK_VARIABLES = {
-  [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: {
-    logo: 'dark',
-    activeLabel: 'Ethereum',
-    optionLabel: 'Ethereum Mainnet',
-  },
-  [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: {
-    logo: 'light',
-    activeLabel: 'Goerli',
-    optionLabel: 'Goerli Testnet',
-  },
-  [`${NETWORKS.HOLESKY}_${API_VERSIONS.V4}`]: {
-    logo: 'light',
-    activeLabel: 'Holesky',
-    optionLabel: 'Holesky Testnet',
-  },
-};
-
-const data = process.env.REACT_APP_SSV_NETWORKS;
-
-const fillNetworkData = (network: NetworkDataFromEnvironmentType, networkId: number, apiVersion: string): NetworkDataType => ({
-  ...network, ...NETWORK_VARIABLES[`${networkId}_${apiVersion}`],
-  api: `${network.api}/${network.apiVersion}/${network.apiNetwork}`,
-  faucetApi: `${network.api}/faucet`,
-});
-
-export const NETWORKS_DATA = data ? JSON.parse(data).map((network: NetworkDataFromEnvironmentType) => fillNetworkData(network, network.networkId, network.apiVersion)) : null;
-
 const _envs = {
   [NETWORKS.GOERLI]: {
     NETWORK: 'prater',
     BEACONCHA_URL: 'https://prater.beaconcha.in',
     LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://goerli.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
+    INSUFFICIENT_BALANCE_URL: getStoredNetwork().insufficientBalanceUrl,
   },
   [NETWORKS.HOLESKY]: {
     NETWORK: 'holesky',
     BEACONCHA_URL: 'https://holesky.beaconcha.in',
     LAUNCHPAD_URL: 'https://holesky.launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://holesky.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://faucet.ssv.network',
+    INSUFFICIENT_BALANCE_URL: getStoredNetwork().insufficientBalanceUrl,
   },
   [NETWORKS.MAINNET]: {
     NETWORK: 'mainnet',
     BEACONCHA_URL: 'https://beaconcha.in',
     LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
     ETHERSCAN_URL: 'https://etherscan.io',
-    INSUFFICIENT_BALANCE_URL: 'https://coinmarketcap.com/currencies/ssv-network/#Markets',
+    INSUFFICIENT_BALANCE_URL: getStoredNetwork().insufficientBalanceUrl,
   },
 };
 
 export const ENV = (): IENVS => {
-  const finalNetworkId = getCurrentNetwork().networkId;
+  const finalNetworkId = getStoredNetwork().networkId;
   return _envs[parseInt(String(finalNetworkId), 10)];
 };
 
 export const transactionLink = (txHash: string) => `${ENV().ETHERSCAN_URL}/tx/${txHash}`;
 
-export const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
+const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
 
-export const changeCurrentNetwork = (networkId: number, version?: string) => {
-  // Find already persisted network index in supported networks list
-  const value = window.localStorage.getItem('current_network');
-  const networkIdHex = toHexString(networkId).toLowerCase();
-  const networkIndex = NETWORKS_DATA.findIndex((network: NetworkDataType) => {
-    const chainIdHex = toHexString(network.networkId).toLowerCase();
-    if (version) {
-      return networkIdHex === chainIdHex && network.apiVersion === version;
-    } else {
-      return networkIdHex === chainIdHex;
-    }
-  });
-  if (networkIndex === -1) {
-    throw new Error(`Network with ID:${networkId} is not found in supported networks`);
-  }
-  if (Number(value) === networkIndex) return;
-  window.localStorage.setItem('current_network', String(networkIndex));
-  window.location.reload();
-};
+export const currentNetworkName = () => NETWORK_NAMES[getStoredNetwork().networkId];
 
-export const getCurrentNetwork = () => {
-  if (!NETWORKS_DATA && !process.env.REACT_APP_DISABLE_NETWORK_DATA_CHECK) throw new Error('Provide network data');
-  const currentNetworkIndex = window.localStorage.getItem('current_network');
-  if (currentNetworkIndex && NETWORKS_DATA.length > 1) {
-    const networkId = NETWORKS_DATA[currentNetworkIndex].networkId;
-    return { ...NETWORKS_DATA[currentNetworkIndex], ...NETWORK_VARIABLES[networkId] };
-  }
-  if (!currentNetworkIndex && process.env.REACT_APP_FAUCET_PAGE) {
-    const holeskyIndex = NETWORKS_DATA.findIndex((networkData: any) => networkData.networkId === NETWORKS.HOLESKY);
-    return saveNetwork(holeskyIndex);
-  }
-  return saveNetwork(0);
-};
-
-export const currentNetworkName = () =>  NETWORK_NAMES[getCurrentNetwork().networkId];
-
-const saveNetwork = (index: number) => {
-  window.localStorage.setItem('current_network', index.toString());
-  const networkId = NETWORKS_DATA[index].networkId;
-  return { ...NETWORKS_DATA[index], ...NETWORK_VARIABLES[networkId] };
-};
-
-export const isMainnet = getCurrentNetwork().networkId === NETWORKS.MAINNET;
+export const isMainnet = getStoredNetwork().networkId === NETWORKS.MAINNET;
 
 export const networkTitle = isMainnet ? 'Mainnet' : 'Testnet';
 
-export const notIncludeMainnet = NETWORKS_DATA.every((network: NetworkDataType) => {
-  return toHexString(network.networkId).toLowerCase() !== '0x1';
-});

@@ -1,13 +1,12 @@
-import React from 'react';
-import { observer } from 'mobx-react';
-import { useStores } from '~app/hooks/useStores';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
+import SsvRoutes from '~app/common/stores/applications/SsvWeb/Routes';
+import FaucetRoutes from '~app/common/stores/applications/Faucet/Routes';
+import DistributionRoutes from '~app/common/stores/applications/Distribution/Routes';
 
-const Routes = () => {
-    const stores = useStores();
-    const applicationStore: ApplicationStore = stores.Application;
-    const ApplicationRoutes = applicationStore.applicationRoutes();
-    return <ApplicationRoutes />;
-};
+let AppRoutes = SsvRoutes;
 
-export default observer(Routes);
+if (process.env.REACT_APP_FAUCET_PAGE) {
+    AppRoutes = FaucetRoutes;
+} if (process.env.REACT_APP_CLAIM_PAGE) {
+    AppRoutes = DistributionRoutes;
+}
+export default AppRoutes;

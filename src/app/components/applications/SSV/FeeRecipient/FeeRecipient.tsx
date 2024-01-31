@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { checkAddressChecksum, toChecksumAddress } from 'web3-utils';
+import { toChecksumAddress } from 'web3-utils';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -14,6 +14,15 @@ import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+
+
+const checkAddressChecksum = (address: string) => {
+  try {
+    return toChecksumAddress(address) === address;
+  } catch (e) {
+    return false;
+  }
+};
 
 const FeeRecipient = () => {
   const stores = useStores();

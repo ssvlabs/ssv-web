@@ -64,7 +64,7 @@ export const formatFloatToMaxPrecision = (numeric: number | string) => {
   return floatString;
 };
 
-export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean) => {
+export const formatNumberToUi = (num?: number | string | Decimal, days?: boolean): string => {
   if (!Number.isFinite(Number(num))) return '- -';
   if (!num || num == 0 || Number.isNaN(num)) return days ? '0' : '0.0';
   const splitNumber = num.toString().split('.');

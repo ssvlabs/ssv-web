@@ -2,25 +2,26 @@ import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
+// import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/SSV/Migration/ConnectWallet/ConnectWallet.styles';
-
+// TODO: reduce to single component for wallet connection
 const ConnectWallet = ({ nextStep }: { nextStep: Function }) => {
     const classes = useStyles();
     const stores = useStores();
-    const walletStore: WalletStore = stores.Wallet;
-    const [buttonLabel, setButtonLabel] = useState(walletStore.connected ? 'Register Validators' : 'Connect wallet');
+    // const walletStore: WalletStore = stores.Wallet;
+    // const [buttonLabel, setButtonLabel] = useState(walletStore.connected ? 'Register Validators' : 'Connect wallet');
 
-    const connectToWallet = () => {
-        if (walletStore.connected) {
-            setButtonLabel('Register Validators');
-            nextStep();
-            return;
-        }
-        return walletStore.connect();
-    };
+    // TODO: move to new approach
+    // const connectToWallet = () => {
+    //     if (walletStore.connected) {
+    //         setButtonLabel('Register Validators');
+    //         nextStep();
+    //         return;
+    //     }
+    //     return walletStore.connect();
+    // };
 
     return (
         <BorderScreen
@@ -33,7 +34,7 @@ const ConnectWallet = ({ nextStep }: { nextStep: Function }) => {
                        <Typography className={classes.Text}>In order to proceed with the migration connect the wallet you defined for the migration process in the Blox Live app</Typography>
                    </Grid>
                     <Grid className={classes.MigrationLogo} />
-                    <PrimaryButton text={buttonLabel} submitFunction={connectToWallet} />
+                    {/*<PrimaryButton text={buttonLabel} submitFunction={connectToWallet} />*/}
                 </Grid>,
             ]}
         />

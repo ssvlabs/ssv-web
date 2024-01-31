@@ -1,9 +1,9 @@
-import { observer } from 'mobx-react';
-import React, { lazy, Suspense } from 'react';
-import { Route, Routes as Wrapper } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
+import { Route, Routes as Wrapper, useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
 import { SsvAppBar } from '~app/components/common/AppBar';
+import { useStores } from '~app/hooks/useStores';
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
 const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
@@ -46,7 +46,11 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 const Migration = lazy(() => import('~app/components/applications/SSV/Migration/Migration'));
 
 const Routes: any = () => {
+  const stores = useStores();
+  const location = useLocation();
+  const navigate = useNavigate();
   const ssvRoutes = config.routes.SSV;
+  const walletStore = stores.Wallet;
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
@@ -59,7 +63,6 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE, Component: ImportFile },
-    { path: ssvRoutes.MY_ACCOUNT.KEYSHARE_UPLOAD_UNSAFE, Component: ImportFile, keyShares: true  },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.REMOVE.ROOT, Component: RemoveOperator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.REACTIVATE, Component: ReactivateCluster },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR_DASHBOARD, Component: OperatorDashboard },
@@ -87,7 +90,6 @@ const Routes: any = () => {
     { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation },
   ];
 
-
   const validatorsRoutes = [
     { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportFile },
     { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
@@ -104,11 +106,21 @@ const Routes: any = () => {
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
   ];
 
+  useEffect(() => {
+    const notLoggedInRoutes = ['/', '/join'];
+    if (walletStore.wallet && notLoggedInRoutes.includes(location.pathname)) {
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+    } else if (!walletStore.wallet && !notLoggedInRoutes.includes(location.pathname)) {
+      navigate(config.routes.SSV.ROOT);
+    }
+  }, [walletStore.wallet]);
+
   return (
       <Layout>
         <SsvAppBar/>
         <Suspense fallback={<div className="container"></div>}>
           <Wrapper>
+            <Route path={'/'} element={<Welcome />} />
             <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
             <Route path={ssvRoutes.ROOT} element={<Welcome />} />
             <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>
@@ -136,4 +148,4 @@ const Routes: any = () => {
   );
 };
 
-export default observer(Routes);
+export default Routes;

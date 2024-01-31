@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { allEqual } from '~lib/utils/arrays';
 import { useStores } from '~app/hooks/useStores';
@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
 import WarningBox from '~app/components/common/WarningBox';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { MEV_RELAYS } from '~lib/utils/operatorMetadataHelper';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -21,6 +20,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -28,13 +28,15 @@ import MevIcon
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import { fromWei } from '~root/services/conversions.service';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
+  const location = useLocation();
+  const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
@@ -72,7 +74,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     if (editPage) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE);
     } else {
-      navigate(config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE);
+      navigate(getNextNavigation());
     }
   };
 
@@ -102,7 +104,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 
   useEffect(() => {
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
-    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => !operatorStore.isOperatorRegistrable(operator.validators_count));
+    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
     setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
   }, [JSON.stringify(operatorStore.selectedOperators)]);
@@ -160,9 +162,10 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                         </Grid>
                         <Grid item className={classes.FeeAndMevRelaysWrapper}>
                           <SsvAndSubTitle fontSize={14}
-                                          ssv={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}/>
+                                          ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
                             {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
+                                                                                          key={mevRelay}
                                                                                           hasMevRelay={operator.mev_relays?.includes(mevRelay)}/>)}
                           </Grid>
                         </Grid>
@@ -240,9 +243,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
             </Grid>
           )}
           {!operatorHasMevRelays &&
-            <WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
-                        textLink={'Learn more'}
-                        link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
+						<WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
+												textLink={'Learn more'}
+												link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
           <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
                          submitFunction={onSelectOperatorsClick}/>
         </Grid>,

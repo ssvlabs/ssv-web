@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
@@ -15,11 +16,11 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import { fromWei } from '~root/services/conversions.service';
 
 const ReactivateCluster = () => {
   const options = [
@@ -31,7 +32,6 @@ const ReactivateCluster = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const applicationStore: ApplicationStore = stores.Application;
@@ -40,13 +40,13 @@ const ReactivateCluster = () => {
   const timePeriodNotValid = customPeriod < 30;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
-  const validatorCount = cluster.validator_count || 1;
+  const validatorCount = cluster.validatorCount || 1;
 
   const checkBox = (option: any) => setCheckedOption(option);
 
   const isCustomPayment = checkedOption.id === 3;
   const operatorsFee = Object.values(cluster.operators).reduce(
-        (previousValue: number, currentValue: any) => previousValue + walletStore.fromWei(currentValue.fee),
+        (previousValue: number, currentValue: any) => previousValue + fromWei(currentValue.fee),
         0,
     ) * validatorCount;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
@@ -119,7 +119,7 @@ const ReactivateCluster = () => {
                         Insufficient SSV balance. Acquire further SSV or pick a different amount.
                       </Grid>
                       <Grid container item xs>
-                        <LinkText className={classes.Link} text={'Need SSV?'} link={'https://faucet.ssv.network'}/>
+                        <LinkText className={classes.Link} text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
                       </Grid>
                     </Grid>
                   }

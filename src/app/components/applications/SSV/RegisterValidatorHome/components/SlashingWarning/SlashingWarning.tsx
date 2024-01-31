@@ -32,44 +32,48 @@ const SlashingWarning = () => {
     }
   };
 
+  const SingleSlashingPublicKey = <>
+    <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+    <Grid item xs={12} className={classes.PublicKey}>
+      <ValidatorKeyInput withBeaconcha withCopy address={publicKey}/>
+    </Grid>
+  </>;
+
   const MainScreen = <BorderScreen
-      blackHeader
-      withoutNavigation={processStore.secondRegistration}
-      header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
-      body={[
-        <Grid container>
-          <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-          <Grid item xs={12} className={classes.PublicKey}>
-            <ValidatorKeyInput withBeaconcha withCopy address={publicKey}/>
-          </Grid>
-          <Grid item xs={12} className={classes.Text}>
-            Running a validator simultaneously to the SSV network will cause slashing to your validator.
-          </Grid>
-          <Grid item xs={12} className={classes.Text}>
-            To avoid slashing, shut down your existing validator setup (if you have one) before importing your validator
-            to
-            run with our network.
-          </Grid>
-          <Checkbox
-              onClickCallBack={setUserAgreed}
-              text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
-          />
-          <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
-                         submitFunction={goToConfirmation}
-          />
-        </Grid>,
-      ]}
+    blackHeader
+    withoutNavigation={processStore.secondRegistration}
+    header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
+    body={[
+      <Grid container>
+        {!validatorStore.isMultiSharesMode && SingleSlashingPublicKey}
+        <Grid item xs={12} className={classes.Text}>
+          Running a validator simultaneously to the SSV network will cause slashing to your validator.
+        </Grid>
+        <Grid item xs={12} className={classes.Text}>
+          To avoid slashing, shut down your existing validator setup (if you have one) before importing your validator
+          to
+          run with our network.
+        </Grid>
+        <Checkbox
+          onClickCallBack={setUserAgreed}
+          text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
+        />
+        <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
+                       submitFunction={goToConfirmation}
+        />
+      </Grid>,
+    ]}
   />;
 
   if (processStore.secondRegistration) {
     return (
-        <Grid container>
-          <NewWhiteWrapper
-              type={0}
-              header={'Cluster'}
-          />
-          {MainScreen}
-        </Grid>
+      <Grid container>
+        <NewWhiteWrapper
+          type={0}
+          header={'Cluster'}
+        />
+        {MainScreen}
+      </Grid>
     );
   }
 

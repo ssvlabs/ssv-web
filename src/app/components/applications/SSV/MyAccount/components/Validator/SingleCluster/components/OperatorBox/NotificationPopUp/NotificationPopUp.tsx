@@ -5,7 +5,6 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import UpdateFeeState
     from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
@@ -15,6 +14,7 @@ import UpdateFeeProcesses
 import {
     useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/NotificationPopUp.styles';
+import { fromWei } from '~root/services/conversions.service';
 
 type NotificationPopUpProps = {
     closePopUp: Function,
@@ -27,7 +27,6 @@ const NotificationPopUp = ({ operator, closePopUp, currentStep, newFee }: Notifi
     const classes = useStyles({});
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    const walletStore: WalletStore = stores.Wallet;
 
     return (
         <Grid className={classes.PopUpWrapper}>
@@ -37,7 +36,7 @@ const NotificationPopUp = ({ operator, closePopUp, currentStep, newFee }: Notifi
             </Grid>
             <Grid item container>
                  <Grid>
-                    <ChangeFeeDisplayValues currentCurrency={'SSV'} newFee={newFee} oldFee={formatNumberToUi(ssvStore.getFeeForYear(walletStore.fromWei(operator.fee)))}/>
+                    <ChangeFeeDisplayValues currentCurrency={'SSV'} newFee={newFee} oldFee={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}/>
                  </Grid>
                  <Grid>
                     <UpdateFeeState operatorId={operator.id}/>

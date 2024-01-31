@@ -5,11 +5,8 @@ import { SingleOperator } from '~app/common/stores/applications/SsvWeb/processes
 import { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 
-// eslint-disable-next-line no-unused-vars
-enum ProcessType {
-  // eslint-disable-next-line no-unused-vars
+export enum ProcessType {
   Operator = 1,
-  // eslint-disable-next-line no-unused-vars
   Validator = 2,
 }
 

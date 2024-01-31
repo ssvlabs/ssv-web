@@ -5,26 +5,24 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/OperatorFlow';
 import ValidatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/ValidatorFlow';
-
+import { fromWei } from '~root/services/conversions.service';
 
 const Withdraw = () => {
   const stores = useStores();
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
-  const processItemBalance = processStore.isValidatorFlow ? walletStore.fromWei(processItem.balance) : processItem.balance;
-  
+  const processItemBalance = processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance;
+
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       const interval = setInterval(async () => {
@@ -32,7 +30,7 @@ const Withdraw = () => {
         processItem.balance = await clusterStore.getClusterBalance(processItem.operators);
       }, 2000);
 
-      return () => clearInterval(interval); 
+      return () => clearInterval(interval);
     }
   }, []);
 

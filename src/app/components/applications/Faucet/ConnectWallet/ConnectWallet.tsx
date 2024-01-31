@@ -9,7 +9,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { currentNetworkName, isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/Faucet/ConnectWallet/ConnectWallet.styles';
-
+// TODO: reduce to single component for wallet connection
 const ConnectWallet = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -17,16 +17,17 @@ const ConnectWallet = () => {
   const applicationStore: ApplicationStore = stores.Application;
 
   useEffect(() => {
-      if (isMainnet && walletStore.connected) {
-          walletStore.changeNetwork(NETWORKS.HOLESKY);
+      if (isMainnet && walletStore.wallet) {
+        // TODO use useSetChain hook instead
+          // walletStore.changeNetwork(NETWORKS.HOLESKY);
       }
   }, []);
 
   const connectToWallet = () => {
-    if (walletStore.connected) {
+    if (walletStore.wallet) {
       return applicationStore.showWalletPopUp(true);
     }
-    return walletStore.connect();
+    // return walletStore.connect();
   };
 
   return (

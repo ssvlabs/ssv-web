@@ -2,7 +2,11 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
+import { useNavigate } from 'react-router-dom';
+import { useConnectWallet } from '@web3-onboard/react';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { cleanLocalStorageAndCookie } from '~lib/utils/onboardHelper';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPopUp.styles';
@@ -14,12 +18,21 @@ const WalletPopUp = () => {
     const classes = useStyles();
     const applicationStore: ApplicationStore = stores.Application;
     const walletStore: WalletStore = stores.Wallet;
+    const navigate = useNavigate();
+    const [{ wallet }, connect, disconnect] = useConnectWallet();
 
     const changeWallet = async () => {
+        cleanLocalStorageAndCookie();
+        if (wallet) {
+            await disconnect({ label: wallet.label });
+            await walletStore.initWallet(null, null);
+        }
         applicationStore.showWalletPopUp(false);
-        const [primaryWallet] = walletStore.onboardSdk.state.get().wallets;
-        await walletStore.onboardSdk.disconnectWallet({ label: primaryWallet.label });
-        await walletStore.onboardSdk.connectWallet();
+        await connect().catch((error) => {
+            console.error('connect error', error);
+        }).then(() => {
+            navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+        });
     };
 
     const closePopUp = () => {

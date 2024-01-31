@@ -12,6 +12,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
+import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
@@ -32,11 +33,12 @@ const FundingPeriod = () => {
   // const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
+  const validatorStore: ValidatorStore = stores.Validator;
   const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
   const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
-  const process: RegisterValidator = processStore.process as RegisterValidator;
 
+  const process: RegisterValidator = processStore.process as RegisterValidator;
   const checkBox = (option: any) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
@@ -49,10 +51,11 @@ const FundingPeriod = () => {
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
+  const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
 
   const getDisableStateCondition = () => {
     if (isCustomPayment) {
-      return customPeriod <= 0 || isNaN(customPeriod);
+      return customPeriod <= 0 || isNaN(customPeriod) || insufficientBalance;
     }
     return insufficientBalance;
   };
@@ -89,7 +92,7 @@ const FundingPeriod = () => {
                             className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
                     </Grid>
                     <Grid item
-                          className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
+                          className={classes.SsvPrice}>{formatNumberToUi(Number(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV</Grid>
                     {isCustom && <TextInput value={customPeriod}
                                             onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
                                             extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
@@ -116,7 +119,7 @@ const FundingPeriod = () => {
             <Grid container>
               <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
-                <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
+                <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{totalAmount} SSV</Typography>
               </Grid>
               <PrimaryButton text={'Next'} submitFunction={moveToNextPage} disable={buttonDisableCondition}/>
             </Grid>,

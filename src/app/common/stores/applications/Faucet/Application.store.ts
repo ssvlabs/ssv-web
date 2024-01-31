@@ -17,15 +17,12 @@ class ApplicationStore extends BaseStore implements Application {
   txHash: string = '';
   userGeo: string = '';
   darkMode: boolean = false;
-  toolBarMenu: boolean = false;
   walletPopUp: boolean = false;
   strategyName: string = 'faucet';
   isShowingLoading: boolean = false;
-  walletConnectivity: boolean = false;
   transactionPendingPopUp: boolean = false;
-  appTitle: string = 'SSV Network Faucet';
   strategyRedirect: string = config.routes.FAUCET.ROOT;
-  locationRestrictionEnabled: boolean = false;
+  shouldCheckCompliance: boolean = true;
 
   constructor() {
     super();
@@ -35,11 +32,9 @@ class ApplicationStore extends BaseStore implements Application {
       txHash: observable,
       userGeo: observable,
       darkMode: observable,
-      appTitle: observable,
       isLoading: computed,
       isDarkMode: computed,
       localStorage: computed,
-      toolBarMenu: observable,
       walletPopUp: observable,
       strategyName: observable,
       setIsLoading: action.bound,
@@ -47,12 +42,9 @@ class ApplicationStore extends BaseStore implements Application {
       isShowingLoading: observable,
       strategyRedirect: observable,
       showWalletPopUp: action.bound,
-      walletConnectivity: observable,
-      applicationRoutes: action.bound,
-      displayToolBarMenu: action.bound,
       transactionPendingPopUp: observable,
-      setWalletConnectivity: action.bound,
       showTransactionPendingPopUp: action.bound,
+      shouldCheckCompliance: observable,
     });
 
     const darkModeSaved = this.localStorage.getItem('isDarkMode');
@@ -80,24 +72,12 @@ class ApplicationStore extends BaseStore implements Application {
     this.theme = createTheme(AppTheme({ isDarkMode: this.isDarkMode }));
   }
 
-  displayToolBarMenu(status: boolean) {
-    this.toolBarMenu = status;
-  }
-
-  applicationRoutes() {
-    return require('~app/common/stores/applications/Faucet/Routes').default;
-  }
-
   showTransactionPendingPopUp(status: boolean) {
     this.transactionPendingPopUp = status;
   }
 
   showWalletPopUp(status: boolean) {
     this.walletPopUp = status;
-  }
-
-  setWalletConnectivity(show: boolean) {
-    this.walletConnectivity = show;
   }
 
   get localStorage() {

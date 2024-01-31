@@ -1,4 +1,4 @@
-import { Contract } from 'web3-eth-contract';
+import { Contract } from 'ethers';
 import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
@@ -6,6 +6,7 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import merkleTree from '~app/components/applications/Distribution/assets/merkleTreeTestnet.json';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
+import { fromWei } from '~root/services/conversions.service';
 
 /**
  * Base store provides singe source of true
@@ -140,20 +141,19 @@ class DistributionTestnetStore extends BaseStore {
   @computed
   get distributionContract(): Contract {
     if (!this.distributionContractInstance) {
-      const walletStore: WalletStore = this.getStore('Wallet');
-      this.distributionContractInstance = new walletStore.web3.eth.Contract(
-        config.CONTRACTS.SSV_DISTRIBUTION.ABI,
-        config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
-      );
+      // const walletStore: WalletStore = this.getStore('Wallet');
+      // this.distributionContractInstance = new walletStore.web3.eth.Contract(
+      //   config.CONTRACTS.SSV_DISTRIBUTION.ABI,
+      //   config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
+      // );
     }
     return <Contract> this.distributionContractInstance;
   }
 
   @computed
   get userRewardAmount() {
-    const walletStore: WalletStore = this.getStore('Wallet');
     // eslint-disable-next-line radix
-    return walletStore.fromWei(parseInt(String(this.rewardAmount)).toString());
+    return fromWei(parseInt(String(this.rewardAmount)).toString());
   }
 }
 

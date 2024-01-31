@@ -17,6 +17,7 @@ type Props = {
     noCamelCase?: boolean,
     withoutLoader?: boolean,
     withVerifyConnection?: boolean
+    withoutBackgroundColor?: boolean
 };
 
 const SecondaryButton = (props: Props) => {
@@ -24,16 +25,17 @@ const SecondaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection } = props;
-    const classes = useStyles({ noCamelCase });
+    const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
+    const classes = useStyles({ noCamelCase, withoutBackgroundColor });
 
+    // TODO: reduce to single component for wallet connection
     const submit = async () => {
         if (walletStore.isWrongNetwork) {
             notificationsStore.showMessage('Please change network to Goerli', 'error');
             return;
         }
-        if (withVerifyConnection && !walletStore.connected) {
-            await walletStore.connect();
+        if (withVerifyConnection && !walletStore.wallet) {
+            // await walletStore.connect();
         }
         submitFunction();
     };

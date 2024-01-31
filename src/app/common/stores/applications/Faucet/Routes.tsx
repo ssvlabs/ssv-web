@@ -21,10 +21,10 @@ const Routes: any = () => {
       <FaucetAppBar />
       <Wrapper>
         <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
-        {walletStore.connected && <Route path={config.routes.FAUCET.ROOT} element={<RequestForSsv />} />}
-        {walletStore.connected && <Route path={config.routes.FAUCET.SUCCESS} element={<SuccessPage />} />}
-        {!walletStore.connected && <Route path={config.routes.FAUCET.ROOT} element={<ConnectWallet />} />}
-        {walletStore.connected && <Route path={config.routes.FAUCET.DEPLETED} element={<FaucetDepleted />} />}
+        {walletStore.wallet && <Route path={config.routes.FAUCET.ROOT} element={<RequestForSsv />} />}
+        {walletStore.wallet && <Route path={config.routes.FAUCET.SUCCESS} element={<SuccessPage />} />}
+        {!walletStore.wallet && <Route path={config.routes.FAUCET.ROOT} element={<ConnectWallet />} />}
+        {walletStore.wallet && <Route path={config.routes.FAUCET.DEPLETED} element={<FaucetDepleted />} />}
       </Wrapper>
     </Layout>
   );

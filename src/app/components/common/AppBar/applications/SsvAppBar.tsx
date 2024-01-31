@@ -27,7 +27,7 @@ const SsvAppBar = () => {
         label: 'My Account',
       });
       if (myAccountStore.ownerAddressClusters?.length > 0) {
-        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD); 
+        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
       } else {
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
       }

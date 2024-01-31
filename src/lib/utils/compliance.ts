@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from '~app/common/config';
-import { getCurrentNetwork, NETWORKS } from '~lib/utils/envHelper';
+import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 
 const DEV_MODE_ON = 1;
 const DEV_IGNORE_COUNTRY_RESTRICTION = 'DEV_IGNORE_COUNTRY_RESTRICTION';
@@ -29,16 +29,39 @@ const getRestrictedLocations = async () => {
  */
 const getCurrentLocation = async (): Promise<string[]> => {
   const fetchLocation = async (requestUri: string, getCountryCallback: any) => {
-    return getCountryCallback(await axios.get(requestUri, { timeout: 2000 }));
+    return axios.get(requestUri, { timeout: 2000 })
+      .then( resp => getCountryCallback(resp))
+      .catch( e => console.error(`Failed to detect location from ${requestUri}. Error ${e}`));
   };
 
   const filterEmpty = (name: undefined | null | string) => {
     return !!name;
   };
 
-  const countryGetters = [
+  const shuffleArray = ( arr: any[] ) => {
+    const shuffledArray = arr.slice();
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      // Generate a random index from 0 to i
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+
+      // Swap elements at randomIndex and i
+      [shuffledArray[i], shuffledArray[randomIndex]] = [shuffledArray[randomIndex], shuffledArray[i]];
+    }
+    return shuffledArray;
+  };
+
+  const countryGetters = shuffleArray([
     {
-      url: 'https://api.ipregistry.co/?key=szh9vdbsf64ez2bk',
+      url: 'https://api.ipgeolocation.io/ipgeo?apiKey=ac26520f1aaa44408bbeb25f9071a91d',
+      callback: ({ data }: { data: any }): string[] => {
+        return [
+          data.country_name,
+          data.city,
+        ].filter(filterEmpty);
+      },
+    },
+    {
+      url: 'https://api.ipregistry.co/?key=tshvuvexipx89ca8',
       callback: ({ data }: { data: any }): string[] => {
         return [
           data.location?.country?.name,
@@ -70,20 +93,15 @@ const getCurrentLocation = async (): Promise<string[]> => {
         return [data?.country_name, data?.city].filter(filterEmpty);
       },
     },
-  ];
+  ]);
   for (let i = 0; i < countryGetters.length; i += 1) {
     const countryGetter = countryGetters[i];
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const currentLocation = await fetchLocation(
-        countryGetter.url,
-        countryGetter.callback,
-      );
-      if (currentLocation) {
-        return currentLocation;
-      }
-    } catch (error) {
-      console.error('Detecting location failed using:', countryGetter.url);
+    const currentLocation = await fetchLocation(
+      countryGetter.url,
+      countryGetter.callback,
+    );
+    if (currentLocation) {
+      return currentLocation;
     }
   }
   return [];
@@ -101,12 +119,15 @@ export const getLocalStorageFlagValue = () => {
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
-  const { networkId } = getCurrentNetwork();
+  const { networkId } = getStoredNetwork();
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   const restrictIgnoreFlag = getLocalStorageFlagValue();
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
+  if (!userLocation.length) {
+    return { restricted: true, userGeo:  'Unknown' };
+  }
   if (networkId === NETWORKS.MAINNET) {
     for (const location of userLocation) {
       for (const restrictedLocation of restrictedLocations) {

@@ -248,7 +248,7 @@ const KeyShareFlow = () => {
       if (Number(value) === 0) {
         value = config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION;
       }
-      if (Number(value) > maxAvailableValidatorsCount) {
+      if (Math.min(value, maxAvailableValidatorsCount)) {
         value = maxAvailableValidatorsCount;
       }
       const validatorsInSelectCount = Math.abs(validatorsCount - Number(value));

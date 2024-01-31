@@ -26,10 +26,8 @@ const WalletPopUp = () => {
         if (wallet) {
             await disconnect({ label: wallet.label });
             await walletStore.initWallet(null, null);
-            window.localStorage.clear();
         }
         applicationStore.showWalletPopUp(false);
-        // await walletStore.initWallet(null, null);
         await connect().catch((error) => {
             console.error('connect error', error);
         }).then(() => {

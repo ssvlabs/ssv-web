@@ -278,6 +278,11 @@ const KeyShareFlow = () => {
       } catch (e: any) {
         setValidatorsList({});
         setValidatorsCount(0);
+        if (e.message.includes('The keyshares file you are attempting to reuse does not have the same version')) {
+          return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+            The keyshares file you are attempting to use appears to be from an older version. Please update ssv-keys to the latest version <LinkText withoutUnderline link={config.links.SSV_KEYS_RELEASES_URL} text={'(v1.1.0)'}/> and generate your keyshares again.
+          </Grid>);
+        }
         return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, e?.message);
       }
     }

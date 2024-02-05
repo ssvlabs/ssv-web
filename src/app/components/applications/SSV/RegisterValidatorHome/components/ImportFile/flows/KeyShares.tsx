@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
-import { KeyShares, KeySharesItem, SSVKeysException } from 'ssv-keys';
+import { KeyShares, KeySharesItem } from 'ssv-keys';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Operator from '~lib/api/Operator';
 import {
@@ -41,7 +42,6 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useConnectWallet } from '@web3-onboard/react';
 
 const KeyShareFlow = () => {
     const stores = useStores();

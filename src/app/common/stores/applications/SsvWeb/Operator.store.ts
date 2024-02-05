@@ -215,9 +215,8 @@ class OperatorStore extends BaseStore {
         this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
       }
     } catch (e) {
-      console.log(e);
+      console.error('Provided contract address is wrong', e);
     }
-
   }
 
   /**

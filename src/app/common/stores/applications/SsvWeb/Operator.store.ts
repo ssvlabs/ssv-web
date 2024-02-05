@@ -210,8 +210,12 @@ class OperatorStore extends BaseStore {
    */
   async updateOperatorValidatorsLimit(): Promise<void> {
     const contract = getContractByName(EContractName.GETTER);
-    if (this.operatorValidatorsLimit === 0) {
-      this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
+    try {
+      if (this.operatorValidatorsLimit === 0) {
+        this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
+      }
+    } catch (e) {
+      console.error('Provided contract address is wrong', e);
     }
   }
 

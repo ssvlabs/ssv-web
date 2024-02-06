@@ -14,8 +14,6 @@ import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 const INTERVAL_TIME = 30000;
 
 class MyAccountStore extends BaseStore {
-  static CHECK_UPDATES_MAX_ITERATIONS = 60;
-
   // GLOBAL
   forceBigList: boolean = false;
   operatorsInterval: any = null;

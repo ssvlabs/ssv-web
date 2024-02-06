@@ -1,16 +1,16 @@
-import MyAccountStore from '../app/common/stores/applications/SsvWeb/MyAccount.store';
-import ContractEvent from '~lib/api/ContractEvent';
+import config from '~app/common/config';
 
-export const ifEventCaught = async (txHash: string, callBack: Function, delay: Function) => {
+export const executeAfterEvent = async (condition: Function, callBack: Function, delay: Function) => {
   let iterations = 0;
-  while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    const txWasCaught = !!await ContractEvent.getInstance().getEventByTxHash(txHash);
+  while (iterations <= config.GLOBAL_VARIABLE.CHECK_UPDATES_MAX_ITERATIONS) {
     iterations += 1;
-    if (txWasCaught) {
+    const res = await condition();
+    if (res) {
       await callBack();
-      iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
+      iterations = config.GLOBAL_VARIABLE.CHECK_UPDATES_MAX_ITERATIONS + 1;
+      continue;
     } else {
-      console.log('Transaction still not catched...');
+      console.log('Transaction still not caught...');
     }
     await delay();
   }

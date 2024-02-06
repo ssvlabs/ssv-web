@@ -10,7 +10,8 @@ import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
 import { toWei } from '~root/services/conversions.service';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import { ifEventCaught } from '~root/services/events.service';
+import ContractEventGetter from '~lib/api/ContractEventGetter';
+import { executeAfterEvent } from '~root/services/events.service';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -177,7 +178,7 @@ class ValidatorStore extends BaseStore {
         const receipt = await tx.wait();
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
-          await ifEventCaught(receipt.transactionHash, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
       } catch (e: any) {
         applicationStore.setIsLoading(false);
@@ -216,32 +217,12 @@ class ValidatorStore extends BaseStore {
             this.keyStoreFile = null;
             this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             console.debug('Contract Receipt', receipt);
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              // eslint-disable-next-line no-await-in-loop
-              const changed = await myAccountStore.checkEntityChangedInAccount(
+            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
                 async () => {
                   return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
                 },
                 validatorBefore,
-              );
-              if (changed) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Validator still not updated in API..');
-              }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
-            }
+              ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         })
         .on('transactionHash', (txHash: string) => {
@@ -289,7 +270,7 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             console.debug('Contract Receipt', receipt);
-            await ifEventCaught(receipt.transactionHash, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
         }
@@ -369,7 +350,7 @@ class ValidatorStore extends BaseStore {
             });
             console.debug('Contract Receipt', receipt);
 
-            await ifEventCaught(receipt.transactionHash, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
         }
@@ -419,7 +400,7 @@ class ValidatorStore extends BaseStore {
             });
             console.debug('Contract Receipt', receipt);
             resolve(true);
-            await ifEventCaught(receipt.transactionHash, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {

@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
 import { configure } from 'mobx';
-import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
+import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { InitOptions, OnboardAPI } from '@web3-onboard/core';
+import { OnboardAPI } from '@web3-onboard/core';
 import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -12,18 +12,37 @@ import { BrowserView, MobileView } from 'react-device-detect';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import Routes from '~app/Routes/Routes';
 import config from '~app/common/config';
-import { useStyles } from '~app/App.styles';
+import { ssvLoader } from '~root/assets';
+import { getColors } from '~root/themes';
 import { globalStyle } from '~app/globalStyle';
-import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import BarMessage from '~app/components/common/BarMessage';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper from '~lib/utils/developerHelper';
-import { tmp } from '~lib/utils/onboardHelper';
+import { initOnboardOptions } from '~lib/utils/onboardHelper';
 
-const onboardInstance = init(tmp);
+const LoaderWrapper = styled.div<{ theme: any }>`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  background-color: ${({ theme }) => theme.loaderColor};
+`;
+
+const Loader = styled.img`
+  width: 200px;
+`;
+
+const onboardInstance = init(initOnboardOptions);
 
 configure({ enforceActions: 'never' });
 
@@ -35,9 +54,9 @@ if (process.env.REACT_APP_FAUCET_PAGE) {
 }
 
 const App = () => {
+  const [theme, setTheme] = useState<any>({});
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const stores = useStores();
-  const classes = useStyles();
   const navigate = useNavigate();
   const GlobalStyle = globalStyle();
   const applicationStore: ApplicationStore = stores.Application;
@@ -47,6 +66,10 @@ const App = () => {
   useEffect(() => {
     setWeb3Onboard(onboardInstance);
   }, []);
+
+  useEffect(() => {
+    setTheme({ colors: getColors({ isDarkTheme: applicationStore.darkMode }) });
+  }, [applicationStore.darkMode]);
 
   useEffect(() => {
     if (window?.localStorage.getItem('locationRestrictionDisabled')) {
@@ -78,20 +101,18 @@ const App = () => {
         <DeveloperHelper />
         <ThemeProvider theme={applicationStore.theme}>
           <ThemeProviderLegacy theme={applicationStore.theme}>
-            <GlobalStyle/>
-            {!web3Onboard && (
-                <Grid container className={classes.LoaderWrapper}>
-                  <img className={classes.Loader} src={getImage('ssv-loader.svg')} alt=""/>
-                </Grid>
-            )}
-            <BarMessage/>
-            <BrowserView>
-              {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
-            </BrowserView>
-            <MobileView>
-              <MobileNotSupported/>
-            </MobileView>
-            <CssBaseline/>
+            <ScThemeProvider theme={theme}>
+              <GlobalStyle/>
+              {!web3Onboard && (<LoaderWrapper><Loader src={ssvLoader} /></LoaderWrapper>)}
+              <BarMessage/>
+              <BrowserView>
+                {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
+              </BrowserView>
+              <MobileView>
+                <MobileNotSupported/>
+              </MobileView>
+              <CssBaseline/>
+            </ScThemeProvider>
           </ThemeProviderLegacy>
         </ThemeProvider>
       </StyledEngineProvider>

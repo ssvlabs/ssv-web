@@ -4,6 +4,7 @@ import walletConnectModule from '@web3-onboard/walletconnect';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
+import { Theme } from '@web3-onboard/core';
 
 export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
@@ -32,11 +33,7 @@ const walletConnect = walletConnectModule({
 });
 const safeWalletInstance = safeWallet();
 
-const initOnboardOptions = () => {
-  const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
-};
-
-const tmp = {
+const initOnboardOptions = {
   apiKey: config.ONBOARD.API_KEY,
   wallets: [
     injected,
@@ -102,15 +99,7 @@ const tmp = {
       privacyUrl: 'https://ssv.network/privacy-policy/',
     },
   },
+  theme: (window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light') as Theme,
 };
 
-// OLD
-// const initOnboard = (): OnboardAPI => {
-//   return Onboard(initOnboardOptions() as InitOptions);
-// };
-
-export {
-  initOnboardOptions,
-  // initOnboard,
-  tmp,
-};
+export { initOnboardOptions };

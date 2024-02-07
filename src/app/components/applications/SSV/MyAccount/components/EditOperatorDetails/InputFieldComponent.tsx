@@ -22,21 +22,21 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
             // Get the pasted value from clipboard
             let pastedValue = event.clipboardData.getData('text');
 
-            // If the value starts with HTTP_PREFIX, remove it
-            if (pastedValue.startsWith(HTTP_PREFIX)) {
-                pastedValue = pastedValue.substring(HTTP_PREFIX.length);
+            // If the value does not start with HTTP_PREFIX add it
+            if (!/^(https?:\/\/).*$/.test(pastedValue)) {
+                pastedValue = HTTP_PREFIX + pastedValue;
             }
 
-            setCurrentValue(HTTP_PREFIX + pastedValue);
-            metadataStore.setMetadataValue(fieldKey, HTTP_PREFIX + pastedValue);
+            setCurrentValue(pastedValue);
+            metadataStore.setMetadataValue(fieldKey, pastedValue);
         }
     };
 
     const onChangeHandler = (event: any) => {
         const { value } = event.target;
         if (fieldKey === FIELD_KEYS.DKG_ADDRESS) {
-            // Ensure http:// is always present
-            if (!value.startsWith(HTTP_PREFIX)) {
+            // Ensure http:// or https:// is always present
+            if (!/^(https?:\/\/).*$/.test(value)) {
                 setCurrentValue(HTTP_PREFIX);
                 metadataStore.setMetadataValue(fieldKey, '');
                 return;

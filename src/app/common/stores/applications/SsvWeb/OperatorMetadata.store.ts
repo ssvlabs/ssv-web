@@ -11,7 +11,6 @@ import {
   FIELD_CONDITIONS,
   FIELD_KEYS,
   FIELDS,
-  HTTP_PREFIX,
   isLink,
   MetadataEntity,
   OPERATOR_NODE_TYPES,
@@ -161,7 +160,7 @@ class OperatorMetadataStore extends BaseStore {
       let value = this.getMetadataValue(field);
       if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
         value = this.sortMevRelays(value);
-      } else if (field === FIELD_KEYS.DKG_ADDRESS && value === HTTP_PREFIX) {
+      } else if (field === FIELD_KEYS.DKG_ADDRESS && /^(https?:\/\/)$/.test(value)) {
         value = '';
       }
       payload[field] = value || '';

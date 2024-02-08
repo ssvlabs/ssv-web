@@ -73,8 +73,13 @@ const ValidatorRegistrationConfirmation = () => {
   }, [String(ssvStore.approvedAllowance)]);
 
   useEffect(() => {
-    const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress)));
-    setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo || hasWhitelistedOperator);
+    try {
+      const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress)));
+      setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo || hasWhitelistedOperator);
+    } catch (e: any) {
+      setRegisterButtonDisabled(true);
+      console.error(`Something went wrong: ${e.message}`);
+    }
   }, [acceptedTerms, checkingUserInfo]);
 
   const onRegisterValidatorClick = async () => {

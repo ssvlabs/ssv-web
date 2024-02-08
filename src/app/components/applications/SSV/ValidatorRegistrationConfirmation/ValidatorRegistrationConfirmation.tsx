@@ -57,8 +57,8 @@ const ValidatorRegistrationConfirmation = () => {
   if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
     liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
   }
-  const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
-  const totalAmountOfSsv = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
+  const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
+  const totalAmountOfSsv: number = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE),
@@ -103,9 +103,10 @@ const ValidatorRegistrationConfirmation = () => {
     </Grid>
     <Grid item style={{ marginBottom: 20 }}>
       <Grid
-        className={classes.TotalSSV}>{Number(totalAmountOfSsv)} SSV</Grid>
+        className={classes.TotalSSV}>{
+        formatNumberToUi(totalAmountOfSsv)} SSV</Grid>
     </Grid>
-    {Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
+    {totalAmountOfSsv > ssvStore.walletSsvBalance && (
       <Grid container item className={classes.InsufficientBalanceWrapper}>
         <Grid item xs>
           Insufficient SSV balance. There is not enough SSV in your wallet.
@@ -126,7 +127,7 @@ const ValidatorRegistrationConfirmation = () => {
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={registerButtonDisabled}
-          totalAmount={totalAmountOfSsv}
+          totalAmount={formatNumberToUi(totalAmountOfSsv)}
         />
       </TermsAndConditionsCheckbox>
     </Grid>

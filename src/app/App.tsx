@@ -54,7 +54,7 @@ if (process.env.REACT_APP_FAUCET_PAGE) {
 }
 
 const App = () => {
-  const [theme, setTheme] = useState<any>({});
+  const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkTheme: window.localStorage.getItem('isDarkMode') === '1' }) });
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const stores = useStores();
   const navigate = useNavigate();

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
+import { equalsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
 import { fromWei } from '~root/services/conversions.service';
@@ -13,7 +14,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import FundingSummary from '~app/components/common/FundingSummary';
-import { useStyles } from './ValidatorRegistrationConfirmation.styles';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
@@ -23,8 +24,11 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import {
+  useStyles,
+} from '~app/components/applications/SSV/ValidatorRegistrationConfirmation/ValidatorRegistrationConfirmation.styles';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 
@@ -37,6 +41,7 @@ const ValidatorRegistrationConfirmation = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const { checkedCondition: acceptedTerms } = useTermsAndConditions();
   const validatorStore: ValidatorStore = stores.Validator;
+  const walletStore: WalletStore = stores.Wallet;
   const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const process: RegisterValidator | SingleCluster = processStore.process;
@@ -52,8 +57,8 @@ const ValidatorRegistrationConfirmation = () => {
   if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
     liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
   }
-  const amountOfSsv = formatNumberToUi(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
-  const totalAmountOfSsv = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
+  const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
+  const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE),
@@ -68,7 +73,13 @@ const ValidatorRegistrationConfirmation = () => {
   }, [String(ssvStore.approvedAllowance)]);
 
   useEffect(() => {
-    setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo);
+    try {
+      const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress)));
+      setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo || hasWhitelistedOperator);
+    } catch (e: any) {
+      setRegisterButtonDisabled(true);
+      console.error(`Something went wrong: ${e.message}`);
+    }
   }, [acceptedTerms, checkingUserInfo]);
 
   const onRegisterValidatorClick = async () => {
@@ -92,9 +103,10 @@ const ValidatorRegistrationConfirmation = () => {
     </Grid>
     <Grid item style={{ marginBottom: 20 }}>
       <Grid
-        className={classes.TotalSSV}>{Number(amountOfSsv)} SSV</Grid>
+        className={classes.TotalSSV}>{
+        formatNumberToUi(totalAmountOfSsv)} SSV</Grid>
     </Grid>
-    {Number(totalAmountOfSsv) > ssvStore.walletSsvBalance && (
+    {totalAmountOfSsv > ssvStore.walletSsvBalance && (
       <Grid container item className={classes.InsufficientBalanceWrapper}>
         <Grid item xs>
           Insufficient SSV balance. There is not enough SSV in your wallet.
@@ -115,7 +127,7 @@ const ValidatorRegistrationConfirmation = () => {
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={registerButtonDisabled}
-          totalAmount={totalAmountOfSsv}
+          totalAmount={formatNumberToUi(totalAmountOfSsv)}
         />
       </TermsAndConditionsCheckbox>
     </Grid>
@@ -123,9 +135,9 @@ const ValidatorRegistrationConfirmation = () => {
 
   const screenBody = [<Grid container>
     {!validatorStore.isMultiSharesMode && <>
-			<Grid item className={classes.SubHeader}>Validator Public Key</Grid>
-			<ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey}/>
-		</>}
+      <Grid item className={classes.SubHeader}>Validator Public Key</Grid>
+      <ValidatorKeyInput withBeaconcha address={validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey}/>
+    </>}
 
     <Grid container item xs={12} className={classes.RowWrapper}>
       <Grid item className={classes.SubHeader}>Selected Operators</Grid>
@@ -153,7 +165,7 @@ const ValidatorRegistrationConfirmation = () => {
   ];
 
   if (!processStore.secondRegistration) screenBody.push(<FundingSummary networkCost={networkCost}
-    liquidationCollateralCost={liquidationCollateralCost}/>);
+                                                                        liquidationCollateralCost={liquidationCollateralCost}/>);
   if (!processStore.secondRegistration) screenBody.push(TotalSection);
 
   const MainScreen = <BorderScreen

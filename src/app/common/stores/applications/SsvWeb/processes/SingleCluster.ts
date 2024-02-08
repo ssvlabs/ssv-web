@@ -7,5 +7,5 @@ export interface SingleCluster extends Process {
   item?: any,
   operators?: any;
   validator?: any;
-  registerValidator: RegisterValidator;
+  registerValidator?: RegisterValidator;
 }

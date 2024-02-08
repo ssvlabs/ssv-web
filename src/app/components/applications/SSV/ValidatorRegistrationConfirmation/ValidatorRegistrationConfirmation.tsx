@@ -58,7 +58,7 @@ const ValidatorRegistrationConfirmation = () => {
     liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
   }
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
-  const totalAmountOfSsv: number = 'registerValidator' in process ? process.registerValidator?.depositAmount : amountOfSsv;
+  const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE),

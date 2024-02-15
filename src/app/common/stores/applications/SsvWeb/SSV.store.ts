@@ -9,6 +9,8 @@ import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
 
+const MAX_WEI_AMOUNT = 115792089237316195423570985008687907853269984665640564039457584007913129639935;
+
 class SsvStore extends BaseStore {
   accountInterval: any = null;
   feesInterval: any = null;
@@ -22,8 +24,6 @@ class SsvStore extends BaseStore {
   accountBurnRate: number = 0;
   liquidationCollateralPeriod: number = 0;
   minimumLiquidationCollateral: number = 0;
-  // Allowance
-  userGaveAllowance: boolean = false;
 
   private syncingUser: boolean = false;
 
@@ -42,12 +42,11 @@ class SsvStore extends BaseStore {
       walletSsvBalance: observable,
       approvedAllowance: observable,
       checkAllowance: action.bound,
-      getNetworkFees: action.bound,
-      userGaveAllowance: observable,
+      getNetworkFeeAndLiquidationCollateralParams: action.bound,
       getRemainingDays: action.bound,
       userSyncInterval: action.bound,
       feesIntervalPoller: action.bound,
-      approveAllowance: action.bound,
+      requestAllowance: action.bound,
       getAccountBurnRate: action.bound,
       clearUserSyncInterval: action.bound,
       getNewAccountBurnRate: action.bound,
@@ -96,7 +95,6 @@ class SsvStore extends BaseStore {
     try {
       console.warn('userSyncInterval before');
       await this.getBalanceFromSsvContract();
-      await this.checkAllowance();
       console.warn('userSyncInterval after');
     } catch (e: any) {
       console.warn('userSyncInterval error', e?.message);
@@ -107,7 +105,7 @@ class SsvStore extends BaseStore {
   }
 
   async feesIntervalPoller() {
-    await this.getNetworkFees();
+    await this.getNetworkFeeAndLiquidationCollateralParams();
   }
 
   /**
@@ -189,7 +187,6 @@ class SsvStore extends BaseStore {
     this.networkFee = 0;
     this.accountBurnRate = 0;
     this.walletSsvBalance = 0;
-    this.userGaveAllowance = false;
     this.contractDepositSsvBalance = 0;
     this.liquidationCollateralPeriod = 0;
   }
@@ -338,8 +335,7 @@ class SsvStore extends BaseStore {
       if (!ssvContract) return;
       console.warn('checkAllowance before');
       const allowance = await ssvContract.allowance(this.accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
-      this.approvedAllowance = allowance;
-      this.userGaveAllowance = allowance !== '0';
+      this.approvedAllowance = allowance || 0;
       console.warn('checkAllowance after');
     } catch (e) {
       console.warn('checkAllowance error', e);
@@ -349,102 +345,48 @@ class SsvStore extends BaseStore {
   /**
    * Set allowance to get CDT from user account.
    */
-  async approveAllowance(callBack?: CallableFunction): Promise<any> {
+  async requestAllowance(callBack?: CallableFunction): Promise<any> {
     return new Promise((async (resolve, reject) => {
-      const weiValue = String('115792089237316195423570985008687907853269984665640564039457584007913129639935'); // amount ? toWei(ssvValue, 'ether') : ssvValue;
+      const weiValue = String(MAX_WEI_AMOUNT); // amount ? toWei(ssvValue, 'ether') : ssvValue;
       const ssvContract = getContractByName(EContractName.TOKEN);
       try {
         const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, weiValue);
         if (tx.hash) {
-          callBack && callBack({
-            txHash: tx.hash,
-          });
+          callBack && callBack({ txHash: tx.hash });
         } else {
-          return reject('Transaction hash is not defined');
+          reject();
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          this.userGaveAllowance = true;
+          this.approvedAllowance = MAX_WEI_AMOUNT;
           resolve(true);
         }
       } catch (e: any) {
         console.debug('Contract Error', e);
-        resolve(false);
-        this.userGaveAllowance = false;
+        this.approvedAllowance = 0;
+        reject();
       }
     }));
-    // return new Promise((resolve => {
-    //   const ssvValue = String('115792089237316195423570985008687907853269984665640564039457584007913129639935');
-    //   const weiValue = ssvValue; // amount ? toWei(ssvValue, 'ether') : ssvValue;
-    //   const walletStore: WalletStore = this.getStore('Wallet');
-    //
-    //   if (!estimate) {
-    //     console.debug('Approving:', { ssvValue, weiValue });
-    //   }
-    //
-    //   const methodCall = this.ssvContract
-    //     .methods
-    //     .approve(this.getContractAddress('ssv_network_setter'), weiValue);
-    //
-    //   if (estimate) {
-    //     return methodCall
-    //       .estimateGas({ from: this.accountAddress })
-    //       .then((gasAmount: number) => {
-    //         // BN was used as: web3.utils.BN(s);
-    //         const floatString = fromWei(walletStore.BN(gasAmount).toString(), 'ether');
-    //         return parseFloat(floatString);
-    //       });
-    //   }
-    //
-    //   return methodCall
-    //     .send({ from: this.accountAddress })
-    //     .on('receipt', async () => {
-    //       resolve(true);
-    //       this.userGaveAllowance = true;
-    //     })
-    //     .on('transactionHash', (txHash: string) => {
-    //       callBack && callBack();
-    //       notifyService.hash(tx.hash);
-    //     })
-    //     .on('error', (error: any) => {
-    //       console.debug('Contract Error', error);
-    //       resolve(false);
-    //       this.userGaveAllowance = false;
-    //     });
-    // }));
   }
 
-  /**
-   * Get network fee
-   */
-  async getNetworkFees() {
+  async getNetworkFeeAndLiquidationCollateralParams() {
     try {
       const contract = getContractByName(EContractName.GETTER);
       if (!contract) return;
 
-      console.warn('getNetworkFees 1');
       if (this.networkFee === 0) {
         this.networkFee = fromWei(await contract.getNetworkFee());
-      } else {
-        console.warn('this.networkFee:', this.networkFee);
       }
 
       if (this.liquidationCollateralPeriod === 0) {
         this.liquidationCollateralPeriod = Number(await contract.getLiquidationThresholdPeriod());
-      } else {
-        console.warn('this.liquidationCollateralPeriod:', this.liquidationCollateralPeriod);
       }
 
-      console.warn('getNetworkFees 2');
       if (this.minimumLiquidationCollateral === 0) {
-        const minimumLiquidationCollateral = await contract.getMinimumLiquidationCollateral();
-        this.minimumLiquidationCollateral = fromWei(minimumLiquidationCollateral);
-      } else {
-        console.warn('this.minimumLiquidationCollateral:', this.minimumLiquidationCollateral);
+        this.minimumLiquidationCollateral = fromWei(await contract.getMinimumLiquidationCollateral());
       }
-      console.warn('getNetworkFees 3');
     } catch (e) {
-      console.warn('getNetworkFees error', e);
+      console.warn('getNetworkFeeAndLiquidationCollateralParams error', e);
     }
   }
 

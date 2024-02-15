@@ -18,12 +18,13 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
-import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
+import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode } from '~app/redux/appState.slice';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -36,12 +37,12 @@ const ClusterDashboard = () => {
   const processStore: ProcessStore = stores.Process;
   const accountStore: AccountStore = stores.Account;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const applicationStore: ApplicationStore = stores.Application;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const [loadingFeeRecipient, setLoadingFeeRecipient] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const isDarkMode = useAppSelector(getIsDarkMode);
 
   const moveToRegisterValidator = () => {
     navigate(getNextNavigation());
@@ -131,7 +132,7 @@ const ClusterDashboard = () => {
   const rowBackgroundColor = (index: number) => {
     const indexCluster = sortedClusters[index];
     if (indexCluster.isLiquidated) return 'rgba(236, 28, 38, 0.03)';
-    if (indexCluster.runWay < 30) return applicationStore.darkMode ? 'rgba(255, 210, 10, 0.2)' : '#FDFBF0';
+    if (indexCluster.runWay < 30) return isDarkMode ? 'rgba(255, 210, 10, 0.2)' : '#FDFBF0';
   };
 
 

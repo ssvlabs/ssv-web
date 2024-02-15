@@ -6,32 +6,34 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({});
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
+  const dispatch = useAppDispatch();
 
   const changeOperatorFee = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee);
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore
-      let savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
+      let savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators'));
       if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
         savedOperator = savedOperator.filter((item: any) => item !== operatorStore.processOperatorId);
-        window.localStorage.setItem('expired_operators', JSON.stringify(savedOperator));
+        saveInLocalStorage('expired_operators', JSON.stringify(savedOperator));
       }
     }
     getCurrentState();
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   };
 
   const currentDate = new Date();

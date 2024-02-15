@@ -12,7 +12,6 @@ import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -22,6 +21,8 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -33,10 +34,10 @@ const KeyStoreFlow = () => {
   const removeButtons = useRef(null);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const applicationStore: ApplicationStore = stores.Application;
   const [errorMessage, setErrorMessage] = useState('');
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [keyStorePassword, setKeyStorePassword] = useState('');
+  const dispatch = useAppDispatch();
   const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
 
   useEffect(() => {
@@ -140,14 +141,14 @@ const KeyStoreFlow = () => {
   const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
 
   const submitHandler = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     setTimeout(async () => {
       try {
         await validatorStore.extractKeyStoreData(keyStorePassword);
         // TODO fix this dummy value.
         const deposited = true; // await isDeposited()
         const nextRouteAction = processStore.secondRegistration ? EValidatorFlowAction.SECOND_REGISTER : EValidatorFlowAction.FIRST_REGISTER;
-        applicationStore.setIsLoading(false);
+        dispatch(setIsLoading(false));
         validatorStore.registrationMode = 1;
         validatorStore.setMultiSharesMode(1);
         navigate(getNextNavigation(nextRouteAction));
@@ -165,7 +166,7 @@ const KeyStoreFlow = () => {
           sendTagManagerEvent('validator_register', 'upload_file', 'invalid_file');
           setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
         }
-        applicationStore.setIsLoading(false);
+        dispatch(setIsLoading(false));
       }
     }, 200);
   };

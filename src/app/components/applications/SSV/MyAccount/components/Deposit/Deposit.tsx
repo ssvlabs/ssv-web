@@ -7,7 +7,6 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
@@ -19,6 +18,8 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const Deposit = () => {
   const stores = useStores();
@@ -31,13 +32,12 @@ const Deposit = () => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
-  const applicationStore: ApplicationStore = stores.Application;
   const [inputValue, setInputValue] = useState('');
   const { checkedCondition } = useTermsAndConditions();
-
+  const dispatch = useAppDispatch();
 
   async function depositSsv() {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
       cluster.balance = await clusterStore.getClusterBalance(cluster.operators);
       GoogleTagManager.getInstance().sendEvent({
@@ -46,7 +46,7 @@ const Deposit = () => {
         label: 'success',
       });
         await myAccountStore.getOwnerAddressClusters({});
-        applicationStore.setIsLoading(false);
+        dispatch(setIsLoading(false));
       if (success) {
         processStore.setProcess({
           processName: 'single_cluster',
@@ -63,7 +63,7 @@ const Deposit = () => {
       console.error(error);
     });
     setInputValue('');
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   }
 
   function inputHandler(e: any) {

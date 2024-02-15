@@ -10,7 +10,9 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/common/Button/Button.styles';
 import { toWei } from '~root/services/conversions.service';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import notifyService from '~root/services/notify.service';
 
 type ButtonParams = {
     text: string,
@@ -30,12 +32,12 @@ const Button = (props: ButtonParams) => {
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const applicationStore: ApplicationStore = stores.Application;
     const [userAllowance, setUserAllowance] = useState(false);
     const [isApprovalProcess, setApprovalProcess] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
     const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
     const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount, isLoading } = props;
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
     if (Number(totalAmount) > 0) {
@@ -61,9 +63,9 @@ const Button = (props: ButtonParams) => {
 
     const handlePendingTransaction = ({ txHash }: { txHash: string }) => {
         setApproveButtonText('Approving…');
-        applicationStore.txHash = txHash;
-        applicationStore.showTransactionPendingPopUp(true);
-        walletStore.notifySdk.hash(txHash);
+        dispatch(setTxHash(txHash));
+        dispatch(setIsShowTxPendingPopup(true));
+        notifyService.hash(txHash);
     };
 
     const allowNetworkContract = async () => {
@@ -87,7 +89,7 @@ const Button = (props: ButtonParams) => {
             setApproveButtonText('Approve SSV');
         } finally {
             setAllowanceButtonDisable(false);
-            applicationStore.showTransactionPendingPopUp(false);
+            dispatch(setIsShowTxPendingPopup(false));
         }
     };
 

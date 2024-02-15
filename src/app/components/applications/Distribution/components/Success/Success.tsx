@@ -1,7 +1,5 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import Typography from '@mui/material/Typography';
 import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -10,18 +8,18 @@ import { useDistributionStore } from '~app/hooks/useDistributionStore';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { networkTitle, transactionLink } from '~lib/utils/envHelper';
-import ApplicationStore from '~app/common/stores/applications/Distribution/Application.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getTxHash } from '~app/redux/appState.slice';
 
 const Success = () => {
   const { networkId } = getStoredNetwork();
-  const stores = useStores();
   const classes = useStyles();
-  const applicationStore: ApplicationStore = stores.Application;
   const distributionStore: DistributionStore | DistributionTestnetStore = useDistributionStore(networkId);
+  const txHash = useAppSelector(getTxHash);
 
   const openMarketingSite = () => {
     GoogleTagManager.getInstance().sendEvent({
@@ -48,7 +46,7 @@ const Success = () => {
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>
           <Grid className={classes.LinkWrapper}>
-            <LinkText text={'View Transaction on Etherscan'}link={transactionLink(applicationStore.txHash)} />
+            <LinkText text={'View Transaction on Etherscan'} link={transactionLink(txHash)} />
           </Grid>
           <SecondaryButton submitFunction={openMarketingSite} children={'Learn more about the SSV network'} />
         </Grid>,
@@ -57,4 +55,4 @@ const Success = () => {
   );
 };
 
-export default observer(Success);
+export default Success;

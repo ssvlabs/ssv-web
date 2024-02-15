@@ -1,19 +1,18 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported.styles';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getStrategyName, getUserGeo } from '~app/redux/appState.slice';
 
 const CountryNotSupported = () => {
-  const stores = useStores();
   const classes = useStyles();
-  const applicationStore: ApplicationStore = stores.Application;
+  const userGeo = useAppSelector(getUserGeo);
+  const strategyName = useAppSelector(getStrategyName);
 
   const openMarketingSite = () => {
     GoogleTagManager.getInstance().sendEvent({
@@ -23,7 +22,7 @@ const CountryNotSupported = () => {
     });
     window.open('https://ssv.network/');
   };
-  const websiteUrl = applicationStore.strategyName === 'distribution' ? 'claim.ssv.network' : 'app.prater.ssv.network';
+  const websiteUrl = strategyName === 'distribution' ? 'claim.ssv.network' : 'app.prater.ssv.network';
 
   return (
     <BorderScreen
@@ -36,7 +35,7 @@ const CountryNotSupported = () => {
             title={'Website not available'}
             subtitle={(
               <span>
-                We noticed you are located in {applicationStore.userGeo}.<br />
+                We noticed you are located in {userGeo}.<br />
                 Please note that the website <LinkText text={websiteUrl} link={`https://${websiteUrl}`} /> is not available in your country.</span>
             )}
           />
@@ -48,4 +47,4 @@ const CountryNotSupported = () => {
   );
 };
 
-export default observer(CountryNotSupported);
+export default CountryNotSupported;

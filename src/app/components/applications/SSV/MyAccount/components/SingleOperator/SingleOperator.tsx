@@ -18,18 +18,19 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
 import ProcessStore, { SingleOperator as SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const SingleOperator = () => {
   const stores = useStores();
@@ -37,16 +38,16 @@ const SingleOperator = () => {
   const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
-  const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   const process: SingleOperatorProcess = processStore.getProcess;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const operator = process?.item;
+  const isDarkMode = useAppSelector(getIsDarkMode);
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
 
   useEffect(() => {
-    if (!operator) return navigate(applicationStore.strategyRedirect);
+    if (!operator) return navigate(strategyRedirect);
     loadOperatorValidators({ page: 1, perPage: 5 });
   }, []);
 
@@ -78,7 +79,7 @@ const SingleOperator = () => {
   // @ts-ignore
   const { logo, validators_count, fee, performance } = operator || {};
   const validator30dPerformance = operator ? performance['30d'] : 0;
-  const yearlyFee = formatNumberToUi(ssvStore.getFeeForYear(fromWei(fee)));
+  const yearlyFee = formatNumberToUi(getFeeForYear(fromWei(fee)));
   const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
   const copyToClipboard = (key: string) => {
@@ -149,7 +150,7 @@ const SingleOperator = () => {
             <Typography className={classes.TableValueText}>{validator30dPerformance === 0 ? '-' : validator30dPerformance}</Typography>
           </Grid>,
         },
-      ], [operator, applicationStore.darkMode],
+      ], [operator, isDarkMode],
   );
 
   const data = React.useMemo(
@@ -178,7 +179,7 @@ const SingleOperator = () => {
           };
         });
       },
-      [operatorsValidators, applicationStore.darkMode],
+      [operatorsValidators, isDarkMode],
   );
 
   const columns = React.useMemo(
@@ -210,7 +211,7 @@ const SingleOperator = () => {
 
           ],
         },
-      ], [applicationStore.darkMode],
+      ], [isDarkMode],
   );
 
   const UpdateFeeButton = () => !Number(operator.fee) ?

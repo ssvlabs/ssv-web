@@ -1,27 +1,36 @@
-import { observer } from 'mobx-react';
 import { configure } from 'mobx';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OnboardAPI } from '@web3-onboard/core';
 import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import Routes from '~app/Routes/Routes';
 import config from '~app/common/config';
-import { ssvLoader } from '~root/assets';
 import { getColors } from '~root/themes';
-import { globalStyle } from '~app/globalStyle';
-import { useStores } from '~app/hooks/useStores';
+import { GlobalStyle } from '~app/globalStyle';
 import BarMessage from '~app/components/common/BarMessage';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper from '~lib/utils/developerHelper';
 import { initOnboardOptions } from '~lib/utils/onboardHelper';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode, setUserGeo } from '~app/redux/appState.slice';
+import { AppTheme } from '~root/Theme';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { useDispatch } from 'react-redux';
+import { getStrategyRedirect, setStrategyRedirect } from '~app/redux/navigation.slice';
+import { getImage } from '~lib/utils/filePath';
+
+const Wrapper = styled.div<{ theme: any }>`
+  width: 100%;
+  height: 100%;
+  
+`;
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -54,13 +63,12 @@ if (process.env.REACT_APP_FAUCET_PAGE) {
 }
 
 const App = () => {
-  const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkTheme: window.localStorage.getItem('isDarkMode') === '1' }) });
+  const dispatch = useDispatch();
+  const isDarkMode = useAppSelector(getIsDarkMode);
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
-  const stores = useStores();
   const navigate = useNavigate();
-  const GlobalStyle = globalStyle();
-  const applicationStore: ApplicationStore = stores.Application;
-
   const location = useLocation();
 
   useEffect(() => {
@@ -68,42 +76,40 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    setTheme({ colors: getColors({ isDarkTheme: applicationStore.darkMode }) });
-  }, [applicationStore.darkMode]);
+    setTheme({ colors: getColors({ isDarkMode }) });
+  }, [isDarkMode]);
 
   useEffect(() => {
-    if (window?.localStorage.getItem('locationRestrictionDisabled')) {
+    if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
-      applicationStore.userGeo = '';
+      dispatch(setUserGeo(''));
     } else {
-      if (applicationStore.shouldCheckCompliance) {
-        checkUserCountryRestriction().then((res: any) => {
-          if (res.restricted) {
-            applicationStore.userGeo = res.userGeo;
-            applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-            navigate(config.routes.COUNTRY_NOT_SUPPORTED);
-          } else {
-            navigate(applicationStore.strategyRedirect);
-          }
-        });
-      } else {
-        if (location.pathname === config.routes.COUNTRY_NOT_SUPPORTED) {
-          applicationStore.userGeo = '';
-          applicationStore.strategyRedirect = config.routes.SSV.ROOT;
-          navigate(applicationStore.strategyRedirect);
+      checkUserCountryRestriction().then((res: any) => {
+        if (res.restricted) {
+          dispatch(setUserGeo(res.userGeo));
+          dispatch(setStrategyRedirect(config.routes.COUNTRY_NOT_SUPPORTED));
+          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+        } else if (location.pathname === config.routes.COUNTRY_NOT_SUPPORTED) {
+            dispatch(setUserGeo(''));
+            dispatch(setStrategyRedirect(config.routes.COUNTRY_NOT_SUPPORTED));
+            navigate(strategyRedirect);
+        } else {
+          navigate(strategyRedirect);
         }
-      }
+      });
     }
-  }, [applicationStore.shouldCheckCompliance]);
+  }, []);
+
+  const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);
 
   return (
       <StyledEngineProvider injectFirst>
         <DeveloperHelper />
-        <ThemeProvider theme={applicationStore.theme}>
-          <ThemeProviderLegacy theme={applicationStore.theme}>
+        <ThemeProvider theme={MuiTheme}>
+          <ThemeProviderLegacy theme={MuiTheme}>
             <ScThemeProvider theme={theme}>
               <GlobalStyle/>
-              {!web3Onboard && (<LoaderWrapper><Loader src={ssvLoader} /></LoaderWrapper>)}
+              {!web3Onboard && (<LoaderWrapper><Loader src={getImage('ssv-loader.svg')} /></LoaderWrapper>)}
               <BarMessage/>
               <BrowserView>
                 {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
@@ -119,4 +125,4 @@ const App = () => {
   );
 };
 
-export default observer(App);
+export default App;

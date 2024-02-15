@@ -6,7 +6,8 @@
       "~lib/*": ["./src/lib/*"],
       "~root/*": ["./src/*"],
       "~config/*": ["./config/*"],
-      "~images/*": ["./src/images/*"]
+      "~images/*": ["./src/images/*"],
+      "~redux/*": ["./src/redux/*"]
     }
   }
 }

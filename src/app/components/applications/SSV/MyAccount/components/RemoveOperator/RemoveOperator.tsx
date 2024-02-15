@@ -11,11 +11,13 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/RemoveOperator/RemoveOperator.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading, setIsLoading } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const RemoveOperator = () => {
   const stores = useStores();
@@ -28,99 +30,23 @@ const RemoveOperator = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const process: RegisterOperator = processStore.process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const applicationStore: ApplicationStore = stores.Application;
-  const classes = useStyles({ isLoading: applicationStore.isLoading });
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(getIsLoading);
+  const classes = useStyles({ isLoading });
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
 
   useEffect(() => {
-    if (!process.item) return navigate(applicationStore.strategyRedirect);
+    if (!process.item) return navigate(strategyRedirect);
   }, []);
-
-  // const chooseReason = (reason: number) => {
-  //   if (leavingReason === reason) {
-  //     setCheckBox(false);
-  //     setLeavingReason(0);
-  //   } else {
-  //     setLeavingReason(reason);
-  //   }
-  // };
-
-  // const inputHandler = (e: any) => {
-  //   const userInput = e.target.value;
-  //   setUserTextReason(userInput);
-  // };
-
-  // const sendLinkClickedAnalytics = (link: string) => {
-  //   GoogleTagManager.getInstance().sendEvent({
-  //     category: 'validator_register',
-  //     action: 'link',
-  //     label: link,
-  //   });
-  // };
-
-  // const outDocumentationLink = 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations';
-
-  // const ShareWithUsText = () => {
-  //   switch (leavingReason) {
-  //     case 1:
-  //       return (
-  //         <Grid item className={classes.ShareWithUsBulletsPoints}>
-  //           <ul>
-  //             <li>Visit <LinkText onClick={() => sendLinkClickedAnalytics(outDocumentationLink)}
-  //               text={'our documentation'}
-  //               link={outDocumentationLink} /> for common node
-  //               troubleshooting.
-  //             </li>
-  //             <li>Consult with other experiences operators in our <LinkText
-  //               onClick={() => sendLinkClickedAnalytics('https://discord.gg/AbYHBfjkDY')}
-  //               text={'discord developer community'} link={'https://discord.gg/AbYHBfjkDY'} />.
-  //             </li>
-  //           </ul>
-  //         </Grid>
-  //       );
-  //     case 2:
-  //       return (
-  //         <Grid item className={classes.ShareWithUsBulletsPoints}>
-  //           <ul>
-  //             <li>Business is slow? Increase your traction and reputation by <LinkText
-  //               text={'becoming a verified operator.'}
-  //               link={'https://forum.ssv.network/t/dao-curated-node-registry-verified-operators/129'} />
-  //             </li>
-  //             {/* <li>Costs are too high? See our guides on how to <LinkText text={'optimize hosting costs.'} link={'blat'} /> */}
-  //             {/* </li> */}
-  //           </ul>
-  //         </Grid>
-  //       );
-  //     default:
-  //       return null;
-  //   }
-  // };
-
-  // const shareWithUs = () => {
-  //   if (leavingReason === 0) return null;
-
-  //   return (
-  //     <Grid container item className={classes.ShareWithUsWrapper}>
-  //       <ShareWithUsText />
-  //       <TextInput
-  //         disable={false}
-  //         value={userTextReason}
-  //         data-testid="leaving reason"
-  //         onChangeCallback={inputHandler}
-  //         wrapperClass={classes.InputWrapper}
-  //         placeHolder={'Share with us what went wrong'}
-  //       />
-  //     </Grid>
-  //   );
-  // };
 
   const checkboxHandler = () => {
     setCheckBox(!checkbox);
   };
 
   const submitForm = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
     if (isRemoved) {
       myAccountStore.getOwnerAddressOperators({ forcePage: 1 }).finally(() => {
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
@@ -151,29 +77,6 @@ const RemoveOperator = () => {
                 Please note that this process is irreversible and you would not be able to reactive this operator in the
                 future.
               </Grid>
-              {/*<Typography className={classes.TextHelper}>Help us understand why you are leaving:</Typography>*/}
-              {/*<Grid container item className={classes.BoxesWrapper}>*/}
-              {/*  <Grid item container className={classes.BoxWrapper} onClick={() => {*/}
-              {/*    chooseReason(1);*/}
-              {/*  }}>*/}
-              {/*    <Grid item className={classes.TechnicalImage} xs={12}></Grid>*/}
-              {/*    Technical Issues*/}
-              {/*  </Grid>*/}
-              {/*  <Grid item container className={classes.BoxWrapper} onClick={() => {*/}
-              {/*    chooseReason(2);*/}
-              {/*  }}>*/}
-              {/*    <Grid item className={classes.ProfitabilityImage} xs={12}></Grid>*/}
-              {/*    Low profitability*/}
-              {/*  </Grid>*/}
-              {/*  <Grid item container className={classes.BoxWrapper} onClick={() => {*/}
-              {/*    chooseReason(3);*/}
-              {/*  }}>*/}
-              {/*    <Grid item className={classes.OtherImage} xs={12}></Grid>*/}
-              {/*    Other*/}
-              {/*  </Grid>*/}
-              {/*</Grid>*/}
-              {/*{shareWithUs()}*/}
-
               <CheckBox onClickCallBack={checkboxHandler}
                         text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'}/>
 

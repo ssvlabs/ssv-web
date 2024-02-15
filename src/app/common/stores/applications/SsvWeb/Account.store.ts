@@ -3,7 +3,8 @@ import Account from '~lib/api/Account';
 import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import { getContractByName } from '~root/services/contracts.service';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
+import { store } from '~app/store';
+import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 
 class AccountStore extends BaseStore  {
   recipientAddress: string = '';
@@ -19,19 +20,18 @@ class AccountStore extends BaseStore  {
 
   async setFeeRecipient(feeRecipient: string): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
-      const applicationStore: ApplicationStore = this.getStore('Application');
       const contract = getContractByName(EContractName.SETTER);
       try {
         const tx = await contract.setFeeRecipientAddress(feeRecipient);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
           console.log('in resolve');
           this.recipientAddress = feeRecipient;
-          applicationStore.showTransactionPendingPopUp(false);
+          store.dispatch(setIsShowTxPendingPopup(false));
           resolve(true);
         }
       } catch (e: any) {
@@ -52,7 +52,7 @@ class AccountStore extends BaseStore  {
     //       })
     //       .on('transactionHash', (txHash: string) => {
     //         applicationStore.txHash = txHash;
-    //         walletStore.notifySdk.hash(txHash);
+    //         notifyService.hash(tx.hash);
     //       })
     //       .on('error', (error: any) => {
     //         console.debug('Contract Error', error.message);

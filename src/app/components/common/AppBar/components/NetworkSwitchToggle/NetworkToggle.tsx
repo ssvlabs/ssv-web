@@ -2,9 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
-import config from '~app/common/config';
 import {
     getNetworkInfoIndexByNetworkId,
     getStoredNetwork,
@@ -31,7 +29,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const [{ wallet }, connect, disconnect] = useConnectWallet();
     const [{ connectedChain }, setChain] = useSetChain();
     const stores = useStores();
-    const navigate = useNavigate();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const notificationsStore: NotificationsStore = stores.Notifications;
@@ -79,7 +76,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                     setSelectedNetworkIndex(index);
                 } else {
                     disconnectWallet();
-                    navigate(config.routes.SSV.ROOT);
+                    walletStore.initWallet(null, null);
                 }
             } else {
                 changeNetwork(index);
@@ -87,7 +84,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             }
         }
         if (wallet?.provider) {
-            initContracts({ provider: wallet.provider, network: getStoredNetwork() });
             walletStore.initWallet(wallet, connectedChain);
         } else {
             resetContracts();
@@ -115,21 +111,22 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         // In wallet connect mode - disconnect and connect again
         if (isWalletConnect()) {
             await disconnectWallet();
-            navigate(config.routes.SSV.ROOT);
+            walletStore.initWallet(null, null);
             await connect();
             return;
         }
 
-        // Set chain works only in not wallet connect mode
-        const network = getStoredNetwork();
-        const setChainParams = { chainId: toHexString(network.networkId) };
-        console.warn('NetworkToggle: onOptionClick: setChainParams', setChainParams);
-        const setChainResult = await setChain(setChainParams);
-        if (!setChainResult) {
-            console.error('NetworkToggle: Error setting chain');
-            return;
+        if (walletStore.wallet) {
+            // Set chain works only in not wallet connect mode
+            const network = getStoredNetwork();
+            const setChainParams = { chainId: toHexString(network.networkId) };
+            console.warn('NetworkToggle: onOptionClick: setChainParams', setChainParams);
+            const setChainResult = await setChain(setChainParams);
+            initContracts({ network });
+            if (!setChainResult) {
+                console.error('NetworkToggle: Error setting chain');
+            }
         }
-        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     };
 
     return (

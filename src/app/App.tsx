@@ -87,6 +87,9 @@ const App = () => {
           navigate(config.routes.SSV.ROOT);
         }
       });
+    } else {
+      dispatch(setRestrictedUserGeo(''));
+      navigate(config.routes.SSV.ROOT);
     }
   }, [shouldCheckCountryRestriction]);
 

@@ -343,7 +343,7 @@ class SsvStore extends BaseStore {
   }
 
   /**
-   * Set allowance to get CDT from user account.
+   * Request for MAX_WEI_AMOUNT, user can change so actual approved allowance is saved
    */
   async requestAllowance(callBack?: CallableFunction): Promise<any> {
     return new Promise((async (resolve, reject) => {
@@ -357,7 +357,7 @@ class SsvStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          this.approvedAllowance = Number(MAX_WEI_AMOUNT);
+          this.approvedAllowance = Number(receipt.approvedAllowance);
           resolve(true);
         }
       } catch (e: any) {

@@ -1,12 +1,12 @@
 import { Contract, ethers } from 'ethers';
-import { EIP1193Provider } from '@web3-onboard/core';
+// import { EIP1193Provider } from '@web3-onboard/core';
 import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { NetworkInfo } from '~root/providers/networkInfo.provider';
 
 let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
 
-const initGetterContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo })=> {
+const initGetterContract = ({ provider, network }: { provider: any; network: NetworkInfo })=> {
   const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
   const contractAddress = network.getterContractAddress;
   if (contracts[EContractName.GETTER] && contracts[EContractName.GETTER].address === contractAddress) {
@@ -23,7 +23,7 @@ const initGetterContract = ({ provider, network }: { provider: EIP1193Provider; 
   }
 };
 
-const initSetterContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+const initSetterContract = ({ provider, network }: { provider: any; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
   const contractAddress = network.setterContractAddress;
   if (contracts[EContractName.SETTER] && contracts[EContractName.SETTER].address === contractAddress) {
@@ -40,7 +40,7 @@ const initSetterContract = ({ provider, network }: { provider: EIP1193Provider; 
   }
 };
 
-const initTokenContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+const initTokenContract = ({ provider, network }: { provider: any; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_TOKEN.ABI;
   const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
   const contractAddress = network.tokenAddress;
@@ -56,7 +56,7 @@ const initTokenContract = ({ provider, network }: { provider: EIP1193Provider; n
   }
 };
 
-const initDistributionContract = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+const initDistributionContract = ({ provider, network }: { provider: any; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_DISTRIBUTION.ABI;
   const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
   const contractAddress = network.distributionContractAddress;
@@ -81,7 +81,8 @@ const resetContracts = () => {
 /**
  * Crucial to call this only when then network object has been changed
  */
-const initContracts = ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+const initContracts = ({ network }: { network: NetworkInfo }) => { // ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
+  const provider = new ethers.providers.JsonRpcProvider('http://bn-h-3.stage.bloxinfra.com:8547/');
   initGetterContract({ provider, network });
   initSetterContract({ provider, network });
   initTokenContract({ provider, network });

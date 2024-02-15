@@ -14,7 +14,6 @@ import {
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
@@ -33,7 +32,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const navigate = useNavigate();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
 
     const disconnectWallet = async () => {
@@ -78,7 +76,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                     setSelectedNetworkIndex(index);
                 } else {
                     disconnectWallet();
-                    navigate('/join');
+                    navigate(config.routes.SSV.ROOT);
                 }
             } else {
                 changeNetwork(index);
@@ -103,7 +101,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             return;
         }
 
-        applicationStore.shouldCheckCompliance = index === 0;
         // Change network in local storage
         ssvStore.clearUserSyncInterval();
         resetContracts();
@@ -120,7 +117,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         // In wallet connect mode - disconnect and connect again
         if (isWalletConnect()) {
             await disconnectWallet();
-            navigate('/join');
+            navigate(config.routes.SSV.ROOT);
             await connect();
             return;
         }

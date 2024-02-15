@@ -1,27 +1,25 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
-    const stores = useStores();
-    const navigate = useNavigate();
-    const applicationStore: ApplicationStore = stores.Application;
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
     const backToMyAccount = async () => {
-        applicationStore.setIsLoading(true);
+        dispatch(setIsLoading(true));
         setTimeout(() => {
-            applicationStore.setIsLoading(false);
+            dispatch(setIsLoading(false));
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }, 5000);
     };
@@ -60,4 +58,4 @@ const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
     );
 };
 
-export default observer(FeeUpdated);
+export default FeeUpdated;

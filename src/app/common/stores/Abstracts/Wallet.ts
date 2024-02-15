@@ -3,8 +3,6 @@ import BaseStore from '~app/common/stores/BaseStore';
 
 export default abstract class Wallet extends BaseStore {
   wallet: any;
-  notifySdk: any;
-  onboardSdk: any;
   accountAddress: string;
   isWrongNetwork: boolean;
   networkId: number | null;

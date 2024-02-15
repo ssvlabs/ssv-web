@@ -15,27 +15,28 @@ import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   const { checkedCondition } = useTermsAndConditions();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
+  const dispatch = useAppDispatch();
 
   const disableLoadingStates = () => {
-    applicationStore.setIsLoading(false);
-    applicationStore.showTransactionPendingPopUp(false);
+    dispatch(setIsLoading(false));
+    dispatch(setIsShowTxPendingPopup(false));
   };
 
   const onRegisterClick = async () => {
     try {
-      applicationStore.setIsLoading(true);
+      dispatch(setIsLoading(true));
       setActionButtonText('Waiting for confirmation...');
       const operatorAdded = await operatorStore.addNewOperator();
       let publicKey = operatorStore.newOperatorKeys.publicKey;

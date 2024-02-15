@@ -5,9 +5,10 @@ import Button from '@mui/material/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './PrimaryButton.styles';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading } from '~app/redux/appState.slice';
 
 type Props = {
     text: string;
@@ -24,10 +25,11 @@ type Props = {
 const PrimaryButton = (props: Props) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
     const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
+    const appStateIsLoading = useAppSelector(getIsLoading);
+
 
     // useEffect(() => {
     //     const callback = (event: any) => {
@@ -53,9 +55,9 @@ const PrimaryButton = (props: Props) => {
         await submitFunction();
     };
 
-    const showLoaderCondition = applicationStore.isLoading || isLoading && !withoutLoader;
-    const isLoadingClassCondition = applicationStore.isLoading || isLoading;
-    const isDisabledCondition = disable || applicationStore.isLoading;
+    const showLoaderCondition = appStateIsLoading || isLoading && !withoutLoader;
+    const isLoadingClassCondition = appStateIsLoading || isLoading;
+    const isDisabledCondition = disable || appStateIsLoading;
 
     return (
         <Grid container item>

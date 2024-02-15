@@ -1,32 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode, getIsLoading, getStrategyName } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const SsvAppBar = () => {
-  const stores = useStores();
   const navigate = useNavigate();
   const wrapperRef = useRef(null);
   const buttonsRef = useRef(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [menuBar, openMenuBar] = useState(false);
-  const applicationStore: ApplicationStore = stores.Application;
   const [showMobileBar, setMobileBar] = useState(false);
-  const isDistribution = applicationStore.strategyName === 'distribution';
-  const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+  const isDarkMode = useAppSelector(getIsDarkMode);
+  const isLoading = useAppSelector(getIsLoading);
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const strategyName = useAppSelector(getStrategyName);
+  const isDistribution = strategyName === 'distribution';
+  const hasOperatorsOrValidators = strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
 
-  const classes = useStyles({
-    isDistribution,
-    // @ts-ignore
-    whiteBackGround: applicationStore.whiteNavBarBackground,
-  });
+  const classes = useStyles({ isDistribution });
 
   // Add event listener on screen size change
   useEffect(() => {
@@ -85,10 +83,9 @@ const SsvAppBar = () => {
   }
 
   const moveToDashboard = () => {
-    if (applicationStore.isLoading) return;
+    if (isLoading) return;
     if (hasOperatorsOrValidators) {
       // @ts-ignore
-      applicationStore.whiteNavBarBackground = false;
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }
   };
@@ -126,7 +123,7 @@ const SsvAppBar = () => {
         <DocsButton className={classes.MenuButton} />
         <Grid item className={classes.UnderLine} />
         <Grid item container className={`${classes.MenuButton} ${classes.Slider}`}>
-          <Grid item xs>{applicationStore.darkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
+          <Grid item xs>{isDarkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
           <Grid item>
             <DarkModeSwitcher margin={false} />
           </Grid>
@@ -145,9 +142,8 @@ const SsvAppBar = () => {
   };
 
   const logoAction = () => {
-    if (applicationStore.isLoading) return;
+    if (isLoading) return;
     // @ts-ignore
-    applicationStore.whiteNavBarBackground = false;
     navigate(config.routes.SSV.ROOT);
   };
 
@@ -180,4 +176,4 @@ const SsvAppBar = () => {
   );
 };
 
-export default observer(SsvAppBar);
+export default SsvAppBar;

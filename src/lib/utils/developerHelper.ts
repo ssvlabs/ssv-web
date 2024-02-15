@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { saveInLocalStorage } from '~root/providers/localStorage.provider';
 
 export const MAXIMUM_VALIDATOR_COUNT_FLAG =  'maximumValidatorCount';
 
@@ -65,7 +66,7 @@ const DeveloperHelper = () => {
       showHelp && console.log(`%c?${flagName}=${flagValues.join('|')}`, valueCss);
 
       if (flagSearchValue && flagValues.indexOf(flagSearchValue) !== -1) {
-        setLocalStorageFlagValue(flagName, flagSearchValue);
+        saveInLocalStorage(flagName, flagSearchValue);
       }
     }
   });

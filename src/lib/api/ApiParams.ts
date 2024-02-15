@@ -1,3 +1,5 @@
+import { saveInLocalStorage } from '~root/providers/localStorage.provider';
+
 class ApiParams {
   static PER_PAGE: number = 8;
   static DEFAULT_PAGINATION = {
@@ -49,11 +51,7 @@ class ApiParams {
     const storage = this.getStorage();
     storage[entity] = storage[entity] || ApiParams.DEFAULT_PAGINATION;
     storage[entity][name] = value;
-    try {
-      window.localStorage.setItem('params', JSON.stringify(storage));
-    } catch (e) {
-      console.error('Unable to use localStorage');
-    }
+    saveInLocalStorage('params', JSON.stringify(storage));
   }
 
   /**

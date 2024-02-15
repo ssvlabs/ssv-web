@@ -138,12 +138,7 @@ class MyAccountStore extends BaseStore {
     }, INTERVAL_TIME);
   }
 
-  async getOwnerAddressOperators(
-    {
-                                     forcePage,
-                                     forcePerPage,
-                                   }: { forcePage?: number, forcePerPage?: number },
-  ): Promise<void> {
+  async getOwnerAddressOperators({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number }): Promise<void> {
     const { page, per_page } = this.ownerAddressOperatorsPagination;
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return;
@@ -182,12 +177,7 @@ class MyAccountStore extends BaseStore {
     };
   }
 
-  async getOwnerAddressClusters(
-      {
-        forcePage,
-        forcePerPage,
-      }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean },
-  ): Promise<any[]> {
+  async getOwnerAddressClusters({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean }): Promise<any[]> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
     if (!walletStore.accountAddress) return [];

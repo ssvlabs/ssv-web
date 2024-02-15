@@ -20,7 +20,6 @@ import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -37,7 +36,7 @@ import ClusterSize
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
 import MevCounterBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,
@@ -46,7 +45,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   clusterBox: number[]
 }) => {
   const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
   const [loading, setLoading] = useState(false);
   const classes = useStyles({ loading });
   const wrapperRef = useRef(null);
@@ -141,19 +139,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   };
 
   const dataRows = () => {
-    // if (loading) {
-    //     return skeletons.map((rowIndex: number) => (
-    //       <StyledRow hover role="checkbox" tabIndex={-1} key={`row-${rowIndex}`}>
-    //         {[0, 1, 2, 3].map((index: number) => (
-    //           <StyledCell style={{ padding: '10px 2px 10px 2px' }} key={`cell-${index}`}>
-    //             <Skeleton />
-    //           </StyledCell>
-    //         ))}
-    //       </StyledRow>
-    //     ));
-    // }
-    // if (loading) return [];
-
     if (operatorsData?.length === 0 && !loading) {
       return (
         <TableRow hover>
@@ -219,7 +204,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
           <StyledCell>
             <Grid container>
               <Grid item
-                    className={classes.FeeColumn}>{formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))} SSV</Grid>
+                    className={classes.FeeColumn}>{formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV</Grid>
             </Grid>
           </StyledCell>
           <StyledCell>

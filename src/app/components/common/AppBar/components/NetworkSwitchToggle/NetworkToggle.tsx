@@ -112,26 +112,12 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         setSelectedNetworkIndex(index);
         setShowNetworks(false);
 
-        // If no wallet - end of the logic
-        if (!wallet) {
-            console.warn('NetworkToggle: onOptionClick: no wallet or network is the same!');
-            return;
-        }
-
         // In wallet connect mode - disconnect and connect again
         if (isWalletConnect()) {
             await disconnectWallet();
             navigate(config.routes.SSV.ROOT);
             await connect();
             return;
-        }
-
-        if (!connectedChain?.id) {
-            const result = await connect();
-            if (!result) {
-                console.error('NetworkToggle: Error connecting wallet');
-                return;
-            }
         }
 
         // Set chain works only in not wallet connect mode

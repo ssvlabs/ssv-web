@@ -82,7 +82,7 @@ const resetContracts = () => {
  * Crucial to call this only when then network object has been changed
  */
 const initContracts = ({ network }: { network: NetworkInfo }) => { // ({ provider, network }: { provider: EIP1193Provider; network: NetworkInfo }) => {
-  const provider = new ethers.providers.JsonRpcProvider('https://cool-prettiest-daylight.ethereum-holesky.quiknode.pro/0d8ffe59dc7865022b15bc0d56692593416330ab/');
+  const provider = new ethers.providers.JsonRpcProvider('https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26/', 'any');
   initGetterContract({ provider, network });
   initSetterContract({ provider, network });
   initTokenContract({ provider, network });

@@ -9,7 +9,7 @@ import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
 
-const MAX_WEI_AMOUNT = 115792089237316195423570985008687907853269984665640564039457584007913129639935;
+const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
 class SsvStore extends BaseStore {
   accountInterval: any = null;
@@ -209,7 +209,7 @@ class SsvStore extends BaseStore {
    * Withdraw ssv
    * @param amount
    */
-  async withdrawSsv(amount: string, operatorFlow: boolean = false) {
+  async withdrawSsv(amount: string) { // , operatorFlow: boolean = false) {
     return new Promise<boolean>(async (resolve) => {
       try {
         const processStore: ProcessStore = this.getStore('Process');
@@ -347,10 +347,9 @@ class SsvStore extends BaseStore {
    */
   async requestAllowance(callBack?: CallableFunction): Promise<any> {
     return new Promise((async (resolve, reject) => {
-      const weiValue = String(MAX_WEI_AMOUNT); // amount ? toWei(ssvValue, 'ether') : ssvValue;
       const ssvContract = getContractByName(EContractName.TOKEN);
       try {
-        const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, weiValue);
+        const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, MAX_WEI_AMOUNT);
         if (tx.hash) {
           callBack && callBack({ txHash: tx.hash });
         } else {
@@ -358,7 +357,7 @@ class SsvStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          this.approvedAllowance = MAX_WEI_AMOUNT;
+          this.approvedAllowance = Number(MAX_WEI_AMOUNT);
           resolve(true);
         }
       } catch (e: any) {

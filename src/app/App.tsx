@@ -1,7 +1,7 @@
 import { configure } from 'mobx';
 import React, { useEffect, useState, useMemo } from 'react';
 import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { OnboardAPI } from '@web3-onboard/core';
 import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -23,14 +23,8 @@ import { getIsDarkMode, getShouldCheckCountryRestriction, setRestrictedUserGeo }
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { useDispatch } from 'react-redux';
-import { getStrategyRedirect, setStrategyRedirect } from '~app/redux/navigation.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getImage } from '~lib/utils/filePath';
-
-const Wrapper = styled.div<{ theme: any }>`
-  width: 100%;
-  height: 100%;
-  
-`;
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -90,6 +84,7 @@ const App = () => {
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
         } else {
           dispatch(setRestrictedUserGeo(''));
+          navigate(config.routes.SSV.ROOT);
         }
       });
     }

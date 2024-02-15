@@ -17,7 +17,7 @@ const initGetterContract = ({ provider, network }: { provider: any; network: Net
   if (contractAddress) {
     // console.warn('Creating new getter contract', { abi, contractAddress });
     const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-    contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
+    contracts[EContractName.GETTER] = new Contract(contractAddress, abi, provider);
   } else {
     console.warn('No getter contract address found');
   }
@@ -34,7 +34,7 @@ const initSetterContract = ({ provider, network }: { provider: any; network: Net
   if (contractAddress) {
     // console.warn('Creating new setter contract', { abi, contractAddress });
     const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-    contracts[EContractName.SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
+    contracts[EContractName.SETTER] = new Contract(contractAddress, abi, provider);
   } else {
     console.warn('No setter contract address found');
   }
@@ -50,7 +50,7 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
   }
   if (contractAddress) {
     // console.warn('Creating new token contract', { abi, contractAddress });
-    contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, ethProvider.getSigner());
+    contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, provider);
   } else {
     console.warn('No token contract address found');
   }
@@ -66,7 +66,7 @@ const initDistributionContract = ({ provider, network }: { provider: any; networ
       return;
     }
     // console.warn('Creating new distribution contract', { abi, contractAddress });
-    contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, ethProvider.getSigner());
+    contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, provider);
   } else {
     console.warn('No distribution contract address found');
   }

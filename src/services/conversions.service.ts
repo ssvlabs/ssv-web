@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import Web3, { utils } from 'web3';
 import { roundNumber } from '~lib/utils/numbers';
+import Decimal from 'decimal.js';
+import config from '~app/common/config';
 
 const fromWei = (amount?: number | string): number => {
   if (!amount) return 0;
@@ -33,4 +35,17 @@ const decodeParameter = (type: string, value: any): string => {
 
 const isAddress = (address: string) => ethers.utils.isAddress(address);
 
-export { fromWei, toWei, encodePacked, encodeParameter, decodeParameter, isAddress };
+const prepareSsvAmountToTransfer = (amountInWei: string): string => {
+  return new Decimal(amountInWei).dividedBy(10000000).floor().mul(10000000).toFixed().toString();
+};
+
+const toDecimalNumber = (fee: number, decimalPlaces?: number): string => {
+  return new Decimal(fee).toFixed(decimalPlaces ?? 18).toString();
+};
+
+const getFeeForYear = (fee: number, decimalPlaces?: number): string => {
+  const wrapFee = new Decimal(fee);
+  return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
+};
+
+export { fromWei, toWei, encodePacked, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear };

@@ -25,7 +25,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { AccountStore, ClusterStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
@@ -42,6 +41,8 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -56,7 +57,6 @@ const KeyShareFlow = () => {
     const clusterStore: ClusterStore = stores.Cluster;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
-    const applicationStore: ApplicationStore = stores.Application;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
     const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -77,6 +77,7 @@ const KeyShareFlow = () => {
     const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
     const [{ wallet }] = useConnectWallet();
     const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label));
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
       if (!processStore.secondRegistration) {
@@ -368,7 +369,7 @@ const KeyShareFlow = () => {
 
     const submitHandler = async () => {
       try {
-        applicationStore.setIsLoading(true);
+        dispatch(setIsLoading(true));
         validatorStore.registrationMode = 0;
         let nextRouteAction = EValidatorFlowAction.FIRST_REGISTER;
         validatorStore.setRegisterValidatorsPublicKeys(Object.values(validatorsList).filter((validator: any) => validator.isSelected).map((validator: any) => validator.publicKey));
@@ -398,7 +399,7 @@ const KeyShareFlow = () => {
         });
         setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
       }
-      applicationStore.setIsLoading(false);
+      dispatch(setIsLoading(false));
     };
 
     const availableToRegisterValidatorsCount = Object.values(validatorsList).filter((validator: ValidatorType) => !validator.registered && !validator.errorMessage).length;

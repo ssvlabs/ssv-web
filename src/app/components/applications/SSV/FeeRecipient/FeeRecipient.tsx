@@ -11,9 +11,10 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 
 const checkAddressChecksum = (address: string) => {
@@ -28,16 +29,16 @@ const FeeRecipient = () => {
   const stores = useStores();
   const classes = useStyles();
   const accountStore: AccountStore = stores.Account;
-  const applicationStore: ApplicationStore = stores.Application;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState(accountStore.recipientAddress);
   const { checkedCondition } = useTermsAndConditions();
+  const dispatch = useAppDispatch();
 
   const submitFeeRecipient = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     await accountStore.setFeeRecipient(userInput);
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   };
 
   const setFeeRecipient = (e: any) => {

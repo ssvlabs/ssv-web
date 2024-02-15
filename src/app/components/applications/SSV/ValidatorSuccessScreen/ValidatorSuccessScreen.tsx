@@ -14,8 +14,9 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const ValidatorSuccessScreen = () => {
   const stores = useStores();
@@ -24,16 +25,16 @@ const ValidatorSuccessScreen = () => {
   const buttonText = 'Manage Validator';
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   const operators = Object.values(operatorStore.selectedOperators);
   const clusterHash = clusterStore.getClusterHash(operators);
   const timeoutRef = useRef<any>(null);
   const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
 
   const redirectTo = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     setTimeout(() => {
-      applicationStore.setIsLoading(false);
+      dispatch(setIsLoading(false));
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }, 5000);
 

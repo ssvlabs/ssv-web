@@ -1,3 +1,5 @@
+import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+
 interface NetworkInfo {
   networkId: number;
   api: string;
@@ -66,18 +68,18 @@ const changeNetwork = (index: number): NetworkInfo => {
   if (!networks[index]) {
     index = 0;
   }
-  localStorage.setItem('networkSwitcherIndex', `${index}`);
+  saveInLocalStorage('networkSwitcherIndex', `${index}`);
   console.warn('Saved network index', index);
   return networks[index];
 };
 
-const getStoredNetworkIndex = () => Number(localStorage.getItem('networkSwitcherIndex') || 0);
+const getStoredNetworkIndex = () => Number(getFromLocalStorageByKey('networkSwitcherIndex') || 0);
 
 const getStoredNetwork = () => {
   let savedNetworkIndex = getStoredNetworkIndex();
   if (!networks[savedNetworkIndex]) {
     savedNetworkIndex = 0;
-    localStorage.setItem('networkSwitcherIndex', `${savedNetworkIndex}`);
+    saveInLocalStorage('networkSwitcherIndex', `${savedNetworkIndex}`);
   }
   return networks[savedNetworkIndex];
 };

@@ -8,30 +8,31 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({ step: StepperSteps.EXECUTION });
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
-  
+  const dispatch = useAppDispatch();
+
   const submitFeeChange = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
     if (response) {
         getCurrentState(true);
     }
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   };
 
   const operatorEndApprovalTime = new Date(Number(operatorStore.operatorApprovalEndTime) * 1000);
   const today = new Date();
-  
+
   return (
     <BorderScreen
       blackHeader

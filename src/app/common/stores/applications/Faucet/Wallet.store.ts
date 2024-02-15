@@ -1,21 +1,18 @@
 import axios from 'axios';
-import Notify from 'bnc-notify';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { action, computed, makeObservable, observable } from 'mobx';
-import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import Application from '~app/common/stores/Abstracts/Application';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import notifyService from '~root/services/notify.service';
 
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   ssvBalance: any = 0;
-  notifySdk: any = null;
-  onboardSdk: any = null;
   accountAddress: string = '';
   wrongNetwork: boolean = false;
   networkId: number | null = null;
@@ -27,9 +24,7 @@ class WalletStore extends BaseStore implements Wallet {
 
     makeObservable(this, {
       wallet: observable,
-      notifySdk: observable,
       networkId: observable,
-      onboardSdk: observable,
       ssvBalance: observable,
       changeNetwork: action.bound,
       isWrongNetwork: computed,
@@ -60,13 +55,7 @@ class WalletStore extends BaseStore implements Wallet {
         this.notificationsStore.showMessage('Please change network', 'error');
       }
       await this.addressHandler(address);
-      const notifyOptions = {
-        networkId: Number(connectedChain.id),
-        dappId: config.ONBOARD.API_KEY,
-        desktopPosition: 'topRight',
-      };
-      // @ts-ignore
-      this.notifySdk = Notify(notifyOptions);
+      notifyService.init(connectedChain.id);
     } else if (this.accountAddress && !wallet) {
       await this.addressHandler(undefined);
     }
@@ -78,14 +67,14 @@ class WalletStore extends BaseStore implements Wallet {
   async initializeUserInfo() {
     try {
       const { faucetApi } = getStoredNetwork();
-      const applicationStore: Application = this.getStore('Application');
       const faucetStore: FaucetStore = this.getStore('Faucet');
       const faucetUrl = `${faucetApi}/config`;
       const response = (await axios.get(faucetUrl)).data.filter((data: any) => data.network === this.networkId?.toString());
       if (response.length > 0) {
         faucetStore.amountToTransfer = response[0].amount_to_transfer;
         // eslint-disable-next-line no-constant-condition
-        applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
+        // TODO refactor whole function
+        // applicationStore.strategyRedirect = response[0].transactions_capacity > 0 ? config.routes.FAUCET.ROOT : config.routes.FAUCET.DEPLETED;
       }
     } catch {
       console.log('[ERROR]: fail to fetch faucet config');
@@ -108,7 +97,6 @@ class WalletStore extends BaseStore implements Wallet {
   async addressHandler(address: string | undefined) {
     if (address === undefined) {
       this.accountAddress = '';
-      window.localStorage.removeItem('selectedWallet');
     } else {
       this.accountAddress = address;
       await this.initializeUserInfo();
@@ -139,7 +127,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   async changeNetwork(networkId: string | number) {
-    await this.onboardSdk.setChain({ chainId: networkId });
+    // await this.onboardSdk.setChain({ chainId: networkId });
   }
 
   get isWrongNetwork(): boolean {

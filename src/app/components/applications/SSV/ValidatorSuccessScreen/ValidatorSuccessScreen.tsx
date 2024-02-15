@@ -95,7 +95,7 @@ const ValidatorSuccessScreen = () => {
               })}
             </Grid>
             <Grid item className={classes.Text}>Your cluster operators have been notified and will start your validator operation instantly.</Grid>
-            <PrimaryButton text={buttonText} submitFunction={redirectTo} />
+            <PrimaryButton children={buttonText} submitFunction={redirectTo} />
           </Grid>,
         ]}
       />

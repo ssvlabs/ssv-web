@@ -9,7 +9,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { useStyles } from './SecondaryButton.styles';
 
 type Props = {
-    text: string,
+    children: string | JSX.Element,
     disable?: boolean,
     className?: string,
     submitFunction: any,
@@ -25,7 +25,7 @@ const SecondaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
+    const { children, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
     const classes = useStyles({ noCamelCase, withoutBackgroundColor });
 
     // TODO: reduce to single component for wallet connection
@@ -49,7 +49,7 @@ const SecondaryButton = (props: Props) => {
         disabled={disable || applicationStore.isLoading}
       >
         {applicationStore.isLoading && !withoutLoader && <Spinner />}
-        {text}
+        {children}
       </Button>
     );
 };

@@ -320,7 +320,7 @@ const OfflineKeyShareGeneration = () => {
 								<CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
 						</Grid>
           }
-          {hideButtonCondition() && <PrimaryButton text={buttonLabel}
+          {hideButtonCondition() && <PrimaryButton children={buttonLabel}
 																									 submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
 																									 disable={disabledCondition()}/>}
         </Grid>,

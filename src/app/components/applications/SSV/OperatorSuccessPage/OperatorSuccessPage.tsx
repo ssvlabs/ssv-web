@@ -58,7 +58,7 @@ const SetOperatorFee = () => {
                   <LinkText text={'Enable MEV'} link={config.links.MONITOR_YOUR_NODE_URL} />to propose MEV blocks for the validators you manage.
                 </Grid>
               </Grid>
-              <PrimaryButton disable={false} text={'Manage Operator'} submitFunction={moveToMyAccount}/>
+              <PrimaryButton disable={false} children={'Manage Operator'} submitFunction={moveToMyAccount}/>
             </Grid>,
           ]}
       />

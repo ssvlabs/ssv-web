@@ -91,7 +91,7 @@ const RequestForSsv = () => {
             onVerify={() => setDisabled(false)}
             sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
           />
-          <PrimaryButton wrapperClass={classes.SubmitButton} text={buttonText} submitFunction={requestForSSV}
+          <PrimaryButton wrapperClass={classes.SubmitButton} children={buttonText} submitFunction={requestForSSV}
                          disable={walletStore.isWrongNetwork || disabled || reachedMaxTransactionPerDay}
                          withVerifyConnection={false}/>
         </Grid>,

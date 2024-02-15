@@ -223,11 +223,11 @@ const SingleOperator = () => {
           placement="top-end"
           children={
           <Grid item xs>
-            <SecondaryButton disable={!Number(operator.fee)} text={'Update Fee'} submitFunction={moveToUpdateFee} />
+            <SecondaryButton disable={!Number(operator.fee)} children={'Update Fee'} submitFunction={moveToUpdateFee} />
           </Grid>}
       />
       :
-      <SecondaryButton disable={!Number(operator.fee)} text={'Update Fee'} submitFunction={moveToUpdateFee} />;
+      <SecondaryButton disable={!Number(operator.fee)} children={'Update Fee'} submitFunction={moveToUpdateFee} />;
 
   return (
       <Grid container item style={{ gap: 26 }}>

@@ -9,7 +9,10 @@ import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
+import {
+  BULK_FLOWS,
+  SingleCluster as SingleClusterProcess,
+} from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 
 const Settings = ({ validator }: { validator: any }) => {
@@ -69,9 +72,11 @@ const Settings = ({ validator }: { validator: any }) => {
     window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}`, '_blank');
   };
 
-  const moveToRemoveValidator = () => {
+  const moveToRemoveValidator = (flow: BULK_FLOWS) => {
+    console.log(process);
     process.validator = validator;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT);
+    process.currentBulkFlow = flow;
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
   };
 
   return (
@@ -88,9 +93,13 @@ const Settings = ({ validator }: { validator: any }) => {
               </Grid>
               <Grid className={classes.ChangeOperatorsLinkImage} />
             </Grid>
-            <Grid container item className={classes.Button} onClick={moveToRemoveValidator}>
+            <Grid container item className={classes.Button} onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_REMOVE)}>
               <Grid className={classes.RemoveValidatorImage} />
               <Typography>Remove Validator</Typography>
+            </Grid>
+            <Grid container item className={classes.Button} onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
+              <Grid className={classes.ExitValidatorImage} />
+              <Typography>Exit Validator</Typography>
             </Grid>
           </Grid>
         </Grid>

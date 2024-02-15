@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
     alignItems: 'start',
     color: theme.colors.gray80,
-    marginBottom: theme.spacing(5),
+    marginBottom: (props: any) => props.withoutMarginBottom ? 0 : theme.spacing(5),
   },
   BoxWrapper: {
     borderRadius: 2,

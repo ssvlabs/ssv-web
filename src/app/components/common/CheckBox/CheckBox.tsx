@@ -12,17 +12,18 @@ type CheckboxProps = {
   isChecked?: boolean,
   onClickCallBack?: any,
   grayBackGround?: boolean,
-
+  withoutMarginBottom?: boolean
 };
 
-const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround }: CheckboxProps) => {
+const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround, withoutMarginBottom }: CheckboxProps) => {
   const stores = useStores();
   const checkboxStore: CheckboxStore = stores.Checkbox;
-  const [checked, setChecked] = useState(isChecked ?? false);
-  const classes = useStyles({ grayBackGround, checked, width, height });
-
+  const [checked, setChecked] = useState(isChecked);
+  const classes = useStyles({ grayBackGround, checked: isChecked ?? checked, width, height, withoutMarginBottom });
   useEffect(() => {
+    if (!isChecked) {
       checkboxStore.setCheckboxStateFalse();
+    }
   }, []);
 
   const checkAction = () => {
@@ -32,7 +33,7 @@ const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, gr
   };
 
   return (
-    <Grid container className={classes.CheckBoxWrapper} onClick={checkAction}>
+    <Grid container={!!text} className={classes.CheckBoxWrapper} onClick={checkAction}>
       <Grid item>
         <Grid className={classes.BoxWrapper} />
       </Grid>

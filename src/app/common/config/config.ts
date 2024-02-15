@@ -98,6 +98,7 @@ const config = {
           VALIDATOR_REMOVE: {
             ROOT: '/my-account/cluster/remove-validator',
             REMOVED: '/my-account/cluster/removed',
+            BULK: '/my-account/cluster/bulk',
           },
         },
         // EDIT_VALIDATOR: '/my-account/validator/:public_key/edit',

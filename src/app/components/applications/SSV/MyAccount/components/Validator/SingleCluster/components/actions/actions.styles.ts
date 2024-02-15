@@ -41,4 +41,20 @@ export const useStyles = makeStyles((theme: Theme) => ({
       borderBottom: 'none',
     },
   },
+  Remove: {
+    width: 16,
+    height: 16,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: `url(/images/validator_settings/remove-${theme.darkMode ? 'dark' : 'light'}.svg)`,
+  },
+  Exit: {
+    width: 16,
+    height: 16,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: `url(/images/exit-validator/exit-${theme.darkMode ? 'dark' : 'light'}.svg)`,
+  },
 }));

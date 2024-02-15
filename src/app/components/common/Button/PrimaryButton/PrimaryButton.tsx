@@ -10,7 +10,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { useStyles } from './PrimaryButton.styles';
 
 type Props = {
-    text: string;
+    children: string | JSX.Element;
     disable?: boolean;
     isLoading?: boolean;
     submitFunction: any;
@@ -26,7 +26,7 @@ const PrimaryButton = (props: Props) => {
     const walletStore: WalletStore = stores.Wallet;
     const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
+    const { children, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
 
     // useEffect(() => {
@@ -58,7 +58,7 @@ const PrimaryButton = (props: Props) => {
     const isDisabledCondition = disable || applicationStore.isLoading;
 
     return (
-        <Grid container item>
+        // <Grid container item>
             <Button
                 type="submit"
                 onClick={submitHandler}
@@ -67,9 +67,9 @@ const PrimaryButton = (props: Props) => {
                 className={`${isLoadingClassCondition ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
             >
                 {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
-                {text}
+                {children}
             </Button>
-        </Grid>
+        // </Grid>
     );
 };
 

@@ -41,7 +41,7 @@ const Welcome = () => {
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
                 withVerifyConnection
-                text={'Distribute Validator'}
+                children={'Distribute Validator'}
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
@@ -50,7 +50,7 @@ const Welcome = () => {
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
                 withVerifyConnection
-                text={'Join as Operator'}
+                children={'Join as Operator'}
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}
@@ -67,7 +67,7 @@ const Welcome = () => {
           {!walletStore.wallet && false && (
             <PrimaryButton
               withVerifyConnection
-              text={'Connect Wallet'}
+              children={'Connect Wallet'}
               submitFunction={connectToWallet}
               dataTestId={'connect-to-wallet-button'}
             />

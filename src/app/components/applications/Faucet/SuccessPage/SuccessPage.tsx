@@ -47,7 +47,7 @@ const SuccessPage = () => {
             <Grid container item xs={12} className={classes.TextWrapper}>
               <PrimaryButton
                 disable={false}
-                text={'Request More Funds'}
+                children={'Request More Funds'}
                 withVerifyConnection={false}
                 submitFunction={requestForSSV}
               />

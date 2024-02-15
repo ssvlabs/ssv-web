@@ -103,7 +103,7 @@ const OfflineKeyShareCeremony = () => {
                                    link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide
             for assistance.
           </Grid>
-          <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick}
+          <PrimaryButton children={'My validator has been activated'} submitFunction={handleValidatorActivatedClick}
                          disable={isValidatorActivated}/>
         </Grid>
       </Grid>
@@ -113,7 +113,7 @@ const OfflineKeyShareCeremony = () => {
             3:</Typography>&nbsp;Register Validator</Typography>
           <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing
             its key shares to your cluster operators.</Typography>
-          <PrimaryButton text={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]}
+          <PrimaryButton children={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]}
                          disable={!isValidatorActivated}/>
         </Grid>
       </Grid>

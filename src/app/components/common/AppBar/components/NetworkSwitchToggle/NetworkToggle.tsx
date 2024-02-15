@@ -19,6 +19,8 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
@@ -33,6 +35,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
     const notificationsStore: NotificationsStore = stores.Notifications;
+    const dispatch = useAppDispatch();
 
     const disconnectWallet = async () => {
         if (wallet) {
@@ -101,6 +104,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             return;
         }
 
+        dispatch(setShouldCheckCountryRestriction(index === 0));
         // Change network in local storage
         ssvStore.clearUserSyncInterval();
         resetContracts();

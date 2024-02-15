@@ -1,6 +1,5 @@
 import axios from 'axios';
 import config from '~app/common/config';
-import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 
 let restrictedCountries: any = null;
 /**
@@ -109,22 +108,19 @@ const getCurrentLocation = async (): Promise<string[]> => {
  * Returns true if country is restricted or false otherwise
  */
 export const checkUserCountryRestriction = async (): Promise<any> => {
-  const { networkId } = getStoredNetwork();
   const userLocation = await getCurrentLocation();
   const restrictedLocations = await getRestrictedLocations();
   console.debug('🚫 Restricted locations:', restrictedLocations);
   console.debug('🌐 User location:', userLocation);
   if (!userLocation.length) {
-    return { restricted: true, userGeo:  'Unknown' };
+    return 'Unknown';
   }
-  if (networkId === NETWORKS.MAINNET) {
-    for (const location of userLocation) {
-      for (const restrictedLocation of restrictedLocations) {
-        if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1) {
-          return { restricted: true, userGeo: userLocation[0] || '' };
-        }
+  for (const location of userLocation) {
+    for (const restrictedLocation of restrictedLocations) {
+      if (String(restrictedLocation).toLowerCase().indexOf(String(location).toLowerCase()) !== -1) {
+        return userLocation[0] || 'Unknown';
       }
     }
   }
-  return { restricted: false, userGeo: userLocation[0] || '' };
+  return '';
 };

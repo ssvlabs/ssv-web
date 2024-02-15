@@ -19,7 +19,7 @@ import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import DeveloperHelper from '~lib/utils/developerHelper';
 import { initOnboardOptions } from '~lib/utils/onboardHelper';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode, setUserGeo } from '~app/redux/appState.slice';
+import { getIsDarkMode, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { useDispatch } from 'react-redux';
@@ -66,10 +66,10 @@ const App = () => {
   const dispatch = useDispatch();
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
   const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     setWeb3Onboard(onboardInstance);
@@ -82,23 +82,22 @@ const App = () => {
   useEffect(() => {
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
-      dispatch(setUserGeo(''));
-    } else {
+      dispatch(setRestrictedUserGeo(''));
+    } else if (shouldCheckCountryRestriction) {
       checkUserCountryRestriction().then((res: any) => {
-        if (res.restricted) {
-          dispatch(setUserGeo(res.userGeo));
-          dispatch(setStrategyRedirect(config.routes.COUNTRY_NOT_SUPPORTED));
+        if (!!res) {
+          dispatch(setRestrictedUserGeo(res));
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
-        } else if (location.pathname === config.routes.COUNTRY_NOT_SUPPORTED) {
-            dispatch(setUserGeo(''));
-            dispatch(setStrategyRedirect(config.routes.COUNTRY_NOT_SUPPORTED));
-            navigate(strategyRedirect);
         } else {
-          navigate(strategyRedirect);
+          dispatch(setRestrictedUserGeo(''));
         }
       });
     }
-  }, []);
+  }, [shouldCheckCountryRestriction]);
+
+  useEffect(() => {
+    navigate(strategyRedirect);
+  }, [strategyRedirect]);
 
   const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);
 

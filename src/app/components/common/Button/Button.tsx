@@ -72,8 +72,8 @@ const Button = (props: ButtonParams) => {
         try {
             setAllowanceButtonDisable(true);
             setApproveButtonText('Waiting...');
-            const userGavePermission = await ssvStore.approveAllowance(handlePendingTransaction);
             await ssvStore.checkAllowance();
+            const userGavePermission = await ssvStore.approveAllowance(handlePendingTransaction);
             if (Number(toWei(totalAmount)) > Number(ssvStore.approvedAllowance)) {
                 setApproveButtonText('Approve SSV');
                 return;

@@ -1,7 +1,5 @@
-import Notify from 'bnc-notify';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
-import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import { distributionHelper } from '~lib/utils/distributionHelper';
@@ -10,12 +8,12 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 import { isMainnetSupported } from '~root/providers/networkInfo.provider';
+import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import notifyService from '~root/services/notify.service';
 
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   ssvBalance: any = 0;
-  notifySdk: any = null;
-  onboardSdk: any = null;
   accountAddress: string = '';
   wrongNetwork: boolean = false;
   networkId: number | null = null;
@@ -28,10 +26,8 @@ class WalletStore extends BaseStore implements Wallet {
 
     makeObservable(this, {
       wallet: observable,
-      notifySdk: observable,
       networkId: observable,
       ssvBalance: observable,
-      onboardSdk: observable,
       changeNetwork: action.bound,
       wrongNetwork: observable,
       isWrongNetwork: computed,
@@ -57,14 +53,7 @@ class WalletStore extends BaseStore implements Wallet {
       const address = wallet?.accounts[0]?.address;
       await this.networkHandler(networkId);
       await this.addressHandler(address);
-
-      const notifyOptions = {
-        networkId: Number(connectedChain.id),
-        dappId: config.ONBOARD.API_KEY,
-        desktopPosition: 'topRight',
-      };
-      // @ts-ignore
-      this.notifySdk = Notify(notifyOptions);
+      notifyService.init(connectedChain.id);
     }
   }
 
@@ -76,7 +65,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   async changeNetwork(networkId: string | number) {
-    await this.onboardSdk.setChain({ chainId: networkId });
+    // await this.onboardSdk.setChain({ chainId: networkId });
   }
 
   /**
@@ -94,7 +83,6 @@ class WalletStore extends BaseStore implements Wallet {
    */
   async addressHandler(address: string | undefined) {
     if (address === undefined) {
-      window.localStorage.removeItem('selectedWallet');
       this.accountAddress = '';
     } else {
       this.accountAddress = address;

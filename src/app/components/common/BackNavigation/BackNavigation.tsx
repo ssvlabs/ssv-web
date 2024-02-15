@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
-// import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading } from '~app/redux/appState.slice';
+
 const BackNavigationWrapper = styled.div`
   gap: 4px;
   height: 16px;
@@ -39,11 +39,10 @@ type BackNavigationProps = {
 };
 
 const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationProps) => {
-  const stores = useStores();
   const navigate = useNavigate();
   const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
-  const applicationStore: ApplicationStore = stores.Application;
+  const isLoading = useAppSelector(getIsLoading);
 
   const onNavigationClicked = async () => {
     let clickHandler = () => {
@@ -53,7 +52,7 @@ const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationPr
     }
     await clickHandler();
     setTimeout(() => {
-      if (applicationStore.isLoading) return;
+      if (isLoading) return;
       if (backButtonRedirect) {
         navigate(backButtonRedirect);
       } else {

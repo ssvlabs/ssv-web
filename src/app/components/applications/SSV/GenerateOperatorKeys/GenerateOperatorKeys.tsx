@@ -15,10 +15,11 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { encodeParameter } from '~root/services/conversions.service';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const GenerateOperatorKeys = () => {
   const stores = useStores();
@@ -26,7 +27,6 @@ const GenerateOperatorKeys = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   let initialOperatorKey = '';
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
     initialOperatorKey = getRandomOperatorKey(false);
@@ -36,6 +36,7 @@ const GenerateOperatorKeys = () => {
   const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey });
   const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const dispatch = useAppDispatch();
 
   // Inputs validation
   useEffect(() => {
@@ -61,7 +62,7 @@ const GenerateOperatorKeys = () => {
 
   const onRegisterClick = async () => {
     setOperatorExist(false);
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
 
     const operatorKeys: NewOperator = {
       fee: 0,
@@ -74,7 +75,7 @@ const GenerateOperatorKeys = () => {
     const isExists = await validateOperatorPublicKey(inputsData.publicKey);
     setOperatorExist(isExists);
     if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   };
 
   return (

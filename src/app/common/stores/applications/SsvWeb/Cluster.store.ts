@@ -9,7 +9,7 @@ import { EContractName } from '~app/model/contracts.model';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { encodePacked, fromWei } from '~root/services/conversions.service';
+import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { OperatorStore } from '~app/common/stores/applications/SsvWeb/index';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
@@ -57,7 +57,7 @@ class ClusterStore extends BaseStore {
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
     const ssvStore: SsvStore = this.getStore('SSV');
     const operatorStore: OperatorStore = this.getStore('Operator');
-    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(ssvStore.getFeeForYear(fromWei(operator.fee))), 0);
+    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(getFeeForYear(fromWei(operator.fee))), 0);
     const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
     const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
     const clusterBurnRate = parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);

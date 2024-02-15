@@ -3,10 +3,11 @@ import { action, computed, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import merkleTree from '~app/components/applications/Distribution/assets/merkleTreeTestnet.json';
 import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
 import { fromWei } from '~root/services/conversions.service';
+import { store } from '~app/store';
+import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 
 /**
  * Base store provides singe source of true
@@ -28,9 +29,8 @@ class DistributionTestnetStore extends BaseStore {
     return new Promise(async (resolve) => {
       const contract = this.distributionContract;
       const walletStore: WalletStore = this.getStore('Wallet');
-      const applicationStore: ApplicationStore = this.getStore('Application');
       const notificationsStore: NotificationsStore = this.getStore('Notifications');
-      applicationStore.setIsLoading(true);
+      store.dispatch(setIsLoading(true));
       await contract.methods.claim(
         this.rewardIndex,
         this.userAddress,
@@ -39,20 +39,20 @@ class DistributionTestnetStore extends BaseStore {
       ).send({ from: walletStore.accountAddress })
         .on('receipt', async (receipt: any) => {
           console.log(receipt);
-          applicationStore.setIsLoading(false);
-          applicationStore.showTransactionPendingPopUp(false);
+          store.dispatch(setIsLoading(false));
+          store.dispatch(setIsShowTxPendingPopup(false));
           this.userWithdrawRewards = true;
           this.claimed = true;
           resolve(true);
         })
         .on('transactionHash', (txHash: string) => {
-          applicationStore.txHash = txHash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(txHash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         })
         .on('error', (error: any) => {
-          applicationStore.setIsLoading(false);
+          store.dispatch(setIsLoading(false));
           notificationsStore.showMessage(error.message, 'error');
-          applicationStore.showTransactionPendingPopUp(false);
+          store.dispatch(setIsShowTxPendingPopup(false));
           resolve(false);
         });
     });

@@ -4,23 +4,24 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/components/common/AppBar/AppBar';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const SsvAppBar = () => {
   const stores = useStores();
   const navigate = useNavigate();
+  const isLoading = useAppSelector(getIsLoading);
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const applicationStore: ApplicationStore = stores.Application;
-  const hasOperatorsOrClusters = [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD, config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD].includes(applicationStore.strategyRedirect);
-  const backgroundColor = applicationStore.theme.colors.white;
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const hasOperatorsOrClusters = [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD, config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD].includes(strategyRedirect);
 
   const moveToDashboard = () => {
-    if (applicationStore.isLoading) return;
+    if (isLoading) return;
     if (hasOperatorsOrClusters) {
       // @ts-ignore
-      applicationStore.whiteNavBarBackground = false;
       GoogleTagManager.getInstance().sendEvent({
         category: 'nav',
         action: 'click',
@@ -72,7 +73,7 @@ const SsvAppBar = () => {
     },
   ];
 
-  return <AppBar backgroundColor={backgroundColor} buttons={buttons} />;
+  return <AppBar buttons={buttons} />;
 };
 
 export default observer(SsvAppBar);

@@ -4,9 +4,10 @@ import Button from '@mui/material/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './SecondaryButton.styles';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading } from '~app/redux/appState.slice';
 
 type Props = {
     text: string,
@@ -23,10 +24,10 @@ type Props = {
 const SecondaryButton = (props: Props) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const applicationStore: ApplicationStore = stores.Application;
     const notificationsStore: NotificationsStore = stores.Notifications;
     const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
     const classes = useStyles({ noCamelCase, withoutBackgroundColor });
+    const isLoading = useAppSelector(getIsLoading);
 
     // TODO: reduce to single component for wallet connection
     const submit = async () => {
@@ -46,9 +47,9 @@ const SecondaryButton = (props: Props) => {
         onClick={submit}
         data-testid={dataTestId}
         className={className ?? classes.SecondaryButton}
-        disabled={disable || applicationStore.isLoading}
+        disabled={disable || isLoading}
       >
-        {applicationStore.isLoading && !withoutLoader && <Spinner />}
+        {isLoading && !withoutLoader && <Spinner />}
         {text}
       </Button>
     );

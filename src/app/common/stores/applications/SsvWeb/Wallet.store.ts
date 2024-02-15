@@ -1,19 +1,19 @@
-import Notify from 'bnc-notify';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
-import Application from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { store } from '~app/store';
+import { setStrategyRedirect } from '~app/redux/navigation.slice';
+import notifyService from '~root/services/notify.service';
 
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
-  notifySdk: any = null;
-  onboardSdk: any = null;
   accountAddress: string = '';
   wrongNetwork: boolean = false;
   networkId: number = 1;
@@ -25,8 +25,6 @@ class WalletStore extends BaseStore implements Wallet {
     makeObservable(this, {
       wallet: observable,
       networkId: observable,
-      notifySdk: observable,
-      onboardSdk: observable,
       resetUser: action.bound,
       isWrongNetwork: computed,
       wrongNetwork: observable,
@@ -40,16 +38,9 @@ class WalletStore extends BaseStore implements Wallet {
     if (wallet && connectedChain) {
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
       this.wallet = wallet;
-      const notifyOptions = {
-        networkId: Number(connectedChain.id),
-        dappId: config.ONBOARD.API_KEY,
-        desktopPosition: 'topRight',
-      };
-      // @ts-ignore
-      this.notifySdk = Notify(notifyOptions);
+      notifyService.init(connectedChain.id);
       // TODO: review this
       await this.initializeUserInfo();
-      const applicationStore: Application = this.getStore('Application');
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const operatorStore: OperatorStore = this.getStore('Operator');
       this.ssvStore.clearSettings();
@@ -62,11 +53,11 @@ class WalletStore extends BaseStore implements Wallet {
         operatorStore.updateOperatorValidatorsLimit(),
       ]);
       if (myAccountStore?.ownerAddressClusters?.length) {
-        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+        store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
       } else if (myAccountStore?.ownerAddressOperators?.length) {
-        applicationStore.strategyRedirect = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+        store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
       } else {
-        applicationStore.strategyRedirect = config.routes.SSV.ROOT;
+        store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
       }
       if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
       myAccountStore.setIntervals();
@@ -86,16 +77,14 @@ class WalletStore extends BaseStore implements Wallet {
   async resetUser() {
     this.ssvStore.clearUserSyncInterval();
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: Application = this.getStore('Application');
     this.accountAddress = '';
     this.wallet = null;
     this.ssvStore.clearSettings();
     this.ssvStore.clearUserSyncInterval();
     this.operatorStore.clearSettings();
     myAccountStore.clearIntervals();
-    window.localStorage.removeItem('params');
-    window.localStorage.removeItem('selectedWallet');
-    applicationStore.strategyRedirect = config.routes.SSV.ROOT;
+    removeFromLocalStorageByKey('params');
+    store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
   }
 
   /**

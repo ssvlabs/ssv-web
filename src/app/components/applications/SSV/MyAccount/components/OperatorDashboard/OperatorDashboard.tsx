@@ -8,7 +8,6 @@ import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -18,13 +17,12 @@ import ToggleDashboards
   from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 const OperatorDashboard = () => {
   const stores = useStores();
   const classes = useStyles({});
   const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -72,7 +70,7 @@ const OperatorDashboard = () => {
         // @ts-ignore
         <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
         <SsvAndSubTitle
-            ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))} leftTextAlign />,
+            ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} leftTextAlign />,
         operator.validators_count,
     );
   });

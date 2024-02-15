@@ -69,9 +69,9 @@ const ValidatorRegistrationConfirmation = () => {
     // In any case, even if checked before, check user info right before the registration
     if (!checkingUserInfo) {
       setCheckingUserInfo(true);
-      ssvStore.userSyncInterval().finally(() => setCheckingUserInfo(false));
+      ssvStore.checkAllowance().finally(() => setCheckingUserInfo(false));
     }
-  }, [String(ssvStore.approvedAllowance)]);
+  }, [ssvStore.approvedAllowance]);
 
   useEffect(() => {
     try {

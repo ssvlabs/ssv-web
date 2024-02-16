@@ -5,16 +5,18 @@ import config from '~app/common/config';
 import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
+import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
+import { EContractName } from '~app/model/contracts.model';
+import ContractEventGetter from '~lib/api/ContractEventGetter';
+import { executeAfterEvent } from '~root/services/events.service';
+import { fromWei, toWei } from '~root/services/conversions.service';
+import { getContractByName } from '~root/services/contracts.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
-
-import { fromWei, toWei } from '~root/services/conversions.service';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { getContractByName } from '~root/services/contracts.service';
-import { EContractName } from '~app/model/contracts.model';
+import { equalsAddresses } from '~lib/utils/strings';
 
 export interface NewOperator {
   id: number,
@@ -210,8 +212,12 @@ class OperatorStore extends BaseStore {
    */
   async updateOperatorValidatorsLimit(): Promise<void> {
     const contract = getContractByName(EContractName.GETTER);
-    if (this.operatorValidatorsLimit === 0) {
-      this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
+    try {
+      if (this.operatorValidatorsLimit === 0) {
+        this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
+      }
+    } catch (e) {
+      console.error('Provided contract address is wrong', e);
     }
   }
 
@@ -311,8 +317,10 @@ class OperatorStore extends BaseStore {
    * update operator address whitelist
    */
   async updateOperatorAddressWhitelist(operatorId: string, address: string) {
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
+
     return new Promise(async (resolve) => {
       try {
         const contractInstance = getContractByName(EContractName.SETTER);
@@ -325,22 +333,10 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
+            await executeAfterEvent(async () => {
               const operator = await Operator.getInstance().getOperator(operatorId);
-              const changed = operator.address_whitelist.toString() === address.toString();
-              if (changed) {
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Operator is still not updated in API..');
-              }
-            }
+              return equalsAddresses(operator.address_whitelist.toString(), address.toString());
+            }, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {
@@ -351,49 +347,6 @@ class OperatorStore extends BaseStore {
         resolve(false);
       }
     });
-    // return new Promise(async (resolve) => {
-    //   try {
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const applicationStore: ApplicationStore = this.getStore('Application');
-    //     const gasLimit = getFixedGasLimit(GasGroup.DECLARE_OPERATOR_FEE);
-    //     const contractInstance = walletStore.setterContract;
-    //     await contractInstance.setOperatorWhitelist(operatorId, address).send({
-    //       from: walletStore.accountAddress,
-    //       gas: gasLimit,
-    //     })
-    //       .on('receipt', async (receipt: any) => {
-    //         const event: boolean = receipt.hasOwnProperty('events');
-    //         if (event) {
-    //           let iterations = 0;
-    //           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    //             const operator = await Operator.getInstance().getOperator(operatorId);
-    //             const changed = operator.address_whitelist.toString() === address.toString();
-    //             if (changed) {
-    //               iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
-    //             } else {
-    //               console.log('Operator is still not updated in API..');
-    //             }
-    //             iterations += 1;
-    //           }
-    //           await this.refreshOperatorsAndClusters(resolve, true);
-    //         }
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         applicationStore.showTransactionPendingPopUp(true);
-    //       })
-    //       .on('error', (error: any) => {
-    //         console.debug('Contract Error', error.message);
-    //         applicationStore.setIsLoading(false);
-    //         applicationStore.showTransactionPendingPopUp(false);
-    //         resolve(false);
-    //       });
-    //   } catch (e: any) {
-    //     console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
-    //     console.log(e.message);
-    //     resolve(false);
-    //   }
-    // });
   }
 
   /**
@@ -435,38 +388,18 @@ class OperatorStore extends BaseStore {
           if (event) {
             ApiParams.initStorage(true);
             console.debug('Contract Receipt', receipt);
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              // eslint-disable-next-line no-await-in-loop
-              const changed = await myAccountStore.checkEntityChangedInAccount(
-                // eslint-disable-next-line @typescript-eslint/no-loop-func
-                async () => {
-                  await this.syncOperatorFeeInfo(operatorId);
-                  return {
-                    operatorFutureFee: this.operatorFutureFee,
-                    operatorApprovalEndTime: this.operatorApprovalEndTime,
-                    operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-                  };
-                },
-                operatorDataBefore,
-              );
-              if (changed) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Operator is still not updated in API..');
-              }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
-            }
+
+            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+              async () => {
+                await this.syncOperatorFeeInfo(operatorId);
+                return {
+                  operatorFutureFee: this.operatorFutureFee,
+                  operatorApprovalEndTime: this.operatorApprovalEndTime,
+                  operatorApprovalBeginTime: this.operatorApprovalBeginTime,
+                };
+              },
+              operatorDataBefore,
+            ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {
@@ -476,63 +409,6 @@ class OperatorStore extends BaseStore {
         resolve(false);
       }
     });
-    // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // const gasLimit = getFixedGasLimit(GasGroup.CANCEL_OPERATOR_FEE);
-    // await this.syncOperatorFeeInfo(operatorId);
-    // const operatorDataBefore = {
-    //   operatorFutureFee: this.operatorFutureFee,
-    //   operatorApprovalEndTime: this.operatorApprovalEndTime,
-    //   operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-    // };
-    //
-    // return new Promise((resolve) => {
-    //   try {
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const applicationStore: ApplicationStore = this.getStore('Application');
-    //     const contract: Contract = walletStore.setterContract;
-    //     contract.cancelDeclaredOperatorFee(operatorId).send({ from: walletStore.accountAddress, gas: gasLimit })
-    //       .on('receipt', async (receipt: any) => {
-    //         const event: boolean = receipt.hasOwnProperty('events');
-    //         if (event) {
-    //           ApiParams.initStorage(true);
-    //           console.debug('Contract Receipt', receipt);
-    //           let iterations = 0;
-    //           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    //             const changed = await myAccountStore.checkEntityChangedInAccount(
-    //               async () => {
-    //                 await this.syncOperatorFeeInfo(operatorId);
-    //                 return {
-    //                   operatorFutureFee: this.operatorFutureFee,
-    //                   operatorApprovalEndTime: this.operatorApprovalEndTime,
-    //                   operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-    //                 };
-    //               },
-    //               operatorDataBefore,
-    //             );
-    //             if (changed) {
-    //               iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
-    //             } else {
-    //               console.log('Operator is still not updated in API..');
-    //             }
-    //             iterations += 1;
-    //             await myAccountStore.delay();
-    //           }
-    //           await this.refreshOperatorsAndClusters(resolve, true);
-    //         }
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         applicationStore.showTransactionPendingPopUp(true);
-    //       })
-    //       .on('error', () => {
-    //         applicationStore.setIsLoading(false);
-    //         applicationStore.showTransactionPendingPopUp(false);
-    //         resolve(false);
-    //       });
-    //   } catch (e) {
-    //     resolve(false);
-    //   }
-    // });
   }
 
   /**
@@ -635,32 +511,18 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              const changed = await myAccountStore.checkEntityChangedInAccount(
-                async () => {
-                  await this.syncOperatorFeeInfo(operatorId);
-                  return {
-                    operatorFutureFee: this.operatorFutureFee,
-                    operatorApprovalEndTime: this.operatorApprovalEndTime,
-                    operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-                  };
-                },
-                operatorDataBefore,
-              );
-              if (changed) {
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Operator is still not updated in API..');
-              }
-              await myAccountStore.delay();
-            }
+
+            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+              async () => {
+                await this.syncOperatorFeeInfo(operatorId);
+                return {
+                  operatorFutureFee: this.operatorFutureFee,
+                  operatorApprovalEndTime: this.operatorApprovalEndTime,
+                  operatorApprovalBeginTime: this.operatorApprovalBeginTime,
+                };
+              },
+              operatorDataBefore,
+            ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {
@@ -671,73 +533,6 @@ class OperatorStore extends BaseStore {
         resolve(false);
       }
     });
-    // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // return new Promise(async (resolve) => {
-    //   try {
-    //     const ssvStore: SsvStore = this.getStore('SSV');
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const applicationStore: ApplicationStore = this.getStore('Application');
-    //     const gasLimit = getFixedGasLimit(GasGroup.DECLARE_OPERATOR_FEE);
-    //     const contractInstance = walletStore.setterContract;
-    //     const formattedFee = ssvStore.prepareSsvAmountToTransfer(
-    //       walletStore.toWei(
-    //         new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
-    //       ),
-    //     );
-    //     await this.syncOperatorFeeInfo(operatorId);
-    //     const operatorDataBefore = {
-    //       operatorFutureFee: this.operatorFutureFee,
-    //       operatorApprovalEndTime: this.operatorApprovalEndTime,
-    //       operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-    //     };
-    //     await contractInstance.declareOperatorFee(operatorId, formattedFee).send({
-    //       from: walletStore.accountAddress,
-    //       gas: gasLimit,
-    //     })
-    //       .on('receipt', async (receipt: any) => {
-    //         // eslint-disable-next-line no-prototype-builtins
-    //         const event: boolean = receipt.hasOwnProperty('events');
-    //         if (event) {
-    //           let iterations = 0;
-    //           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    //             const changed = await myAccountStore.checkEntityChangedInAccount(
-    //               async () => {
-    //                 await this.syncOperatorFeeInfo(operatorId);
-    //                 return {
-    //                   operatorFutureFee: this.operatorFutureFee,
-    //                   operatorApprovalEndTime: this.operatorApprovalEndTime,
-    //                   operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-    //                 };
-    //               },
-    //               operatorDataBefore,
-    //             );
-    //             if (changed) {
-    //               iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
-    //             } else {
-    //               console.log('Operator is still not updated in API..');
-    //             }
-    //             iterations += 1;
-    //             await myAccountStore.delay();
-    //           }
-    //           await this.refreshOperatorsAndClusters(resolve, true);
-    //         }
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         applicationStore.showTransactionPendingPopUp(true);
-    //       })
-    //       .on('error', (error: any) => {
-    //         console.debug('Contract Error', error.message);
-    //         applicationStore.setIsLoading(false);
-    //         applicationStore.showTransactionPendingPopUp(false);
-    //         resolve(false);
-    //       });
-    //   } catch (e: any) {
-    //     console.log('<<<<<<<<<<<<<<error>>>>>>>>>>>>>>');
-    //     console.log(e.message);
-    //     resolve(false);
-    //   }
-    // });
   }
 
   async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
@@ -764,31 +559,16 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              const changed = await myAccountStore.checkEntityChangedInAccount(
-                async () => {
-                  const operatorAfter = await Operator.getInstance().getOperator(operatorId);
-                  return {
-                    id: operatorAfter.id,
-                    fee: operatorAfter.fee,
-                  };
-                },
-                operatorBefore,
-              );
-              if (changed) {
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Operator is still not updated in API..');
-              }
-              await myAccountStore.delay();
-            }
+            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+              async () => {
+                const operatorAfter = await Operator.getInstance().getOperator(operatorId);
+                return {
+                  id: operatorAfter.id,
+                  fee: operatorAfter.fee,
+                };
+              },
+              operatorBefore,
+            ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {
@@ -799,67 +579,6 @@ class OperatorStore extends BaseStore {
         resolve(false);
       }
     });
-    // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // const gasLimit = getFixedGasLimit(GasGroup.REDUCE_OPERATOR_FEE);
-    // return new Promise(async (resolve) => {
-    //   try {
-    //     const ssvStore: SsvStore = this.getStore('SSV');
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const applicationStore: ApplicationStore = this.getStore('Application');
-    //     const contractInstance = walletStore.setterContract;
-    //     const formattedFee = ssvStore.prepareSsvAmountToTransfer(
-    //       walletStore.toWei(
-    //         new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
-    //       ),
-    //     );
-    //     const { id, fee } = await Operator.getInstance().getOperator(operatorId);
-    //     const operatorBefore = { id, fee };
-    //     await contractInstance.reduceOperatorFee(operatorId, formattedFee).send({
-    //       from: walletStore.accountAddress,
-    //       gas: gasLimit,
-    //     })
-    //       .on('receipt', async (receipt: any) => {
-    //         // eslint-disable-next-line no-prototype-builtins
-    //         const event: boolean = receipt.hasOwnProperty('events');
-    //         if (event) {
-    //           let iterations = 0;
-    //           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    //             const changed = await myAccountStore.checkEntityChangedInAccount(
-    //               async () => {
-    //                 const operatorAfter = await Operator.getInstance().getOperator(operatorId);
-    //                 return {
-    //                   id: operatorAfter.id,
-    //                   fee: operatorAfter.fee,
-    //                 };
-    //               },
-    //               operatorBefore,
-    //             );
-    //             if (changed) {
-    //               iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
-    //             } else {
-    //               console.log('Operator is still not updated in API..');
-    //             }
-    //             iterations += 1;
-    //             await myAccountStore.delay();
-    //           }
-    //           await this.refreshOperatorsAndClusters(resolve, true);
-    //         }
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         applicationStore.showTransactionPendingPopUp(true);
-    //       })
-    //       .on('error', (error: any) => {
-    //         console.debug('Contract Error', error.message);
-    //         applicationStore.setIsLoading(false);
-    //         applicationStore.showTransactionPendingPopUp(false);
-    //         resolve(false);
-    //       });
-    //   } catch (e: any) {
-    //     console.log(`Filed to decrease operator fee: ${e.message}`);
-    //     resolve(false);
-    //   }
-    // });
   }
 
   /**
@@ -873,7 +592,6 @@ class OperatorStore extends BaseStore {
       try {
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         let operatorBefore = await Operator.getInstance().getOperator(operatorId);
-        // const gasLimit = getFixedGasLimit(GasGroup.EXECUTE_OPERATOR_FEE);
         operatorBefore = {
           id: operatorBefore.id,
           declared_fee: operatorBefore.declared_fee,
@@ -889,18 +607,8 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              // eslint-disable-next-line no-await-in-loop
-              const changed = await myAccountStore.checkEntityChangedInAccount(
-                // eslint-disable-next-line @typescript-eslint/no-loop-func
+
+            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
                 async () => {
                   const operatorAfter = await Operator.getInstance().getOperator(operatorId);
                   return {
@@ -910,17 +618,7 @@ class OperatorStore extends BaseStore {
                   };
                 },
                 operatorBefore,
-              );
-              if (changed) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Operator is still not updated in API..');
-              }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
-            }
+              ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {
@@ -931,67 +629,6 @@ class OperatorStore extends BaseStore {
         resolve(false);
       }
     });
-    // // eslint-disable-next-line no-async-promise-executor
-    // return new Promise(async (resolve) => {
-    //   try {
-    //     const walletStore: WalletStore = this.getStore('Wallet');
-    //     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    //     const applicationStore: ApplicationStore = this.getStore('Application');
-    //     let operatorBefore = await Operator.getInstance().getOperator(operatorId);
-    //     const gasLimit = getFixedGasLimit(GasGroup.EXECUTE_OPERATOR_FEE);
-    //     operatorBefore = {
-    //       id: operatorBefore.id,
-    //       declared_fee: operatorBefore.declared_fee,
-    //       previous_fee: operatorBefore.previous_fee,
-    //     };
-    //
-    //     await walletStore.setterContract.executeOperatorFee(operatorId).send({
-    //       from: walletStore.accountAddress,
-    //       gas: gasLimit,
-    //     })
-    //       .on('receipt', async (receipt: any) => {
-    //         // eslint-disable-next-line no-prototype-builtins
-    //         const event: boolean = receipt.hasOwnProperty('events');
-    //         if (event) {
-    //           let iterations = 0;
-    //           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    //             const changed = await myAccountStore.checkEntityChangedInAccount(
-    //               async () => {
-    //                 const operatorAfter = await Operator.getInstance().getOperator(operatorId);
-    //                 return {
-    //                   id: operatorAfter.id,
-    //                   declared_fee: operatorAfter.declared_fee,
-    //                   previous_fee: operatorAfter.previous_fee,
-    //                 };
-    //               },
-    //               operatorBefore,
-    //             );
-    //             if (changed) {
-    //               iterations = MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS;
-    //             } else {
-    //               console.log('Operator is still not updated in API..');
-    //             }
-    //             iterations += 1;
-    //             await myAccountStore.delay();
-    //           }
-    //           await this.refreshOperatorsAndClusters(resolve, true);
-    //         }
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         applicationStore.showTransactionPendingPopUp(true);
-    //       })
-    //       .on('error', (error: any) => {
-    //         console.debug('Contract Error', error.message);
-    //         applicationStore.setIsLoading(false);
-    //         applicationStore.showTransactionPendingPopUp(false);
-    //         resolve(false);
-    //       });
-    //   } catch (e: any) {
-    //     console.log(e.message);
-    //     resolve(false);
-    //   }
-    // });
   }
 
   /**
@@ -1015,27 +652,10 @@ class OperatorStore extends BaseStore {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             ApiParams.initStorage(true);
-            console.debug('Contract Receipt', receipt);
-            let iterations = 0;
-            while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-              // Reached maximum iterations
-              if (iterations >= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              }
-              iterations += 1;
-              // eslint-disable-next-line no-await-in-loop
-              if (!(await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(operatorId), 10)))) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.refreshOperatorsAndClusters(resolve, true);
-                break;
-              } else {
-                console.log('Operator is still in API..');
-              }
-              // eslint-disable-next-line no-await-in-loop
-              await myAccountStore.delay();
-            }
+            await executeAfterEvent(async () => {
+              console.log(await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash));
+              return await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash);
+            }, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {
@@ -1045,69 +665,18 @@ class OperatorStore extends BaseStore {
         return false;
       }
     });
-    // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // const applicationStore: ApplicationStore = this.getStore('Application');
-    // const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    // const gasLimit = getFixedGasLimit(GasGroup.REMOVE_OPERATOR);
-    // try {
-    //   const walletStore: WalletStore = this.getStore('Wallet');
-    //   const contractInstance = walletStore.setterContract;
-    //
-    //   // eslint-disable-next-line no-async-promise-executor
-    //   return await new Promise(async (resolve) => {
-    //     await contractInstance.removeOperator(operatorId).send({
-    //       from: walletStore.accountAddress,
-    //       gas: gasLimit,
-    //     })
-    //       .on('receipt', async (receipt: any) => {
-    //         // eslint-disable-next-line no-prototype-builtins
-    //         const event: boolean = receipt.hasOwnProperty('events');
-    //         if (event) {
-    //           ApiParams.initStorage(true);
-    //           console.debug('Contract Receipt', receipt);
-    //           let iterations = 0;
-    //           while (iterations <= MyAccountStore.CHECK_UPDATES_MAX_ITERATIONS) {
-    //             if (!(await myAccountStore.checkEntityInAccount('operator', 'id', parseInt(String(operatorId), 10)))) {
-    //               break;
-    //             } else {
-    //               console.log('Operator is still in API..');
-    //             }
-    //             iterations += 1;
-    //             await myAccountStore.delay();
-    //           }
-    //           await this.refreshOperatorsAndClusters(resolve, true);
-    //         }
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         applicationStore.showTransactionPendingPopUp(true);
-    //       })
-    //       .on('error', (error: any) => {
-    //         applicationStore.setIsLoading(false);
-    //         applicationStore.showTransactionPendingPopUp(false);
-    //         notificationsStore.showMessage(error.message, 'error');
-    //         resolve(false);
-    //       });
-    //   });
-    // } catch (e: any) {
-    //   notificationsStore.showMessage(e.message, 'error');
-    //   return false;
-    // }
   }
 
   async addNewOperator() {
-    // const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
         const payload: any[] = [];
         const ssvStore: SsvStore = this.getStore('SSV');
         const contract: Contract = getContractByName(EContractName.SETTER);
-        // const address: string = this.newOperatorKeys.address;
         const transaction: NewOperator = this.newOperatorKeys;
-        // const gasLimit = getFixedGasLimit(GasGroup.REGISTER_OPERATOR);
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
@@ -1115,21 +684,15 @@ class OperatorStore extends BaseStore {
           transaction.publicKey,
           ssvStore.prepareSsvAmountToTransfer(toWei(feePerBlock)),
         );
-
-        console.debug('Register Operator Transaction Data:', payload);
-
-        console.warn('[addNewOperator] debug 1');
         try {
           const tx = await contract.registerOperator(...payload);
           if (tx.hash) {
             applicationStore.txHash = tx.hash;
             applicationStore.showTransactionPendingPopUp(true);
           }
-          console.warn('[addNewOperator] debug 2');
           const receipt = await tx.wait();
-          console.warn('[addNewOperator] debug 3', receipt);
           if (receipt.blockHash) {
-            // this.newOperatorKeys.id = String(parseInt(receipt.events[0].args.operatorId));
+            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
           }
@@ -1138,75 +701,7 @@ class OperatorStore extends BaseStore {
           notificationsStore.showMessage(err.message, 'error');
           resolve(false);
         }
-        // const gas = await tx.estimateGas();
-        // console.warn('[addNewOperator] debug 3', gas);
-
-        // if (getGasEstimation && false) {
-        //   this.estimationGas = gas * 0.000000001;
-        //   if (config.FEATURE.DOLLAR_CALCULATION) {
-        //     resolve(true);
-        //   } else {
-        //     this.dollarEstimationGas = 0;
-        //     resolve(true);
-        //   }
-        //   return;
-        // }
-
-          // .on('Transfer', async (data: any) => {
-          //   console.warn('[addNewOperator] debug TRANSFER', data);
-          // })
-          // .on('receipt', async (receipt: any) => {
-          //   // eslint-disable-next-line no-prototype-builtins
-          //   const events: boolean = receipt.hasOwnProperty('events');
-          //   if (events) {
-          //     console.debug('Contract Receipt', receipt);
-          //     GoogleTagManager.getInstance().sendEvent({
-          //       category: 'operator_register',
-          //       action: 'register_tx',
-          //       label: 'success',
-          //     });
-          //     this.newOperatorKeys.id = receipt.events.OperatorAdded.returnValues[0];
-          //     this.newOperatorRegisterSuccessfully = sha256(walletStore.decodeKey(transaction.publicKey));
-          //     resolve(true);
-          //   }
-          //   console.warn('[addNewOperator] debug 5');
-          // })
-          // .on('*', (txHash: any) => {
-          //   console.warn('[addNewOperator] debug 6', txHash);
-          //   // applicationStore.txHash = txHash;
-          //   applicationStore.showTransactionPendingPopUp(true);
-          // })
-          // .on('error', (error: any) => {
-          //   console.warn('[addNewOperator] debug 7');
-          //   // eslint-disable-next-line no-prototype-builtins
-          //   const isRejected: boolean = error.hasOwnProperty('code');
-          //   GoogleTagManager.getInstance().sendEvent({
-          //     category: 'operator_register',
-          //     action: 'register_tx',
-          //     label: isRejected ? 'rejected' : 'error',
-          //   });
-          //   applicationStore.setIsLoading(false);
-          //   applicationStore.showTransactionPendingPopUp(false);
-          //   notificationsStore.showMessage(error.message, 'error');
-          //   resolve(false);
-          // })
-          // .catch((error: any) => {
-          //   applicationStore.setIsLoading(false);
-          //   applicationStore.showTransactionPendingPopUp(false);
-          //   if (error) {
-          //     notificationsStore.showMessage(error.message, 'error');
-          //     GoogleTagManager.getInstance().sendEvent({
-          //       category: 'operator_register',
-          //       action: 'register_tx',
-          //       label: 'error',
-          //     });
-          //     resolve(false);
-          //   }
-          //   console.debug('Contract Error', error);
-          //   resolve(true);
-          // })
       } catch (e) {
-        // eslint-disable-next-line prefer-promise-reject-errors
         reject(false);
       }
     });

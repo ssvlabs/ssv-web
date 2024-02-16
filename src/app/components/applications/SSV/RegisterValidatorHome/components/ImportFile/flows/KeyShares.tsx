@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
-import { KeyShares, KeySharesItem, SSVKeysException } from 'ssv-keys';
+import { KeyShares, KeySharesItem } from 'ssv-keys';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Operator from '~lib/api/Operator';
 import {
@@ -41,7 +42,6 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useConnectWallet } from '@web3-onboard/react';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -278,6 +278,11 @@ const KeyShareFlow = () => {
       } catch (e: any) {
         setValidatorsList({});
         setValidatorsCount(0);
+        if (e.message.includes('The keyshares file you are attempting to reuse does not have the same version')) {
+          return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+            The keyshares file you are attempting to use appears to be from an older version. Please update ssv-keys to the latest version <LinkText withoutUnderline link={config.links.SSV_KEYS_RELEASES_URL} text={'(v1.1.0)'}/> and generate your keyshares again.
+          </Grid>);
+        }
         return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, e?.message);
       }
     }

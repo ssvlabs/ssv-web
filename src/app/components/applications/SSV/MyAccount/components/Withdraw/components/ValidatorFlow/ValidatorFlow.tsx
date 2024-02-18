@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
@@ -17,6 +16,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
+import { clusterByHash } from '~root/services/validator.service';
 
 const ValidatorFlow = () => {
   const stores = useStores();
@@ -74,9 +74,9 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
+    const response = await clusterByHash(clusterStore.getClusterHash(cluster.operators));
     const newCluster = response.cluster;
-    newCluster.validatorCount = newCluster.validatorCount;
+    // newCluster.validatorCount = newCluster.validatorCount;
     newCluster.operators = cluster.operators;
     processStore.setProcess({
       processName: 'single_cluster',

@@ -15,7 +15,6 @@ import {
   validateConsistentOperatorIds,
   ValidatorType,
 } from '~root/services/keyShare.service';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import { equalsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
@@ -43,6 +42,7 @@ import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { getValidator } from '~root/services/validator.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -138,7 +138,7 @@ const KeyShareFlow = () => {
 
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
-            const res = await Validator.getInstance().getValidator(validator.publicKey, true);
+            const res = await getValidator(validator.publicKey, true);
             if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
               validators[`0x${res.public_key}`].registered = true;
             }

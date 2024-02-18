@@ -3,7 +3,6 @@ import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import { action, makeObservable } from 'mobx';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -12,6 +11,7 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { OperatorStore } from '~app/common/stores/applications/SsvWeb/index';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { getClusterData } from '~root/services/validator.service';
 
 const annotations = {
   getClusterData: action.bound,
@@ -106,7 +106,7 @@ class ClusterStore extends BaseStore {
 
   async getClusterData(clusterHash: string, fullData = false) {
     try {
-      const response = await Validator.getInstance().getClusterData(clusterHash);
+      const response = await getClusterData(clusterHash);
       const clusterData = response.cluster;
       if (clusterData === null) {
         return {

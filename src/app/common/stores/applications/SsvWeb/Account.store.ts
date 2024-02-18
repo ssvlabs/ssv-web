@@ -1,10 +1,10 @@
 import { observable, makeObservable } from 'mobx';
-import Account from '~lib/api/Account';
 import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import { getContractByName } from '~root/services/contracts.service';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { getAccountData } from '~root/services/account.service';
 
 class AccountStore extends BaseStore  {
   recipientAddress: string = '';
@@ -68,7 +68,7 @@ class AccountStore extends BaseStore  {
 
   async getFeeRecipientAddress(ownerAddress: string) {
     const result: any = await new Promise(resolve => {
-      const res = Account.getInstance().getAccountData(ownerAddress);
+      const res = getAccountData(ownerAddress);
       resolve(res);
     });
     if (result.data.recipientAddress) {
@@ -80,7 +80,7 @@ class AccountStore extends BaseStore  {
 
   async getOwnerNonce(ownerAddress: string) {
     const result: any = await new Promise(resolve => {
-      const res = Account.getInstance().getAccountData(ownerAddress);
+      const res = getAccountData(ownerAddress);
       resolve(res);
     });
     if (result?.data) {

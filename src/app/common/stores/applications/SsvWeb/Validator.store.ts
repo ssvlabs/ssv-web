@@ -4,7 +4,6 @@ import { KeySharesItem } from 'ssv-keys';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
 import ApiParams from '~lib/api/ApiParams';
-import Validator from '~lib/api/Validator';
 import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
@@ -24,6 +23,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { getValidator } from '~root/services/validator.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -206,7 +206,7 @@ class ValidatorStore extends BaseStore {
         return;
       }
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+      const validatorBefore = await getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
 
       const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
         .on('receipt', async (receipt: any) => {
@@ -218,7 +218,7 @@ class ValidatorStore extends BaseStore {
             console.debug('Contract Receipt', receipt);
             await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
                 async () => {
-                  return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+                  return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
                 },
                 validatorBefore,
               ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
@@ -310,7 +310,7 @@ class ValidatorStore extends BaseStore {
 
         console.debug('Add Validator Payload: ', payload);
         // const clusterHash = clusterStore.getClusterHash(payload.get(OPERATOR_IDS));
-        // const response = await Validator.getInstance().getClusterData(clusterHash);
+        // const response = await getClusterData(clusterHash);
         // const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
         // const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.get(OPERATOR_IDS).length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
         const gasLimit = 4075000;
@@ -537,7 +537,7 @@ class ValidatorStore extends BaseStore {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;
       this.keyStorePublicKey = await this.getKeyStorePublicKey();
-      this.validatorPublicKeyExist = !!(await Validator.getInstance().getValidator(this.keyStorePublicKey, true));
+      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey, true));
     } catch (e: any) {
       console.log(e.message);
     }

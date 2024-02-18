@@ -22,7 +22,7 @@ type OperatorValidatorListQuery = {
 
 class Operator {
   private static instance: Operator;
-  ownerAddress: string = '';
+  // ownerAddress: string = '';
   private readonly baseUrl: string = '';
 
   constructor(baseUrl: string) {
@@ -42,7 +42,7 @@ class Operator {
   async getOperatorsByOwnerAddress(page: number = 1, perPage: number = 8, ownerAddress: string, skipRetry?: boolean) {
     const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
     try {
-      this.ownerAddress = ownerAddress;
+      // this.ownerAddress = ownerAddress;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return { operators: [], pagination: {} };

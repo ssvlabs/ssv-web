@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
@@ -22,6 +21,7 @@ import Dashboard from '~app/components/applications/SSV/MyAccount/components/Das
 import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import ProcessStore, { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
+import { validatorsByClusterHash } from '~root/services/validator.service';
 
 const SingleCluster = () => {
   const stores = useStores();
@@ -51,7 +51,7 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -104,7 +104,7 @@ const SingleCluster = () => {
 
   const onChangePage = _.debounce( async (newPage: number) =>  {
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);

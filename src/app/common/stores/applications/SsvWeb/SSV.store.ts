@@ -320,8 +320,8 @@ class SsvStore extends BaseStore {
    */
   async requestAllowance(callBack?: CallableFunction): Promise<any> {
     return new Promise((async (resolve, reject) => {
-      const ssvContract = getContractByName(EContractName.TOKEN);
       try {
+        const ssvContract = getContractByName(EContractName.TOKEN);
         const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, MAX_WEI_AMOUNT);
         if (tx.hash) {
           callBack && callBack({ txHash: tx.hash });

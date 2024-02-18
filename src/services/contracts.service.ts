@@ -44,7 +44,12 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
       console.warn('Token contract already exists');
     } else {
       console.warn('Creating new token contract');
-      contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, provider);
+      console.warn('Token contract address ', contractAddress);
+      try {
+        contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, provider);
+      } catch (e) {
+        console.warn('Creating new token contract error', e);
+      }
     }
   } else {
     console.warn('No token contract address found');

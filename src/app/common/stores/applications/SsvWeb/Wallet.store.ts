@@ -11,6 +11,8 @@ import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provid
 import { store } from '~app/store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import notifyService from '~root/services/notify.service';
+import { initContracts } from '~root/services/contracts.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
@@ -45,6 +47,7 @@ class WalletStore extends BaseStore implements Wallet {
       const operatorStore: OperatorStore = this.getStore('Operator');
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
+      initContracts({ provider: wallet.label === 'walletConnect' ? null : wallet.provider, network: getStoredNetwork() });
       this.accountAddress = wallet.accounts[0]?.address;
       ApiParams.cleanStorage();
       await Promise.all([
@@ -80,7 +83,6 @@ class WalletStore extends BaseStore implements Wallet {
     this.accountAddress = '';
     this.wallet = null;
     this.ssvStore.clearSettings();
-    this.ssvStore.clearUserSyncInterval();
     this.operatorStore.clearSettings();
     myAccountStore.clearIntervals();
     removeFromLocalStorageByKey('params');

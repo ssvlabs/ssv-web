@@ -1,7 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
 import { useConnectWallet } from '@web3-onboard/react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
@@ -9,25 +8,19 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from './ConnectWalletButton.styles';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
-import config from '~app/common/config';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const classes = useStyles({ walletConnected: !!walletStore.wallet });
   const [{ wallet }, connect] = useConnectWallet();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const onClick = async () => {
     if (walletStore.wallet) {
       dispatch(setIsShowWalletPopup(true));
     } else {
-      await connect().then(() => {
-        navigate(config.routes.SSV.ROOT);
-      }).catch((error) => {
-        console.error('ConnectWalletButton:', error);
-      });
+      await connect();
     }
   };
 

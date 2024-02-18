@@ -41,8 +41,9 @@ const Welcome = () => {
           <Grid container item className={classes.LinkButtonsWrapper}>
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
-                withVerifyConnection
-                children={'Distribute Validator'}
+                withVerifyConnection    
+                children={'Distribute Validator'}  
+                disable={!walletStore.wallet}     
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
@@ -52,6 +53,7 @@ const Welcome = () => {
               <SecondaryButton
                 withVerifyConnection
                 children={'Join as Operator'}
+                disable={!walletStore.wallet}
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}

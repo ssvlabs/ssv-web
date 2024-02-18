@@ -122,6 +122,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             const setChainParams = { chainId: toHexString(network.networkId) };
             console.warn('NetworkToggle: onOptionClick: setChainParams', setChainParams);
             const setChainResult = await setChain(setChainParams);
+            ssvStore.initUser();
             initContracts({ network });
             if (!setChainResult) {
                 console.error('NetworkToggle: Error setting chain');

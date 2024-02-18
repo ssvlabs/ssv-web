@@ -44,8 +44,6 @@ class SsvStore extends BaseStore {
       checkAllowance: action.bound,
       getNetworkFeeAndLiquidationCollateralParams: action.bound,
       getRemainingDays: action.bound,
-      userSyncInterval: action.bound,
-      feesIntervalPoller: action.bound,
       requestAllowance: action.bound,
       getAccountBurnRate: action.bound,
       clearUserSyncInterval: action.bound,
@@ -83,32 +81,6 @@ class SsvStore extends BaseStore {
   }
 
   /**
-   * Init User Interval
-   */
-  async userSyncInterval() {
-    if (this.syncingUser) {
-      console.warn('userSyncInterval already syncing');
-      return;
-    }
-
-    this.syncingUser = true;
-    try {
-      console.warn('userSyncInterval before');
-      await this.getBalanceFromSsvContract();
-      console.warn('userSyncInterval after');
-    } catch (e: any) {
-      console.warn('userSyncInterval error', e?.message);
-    } finally {
-      console.warn('userSyncInterval finally remove syncing flag');
-      this.syncingUser = false;
-    }
-  }
-
-  async feesIntervalPoller() {
-    await this.getNetworkFeeAndLiquidationCollateralParams();
-  }
-
-  /**
    * Init User
    */
   async initUser() {
@@ -116,10 +88,10 @@ class SsvStore extends BaseStore {
     this.clearUserSyncInterval();
     setTimeout(async () => {
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      this.feesInterval = setInterval(this.feesIntervalPoller, 86400000); // once in 24 hours
-      this.accountInterval = setInterval(this.userSyncInterval, 10000);
-      await this.userSyncInterval();
-    }, 1000);
+      this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateralParams, 86400000); // once in 24 hours
+      this.accountInterval = setInterval(this.getBalanceFromSsvContract, 10000);
+      await this.getBalanceFromSsvContract();
+    }, 5000);
   }
 
   clearUserSyncInterval() {
@@ -195,11 +167,13 @@ class SsvStore extends BaseStore {
    * Get account balance on ssv contract
    */
   async getBalanceFromSsvContract(): Promise<any> {
+    console.warn('getBalanceFromSsvContract before');
     try {
       const ssvContract = getContractByName(EContractName.TOKEN);
       if (!ssvContract) return;
       const balance = await ssvContract.balanceOf(this.accountAddress);
       this.walletSsvBalance = parseFloat(String(fromWei(balance)));
+      console.warn('getBalanceFromSsvContract after');
     } catch (e) {
       console.warn('getBalanceFromSsvContract error', e);
     }
@@ -369,6 +343,7 @@ class SsvStore extends BaseStore {
   }
 
   async getNetworkFeeAndLiquidationCollateralParams() {
+    console.warn('getNetworkFeeAndLiquidationCollateralParams called');
     try {
       const contract = getContractByName(EContractName.GETTER);
       if (!contract) return;

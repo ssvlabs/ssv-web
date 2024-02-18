@@ -14,8 +14,9 @@ const initGetterContract = ({ provider, network }: { provider: any; network: Net
       console.warn('Getter contract already exists');
     } else {
       console.warn('Creating new getter contract');
-      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-      contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
+      // const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      const ethProvider = new ethers.providers.JsonRpcProvider('https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26');
+      contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider);
     }
   } else {
     console.warn('No getter contract address found');

@@ -12,7 +12,7 @@ const getInitialState = () => {
   } if (process.env.REACT_APP_CLAIM_PAGE) {
     return config.routes.DISTRIBUTION.ROOT;
   }
-  return config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+  return config.routes.SSV.ROOT;
 };
 
 const initialState: NavState = {

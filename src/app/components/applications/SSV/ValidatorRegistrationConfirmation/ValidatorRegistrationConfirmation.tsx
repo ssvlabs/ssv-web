@@ -48,7 +48,6 @@ const ValidatorRegistrationConfirmation = () => {
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
-  const [checkingUserInfo, setCheckingUserInfo] = useState(false);
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
   const dispatch = useAppDispatch();
 
@@ -66,22 +65,14 @@ const ValidatorRegistrationConfirmation = () => {
   };
 
   useEffect(() => {
-    // In any case, even if checked before, check user info right before the registration
-    if (!checkingUserInfo) {
-      setCheckingUserInfo(true);
-      ssvStore.userSyncInterval().finally(() => setCheckingUserInfo(false));
-    }
-  }, [String(ssvStore.approvedAllowance)]);
-
-  useEffect(() => {
     try {
       const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress)));
-      setRegisterButtonDisabled(!acceptedTerms || checkingUserInfo || hasWhitelistedOperator);
+      setRegisterButtonDisabled(!acceptedTerms || hasWhitelistedOperator);
     } catch (e: any) {
       setRegisterButtonDisabled(true);
       console.error(`Something went wrong: ${e.message}`);
     }
-  }, [acceptedTerms, checkingUserInfo]);
+  }, [acceptedTerms]);
 
   const onRegisterValidatorClick = async () => {
     dispatch(setIsLoading(true));

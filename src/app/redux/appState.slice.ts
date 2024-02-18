@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import config from '~app/common/config';
+import { getStoredNetworkIndex } from '~root/providers/networkInfo.provider';
 
 export interface AppState {
   strategyName: string;
@@ -10,7 +11,8 @@ export interface AppState {
   isShowWalletPopup: boolean;
   isShowTxPendingPopup: boolean;
   txHash: string;
-  userGeo: string;
+  restrictedUserGeo: string;
+  shouldCheckCountryRestriction: boolean;
 }
 
 const getInitialStrategyName = () => {
@@ -29,7 +31,8 @@ const initialState: AppState = {
   isShowWalletPopup: false,
   isShowTxPendingPopup: false,
   txHash: '',
-  userGeo: '',
+  restrictedUserGeo: '',
+  shouldCheckCountryRestriction: getStoredNetworkIndex() === 0,
 };
 
 export const slice = createSlice({
@@ -44,8 +47,11 @@ export const slice = createSlice({
       }
       state.isDarkMode = !state.isDarkMode;
     },
-    setUserGeo: (state, action: { payload: string }) => {
-      state.userGeo = action.payload;
+    setShouldCheckCountryRestriction: (state, action: { payload: boolean }) => {
+      state.shouldCheckCountryRestriction = action.payload;
+    },
+    setRestrictedUserGeo: (state, action: { payload: string }) => {
+      state.restrictedUserGeo = action.payload;
     },
     setIsLoading: (state, action: { payload: boolean }) => {
       state.isLoading = action.payload;
@@ -64,11 +70,12 @@ export const slice = createSlice({
 
 export const appStateReducer = slice.reducer;
 
-export const { toggleDarkMode, setUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash } = slice.actions;
+export const { toggleDarkMode, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setShouldCheckCountryRestriction } = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
 export const getIsDarkMode = (state: RootState) => state.appState.isDarkMode;
-export const getUserGeo = (state: RootState) => state.appState.userGeo;
+export const getShouldCheckCountryRestriction = (state: RootState) => state.appState.shouldCheckCountryRestriction;
+export const getRestrictedUserGeo = (state: RootState) => state.appState.restrictedUserGeo;
 export const getIsLoading = (state: RootState) => state.appState.isLoading;
 export const getIsShowWalletPopup = (state: RootState) => state.appState.isShowWalletPopup;
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;

@@ -7,11 +7,11 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getStrategyName, getUserGeo } from '~app/redux/appState.slice';
+import { getStrategyName, getRestrictedUserGeo } from '~app/redux/appState.slice';
 
 const CountryNotSupported = () => {
   const classes = useStyles();
-  const userGeo = useAppSelector(getUserGeo);
+  const restrictedUserGeo = useAppSelector(getRestrictedUserGeo);
   const strategyName = useAppSelector(getStrategyName);
 
   const openMarketingSite = () => {
@@ -35,7 +35,7 @@ const CountryNotSupported = () => {
             title={'Website not available'}
             subtitle={(
               <span>
-                We noticed you are located in {userGeo}.<br />
+                We noticed you are located in {restrictedUserGeo}.<br />
                 Please note that the website <LinkText text={websiteUrl} link={`https://${websiteUrl}`} /> is not available in your country.</span>
             )}
           />

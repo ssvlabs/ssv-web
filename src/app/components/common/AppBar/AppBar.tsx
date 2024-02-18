@@ -8,7 +8,7 @@ import NetworkToggle from '~app/components/common/AppBar/components/NetworkSwitc
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode, getUserGeo, getIsLoading } from '~app/redux/appState.slice';
+import { getIsDarkMode, getRestrictedUserGeo, getIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 type Button = {
@@ -27,7 +27,7 @@ const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[], exclude
     // @ts-ignore
     const classes = useStyles();
     const isDarkMode = useAppSelector(getIsDarkMode);
-    const useGeo = useAppSelector(getUserGeo);
+    const restrictedUserGeo = useAppSelector(getRestrictedUserGeo);
     const isLoading = useAppSelector(getIsLoading);
     const strategyRedirect = useAppSelector(getStrategyRedirect);
     const hasOperatorsOrValidators = strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
@@ -51,7 +51,7 @@ const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[], exclude
     }, [wrapperRef, buttonsRef, menuBar]);
 
     const logoAction = () => {
-        if (useGeo || isLoading) return;
+        if (restrictedUserGeo || isLoading) return;
         // @ts-ignore
         navigate(strategyRedirect);
     };
@@ -124,7 +124,7 @@ const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[], exclude
               <Grid item>
                   <NetworkToggle excludeNetworks={excludeNetworks} />
               </Grid>
-            {!useGeo && (
+            {!restrictedUserGeo && (
               <Grid item>
                 <ConnectWalletButton />
               </Grid>

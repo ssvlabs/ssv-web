@@ -324,7 +324,7 @@ class SsvStore extends BaseStore {
         const ssvContract = getContractByName(EContractName.TOKEN);
         console.log('ssvContract', ssvContract);
         console.log('config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS', config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
-        const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, MAX_WEI_AMOUNT);
+        const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, String(MAX_WEI_AMOUNT));
         if (tx.hash) {
           callBack && callBack({ txHash: tx.hash });
         } else {

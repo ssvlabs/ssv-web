@@ -182,6 +182,9 @@ class ValidatorStore extends BaseStore {
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
           await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          store.dispatch(setIsLoading(false));
+          store.dispatch(setIsShowTxPendingPopup(false));
+          resolve(true);
         }
       } catch (e: any) {
         store.dispatch(setIsLoading(false));
@@ -214,6 +217,9 @@ class ValidatorStore extends BaseStore {
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
           await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          store.dispatch(setIsLoading(false));
+          store.dispatch(setIsShowTxPendingPopup(false));
+          resolve(true);
         }
       } catch (e: any) {
         store.dispatch(setIsLoading(false));

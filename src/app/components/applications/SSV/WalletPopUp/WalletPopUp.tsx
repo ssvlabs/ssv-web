@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
-import { useConnectWallet } from '@web3-onboard/react';
+import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { cleanLocalStorageAndCookie } from '~lib/utils/onboardHelper';
@@ -20,6 +20,7 @@ const WalletPopUp = () => {
     const walletStore: WalletStore = stores.Wallet;
     const navigate = useNavigate();
     const [{ wallet }, connect, disconnect] = useConnectWallet();
+    const [{ connectedChain }] = useSetChain();
     const dispatch = useAppDispatch();
     const isShowWalletPopup = useAppSelector(getIsShowWalletPopup);
 
@@ -28,10 +29,11 @@ const WalletPopUp = () => {
         if (wallet) {
             await disconnect({ label: wallet.label });
             navigate(config.routes.SSV.ROOT);
-            walletStore.initWallet(null, null);
+            await walletStore.initWallet(null, null);
         }
         dispatch(setIsShowWalletPopup(false));
         await connect();
+        await walletStore.initWallet(wallet, connectedChain);
     };
 
     const closePopUp = () => {

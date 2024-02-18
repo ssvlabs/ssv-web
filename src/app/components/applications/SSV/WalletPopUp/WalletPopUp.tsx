@@ -31,11 +31,7 @@ const WalletPopUp = () => {
             walletStore.initWallet(null, null);
         }
         dispatch(setIsShowWalletPopup(false));
-        await connect().catch((error) => {
-            console.error('connect error', error);
-        }).then(() => {
-            navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-        });
+        await connect();
     };
 
     const closePopUp = () => {

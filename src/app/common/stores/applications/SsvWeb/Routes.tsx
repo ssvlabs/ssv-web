@@ -1,9 +1,8 @@
-import React, { lazy, Suspense, useEffect } from 'react';
-import { Route, Routes as Wrapper, useLocation, useNavigate } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
+import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
 import { SsvAppBar } from '~app/components/common/AppBar';
-import { useStores } from '~app/hooks/useStores';
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
 const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
@@ -46,11 +45,7 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 const Migration = lazy(() => import('~app/components/applications/SSV/Migration/Migration'));
 
 const Routes: any = () => {
-  const stores = useStores();
-  const location = useLocation();
-  const navigate = useNavigate();
   const ssvRoutes = config.routes.SSV;
-  const walletStore = stores.Wallet;
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
@@ -105,15 +100,6 @@ const Routes: any = () => {
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
   ];
-
-  useEffect(() => {
-    const notLoggedInRoutes = ['/', '/join'];
-    if (walletStore.wallet && notLoggedInRoutes.includes(location.pathname)) {
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    } else if (!walletStore.wallet && !notLoggedInRoutes.includes(location.pathname)) {
-      navigate(config.routes.SSV.ROOT);
-    }
-  }, [walletStore.wallet]);
 
   return (
       <Layout>

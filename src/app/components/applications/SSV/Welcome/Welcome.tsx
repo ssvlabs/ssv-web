@@ -43,6 +43,7 @@ const Welcome = () => {
               <SecondaryButton
                 withVerifyConnection
                 text={'Distribute Validator'}
+                disable={!walletStore.wallet}
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
@@ -52,6 +53,7 @@ const Welcome = () => {
               <SecondaryButton
                 withVerifyConnection
                 text={'Join as Operator'}
+                disable={!walletStore.wallet}
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}

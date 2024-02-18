@@ -83,7 +83,6 @@ class WalletStore extends BaseStore implements Wallet {
     this.accountAddress = '';
     this.wallet = null;
     this.ssvStore.clearSettings();
-    this.ssvStore.clearUserSyncInterval();
     this.operatorStore.clearSettings();
     myAccountStore.clearIntervals();
     removeFromLocalStorageByKey('params');

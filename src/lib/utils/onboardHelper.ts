@@ -63,11 +63,13 @@ const initOnboardOptions = {
       id: NETWORKS.MAINNET,
       label: 'Ethereum Mainnet',
       token: TOKEN_NAMES[NETWORKS.MAINNET],
+      rpcUrl: 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26',
     },
     {
       id: NETWORKS.GOERLI,
       label: 'Goerli testnet',
       token: TOKEN_NAMES[NETWORKS.GOERLI],
+      rpcUrl: 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26',
     },
     {
       id: NETWORKS.HOLESKY,

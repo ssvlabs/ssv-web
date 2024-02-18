@@ -123,7 +123,7 @@ jobs:
 
       # <beta.app.ssv.network>
       - name: Run prod webapp build
-        if: github.ref == 'refs/heads/prod-test'
+        if: github.ref == 'refs/heads/main'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -140,7 +140,7 @@ jobs:
           BLOX_INFRA_API: "https://api.bloxstaking.com"
 
       - name: Deploy prod webapp
-        if: github.ref == 'refs/heads/prod-test'
+        if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete

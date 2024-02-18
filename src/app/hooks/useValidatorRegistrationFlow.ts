@@ -107,10 +107,10 @@ const validatorRegistrationFlow = (currentRoute: string) => {
       if (walletLabel === 'WalletConnect') {
         maximumCount = config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.WALLET_CONNECT;
       } else {
-        maximumCount = Number(getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG)) || MAX_VALIDATORS_PER_CLUSTER_SIZE[clusterSize];
+        maximumCount = MAX_VALIDATORS_PER_CLUSTER_SIZE[clusterSize];
       }
     }
-    return maximumCount;
+    return Number(getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG)) || maximumCount;
   };
 
   const getNextNavigation = (action?: EValidatorFlowAction): string => {

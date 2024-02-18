@@ -25,8 +25,6 @@ class SsvStore extends BaseStore {
   liquidationCollateralPeriod: number = 0;
   minimumLiquidationCollateral: number = 0;
 
-  private syncingUser: boolean = false;
-
   constructor() {
     super();
     makeObservable(this, {
@@ -90,6 +88,7 @@ class SsvStore extends BaseStore {
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
       this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateralParams, 86400000); // once in 24 hours
       this.accountInterval = setInterval(this.getBalanceFromSsvContract, 10000);
+      await this.getNetworkFeeAndLiquidationCollateralParams();
       await this.getBalanceFromSsvContract();
     }, 5000);
   }

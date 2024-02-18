@@ -38,11 +38,6 @@ const translations = {
       ],
     },
     REMOVE_EXIT_VALIDATOR: {
-      BULK_STEPS: {
-        BULK_ACTIONS: 'BULK_ACTIONS',
-        BULK_CONFIRMATION: 'BULK_CONFIRMATION',
-        BULK_EXIT_FINISH: 'BULK_EXIT_FINISH',
-      },
       BULK_TITLES: {
         SELECT_REMOVE_VALIDATORS:'Select Validators to Remove',
         SELECT_EXIT_VALIDATORS: 'Select Validators to Exit',

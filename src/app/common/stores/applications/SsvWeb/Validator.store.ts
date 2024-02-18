@@ -200,7 +200,6 @@ class ValidatorStore extends BaseStore {
    */
   async bulkRemoveValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
     const clusterStore: ClusterStore = this.getStore('Cluster');
-    // const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));

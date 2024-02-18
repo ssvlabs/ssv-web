@@ -49,7 +49,7 @@ const SecondaryButton = (props: Props) => {
         className={className ?? classes.SecondaryButton}
         disabled={disable || isLoading}
       >
-        {applicationStore.isLoading && !withoutLoader && <Spinner />}
+        {isLoading && !withoutLoader && <Spinner />}
         {children}
       </Button>
     );

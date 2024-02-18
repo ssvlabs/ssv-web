@@ -106,6 +106,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
     rowsPerPage: 14,
     onChangePage: console.log,
   });
+
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
@@ -130,10 +131,11 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
       <TableHeader>
         {selectUnselectAllValidators && <Checkbox disable={false} grayBackGround text={''}
                                                                    withoutMarginBottom
+                                                                   smallLine
                                                                    onClickCallBack={() => {
                                                                      selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key), setSelectAllValidators);
                                                                    }}
-                                                                   isChecked={selectAllValidators}/>}
+                                                                   isChecked={selectedValidators && selectedValidators.length > 0}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
         <TableHeaderTitle
           marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>

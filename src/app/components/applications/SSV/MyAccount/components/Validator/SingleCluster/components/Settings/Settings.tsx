@@ -4,8 +4,8 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
+import { ENV, isMainnet } from '~lib/utils/envHelper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -97,10 +97,11 @@ const Settings = ({ validator }: { validator: any }) => {
               <Grid className={classes.RemoveValidatorImage} />
               <Typography>Remove Validator</Typography>
             </Grid>
-            <Grid container item className={classes.Button} onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
-              <Grid className={classes.ExitValidatorImage} />
+            {!isMainnet && <Grid container item className={classes.Button}
+                   onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
+              <Grid className={classes.ExitValidatorImage}/>
               <Typography>Exit Validator</Typography>
-            </Grid>
+            </Grid>}
           </Grid>
         </Grid>
         }

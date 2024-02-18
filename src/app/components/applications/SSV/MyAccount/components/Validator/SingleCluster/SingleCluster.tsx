@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
+import { isMainnet } from '~lib/utils/envHelper';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
 import { longStringShorten } from '~lib/utils/strings';
@@ -172,7 +173,7 @@ const SingleCluster = () => {
             header={<Grid container className={classes.HeaderWrapper}>
               <Grid item className={classes.Header}>Validators</Grid>
               <Grid className={classes.ButtonsWrapper}>
-                {cluster.validatorCount > 1 && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
+                {cluster.validatorCount > 1 && !isMainnet && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
                   <ButtonText>
                     Actions
                   </ButtonText>

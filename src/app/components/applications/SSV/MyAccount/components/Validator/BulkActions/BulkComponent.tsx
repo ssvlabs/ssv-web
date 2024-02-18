@@ -37,7 +37,7 @@ const BulkComponent = () => {
 
   const selectUnselectAllValidators = (publicKeys: string[], callback: Function) => {
     let nextState = publicKeys;
-    if (selectedValidators.length === publicKeys.length) {
+    if (selectedValidators.length === publicKeys.length || selectedValidators.length > 0) {
       nextState = [];
     }
     setSelectedValidators(nextState);

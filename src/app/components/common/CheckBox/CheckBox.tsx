@@ -10,16 +10,17 @@ type CheckboxProps = {
   height?: number,
   disable?: boolean,
   isChecked?: boolean,
+  smallLine?: boolean,
   onClickCallBack?: any,
   grayBackGround?: boolean,
   withoutMarginBottom?: boolean
 };
 
-const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround, withoutMarginBottom }: CheckboxProps) => {
+const CheckBox = ({ width, height, text, disable, isChecked, onClickCallBack, grayBackGround, withoutMarginBottom, smallLine }: CheckboxProps) => {
   const stores = useStores();
   const checkboxStore: CheckboxStore = stores.Checkbox;
   const [checked, setChecked] = useState(isChecked);
-  const classes = useStyles({ grayBackGround, checked: isChecked ?? checked, width, height, withoutMarginBottom });
+  const classes = useStyles({ grayBackGround, checked: isChecked ?? checked, width, height, withoutMarginBottom, smallLine });
   useEffect(() => {
     if (!isChecked) {
       checkboxStore.setCheckboxStateFalse();

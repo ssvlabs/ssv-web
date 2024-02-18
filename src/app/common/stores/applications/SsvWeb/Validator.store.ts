@@ -184,9 +184,9 @@ class ValidatorStore extends BaseStore {
           await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
       } catch (e: any) {
-        applicationStore.setIsLoading(false);
+        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        applicationStore.showTransactionPendingPopUp(false);
+        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
       }
     });
@@ -197,23 +197,18 @@ class ValidatorStore extends BaseStore {
    */
   async bulkRemoveValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
     const clusterStore: ClusterStore = this.getStore('Cluster');
-    const applicationStore: ApplicationStore = this.getStore('Application');
+    // const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
-    applicationStore.setIsLoading(true);
+    store.dispatch(setIsLoading(true));
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // @ts-ignore
-    // const operatorsIds = validator.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
     const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(operatorIds));
-    console.log(validators);
-    console.log(operatorIds);
-    console.log(clusterData);
     return new Promise(async (resolve) => {
       try {
         const tx = await contract.bulkRemoveValidator(validators, operatorIds, clusterData);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -221,9 +216,9 @@ class ValidatorStore extends BaseStore {
           await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
       } catch (e: any) {
-        applicationStore.setIsLoading(false);
+        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        applicationStore.showTransactionPendingPopUp(false);
+        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
       }
     });
@@ -233,53 +228,53 @@ class ValidatorStore extends BaseStore {
    * Exit validator
    */
   async exitValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
-    const applicationStore: ApplicationStore = this.getStore('Application');
+    // const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
-    applicationStore.setIsLoading(true);
+    store.dispatch(setIsLoading(true));
 
     return new Promise(async (resolve) => {
       try {
         const tx = await contract.exitValidator(publicKey, operatorIds);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          applicationStore.showTransactionPendingPopUp(false);
-          applicationStore.setIsLoading(false);
+          store.dispatch(setIsShowTxPendingPopup(false));
+          store.dispatch(setIsLoading(false));
           resolve(true);
         }
       } catch (e: any) {
-        applicationStore.setIsLoading(false);
+        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        applicationStore.showTransactionPendingPopUp(false);
+        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
       }
     });
   }
 
   /**
-   * Bulk exit validators
+   * Bulk exit validator
    */
   async bulkExitValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
-    const applicationStore: ApplicationStore = this.getStore('Application');
+    // const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
-    applicationStore.setIsLoading(true);
+    store.dispatch(setIsLoading(true));
 
     return new Promise(async (resolve) => {
       try {
         const tx = await contract.bulkExitValidator(validators, operatorIds);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          applicationStore.showTransactionPendingPopUp(false);
-          applicationStore.setIsLoading(false);
+          store.dispatch(setIsShowTxPendingPopup(false));
+          store.dispatch(setIsLoading(false));
           resolve(true);
         }
       } catch (e: any) {

@@ -90,21 +90,22 @@ const BulkComponent = () => {
     }
   };
 
-  const components = {
-    [BULK_STEPS.BULK_ACTIONS]: <NewBulkActions nextStep={nextStep}
-                                               title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-                                               selectUnselectAllValidators={selectUnselectAllValidators}
-                                               selectedValidators={selectedValidators}
-                                               onCheckboxClickHandler={onCheckboxClickHandler}/>,
-    [BULK_STEPS.BULK_CONFIRMATION]: <ConfirmationStep
-      flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-      selectedValidators={selectedValidators} nextStep={nextStep}/>,
-    [BULK_STEPS.BULK_EXIT_FINISH]: <ExitFinishPage nextStep={nextStep} selectedValidators={selectedValidators}/>,
-  };
+  if (currentStep === BULK_STEPS.BULK_ACTIONS) {
+    return <NewBulkActions nextStep={nextStep}
+                           title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
+                           selectUnselectAllValidators={selectUnselectAllValidators}
+                           selectedValidators={selectedValidators}
+                           onCheckboxClickHandler={onCheckboxClickHandler}/>;
+  }
 
-  const Component = components[currentStep];
+  if (currentStep === BULK_STEPS.BULK_CONFIRMATION) {
+    return  <ConfirmationStep
+          flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
+          selectedValidators={selectedValidators} nextStep={nextStep}/>;
+  }
 
-  return Component;
+  // BULK_STEPS.BULK_EXIT_FINISH === currentStep
+  return <ExitFinishPage nextStep={nextStep} selectedValidators={selectedValidators}/>;
 };
 
 export default BulkComponent;

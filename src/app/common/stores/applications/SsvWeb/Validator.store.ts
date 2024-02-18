@@ -182,15 +182,14 @@ class ValidatorStore extends BaseStore {
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
           await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
           resolve(true);
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -216,15 +215,14 @@ class ValidatorStore extends BaseStore {
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
           await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
           resolve(true);
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -247,15 +245,14 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          store.dispatch(setIsShowTxPendingPopup(false));
-          store.dispatch(setIsLoading(false));
           resolve(true);
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -278,15 +275,14 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          store.dispatch(setIsShowTxPendingPopup(false));
-          store.dispatch(setIsLoading(false));
           resolve(true);
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }

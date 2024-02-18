@@ -5,8 +5,15 @@ import { translations } from '~app/common/config';
 import { BULK_FLOWS } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
 import ExitFinishPage from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitFinishPage';
-import ConfirmationStep from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
-import { IOperator, ProcessStore, ValidatorStore, SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb';
+import ConfirmationStep
+  from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
+import {
+  IOperator,
+  ProcessStore,
+  ValidatorStore,
+  SingleCluster as SingleClusterProcess,
+} from '~app/common/stores/applications/SsvWeb';
+import { conditionalExecutor } from '~root/services/utils.service';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -58,27 +65,28 @@ const BulkComponent = () => {
     }
   };
 
+  const backToSingleClusterPage = () => {
+    process.validator = undefined;
+    navigate(-1);
+  };
+
   const nextStep = async () => {
+    let res;
+    const condition = selectedValidators.length === 1;
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
-      if (selectedValidators.length === 1) {
-        await validatorStore.exitValidator(`0x${selectedValidators[0]}`, process.item.operators.map((operator: IOperator) => operator.id));
-      } else {
-        await validatorStore.bulkExitValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id));
+      res = await conditionalExecutor(condition, async () => await validatorStore.exitValidator(`0x${selectedValidators[0]}`, process.item.operators.map((operator: IOperator) => operator.id)), async () => await validatorStore.bulkExitValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id)));
+      if (res) {
+        setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
-      setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
-      process.validator = undefined;
-      navigate(-1);
+      backToSingleClusterPage();
     } else {
-      if (selectedValidators.length === 1) {
-        await validatorStore.removeValidator(process.validator);
-      } else {
-        await validatorStore.bulkRemoveValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id));
+      res = await conditionalExecutor(condition, async () => await validatorStore.removeValidator(process.validator), async () => await validatorStore.bulkRemoveValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id)));
+      if (res) {
+        backToSingleClusterPage();
       }
-      process.validator = undefined;
-      navigate(-1);
     }
   };
 

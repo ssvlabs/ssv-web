@@ -73,7 +73,7 @@ const initOnboardOptions = {
       id: NETWORKS.HOLESKY,
       label: 'Holesky',
       token: 'ETH',
-      rpcUrl: 'https://cool-prettiest-daylight.ethereum-holesky.quiknode.pro/0d8ffe59dc7865022b15bc0d56692593416330ab/',
+      rpcUrl: 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26',
       // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // rpcUrl: 'https://ethereum-holesky.publicnode.com',

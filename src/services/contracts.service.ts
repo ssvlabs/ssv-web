@@ -43,13 +43,7 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
     if (contracts[EContractName.TOKEN] && contracts[EContractName.TOKEN].address === contractAddress) {
       console.warn('Token contract already exists');
     } else {
-      console.warn('Creating new token contract');
-      console.warn('Token contract address ', contractAddress);
-      try {
-        contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, provider);
-      } catch (e) {
-        console.warn('Creating new token contract error', e);
-      }
+      contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, provider.getSigner());
     }
   } else {
     console.warn('No token contract address found');
@@ -80,11 +74,11 @@ const resetContracts = () => {
 /**
  * Crucial to call this only when then network object has been changed
  */
-const initContracts = ({ provider, network }: { provider: EIP1193Provider | null; network: NetworkInfo }) => {
-  const resolvedProvider = provider ? new ethers.providers.Web3Provider(provider) : new ethers.providers.JsonRpcProvider('https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26/');
+const initContracts = ({ provider, network, tmp }: { provider: EIP1193Provider | null; network: NetworkInfo; tmp: EIP1193Provider }) => {
+  const resolvedProvider = provider ? new ethers.providers.Web3Provider(provider, 'any') : new ethers.providers.JsonRpcProvider('https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26/');
   initGetterContract({ provider: resolvedProvider, network });
   initSetterContract({ provider: resolvedProvider, network });
-  initTokenContract({ provider: resolvedProvider, network });
+  initTokenContract({ provider: tmp, network });
   initDistributionContract({ provider: resolvedProvider, network });
 };
 

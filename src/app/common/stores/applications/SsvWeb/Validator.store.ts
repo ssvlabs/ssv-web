@@ -177,6 +177,8 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
+          store.dispatch(setIsLoading(false));
+          store.dispatch(setIsShowTxPendingPopup(false));
           ApiParams.initStorage(true);
           await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
@@ -268,6 +270,8 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             console.debug('Contract Receipt', receipt);
+            store.dispatch(setIsLoading(false));
+            store.dispatch(setIsShowTxPendingPopup(false));
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
@@ -346,6 +350,8 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             console.debug('Contract Receipt', receipt);
+            store.dispatch(setIsLoading(false));
+            store.dispatch(setIsShowTxPendingPopup(false));
 
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
@@ -360,6 +366,7 @@ class ValidatorStore extends BaseStore {
         });
         console.debug('Contract Error', e.message);
         store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
       }
@@ -395,6 +402,8 @@ class ValidatorStore extends BaseStore {
               action: 'reactivate_cluster',
             });
             console.debug('Contract Receipt', receipt);
+            store.dispatch(setIsLoading(false));
+            store.dispatch(setIsShowTxPendingPopup(false));
             resolve(true);
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }

@@ -267,8 +267,7 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             console.debug('Contract Receipt', receipt);
-            store.dispatch(setIsLoading(false));
-            store.dispatch(setIsShowTxPendingPopup(false));
+
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
@@ -282,19 +281,17 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
 
   async addNewValidator() {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    // const clusterStore: ClusterStore = this.getStore('Cluster');
-    // const processStore: ProcessStore = this.getStore('Process');
-
     return new Promise(async (resolve) => {
       try {
         const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
@@ -346,10 +343,6 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            console.debug('Contract Receipt', receipt);
-            store.dispatch(setIsLoading(false));
-            store.dispatch(setIsShowTxPendingPopup(false));
-
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
@@ -361,11 +354,11 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -398,11 +391,8 @@ class ValidatorStore extends BaseStore {
               category: 'single_cluster',
               action: 'reactivate_cluster',
             });
-            console.debug('Contract Receipt', receipt);
-            store.dispatch(setIsLoading(false));
-            store.dispatch(setIsShowTxPendingPopup(false));
-            resolve(true);
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            resolve(true);
           }
         }
       } catch (e: any) {
@@ -412,10 +402,11 @@ class ValidatorStore extends BaseStore {
           action: 'reactivate_cluster',
           label: isRejected ? 'rejected' : 'error',
         });
-        console.debug('Contract Error', e.message);
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsLoading(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }

@@ -66,11 +66,11 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} text={'Cancel'}
+              <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} children={'Cancel'}
                                submitFunction={cancelUpdateFee} />
             </Grid>
             <Grid item xs>
-              <PrimaryButton withoutLoader={operatorStore.openCancelDialog} disable={false} text={'Execute'}
+              <PrimaryButton withoutLoader={operatorStore.openCancelDialog} disable={false} children={'Execute'}
                 submitFunction={submitFeeChange} />
             </Grid>
           </Grid>

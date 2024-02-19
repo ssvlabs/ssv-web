@@ -89,7 +89,7 @@ const SetOperatorFee = () => {
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
             {zeroError && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'}/>}
-              <PrimaryButton text={'Next'} disable={registerButtonDisabled} submitFunction={moveToSubmitConfirmation} />
+              <PrimaryButton children={'Next'} disable={registerButtonDisabled} submitFunction={moveToSubmitConfirmation} />
           </Grid>
         </Grid>,
       ]}

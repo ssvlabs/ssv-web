@@ -2131,6 +2131,17 @@ export const ABI_VERSION = {
         'type': 'error',
       },
       {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'IncorrectValidatorStateWithData',
+        'type': 'error',
+      },
+      {
         'inputs': [],
         'name': 'InsufficientBalance',
         'type': 'error',
@@ -2208,6 +2219,17 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'ValidatorAlreadyExists',
+        'type': 'error',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'ValidatorAlreadyExistsWithData',
         'type': 'error',
       },
       {
@@ -3005,6 +3027,24 @@ export const ABI_VERSION = {
             'name': 'operatorIds',
             'type': 'uint64[]',
           },
+        ],
+        'name': 'bulkExitValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
           {
             'internalType': 'bytes[]',
             'name': 'sharesData',
@@ -3049,6 +3089,56 @@ export const ABI_VERSION = {
           },
         ],
         'name': 'bulkRegisterValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
+          {
+            'components': [
+              {
+                'internalType': 'uint32',
+                'name': 'validatorCount',
+                'type': 'uint32',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'networkFeeIndex',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'index',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'bool',
+                'name': 'active',
+                'type': 'bool',
+              },
+              {
+                'internalType': 'uint256',
+                'name': 'balance',
+                'type': 'uint256',
+              },
+            ],
+            'internalType': 'struct ISSVNetworkCore.Cluster',
+            'name': 'cluster',
+            'type': 'tuple',
+          },
+        ],
+        'name': 'bulkRemoveValidator',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function',
@@ -3441,7 +3531,7 @@ export const ABI_VERSION = {
           },
           {
             'internalType': 'bytes',
-            'name': 'shares',
+            'name': 'sharesData',
             'type': 'bytes',
           },
           {

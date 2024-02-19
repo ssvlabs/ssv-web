@@ -76,7 +76,7 @@ const AccountBalanceAndFee = () => {
         />
         <PrimaryButton
           disable={!firstCheckBox || !secondCheckBox}
-          text={'Next'}
+          children={'Next'}
           submitFunction={() => {
             navigate(getNextNavigation());
           }}

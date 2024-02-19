@@ -95,7 +95,7 @@ const Button = (props: ButtonParams) => {
             errorButton={errorButton}
             isLoading={isLoading}
             submitFunction={() => { checkWalletConnected(onClick); }}
-            text={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
+            children={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
           />
         );
     };
@@ -106,9 +106,9 @@ const Button = (props: ButtonParams) => {
             <Grid item xs className={classes.ButtonWrapper}>
               <PrimaryButton
                 dataTestId={testId}
-                text={approveButtonText}
-                withoutLoader={hasGotAllowanceApproval}
-                disable={hasGotAllowanceApproval || disable}
+                children={approveButtonText}
+                withoutLoader={userAllowance}
+                disable={userAllowance || disable}
                 submitFunction={() => { !allowanceButtonDisable && checkWalletConnected(allowNetworkContract); }}
               />
             </Grid>
@@ -117,7 +117,7 @@ const Button = (props: ButtonParams) => {
                 dataTestId={testId}
                 disable={!hasGotAllowanceApproval || disable}
                 submitFunction={() => { checkWalletConnected(onClick); }}
-                text={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
+                children={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
               />
             </Grid>
             <Grid container item xs={12}>

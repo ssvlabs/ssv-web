@@ -40,7 +40,7 @@ const CountryNotSupported = () => {
             )}
           />
           <Grid container item className={classes.ImageWrapper} />
-          <SecondaryButton noCamelCase submitFunction={openMarketingSite} text={'Learn more about the SSV network'} />
+          <SecondaryButton noCamelCase submitFunction={openMarketingSite} children={'Learn more about the SSV network'} />
         </Grid>,
       ]}
     />

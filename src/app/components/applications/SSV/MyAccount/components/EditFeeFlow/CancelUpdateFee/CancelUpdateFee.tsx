@@ -83,7 +83,7 @@ const CancelUpdateFee = () => {
           </Grid>
           <PrimaryButton
             disable={false}
-            text={'Back to My Account'}
+            children={'Back to My Account'}
             submitFunction={backToMyAccount}
             wrapperClass={classes.BackToMyAccount}
           />
@@ -108,9 +108,9 @@ const CancelUpdateFee = () => {
           <b>Declaring a new fee</b> will reset the current <br />
           process and start the process anew.
         </Grid>
-        <PrimaryButton wrapperClass={classes.FirstButton} disable={false} text={'Cancel Update Fee'}
+        <PrimaryButton wrapperClass={classes.FirstButton} disable={false} children={'Cancel Update Fee'}
           submitFunction={cancelUpdateProcess} />
-        <PrimaryButton withoutLoader wrapperClass={classes.SecondButton} disable={false} text={'Declare a New Fee'}
+        <PrimaryButton withoutLoader wrapperClass={classes.SecondButton} disable={false} children={'Declare a New Fee'}
           submitFunction={declareNewFee} />
       </Grid>
     </Dialog>

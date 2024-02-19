@@ -41,7 +41,7 @@ const ConnectWallet = () => {
         <Grid container>
           <Typography className={classes.SubHeader}>Connect your wallet to receive testnet SSV for testing purposes.</Typography>
           <Grid item className={classes.Warning}>Funds received through the SSV faucet are not real funds and hold no value.</Grid>
-          <PrimaryButton text={'Connect Wallet'} submitFunction={connectToWallet} disable={false} withVerifyConnection={false}/>
+          <PrimaryButton children={'Connect Wallet'} submitFunction={connectToWallet} disable={false} withVerifyConnection={false}/>
         </Grid>,
       ]}
     />

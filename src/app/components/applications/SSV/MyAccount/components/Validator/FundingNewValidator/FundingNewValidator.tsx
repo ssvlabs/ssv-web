@@ -193,7 +193,7 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={disableBtnCondition} text={'Next'}
+                    <PrimaryButton disable={disableBtnCondition} children={'Next'}
                                    submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>

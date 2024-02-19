@@ -155,10 +155,10 @@ const WhiteWrapper = (props: Props) => {
             <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'} />
             <Grid container className={classes.ButtonsWrapper}>
               <Grid item xs>
-                <SecondaryButton text={'Yes, Cancel'} submitFunction={cancelProcess} />
+                <SecondaryButton children={'Yes, Cancel'} submitFunction={cancelProcess} />
               </Grid>
               <Grid item xs>
-                <PrimaryButton text={'No, Go Back'} submitFunction={dialogHandler} />
+                <PrimaryButton children={'No, Go Back'} submitFunction={dialogHandler} />
               </Grid>
             </Grid>
           </Grid>

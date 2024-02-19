@@ -105,7 +105,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
                   </ul>
                 </Grid>
               </Grid>
-              <PrimaryButton text={'Declare New Fee'}
+              <PrimaryButton children={'Declare New Fee'}
                              submitFunction={changeOperatorFee}/>
             </Grid>,
           ]}

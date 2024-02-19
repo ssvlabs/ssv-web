@@ -45,7 +45,7 @@ const Balance = () => {
     if (liquidated) {
       return (
         <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-          <PrimaryButton text={'Reactivate Cluster'} submitFunction={moveToReactivateCluster} />
+          <PrimaryButton children={'Reactivate Cluster'} submitFunction={moveToReactivateCluster} />
         </Grid>
       );
     }
@@ -53,10 +53,10 @@ const Balance = () => {
     return (
         <Grid container item className={classes.ActionButtonWrapper}>
           <Grid item xs>
-            <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit} />
+            <PrimaryButton children={'Deposit'} submitFunction={moveToDeposit} />
           </Grid>
           <Grid item xs>
-            <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw} />
+            <SecondaryButton children={'Withdraw'} submitFunction={moveToWithdraw} />
           </Grid>
         </Grid>
     );

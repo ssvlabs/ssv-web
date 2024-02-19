@@ -336,6 +336,9 @@ class OperatorStore extends BaseStore {
               const operator = await Operator.getInstance().getOperator(operatorId);
               return equalsAddresses(operator.address_whitelist.toString(), address.toString());
             }, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            store.dispatch(setIsLoading(false));
+            store.dispatch(setIsShowTxPendingPopup(false));
+            resolve(true);
           }
         }
       } catch (e: any) {

@@ -54,7 +54,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
                             Read more on fee changes
                         </Grid>
                     </Grid>}
-                    <PrimaryButton text={buttonText} submitFunction={onUpdateFeeHandle}/>
+                    <PrimaryButton children={buttonText} submitFunction={onUpdateFeeHandle}/>
                 </Grid>,
             ]}
         />

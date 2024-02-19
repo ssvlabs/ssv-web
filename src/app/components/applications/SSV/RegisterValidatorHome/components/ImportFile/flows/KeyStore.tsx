@@ -198,7 +198,7 @@ const KeyStoreFlow = () => {
             <Grid item xs={12} className={classes.ErrorWrapper}>
               {errorMessage && <ErrorMessage text={errorMessage}/>}
             </Grid></>
-          <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
+          <PrimaryButton children={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
         </Grid>
       </Grid>,
     ]}

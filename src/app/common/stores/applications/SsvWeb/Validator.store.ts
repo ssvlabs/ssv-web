@@ -60,6 +60,9 @@ const annotations = {
   keySharePublicKey: observable,
   setKeySharePublicKey: action.bound,
   removeValidator: action.bound,
+  bulkRemoveValidators: action.bound,
+  exitValidator: action.bound,
+  bulkExitValidators: action.bound,
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
@@ -156,7 +159,7 @@ class ValidatorStore extends BaseStore {
   }
 
   /**
-   * Add new validator
+   * Remove validator
    */
   async removeValidator(validator: any): Promise<boolean> {
     const clusterStore: ClusterStore = this.getStore('Cluster');
@@ -178,13 +181,108 @@ class ValidatorStore extends BaseStore {
         const receipt = await tx.wait();
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
-          await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          resolve(true);
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+    });
+  }
+
+  /**
+   * Bulk remove validators
+   */
+  async bulkRemoveValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
+    const clusterStore: ClusterStore = this.getStore('Cluster');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const contract = getContractByName(EContractName.SETTER);
+    store.dispatch(setIsLoading(true));
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(operatorIds));
+    return new Promise(async (resolve) => {
+      try {
+        const tx = await contract.bulkRemoveValidator(validators, operatorIds, clusterData);
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          ApiParams.initStorage(true);
+          await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          resolve(true);
+        }
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+    });
+  }
+
+  /**
+   * Exit validator
+   */
+  async exitValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
+    // const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const contract = getContractByName(EContractName.SETTER);
+    store.dispatch(setIsLoading(true));
+
+    return new Promise(async (resolve) => {
+      try {
+        const tx = await contract.exitValidator(publicKey, operatorIds);
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          resolve(true);
+        }
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+    });
+  }
+
+  /**
+   * Bulk exit validator
+   */
+  async bulkExitValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
+    // const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const contract = getContractByName(EContractName.SETTER);
+    store.dispatch(setIsLoading(true));
+
+    return new Promise(async (resolve) => {
+      try {
+        const tx = await contract.bulkExitValidator(validators, operatorIds);
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          resolve(true);
+        }
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -217,11 +315,11 @@ class ValidatorStore extends BaseStore {
             this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             console.debug('Contract Receipt', receipt);
             await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
-                async () => {
-                  return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-                },
-                validatorBefore,
-              ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+              async () => {
+                return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+              },
+              validatorBefore,
+            ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         })
         .on('transactionHash', (txHash: string) => {
@@ -268,7 +366,7 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             console.debug('Contract Receipt', receipt);
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
         }
@@ -347,7 +445,7 @@ class ValidatorStore extends BaseStore {
             });
             console.debug('Contract Receipt', receipt);
 
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
         }
@@ -396,7 +494,7 @@ class ValidatorStore extends BaseStore {
             });
             console.debug('Contract Receipt', receipt);
             resolve(true);
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
       } catch (e: any) {

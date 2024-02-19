@@ -71,7 +71,7 @@ const EligibleScreen = () => {
             submitFunction={claimRewards}
             wrapperClass={classes.CtaButton}
             dataTestId={'connect-to-wallet-button'}
-            text={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'}
+            children={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'}
           />
         </Grid>,
       ]}

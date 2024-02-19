@@ -91,7 +91,7 @@ const OperatorAccessSettings = () => {
                                 <Typography className={classes.ErrorMessage}>{addressError.errorMessage}</Typography>
                             </Grid>}
                             <TermsAndConditionsCheckbox>
-                                <PrimaryButton disable={btnDisabledCondition} text={'Update'} submitFunction={updateAddressHandler}/>
+                                <PrimaryButton disable={btnDisabledCondition} children={'Update'} submitFunction={updateAddressHandler}/>
                             </TermsAndConditionsCheckbox>
                         </Grid>
                     </Grid>

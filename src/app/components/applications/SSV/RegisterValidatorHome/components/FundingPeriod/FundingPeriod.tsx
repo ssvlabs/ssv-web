@@ -121,7 +121,7 @@ const FundingPeriod = () => {
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
                 <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{totalAmount} SSV</Typography>
               </Grid>
-              <PrimaryButton text={'Next'} submitFunction={moveToNextPage} disable={buttonDisableCondition}/>
+              <PrimaryButton children={'Next'} submitFunction={moveToNextPage} disable={buttonDisableCondition}/>
             </Grid>,
           ]}
       />

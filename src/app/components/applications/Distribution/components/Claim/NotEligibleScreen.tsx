@@ -42,7 +42,7 @@ const NotEligibleScreen = () => {
             submitFunction={claimRewards}
             wrapperClass={classes.CtaButton}
             dataTestId={'connect-to-wallet-button'}
-            text={'Connect a Different Wallet'}
+            children={'Connect a Different Wallet'}
           />
         </Grid>,
       ]}

@@ -107,8 +107,8 @@ const Button = (props: ButtonParams) => {
               <PrimaryButton
                 dataTestId={testId}
                 children={approveButtonText}
-                withoutLoader={userAllowance}
-                disable={userAllowance || disable}
+                withoutLoader={hasGotAllowanceApproval}
+                disable={hasGotAllowanceApproval || disable}
                 submitFunction={() => { !allowanceButtonDisable && checkWalletConnected(allowNetworkContract); }}
               />
             </Grid>

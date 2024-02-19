@@ -4,6 +4,8 @@ import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { NetworkInfo } from '~root/providers/networkInfo.provider';
 
+const RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
+
 let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
 
 const initGetterContract = ({ provider, network }: { provider: any; network: NetworkInfo })=> {
@@ -14,7 +16,9 @@ const initGetterContract = ({ provider, network }: { provider: any; network: Net
       console.warn('Getter contract already exists');
     } else {
       console.warn('Creating new getter contract');
-      contracts[EContractName.GETTER] = new Contract(contractAddress, abi, provider);
+      // const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      const ethProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
+      contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider);
     }
   } else {
     console.warn('No getter contract address found');
@@ -29,7 +33,8 @@ const initSetterContract = ({ provider, network }: { provider: any; network: Net
       console.warn('Setter contract already exists');
     } else {
       console.warn('Creating new setter contract');
-      contracts[EContractName.SETTER] = new Contract(contractAddress, abi, provider);
+      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      contracts[EContractName.SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
     }
   } else {
     console.warn('No setter contract address found');
@@ -40,11 +45,14 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
   const abi: any = config.CONTRACTS.SSV_TOKEN.ABI;
   const contractAddress = network.tokenAddress;
   if (contractAddress) {
-    if (contracts[EContractName.TOKEN] && contracts[EContractName.TOKEN].address === contractAddress) {
+    if (contracts[EContractName.TOKEN_GETTER] && contracts[EContractName.TOKEN_GETTER].address === contractAddress) {
       console.warn('Token contract already exists');
     } else {
       console.warn('Creating new token contract');
-      contracts[EContractName.TOKEN] = new Contract(contractAddress, abi, provider);
+      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      const rpcProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
+      contracts[EContractName.TOKEN_GETTER] = new Contract(contractAddress, abi, rpcProvider);
+      contracts[EContractName.TOKEN_SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
     }
   } else {
     console.warn('No token contract address found');
@@ -59,7 +67,8 @@ const initDistributionContract = ({ provider, network }: { provider: any; networ
       console.warn('Distribution contract already exists', { abi, contractAddress });
     } else {
       console.warn('Creating new distribution contract');
-      contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, provider);
+      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, ethProvider.getSigner());
     }
   } else {
     console.warn('No distribution contract address found');
@@ -75,12 +84,12 @@ const resetContracts = () => {
 /**
  * Crucial to call this only when then network object has been changed
  */
-const initContracts = ({ provider, network }: { provider: EIP1193Provider | null; network: NetworkInfo }) => {
-  const resolvedProvider = provider ? new ethers.providers.Web3Provider(provider) : new ethers.providers.JsonRpcProvider('https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26/');
-  initGetterContract({ provider: resolvedProvider, network });
-  initSetterContract({ provider: resolvedProvider, network });
-  initTokenContract({ provider: resolvedProvider, network });
-  initDistributionContract({ provider: resolvedProvider, network });
+const initContracts = ({ provider, network }: { provider: EIP1193Provider | null; network: NetworkInfo; }) => {
+  // const resolvedProvider = // provider ? new ethers.providers.Web3Provider(provider, 'any') : new ethers.providers.JsonRpcProvider(RPC_URL);
+  initGetterContract({ provider, network });
+  initSetterContract({ provider, network });
+  initTokenContract({ provider, network });
+  initDistributionContract({ provider, network });
 };
 
 export {

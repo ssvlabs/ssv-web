@@ -177,16 +177,16 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
+
           ApiParams.initStorage(true);
           await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -209,34 +209,31 @@ class ValidatorStore extends BaseStore {
       }
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const validatorBefore = await Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-
-      const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
-        .on('receipt', async (receipt: any) => {
-          // eslint-disable-next-line no-prototype-builtins
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
-            console.debug('Contract Receipt', receipt);
-            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
-                async () => {
-                  return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-                },
-                validatorBefore,
-              ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-          }
-        })
-        .on('transactionHash', (txHash: string) => {
-          store.dispatch(setTxHash(txHash));
+      try {
+        const tx = await contract.updateValidator(...payload.values()).send({ from: walletStore.accountAddress });
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
-        })
-        .on('error', (error: any) => {
-          console.debug('Contract Error', error.message);
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-          resolve(false);
-        });
-      console.log(response);
+        }
+        const receipt = await tx.wait();
+        const event: boolean = receipt.hasOwnProperty('events');
+        if (event) {
+          this.keyStoreFile = null;
+          this.newValidatorReceipt = payload.get(OPERATOR_IDS);
+          console.debug('Contract Receipt', receipt);
+          await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+            async () => {
+              return Validator.getInstance().getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+            },
+            validatorBefore,
+          ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+        }
+      } catch (e) {
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
     });
   }
 

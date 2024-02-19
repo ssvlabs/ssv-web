@@ -340,10 +340,11 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -401,10 +402,11 @@ class OperatorStore extends BaseStore {
           }
         }
       } catch (e: any) {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -523,10 +525,11 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -566,11 +569,11 @@ class OperatorStore extends BaseStore {
           }
         }
       } catch (e: any) {
-        console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -615,11 +618,11 @@ class OperatorStore extends BaseStore {
           }
         }
       } catch (e: any) {
-        console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -652,9 +655,10 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         notificationsStore.showMessage(e.message, 'error');
+        return false;
+      } finally {
         store.dispatch(setIsLoading(false));
         store.dispatch(setIsShowTxPendingPopup(false));
-        return false;
       }
     });
   }
@@ -680,7 +684,6 @@ class OperatorStore extends BaseStore {
           const receipt = await tx.wait();
           if (receipt.blockHash) {
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-            store.dispatch(setIsShowTxPendingPopup(false));
             resolve(true);
           }
         } catch (err: any) {
@@ -690,6 +693,8 @@ class OperatorStore extends BaseStore {
         }
       } catch (e) {
         reject(false);
+      } finally {
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -713,11 +718,6 @@ class OperatorStore extends BaseStore {
     });
   }
 
-  /**
-   * Select operator
-   * @param operator
-   * @param selectedIndex
-   */
   selectOperator(operator: IOperator, selectedIndex: number, clusterBox: number[]) {
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax

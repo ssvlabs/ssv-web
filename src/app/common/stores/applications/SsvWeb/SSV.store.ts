@@ -2,12 +2,13 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
+import { getClusterData, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb/index';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -104,16 +105,15 @@ class SsvStore extends BaseStore {
    */
   async deposit(amount: string) {
     return new Promise<boolean>(async (resolve) => {
-      // const gasLimit = getFixedGasLimit(GasGroup.DEPOSIT);
       const processStore: ProcessStore = this.getStore('Process');
-      const clusterStore: ClusterStore = this.getStore('Cluster');
+      const walletStore: WalletStore = this.getStore('Wallet');
       const process: SingleCluster = processStore.getProcess;
       const cluster = process.item;
       const contract = getContractByName(EContractName.SETTER);
       const operatorsIds = cluster.operators.map((operator: {
         id: any;
       }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
-      const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
+      const clusterData = await getClusterData(getClusterHash(cluster.operators, walletStore.accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
       const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
       const tx = await contract.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData);
       if (tx.hash) {
@@ -123,32 +123,6 @@ class SsvStore extends BaseStore {
       const result = receipt.blockHash;
       resolve(result);
     });
-    // return new Promise<boolean>(async (resolve) => {
-    //   const gasLimit = getFixedGasLimit(GasGroup.DEPOSIT);
-    //   const walletStore: WalletStore = this.getStore('Wallet');
-    //   const processStore: ProcessStore = this.getStore('Process');
-    //   const clusterStore: ClusterStore = this.getStore('Cluster');
-    //   const process: SingleCluster = processStore.getProcess;
-    //   const cluster = process.item;
-    //   const operatorsIds = cluster.operators.map((operator: {
-    //     id: any;
-    //   }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
-    //   const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
-    //   const ssvAmount = this.prepareSsvAmountToTransfer(toWei(amount));
-    //   walletStore.setterContract.methods.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData).send({
-    //     from: this.accountAddress,
-    //     gas: gasLimit,
-    //   })
-    //     .on('receipt', async () => {
-    //       resolve(true);
-    //     })
-    //     .on('transactionHash', (txHash: string) => {
-    //       notifyService.hash(tx.hash);
-    //     })
-    //     .on('error', () => {
-    //       resolve(false);
-    //     });
-    // });
   }
 
   /**
@@ -186,7 +160,7 @@ class SsvStore extends BaseStore {
     return new Promise<boolean>(async (resolve) => {
       try {
         const processStore: ProcessStore = this.getStore('Process');
-        const clusterStore: ClusterStore = this.getStore('Cluster');
+        const walletStore: WalletStore = this.getStore('Wallet');
         const process: any = processStore.process;
         // const eventFlow = operatorFlow ? GasGroup.WITHDRAW_OPERATOR_BALANCE : GasGroup.WITHDRAW_CLUSTER_BALANCE;
         const contract = getContractByName(EContractName.SETTER);
@@ -197,10 +171,11 @@ class SsvStore extends BaseStore {
           const operatorsIds = cluster.operators.map((operator: {
             id: any;
           }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
-          const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(cluster.operators));
+          const clusterData = await getClusterData(getClusterHash(cluster.operators, walletStore.accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
           // @ts-ignore
           const newBalance = fromWei(cluster.balance) - Number(amount);
-          if (clusterStore.getClusterRunWay({ ...process.item, balance: toWei(newBalance) }) <= 0) {
+          if (getClusterRunWay({ ...process.item, balance: toWei(newBalance) }, this.liquidationCollateralPeriod, this.minimumLiquidationCollateral) <= 0) {
+
             tx = await contract.liquidate(this.accountAddress, operatorsIds, clusterData);
             if (tx.hash) {
               notifyService.hash(tx.hash);

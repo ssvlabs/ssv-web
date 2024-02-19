@@ -27,7 +27,6 @@ const Withdraw = () => {
         // Call your function here
         processItem.balance = await clusterStore.getClusterBalance(processItem.operators);
       }, 2000);
-
       return () => clearInterval(interval);
     }
   }, []);

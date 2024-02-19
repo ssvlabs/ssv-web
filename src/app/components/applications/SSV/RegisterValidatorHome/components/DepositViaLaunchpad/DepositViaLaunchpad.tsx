@@ -67,7 +67,7 @@ const DepositViaLaunchpad = () => {
           <Grid item container xs={12}>
             <Grid item className={classes.rhinoImage} />
           </Grid>
-          <PrimaryButton text={'Visit Ethereum Launchpad'} submitFunction={redirectToLaunchpad} />
+          <PrimaryButton children={'Visit Ethereum Launchpad'} submitFunction={redirectToLaunchpad} />
         </Grid>,
       ]}
     />

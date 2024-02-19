@@ -23,7 +23,7 @@ const RegisterOperatorHome = () => {
           <Grid container item>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Run SSV Node'} submitFunction={() => {
+                <SecondaryButton children={'Run SSV Node'} submitFunction={() => {
                       GoogleTagManager.getInstance().sendEvent({
                         category: 'external_link',
                         action: 'click',
@@ -38,7 +38,7 @@ const RegisterOperatorHome = () => {
             </Grid>
             <Grid container item className={classes.LinkButtonWrapper}>
               <Grid item xs={12}>
-                <SecondaryButton text={'Register Operator'} submitFunction={() => {
+                <SecondaryButton children={'Register Operator'} submitFunction={() => {
                       navigate(config.routes.SSV.OPERATOR.GENERATE_KEYS);
                     }} />
               </Grid>

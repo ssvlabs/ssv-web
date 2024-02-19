@@ -244,7 +244,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 						<WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
 												textLink={'Learn more'}
 												link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
-          <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
+          <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} children={'Next'}
                          submitFunction={onSelectOperatorsClick}/>
         </Grid>,
       ]}

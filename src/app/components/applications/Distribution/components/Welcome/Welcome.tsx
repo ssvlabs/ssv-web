@@ -38,7 +38,7 @@ const Welcome = () => {
               subtitle={'Connect your wallet to check your rewards eligibility'} />
             <Grid container item className={classes.ImageWrapper} />
             <PrimaryButton
-              text={'Connect Wallet'}
+              children={'Connect Wallet'}
               submitFunction={connectToWallet}
               dataTestId={'connect-to-wallet-button'}
             />

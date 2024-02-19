@@ -10,7 +10,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
 
 type Props = {
-    text: string,
+    children: string | JSX.Element,
     disable?: boolean,
     className?: string,
     submitFunction: any,
@@ -25,7 +25,7 @@ const SecondaryButton = (props: Props) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
+    const { children, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
     const classes = useStyles({ noCamelCase, withoutBackgroundColor });
     const isLoading = useAppSelector(getIsLoading);
 
@@ -50,7 +50,7 @@ const SecondaryButton = (props: Props) => {
         disabled={disable || isLoading}
       >
         {isLoading && !withoutLoader && <Spinner />}
-        {text}
+        {children}
       </Button>
     );
 };

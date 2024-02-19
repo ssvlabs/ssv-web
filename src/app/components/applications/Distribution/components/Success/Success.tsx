@@ -48,7 +48,7 @@ const Success = () => {
           <Grid className={classes.LinkWrapper}>
             <LinkText text={'View Transaction on Etherscan'} link={transactionLink(txHash)} />
           </Grid>
-          <SecondaryButton submitFunction={openMarketingSite} text={'Learn more about the SSV network'} />
+          <SecondaryButton submitFunction={openMarketingSite} children={'Learn more about the SSV network'} />
         </Grid>,
       ]}
     />

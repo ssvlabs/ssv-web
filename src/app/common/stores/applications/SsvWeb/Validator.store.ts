@@ -60,6 +60,9 @@ const annotations = {
   keySharePublicKey: observable,
   setKeySharePublicKey: action.bound,
   removeValidator: action.bound,
+  bulkRemoveValidators: action.bound,
+  exitValidator: action.bound,
+  bulkExitValidators: action.bound,
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
@@ -156,7 +159,7 @@ class ValidatorStore extends BaseStore {
   }
 
   /**
-   * Add new validator
+   * Remove validator
    */
   async removeValidator(validator: any): Promise<boolean> {
     const clusterStore: ClusterStore = this.getStore('Cluster');
@@ -178,13 +181,110 @@ class ValidatorStore extends BaseStore {
         const receipt = await tx.wait();
         if (receipt.blockHash) {
           ApiParams.initStorage(true);
-          await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
-      } catch (e: any) {
-        store.dispatch(setIsLoading(false));
-        notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+    });
+  }
+
+  /**
+   * Bulk remove validators
+   */
+  async bulkRemoveValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
+    const clusterStore: ClusterStore = this.getStore('Cluster');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const contract = getContractByName(EContractName.SETTER);
+    store.dispatch(setIsLoading(true));
+    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
+    const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(operatorIds));
+    return new Promise(async (resolve) => {
+      try {
+        const tx = await contract.bulkRemoveValidator(validators, operatorIds, clusterData);
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          ApiParams.initStorage(true);
+          await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+        }
+        resolve(false);
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+    });
+  }
+
+  /**
+   * Exit validator
+   */
+  async exitValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
+    // const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const contract = getContractByName(EContractName.SETTER);
+    store.dispatch(setIsLoading(true));
+
+    return new Promise(async (resolve) => {
+      try {
+        const tx = await contract.exitValidator(publicKey, operatorIds);
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          resolve(true);
+        }
+        resolve(false);
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+    });
+  }
+
+  /**
+   * Bulk exit validator
+   */
+  async bulkExitValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
+    // const applicationStore: ApplicationStore = this.getStore('Application');
+    const notificationsStore: NotificationsStore = this.getStore('Notifications');
+    const contract = getContractByName(EContractName.SETTER);
+    store.dispatch(setIsLoading(true));
+
+    return new Promise(async (resolve) => {
+      try {
+        const tx = await contract.bulkExitValidator(validators, operatorIds);
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
+        }
+        const receipt = await tx.wait();
+        if (receipt.blockHash) {
+          resolve(true);
+        }
+        resolve(false);
+      } catch (e: any) {
+        notificationsStore.showMessage(e.message, 'error');
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -198,7 +298,7 @@ class ValidatorStore extends BaseStore {
       const { KEYSTORE_PUBLIC_KEY, OPERATOR_IDS } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const contract = getContractByName(EContractName.SETTER);
-      const payload: Map<string, any> | false = await this.createKeystorePayload();
+      const payload = await this.createKeystorePayload();
       if (!payload) {
         store.dispatch(setIsLoading(false));
         store.dispatch(setIsShowTxPendingPopup(false));
@@ -207,34 +307,32 @@ class ValidatorStore extends BaseStore {
       }
       const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const validatorBefore = await getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-
-      const response = await contract.methods.updateValidator(...payload.values()).send({ from: walletStore.accountAddress })
-        .on('receipt', async (receipt: any) => {
-          // eslint-disable-next-line no-prototype-builtins
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
-            console.debug('Contract Receipt', receipt);
-            await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
-                async () => {
-                  return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-                },
-                validatorBefore,
-              ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-          }
-        })
-        .on('transactionHash', (txHash: string) => {
-          store.dispatch(setTxHash(txHash));
+      try {
+        const tx = await contract.updateValidator(...payload.values()).send({ from: walletStore.accountAddress });
+        if (tx.hash) {
+          store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
-        })
-        .on('error', (error: any) => {
-          console.debug('Contract Error', error.message);
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-          resolve(false);
-        });
-      console.log(response);
+        }
+        const receipt = await tx.wait();
+        const event: boolean = receipt.hasOwnProperty('events');
+        if (event) {
+          this.keyStoreFile = null;
+          this.newValidatorReceipt = payload.get(OPERATOR_IDS);
+          console.debug('Contract Receipt', receipt);
+          await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+            async () => {
+              return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+            },
+            validatorBefore,
+          ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+        }
+        resolve(false);
+      } catch (e) {
+        resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
     });
   }
 
@@ -267,12 +365,10 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            console.debug('Contract Receipt', receipt);
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-            resolve(true);
+            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
-        resolve(true);
+        resolve(false);
       } catch (e: any) {
         console.log(e.data);
         const isRejected: boolean = e.hasOwnProperty('code');
@@ -281,22 +377,20 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
 
   async addNewValidator() {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    // const clusterStore: ClusterStore = this.getStore('Cluster');
-    // const processStore: ProcessStore = this.getStore('Process');
-
     return new Promise(async (resolve) => {
       try {
-        const payload: Map<string, any> | false = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
+        const payload = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
         const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const walletStore: WalletStore = this.getStore('Wallet');
         const myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -345,12 +439,10 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            console.debug('Contract Receipt', receipt);
-
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-            resolve(true);
           }
         }
+        resolve(false);
       } catch (e: any) {
         const isRejected: boolean = e.hasOwnProperty('code');
         GoogleTagManager.getInstance().sendEvent({
@@ -358,10 +450,11 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        console.debug('Contract Error', e.message);
-        store.dispatch(setIsLoading(false));
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -394,11 +487,11 @@ class ValidatorStore extends BaseStore {
               category: 'single_cluster',
               action: 'reactivate_cluster',
             });
-            console.debug('Contract Receipt', receipt);
             resolve(true);
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
+        resolve(false);
       } catch (e: any) {
         const isRejected: boolean = e.hasOwnProperty('code');
         GoogleTagManager.getInstance().sendEvent({
@@ -406,15 +499,16 @@ class ValidatorStore extends BaseStore {
           action: 'reactivate_cluster',
           label: isRejected ? 'rejected' : 'error',
         });
-        console.debug('Contract Error', e.message);
         notificationsStore.showMessage(e.message, 'error');
-        store.dispatch(setIsLoading(false));
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
 
-  async createKeystorePayload(): Promise<Map<string, any> | false> {
+  async createKeystorePayload(): Promise<Map<string, any> | null> {
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
     const clusterStore: ClusterStore = this.getStore('Cluster');
@@ -443,9 +537,7 @@ class ValidatorStore extends BaseStore {
           }
           totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
-        let keysharePayload;
-        try {
-          keysharePayload = await (new KeySharesItem()).buildPayload({
+        const keysharePayload = await (new KeySharesItem()).buildPayload({
             publicKey: threshold.publicKey,
             operators,
             encryptedShares,
@@ -454,12 +546,6 @@ class ValidatorStore extends BaseStore {
             ownerNonce: ownerNonce,
             privateKey: this.keyStorePrivateKey,
           });
-        } catch (e: any) {
-          console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
-          console.log(threshold.publicKey);
-          console.log(e.message);
-          console.log('<<<<<<<<<<<<<<<<<<<<here3>>>>>>>>>>>>>>>>>>>>');
-        }
 
         const payload = this.createPayload(this.keyStorePublicKey,
           keysharePayload.operatorIds,
@@ -470,12 +556,12 @@ class ValidatorStore extends BaseStore {
         resolve(payload);
       } catch (e: any) {
         console.log(e.message);
-        resolve(false);
+        resolve(null);
       }
     });
   }
 
-  async createKeySharePayload(): Promise<Map<string, any> | false> {
+  async createKeySharePayload(): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
       const ssvStore: SsvStore = this.getStore('SSV');
       const clusterStore: ClusterStore = this.getStore('Cluster');
@@ -520,9 +606,10 @@ class ValidatorStore extends BaseStore {
             await clusterStore.getClusterData(clusterStore.getClusterHash(operatorIds)));
           resolve(payload);
         }
+        resolve(null);
       } catch (e: any) {
         console.log(e.message);
-        resolve(false);
+        resolve(null);
       }
     });
   }

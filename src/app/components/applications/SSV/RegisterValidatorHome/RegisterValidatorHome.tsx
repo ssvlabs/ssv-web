@@ -100,10 +100,10 @@ const RegisterValidatorHome = () => {
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators}
+          <PrimaryButton children={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators}
                          withoutLoader/>
           <ButtonSeparator/>
-          <SecondaryButton text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare}
+          <SecondaryButton children={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare}
                            noCamelCase withoutLoader/>
         </Grid>,
       ]}

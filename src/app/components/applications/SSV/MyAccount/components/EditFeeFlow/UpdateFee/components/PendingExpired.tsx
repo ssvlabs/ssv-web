@@ -45,7 +45,7 @@ const PendingExpired = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler 
             <ChangeFeeDisplayValues negativeArrow={true} currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
-            <PrimaryButton disable={false} text={'Declare New Fee'} submitFunction={declareNewFee} />
+            <PrimaryButton disable={false} children={'Declare New Fee'} submitFunction={declareNewFee} />
           </Grid>
         </Grid>,
 

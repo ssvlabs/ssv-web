@@ -50,7 +50,7 @@ const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
                 <ChangeFeeDisplayValues currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
-              <PrimaryButton disable={false} text={'Back to My Account'} submitFunction={backToMyAccount} />
+              <PrimaryButton disable={false} children={'Back to My Account'} submitFunction={backToMyAccount} />
             </Grid>
           </Grid>,
         ]}

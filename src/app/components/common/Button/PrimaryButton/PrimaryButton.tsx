@@ -11,7 +11,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
 
 type Props = {
-    text: string;
+    children: string | JSX.Element;
     disable?: boolean;
     isLoading?: boolean;
     submitFunction: any;
@@ -26,7 +26,7 @@ const PrimaryButton = (props: Props) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
     const notificationsStore: NotificationsStore = stores.Notifications;
-    const { text, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
+    const { children, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
     const appStateIsLoading = useAppSelector(getIsLoading);
 
@@ -60,7 +60,7 @@ const PrimaryButton = (props: Props) => {
     const isDisabledCondition = disable || appStateIsLoading;
 
     return (
-        <Grid container item>
+        // <Grid container item>
             <Button
                 type="submit"
                 onClick={submitHandler}
@@ -69,9 +69,9 @@ const PrimaryButton = (props: Props) => {
                 className={`${isLoadingClassCondition ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
             >
                 {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
-                {text}
+                {children}
             </Button>
-        </Grid>
+        // </Grid>
     );
 };
 

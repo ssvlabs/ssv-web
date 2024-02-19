@@ -459,7 +459,7 @@ const KeyShareFlow = () => {
               validator keys to new key shares aligned with the correct one.</Typography>}/>}
           <ValidatorList validatorsList={Object.values(validatorsList)}/>
           <Grid container item xs={12}>
-            <PrimaryButton text={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
+            <PrimaryButton children={'Next'} submitFunction={submitHandler} disable={buttonDisableConditions}/>
           </Grid>
         </Grid>,
       ]}

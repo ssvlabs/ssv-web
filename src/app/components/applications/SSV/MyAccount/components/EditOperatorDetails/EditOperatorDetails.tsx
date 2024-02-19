@@ -101,7 +101,7 @@ const EditOperatorDetails = () => {
           return (<FieldWrapper fieldKey={key}/>);
         }),
         ...errorMessage.map(error => <Typography className={classes.ErrorMessage}>{error}</Typography>),
-        <PrimaryButton text={'Update'}
+        <PrimaryButton children={'Update'}
                        disable={buttonDisable}
                        wrapperClass={classes.marginBottom}
                        submitFunction={submitHandler}/>,

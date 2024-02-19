@@ -4,6 +4,7 @@ import { EContractName } from '~app/model/contracts.model';
 import { getContractByName } from '~root/services/contracts.service';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import notifyService from '~root/services/notify.service';
 import { getAccountData } from '~root/services/account.service';
 
 class AccountStore extends BaseStore  {
@@ -24,46 +25,22 @@ class AccountStore extends BaseStore  {
       try {
         const tx = await contract.setFeeRecipientAddress(feeRecipient);
         if (tx.hash) {
+          notifyService.hash(tx.hash);
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          console.log('in resolve');
           this.recipientAddress = feeRecipient;
-          store.dispatch(setIsShowTxPendingPopup(false));
           resolve(true);
         }
       } catch (e: any) {
         console.error(`Error during setting fee recipient: ${e.message}`);
         resolve(false);
+      } finally {
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
-    // return new Promise<boolean>(async (resolve) => {
-    //   const applicationStore: ApplicationStore = this.getStore('Application');
-    //   const walletStore: WalletStore = this.getStore('Wallet');
-    //   const contract: Contract = walletStore.setterContract;
-    //   try {
-    //     await contract.methods.setFeeRecipientAddress(feeRecipient).send({ from: walletStore.accountAddress })
-    //       .on('receipt', async (receipt: any) => {
-    //         console.log(receipt);
-    //         this.recipientAddress = feeRecipient;
-    //         resolve(true);
-    //       })
-    //       .on('transactionHash', (txHash: string) => {
-    //         applicationStore.txHash = txHash;
-    //         notifyService.hash(tx.hash);
-    //       })
-    //       .on('error', (error: any) => {
-    //         console.debug('Contract Error', error.message);
-    //         applicationStore.setIsLoading(false);
-    //         resolve(false);
-    //       });
-    //   } catch (e: any) {
-    //     console.error(`Error during setting fee recipient: ${e.message}`);
-    //     resolve(false);
-    //   }
-    // });
   }
 
   async getFeeRecipientAddress(ownerAddress: string) {

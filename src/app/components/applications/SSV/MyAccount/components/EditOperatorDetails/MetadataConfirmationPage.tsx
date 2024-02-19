@@ -41,10 +41,10 @@ const MetadataConfirmationPage = () => {
                 />
                 <Grid className={classes.ButtonGroup}>
                     <Grid className={classes.buttonWidth}>
-                        <SecondaryButton text={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.EXPLORER_BUTTON} submitFunction={openExplorer} />
+                        <SecondaryButton children={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.EXPLORER_BUTTON} submitFunction={openExplorer} />
                     </Grid>
                     <Grid className={classes.buttonWidth}>
-                        <PrimaryButton text={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.RETURN_TO_MY_ACCOUNT} submitFunction={goToDashboard}/>
+                        <PrimaryButton children={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.RETURN_TO_MY_ACCOUNT} submitFunction={goToDashboard}/>
                     </Grid>
                 </Grid>
             </Grid>

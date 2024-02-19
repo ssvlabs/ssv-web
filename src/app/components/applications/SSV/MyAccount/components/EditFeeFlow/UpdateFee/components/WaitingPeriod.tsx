@@ -60,11 +60,11 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} text={'Cancel'}
+              <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} children={'Cancel'}
                 submitFunction={cancelUpdateFee} />
             </Grid>
             <Grid item xs>
-              <PrimaryButton withoutLoader disable text={'Execute'} submitFunction={console.log} />
+              <PrimaryButton withoutLoader disable children={'Execute'} submitFunction={console.log} />
             </Grid>
           </Grid>
         </Grid>,

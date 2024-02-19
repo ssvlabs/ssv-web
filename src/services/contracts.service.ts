@@ -4,7 +4,8 @@ import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { NetworkInfo } from '~root/providers/networkInfo.provider';
 
-const RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
+// const RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
+const RPC_URL = 'https://long-rough-season.ethereum-goerli.quiknode.pro/3f90b8bb4aaea263621f2522b6b9ae240c09c7c6';
 
 let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
 

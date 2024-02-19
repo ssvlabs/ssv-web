@@ -168,7 +168,7 @@ class SsvStore extends BaseStore {
   async getBalanceFromSsvContract(): Promise<any> {
     console.warn('getBalanceFromSsvContract before');
     try {
-      const ssvContract = getContractByName(EContractName.TOKEN);
+      const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
       if (!ssvContract) return;
       const balance = await ssvContract.balanceOf(this.accountAddress);
       this.walletSsvBalance = parseFloat(String(fromWei(balance)));
@@ -304,7 +304,7 @@ class SsvStore extends BaseStore {
    */
   async checkAllowance(): Promise<void> {
     try {
-      const ssvContract = getContractByName(EContractName.TOKEN);
+      const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
       if (!ssvContract) return;
       console.warn('checkAllowance before');
       const allowance = await ssvContract.allowance(this.accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
@@ -321,7 +321,7 @@ class SsvStore extends BaseStore {
   async requestAllowance(callBack?: CallableFunction): Promise<any> {
     return new Promise((async (resolve, reject) => {
       try {
-        const ssvContract = getContractByName(EContractName.TOKEN);
+        const ssvContract = getContractByName(EContractName.TOKEN_SETTER);
         console.log('ssvContract', ssvContract);
         console.log('config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS', config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
         const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, String(MAX_WEI_AMOUNT));

@@ -80,8 +80,7 @@ const ValidatorFlow = () => {
     newCluster.operators = cluster.operators;
     processStore.setProcess({
       processName: 'single_cluster',
-      // @ts-ignore
-      item: await extendClusterEntity(newCluster, walletStore.accountAddress),
+      item: await extendClusterEntity(newCluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
     }, 2);
     await myAccountStore.getOwnerAddressClusters({});
     setIsLoading(false);

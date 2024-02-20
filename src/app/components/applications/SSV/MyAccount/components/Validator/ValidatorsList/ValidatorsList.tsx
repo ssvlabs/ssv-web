@@ -7,7 +7,15 @@ import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { longStringShorten } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
-import { ClusterStore, ProcessStore, WalletStore, SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb';
+import {
+  ClusterStore,
+  ProcessStore,
+  WalletStore,
+  SingleCluster as SingleClusterProcess,
+  NotificationsStore,
+} from '~app/common/stores/applications/SsvWeb';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { ENV } from '~lib/utils/envHelper';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -92,11 +100,11 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const clusterStore: ClusterStore = stores.Cluster;
+  const notificationsStore: NotificationsStore = stores.Notifications;
   const processStore: ProcessStore = stores.Process;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process?.item;
   const navigate = useNavigate();
-  const [selectAllValidators, setSelectAllValidators] = useState(false);
   const [clusterValidators, setClusterValidators] = useState<any[]>([]);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
@@ -126,6 +134,29 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   //   });
   // };
 
+  const copyToClipboard = (publicKey: string) => {
+    navigator.clipboard.writeText(publicKey);
+    notificationsStore.showMessage('Copied to clipboard.', 'success');
+  };
+
+  const openBeaconcha = (publicKey: string) => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'external_link',
+      action: 'click',
+      label: 'Open Beaconcha',
+    });
+    window.open(`${ENV().BEACONCHA_URL}/validator/${publicKey}`);
+  };
+
+  const openExplorer = (publicKey: string) => {
+    GoogleTagManager.getInstance().sendEvent({
+      category: 'explorer_link',
+      action: 'click',
+      label: 'operator',
+    });
+    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}`, '_blank');
+  };
+
   return (
     <TableWrapper>
       <TableHeader>
@@ -133,7 +164,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
                                                                    withoutMarginBottom
                                                                    smallLine
                                                                    onClickCallBack={() => {
-                                                                     selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key), setSelectAllValidators);
+                                                                     selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key));
                                                                    }}
                                                                    isChecked={selectedValidators && selectedValidators.length > 0}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
@@ -163,12 +194,12 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
                                                                                  isChecked={res}/>}
                       0x{longStringShorten(validator.public_key, 4, 4)}
                     </PublicKey>
-                    <Link logo={'/images/copy/'}/>
+                    <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}/>
                   </PublicKeyWrapper>
                   <Status item={validator}/>
                   <LinksWrapper>
-                    <Link logo={'/images/explorer/'}/>
-                    <Link logo={'/images/beacon/'}/>
+                    <Link onClick={() => openExplorer(validator.public_key)} logo={'/images/explorer/'}/>
+                    <Link onClick={() => openBeaconcha(validator.public_key)} logo={'/images/beacon/'}/>
 
                   </LinksWrapper>
                 </ValidatorWrapper>);

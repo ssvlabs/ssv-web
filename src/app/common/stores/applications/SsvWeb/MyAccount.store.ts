@@ -1,6 +1,5 @@
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -8,6 +7,7 @@ import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers'
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import { getValidator as getValidatorServiceCall, clustersByOwnerAddress } from '~root/services/validator.service';
+import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 
 const INTERVAL_TIME = 30000;
 
@@ -109,7 +109,7 @@ class MyAccountStore extends BaseStore {
     const { page, per_page } = this.ownerAddressOperatorsPagination;
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return;
-    const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? per_page, walletStore.accountAddress);
+    const response = await getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? per_page, walletStore.accountAddress);
     this.ownerAddressOperatorsPagination = response.pagination;
     this.ownerAddressOperators = await this.getOperatorsRevenue(response.operators);
     this.lastUpdateOperators = Date.now();

@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { KeyShares, KeySharesItem } from 'ssv-keys';
 import { useConnectWallet } from '@web3-onboard/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Operator from '~lib/api/Operator';
 import {
   createValidatorsRecord,
   getResponse, getTooltipText, getValidatorCountErrorMessage,
@@ -43,6 +42,7 @@ import ValidatorCounter
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getValidator } from '~root/services/validator.service';
+import { getOperatorsByIds } from '~root/services/operator.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -100,7 +100,7 @@ const KeyShareFlow = () => {
           }
         } else {
           const consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
-          const selectedOperators = await Operator.getInstance().getOperatorsByIds(consistentOperatorIds);
+          const selectedOperators = await getOperatorsByIds(consistentOperatorIds);
           const selectedOperatorsIds = selectedOperators.map((operator: IOperator) => operator.id);
           if (!selectedOperators.length) {
             return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);

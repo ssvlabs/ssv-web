@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { longStringShorten } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import { ClusterStore, ProcessStore, WalletStore, SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb';
+import { validatorsByClusterHash } from '~root/services/validator.service';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -98,20 +98,11 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   const navigate = useNavigate();
   const [selectAllValidators, setSelectAllValidators] = useState(false);
   const [clusterValidators, setClusterValidators] = useState<any[]>([]);
-  const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
-    page: 1,
-    total: cluster.validatorCount,
-    pages: 1,
-    per_page: 5,
-    rowsPerPage: 14,
-    onChangePage: console.log,
-  });
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
+    validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
       setClusterValidators(response.validators);
-      setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
     });
   }, []);
 

@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
@@ -20,9 +19,9 @@ import OperatorMetadataStore, {
 } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import { isSuccessful } from '~root/services/httpApi.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { updateOperatorMetadata } from '~root/services/operator.service';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
@@ -74,8 +73,8 @@ const EditOperatorDetails = () => {
         dispatch(setIsLoading(false));
         return;
       }
-      const updateOperatorResponse = await Operator.getInstance().updateOperatorMetadata(operator.id, signatureHash, payload);
-      if (isSuccessful(updateOperatorResponse)) {
+      const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
+      if (updateOperatorResponse.data) {
         const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
         for (let key in updateOperatorResponse.data) {
           operator[key] = updateOperatorResponse.data[key];

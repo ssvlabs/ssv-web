@@ -15,7 +15,6 @@ const INTERVAL_TIME = 30000;
 
 class MyAccountStore extends BaseStore {
   // GLOBAL
-  forceBigList: boolean = false;
   operatorsInterval: any = null;
   validatorsInterval: any = null;
   lastUpdateOperators: number | undefined;
@@ -38,7 +37,6 @@ class MyAccountStore extends BaseStore {
     super();
 
     makeObservable(this, {
-      forceBigList: observable,
       setIntervals: action.bound,
       getValidator: action.bound,
       clearIntervals: action.bound,
@@ -142,7 +140,7 @@ class MyAccountStore extends BaseStore {
     const { page, per_page } = this.ownerAddressOperatorsPagination;
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return;
-    const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? per_page, walletStore.accountAddress);
+    const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, forcePerPage ?? per_page, walletStore.accountAddress);
     this.ownerAddressOperatorsPagination = response.pagination;
     this.ownerAddressOperators = await this.getOperatorsRevenue(response.operators);
     this.lastUpdateOperators = Date.now();
@@ -182,7 +180,7 @@ class MyAccountStore extends BaseStore {
     const clusterStore: ClusterStore = this.getStore('Cluster');
     if (!walletStore.accountAddress) return [];
     const { page, per_page } = this.ownerAddressClustersPagination;
-    const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? per_page)}`;
+    const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${(forcePerPage ?? per_page)}`;
     const response = await Validator.getInstance().clustersByOwnerAddress(query, true);
     if (!response) return [];
     // @ts-ignore

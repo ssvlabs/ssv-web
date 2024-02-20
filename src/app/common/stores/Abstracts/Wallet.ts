@@ -15,8 +15,8 @@ export default abstract class Wallet extends BaseStore {
     this.isWrongNetwork = false;
   }
 
-  public abstract initializeUserInfo(): void;
-
   // eslint-disable-next-line no-unused-vars
-  public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): Promise<void>;
+  public abstract initWallet(wallet: WalletState, connectedChain: ConnectedChain): Promise<void>;
+
+  public abstract resetUser(): Promise<void>;
 }

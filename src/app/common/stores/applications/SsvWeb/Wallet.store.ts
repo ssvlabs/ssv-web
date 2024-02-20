@@ -7,7 +7,6 @@ import Wallet from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { store } from '~app/store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import notifyService from '~root/services/notify.service';
@@ -21,6 +20,7 @@ class WalletStore extends BaseStore implements Wallet {
   networkId: number = 1;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
+  private myAccountStore: MyAccountStore = this.getStore('MyAccount');
 
   constructor() {
     super();
@@ -32,60 +32,41 @@ class WalletStore extends BaseStore implements Wallet {
       wrongNetwork: observable,
       accountAddress: observable,
       initWallet: action.bound,
-      initializeUserInfo: action.bound,
     });
   }
 
-  async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
-    if (wallet && connectedChain) {
-      console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
-      this.wallet = wallet;
-      notifyService.init(connectedChain.id);
-      // TODO: review this
-      await this.initializeUserInfo();
-      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-      const operatorStore: OperatorStore = this.getStore('Operator');
-      this.ssvStore.clearSettings();
-      myAccountStore.clearIntervals();
-      initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: wallet.label === 'WalletConnect' });
-      this.accountAddress = wallet.accounts[0]?.address;
-      ApiParams.cleanStorage();
-      await Promise.all([
-        myAccountStore.getOwnerAddressOperators({}),
-        myAccountStore.getOwnerAddressClusters({}),
-        operatorStore.updateOperatorValidatorsLimit(),
-      ]);
-      if (myAccountStore?.ownerAddressClusters?.length) {
-        store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
-      } else if (myAccountStore?.ownerAddressOperators?.length) {
-        store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
-      } else {
-        store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
-      }
-      if (!myAccountStore?.ownerAddressOperators?.length || !myAccountStore?.ownerAddressClusters?.length) myAccountStore.forceBigList = true;
-      myAccountStore.setIntervals();
-    } else {
-      await this.resetUser();
-    }
-  }
-
-  /**
-   * Initialize Account data from contract
-   */
-  async initializeUserInfo() {
+  async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
+    await this.resetUser();
+    console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
+    this.wallet = wallet;
+    notifyService.init(connectedChain.id);
+    this.accountAddress = wallet.accounts[0]?.address;
+    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: wallet.label === 'WalletConnect' });
     await this.ssvStore.initUser();
     await this.operatorStore.initUser();
+    this.myAccountStore.setIntervals();
+    await Promise.all([
+      this.myAccountStore.getOwnerAddressOperators({}),
+      this.myAccountStore.getOwnerAddressClusters({}),
+      this.operatorStore.updateOperatorValidatorsLimit(),
+    ]);
+    if (this.myAccountStore?.ownerAddressClusters?.length) {
+      store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
+    } else if (this.myAccountStore?.ownerAddressOperators?.length) {
+      store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
+    } else {
+      store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
+    }
   }
 
   async resetUser() {
     this.ssvStore.clearUserSyncInterval();
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    this.accountAddress = '';
-    this.wallet = null;
+    this.myAccountStore.clearIntervals();
     this.ssvStore.clearSettings();
     this.operatorStore.clearSettings();
-    myAccountStore.clearIntervals();
-    removeFromLocalStorageByKey('params');
+    ApiParams.cleanStorage();
+    this.accountAddress = '';
+    this.wallet = null;
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
   }
 

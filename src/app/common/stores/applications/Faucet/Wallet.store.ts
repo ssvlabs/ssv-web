@@ -7,7 +7,6 @@ import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import notifyService from '~root/services/notify.service';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -35,6 +34,7 @@ class WalletStore extends BaseStore implements Wallet {
       initWallet: action.bound,
       initializeUserInfo: action.bound,
       checkConnectedWallet: action.bound,
+      resetUser: action.bound,
     });
   }
 
@@ -42,7 +42,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
-  async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
+  async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
     if (wallet && connectedChain) {
       this.wallet = wallet;
       const networkId = parseInt(String(connectedChain.id), 16);
@@ -133,6 +133,8 @@ class WalletStore extends BaseStore implements Wallet {
   get isWrongNetwork(): boolean {
     return this.wrongNetwork;
   }
+
+  async resetUser() {}
 }
 
 export default WalletStore;

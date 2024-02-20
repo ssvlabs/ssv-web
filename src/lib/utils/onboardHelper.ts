@@ -6,9 +6,7 @@ import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 import { Theme } from '@web3-onboard/core';
 import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-
-const GOERLI_RPC_URL = 'https://long-rough-season.ethereum-goerli.quiknode.pro/3f90b8bb4aaea263621f2522b6b9ae240c09c7c6';
-const HOLESKY_RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
+import { GOERLI_RPC_URL, HOLESKY_RPC_URL } from '~app/common/config/config';
 
 export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = getFromLocalStorageByKey('locationRestrictionDisabled');

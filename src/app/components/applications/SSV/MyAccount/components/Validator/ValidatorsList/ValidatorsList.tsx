@@ -139,34 +139,18 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
     notificationsStore.showMessage('Copied to clipboard.', 'success');
   };
 
-  const openBeaconcha = (publicKey: string) => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'external_link',
-      action: 'click',
-      label: 'Open Beaconcha',
-    });
-    window.open(`${ENV().BEACONCHA_URL}/validator/${publicKey}`);
-  };
-
-  const openExplorer = (publicKey: string) => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'explorer_link',
-      action: 'click',
-      label: 'operator',
-    });
-    window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}`, '_blank');
-  };
+  const openLink = (url: string) => window.open(url, '_blank');
 
   return (
     <TableWrapper>
       <TableHeader>
         {selectUnselectAllValidators && <Checkbox disable={false} grayBackGround text={''}
-                                                                   withoutMarginBottom
-                                                                   smallLine
-                                                                   onClickCallBack={() => {
-                                                                     selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key));
-                                                                   }}
-                                                                   isChecked={selectedValidators && selectedValidators.length > 0}/>}
+                                                  withoutMarginBottom
+                                                  smallLine
+                                                  onClickCallBack={() => {
+                                                    selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key));
+                                                  }}
+                                                  isChecked={selectedValidators && selectedValidators.length > 0}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
         <TableHeaderTitle
           marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>
@@ -182,29 +166,30 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
         {/*  loader={<h4>Loading...</h4>}*/}
         {/*  scrollableTarget="scrollableDiv"*/}
         {/*>*/}
-          {clusterValidators?.map((validator: any) => {
-              const res = selectedValidators?.includes(validator.public_key);
-              return (
-                <ValidatorWrapper>
-                  <PublicKeyWrapper>
-                    <PublicKey>
-                      {onCheckboxClickHandler && selectedValidators && <Checkbox disable={false} grayBackGround text={''}
-                                                                                 withoutMarginBottom
-                                                                                 onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, validator.public_key)}
-                                                                                 isChecked={res}/>}
-                      0x{longStringShorten(validator.public_key, 4, 4)}
-                    </PublicKey>
-                    <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}/>
-                  </PublicKeyWrapper>
-                  <Status item={validator}/>
-                  <LinksWrapper>
-                    <Link onClick={() => openExplorer(validator.public_key)} logo={'/images/explorer/'}/>
-                    <Link onClick={() => openBeaconcha(validator.public_key)} logo={'/images/beacon/'}/>
-
-                  </LinksWrapper>
-                </ValidatorWrapper>);
-            },
-          )}
+        {clusterValidators?.map((validator: any) => {
+            const res = selectedValidators?.includes(validator.public_key);
+            return (
+              <ValidatorWrapper>
+                <PublicKeyWrapper>
+                  <PublicKey>
+                    {onCheckboxClickHandler && selectedValidators && <Checkbox disable={false} grayBackGround text={''}
+                                                                               withoutMarginBottom
+                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, validator.public_key)}
+                                                                               isChecked={res}/>}
+                    0x{longStringShorten(validator.public_key, 4, 4)}
+                  </PublicKey>
+                  <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}/>
+                </PublicKeyWrapper>
+                <Status item={validator}/>
+                <LinksWrapper>
+                  <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
+                        logo={'/images/explorer/'}/>
+                  <Link onClick={() => openLink(`${ENV().BEACONCHA_URL}/validator/${validator.public_key}`)}
+                        logo={'/images/beacon/'}/>
+                </LinksWrapper>
+              </ValidatorWrapper>);
+          },
+        )}
         {/*</InfiniteScroll>*/}
       </ValidatorsListWrapper>
     </TableWrapper>

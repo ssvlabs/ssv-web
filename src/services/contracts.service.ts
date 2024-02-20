@@ -2,7 +2,12 @@ import { Contract, ethers } from 'ethers';
 import { EIP1193Provider } from '@web3-onboard/core';
 import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
-import { GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID, NetworkInfo } from '~root/providers/networkInfo.provider';
+import {
+  GOERLI_NETWORK_ID,
+  HOLESKY_NETWORK_ID,
+  MAINNET_NETWORK_ID,
+  NetworkInfo,
+} from '~root/providers/networkInfo.provider';
 import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
 
 let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
@@ -19,11 +24,11 @@ const initGetterContract = ({ provider, network }: { provider: any; network: Net
       let ethProvider;
       if (shouldUseRpcUrlFlag) {
         if (network.networkId === HOLESKY_NETWORK_ID) {
-          ethProvider = new ethers.providers.JsonRpcProvider(HOLESKY_RPC_URL);
+          ethProvider = new ethers.providers.JsonRpcProvider(HOLESKY_RPC_URL, HOLESKY_NETWORK_ID);
         } else if (network.networkId === GOERLI_NETWORK_ID) {
-          ethProvider = new ethers.providers.JsonRpcProvider(GOERLI_RPC_URL);
+          ethProvider = new ethers.providers.JsonRpcProvider(GOERLI_RPC_URL, GOERLI_NETWORK_ID);
         } else {
-          ethProvider = new ethers.providers.JsonRpcProvider(MAINNET_RPC_URL);
+          ethProvider = new ethers.providers.JsonRpcProvider(MAINNET_RPC_URL, MAINNET_NETWORK_ID);
         }
       } else {
         ethProvider = new ethers.providers.Web3Provider(provider, 'any');
@@ -63,11 +68,11 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
       let rpcProvider;
       if (shouldUseRpcUrlFlag) {
         if (network.networkId === HOLESKY_NETWORK_ID) {
-          rpcProvider = new ethers.providers.JsonRpcProvider(HOLESKY_RPC_URL);
+          rpcProvider = new ethers.providers.JsonRpcProvider(HOLESKY_RPC_URL, HOLESKY_NETWORK_ID);
         } else if (network.networkId === GOERLI_NETWORK_ID) {
-          rpcProvider = new ethers.providers.JsonRpcProvider(GOERLI_RPC_URL);
+          rpcProvider = new ethers.providers.JsonRpcProvider(GOERLI_RPC_URL, GOERLI_NETWORK_ID);
         } else {
-          rpcProvider = new ethers.providers.JsonRpcProvider(MAINNET_RPC_URL);
+          rpcProvider = new ethers.providers.JsonRpcProvider(MAINNET_RPC_URL, MAINNET_NETWORK_ID);
         }
       } else {
         rpcProvider = new ethers.providers.Web3Provider(provider, 'any');

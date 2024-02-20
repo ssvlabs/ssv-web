@@ -83,7 +83,7 @@ const BulkComponent = () => {
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
       backToSingleClusterPage();
     } else {
-      res = await conditionalExecutor(condition, async () => await validatorStore.removeValidator(process.validator), async () => await validatorStore.bulkRemoveValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id)));
+      res = await conditionalExecutor(condition, async () => await validatorStore.removeValidator(`0x${process?.validator?.public_key || selectedValidators[0]}`, process.item.operators), async () => await validatorStore.bulkRemoveValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id)));
       if (res) {
         backToSingleClusterPage();
       }

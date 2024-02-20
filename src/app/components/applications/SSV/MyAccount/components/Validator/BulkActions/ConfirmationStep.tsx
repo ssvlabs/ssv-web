@@ -5,6 +5,8 @@ import WarningBox from '~app/components/common/WarningBox';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading } from '~app/redux/appState.slice';
 
 type FlowData = {
   title: string;
@@ -62,6 +64,8 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData }: { nextStep
   const { title, texts, warningMessage, checkBoxes } = flowData;
   const [isSelectedCheckboxes, setIsSelectedCheckboxes] = useState(initialState(checkBoxes));
   const disableCButtonCondition = isSelectedCheckboxes.some((isSelected: boolean) => !isSelected);
+  const appStateIsLoading = useAppSelector(getIsLoading);
+
 
   const clickCheckboxHandler = (isChecked: boolean, index: number) => {
     setIsSelectedCheckboxes((prevState: boolean[]) => {
@@ -83,7 +87,7 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData }: { nextStep
           <WarningBox text={warningMessage}/>
           {checkBoxes.map((checkBoxText, index) => <Checkbox withoutMarginBottom onClickCallBack={(isChecked: boolean) => clickCheckboxHandler(isChecked, index)} disable={false} grayBackGround text={checkBoxText}
                                                       isChecked={isSelectedCheckboxes[index]}/>)}
-          <PrimaryButton children={flowData.buttonText(selectedValidators.length)} disable={disableCButtonCondition} submitFunction={nextStep} />
+          <PrimaryButton children={flowData.buttonText(selectedValidators.length, appStateIsLoading)} disable={disableCButtonCondition} submitFunction={nextStep} />
         </Confirmation>
         <Summary selectedValidators={selectedValidators} />
       </ConfirmationWrapper>

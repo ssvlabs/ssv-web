@@ -162,15 +162,12 @@ class ValidatorStore extends BaseStore {
    * Remove validator
    */
   async removeValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
-    // console.log(validator);
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // @ts-ignore
     const sortedOperatorIds = clusterStore.getSortedOperatorsIds(operatorIds);
-    // validator.publicKey = validator.public_key.startsWith('0x') ? validator.public_key : `0x${validator.public_key}`;
     const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(sortedOperatorIds));
     return new Promise(async (resolve) => {
       try {

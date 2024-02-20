@@ -6,7 +6,7 @@ import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 import { Theme } from '@web3-onboard/core';
 import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-import { GOERLI_RPC_URL, HOLESKY_RPC_URL } from '~app/common/config/config';
+import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
 
 export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = getFromLocalStorageByKey('locationRestrictionDisabled');
@@ -64,6 +64,7 @@ const initOnboardOptions = {
       id: NETWORKS.MAINNET,
       label: 'Ethereum Mainnet',
       token: TOKEN_NAMES[NETWORKS.MAINNET],
+      rpcUrl: MAINNET_RPC_URL,
     },
     {
       id: NETWORKS.GOERLI,

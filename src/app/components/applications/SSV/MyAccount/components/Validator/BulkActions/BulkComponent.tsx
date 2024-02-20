@@ -48,13 +48,12 @@ const BulkComponent = () => {
     }
   }, []);
 
-  const selectUnselectAllValidators = (publicKeys: string[], callback: Function) => {
+  const selectUnselectAllValidators = (publicKeys: string[]) => {
     let nextState = publicKeys;
     if (selectedValidators.length === publicKeys.length || selectedValidators.length > 0) {
       nextState = [];
     }
     setSelectedValidators(nextState);
-    callback(!!nextState.length);
   };
 
   const onCheckboxClickHandler = (isChecked: boolean, publicKey: string) => {

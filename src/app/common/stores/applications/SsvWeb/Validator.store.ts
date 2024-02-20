@@ -23,7 +23,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
-import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -158,23 +158,18 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  /**
-   * Remove validator
-   */
-  async removeValidator(validator: any): Promise<boolean> {
+  async removeValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
-    // @ts-ignore
-    const operatorsIds = validator.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
-    validator.publicKey = validator.public_key.startsWith('0x') ? validator.public_key : `0x${validator.public_key}`;
-    const clusterData = await getClusterData(getClusterHash(validator.operators, walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
+    const clusterData = getClusterData(getClusterHash(operatorIds, walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
     return new Promise(async (resolve) => {
       try {
-        const tx = await contract.removeValidator(validator.publicKey, operatorsIds, clusterData);
+        const tx = await contract.removeValidator(publicKey, sortedOperatorIds, clusterData);
         if (tx.hash) {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));

@@ -40,9 +40,9 @@ class Validator {
     }
   }
 
-  async validatorsByClusterHash(page: number, ownerAddress: string, clusterHash: string, skipRetry?: boolean): Promise<any> {
+  async validatorsByClusterHash(page: number, ownerAddress: string, clusterHash: string, skipRetry?: boolean, perPage?: Number): Promise<any> {
     try {
-      const url = `${getStoredNetwork().api}/validators/?&search=${clusterHash}&page=${page}&perPage=7&ts=${new Date().getTime()}`;
+      const url = `${getStoredNetwork().api}/validators/?&search=${clusterHash}&page=${page}&perPage=${perPage ?? '7'}&ts=${new Date().getTime()}`;
       return await this.getData(url, skipRetry);
     } catch (e) {
       return { clusters: [], pagination: {} };

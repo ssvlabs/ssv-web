@@ -1,34 +1,26 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
 import { useConnectWallet } from '@web3-onboard/react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './ConnectWalletButton.styles';
+import { setIsShowWalletPopup } from '~app/redux/appState.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
-  const applicationStore: ApplicationStore = stores.Application;
-  const classes = useStyles({
-    walletConnected: !!walletStore.wallet,
-    whiteAppBar: applicationStore.whiteNavBarBackground,
-  });
+  const classes = useStyles({ walletConnected: !!walletStore.wallet });
   const [{ wallet }, connect] = useConnectWallet();
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const onClick = async () => {
     if (walletStore.wallet) {
-      applicationStore.showWalletPopUp(true);
+      dispatch(setIsShowWalletPopup(true));
     } else {
-      await connect().then(() => {
-        navigate('/join');
-      }).catch((error) => {
-        console.error('ConnectWalletButton:', error);
-      });
+      await connect();
     }
   };
 

@@ -3,8 +3,6 @@ import BaseStore from '~app/common/stores/BaseStore';
 
 export default abstract class Wallet extends BaseStore {
   wallet: any;
-  notifySdk: any;
-  onboardSdk: any;
   accountAddress: string;
   isWrongNetwork: boolean;
   networkId: number | null;
@@ -20,5 +18,5 @@ export default abstract class Wallet extends BaseStore {
   public abstract initializeUserInfo(): void;
 
   // eslint-disable-next-line no-unused-vars
-  public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): void;
+  public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): Promise<void>;
 }

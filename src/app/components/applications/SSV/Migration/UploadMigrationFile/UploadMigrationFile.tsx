@@ -111,7 +111,7 @@ const UploadMigrationFile = ({ nextStep }: { nextStep: Function }) => {
                         removeButtons={removeButtons}
                         processingFile={processFile}
                     />
-                    <PrimaryButton disable={disableBtnCondition} text={'Next'} submitFunction={nextStep} />
+                    <PrimaryButton disable={disableBtnCondition} children={'Next'} submitFunction={nextStep} />
                 </Grid>,
             ]}
         />

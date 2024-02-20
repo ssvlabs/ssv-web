@@ -8,20 +8,21 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 const SuccessPage = () => {
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
     const faucetStore: FaucetStore = stores.Faucet;
-    const applicationStore: ApplicationStore = stores.Application;
-    
+    const dispatch = useAppDispatch();
+
     const requestForSSV = () => {
-        applicationStore.setIsLoading(true);
+      dispatch(setIsLoading(true));
         setTimeout(() => {
-            applicationStore.setIsLoading(false);
+          dispatch(setIsLoading(false));
             navigate(config.routes.FAUCET.ROOT);
         }, 300);
     };
@@ -47,7 +48,7 @@ const SuccessPage = () => {
             <Grid container item xs={12} className={classes.TextWrapper}>
               <PrimaryButton
                 disable={false}
-                text={'Request More Funds'}
+                children={'Request More Funds'}
                 withVerifyConnection={false}
                 submitFunction={requestForSSV}
               />

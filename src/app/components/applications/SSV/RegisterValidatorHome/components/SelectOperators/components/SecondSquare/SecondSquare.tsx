@@ -17,7 +17,6 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
@@ -28,7 +27,7 @@ import MevIcon
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
@@ -36,7 +35,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const navigate = useNavigate();
   const location = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
-  const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
@@ -162,7 +160,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                         </Grid>
                         <Grid item className={classes.FeeAndMevRelaysWrapper}>
                           <SsvAndSubTitle fontSize={14}
-                                          ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}/>
+                                          ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
                             {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
                                                                                           key={mevRelay}
@@ -199,7 +197,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                 bold
                 fontSize={16}
                 subTextCenter={false}
-                ssv={formatNumberToUi(ssvStore.getFeeForYear(operatorStore.getSelectedOperatorsFee))}
+                ssv={formatNumberToUi(getFeeForYear(operatorStore.getSelectedOperatorsFee))}
               />
             </Grid>
           </Grid>
@@ -246,7 +244,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 						<WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
 												textLink={'Learn more'}
 												link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
-          <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} text={'Next'}
+          <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} children={'Next'}
                          submitFunction={onSelectOperatorsClick}/>
         </Grid>,
       ]}

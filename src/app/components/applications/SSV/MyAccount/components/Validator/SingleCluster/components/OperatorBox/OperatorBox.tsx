@@ -6,18 +6,16 @@ import { useStyles } from './OperatorBox.styles';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import NotificationPopUp
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/NotificationPopUp';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 const OperatorBox = ({ operator }: { operator: any }) => {
   const stores = useStores();
   const isDeleted = operator.is_deleted;
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const [newFee, setNewFee] = useState<string | null>(null);
   const [showPopUp, setShowPopUp] = useState<boolean>(false);
@@ -37,7 +35,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
       const todayDate = new Date();
       const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
       const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
-      setNewFee(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operatorStore.operatorFutureFee.toString()))));
+      setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorFutureFee.toString()))));
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
       if (isInPendingState) {
         setCurrentStep(2);
@@ -77,7 +75,7 @@ const OperatorBox = ({ operator }: { operator: any }) => {
             <Status item={operator}/>
             <Grid item className={classes.BoldText}>{isDeleted ? '-' : `${operator.performance['30d'].toFixed(2) ?? 0  }%`}</Grid>
             <Grid item
-                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))} SSV`}</Grid>
+                  className={classes.BoldText}>{isDeleted ? '-' : `${formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV`}</Grid>
           </Grid>
         </Grid>
       </Grid>

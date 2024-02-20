@@ -69,7 +69,7 @@ const OperatorAccessSettings = () => {
                         <Grid className={classes.HeaderWrapper} container style={{ gap: 16 }}>
                             <Grid className={classes.HeaderInner}>
                                 <Typography className={classes.InfoText}>{translations.OPERATOR_WHITELIST_ADDRESS.SECOND_TITLE}</Typography>
-                                <Tooltip text={<Grid>Read more on <LinkText text={'Permissioned Operators'} link={config.links.SSV_DOCUMENTATION}/></Grid>} />
+                                <Tooltip text={<Grid>Read more on <LinkText textSize={12} text={'Permissioned Operators'} link={config.links.SSV_DOCUMENTATION}/></Grid>} />
                             </Grid>
                             <Switch checked={isPermissionedOperator}
                                     className={classes.SwitchClassName}
@@ -91,7 +91,7 @@ const OperatorAccessSettings = () => {
                                 <Typography className={classes.ErrorMessage}>{addressError.errorMessage}</Typography>
                             </Grid>}
                             <TermsAndConditionsCheckbox>
-                                <PrimaryButton disable={btnDisabledCondition} text={'Update'} submitFunction={updateAddressHandler}/>
+                                <PrimaryButton disable={btnDisabledCondition} children={'Update'} submitFunction={updateAddressHandler}/>
                             </TermsAndConditionsCheckbox>
                         </Grid>
                     </Grid>

@@ -21,13 +21,14 @@ import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
+import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -189,7 +190,8 @@ const OfflineKeyShareGeneration = () => {
     return true;
   };
 
-  const enableDesktopAppKeysharesGeneration = getLocalStorageFlagValue(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION);
+  // @ts-ignore
+  const enableDesktopAppKeysharesGeneration = JSON.parse(getFromLocalStorageByKey(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION));
 
   const MainScreen =
     <BorderScreen
@@ -320,7 +322,7 @@ const OfflineKeyShareGeneration = () => {
 								<CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
 						</Grid>
           }
-          {hideButtonCondition() && <PrimaryButton text={buttonLabel}
+          {hideButtonCondition() && <PrimaryButton children={buttonLabel}
 																									 submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
 																									 disable={disabledCondition()}/>}
         </Grid>,

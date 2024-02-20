@@ -83,9 +83,9 @@ const FundingSummary = (props: Props) => {
     return (
       <Grid className={classes.Wrapper}>
         {mandatoryColumns.map((fundingSummeryColumnName: string) =>
-          <Grid className={columnStyles[fundingSummeryColumnName]}>
+          <Grid className={columnStyles[fundingSummeryColumnName]} key={fundingSummeryColumnName}>
             <Typography className={classes.Title}>{fundingSummeryColumnName}</Typography>
-            {payments.map((payment: any) => <Typography
+            {payments.map((payment: any) => <Typography key={payment.id}
               className={classes.Value}>{columnValues[fundingSummeryColumnName](payment.id)}</Typography>)}
           </Grid>,
         )}

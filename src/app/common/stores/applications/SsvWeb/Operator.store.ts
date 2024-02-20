@@ -9,14 +9,14 @@ import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import { EContractName } from '~app/model/contracts.model';
 import ContractEventGetter from '~lib/api/ContractEventGetter';
 import { executeAfterEvent } from '~root/services/events.service';
-import { fromWei, toWei } from '~root/services/conversions.service';
+import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { equalsAddresses } from '~lib/utils/strings';
+import { store } from '~app/store';
+import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 
 export interface NewOperator {
   id: number,
@@ -41,6 +41,7 @@ export interface IOperator {
   mev_relays?: string,
   autoSelected?: boolean
   validators_count: number,
+  address_whitelist: string
   verified_operator?: boolean,
 }
 
@@ -154,23 +155,22 @@ class OperatorStore extends BaseStore {
    */
   async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return Promise.all([
       myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
     ])
       .then(() => {
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(true);
       })
       .catch((error) => {
-        applicationStore.setIsLoading(false);
+        store.dispatch(setIsLoading(false));
         if (showError) {
           notificationsStore.showMessage(error.message, 'error');
         }
-        applicationStore.showTransactionPendingPopUp(false);
+        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);
       });
   }
@@ -318,7 +318,6 @@ class OperatorStore extends BaseStore {
    */
   async updateOperatorAddressWhitelist(operatorId: string, address: string) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
 
     return new Promise(async (resolve) => {
@@ -326,8 +325,8 @@ class OperatorStore extends BaseStore {
         const contractInstance = getContractByName(EContractName.SETTER);
         const tx = await contractInstance.setOperatorWhitelist(operatorId, address);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -337,14 +336,18 @@ class OperatorStore extends BaseStore {
               const operator = await Operator.getInstance().getOperator(operatorId);
               return equalsAddresses(operator.address_whitelist.toString(), address.toString());
             }, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            store.dispatch(setIsLoading(false));
+            store.dispatch(setIsShowTxPendingPopup(false));
+            resolve(true);
           }
         }
       } catch (e: any) {
         console.debug('Contract Error', e.message);
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -366,7 +369,6 @@ class OperatorStore extends BaseStore {
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     await this.syncOperatorFeeInfo(operatorId);
     const operatorDataBefore = {
@@ -379,8 +381,8 @@ class OperatorStore extends BaseStore {
         const contract: Contract = getContractByName(EContractName.SETTER);
         const tx = await contract.cancelDeclaredOperatorFee(operatorId);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -403,10 +405,11 @@ class OperatorStore extends BaseStore {
           }
         }
       } catch (e: any) {
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -485,13 +488,11 @@ class OperatorStore extends BaseStore {
    */
   async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
-        const ssvStore: SsvStore = this.getStore('SSV');
         const contractInstance = getContractByName(EContractName.SETTER);
-        const formattedFee = ssvStore.prepareSsvAmountToTransfer(
+        const formattedFee = prepareSsvAmountToTransfer(
           toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
           ),
@@ -504,8 +505,8 @@ class OperatorStore extends BaseStore {
         };
         const tx = await contractInstance.declareOperatorFee(operatorId, formattedFee);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -527,23 +528,22 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         console.debug('Contract Error', e.message);
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
 
   async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
-        const ssvStore: SsvStore = this.getStore('SSV');
         const contractInstance = getContractByName(EContractName.SETTER);
-        const formattedFee = ssvStore.prepareSsvAmountToTransfer(
+        const formattedFee = prepareSsvAmountToTransfer(
           toWei(
             new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
           ),
@@ -552,8 +552,8 @@ class OperatorStore extends BaseStore {
         const operatorBefore = { id, fee };
         const tx = await contractInstance.reduceOperatorFee(operatorId, formattedFee);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -572,11 +572,11 @@ class OperatorStore extends BaseStore {
           }
         }
       } catch (e: any) {
-        console.debug('Contract Error', e.message);
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -586,7 +586,6 @@ class OperatorStore extends BaseStore {
    * @param operatorId
    */
   async approveOperatorFee(operatorId: number): Promise<boolean> {
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
@@ -600,8 +599,8 @@ class OperatorStore extends BaseStore {
         const contract = getContractByName(EContractName.SETTER);
         const tx = await contract.executeOperatorFee(operatorId);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -622,11 +621,11 @@ class OperatorStore extends BaseStore {
           }
         }
       } catch (e: any) {
-        console.debug('Contract Error', e.message);
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
         notificationsStore.showMessage(e.message, 'error');
         resolve(false);
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -637,15 +636,14 @@ class OperatorStore extends BaseStore {
    */
   async removeOperator(operatorId: number): Promise<any> {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contractInstance = getContractByName(EContractName.SETTER);
     return new Promise(async (resolve) => {
       try {
         const tx = await contractInstance.removeOperator(operatorId);
         if (tx.hash) {
-          applicationStore.txHash = tx.hash;
-          applicationStore.showTransactionPendingPopUp(true);
+          store.dispatch(setTxHash(tx.hash));
+          store.dispatch(setIsShowTxPendingPopup(true));
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
@@ -660,40 +658,35 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         notificationsStore.showMessage(e.message, 'error');
-        applicationStore.setIsLoading(false);
-        applicationStore.showTransactionPendingPopUp(false);
         return false;
+      } finally {
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
 
   async addNewOperator() {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const applicationStore: ApplicationStore = this.getStore('Application');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve, reject) => {
       try {
         const payload: any[] = [];
-        const ssvStore: SsvStore = this.getStore('SSV');
         const contract: Contract = getContractByName(EContractName.SETTER);
         const transaction: NewOperator = this.newOperatorKeys;
         const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
         // Send add operator transaction
-        payload.push(
-          transaction.publicKey,
-          ssvStore.prepareSsvAmountToTransfer(toWei(feePerBlock)),
-        );
+        payload.push(transaction.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock)));
         try {
           const tx = await contract.registerOperator(...payload);
           if (tx.hash) {
-            applicationStore.txHash = tx.hash;
-            applicationStore.showTransactionPendingPopUp(true);
+            store.dispatch(setTxHash(tx.hash));
+            store.dispatch(setIsShowTxPendingPopup(true));
           }
           const receipt = await tx.wait();
           if (receipt.blockHash) {
             await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
-            applicationStore.showTransactionPendingPopUp(false);
             resolve(true);
           }
         } catch (err: any) {
@@ -703,6 +696,8 @@ class OperatorStore extends BaseStore {
         }
       } catch (e) {
         reject(false);
+      } finally {
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -726,11 +721,6 @@ class OperatorStore extends BaseStore {
     });
   }
 
-  /**
-   * Select operator
-   * @param operator
-   * @param selectedIndex
-   */
   selectOperator(operator: IOperator, selectedIndex: number, clusterBox: number[]) {
     let operatorExist = false;
     // eslint-disable-next-line no-restricted-syntax

@@ -9,7 +9,7 @@ import { EContractName } from '~app/model/contracts.model';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { encodePacked, fromWei } from '~root/services/conversions.service';
+import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { OperatorStore } from '~app/common/stores/applications/SsvWeb/index';
 import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 
@@ -46,7 +46,6 @@ class ClusterStore extends BaseStore {
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
-      // const balance = await contract.methods.getBalance(walletStore.accountAddress, operatorsIds, clusterData).call();
       const balance = await contract.getBalance(walletStore.accountAddress, operatorsIds, clusterData);
       return balance;
     } catch (e) {
@@ -57,7 +56,7 @@ class ClusterStore extends BaseStore {
   getClusterNewBurnRate(cluster: any, newAmountOfValidators: number) {
     const ssvStore: SsvStore = this.getStore('SSV');
     const operatorStore: OperatorStore = this.getStore('Operator');
-    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(ssvStore.getFeeForYear(fromWei(operator.fee))), 0);
+    const operatorsFeePerYear = Object.values(operatorStore.selectedOperators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(getFeeForYear(fromWei(operator.fee))), 0);
     const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
     const networkFeePerBlock = new Decimal(ssvStore.networkFee).toFixed().toString();
     const clusterBurnRate = parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
@@ -71,7 +70,6 @@ class ClusterStore extends BaseStore {
     const clusterData: any = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     if (!clusterData) return;
     try {
-      // const isLiquidated = await contract.methods.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData).call();
       const isLiquidated = await contract.isLiquidated(walletStore.accountAddress, operatorsIds, clusterData);
       return isLiquidated;
     } catch (e) {
@@ -86,7 +84,6 @@ class ClusterStore extends BaseStore {
     const clusterData = injectedClusterData ?? await this.getClusterData(this.getClusterHash(operators));
     try {
       const burnRate = await contract.getBurnRate(walletStore.accountAddress, operatorsIds, clusterData);
-      // const burnRate = await contract.methods.getBurnRate(walletStore.accountAddress, operatorsIds, clusterData).call();
       return burnRate;
     } catch (e) {
       return 0;

@@ -11,10 +11,10 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/OperatorSuccessPage.styles';
-
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 
 
 const SetOperatorFee = () => {
@@ -23,12 +23,12 @@ const SetOperatorFee = () => {
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const applicationStore: ApplicationStore = stores.Application;
+  const dispatch = useAppDispatch();
 
   const moveToMyAccount = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     await myAccountStore.getOwnerAddressOperators({}).then(() => {
-      applicationStore.setIsLoading(false);
+      dispatch(setIsLoading(false));
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     });
   };
@@ -58,7 +58,7 @@ const SetOperatorFee = () => {
                   <LinkText text={'Enable MEV'} link={config.links.MONITOR_YOUR_NODE_URL} />to propose MEV blocks for the validators you manage.
                 </Grid>
               </Grid>
-              <PrimaryButton disable={false} text={'Manage Operator'} submitFunction={moveToMyAccount}/>
+              <PrimaryButton disable={false} children={'Manage Operator'} submitFunction={moveToMyAccount}/>
             </Grid>,
           ]}
       />

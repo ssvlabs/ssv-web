@@ -98,6 +98,7 @@ const config = {
           VALIDATOR_REMOVE: {
             ROOT: '/my-account/cluster/remove-validator',
             REMOVED: '/my-account/cluster/removed',
+            BULK: '/my-account/cluster/bulk',
           },
         },
         // EDIT_VALIDATOR: '/my-account/validator/:public_key/edit',
@@ -166,6 +167,7 @@ const config = {
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
+    // TODO: blox-infra-api calls organization-center, if organization center will be archived, need to update this endpoint
     COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ABOUT_UPDATE_FEES: 'https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf',
@@ -174,10 +176,6 @@ const config = {
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/operator-user-guides/operator-node/configuring-mev',
     INCORRECT_OWNER_NONCE_LINK: 'https://docs.ssv.network/developers/tools/cluster-scanner#_x7nzjlwu00d0',
     DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting',
-  },
-  THEMES: {
-    DARK: 'dark',
-    LIGHT: 'light',
   },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {

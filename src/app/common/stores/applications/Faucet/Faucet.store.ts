@@ -31,8 +31,7 @@ class FaucetStore extends BaseStore {
       const { networkId, apiVersion } = getStoredNetwork();
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = faucetApi;
-            this.pendingTransaction = await axios.post(faucetUrl, { owner_address: walletStore.accountAddress, network: networkId, version: apiVersion });
+            this.pendingTransaction = await axios.post(faucetApi, { owner_address: walletStore.accountAddress, network: networkId, version: apiVersion });
             return { status: true };
         } catch (e: any) {
             return { status: false, type: e.response.data.error.message === translations.FAUCET.REACHED_MAX_TRANSACTIONS ? translations.FAUCET.REACHED_MAX_TRANSACTIONS : translations.FAUCET.FAUCET_DEPLETED };
@@ -42,8 +41,7 @@ class FaucetStore extends BaseStore {
     async getLatestTransactions() {
         try {
             const walletStore: WalletStore = this.getStore('Wallet');
-            const faucetUrl = faucetApi;
-            this.pendingTransaction = await axios.get(faucetUrl, { params: { owner_address: walletStore.accountAddress } });
+            this.pendingTransaction = await axios.get(faucetApi, { params: { owner_address: walletStore.accountAddress } });
             return true;
         } catch (e) {
             return false;

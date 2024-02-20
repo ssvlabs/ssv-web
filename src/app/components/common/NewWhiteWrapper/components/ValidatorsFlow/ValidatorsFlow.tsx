@@ -23,6 +23,7 @@ const ValidatorsFlow = (props: Props) => {
   const cluster = process?.item;
 
   const onNavigationClicked = async () => {
+    process.validator = undefined;
     navigate(-1);
   };
 

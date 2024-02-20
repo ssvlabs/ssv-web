@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import AppLinksToggle from '~app/components/common/AppLinksToggle';
 import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import NetworkToggle from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
 import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode, getRestrictedUserGeo, getIsLoading } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 type Button = {
   label: string;
@@ -18,17 +18,19 @@ type Button = {
   options?: any[],
 };
 
-const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: Button[], backgroundColor?: string, excludeNetworks?: number[] }) => {
-    const stores = useStores();
+const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[], excludeNetworks?: number[] }) => {
     const navigate = useNavigate();
     const wrapperRef = useRef(null);
     const buttonsRef = useRef(null);
     const [menuBar, openMenuBar] = useState(false);
-    const applicationStore: ApplicationStore = stores.Application;
     // const isDistribution = applicationStore.strategyName === 'distribution';
-    const hasOperatorsOrValidators = applicationStore.strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     // @ts-ignore
-    const classes = useStyles({ backgroundColor });
+    const classes = useStyles();
+    const isDarkMode = useAppSelector(getIsDarkMode);
+    const restrictedUserGeo = useAppSelector(getRestrictedUserGeo);
+    const isLoading = useAppSelector(getIsLoading);
+    const strategyRedirect = useAppSelector(getStrategyRedirect);
+    const hasOperatorsOrValidators = strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
 
     useEffect(() => {
         /**
@@ -49,11 +51,9 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
     }, [wrapperRef, buttonsRef, menuBar]);
 
     const logoAction = () => {
-        if (applicationStore.userGeo) return;
-        if (applicationStore.isLoading) return;
+        if (restrictedUserGeo || isLoading) return;
         // @ts-ignore
-        applicationStore.whiteNavBarBackground = false;
-        navigate(applicationStore.strategyRedirect);
+        navigate(strategyRedirect);
     };
 
     const Buttons = () => {
@@ -73,7 +73,7 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
               })}
             <Grid item className={classes.UnderLine} />
             <Grid item container className={`${classes.MenuButton} ${classes.Slider}`}>
-              <Grid item xs>{applicationStore.darkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
+              <Grid item xs>{isDarkMode ? 'Dark Mode' : 'Light Mode'}</Grid>
               <Grid item>
                 <DarkModeSwitcher margin={false} />
               </Grid>
@@ -124,7 +124,7 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
               <Grid item>
                   <NetworkToggle excludeNetworks={excludeNetworks} />
               </Grid>
-            {!applicationStore.userGeo && (
+            {!restrictedUserGeo && (
               <Grid item>
                 <ConnectWalletButton />
               </Grid>
@@ -140,4 +140,4 @@ const AppBar = ({ buttons, backgroundColor, excludeNetworks = [] }: { buttons?: 
     );
 };
 
-export default observer(AppBar);
+export default AppBar;

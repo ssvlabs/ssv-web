@@ -6,8 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const PROCESS_STATE_START = 0;
 const PROCESS_STATE_WAITING = 1;
@@ -19,13 +21,13 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   const stores = useStores();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   const [processState, setProcessState] = useState(0);
   const classes = useStyles({ step: processState });
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
 
   useEffect(() => {
     if (!operatorStore.processOperatorId && !operatorId) {
-      navigate(applicationStore.strategyRedirect);
+      navigate(strategyRedirect);
       return;
     }
     getState();
@@ -49,7 +51,7 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
         setProcessState(PROCESS_STATE_WAITING);
       } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
         // @ts-ignore
-        const savedOperator = JSON.parse(window.localStorage.getItem('expired_operators'));
+        const savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators'));
         if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
           setProcessState(PROCESS_STATE_START);
           return;

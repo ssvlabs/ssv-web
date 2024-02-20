@@ -9,27 +9,28 @@ import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   const [futureFee, setFutureFee] = useState(0);
   const [successPage, showSuccessPage] = useState(false);
+  const dispatch = useAppDispatch();
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
 
   const cancelUpdateProcess = async () => {
-    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
-    applicationStore.setIsLoading(true);
+    if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
+    dispatch(setIsLoading(true));
     const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore
@@ -40,7 +41,7 @@ const CancelUpdateFee = () => {
       });
       showSuccessPage(true);
     }
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   };
 
   const backToMyAccount = () => {
@@ -54,9 +55,9 @@ const CancelUpdateFee = () => {
   };
 
   // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(ssvStore.getFeeForYear(fromWei(operatorStore.operatorCurrentFee)));
+  const currentOperatorFee = formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorCurrentFee)));
   // @ts-ignore
-  const operatorFutureFee = formatNumberToUi(ssvStore.getFeeForYear(fromWei(futureFee)));
+  const operatorFutureFee = formatNumberToUi(getFeeForYear(fromWei(futureFee)));
 
   if (successPage) {
     return (
@@ -82,7 +83,7 @@ const CancelUpdateFee = () => {
           </Grid>
           <PrimaryButton
             disable={false}
-            text={'Back to My Account'}
+            children={'Back to My Account'}
             submitFunction={backToMyAccount}
             wrapperClass={classes.BackToMyAccount}
           />
@@ -107,9 +108,9 @@ const CancelUpdateFee = () => {
           <b>Declaring a new fee</b> will reset the current <br />
           process and start the process anew.
         </Grid>
-        <PrimaryButton wrapperClass={classes.FirstButton} disable={false} text={'Cancel Update Fee'}
+        <PrimaryButton wrapperClass={classes.FirstButton} disable={false} children={'Cancel Update Fee'}
           submitFunction={cancelUpdateProcess} />
-        <PrimaryButton withoutLoader wrapperClass={classes.SecondButton} disable={false} text={'Declare a New Fee'}
+        <PrimaryButton withoutLoader wrapperClass={classes.SecondButton} disable={false} children={'Declare a New Fee'}
           submitFunction={declareNewFee} />
       </Grid>
     </Dialog>

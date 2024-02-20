@@ -161,19 +161,17 @@ class ValidatorStore extends BaseStore {
   /**
    * Remove validator
    */
-  async removeValidator(validator: any): Promise<boolean> {
+  async removeValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
     const clusterStore: ClusterStore = this.getStore('Cluster');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    // @ts-ignore
-    const operatorsIds = validator.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
-    validator.publicKey = validator.public_key.startsWith('0x') ? validator.public_key : `0x${validator.public_key}`;
-    const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(validator.operators));
+    const sortedOperatorIds = clusterStore.getSortedOperatorsIds(operatorIds);
+    const clusterData = await clusterStore.getClusterData(clusterStore.getClusterHash(sortedOperatorIds));
     return new Promise(async (resolve) => {
       try {
-        const tx = await contract.removeValidator(validator.publicKey, operatorsIds, clusterData);
+        const tx = await contract.removeValidator(publicKey, sortedOperatorIds, clusterData);
         if (tx.hash) {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));

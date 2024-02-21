@@ -83,9 +83,9 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData }: { nextStep
       <ConfirmationWrapper>
         <Confirmation>
           <ConfirmationTitle>{title}</ConfirmationTitle>
-          {texts.map((text: string) => <ConfirmationText>{text}</ConfirmationText>)}
+          {texts.map((text: string) => <ConfirmationText key={text}>{text}</ConfirmationText>)}
           <WarningBox text={warningMessage}/>
-          {checkBoxes.map((checkBoxText, index) => <Checkbox withoutMarginBottom onClickCallBack={(isChecked: boolean) => clickCheckboxHandler(isChecked, index)} disable={false} grayBackGround text={checkBoxText}
+          {checkBoxes.map((checkBoxText, index) => <Checkbox key={index} withoutMarginBottom onClickCallBack={(isChecked: boolean) => clickCheckboxHandler(isChecked, index)} disable={false} grayBackGround text={checkBoxText}
                                                       isChecked={isSelectedCheckboxes[index]}/>)}
           <PrimaryButton children={flowData.buttonText(selectedValidators.length, appStateIsLoading)} disable={disableCButtonCondition} submitFunction={nextStep} />
         </Confirmation>

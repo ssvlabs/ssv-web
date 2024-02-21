@@ -26,7 +26,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { AccountStore, SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
@@ -44,6 +44,7 @@ import { setIsLoading } from '~app/redux/appState.slice';
 import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { IOperator } from '~app/model/operator.model';
 
 const KeyShareFlow = () => {
     const stores = useStores();

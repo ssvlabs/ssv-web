@@ -23,12 +23,13 @@ import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { IOperator } from '~app/model/operator.model';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,

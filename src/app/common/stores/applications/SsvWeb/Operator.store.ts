@@ -16,6 +16,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import { equalsAddresses } from '~lib/utils/strings';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 
 export interface NewOperator {
@@ -23,26 +24,6 @@ export interface NewOperator {
   fee: number,
   publicKey: string,
   address: string,
-}
-
-export interface IOperator {
-  id: number,
-  fee?: string,
-  name: string,
-  logo?: string,
-  type?: string,
-  address: string,
-  score?: number,
-  public_key: string,
-  selected?: boolean,
-  dappNode?: boolean,
-  ownerAddress: string,
-  dkg_address?: string,
-  mev_relays?: string,
-  autoSelected?: boolean
-  validators_count: number,
-  address_whitelist: string
-  verified_operator?: boolean,
 }
 
 export interface Operators {

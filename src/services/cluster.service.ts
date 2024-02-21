@@ -3,10 +3,10 @@ import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
-import { IOperator } from '~app/common/stores/applications/SsvWeb';
 import { getContractByName } from '~root/services/contracts.service';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getClusterData as getClusterDataValidatorService } from '~root/services/validator.service';
+import { IOperator } from '~app/model/operator.model';
 
 const getSortedOperatorsIds = (operators: (number | IOperator)[]) => {
   if (typeof operators[0] === 'number') {

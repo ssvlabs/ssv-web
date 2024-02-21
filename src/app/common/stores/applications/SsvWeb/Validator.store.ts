@@ -17,11 +17,12 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
 import { getValidator } from '~root/services/validator.service';
 
@@ -166,7 +167,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
     const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
-    const clusterData = getClusterData(getClusterHash(operatorIds, walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    const clusterData = await getClusterData(getClusterHash(operatorIds, walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
     return new Promise(async (resolve) => {
       try {
         const tx = await contract.removeValidator(publicKey, sortedOperatorIds, clusterData);

@@ -20,7 +20,6 @@ type OperatorValidatorListQuery = {
 const getOperatorsByOwnerAddress = async (page: number = 1, perPage: number = 8, ownerAddress: string, skipRetry?: boolean) => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
   try {
-    // this.ownerAddress = ownerAddress;
     return await getRequest(url, skipRetry);
   } catch (e) {
     return { operators: [], pagination: {} };

@@ -77,7 +77,6 @@ const ValidatorFlow = () => {
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
     const response = await clusterByHash(getClusterHash(cluster.operators, walletStore.accountAddress));
     const newCluster = response.cluster;
-    // newCluster.validatorCount = newCluster.validatorCount;
     newCluster.operators = cluster.operators;
     processStore.setProcess({
       processName: 'single_cluster',

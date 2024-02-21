@@ -24,10 +24,12 @@ const ValidatorsFlow = (props: Props) => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process?.item;
 
-  const onNavigationClicked = async () => {
-    if (!props.stepBack || !props.stepBack()) {
+  const onNavigationClicked = () => {
+    if (!props.stepBack) {
       process.validator = undefined;
       navigate(-1);
+    } else {
+      props.stepBack();
     }
   };
 

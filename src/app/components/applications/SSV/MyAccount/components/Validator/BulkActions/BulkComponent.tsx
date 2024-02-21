@@ -102,10 +102,7 @@ const BulkComponent = () => {
     }
   };
 
-  const stepBack = () => {
-    setCurrentStep(BULK_STEPS.BULK_ACTIONS);
-    return true;
-  };
+  const stepBack = () => setCurrentStep(BULK_STEPS.BULK_ACTIONS);
 
   if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
     return <NewBulkActions nextStep={nextStep}

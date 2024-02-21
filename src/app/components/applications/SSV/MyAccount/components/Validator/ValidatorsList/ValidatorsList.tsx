@@ -8,14 +8,13 @@ import Status from '~app/components/common/Status';
 import { longStringShorten } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import {
-  ClusterStore,
   ProcessStore,
   WalletStore,
   SingleCluster as SingleClusterProcess,
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { ENV } from '~lib/utils/envHelper';
+import { getClusterHash } from '~root/services/cluster.service';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -99,7 +98,6 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
 }) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
-  const clusterStore: ClusterStore = stores.Cluster;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const processStore: ProcessStore = stores.Process;
   const process: SingleClusterProcess = processStore.getProcess;
@@ -117,7 +115,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
+    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress), undefined, clusterValidatorsPagination.total).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
     });

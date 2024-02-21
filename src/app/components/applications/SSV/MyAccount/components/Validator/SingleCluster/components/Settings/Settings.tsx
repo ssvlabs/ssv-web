@@ -73,7 +73,6 @@ const Settings = ({ validator }: { validator: any }) => {
   };
 
   const moveToRemoveValidator = (flow: BULK_FLOWS) => {
-    console.log(process);
     process.validator = validator;
     process.currentBulkFlow = flow;
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);

@@ -9,7 +9,8 @@ import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import { extendClusterEntity } from '~root/services/cluster.service';
+import { SsvStore } from '~app/common/stores/applications/SsvWeb/index';
 
 const INTERVAL_TIME = 30000;
 
@@ -179,7 +180,7 @@ class MyAccountStore extends BaseStore {
 
   async getOwnerAddressClusters({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean }): Promise<any[]> {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const clusterStore: ClusterStore = this.getStore('Cluster');
+    const ssvStore: SsvStore = this.getStore('SSV');
     if (!walletStore.accountAddress) return [];
     const { page, per_page } = this.ownerAddressClustersPagination;
     const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? per_page)}`;
@@ -187,7 +188,7 @@ class MyAccountStore extends BaseStore {
     if (!response) return [];
     // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;
-    this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => clusterStore.extendClusterEntity(cluster))) || [];
+    this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => extendClusterEntity(cluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral))) || [];
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated);
     return this.ownerAddressClusters;
   }

@@ -47,7 +47,7 @@ class WalletStore extends BaseStore implements Wallet {
       const operatorStore: OperatorStore = this.getStore('Operator');
       this.ssvStore.clearSettings();
       myAccountStore.clearIntervals();
-      initContracts({ provider: wallet.provider, network: getStoredNetwork() });
+      initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: wallet.label === 'WalletConnect' });
       this.accountAddress = wallet.accounts[0]?.address;
       ApiParams.cleanStorage();
       await Promise.all([
@@ -87,19 +87,6 @@ class WalletStore extends BaseStore implements Wallet {
     myAccountStore.clearIntervals();
     removeFromLocalStorageByKey('params');
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
-  }
-
-  /**
-   * User Network handler
-   * @param networkId
-   * @param apiVersion
-   */
-  setNetwork(networkId: number, apiVersion?: string) {
-    // TODO: move this out to listener
-    // if (notIncludeMainnet && networkId !== undefined && !inNetworks(networkId, testNets)) {
-    //   this.wrongNetwork = true;
-    //   this.notificationsStore.showMessage('Please change network to Holesky', 'error');
-    // }
   }
 
   get isWrongNetwork(): boolean {

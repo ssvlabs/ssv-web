@@ -237,4 +237,11 @@ const config = {
   },
 };
 
+const HOLESKY_RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
+const GOERLI_RPC_URL = 'https://long-rough-season.ethereum-goerli.quiknode.pro/3f90b8bb4aaea263621f2522b6b9ae240c09c7c6';
+
+const MAINNET_RPC_URL = 'https://misty-purple-sailboat.quiknode.pro/7fea68f21d77d9b54fc35c3f6d68199a880f5cf0';
+
+export { HOLESKY_RPC_URL, GOERLI_RPC_URL, MAINNET_RPC_URL };
+
 export default config;

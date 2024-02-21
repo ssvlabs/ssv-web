@@ -2,7 +2,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -19,6 +18,7 @@ import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { getOperatorByPublicKey } from '~root/services/operator.service';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
@@ -48,7 +48,7 @@ const OperatorConfirmation = () => {
         }
         for (let i = 0; i < 20 && !operatorStore.newOperatorKeys.id; i++) {
           try {
-            const operator = await Operator.getInstance().getOperatorByPublicKey(publicKey, false);
+            const operator = await getOperatorByPublicKey(publicKey, false);
             console.log('Fetched operator by public key', operator);
             if (operator?.data?.id) {
               operatorStore.newOperatorKeys = {

@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { retryWithDelay } from '~app/decorators/retriable.decorator';
+import config from '~app/common/config';
 
 enum HttpResult {
   SUCCESS,
@@ -15,12 +17,9 @@ const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, 
 
 const httpGeneralErrorMessage = (url: string) => `Http request to url ${url} failed.`;
 
-const get = () => {
-};
-
-const put = async (url: string, data?: any, config?: AxiosRequestConfig): Promise<IHttpResponse> => {
+const putRequest = async (url: string, data?: any, requestConfig?: AxiosRequestConfig): Promise<IHttpResponse> => {
   try {
-    const response = await axios.put(url, data, config);
+    const response = await axios.put(url, data, requestConfig);
     return { error: null, data: response.data, result: HttpResult.SUCCESS };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -32,11 +31,15 @@ const put = async (url: string, data?: any, config?: AxiosRequestConfig): Promis
   }
 };
 
-function isSuccessful(httpResponse: IHttpResponse) {
-  return httpResponse.data && !httpResponse.error;
-}
-
-const post = () => {
+const getRequest = async (url: string, skipRetry?: boolean) => {
+  try {
+    return (await axios.get(url)).data;
+  } catch (e) {
+    if (skipRetry) {
+      return null;
+    }
+    return await retryWithDelay({ caller: async () => (await axios.get(url)).data, ...config.retry.default });
+  }
 };
 
-export { put, HttpResult, isSuccessful };
+export { putRequest, getRequest };

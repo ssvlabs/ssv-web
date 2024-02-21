@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import { isMainnet } from '~lib/utils/envHelper';
 import Status from '~app/components/common/Status';
@@ -30,6 +29,7 @@ import OperatorBox
 import ActionsButton
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
 import { getClusterHash } from '~root/services/cluster.service';
+import { validatorsByClusterHash } from '~root/services/validator.service';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -87,7 +87,7 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -140,7 +140,7 @@ const SingleCluster = () => {
 
   const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(newPage, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);

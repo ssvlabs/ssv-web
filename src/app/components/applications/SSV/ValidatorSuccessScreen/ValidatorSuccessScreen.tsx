@@ -16,7 +16,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
-import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterHash } from '~root/services/cluster.service';
 
 const ValidatorSuccessScreen = () => {

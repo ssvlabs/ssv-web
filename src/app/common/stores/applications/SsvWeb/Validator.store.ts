@@ -400,10 +400,6 @@ class ValidatorStore extends BaseStore {
         this.newValidatorReceipt = null;
 
         console.debug('Add Validator Payload: ', payload);
-        // const clusterHash = clusterStore.getClusterHash(payload.get(OPERATOR_IDS));
-        // const response = await getClusterData(clusterHash);
-        // const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-        // const gasLimit = getRegisterValidatorGasLimit(!!response.cluster, payload.get(OPERATOR_IDS).length, 'registerValidator' in process && process.registerValidator?.depositAmount <= 0);
         const gasLimit = 4075000;
 
         const provider = new ethers.providers.Web3Provider(walletStore.wallet.provider, 'any');

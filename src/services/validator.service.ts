@@ -19,10 +19,10 @@ const clustersByOwnerAddress = async (query: string, skipRetry?: boolean): Promi
   }
 };
 
-const validatorsByClusterHash = async (page: number, ownerAddress: string, clusterHash: string, skipRetry?: boolean): Promise<any> => {
+const validatorsByClusterHash = async (page: number, clusterHash: string, perPage: number = 7): Promise<any> => {
   try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/?&search=${clusterHash}&page=${page}&perPage=7&ts=${new Date().getTime()}`;
-    return await getRequest(url, skipRetry);
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/?&search=${clusterHash}&page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+    return await getRequest(url, true);
   } catch (e) {
     return { clusters: [], pagination: {} };
   }

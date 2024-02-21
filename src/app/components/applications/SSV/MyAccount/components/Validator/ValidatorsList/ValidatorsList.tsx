@@ -17,6 +17,7 @@ import {
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { ENV } from '~lib/utils/envHelper';
 import { IValidator } from '~app/model/validator.model';
+import { formatValidatorPublicKey } from '~root/services/utils.service';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -93,10 +94,10 @@ const Link = styled.div<{ logo: string }>`
 }
 `;
 
-const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnselectAllValidators }: {
+const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: {
   onCheckboxClickHandler?: Function,
-  selectedValidators?: string[],
-  selectUnselectAllValidators?: Function
+  selectedValidators?: Record<string, { validator: IValidator, isSelected: boolean }>,
+  fillSelectedValidators?: Function
 }) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
@@ -119,8 +120,9 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
-      setClusterValidators(response.validators);
+      setClusterValidators(response.validators || {});
       setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
+      if (fillSelectedValidators) fillSelectedValidators(response.validators);
     });
   }, []);
 
@@ -145,13 +147,13 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   return (
     <TableWrapper>
       <TableHeader>
-        {selectUnselectAllValidators && <Checkbox disable={false} grayBackGround text={''}
+        {fillSelectedValidators && <Checkbox disable={false} grayBackGround text={''}
                                                   withoutMarginBottom
                                                   smallLine
                                                   onClickCallBack={() => {
-                                                    selectUnselectAllValidators(clusterValidators.map((validator: IValidator) => validator.public_key));
+                                                    fillSelectedValidators(clusterValidators, true);
                                                   }}
-                                                  isChecked={selectedValidators && selectedValidators.length > 0}/>}
+                                                  isChecked={selectedValidators && Object.values(selectedValidators).some((validator: { validator: IValidator, isSelected: boolean }) => validator.isSelected)}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
         <TableHeaderTitle
           marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>
@@ -168,16 +170,17 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
         {/*  scrollableTarget="scrollableDiv"*/}
         {/*>*/}
         {clusterValidators?.map((validator: IValidator) => {
-            const res = selectedValidators?.includes(validator.public_key);
+            const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
+            const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
             return (
               <ValidatorWrapper>
                 <PublicKeyWrapper>
                   <PublicKey>
                     {onCheckboxClickHandler && selectedValidators && <Checkbox disable={false} grayBackGround text={''}
                                                                                withoutMarginBottom
-                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, validator.public_key, clusterValidators)}
+                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
                                                                                isChecked={res}/>}
-                    0x{longStringShorten(validator.public_key, 4, 4)}
+                    {longStringShorten(formattedPublicKey, 4, 4)}
                   </PublicKey>
                   <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}/>
                 </PublicKeyWrapper>

@@ -12,16 +12,16 @@ import {
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { initContracts, resetContracts } from '~root/services/contracts.service';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import { initContracts, resetContracts } from '~root/services/contracts.service';
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
-import OperatorStore from '../../../../../common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '../../../../../common/stores/applications/SsvWeb/MyAccount.store';
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);

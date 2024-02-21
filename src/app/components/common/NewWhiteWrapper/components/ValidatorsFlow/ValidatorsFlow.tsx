@@ -11,6 +11,7 @@ import { getClusterHash } from '~root/services/cluster.service';
 
 type Props = {
   header: string,
+  stepBack?: Function
 };
 
 const ValidatorsFlow = (props: Props) => {
@@ -24,8 +25,10 @@ const ValidatorsFlow = (props: Props) => {
   const cluster = process?.item;
 
   const onNavigationClicked = async () => {
-    process.validator = undefined;
-    navigate(-1);
+    if (!props.stepBack || !props.stepBack()) {
+      process.validator = undefined;
+      navigate(-1);
+    }
   };
 
   return (

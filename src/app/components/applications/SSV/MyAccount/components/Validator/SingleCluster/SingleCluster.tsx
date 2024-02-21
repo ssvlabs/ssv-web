@@ -87,7 +87,7 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -140,7 +140,7 @@ const SingleCluster = () => {
 
   const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingValidators(true);
-    validatorsByClusterHash(newPage, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(newPage, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);

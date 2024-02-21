@@ -117,7 +117,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
-      setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
+      setClusterValidatorsPagination({...response.pagination, rowsPerPage: 14 });
     });
   }, []);
 

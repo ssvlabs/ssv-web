@@ -84,6 +84,8 @@ const getStoredNetwork = () => {
   return networks[savedNetworkIndex];
 };
 
+const isMainnet = getStoredNetwork().networkId === NETWORKS.MAINNET;
+
 const isMainnetSupported = () => {
   return networks.findIndex((network) => toHexString(network.networkId).toLowerCase() !== '0x1') !== -1;
 };
@@ -98,4 +100,5 @@ export {
   getStoredNetwork,
   getStoredNetworkIndex,
   isMainnetSupported,
+  isMainnet,
 };

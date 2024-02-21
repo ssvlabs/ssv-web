@@ -10,7 +10,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -20,6 +19,8 @@ import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.sto
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const Deposit = () => {
   const stores = useStores();
@@ -27,7 +28,7 @@ const Deposit = () => {
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
-  const clusterStore: ClusterStore = stores.Cluster;
+  const walletStore: WalletStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
@@ -39,7 +40,7 @@ const Deposit = () => {
   async function depositSsv() {
     dispatch(setIsLoading(true));
     await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
-      cluster.balance = await clusterStore.getClusterBalance(cluster.operators);
+      cluster.balance = await getClusterBalance(cluster.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
@@ -121,7 +122,7 @@ const Deposit = () => {
               ),
               (
                   <>
-                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: toWei(newBalance) }) }}/>
+                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) }}/>
                   </>
               ),
             ]}

@@ -33,7 +33,7 @@ const RemoveValidator = () => {
 
   const removeValidator = async () => {
     if (validator.public_key) {
-      const response = await validatorStore.removeValidator(validator);
+      const response = await validatorStore.removeValidator(validator.public_key, validator.operators);
       if (response) {
         navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
       }

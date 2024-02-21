@@ -6,6 +6,7 @@ import { getImage } from '~lib/utils/filePath';
 import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 import { Theme } from '@web3-onboard/core';
 import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
 
 export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = getFromLocalStorageByKey('locationRestrictionDisabled');
@@ -63,19 +64,19 @@ const initOnboardOptions = {
       id: NETWORKS.MAINNET,
       label: 'Ethereum Mainnet',
       token: TOKEN_NAMES[NETWORKS.MAINNET],
-      rpcUrl: 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26',
+      rpcUrl: MAINNET_RPC_URL,
     },
     {
       id: NETWORKS.GOERLI,
       label: 'Goerli testnet',
       token: TOKEN_NAMES[NETWORKS.GOERLI],
-      rpcUrl: 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26',
+      rpcUrl: GOERLI_RPC_URL,
     },
     {
       id: NETWORKS.HOLESKY,
       label: 'Holesky',
-      token: 'ETH',
-      rpcUrl: 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26',
+      token: TOKEN_NAMES[NETWORKS.HOLESKY],
+      rpcUrl: HOLESKY_RPC_URL,
       // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // rpcUrl: 'https://ethereum-holesky.publicnode.com',

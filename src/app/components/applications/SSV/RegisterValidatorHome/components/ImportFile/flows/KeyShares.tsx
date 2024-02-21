@@ -25,7 +25,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { AccountStore, ClusterStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { AccountStore, SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
@@ -43,6 +43,7 @@ import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -54,8 +55,8 @@ const KeyShareFlow = () => {
     const walletStore: WalletStore = stores.Wallet;
     const accountStore: AccountStore = stores.Account;
     const processStore: ProcessStore = stores.Process;
-    const clusterStore: ClusterStore = stores.Cluster;
     const operatorStore: OperatorStore = stores.Operator;
+    const ssvStore: SsvStore = stores.SSV;
     const validatorStore: ValidatorStore = stores.Validator;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -377,7 +378,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: clusterData,

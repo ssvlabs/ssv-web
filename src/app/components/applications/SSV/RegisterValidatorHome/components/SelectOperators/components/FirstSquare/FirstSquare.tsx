@@ -9,7 +9,6 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
-import Operator from '~lib/api/Operator';
 import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
@@ -38,6 +37,7 @@ import MevCounterBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
+import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,
@@ -83,7 +83,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       search: searchInput,
     };
 
-    const response = await Operator.getInstance().getOperators(payload);
+    const response = await getOperatorsOperatorService(payload);
     if (response?.pagination?.page > 1) {
       const operatorListInString = operatorsData.map(operator => operator.id);
       const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));

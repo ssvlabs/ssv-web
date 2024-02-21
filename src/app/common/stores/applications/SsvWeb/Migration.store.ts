@@ -1,12 +1,12 @@
 import { observable, makeObservable, action } from 'mobx';
 import { KeySharesItem } from 'ssv-keys';
-import Operator from '~lib/api/Operator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { IOperator } from '~app/model/operator.model';
+import { getOperatorsByIds } from '~root/services/operator.service';
 
 class MigrationStore extends BaseStore  {
     migrationFile: File | null = null;
@@ -76,7 +76,7 @@ class MigrationStore extends BaseStore  {
             if (data.ownerAddress !== walletStore.accountAddress) {
                return { errorMessage: INCORRECT_OWNER_ADDRESS_ERROR.errorMessage, subErrorMessage: `${INCORRECT_OWNER_ADDRESS_ERROR.subErrorMessage} ${data.ownerAddress}`, id: OWNER_ADDRESS_NOT_MATCHING };
             }
-                const selectedOperators = await Operator.getInstance().getOperatorsByIds(keyShareOperators);
+                const selectedOperators = await getOperatorsByIds(keyShareOperators);
                 if (!selectedOperators.length) return { ...OPERATOR_NOT_EXIST_RESPONSE, id: OPERATOR_NOT_EXIST_ID };
                 if (selectedOperators?.some((operator: IOperator) => !operatorPublicKeys.includes(operator.public_key))) {
                     return { errorMessage: INVALID_OPERATOR_DETAILS.message, subErrorMessage: INVALID_OPERATOR_DETAILS.subErrorMessage, id: OPERATOR_NOT_MATCHING_ID };

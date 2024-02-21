@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { longStringShorten } from '~lib/utils/strings';
@@ -17,6 +16,7 @@ import { ENV } from '~lib/utils/envHelper';
 import { IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey } from '~root/services/utils.service';
 import { getClusterHash } from '~root/services/cluster.service';
+import { validatorsByClusterHash } from '~root/services/validator.service';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -106,20 +106,11 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   const cluster = process?.item;
   const navigate = useNavigate();
   const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
-  const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
-    page: 1,
-    total: cluster.validatorCount,
-    pages: 1,
-    per_page: 5,
-    rowsPerPage: 14,
-    onChangePage: console.log,
-  });
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress), undefined, clusterValidatorsPagination.total).then((response: any) => {
-      setClusterValidators(response.validators || {});
-      setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
+    validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+      setClusterValidators(response.validators);
       if (fillSelectedValidators) fillSelectedValidators(response.validators);
     });
   }, []);

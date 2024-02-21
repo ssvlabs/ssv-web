@@ -135,7 +135,7 @@ const Summary = ({ selectedValidators }: { selectedValidators: string[] }) => {
         </TableHeader>
         <ValidatorsListWrapper>
           {selectedValidators.map((validatorPublicKey: string) =>
-            <ValidatorWrapper>
+            <ValidatorWrapper key={validatorPublicKey}>
               <ValidatorPublicKey>{longStringShorten(validatorPublicKey, 4, 4)}</ValidatorPublicKey>
               <LinksWrapper>
                 <Link onClick={() => openBeaconcha(validatorPublicKey)} logo={'/images/beacon/'}/>

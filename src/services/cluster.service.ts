@@ -2,11 +2,11 @@ import * as _ from 'lodash';
 import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { EContractName } from '~app/model/contracts.model';
-import { IOperator } from '~app/common/stores/applications/SsvWeb';
 import { getContractByName } from '~root/services/contracts.service';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getClusterData as getClusterDataValidatorService } from '~root/services/validator.service';
+import { IOperator } from '~app/model/operator.model';
 
 const getSortedOperatorsIds = (operators: (number | IOperator)[]) => {
   if (typeof operators[0] === 'number') {
@@ -83,7 +83,7 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
 
 const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, fullData = false) => {
   try {
-    const response = await Validator.getInstance().getClusterData(clusterHash);
+    const response = await getClusterDataValidatorService(clusterHash);
     const clusterData = response.cluster;
     if (clusterData === null) {
       return {

@@ -2,8 +2,8 @@ import axios from 'axios';
 import { Retryable } from 'typescript-retry-decorator';
 import config from '~app/common/config';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { put } from '~root/services/httpApi.service';
+import { IOperator } from '~app/model/operator.model';
 
 type OperatorsListQuery = {
   page?: number,

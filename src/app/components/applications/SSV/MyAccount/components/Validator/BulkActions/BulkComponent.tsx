@@ -8,13 +8,13 @@ import ExitFinishPage from '~app/components/applications/SSV/MyAccount/component
 import ConfirmationStep
   from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
 import {
-  IOperator,
   ProcessStore,
   ValidatorStore,
   SingleCluster as SingleClusterProcess,
 } from '~app/common/stores/applications/SsvWeb';
 import { conditionalExecutor, formatValidatorPublicKey } from '~root/services/utils.service';
 import { IValidator } from '~app/model/validator.model';
+import { IOperator } from '~app/model/operator.model';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',

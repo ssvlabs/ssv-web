@@ -1,4 +1,4 @@
-import { IOperator } from '~app/common/stores/applications/SsvWeb';
+import { IOperator } from '~app/model/operator.model';
 
 export interface IValidator {
   public_key: string,

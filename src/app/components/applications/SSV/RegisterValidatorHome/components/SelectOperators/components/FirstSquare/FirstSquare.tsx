@@ -22,7 +22,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
 import {
@@ -37,6 +37,7 @@ import ClusterSize
 import MevCounterBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { IOperator } from '~app/model/operator.model';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,

@@ -11,7 +11,7 @@ import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { OperatorStore } from '~app/common/stores/applications/SsvWeb/index';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { IOperator } from '~app/model/operator.model';
 
 const annotations = {
   getClusterData: action.bound,

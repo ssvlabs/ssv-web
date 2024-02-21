@@ -75,7 +75,7 @@ const initOnboardOptions = {
     {
       id: NETWORKS.HOLESKY,
       label: 'Holesky',
-      token: 'ETH',
+      token: TOKEN_NAMES[NETWORKS.HOLESKY],
       rpcUrl: HOLESKY_RPC_URL,
       // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',

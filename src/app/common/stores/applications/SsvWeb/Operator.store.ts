@@ -651,7 +651,6 @@ class OperatorStore extends BaseStore {
           if (event) {
             ApiParams.initStorage(true);
             await executeAfterEvent(async () => {
-              console.log(await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash));
               return await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash);
             }, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }

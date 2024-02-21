@@ -102,6 +102,8 @@ const BulkComponent = () => {
     }
   };
 
+  const stepBack = () => setCurrentStep(BULK_STEPS.BULK_ACTIONS);
+
   if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
     return <NewBulkActions nextStep={nextStep}
                            title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
@@ -111,7 +113,7 @@ const BulkComponent = () => {
   }
 
   if (currentStep === BULK_STEPS.BULK_CONFIRMATION) {
-    return  <ConfirmationStep
+    return  <ConfirmationStep stepBack={stepBack}
           flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
           selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)} nextStep={nextStep}/>;
   }

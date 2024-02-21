@@ -117,11 +117,18 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
-      setClusterValidators(response.validators);
-      if (fillSelectedValidators) fillSelectedValidators(response.validators);
-      setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
-    });
+    if (selectedValidators && Object.values(selectedValidators).length) {
+      setClusterValidators(Object.values(selectedValidators).map((validator: {
+        validator: IValidator,
+        isSelected: boolean
+      }) => validator.validator));
+    } else {
+      validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
+        setClusterValidators(response.validators);
+        if (fillSelectedValidators) fillSelectedValidators(response.validators);
+        setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
+      });
+    }
   }, []);
 
   // TODO: Implement infinite scroll on using this component for single cluster page
@@ -146,12 +153,15 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
     <TableWrapper>
       <TableHeader>
         {fillSelectedValidators && <Checkbox disable={false} grayBackGround text={''}
-                                                  withoutMarginBottom
-                                                  smallLine
-                                                  onClickCallBack={() => {
-                                                    fillSelectedValidators(clusterValidators, true);
-                                                  }}
-                                                  isChecked={selectedValidators && Object.values(selectedValidators).some((validator: { validator: IValidator, isSelected: boolean }) => validator.isSelected)}/>}
+                                             withoutMarginBottom
+                                             smallLine
+                                             onClickCallBack={() => {
+                                               fillSelectedValidators(clusterValidators, true);
+                                             }}
+                                             isChecked={selectedValidators && Object.values(selectedValidators).some((validator: {
+                                               validator: IValidator,
+                                               isSelected: boolean
+                                             }) => validator.isSelected)}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
         <TableHeaderTitle
           marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>

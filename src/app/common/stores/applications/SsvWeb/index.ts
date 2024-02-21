@@ -1,7 +1,4 @@
 export { default as AccountStore } from './Account.store';
-export { default as CheckboxStore } from './Checkbox.store';
-export { default as ClusterStore } from './Cluster.store';
-export { default as MigrationStore } from './Migration.store';
 export { default as MyAccountStore } from './MyAccount.store';
 export { default as NotificationsStore } from './Notifications.store';
 export { default as OperatorStore } from './Operator.store';

@@ -15,7 +15,6 @@ import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
@@ -25,6 +24,7 @@ import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
+import { getClusterHash } from '~root/services/cluster.service';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -33,7 +33,6 @@ const ClusterDashboard = () => {
   const location = useLocation();
   const timeoutRef = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
-  const clusterStore: ClusterStore = stores.Cluster;
   const processStore: ProcessStore = stores.Process;
   const accountStore: AccountStore = stores.Account;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -82,7 +81,7 @@ const ClusterDashboard = () => {
     const remainingDaysValue = formatNumberToUi(cluster.runWay, true);
     const remainingDays = +remainingDaysValue > 0 ? `${remainingDaysValue} Days` : remainingDaysValue;
     return createData(
-      longStringShorten(clusterStore.getClusterHash(cluster.operators).slice(2), 4),
+      longStringShorten(getClusterHash(cluster.operators, walletStore.accountAddress).slice(2), 4),
       <Grid container style={{ gap: 8 }}>
         {cluster.operators.map((operator: any, index: number) => {
           return <Grid item
@@ -90,9 +89,9 @@ const ClusterDashboard = () => {
                        key={index}
                        onMouseLeave={handleGridLeave}
                        className={classes.CircleImageOperatorWrapper}
-                       onMouseEnter={() => handleGridHover(clusterStore.getClusterHash(cluster.operators) + operator.id)}
+                       onMouseEnter={() => handleGridHover(getClusterHash(cluster.operators, walletStore.accountAddress) + operator.id)}
           >
-            {(hoveredGrid === clusterStore.getClusterHash(cluster.operators) + operator.id) && (
+            {(hoveredGrid === getClusterHash(cluster.operators, walletStore.accountAddress) + operator.id) && (
               <OperatorCard operator={operator}/>
             )}
             <OperatorCircleImage operatorLogo={operator.logo}/>

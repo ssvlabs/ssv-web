@@ -122,7 +122,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             const setChainParams = { chainId: toHexString(network.networkId) };
             console.warn('NetworkToggle: onOptionClick: setChainParams', setChainParams);
             const setChainResult = await setChain(setChainParams);
-            initContracts({ provider: walletStore.wallet.provider, network });
+            initContracts({ provider: walletStore.wallet.provider, network, shouldUseRpcUrl: walletStore.wallet.label === 'WalletConnect' });
             ssvStore.initUser();
             if (!setChainResult) {
                 console.error('NetworkToggle: Error setting chain');

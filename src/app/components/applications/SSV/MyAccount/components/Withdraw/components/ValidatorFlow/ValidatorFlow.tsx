@@ -10,20 +10,21 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
+import { extendClusterEntity, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const ValidatorFlow = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const clusterStore: ClusterStore = stores.Cluster;
+  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
@@ -42,7 +43,7 @@ const ValidatorFlow = () => {
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
 
   useEffect(() => {
-    if (clusterStore.getClusterRunWay({ ...cluster, balance: toWei(newBalance) }) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && userAgree) {
+    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && userAgree) {
       setUserAgreement(false);
     }
     if (withdrawValue === clusterBalance) {
@@ -52,7 +53,7 @@ const ValidatorFlow = () => {
     }
 
     const balance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
-    const runWay = clusterStore.getClusterRunWay({ ...cluster, balance: toWei(balance) });
+    const runWay = getClusterRunWay({ ...cluster, balance: toWei(balance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
     const errorConditionButton = runWay <= 0;
     const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
 
@@ -74,18 +75,16 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await Validator.getInstance().clusterByHash(clusterStore.getClusterHash(cluster.operators));
+    const response = await Validator.getInstance().clusterByHash(getClusterHash(cluster.operators, walletStore.accountAddress));
     const newCluster = response.cluster;
-    newCluster.validatorCount = newCluster.validatorCount;
     newCluster.operators = cluster.operators;
     processStore.setProcess({
       processName: 'single_cluster',
-      // @ts-ignore
-      item: await clusterStore.extendClusterEntity(newCluster),
+      item: await extendClusterEntity(newCluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
     }, 2);
     await myAccountStore.getOwnerAddressClusters({});
     setIsLoading(false);
-    if (clusterStore.getClusterRunWay({ ...cluster, balance: toWei(newBalance) }) <= 0) {
+    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {
       navigate(-1);
     }
     if (success) {
@@ -138,7 +137,7 @@ const ValidatorFlow = () => {
         </Grid>
       </Grid>
   ), (
-      <NewRemainingDays withdrawState isInputFilled={!!withdrawValue} cluster={{ ...cluster, newRunWay: !withdrawValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: toWei(newBalance) }) }} />
+      <NewRemainingDays withdrawState isInputFilled={!!withdrawValue} cluster={{ ...cluster, newRunWay: !withdrawValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) }} />
   )];
 
   return (

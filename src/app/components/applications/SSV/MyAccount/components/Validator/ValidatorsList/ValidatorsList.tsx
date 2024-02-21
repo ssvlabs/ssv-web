@@ -106,18 +106,27 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   const cluster = process?.item;
   const navigate = useNavigate();
   const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
+  const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
+    page: 1,
+    total: cluster.validatorCount,
+    pages: 1,
+    per_page: 5,
+    rowsPerPage: 14,
+    onChangePage: console.log,
+  });
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       if (fillSelectedValidators) fillSelectedValidators(response.validators);
+      setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
     });
   }, []);
 
   // TODO: Implement infinite scroll on using this component for single cluster page
   // const onChangePage = async (newPage: number, rowsPerPage?: number) => {
-  //   Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
+  //   validatorsByClusterHash(newPage, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
   //     setClusterValidators([...clusterValidators, ...response.validators]);
   //     setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: clusterValidatorsPagination.total + 1 });
   //     if (selectAllValidators && selectUnselectAllValidators) {

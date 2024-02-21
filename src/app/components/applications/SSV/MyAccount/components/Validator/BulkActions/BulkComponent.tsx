@@ -14,6 +14,7 @@ import {
   SingleCluster as SingleClusterProcess,
 } from '~app/common/stores/applications/SsvWeb';
 import { conditionalExecutor } from '~root/services/utils.service';
+import { IValidator } from '~app/model/validator.model';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -56,11 +57,11 @@ const BulkComponent = () => {
     setSelectedValidators(nextState);
   };
 
-  const onCheckboxClickHandler = (isChecked: boolean, publicKey: string) => {
+  const onCheckboxClickHandler = (isChecked: boolean, publicKey: string, validators: IValidator[]) => {
     if (isChecked && !selectedValidators.includes(publicKey)) {
-      setSelectedValidators((prevState: string[]) => [...prevState, publicKey]);
+      setSelectedValidators((prevState: string[]) => validators.map((validator: IValidator) => validator.public_key).filter((validatorPublicKey: string) => [...prevState, publicKey].includes(validatorPublicKey)));
     } else {
-      setSelectedValidators((prevState: string[]) => prevState.filter((key: string) => key !== publicKey));
+      setSelectedValidators((prevState: string[]) =>validators.map((validator: IValidator) => validator.public_key).filter((validatorPublicKey: string) => prevState.filter((key: string) => key !== publicKey).includes(validatorPublicKey)));
     }
   };
 

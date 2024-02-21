@@ -16,6 +16,7 @@ import {
 } from '~app/common/stores/applications/SsvWeb';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { ENV } from '~lib/utils/envHelper';
+import { IValidator } from '~app/model/validator.model';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -105,7 +106,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process?.item;
   const navigate = useNavigate();
-  const [clusterValidators, setClusterValidators] = useState<any[]>([]);
+  const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     total: cluster.validatorCount,
@@ -148,7 +149,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
                                                   withoutMarginBottom
                                                   smallLine
                                                   onClickCallBack={() => {
-                                                    selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key));
+                                                    selectUnselectAllValidators(clusterValidators.map((validator: IValidator) => validator.public_key));
                                                   }}
                                                   isChecked={selectedValidators && selectedValidators.length > 0}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
@@ -166,7 +167,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
         {/*  loader={<h4>Loading...</h4>}*/}
         {/*  scrollableTarget="scrollableDiv"*/}
         {/*>*/}
-        {clusterValidators?.map((validator: any) => {
+        {clusterValidators?.map((validator: IValidator) => {
             const res = selectedValidators?.includes(validator.public_key);
             return (
               <ValidatorWrapper>
@@ -174,7 +175,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
                   <PublicKey>
                     {onCheckboxClickHandler && selectedValidators && <Checkbox disable={false} grayBackGround text={''}
                                                                                withoutMarginBottom
-                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, validator.public_key)}
+                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, validator.public_key, clusterValidators)}
                                                                                isChecked={res}/>}
                     0x{longStringShorten(validator.public_key, 4, 4)}
                   </PublicKey>

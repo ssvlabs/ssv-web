@@ -1,6 +1,8 @@
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { putRequest, getRequest } from '~root/services/httpApi.service';
 import { IOperator } from '~app/model/operator.model';
+import { IPagination } from '~app/model/pagination.model';
+import { DEFAULT_PAGINATION } from '~app/common/config/config';
 
 type OperatorsListQuery = {
   page?: number,
@@ -17,12 +19,12 @@ type OperatorValidatorListQuery = {
   operatorId: number,
 };
 
-const getOperatorsByOwnerAddress = async (page: number = 1, perPage: number = 8, ownerAddress: string, skipRetry?: boolean) => {
+const getOperatorsByOwnerAddress = async (page: number = 1, perPage: number = 8, ownerAddress: string, skipRetry?: boolean): Promise<{ operators: IOperator[], pagination: IPagination }> => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
   try {
     return await getRequest(url, skipRetry);
   } catch (e) {
-    return { operators: [], pagination: {} };
+    return { operators: [], pagination: DEFAULT_PAGINATION };
   }
 };
 

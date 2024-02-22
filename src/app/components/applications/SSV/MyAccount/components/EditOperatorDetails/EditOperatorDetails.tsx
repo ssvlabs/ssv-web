@@ -76,11 +76,13 @@ const EditOperatorDetails = () => {
       const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
       if (updateOperatorResponse.data) {
         const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
-        for (let key in updateOperatorResponse.data) {
-          operator[key] = updateOperatorResponse.data[key];
-          selectedOperator[key] = updateOperatorResponse.data[key];
+        if (selectedOperator) {
+          for (let key in updateOperatorResponse.data) {
+            operator[key] = updateOperatorResponse.data[key];
+            selectedOperator[key] = updateOperatorResponse.data[key];
+          }
+          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
         }
-        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
       } else {
         setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
       }

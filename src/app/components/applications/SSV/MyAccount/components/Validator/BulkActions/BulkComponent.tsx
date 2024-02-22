@@ -12,9 +12,9 @@ import {
   ValidatorStore,
   SingleCluster as SingleClusterProcess,
 } from '~app/common/stores/applications/SsvWeb';
-import { conditionalExecutor, formatValidatorPublicKey } from '~root/services/utils.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { IOperator } from '~app/model/operator.model';
+import { formatValidatorPublicKey } from '~lib/utils/strings';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -89,7 +89,7 @@ const BulkComponent = () => {
       const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
       const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
       const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
-      res = await conditionalExecutor(condition, exitSingle, exitBulk);
+      res = condition ? await exitSingle() : await exitBulk();
       if (res) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
@@ -99,7 +99,7 @@ const BulkComponent = () => {
       const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
       const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
       const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
-      res = await conditionalExecutor(condition, singleRemove, bulkRemove);
+      res = condition ? await singleRemove() : await bulkRemove();
       if (res) {
         backToSingleClusterPage();
       }

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-import { longStringShorten } from '~lib/utils/strings';
+import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import {
   ProcessStore,
@@ -14,7 +14,6 @@ import {
 } from '~app/common/stores/applications/SsvWeb';
 import { ENV } from '~lib/utils/envHelper';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
-import { formatValidatorPublicKey } from '~root/services/utils.service';
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 

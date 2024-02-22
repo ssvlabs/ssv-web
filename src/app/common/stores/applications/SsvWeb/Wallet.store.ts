@@ -1,7 +1,6 @@
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import Wallet from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -49,7 +48,6 @@ class WalletStore extends BaseStore implements Wallet {
       myAccountStore.clearIntervals();
       initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: wallet.label === 'WalletConnect' });
       this.accountAddress = wallet.accounts[0]?.address;
-      ApiParams.cleanStorage();
       await Promise.all([
         myAccountStore.getOwnerAddressOperators({}),
         myAccountStore.getOwnerAddressClusters({}),

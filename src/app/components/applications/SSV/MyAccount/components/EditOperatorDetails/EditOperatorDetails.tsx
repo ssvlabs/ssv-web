@@ -22,6 +22,7 @@ import { EContractName } from '~app/model/contracts.model';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { updateOperatorMetadata } from '~root/services/operator.service';
+import { IOperator } from '~app/model/operator.model';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
@@ -31,7 +32,7 @@ const EditOperatorDetails = () => {
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
   const process: SingleOperator = processStore.getProcess;
-  const operator = process?.item;
+  let operator: IOperator = process?.item;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -75,12 +76,12 @@ const EditOperatorDetails = () => {
       }
       const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
       if (updateOperatorResponse.data) {
-        const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
-        for (let key in updateOperatorResponse.data) {
-          operator[key] = updateOperatorResponse.data[key];
-          selectedOperator[key] = updateOperatorResponse.data[key];
+        let selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
+        if (selectedOperator) {
+          operator = { ...operator, ...updateOperatorResponse.data };
+          Object.assign(selectedOperator, updateOperatorResponse.data);
+          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
         }
-        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
       } else {
         setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
       }

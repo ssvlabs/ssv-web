@@ -14,3 +14,5 @@ export interface IValidator {
   version: string,
   network: string
 }
+
+export type BulkValidatorData = { validator: IValidator, isSelected: boolean };

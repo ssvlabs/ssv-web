@@ -9,7 +9,6 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
-import ApiParams from '~lib/api/ApiParams';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
@@ -38,6 +37,7 @@ import MevCounterBadge
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
+import { DEFAULT_PAGINATION } from '~app/common/config/config';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,
@@ -57,7 +57,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   const [sortOrder, setSortOrder] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
-  const [operatorsPagination, setOperatorsPagination] = useState(ApiParams.DEFAULT_PAGINATION);
+  const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
 
   const headers = [

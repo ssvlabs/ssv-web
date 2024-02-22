@@ -17,7 +17,7 @@ const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, 
 
 const httpGeneralErrorMessage = (url: string) => `Http request to url ${url} failed.`;
 
-const putRequest = async (url: string, data?: any, requestConfig?: AxiosRequestConfig): Promise<IHttpResponse<T>> => {
+const putRequest = async <T>(url: string, data?: any, requestConfig?: AxiosRequestConfig): Promise<IHttpResponse<T>> => {
   try {
     const response = await axios.put(url, data, requestConfig);
     return { error: null, data: response.data, result: HttpResult.SUCCESS };

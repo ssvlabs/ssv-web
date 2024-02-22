@@ -17,6 +17,8 @@ type OperatorValidatorListQuery = {
   operatorId: number,
 };
 
+const PERFORMANCE_PERIOD = '24hours';
+
 const getOperatorsByOwnerAddress = async (page: number = 1, perPage: number = 8, ownerAddress: string, skipRetry?: boolean) => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
   try {
@@ -45,7 +47,8 @@ const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
 };
 
 const getOperator = async (operatorId: number | string, skipRetry?: boolean) => {
-  const url = `${getStoredNetwork().api}/operators/${operatorId}?performances=24hours&withFee=true&ts=${new Date().getTime()}`;
+  const utcTimestamp = new Date(new Date().toUTCString()).getTime();
+  const url = `${getStoredNetwork().api}/operators/${operatorId}?performances=${PERFORMANCE_PERIOD}&withFee=true&ts=${utcTimestamp}`;
   try {
     return await getRequest(url, skipRetry);
   } catch (e) {

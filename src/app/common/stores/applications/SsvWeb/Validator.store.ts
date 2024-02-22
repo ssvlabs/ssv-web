@@ -3,13 +3,11 @@ import { ethers } from 'ethers';
 import { KeySharesItem } from 'ssv-keys';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
-import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import ContractEventGetter from '~lib/api/ContractEventGetter';
 import { executeAfterEvent } from '~root/services/events.service';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -25,6 +23,7 @@ import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/app
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
 import { getValidator } from '~root/services/validator.service';
+import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -177,8 +176,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          ApiParams.initStorage(true);
-          await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
         resolve(false);
       } catch (e: any) {
@@ -211,8 +209,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          ApiParams.initStorage(true);
-          await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
         }
         resolve(false);
       } catch (e: any) {
@@ -363,7 +360,7 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
         resolve(false);
@@ -433,7 +430,7 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
         resolve(false);
@@ -483,7 +480,7 @@ class ValidatorStore extends BaseStore {
               action: 'reactivate_cluster',
             });
             resolve(true);
-            await executeAfterEvent(async () => !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
         resolve(false);

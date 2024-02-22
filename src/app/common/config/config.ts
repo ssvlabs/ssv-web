@@ -242,6 +242,13 @@ const GOERLI_RPC_URL = 'https://long-rough-season.ethereum-goerli.quiknode.pro/3
 
 const MAINNET_RPC_URL = 'https://misty-purple-sailboat.quiknode.pro/7fea68f21d77d9b54fc35c3f6d68199a880f5cf0';
 
-export { HOLESKY_RPC_URL, GOERLI_RPC_URL, MAINNET_RPC_URL };
+const DEFAULT_PAGINATION = {
+  page: 1,
+  pages: 1,
+  total: 0,
+  per_page: 8,
+};
+
+export { HOLESKY_RPC_URL, GOERLI_RPC_URL, MAINNET_RPC_URL, DEFAULT_PAGINATION };
 
 export default config;

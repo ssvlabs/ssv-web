@@ -1,14 +1,16 @@
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { getValidator as getValidatorServiceCall, clustersByOwnerAddress } from '~root/services/validator.service';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 import { extendClusterEntity } from '~root/services/cluster.service';
 import { SsvStore } from '~app/common/stores/applications/SsvWeb/index';
+import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
+import { fromWei } from '~root/services/conversions.service';
+import { DEFAULT_PAGINATION } from '~app/common/config/config';
 
 const INTERVAL_TIME = 30000;
 
@@ -22,11 +24,11 @@ class MyAccountStore extends BaseStore {
 
   // OPERATOR
   ownerAddressOperators: any = [];
-  ownerAddressOperatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressOperatorsPagination: any = DEFAULT_PAGINATION;
 
   // VALIDATOR
   ownerAddressClusters: any = [];
-  ownerAddressClustersPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressClustersPagination: any = DEFAULT_PAGINATION;
 
   // BEACONCHAIN
   beaconChaBalances: any = {};
@@ -63,8 +65,8 @@ class MyAccountStore extends BaseStore {
     clearInterval(this.validatorsInterval);
     this.ownerAddressOperators = [];
     this.ownerAddressClusters = [];
-    this.ownerAddressOperatorsPagination = ApiParams.DEFAULT_PAGINATION;
-    this.ownerAddressClustersPagination = ApiParams.DEFAULT_PAGINATION;
+    this.ownerAddressOperatorsPagination = DEFAULT_PAGINATION;
+    this.ownerAddressClustersPagination = DEFAULT_PAGINATION;
   }
 
   /**
@@ -118,9 +120,13 @@ class MyAccountStore extends BaseStore {
   }
 
   async getOperatorRevenue(operator: any) {
-    const operatorStore: OperatorStore = this.getStore('Operator');
-    // eslint-disable-next-line no-param-reassign
-    operator.revenue = await operatorStore.getOperatorRevenue(operator.id);
+    try {
+      const contract = getContractByName(EContractName.GETTER);
+      const response = await contract.totalEarningsOf(operator.id);
+      operator.revenue = fromWei(response.toString());
+    } catch (e: any) {
+      operator.revenue = 0;
+    }
     return operator;
   }
 
@@ -153,7 +159,6 @@ class MyAccountStore extends BaseStore {
     const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? per_page)}`;
     const response = await clustersByOwnerAddress(query, true);
     if (!response) return [];
-    // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;
     this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => extendClusterEntity(cluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral))) || [];
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated);

@@ -39,7 +39,7 @@ const FundingNewValidator = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
-  const newBurnRate = getClusterNewBurnRate(cluster, cluster.validatorCount + newValidatorsCount, ssvStore.networkFee);
+  const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, ssvStore.networkFee);
   const newRunWay = getClusterRunWay({
     ...cluster,
     burnRate: toWei(parseFloat(newBurnRate.toString())),

@@ -60,7 +60,7 @@ const initialState = (checkBoxes: string[]) =>  checkBoxes.reduce((acc: boolean[
   return acc;
 }, []);
 
-const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack }: { nextStep: Function, selectedValidators: string[], flowData: FlowData, stepBack: Function }) => {
+const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack }: { nextStep: Function, selectedValidators: string[], flowData: FlowData, stepBack?: Function }) => {
   const { title, texts, warningMessage, checkBoxes } = flowData;
   const [isSelectedCheckboxes, setIsSelectedCheckboxes] = useState(initialState(checkBoxes));
   const disableCButtonCondition = isSelectedCheckboxes.some((isSelected: boolean) => !isSelected);

@@ -2,11 +2,9 @@ import Decimal from 'decimal.js';
 import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import ApiParams from '~lib/api/ApiParams';
 import BaseStore from '~app/common/stores/BaseStore';
 import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import { EContractName } from '~app/model/contracts.model';
-import ContractEventGetter from '~lib/api/ContractEventGetter';
 import { executeAfterEvent } from '~root/services/events.service';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
@@ -18,6 +16,7 @@ import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
+import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 export interface NewOperator {
   id: number,
@@ -105,7 +104,6 @@ class OperatorStore extends BaseStore {
       clearOperatorData: action.bound,
       dollarEstimationGas: observable,
       updateOperatorFee: action.bound,
-      getOperatorRevenue: action.bound,
       approveOperatorFee: action.bound,
       switchCancelDialog: action.bound,
       syncOperatorFeeInfo: action.bound,
@@ -369,9 +367,7 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
-            ApiParams.initStorage(true);
             console.debug('Contract Receipt', receipt);
-
             await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
               async () => {
                 await this.syncOperatorFeeInfo(operatorId);
@@ -447,19 +443,6 @@ class OperatorStore extends BaseStore {
    */
   setOperatorKeys(transaction: NewOperator) {
     this.newOperatorKeys = transaction;
-  }
-
-  /**
-   * Get operator revenue
-   */
-  async getOperatorRevenue(operatorId: number): Promise<any> {
-    try {
-      const contract = getContractByName(EContractName.GETTER);
-      const response = await contract.totalEarningsOf(operatorId);
-      return fromWei(response.toString());
-    } catch (e: any) {
-      return 0;
-    }
   }
 
   /**
@@ -630,9 +613,8 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
-            ApiParams.initStorage(true);
             await executeAfterEvent(async () => {
-              return await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash);
+              return await getEventByTxHash(receipt.transactionHash);
             }, async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
           }
         }
@@ -666,7 +648,7 @@ class OperatorStore extends BaseStore {
           }
           const receipt = await tx.wait();
           if (receipt.blockHash) {
-            await executeAfterEvent(async () =>  !!await ContractEventGetter.getInstance().getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
             resolve(true);
           }
         } catch (err: any) {

@@ -24,11 +24,11 @@ class MyAccountStore extends BaseStore {
 
   // OPERATOR
   ownerAddressOperators: any = [];
-  ownerAddressOperatorsPagination: any = DEFAULT_PAGINATION;
+  ownerAddressOperatorsPagination = DEFAULT_PAGINATION;
 
   // VALIDATOR
   ownerAddressClusters: any = [];
-  ownerAddressClustersPagination: any = DEFAULT_PAGINATION;
+  ownerAddressClustersPagination = DEFAULT_PAGINATION;
 
   // BEACONCHAIN
   beaconChaBalances: any = {};

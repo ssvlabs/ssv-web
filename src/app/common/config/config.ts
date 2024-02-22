@@ -158,7 +158,6 @@ const config = {
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
-    LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
     SSV_KEYS_RELEASES_URL: 'https://github.com/bloxapp/ssv-keys/releases',
@@ -212,9 +211,6 @@ const config = {
     API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
     NETWORK_ID: networkId,
     PROJECT_ID: 'c93804911b583e5cacf856eee58655e6',
-  },
-  COIN_KEY: {
-    COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
   },
   CONTRACTS: {
     SSV_TOKEN: {

@@ -82,14 +82,14 @@ const BulkComponent = () => {
     const selectedValidatorKeys =  Object.keys(selectedValidators);
     const selectedValidatorValues =  Object.values(selectedValidators);
     let res;
-    const condition = selectedValidatorValues.every((validator: BulkValidatorData) => validator.isSelected);
+    const condition = selectedValidatorValues.filter(validator => validator.isSelected).length > 1;
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
       const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
       const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
       const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
-      res = condition ? await exitSingle() : await exitBulk();
+      res = condition ? await exitBulk() : await exitSingle();
       if (res) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
@@ -99,7 +99,7 @@ const BulkComponent = () => {
       const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
       const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
       const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
-      res = condition ? await singleRemove() : await bulkRemove();
+      res = condition ? await bulkRemove() : await singleRemove();
       if (res) {
         backToSingleClusterPage();
       }

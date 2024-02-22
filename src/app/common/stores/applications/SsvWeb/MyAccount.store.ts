@@ -11,6 +11,7 @@ import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import { fromWei } from '~root/services/conversions.service';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { IOperator } from '~app/model/operator.model';
 
 const INTERVAL_TIME = 30000;
 
@@ -23,7 +24,7 @@ class MyAccountStore extends BaseStore {
   lastUpdateValidators: number | undefined;
 
   // OPERATOR
-  ownerAddressOperators: any = [];
+  ownerAddressOperators: IOperator[] = [];
   ownerAddressOperatorsPagination = DEFAULT_PAGINATION;
 
   // VALIDATOR
@@ -116,7 +117,6 @@ class MyAccountStore extends BaseStore {
     this.ownerAddressOperatorsPagination = response.pagination;
     this.ownerAddressOperators = await this.getOperatorsRevenue(response.operators);
     this.lastUpdateOperators = Date.now();
-    return this.ownerAddressOperators;
   }
 
   async getOperatorRevenue(operator: any) {

@@ -90,11 +90,6 @@ export const getHexNetworks = (networks: string[] | number[]): string[] => {
   });
 };
 
-export const API_VERSIONS = {
-  V3: 'v3',  // TODO: cleanup from v3
-  V4: 'v4',
-};
-
 const _envs = {
   [NETWORKS.GOERLI]: {
     NETWORK: 'prater',

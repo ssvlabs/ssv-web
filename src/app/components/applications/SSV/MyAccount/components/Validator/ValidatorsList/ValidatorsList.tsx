@@ -125,7 +125,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
       validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
         setClusterValidators(response.validators);
         if (fillSelectedValidators) fillSelectedValidators(response.validators);
-        setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
+        setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: cluster.validatorCount });
       });
     }
   }, []);

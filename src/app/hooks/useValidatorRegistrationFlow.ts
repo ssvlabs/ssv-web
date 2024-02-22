@@ -96,7 +96,7 @@ const validatorRegistrationFlow = (currentRoute: string) => {
   const [{ connectedChain }] = useSetChain();
 
   const getCurrentNetwork = (): number => {
-    return connectedChain?.id !== null ? Number(connectedChain!.id) : getStoredNetwork().networkId;
+    return connectedChain && connectedChain?.id !== null ? Number(connectedChain!.id) : getStoredNetwork().networkId;
   };
 
   const getMaxValidatorsCountPerRegistration = (clusterSize: number, walletLabel: string = '') => {

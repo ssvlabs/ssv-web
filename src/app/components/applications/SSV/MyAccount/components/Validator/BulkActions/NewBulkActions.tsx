@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
-import { IValidator } from '~app/model/validator.model';
+import { BulkValidatorData } from '~app/model/validator.model';
 
 const HeaderWrapper = styled.div`
     display: flex;
@@ -64,9 +64,9 @@ const ValidatorsWrapper = styled.div`
     background-color: ${({ theme }) => theme.colors.white};
 `;
 
-const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: { title: string, nextStep: Function, onCheckboxClickHandler: Function, selectedValidators: Record<string, { validator: IValidator, isSelected: boolean }>, fillSelectedValidators: Function }) => {
+const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: { title: string, nextStep: Function, onCheckboxClickHandler: Function, selectedValidators: Record<string, BulkValidatorData>, fillSelectedValidators: Function }) => {
   const validatorsListArray = Object.values(selectedValidators);
-  const selectedValidatorsCount = validatorsListArray.filter((validator: { validator:IValidator, isSelected: boolean }) => validator.isSelected).length;
+  const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
   const disableButtonCondition = !selectedValidatorsCount;
   const showIndicatorCondition = selectedValidatorsCount > 0;
 

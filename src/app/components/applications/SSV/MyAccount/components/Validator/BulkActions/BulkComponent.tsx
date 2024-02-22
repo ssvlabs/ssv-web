@@ -13,7 +13,7 @@ import {
   SingleCluster as SingleClusterProcess,
 } from '~app/common/stores/applications/SsvWeb';
 import { conditionalExecutor, formatValidatorPublicKey } from '~root/services/utils.service';
-import { IValidator } from '~app/model/validator.model';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { IOperator } from '~app/model/operator.model';
 
 enum BULK_STEPS {
@@ -33,7 +33,7 @@ const BULK_FLOWS_CONFIRMATION_DATA = {
 };
 
 const BulkComponent = () => {
-  const [selectedValidators, setSelectedValidators] = useState<Record<string, { validator: IValidator, isSelected: boolean }>>({});
+  const [selectedValidators, setSelectedValidators] = useState<Record<string, BulkValidatorData>>({});
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -51,7 +51,7 @@ const BulkComponent = () => {
 
   const fillSelectedValidators = (validators: IValidator[], selectAll: boolean = false) => {
     if (validators) {
-      let validatorList: Record<string, { validator: IValidator, isSelected: boolean }> = {};
+      let validatorList: Record<string, BulkValidatorData> = {};
       const isSelected = selectAll && Object.values(selectedValidators).every((validator: {
         validator: IValidator,
         isSelected: boolean
@@ -82,12 +82,14 @@ const BulkComponent = () => {
     const selectedValidatorKeys =  Object.keys(selectedValidators);
     const selectedValidatorValues =  Object.values(selectedValidators);
     let res;
-    const condition = selectedValidatorValues.every((validator: { validator: IValidator, isSelected: boolean }) => validator.isSelected);
+    const condition = selectedValidatorValues.every((validator: BulkValidatorData) => validator.isSelected);
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
       const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
-      res = await conditionalExecutor(condition, async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id)), async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id)));
+      const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
+      const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
+      res = await conditionalExecutor(condition, exitSingle, exitBulk);
       if (res) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
@@ -95,7 +97,9 @@ const BulkComponent = () => {
       backToSingleClusterPage();
     } else {
       const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
-      res = await conditionalExecutor(condition, async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators), async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id)));
+      const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
+      const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
+      res = await conditionalExecutor(condition, singleRemove, bulkRemove);
       if (res) {
         backToSingleClusterPage();
       }
@@ -113,7 +117,7 @@ const BulkComponent = () => {
   }
 
   if (currentStep === BULK_STEPS.BULK_CONFIRMATION) {
-    return  <ConfirmationStep stepBack={stepBack}
+    return  <ConfirmationStep stepBack={!process.validator ? stepBack : undefined}
           flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
           selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)} nextStep={nextStep}/>;
   }

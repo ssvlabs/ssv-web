@@ -13,7 +13,7 @@ import {
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
 import { ENV } from '~lib/utils/envHelper';
-import { IValidator } from '~app/model/validator.model';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey } from '~root/services/utils.service';
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
@@ -95,7 +95,7 @@ const Link = styled.div<{ logo: string }>`
 
 const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: {
   onCheckboxClickHandler?: Function,
-  selectedValidators?: Record<string, { validator: IValidator, isSelected: boolean }>,
+  selectedValidators?: Record<string, BulkValidatorData>,
   fillSelectedValidators?: Function
 }) => {
   const stores = useStores();

@@ -1,5 +1,5 @@
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { putRequest, getRequest } from '~root/services/httpApi.service';
+import { putRequest, getRequest, IHttpResponse } from '~root/services/httpApi.service';
 import { IOperator } from '~app/model/operator.model';
 import { IPagination } from '~app/model/pagination.model';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
@@ -82,7 +82,7 @@ const getOperatorByPublicKey = async (publicKey: string, skipRetry: boolean = tr
   }
 };
 
-const updateOperatorMetadata = async (operatorId: string, signature: string, operatorMetadata: Record<string, any>) => {
+const updateOperatorMetadata = async (operatorId: number, signature: string, operatorMetadata: Record<string, any>): Promise<IHttpResponse<IOperator>> => {
   const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
   return await putRequest(url, { ...operatorMetadata, signature });
 };

@@ -110,7 +110,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
     total: cluster.validatorCount,
     pages: 1,
     per_page: 5,
-    rowsPerPage: 14,
+    rowsPerPage: cluster.validatorCount,
     onChangePage: console.log,
   });
 

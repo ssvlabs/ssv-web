@@ -24,6 +24,7 @@ import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
 import { getValidator } from '~root/services/validator.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
+import { translations } from '~app/common/config';
 
 type ClusterDataType = {
   active: boolean;
@@ -180,7 +181,7 @@ class ValidatorStore extends BaseStore {
         }
         resolve(false);
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -213,7 +214,7 @@ class ValidatorStore extends BaseStore {
         }
         resolve(false);
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -244,7 +245,7 @@ class ValidatorStore extends BaseStore {
         }
         resolve(false);
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -275,7 +276,7 @@ class ValidatorStore extends BaseStore {
         }
         resolve(false);
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -372,7 +373,7 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -441,7 +442,7 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -491,7 +492,7 @@ class ValidatorStore extends BaseStore {
           action: 'reactivate_cluster',
           label: isRejected ? 'rejected' : 'error',
         });
-        notificationsStore.showMessage(e.message, 'error');
+        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -657,7 +658,7 @@ class ValidatorStore extends BaseStore {
       .catch((error) => {
         store.dispatch(setIsLoading(false));
         if (showError) {
-          notificationsStore.showMessage(error.message, 'error');
+          notificationsStore.showMessage(error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         }
         store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);

@@ -263,6 +263,9 @@ const translations = {
     FAUCET_DEPLETED: 'Depleted',
     REACHED_MAX_TRANSACTIONS: 'Reached max transactions per day',
   },
+  DEFAULT: {
+    DEFAULT_ERROR_MESSAGE: 'Failed to receive response from your wallet provider. Please try again.',
+  },
 };
 
 export default translations;

@@ -81,6 +81,8 @@ const EditOperatorDetails = () => {
           operator = { ...operator, ...updateOperatorResponse.data };
           Object.assign(selectedOperator, updateOperatorResponse.data);
           navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
+        } else {
+          setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
         }
       } else {
         setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);

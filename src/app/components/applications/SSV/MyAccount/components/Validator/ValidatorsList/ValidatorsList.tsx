@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import config from '~app/common/config';
+import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
+import { getClusterHash } from '~root/services/cluster.service';
+import { validatorsByClusterHash } from '~root/services/validator.service';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
+import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
 import {
   ProcessStore,
   WalletStore,
   SingleCluster as SingleClusterProcess,
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
-import { ENV } from '~lib/utils/envHelper';
-import { BulkValidatorData, IValidator } from '~app/model/validator.model';
-import { getClusterHash } from '~root/services/cluster.service';
-import { validatorsByClusterHash } from '~root/services/validator.service';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -92,10 +92,12 @@ const Link = styled.div<{ logo: string }>`
 }
 `;
 
-const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: {
+const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount, checkboxTooltipTitle }: {
   onCheckboxClickHandler?: Function,
   selectedValidators?: Record<string, BulkValidatorData>,
   fillSelectedValidators?: Function
+  maxValidatorsCount?: number
+  checkboxTooltipTitle?: JSX.Element | string
 }) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
@@ -103,6 +105,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   const processStore: ProcessStore = stores.Process;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process?.item;
+  const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();
   const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
@@ -179,11 +182,15 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
         {clusterValidators?.map((validator: IValidator) => {
             const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
             const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
+            const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
+            const disableButtonCondition = selectValidatorDisableCondition && !res;
             return (
               <ValidatorWrapper>
                 <PublicKeyWrapper>
                   <PublicKey>
-                    {onCheckboxClickHandler && selectedValidators && <Checkbox disable={false} grayBackGround text={''}
+                    {showingCheckboxCondition && <Checkbox disable={disableButtonCondition} grayBackGround text={''}
+                                                                               withTooltip={disableButtonCondition}
+                                                                               tooltipText={checkboxTooltipTitle}
                                                                                withoutMarginBottom
                                                                                onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
                                                                                isChecked={res}/>}

@@ -32,6 +32,9 @@ const BULK_FLOWS_CONFIRMATION_DATA = {
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.EXIT,
 };
 
+// TODO: Add limitations
+const MAX_VALIDATORS_COUNT = 3;
+
 const BulkComponent = () => {
   const [selectedValidators, setSelectedValidators] = useState<Record<string, BulkValidatorData>>({});
   const stores = useStores();
@@ -56,10 +59,10 @@ const BulkComponent = () => {
         validator: IValidator,
         isSelected: boolean
       }) => !validator.isSelected);
-      validators.forEach((validator: IValidator) => {
+      validators.forEach((validator: IValidator, index: number) => {
         validatorList[formatValidatorPublicKey(validator.public_key)] = {
           validator,
-          isSelected,
+          isSelected: isSelected && index < MAX_VALIDATORS_COUNT,
         };
       });
       setSelectedValidators(validatorList);
@@ -110,6 +113,7 @@ const BulkComponent = () => {
 
   if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
     return <NewBulkActions nextStep={nextStep}
+                           maxValidatorsCount={MAX_VALIDATORS_COUNT}
                            title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
                            fillSelectedValidators={fillSelectedValidators}
                            selectedValidators={selectedValidators}

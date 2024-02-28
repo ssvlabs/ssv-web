@@ -3,12 +3,12 @@ import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import { getImage } from '~lib/utils/filePath';
 import LinkText from '~app/components/common/LinkText';
-import { ENV } from '~lib/utils/envHelper';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { useStyles } from '~app/components/applications/SSV/TransactionPendingPopUp/TransactionPendingPopUp.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsShowTxPendingPopup, getTxHash } from '~app/redux/appState.slice';
+import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 
 const TransactionPendingPopUp = () => {
     const classes = useStyles();
@@ -20,7 +20,7 @@ const TransactionPendingPopUp = () => {
         <Grid className={classes.gridWrapper} container>
           <HeaderSubHeader title={'Sending Transaction'} subtitle={'Your transaction is pending on the blockchain - please wait while it\'s being confirmed'} />
           <Grid item>
-            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+            <img className={classes.Loader} src={getImage('ssv-loader.svg')}  alt="loader" />
           </Grid>
           <Grid item container style={{ marginBottom: 20 }}>
             <Grid item xs>
@@ -28,7 +28,7 @@ const TransactionPendingPopUp = () => {
             </Grid>
             <AddressKeyInput whiteBackgroundColor withCopy address={txHash} />
           </Grid>
-          <LinkText text={'View on Etherscan'} link={`${ENV().ETHERSCAN_URL}/tx/${txHash}`} />
+          <LinkText text={'View on Etherscan'} link={`${getEtherScanLink()}/tx/${txHash}`} />
         </Grid>
       </Dialog>
     );

@@ -32,3 +32,7 @@ export const checkSpecialCharacters = (value: string) => {
 export const equalsAddresses = (a: string, b: string): boolean => web3.utils.toChecksumAddress(a) === web3.utils.toChecksumAddress(b);
 
 export const formatValidatorPublicKey = (publicKey: string) => publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
+
+const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
+
+export { toHexString };

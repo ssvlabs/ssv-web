@@ -12,7 +12,6 @@ import { executeAfterEvent } from '~root/services/events.service';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -25,6 +24,7 @@ import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/ser
 import { getValidator } from '~root/services/validator.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { translations } from '~app/common/config';
+import { getOwnerNonce } from '~root/services/account.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -504,11 +504,14 @@ class ValidatorStore extends BaseStore {
   async createKeystorePayload(): Promise<Map<string, any> | null> {
     const ssvStore: SsvStore = this.getStore('SSV');
     const walletStore: WalletStore = this.getStore('Wallet');
-    const accountStore: AccountStore = this.getStore('Account');
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-    const { ownerNonce } = accountStore;
+    const ownerNonce = await getOwnerNonce({ address: walletStore.accountAddress });
+    if (ownerNonce === null) {
+      // TODO: add proper error handling
+      return null;
+    }
     const operators = Object.values(operatorStore.selectedOperators)
       .sort((a: any, b: any) => a.id - b.id)
       .map(item => ({ id: item.id, operatorKey: item.public_key }));
@@ -535,7 +538,7 @@ class ValidatorStore extends BaseStore {
             encryptedShares,
           }, {
             ownerAddress: accountAddress,
-            ownerNonce: ownerNonce,
+            ownerNonce: ownerNonce as number,
             privateKey: this.keyStorePrivateKey,
           });
 

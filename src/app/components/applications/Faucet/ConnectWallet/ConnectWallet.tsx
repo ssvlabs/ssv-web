@@ -6,10 +6,10 @@ import Typography from '@mui/material/Typography';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import { currentNetworkName, isMainnet } from '~lib/utils/envHelper';
 import { useStyles } from '~app/components/applications/Faucet/ConnectWallet/ConnectWallet.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
+import { currentNetworkName, isMainnet } from '~root/providers/networkInfo.provider';
 // TODO: reduce to single component for wallet connection
 const ConnectWallet = () => {
   const stores = useStores();
@@ -18,7 +18,7 @@ const ConnectWallet = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-      if (isMainnet && walletStore.wallet) {
+      if (isMainnet() && walletStore.wallet) {
         // TODO use useSetChain hook instead
           // walletStore.changeNetwork(NETWORKS.HOLESKY);
       }

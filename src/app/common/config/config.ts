@@ -71,9 +71,6 @@ const config = {
             EXPIRED: '/my-account/operator/fee-update/expired',
           },
         },
-        MIGRATION: {
-          START_MIGRATION: '/my-account/migration',
-        },
         CLUSTER: {
           ROOT: '/my-account/cluster',
           DEPOSIT: '/my-account/cluster/deposit',

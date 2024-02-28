@@ -31,7 +31,7 @@ const initialState: AppState = {
   isShowTxPendingPopup: false,
   txHash: '',
   restrictedUserGeo: '',
-  shouldCheckCountryRestriction: isMainnet,
+  shouldCheckCountryRestriction: isMainnet(),
 };
 
 export const slice = createSlice({

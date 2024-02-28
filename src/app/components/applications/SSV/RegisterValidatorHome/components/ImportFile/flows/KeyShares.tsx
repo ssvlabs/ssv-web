@@ -25,7 +25,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { AccountStore, SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
@@ -45,6 +45,7 @@ import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
+import { getOwnerNonce } from '~root/services/account.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -54,7 +55,6 @@ const KeyShareFlow = () => {
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
-    const accountStore: AccountStore = stores.Account;
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const ssvStore: SsvStore = stores.SSV;
@@ -135,8 +135,12 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
         }
         const validators: Record<string, ValidatorType> = createValidatorsRecord(keyShareMulti);
-        await accountStore.getOwnerNonce(walletStore.accountAddress);
-        const { ownerNonce } = accountStore;
+        const ownerNonce = await getOwnerNonce({ address: walletStore.accountAddress });
+
+        if (!ownerNonce) {
+          // TODO: add proper error handling
+          return;
+        }
 
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {

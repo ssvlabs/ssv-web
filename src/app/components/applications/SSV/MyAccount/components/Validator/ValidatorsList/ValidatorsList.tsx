@@ -12,10 +12,10 @@ import {
   SingleCluster as SingleClusterProcess,
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
-import { ENV } from '~lib/utils/envHelper';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -195,7 +195,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
                 <LinksWrapper>
                   <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
                         logo={'/images/explorer/'}/>
-                  <Link onClick={() => openLink(`${ENV().BEACONCHA_URL}/validator/${validator.public_key}`)}
+                  <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)}
                         logo={'/images/beacon/'}/>
                 </LinksWrapper>
               </ValidatorWrapper>);

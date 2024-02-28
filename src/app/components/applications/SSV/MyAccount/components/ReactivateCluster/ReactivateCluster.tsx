@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
@@ -22,6 +21,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import { fromWei } from '~root/services/conversions.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const ReactivateCluster = () => {
   const options = [
@@ -120,7 +120,7 @@ const ReactivateCluster = () => {
                         Insufficient SSV balance. Acquire further SSV or pick a different amount.
                       </Grid>
                       <Grid container item xs>
-                        <LinkText className={classes.Link} text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
+                        <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
                       </Grid>
                     </Grid>
                   }

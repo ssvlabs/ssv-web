@@ -3,7 +3,6 @@ import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -13,7 +12,6 @@ import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
@@ -34,11 +32,9 @@ const ClusterDashboard = () => {
   const timeoutRef = useRef(null);
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  const accountStore: AccountStore = stores.Account;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
-  const [loadingFeeRecipient, setLoadingFeeRecipient] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const isDarkMode = useAppSelector(getIsDarkMode);
@@ -114,12 +110,8 @@ const ClusterDashboard = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
-  const moveToFeeRecipient = async () => {
-    setLoadingFeeRecipient(true);
-    accountStore.getFeeRecipientAddress(walletStore.accountAddress).finally(() => {
-      setLoadingFeeRecipient(false);
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT);
-    });
+  const moveToFeeRecipient = () => {
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT);
   };
 
   const onChangePage = _.debounce(async (newPage: number) => {
@@ -140,12 +132,12 @@ const ClusterDashboard = () => {
       <Grid container item className={classes.HeaderWrapper}>
         <ToggleDashboards title={'Validator Clusters'}/>
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
-          {rows.length > 0 && (<Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`}
-                                     onClick={() => !loadingFeeRecipient && moveToFeeRecipient()}>
-            Fee Address
-            {loadingFeeRecipient ? <CircularProgress className={classes.SpinnerWrapper} thickness={6} size={16}/> :
-              <Grid item className={classes.Pencil}/>}
-          </Grid>)}
+          {rows.length > 0 && (
+            <Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
+              Fee Address
+              <Grid item className={classes.Pencil}/>
+            </Grid>
+          )}
           <Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>
         </Grid>
       </Grid>

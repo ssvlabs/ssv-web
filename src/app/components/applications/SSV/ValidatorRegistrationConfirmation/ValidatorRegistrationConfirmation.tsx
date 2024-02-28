@@ -32,7 +32,7 @@ import OperatorDetails
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -104,7 +104,7 @@ const ValidatorRegistrationConfirmation = () => {
           Insufficient SSV balance. There is not enough SSV in your wallet.
         </Grid>
         <Grid item>
-          <LinkText text={'Need SSV?'} link={getLinks().INSUFFICIENT_BALANCE_URL}/>
+          <LinkText text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
         </Grid>
       </Grid>
     )}

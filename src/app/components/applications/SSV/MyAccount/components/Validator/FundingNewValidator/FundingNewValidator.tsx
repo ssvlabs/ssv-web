@@ -21,7 +21,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -61,7 +61,7 @@ const FundingNewValidator = () => {
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         link: {
           text: 'Need SSV?',
-          path: getLinks().INSUFFICIENT_BALANCE_URL,
+          path: getStoredNetwork().insufficientBalanceUrl,
         },
       });
       setShowErrorMessage(true);

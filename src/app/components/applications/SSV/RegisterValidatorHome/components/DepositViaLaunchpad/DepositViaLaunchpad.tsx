@@ -12,7 +12,7 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getBeaconChainLink, getLaunchpadLink } from '~root/providers/networkInfo.provider';
 
 const DepositViaLaunchpad = () => {
   const stores = useStores();
@@ -25,7 +25,7 @@ const DepositViaLaunchpad = () => {
       action: 'click',
       label: 'Visit Ethereum Launchpad',
     });
-    window.open(getLinks().LAUNCHPAD_URL);
+    window.open(getLaunchpadLink());
   };
 
   return (
@@ -44,7 +44,7 @@ const DepositViaLaunchpad = () => {
           <Grid item className={classes.Text} xs={12}>
             You can keep track on the status of your validator activation on:
             <Link
-              href={`${getLinks().BEACONCHA_URL}/validator/${validatorStore.keyStorePublicKey}`}
+              href={`${getBeaconChainLink()}/validator/${validatorStore.keyStorePublicKey}`}
               target="_blank"
               onClick={() => {
                 GoogleTagManager.getInstance().sendEvent({
@@ -55,7 +55,7 @@ const DepositViaLaunchpad = () => {
               }}
             >
               <Typography noWrap>
-                {`${getLinks().BEACONCHA_URL}/validator/${validatorStore.keyStorePublicKey}`}
+                {`${getBeaconChainLink()}/validator/${validatorStore.keyStorePublicKey}`}
               </Typography>
             </Link>
           </Grid>

@@ -1,11 +1,5 @@
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-
-export interface I_ENVS {
-  BEACONCHA_URL: string,
-  LAUNCHPAD_URL: string,
-  ETHERSCAN_URL: string,
-  INSUFFICIENT_BALANCE_URL: string,
-}
+import { NetworksEnum } from '~app/enums/networks.enum';
 
 interface NetworkInfo {
   networkId: number;
@@ -35,6 +29,24 @@ const NETWORK_NAMES = {
   [`${MAINNET_NETWORK_ID}`]: 'Mainnet',
   [`${GOERLI_NETWORK_ID}`]: 'Goerli',
   [`${HOLESKY_NETWORK_ID}`]: 'Holesky',
+};
+
+const LINKS = {
+  [`${GOERLI_NETWORK_ID}`]: {
+    [NetworksEnum.BEACONCHA_URL]: 'https://prater.beaconcha.in',
+    [NetworksEnum.LAUNCHPAD_URL]: 'https://prater.launchpad.ethereum.org/en/',
+    [NetworksEnum.ETHERSCAN_URL]: 'https://goerli.etherscan.io',
+  },
+  [`${HOLESKY_NETWORK_ID}`]: {
+    [NetworksEnum.BEACONCHA_URL]: 'https://holesky.beaconcha.in',
+    [NetworksEnum.LAUNCHPAD_URL]: 'https://holesky.launchpad.ethereum.org/en/',
+    ETHERSCAN_URL: 'https://holesky.etherscan.io',
+  },
+  [`${MAINNET_NETWORK_ID}`]: {
+    [NetworksEnum.BEACONCHA_URL]: 'https://beaconcha.in',
+    [NetworksEnum.LAUNCHPAD_URL]: 'https://launchpad.ethereum.org/en/',
+    [NetworksEnum.ETHERSCAN_URL]: 'https://etherscan.io',
+  },
 };
 
 const NETWORK_VARIABLES = {
@@ -95,37 +107,19 @@ const currentNetworkName = () => NETWORK_NAMES[getStoredNetwork().networkId];
 
 const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
 
-const _envs = {
-  [`${GOERLI_NETWORK_ID}`]: {
-    BEACONCHA_URL: 'https://prater.beaconcha.in',
-    LAUNCHPAD_URL: 'https://prater.launchpad.ethereum.org/en/',
-    ETHERSCAN_URL: 'https://goerli.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: getStoredNetwork().insufficientBalanceUrl,
-  },
-  [`${HOLESKY_NETWORK_ID}`]: {
-    BEACONCHA_URL: 'https://holesky.beaconcha.in',
-    LAUNCHPAD_URL: 'https://holesky.launchpad.ethereum.org/en/',
-    ETHERSCAN_URL: 'https://holesky.etherscan.io',
-    INSUFFICIENT_BALANCE_URL: getStoredNetwork().insufficientBalanceUrl,
-  },
-  [`${MAINNET_NETWORK_ID}`]: {
-    BEACONCHA_URL: 'https://beaconcha.in',
-    LAUNCHPAD_URL: 'https://launchpad.ethereum.org/en/',
-    ETHERSCAN_URL: 'https://etherscan.io',
-    INSUFFICIENT_BALANCE_URL: getStoredNetwork().insufficientBalanceUrl,
-  },
-};
+const getLink = ({ type }: { type: NetworksEnum }) => LINKS[`${getStoredNetwork().networkId}`][type];
 
-// TODO: refactor
-const getLinks = (): I_ENVS => {
-  const finalNetworkId = getStoredNetwork().networkId;
-  return _envs[parseInt(String(finalNetworkId), 10)];
-};
+const getBeaconChainLink = () => LINKS[`${getStoredNetwork().networkId}`][NetworksEnum.BEACONCHA_URL];
 
-const getTransactionLink = (txHash: string) => `${getLinks().ETHERSCAN_URL}/tx/${txHash}`;
+const getLaunchpadLink = () => LINKS[`${getStoredNetwork().networkId}`][NetworksEnum.LAUNCHPAD_URL];
+
+const getEtherScanLink = () => LINKS[`${getStoredNetwork().networkId}`][NetworksEnum.ETHERSCAN_URL];
+
+const getTransactionLink = (txHash: string) => `${getLink({ type: NetworksEnum.ETHERSCAN_URL })}/tx/${txHash}`;
 
 export {
   NETWORK_VARIABLES,
+  LINKS,
   NetworkInfo,
   networks,
   getNetworkInfoIndexByNetworkId,
@@ -134,7 +128,10 @@ export {
   getStoredNetworkIndex,
   isMainnet,
   currentNetworkName,
-  getLinks,
   testNets,
+  getLink,
+  getBeaconChainLink,
+  getLaunchpadLink,
+  getEtherScanLink,
   getTransactionLink,
 };

@@ -12,7 +12,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 type Props = {
   text: string,
@@ -27,7 +27,6 @@ type Props = {
 const ValidatorWhiteHeader = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
-  const beaconchaBaseUrl = getLinks().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleCluster = processStore.getProcess;
@@ -62,7 +61,7 @@ const ValidatorWhiteHeader = (props: Props) => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${validator.public_key}`);
+    window.open(`${getBeaconChainLink()}/validator/${validator.public_key}`);
   };
 
   return (

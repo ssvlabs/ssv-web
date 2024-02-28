@@ -14,7 +14,7 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/OfflineKeyShareCeremony.styles';
 import DirectoryBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/DirectoryBadge/DirectoryBadge';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
 
 const OfflineKeyShareCeremony = () => {
   const stores = useStores();
@@ -98,7 +98,7 @@ const OfflineKeyShareCeremony = () => {
           <Grid className={classes.DkgText}>
             Activate your validator on the Beacon Chain by depositing 32 ETH into Ethereum's Deposit Contract.
             You can deposit your validator using <LinkText text={'Ethereum\'s LaunchPad'}
-                                                           link={getLinks().LAUNCHPAD_URL}/>&nbsp;or
+                                                           link={getLaunchpadLink()}/>&nbsp;or
             refer to the <LinkText text={'validator activation'}
                                    link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide
             for assistance.

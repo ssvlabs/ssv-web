@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import config from '~app/common/config';
 import { longStringShorten } from '~lib/utils/strings';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const SummaryWrapper = styled.div`
     width: 424px;
@@ -116,7 +116,7 @@ const Summary = ({ selectedValidators }: { selectedValidators: string[] }) => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${getLinks().BEACONCHA_URL}/validator/${publicKey}`);
+    window.open(`${getBeaconChainLink()}/validator/${publicKey}`);
   };
 
   return (

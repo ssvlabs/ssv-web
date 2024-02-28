@@ -8,7 +8,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList.styles';
 import { longStringShorten } from '~lib/utils/strings';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelected }: {
   validatorPublicKey: string,
@@ -31,7 +31,7 @@ const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelecte
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${getLinks().BEACONCHA_URL}/validator/${publicKey}`);
+    window.open(`${getBeaconChainLink()}/validator/${publicKey}`);
   };
 
   return (

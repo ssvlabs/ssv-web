@@ -28,7 +28,7 @@ const RequestForSsv = () => {
   const [disabled, setDisabled] = useState(true);
   const [buttonText, setButtonText] = useState('Request');
   const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
-  const [amountToTransfer, setAmountToTransfer] = useState(-1);
+  const [amountToTransfer, setAmountToTransfer] = useState(undefined);
   const isDarkMode = useAppSelector(getIsDarkMode);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const RequestForSsv = () => {
     setButtonText('Request');
     const fetchAmountToTransfer = async () => {
       const res = await getAmountToTransfer();
-      setAmountToTransfer(res || 10);
+      setAmountToTransfer(res);
     };
     fetchAmountToTransfer();
   }, [walletStore.accountAddress]);

@@ -8,7 +8,7 @@ import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyIn
 import { useStyles } from '~app/components/applications/SSV/TransactionPendingPopUp/TransactionPendingPopUp.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsShowTxPendingPopup, getTxHash } from '~app/redux/appState.slice';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 
 const TransactionPendingPopUp = () => {
     const classes = useStyles();
@@ -28,7 +28,7 @@ const TransactionPendingPopUp = () => {
             </Grid>
             <AddressKeyInput whiteBackgroundColor withCopy address={txHash} />
           </Grid>
-          <LinkText text={'View on Etherscan'} link={`${getLinks().ETHERSCAN_URL}/tx/${txHash}`} />
+          <LinkText text={'View on Etherscan'} link={`${getEtherScanLink()}/tx/${txHash}`} />
         </Grid>
       </Dialog>
     );

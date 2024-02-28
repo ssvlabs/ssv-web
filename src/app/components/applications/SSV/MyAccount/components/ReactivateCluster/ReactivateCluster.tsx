@@ -21,7 +21,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import { fromWei } from '~root/services/conversions.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { getLinks } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const ReactivateCluster = () => {
   const options = [
@@ -120,7 +120,7 @@ const ReactivateCluster = () => {
                         Insufficient SSV balance. Acquire further SSV or pick a different amount.
                       </Grid>
                       <Grid container item xs>
-                        <LinkText className={classes.Link} text={'Need SSV?'} link={getLinks().INSUFFICIENT_BALANCE_URL}/>
+                        <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
                       </Grid>
                     </Grid>
                   }

@@ -12,10 +12,12 @@ import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import notifyService from '~root/services/notify.service';
 import { initContracts } from '~root/services/contracts.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { checkIfWalletIsContract } from '~root/services/wallet.service';
 
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
+  isContractWallet: boolean = false;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -26,6 +28,7 @@ class WalletStore extends BaseStore implements Wallet {
       wallet: observable,
       resetUser: action.bound,
       accountAddress: observable,
+      isContractWallet: observable,
       initWallet: action.bound,
     });
   }
@@ -40,8 +43,9 @@ class WalletStore extends BaseStore implements Wallet {
       this.myAccountStore.clearIntervals();
       await this.ssvStore.initUser();
       await this.operatorStore.initUser();
+      this.accountAddress = wallet.accounts[0].address;
+      this.isContractWallet = await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
       initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: wallet.label === 'WalletConnect' });
-      this.accountAddress = wallet.accounts[0]?.address;
       await Promise.all([
         this.myAccountStore.getOwnerAddressOperators({}),
         this.myAccountStore.getOwnerAddressClusters({}),

@@ -3,12 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
-import {
-    getNetworkInfoIndexByNetworkId,
-    getStoredNetwork,
-    NETWORK_VARIABLES,
-    toHexString,
-} from '~root/providers/networkInfo.provider';
+import { getNetworkInfoIndexByNetworkId, getStoredNetwork, NETWORK_VARIABLES } from '~root/providers/networkInfo.provider';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -22,6 +17,7 @@ import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitc
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
+import { toHexString } from '~lib/utils/strings';
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);

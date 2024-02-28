@@ -1,4 +1,5 @@
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+import { NetworksEnum } from '~app/enums/networks.enum';
 
 interface NetworkInfo {
   networkId: number;
@@ -20,30 +21,46 @@ export const API_VERSIONS = {
   V4: 'v4',
 };
 
-const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
-
 export const MAINNET_NETWORK_ID = 1;
 export const GOERLI_NETWORK_ID = 5;
 export const HOLESKY_NETWORK_ID = 17000;
 
-export const NETWORKS = {
-  MAINNET: MAINNET_NETWORK_ID,
-  GOERLI: GOERLI_NETWORK_ID,
-  HOLESKY: HOLESKY_NETWORK_ID,
+const NETWORK_NAMES = {
+  [`${MAINNET_NETWORK_ID}`]: 'Mainnet',
+  [`${GOERLI_NETWORK_ID}`]: 'Goerli',
+  [`${HOLESKY_NETWORK_ID}`]: 'Holesky',
+};
+
+const LINKS = {
+  [`${GOERLI_NETWORK_ID}`]: {
+    [NetworksEnum.BEACONCHA_URL]: 'https://prater.beaconcha.in',
+    [NetworksEnum.LAUNCHPAD_URL]: 'https://prater.launchpad.ethereum.org/en/',
+    [NetworksEnum.ETHERSCAN_URL]: 'https://goerli.etherscan.io',
+  },
+  [`${HOLESKY_NETWORK_ID}`]: {
+    [NetworksEnum.BEACONCHA_URL]: 'https://holesky.beaconcha.in',
+    [NetworksEnum.LAUNCHPAD_URL]: 'https://holesky.launchpad.ethereum.org/en/',
+    ETHERSCAN_URL: 'https://holesky.etherscan.io',
+  },
+  [`${MAINNET_NETWORK_ID}`]: {
+    [NetworksEnum.BEACONCHA_URL]: 'https://beaconcha.in',
+    [NetworksEnum.LAUNCHPAD_URL]: 'https://launchpad.ethereum.org/en/',
+    [NetworksEnum.ETHERSCAN_URL]: 'https://etherscan.io',
+  },
 };
 
 const NETWORK_VARIABLES = {
-  [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: {
+  [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: {
     logo: 'dark',
     activeLabel: 'Ethereum',
     optionLabel: 'Ethereum Mainnet',
   },
-  [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: {
+  [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: {
     logo: 'light',
     activeLabel: 'Goerli',
     optionLabel: 'Goerli Testnet',
   },
-  [`${NETWORKS.HOLESKY}_${API_VERSIONS.V4}`]: {
+  [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: {
     logo: 'light',
     activeLabel: 'Holesky',
     optionLabel: 'Holesky Testnet',
@@ -84,21 +101,37 @@ const getStoredNetwork = () => {
   return networks[savedNetworkIndex];
 };
 
-const isMainnet = getStoredNetwork().networkId === NETWORKS.MAINNET;
+const isMainnet = () => getStoredNetwork().networkId === MAINNET_NETWORK_ID;
 
-const isMainnetSupported = () => {
-  return networks.findIndex((network) => toHexString(network.networkId).toLowerCase() !== '0x1') !== -1;
-};
+const currentNetworkName = () => NETWORK_NAMES[getStoredNetwork().networkId];
+
+const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
+
+const getLink = ({ type }: { type: NetworksEnum }) => LINKS[`${getStoredNetwork().networkId}`][type];
+
+const getBeaconChainLink = () => LINKS[`${getStoredNetwork().networkId}`][NetworksEnum.BEACONCHA_URL];
+
+const getLaunchpadLink = () => LINKS[`${getStoredNetwork().networkId}`][NetworksEnum.LAUNCHPAD_URL];
+
+const getEtherScanLink = () => LINKS[`${getStoredNetwork().networkId}`][NetworksEnum.ETHERSCAN_URL];
+
+const getTransactionLink = (txHash: string) => `${getLink({ type: NetworksEnum.ETHERSCAN_URL })}/tx/${txHash}`;
 
 export {
   NETWORK_VARIABLES,
+  LINKS,
   NetworkInfo,
   networks,
-  toHexString,
   getNetworkInfoIndexByNetworkId,
   changeNetwork,
   getStoredNetwork,
   getStoredNetworkIndex,
-  isMainnetSupported,
   isMainnet,
+  currentNetworkName,
+  testNets,
+  getLink,
+  getBeaconChainLink,
+  getLaunchpadLink,
+  getEtherScanLink,
+  getTransactionLink,
 };

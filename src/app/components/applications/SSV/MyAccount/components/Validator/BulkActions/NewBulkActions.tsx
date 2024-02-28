@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useStores } from '~app/hooks/useStores';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { ProcessStore, SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb';
 import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
+import { BulkValidatorData } from '~app/model/validator.model';
 
 const HeaderWrapper = styled.div`
     display: flex;
@@ -65,12 +64,11 @@ const ValidatorsWrapper = styled.div`
     background-color: ${({ theme }) => theme.colors.white};
 `;
 
-const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, selectUnselectAllValidators }: { title: string, nextStep: Function, onCheckboxClickHandler: Function, selectedValidators: string[], selectUnselectAllValidators: Function }) => {
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
-  const cluster = process?.item;
-  const disableButtonCondition = !selectedValidators.length;
+const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: { title: string, nextStep: Function, onCheckboxClickHandler: Function, selectedValidators: Record<string, BulkValidatorData>, fillSelectedValidators: Function }) => {
+  const validatorsListArray = Object.values(selectedValidators);
+  const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
+  const disableButtonCondition = !selectedValidatorsCount;
+  const showIndicatorCondition = selectedValidatorsCount > 0;
 
   return (
     <Wrapper>
@@ -82,9 +80,9 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
             <HeaderWrapper>
               <TitleWrapper>
                 <Title>{title}</Title>
-                {selectedValidators.length > 0 && <SelectedIndicator>{selectedValidators.length} of {cluster.validatorCount} selected</SelectedIndicator>}
+                {showIndicatorCondition && <SelectedIndicator>{selectedValidatorsCount} of {validatorsListArray.length} selected</SelectedIndicator>}
               </TitleWrapper>
-              <ValidatorsList onCheckboxClickHandler={onCheckboxClickHandler} selectedValidators={selectedValidators} selectUnselectAllValidators={selectUnselectAllValidators} />
+              <ValidatorsList onCheckboxClickHandler={onCheckboxClickHandler} selectedValidators={selectedValidators} fillSelectedValidators={fillSelectedValidators} />
             </HeaderWrapper>
         <PrimaryButton children={'Next'} disable={disableButtonCondition} submitFunction={nextStep} />
       </ValidatorsWrapper>

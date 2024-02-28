@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
@@ -13,6 +13,8 @@ import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterBalance } from '~root/services/cluster.service';
 
+let interval: NodeJS.Timeout;
+
 const Withdraw = () => {
   const stores = useStores();
   const classes = useStyles();
@@ -21,13 +23,13 @@ const Withdraw = () => {
   const ssvStore: SsvStore = stores.SSV;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
-  const processItemBalance = processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance;
+  const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
 
   useEffect(() => {
     if (processStore.isValidatorFlow) {
-      const interval = setInterval(async () => {
-        // Call your function here
-        processItem.balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+      interval = setInterval(async () => {
+        const balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+        setProcessItemBalance(balance);
       }, 2000);
       return () => clearInterval(interval);
     }
@@ -47,9 +49,7 @@ const Withdraw = () => {
                   <Grid item xs={12} className={classes.currentBalance}>
                     {formatNumberToUi(toDecimalNumber(Number(processItemBalance)))} SSV
                   </Grid>
-                  <Grid item xs={12} className={classes.currentBalanceDollar}>
-                    {/* ~$2,449.53 */}
-                  </Grid>
+                  <Grid item xs={12} className={classes.currentBalanceDollar}></Grid>
                 </Grid>,
               ]}
           />

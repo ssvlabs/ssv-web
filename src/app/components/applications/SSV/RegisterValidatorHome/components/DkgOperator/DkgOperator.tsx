@@ -2,11 +2,11 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import { truncateText } from '~lib/utils/strings';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator.styles';
+import { IOperator } from '~app/model/operator.model';
 
 const DkgOperator = ({ operator }: { operator: IOperator }) => {
   const dkgEnabled = !validateDkgAddress(operator.dkg_address ?? '');

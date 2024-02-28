@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-import { longStringShorten } from '~lib/utils/strings';
+import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import {
   ProcessStore,
@@ -13,8 +12,10 @@ import {
   SingleCluster as SingleClusterProcess,
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
-import { ENV } from '~lib/utils/envHelper';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getClusterHash } from '~root/services/cluster.service';
+import { validatorsByClusterHash } from '~root/services/validator.service';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -91,10 +92,10 @@ const Link = styled.div<{ logo: string }>`
 }
 `;
 
-const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnselectAllValidators }: {
+const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelectedValidators }: {
   onCheckboxClickHandler?: Function,
-  selectedValidators?: string[],
-  selectUnselectAllValidators?: Function
+  selectedValidators?: Record<string, BulkValidatorData>,
+  fillSelectedValidators?: Function
 }) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
@@ -103,27 +104,35 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process?.item;
   const navigate = useNavigate();
-  const [clusterValidators, setClusterValidators] = useState<any[]>([]);
+  const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     total: cluster.validatorCount,
     pages: 1,
     per_page: 5,
-    rowsPerPage: 14,
+    rowsPerPage: cluster.validatorCount,
     onChangePage: console.log,
   });
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress), undefined, clusterValidatorsPagination.total).then((response: any) => {
-      setClusterValidators(response.validators);
-      setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: 14 });
-    });
+    if (selectedValidators && Object.values(selectedValidators).length) {
+      setClusterValidators(Object.values(selectedValidators).map((validator: {
+        validator: IValidator,
+        isSelected: boolean
+      }) => validator.validator));
+    } else {
+      validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
+        setClusterValidators(response.validators);
+        if (fillSelectedValidators) fillSelectedValidators(response.validators);
+        setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: cluster.validatorCount });
+      });
+    }
   }, []);
 
   // TODO: Implement infinite scroll on using this component for single cluster page
   // const onChangePage = async (newPage: number, rowsPerPage?: number) => {
-  //   Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
+  //   validatorsByClusterHash(newPage, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
   //     setClusterValidators([...clusterValidators, ...response.validators]);
   //     setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: clusterValidatorsPagination.total + 1 });
   //     if (selectAllValidators && selectUnselectAllValidators) {
@@ -142,13 +151,16 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
   return (
     <TableWrapper>
       <TableHeader>
-        {selectUnselectAllValidators && <Checkbox disable={false} grayBackGround text={''}
-                                                  withoutMarginBottom
-                                                  smallLine
-                                                  onClickCallBack={() => {
-                                                    selectUnselectAllValidators(clusterValidators.map((validator: any) => validator.public_key));
-                                                  }}
-                                                  isChecked={selectedValidators && selectedValidators.length > 0}/>}
+        {fillSelectedValidators && <Checkbox disable={false} grayBackGround text={''}
+                                             withoutMarginBottom
+                                             smallLine
+                                             onClickCallBack={() => {
+                                               fillSelectedValidators(clusterValidators, true);
+                                             }}
+                                             isChecked={selectedValidators && Object.values(selectedValidators).some((validator: {
+                                               validator: IValidator,
+                                               isSelected: boolean
+                                             }) => validator.isSelected)}/>}
         <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
         <TableHeaderTitle
           marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>
@@ -164,17 +176,18 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
         {/*  loader={<h4>Loading...</h4>}*/}
         {/*  scrollableTarget="scrollableDiv"*/}
         {/*>*/}
-        {clusterValidators?.map((validator: any) => {
-            const res = selectedValidators?.includes(validator.public_key);
+        {clusterValidators?.map((validator: IValidator) => {
+            const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
+            const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
             return (
               <ValidatorWrapper>
                 <PublicKeyWrapper>
                   <PublicKey>
                     {onCheckboxClickHandler && selectedValidators && <Checkbox disable={false} grayBackGround text={''}
                                                                                withoutMarginBottom
-                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, validator.public_key)}
+                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
                                                                                isChecked={res}/>}
-                    0x{longStringShorten(validator.public_key, 4, 4)}
+                    {longStringShorten(formattedPublicKey, 4, 4)}
                   </PublicKey>
                   <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}/>
                 </PublicKeyWrapper>
@@ -182,7 +195,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, selectUnse
                 <LinksWrapper>
                   <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
                         logo={'/images/explorer/'}/>
-                  <Link onClick={() => openLink(`${ENV().BEACONCHA_URL}/validator/${validator.public_key}`)}
+                  <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)}
                         logo={'/images/beacon/'}/>
                 </LinksWrapper>
               </ValidatorWrapper>);

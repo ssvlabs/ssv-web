@@ -5,8 +5,6 @@ import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import Button from '~app/components/common/Button';
@@ -31,11 +29,12 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getOperatorValidators } from '~root/services/operator.service';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const SingleOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
   const processStore: ProcessStore = stores.Process;
@@ -54,7 +53,7 @@ const SingleOperator = () => {
   const loadOperatorValidators = async (props: { page: number, perPage: number }) => {
     // eslint-disable-next-line react/prop-types
     const { page, perPage } = props;
-    const response = await Operator.getInstance().getOperatorValidators({
+    const response = await getOperatorValidators({
       // @ts-ignore
       operatorId: operator.id,
       page,
@@ -111,7 +110,7 @@ const SingleOperator = () => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${publicKey}`);
+    window.open(`${getBeaconChainLink()}/validator/${publicKey}`);
   };
 
   const sortValidatorsByStatus = () => {

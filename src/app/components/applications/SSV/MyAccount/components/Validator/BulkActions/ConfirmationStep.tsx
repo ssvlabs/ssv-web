@@ -60,7 +60,7 @@ const initialState = (checkBoxes: string[]) =>  checkBoxes.reduce((acc: boolean[
   return acc;
 }, []);
 
-const ConfirmationStep = ({ nextStep, selectedValidators, flowData }: { nextStep: Function, selectedValidators: string[], flowData: FlowData }) => {
+const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack }: { nextStep: Function, selectedValidators: string[], flowData: FlowData, stepBack?: Function }) => {
   const { title, texts, warningMessage, checkBoxes } = flowData;
   const [isSelectedCheckboxes, setIsSelectedCheckboxes] = useState(initialState(checkBoxes));
   const disableCButtonCondition = isSelectedCheckboxes.some((isSelected: boolean) => !isSelected);
@@ -79,13 +79,14 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData }: { nextStep
       <NewWhiteWrapper
         type={0}
         header={'Cluster'}
+        stepBack={stepBack}
       />
       <ConfirmationWrapper>
         <Confirmation>
           <ConfirmationTitle>{title}</ConfirmationTitle>
-          {texts.map((text: string) => <ConfirmationText>{text}</ConfirmationText>)}
+          {texts.map((text: string) => <ConfirmationText key={text}>{text}</ConfirmationText>)}
           <WarningBox text={warningMessage}/>
-          {checkBoxes.map((checkBoxText, index) => <Checkbox withoutMarginBottom onClickCallBack={(isChecked: boolean) => clickCheckboxHandler(isChecked, index)} disable={false} grayBackGround text={checkBoxText}
+          {checkBoxes.map((checkBoxText, index) => <Checkbox key={index} withoutMarginBottom onClickCallBack={(isChecked: boolean) => clickCheckboxHandler(isChecked, index)} disable={false} grayBackGround text={checkBoxText}
                                                       isChecked={isSelectedCheckboxes[index]}/>)}
           <PrimaryButton children={flowData.buttonText(selectedValidators.length, appStateIsLoading)} disable={disableCButtonCondition} submitFunction={nextStep} />
         </Confirmation>

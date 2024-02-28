@@ -5,9 +5,7 @@ import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
-import { isMainnet } from '~lib/utils/envHelper';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
 import { longStringShorten } from '~lib/utils/strings';
@@ -30,6 +28,8 @@ import OperatorBox
 import ActionsButton
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
 import { getClusterHash } from '~root/services/cluster.service';
+import { validatorsByClusterHash } from '~root/services/validator.service';
+import { isMainnet } from '~root/providers/networkInfo.provider';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -87,7 +87,7 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -140,7 +140,7 @@ const SingleCluster = () => {
 
   const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, getClusterHash(cluster.operators, walletStore.accountAddress)).then((response: any) => {
+    validatorsByClusterHash(newPage, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -172,7 +172,7 @@ const SingleCluster = () => {
             header={<Grid container className={classes.HeaderWrapper}>
               <Grid item className={classes.Header}>Validators</Grid>
               <Grid className={classes.ButtonsWrapper}>
-                {cluster.validatorCount > 1 && !isMainnet && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
+                {cluster.validatorCount > 1 && !isMainnet() && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
                   <ButtonText>
                     Actions
                   </ButtonText>

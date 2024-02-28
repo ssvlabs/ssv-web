@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
@@ -18,6 +17,7 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { extendClusterEntity, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { clusterByHash } from '~root/services/validator.service';
 
 const ValidatorFlow = () => {
   const stores = useStores();
@@ -75,7 +75,7 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await Validator.getInstance().clusterByHash(getClusterHash(cluster.operators, walletStore.accountAddress));
+    const response = await clusterByHash(getClusterHash(cluster.operators, walletStore.accountAddress));
     const newCluster = response.cluster;
     newCluster.operators = cluster.operators;
     processStore.setProcess({

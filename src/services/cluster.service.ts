@@ -2,11 +2,11 @@ import * as _ from 'lodash';
 import Decimal from 'decimal.js';
 import { keccak256 } from 'web3-utils';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { EContractName } from '~app/model/contracts.model';
-import { IOperator } from '~app/common/stores/applications/SsvWeb';
 import { getContractByName } from '~root/services/contracts.service';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getClusterData as getClusterDataValidatorService } from '~root/services/validator.service';
+import { IOperator } from '~app/model/operator.model';
 
 const getSortedOperatorsIds = (operators: (number | IOperator)[]) => {
   if (typeof operators[0] === 'number') {
@@ -38,8 +38,8 @@ const getClusterBalance = async (operators: number[] | IOperator[], ownerAddress
   }
 };
 
-const getClusterNewBurnRate = (operators: IOperator[], newAmountOfValidators: number, networkFee: number) => {
-  const operatorsFeePerYear = operators.reduce((acc: number, operator: IOperator) => Number(acc) + Number(getFeeForYear(fromWei(operator.fee))), 0);
+const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOfValidators: number, networkFee: number) => {
+  const operatorsFeePerYear = Object.values(operators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(getFeeForYear(fromWei(operator.fee))), 0);
   const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
   const networkFeePerBlock = new Decimal(networkFee).toFixed().toString();
   const clusterBurnRate = parseFloat(operatorsFeePerBlock) + parseFloat(networkFeePerBlock);
@@ -83,7 +83,7 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
 
 const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, fullData = false) => {
   try {
-    const response = await Validator.getInstance().getClusterData(clusterHash);
+    const response = await getClusterDataValidatorService(clusterHash);
     const clusterData = response.cluster;
     if (clusterData === null) {
       return {

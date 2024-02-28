@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { longStringShorten } from '~lib/utils/strings';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const SummaryWrapper = styled.div`
     width: 424px;
@@ -116,7 +116,7 @@ const Summary = ({ selectedValidators }: { selectedValidators: string[] }) => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${ENV().BEACONCHA_URL}/validator/${publicKey}`);
+    window.open(`${getBeaconChainLink()}/validator/${publicKey}`);
   };
 
   return (
@@ -135,8 +135,8 @@ const Summary = ({ selectedValidators }: { selectedValidators: string[] }) => {
         </TableHeader>
         <ValidatorsListWrapper>
           {selectedValidators.map((validatorPublicKey: string) =>
-            <ValidatorWrapper>
-              <ValidatorPublicKey>0x{longStringShorten(validatorPublicKey, 4, 4)}</ValidatorPublicKey>
+            <ValidatorWrapper key={validatorPublicKey}>
+              <ValidatorPublicKey>{longStringShorten(validatorPublicKey, 4, 4)}</ValidatorPublicKey>
               <LinksWrapper>
                 <Link onClick={() => openBeaconcha(validatorPublicKey)} logo={'/images/beacon/'}/>
                 <Link onClick={() => openExplorer(validatorPublicKey)} logo={'/images/explorer/'}/>

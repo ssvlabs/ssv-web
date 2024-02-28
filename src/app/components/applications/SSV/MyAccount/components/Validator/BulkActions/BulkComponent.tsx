@@ -8,12 +8,13 @@ import ExitFinishPage from '~app/components/applications/SSV/MyAccount/component
 import ConfirmationStep
   from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
 import {
-  IOperator,
   ProcessStore,
   ValidatorStore,
   SingleCluster as SingleClusterProcess,
 } from '~app/common/stores/applications/SsvWeb';
-import { conditionalExecutor } from '~root/services/utils.service';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
+import { IOperator } from '~app/model/operator.model';
+import { formatValidatorPublicKey } from '~lib/utils/strings';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -32,7 +33,7 @@ const BULK_FLOWS_CONFIRMATION_DATA = {
 };
 
 const BulkComponent = () => {
-  const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
+  const [selectedValidators, setSelectedValidators] = useState<Record<string, BulkValidatorData>>({});
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -43,25 +44,33 @@ const BulkComponent = () => {
 
   useEffect(() => {
     if (process.validator) {
-      setSelectedValidators([process.validator.public_key]);
+      setSelectedValidators({ [formatValidatorPublicKey(process.validator.public_key)] : { validator: process.validator, isSelected: true } });
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     }
   }, []);
 
-  const selectUnselectAllValidators = (publicKeys: string[]) => {
-    let nextState = publicKeys;
-    if (selectedValidators.length === publicKeys.length || selectedValidators.length > 0) {
-      nextState = [];
+  const fillSelectedValidators = (validators: IValidator[], selectAll: boolean = false) => {
+    if (validators) {
+      let validatorList: Record<string, BulkValidatorData> = {};
+      const isSelected = selectAll && Object.values(selectedValidators).every((validator: {
+        validator: IValidator,
+        isSelected: boolean
+      }) => !validator.isSelected);
+      validators.forEach((validator: IValidator) => {
+        validatorList[formatValidatorPublicKey(validator.public_key)] = {
+          validator,
+          isSelected,
+        };
+      });
+      setSelectedValidators(validatorList);
     }
-    setSelectedValidators(nextState);
   };
 
   const onCheckboxClickHandler = (isChecked: boolean, publicKey: string) => {
-    if (isChecked && !selectedValidators.includes(publicKey)) {
-      setSelectedValidators((prevState: string[]) => [...prevState, publicKey]);
-    } else {
-      setSelectedValidators((prevState: string[]) => prevState.filter((key: string) => key !== publicKey));
-    }
+    setSelectedValidators((prevState: any) => {
+      prevState[publicKey].isSelected = isChecked && !prevState[publicKey].isSelected;
+      return { ...prevState };
+    });
   };
 
   const backToSingleClusterPage = () => {
@@ -70,41 +79,51 @@ const BulkComponent = () => {
   };
 
   const nextStep = async () => {
+    const selectedValidatorKeys =  Object.keys(selectedValidators);
+    const selectedValidatorValues =  Object.values(selectedValidators);
     let res;
-    const condition = selectedValidators.length === 1;
+    const condition = selectedValidatorValues.filter(validator => validator.isSelected).length > 1;
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
-      res = await conditionalExecutor(condition, async () => await validatorStore.exitValidator(`0x${selectedValidators[0]}`, process.item.operators.map((operator: IOperator) => operator.id)), async () => await validatorStore.bulkExitValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id)));
+      const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
+      const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
+      const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
+      res = condition ? await exitBulk() : await exitSingle();
       if (res) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
       backToSingleClusterPage();
     } else {
-      res = await conditionalExecutor(condition, async () => await validatorStore.removeValidator(`0x${process?.validator?.public_key || selectedValidators[0]}`, process.item.operators), async () => await validatorStore.bulkRemoveValidators(selectedValidators.map((publicKey: string) => `0x${publicKey}`), process.item.operators.map((operator: IOperator) => operator.id)));
+      const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
+      const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
+      const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
+      res = condition ? await bulkRemove() : await singleRemove();
       if (res) {
         backToSingleClusterPage();
       }
     }
   };
 
-  if (currentStep === BULK_STEPS.BULK_ACTIONS) {
+  const stepBack = () => setCurrentStep(BULK_STEPS.BULK_ACTIONS);
+
+  if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
     return <NewBulkActions nextStep={nextStep}
                            title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-                           selectUnselectAllValidators={selectUnselectAllValidators}
+                           fillSelectedValidators={fillSelectedValidators}
                            selectedValidators={selectedValidators}
                            onCheckboxClickHandler={onCheckboxClickHandler}/>;
   }
 
   if (currentStep === BULK_STEPS.BULK_CONFIRMATION) {
-    return  <ConfirmationStep
+    return  <ConfirmationStep stepBack={!process.validator ? stepBack : undefined}
           flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-          selectedValidators={selectedValidators} nextStep={nextStep}/>;
+          selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)} nextStep={nextStep}/>;
   }
 
   // BULK_STEPS.BULK_EXIT_FINISH === currentStep
-  return <ExitFinishPage nextStep={nextStep} selectedValidators={selectedValidators}/>;
+  return <ExitFinishPage nextStep={nextStep} selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}/>;
 };
 
 export default BulkComponent;

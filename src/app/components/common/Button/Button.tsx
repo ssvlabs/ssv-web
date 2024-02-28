@@ -57,7 +57,7 @@ const Button = (props: ButtonParams) => {
     }, []);
 
     // TODO: reduce to single component for wallet connection
-    const checkWalletConnected = async (onClickCallBack: any) => {
+    const checkWalletConnected = (onClickCallBack: any) => {
         // if (!walletStore.wallet) walletStore.connect();
         // if (walletStore.isWrongNetwork) {
             // await walletStore.networkHandler(10);

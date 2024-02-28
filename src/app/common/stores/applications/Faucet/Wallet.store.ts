@@ -8,6 +8,7 @@ import notifyService from '~root/services/notify.service';
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
+  isWalletConnect = false;
 
   constructor() {
     super();
@@ -16,6 +17,7 @@ class WalletStore extends BaseStore implements Wallet {
       wallet: observable,
       accountAddress: observable,
       initWallet: action.bound,
+      resetUser: action.bound,
     });
   }
 
@@ -38,6 +40,8 @@ class WalletStore extends BaseStore implements Wallet {
       notifyService.init(connectedChain.id);
     }
   }
+
+  resetUser = async () => {};
 }
 
 export default WalletStore;

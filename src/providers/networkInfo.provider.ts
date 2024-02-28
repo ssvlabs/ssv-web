@@ -49,24 +49,6 @@ const LINKS = {
   },
 };
 
-const NETWORK_VARIABLES = {
-  [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: {
-    logo: 'dark',
-    activeLabel: 'Ethereum',
-    optionLabel: 'Ethereum Mainnet',
-  },
-  [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: {
-    logo: 'light',
-    activeLabel: 'Goerli',
-    optionLabel: 'Goerli Testnet',
-  },
-  [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: {
-    logo: 'light',
-    activeLabel: 'Holesky',
-    optionLabel: 'Holesky Testnet',
-  },
-};
-
 const rawNetworksData: string = process.env.REACT_APP_SSV_NETWORKS as string;
 const networks: NetworkInfo[] = JSON.parse(rawNetworksData);
 
@@ -118,7 +100,6 @@ const getEtherScanLink = () => LINKS[`${getStoredNetwork().networkId}`][Networks
 const getTransactionLink = (txHash: string) => `${getLink({ type: NetworksEnum.ETHERSCAN_URL })}/tx/${txHash}`;
 
 export {
-  NETWORK_VARIABLES,
   LINKS,
   NetworkInfo,
   networks,

@@ -18,6 +18,7 @@ class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
   isContractWallet: boolean = false;
+  isWalletConnect = false;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -29,40 +30,38 @@ class WalletStore extends BaseStore implements Wallet {
       resetUser: action.bound,
       accountAddress: observable,
       isContractWallet: observable,
+      isWalletConnect: observable,
       initWallet: action.bound,
     });
   }
 
-  async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
-    if (wallet && connectedChain) {
-      console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
-      this.wallet = wallet;
-      notifyService.init(connectedChain.id);
-      // TODO: review this
-      this.ssvStore.clearSettings();
-      this.myAccountStore.clearIntervals();
-      await this.ssvStore.initUser();
-      await this.operatorStore.initUser();
-      this.myAccountStore.setIntervals();
-      this.accountAddress = wallet.accounts[0].address;
-      this.isContractWallet = await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
-      initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: wallet.label === 'WalletConnect' });
-      await Promise.all([
-        this.myAccountStore.getOwnerAddressOperators({}),
-        this.myAccountStore.getOwnerAddressClusters({}),
-        this.operatorStore.updateOperatorValidatorsLimit(),
-      ]);
-      if (this.myAccountStore?.ownerAddressClusters?.length) {
-        store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
-      } else if (this.myAccountStore?.ownerAddressOperators?.length) {
-        store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
-      } else {
-        store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
-      }
-      if (!this.myAccountStore?.ownerAddressOperators?.length || !this.myAccountStore?.ownerAddressClusters?.length) this.myAccountStore.forceBigList = true;
+  async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
+    console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
+    this.wallet = wallet;
+    notifyService.init(connectedChain.id);
+    // TODO: review this
+    this.ssvStore.clearSettings();
+    this.myAccountStore.clearIntervals();
+    await this.ssvStore.initUser();
+    await this.operatorStore.initUser();
+    this.myAccountStore.setIntervals();
+    this.accountAddress = wallet.accounts[0].address;
+    this.isContractWallet = await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
+    this.isWalletConnect = wallet.label === 'WalletConnect';
+    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isWalletConnect });
+    await Promise.all([
+      this.myAccountStore.getOwnerAddressOperators({}),
+      this.myAccountStore.getOwnerAddressClusters({}),
+      this.operatorStore.updateOperatorValidatorsLimit(),
+    ]);
+    if (this.myAccountStore?.ownerAddressClusters?.length) {
+      store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
+    } else if (this.myAccountStore?.ownerAddressOperators?.length) {
+      store.dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
     } else {
-      await this.resetUser();
+      store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
+    if (!this.myAccountStore?.ownerAddressOperators?.length || !this.myAccountStore?.ownerAddressClusters?.length) this.myAccountStore.forceBigList = true;
   }
 
   async resetUser() {

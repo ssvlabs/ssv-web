@@ -2,8 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import { useConnectWallet, useSetChain } from '@web3-onboard/react';
-import { getNetworkInfoIndexByNetworkId, getStoredNetwork, NETWORK_VARIABLES } from '~root/providers/networkInfo.provider';
+import { useSetChain } from '@web3-onboard/react';
+import {
+    API_VERSIONS,
+    getNetworkInfoIndexByNetworkId,
+    getStoredNetwork, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID,
+    MAINNET_NETWORK_ID,
+} from '~root/providers/networkInfo.provider';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -12,12 +17,41 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
-import NetworkOption from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkOption';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
 import { toHexString } from '~lib/utils/strings';
+
+const NETWORK_VARIABLES = {
+    [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: {
+        logo: 'dark',
+        activeLabel: 'Ethereum',
+        optionLabel: 'Ethereum Mainnet',
+    },
+    [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: {
+        logo: 'light',
+        activeLabel: 'Goerli',
+        optionLabel: 'Goerli Testnet',
+    },
+    [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: {
+        logo: 'light',
+        activeLabel: 'Holesky',
+        optionLabel: 'Holesky Testnet',
+    },
+};
+
+const NetworkOption = ({ networkId, apiVersion, onClick }: { networkId: number; apiVersion: string; onClick: any }) => {
+    const { optionLabel, logo } = NETWORK_VARIABLES[`${networkId}_${apiVersion}`];
+    const classes = useStyles({ logo });
+
+    return (
+      <Grid container item className={classes.Button} onClick={onClick}>
+          <Grid className={classes.NetworkIcon}/>
+          <Typography className={classes.NetworkLabel}>{optionLabel}</Typography>
+      </Grid>
+    );
+};
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
@@ -25,7 +59,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const { apiVersion, networkId } = networks[selectedNetworkIndex];
     const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
     const [showNetworks, setShowNetworks] = useState(false);
-    const [{ wallet }] = useConnectWallet();
     const [{ connectedChain }, setChain] = useSetChain();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
@@ -35,8 +68,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const notificationsStore: NotificationsStore = stores.Notifications;
     const dispatch = useAppDispatch();
     const { disconnectWallet } = useWalletDisconnector();
-
-    const isWalletConnect = () => wallet?.label === 'WalletConnect';
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {
@@ -51,26 +82,25 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         };
     }, [optionsRef, showNetworks]);
 
-    // If chain has been changed in wallet
     useEffect(() => {
-        const network = getStoredNetwork();
-        if (connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId)) {
-
+        const networkInWalletChangedHandler = async () => {
             let index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
             if (index < 0) {
                 index = getNetworkInfoIndexByNetworkId(network.networkId);
                 notificationsStore.showMessage(`Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
-                if (!isWalletConnect()) {
-                    setChain({ chainId: toHexString(network.networkId) });
-                    changeNetwork(index);
-                    setSelectedNetworkIndex(index);
-                } else {
-
-                }
-            } else {
+            }
+            if (!walletStore.isWalletConnect) {
+                await setChain({ chainId: toHexString(network.networkId) });
                 changeNetwork(index);
                 setSelectedNetworkIndex(index);
+            } else {
+                await disconnectWallet();
             }
+        };
+
+        const network = getStoredNetwork();
+        if (connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId)) {
+            networkInWalletChangedHandler();
         }
     }, [connectedChain]);
 
@@ -80,7 +110,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             console.warn('NetworkToggle: onOptionClick: no wallet or network is the same!');
             setShowNetworks(false);
         } else if (walletStore.wallet) {
-            if (isWalletConnect()) {
+            if (walletStore.isWalletConnect) {
                 await disconnectWallet();
             } else {
                 ssvStore.clearUserSyncInterval();
@@ -97,8 +127,8 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                 const setChainParams = { chainId: toHexString(network.networkId) };
                 await setChain(setChainParams);
                 initContracts({ provider: walletStore.wallet.provider, network, shouldUseRpcUrl: walletStore.wallet.label === 'WalletConnect' });
-                ssvStore.initUser();
-                operatorStore.initUser();
+                await ssvStore.initUser();
+                await operatorStore.initUser();
                 myAccountStore.setIntervals();
             }
         }

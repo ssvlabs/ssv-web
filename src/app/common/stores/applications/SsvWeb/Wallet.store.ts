@@ -42,13 +42,13 @@ class WalletStore extends BaseStore implements Wallet {
     // TODO: review this
     this.ssvStore.clearSettings();
     this.myAccountStore.clearIntervals();
+    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isWalletConnect });
     await this.ssvStore.initUser();
     await this.operatorStore.initUser();
     this.myAccountStore.setIntervals();
     this.accountAddress = wallet.accounts[0].address;
     this.isContractWallet = await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
     this.isWalletConnect = wallet.label === 'WalletConnect';
-    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isWalletConnect });
     await Promise.all([
       this.myAccountStore.getOwnerAddressOperators({}),
       this.myAccountStore.getOwnerAddressClusters({}),

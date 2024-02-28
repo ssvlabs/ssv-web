@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { ENV } from '~lib/utils/envHelper';
 import Button from '~app/components/common/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
+import { getLinks } from '~root/providers/networkInfo.provider';
 
 const CreateValidator = () => {
   const classes = useStyles();
@@ -18,7 +18,7 @@ const CreateValidator = () => {
       action: 'click',
       label: 'Visit Ethereum Launchpad',
     });
-    window.open(ENV().LAUNCHPAD_URL);
+    window.open(getLinks().LAUNCHPAD_URL);
   };
 
   return (

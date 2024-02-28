@@ -6,16 +6,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
-import { currentNetworkName } from '~lib/utils/envHelper';
 import translations from '~app/common/config/translations';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, setIsLoading } from '~app/redux/appState.slice';
+import { currentNetworkName, isMainnet } from '~root/providers/networkInfo.provider';
+import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
 
 const RequestForSsv = () => {
   const stores = useStores();
@@ -23,25 +23,30 @@ const RequestForSsv = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const captchaRef = useRef(null);
-  const faucetStore: FaucetStore = stores.Faucet;
   const walletStore: WalletStore = stores.Wallet;
   const [error, setError] = useState('');
   const [disabled, setDisabled] = useState(true);
   const [buttonText, setButtonText] = useState('Request');
   const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
+  const [amountToTransfer, setAmountToTransfer] = useState(-1);
   const isDarkMode = useAppSelector(getIsDarkMode);
 
   useEffect(() => {
     setError('');
     setDisabled(true);
     setButtonText('Request');
+    const fetchAmountToTransfer = async () => {
+      const res = await getAmountToTransfer();
+      setAmountToTransfer(res || 10);
+    };
+    fetchAmountToTransfer();
   }, [walletStore.accountAddress]);
 
   const requestForSSV = async () => {
     setError('');
     setButtonText('Requesting...');
     dispatch(setIsLoading(true));
-    const response = await faucetStore.registerNewTransaction();
+    const response = await requestSsvFromFaucet({ address: walletStore.accountAddress });
     if (!response.status) {
       if (response.type === translations.FAUCET.FAUCET_DEPLETED) {
         dispatch(setIsLoading(false));
@@ -76,12 +81,12 @@ const RequestForSsv = () => {
           </Grid>
           <Grid item xs={12}>
             <InputLabel title="Request Amount"/>
-            <TextInput
+            {amountToTransfer !== undefined && <TextInput
               disable
-              value={`${faucetStore.amountToTransfer ?? 10} SSV`}
-              data-testid="request-amount"
+              value={`${amountToTransfer} SSV`}
+              data-testid='request-amount'
               wrapperClass={classes.AmountInput}
-            />
+            />}
           </Grid>
           {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
           <HCaptcha
@@ -91,7 +96,7 @@ const RequestForSsv = () => {
             sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
           />
           <PrimaryButton wrapperClass={classes.SubmitButton} children={buttonText} submitFunction={requestForSSV}
-                         disable={walletStore.isWrongNetwork || disabled || reachedMaxTransactionPerDay}
+                         disable={isMainnet() || disabled || reachedMaxTransactionPerDay}
                          withVerifyConnection={false}/>
         </Grid>,
       ]}

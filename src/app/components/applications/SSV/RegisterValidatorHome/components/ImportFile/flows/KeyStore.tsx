@@ -3,7 +3,6 @@ import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
@@ -23,6 +22,7 @@ import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useV
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { getLinks } from '~root/providers/networkInfo.provider';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -60,7 +60,7 @@ const KeyStoreFlow = () => {
   };
 
   const isDeposited = async (): Promise<boolean> => {
-    const beaconChaValidatorUrl = `${ENV().BEACONCHA_URL}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
+    const beaconChaValidatorUrl = `${getLinks().BEACONCHA_URL}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
     try {
       const response: any = (await axios.get(beaconChaValidatorUrl, { timeout: 5000 })).data;
       const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;

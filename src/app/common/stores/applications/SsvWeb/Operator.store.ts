@@ -3,12 +3,11 @@ import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
-import { isMainnet, NETWORKS } from '~lib/utils/envHelper';
 import { EContractName } from '~app/model/contracts.model';
 import { executeAfterEvent } from '~root/services/events.service';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, isMainnet, testNets } from '~root/providers/networkInfo.provider';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { equalsAddresses } from '~lib/utils/strings';
@@ -257,7 +256,6 @@ class OperatorStore extends BaseStore {
     try {
       this.operatorCurrentFee = await contract.getOperatorFee(operatorId);
       const response = await contract.getOperatorDeclaredFee(operatorId);
-      const testNets = [NETWORKS.GOERLI, NETWORKS.HOLESKY];
       if (response['0'] && testNets.indexOf(getStoredNetwork().networkId) !== -1) {
         this.operatorFutureFee = response['1'];
         this.operatorApprovalBeginTime = response['2'];
@@ -278,7 +276,7 @@ class OperatorStore extends BaseStore {
    * @param accountAddress queried account
    */
   async isOperatorWhitelisted(accountAddress: string): Promise<boolean> {
-    if (!isMainnet) {
+    if (!isMainnet()) {
       return true;
     }
     const contract = getContractByName(EContractName.SETTER);

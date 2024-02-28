@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
@@ -13,6 +12,7 @@ import ProcessStore, { SingleCluster } from '~app/common/stores/applications/Ssv
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
+import { getLinks } from '~root/providers/networkInfo.provider';
 
 type Props = {
   text: string,
@@ -27,7 +27,7 @@ type Props = {
 const ValidatorWhiteHeader = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
-  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
+  const beaconchaBaseUrl = getLinks().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleCluster = processStore.getProcess;

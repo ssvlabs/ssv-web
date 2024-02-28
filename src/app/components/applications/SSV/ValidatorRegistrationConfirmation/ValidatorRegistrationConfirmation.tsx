@@ -3,7 +3,6 @@ import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import { equalsAddresses } from '~lib/utils/strings';
@@ -33,6 +32,7 @@ import OperatorDetails
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
+import { getLinks } from '~root/providers/networkInfo.provider';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -104,7 +104,7 @@ const ValidatorRegistrationConfirmation = () => {
           Insufficient SSV balance. There is not enough SSV in your wallet.
         </Grid>
         <Grid item>
-          <LinkText text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
+          <LinkText text={'Need SSV?'} link={getLinks().INSUFFICIENT_BALANCE_URL}/>
         </Grid>
       </Grid>
     )}

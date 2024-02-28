@@ -3,10 +3,16 @@ import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
-import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
 import { Theme } from '@web3-onboard/core';
 import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
+import { MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
+
+const TOKEN_NAMES = {
+  [`${MAINNET_NETWORK_ID}`]: 'ETH',
+  [`${GOERLI_NETWORK_ID}`]: 'GoerliETH',
+  [`${HOLESKY_NETWORK_ID}`]: 'ETH',
+};
 
 export const cleanLocalStorageAndCookie = () => {
   const locationRestrictionDisabled = getFromLocalStorageByKey('locationRestrictionDisabled');
@@ -31,7 +37,7 @@ const injected = injectedModule();
 const walletConnect = walletConnectModule({
   dappUrl: window.location.origin,
   projectId: config.ONBOARD.PROJECT_ID,
-  optionalChains: [Number(NETWORKS.MAINNET), Number(NETWORKS.GOERLI), Number(NETWORKS.HOLESKY)],
+  optionalChains: [MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID],
 });
 const safeWalletInstance = safeWallet();
 
@@ -61,21 +67,21 @@ const initOnboardOptions = {
   },
   chains: [
     {
-      id: NETWORKS.MAINNET,
+      id: MAINNET_NETWORK_ID,
       label: 'Ethereum Mainnet',
-      token: TOKEN_NAMES[NETWORKS.MAINNET],
+      token: TOKEN_NAMES[`${MAINNET_NETWORK_ID}`],
       rpcUrl: MAINNET_RPC_URL,
     },
     {
-      id: NETWORKS.GOERLI,
+      id: GOERLI_NETWORK_ID,
       label: 'Goerli testnet',
-      token: TOKEN_NAMES[NETWORKS.GOERLI],
+      token: TOKEN_NAMES[`${GOERLI_NETWORK_ID}`],
       rpcUrl: GOERLI_RPC_URL,
     },
     {
-      id: NETWORKS.HOLESKY,
+      id: HOLESKY_NETWORK_ID,
       label: 'Holesky',
-      token: TOKEN_NAMES[NETWORKS.HOLESKY],
+      token: TOKEN_NAMES[`${HOLESKY_NETWORK_ID}`],
       rpcUrl: HOLESKY_RPC_URL,
       // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',

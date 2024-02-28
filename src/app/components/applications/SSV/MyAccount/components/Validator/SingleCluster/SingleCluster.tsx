@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { isMainnet } from '~lib/utils/envHelper';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
 import { longStringShorten } from '~lib/utils/strings';
@@ -30,6 +29,7 @@ import ActionsButton
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
+import { isMainnet } from '~root/providers/networkInfo.provider';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -172,7 +172,7 @@ const SingleCluster = () => {
             header={<Grid container className={classes.HeaderWrapper}>
               <Grid item className={classes.Header}>Validators</Grid>
               <Grid className={classes.ButtonsWrapper}>
-                {cluster.validatorCount > 1 && !isMainnet && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
+                {cluster.validatorCount > 1 && !isMainnet() && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
                   <ButtonText>
                     Actions
                   </ButtonText>

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { ENV, isMainnet } from '~lib/utils/envHelper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -14,13 +13,14 @@ import {
   SingleCluster as SingleClusterProcess,
 } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
+import { getLinks, isMainnet } from '~root/providers/networkInfo.provider';
 
 const Settings = ({ validator }: { validator: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const settingsRef = useRef(null);
-  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
+  const beaconchaBaseUrl = getLinks().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
   const process: SingleClusterProcess = processStore.getProcess;
   const [showSettings, setShowSettings] = useState(false);
@@ -96,7 +96,7 @@ const Settings = ({ validator }: { validator: any }) => {
               <Grid className={classes.RemoveValidatorImage} />
               <Typography>Remove Validator</Typography>
             </Grid>
-            {!isMainnet && <Grid container item className={classes.Button}
+            {!isMainnet() && <Grid container item className={classes.Button}
                    onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
               <Grid className={classes.ExitValidatorImage}/>
               <Typography>Exit Validator</Typography>

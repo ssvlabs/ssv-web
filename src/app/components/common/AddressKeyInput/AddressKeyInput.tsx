@@ -1,12 +1,12 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/AddressKeyInput/AddressKeyInput.styles';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
+import { getLinks } from '~root/providers/networkInfo.provider';
 
 type ValidatorPrivateKeyInputProps = {
     address: string,
@@ -19,7 +19,7 @@ type ValidatorPrivateKeyInputProps = {
 const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
     const stores = useStores();
     const classes = useStyles();
-    const { ETHERSCAN_URL, BEACONCHA_URL } = ENV();
+    const { ETHERSCAN_URL, BEACONCHA_URL } = getLinks();
     const { address, withBeaconcha, withEtherScan, whiteBackgroundColor, withCopy } = props;
     const notificationsStore: NotificationsStore = stores.Notifications;
 

@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
@@ -22,6 +21,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
+import { getLinks } from '~root/providers/networkInfo.provider';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -61,7 +61,7 @@ const FundingNewValidator = () => {
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         link: {
           text: 'Need SSV?',
-          path: ENV().INSUFFICIENT_BALANCE_URL,
+          path: getLinks().INSUFFICIENT_BALANCE_URL,
         },
       });
       setShowErrorMessage(true);

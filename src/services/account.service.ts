@@ -17,13 +17,11 @@ const getAccountData = async (publicKey: string) => {
 };
 
 const getOwnerNonce = async ({ address }: { address: string }) => {
-  const result: any = await new Promise(resolve => {
-    const res = getAccountData(address);
-    resolve(res);
-  });
-  if (result?.data) {
-    return Number(result.data.nonce);
+  const res = await getAccountData(address);
+  if (res) {
+    return Number(res.nonce);
   }
+  return undefined;
 };
 
 const setFeeRecipient = async ({ feeRecipientAddress }: { feeRecipientAddress: string }) => {

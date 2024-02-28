@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
@@ -6,9 +6,8 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, isMainnet } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import useValidatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
@@ -16,7 +15,6 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares/GenerateKeyShares.styles';
 import { translations } from '~app/common/config';
-import { getOwnerNonce } from '~root/services/account.service';
 
 type ButtonData = {
   isShow: boolean
@@ -38,16 +36,14 @@ const GenerateKeyShares = () => {
     const stores = useStores();
     const navigate = useNavigate();
     const { networkId } = getStoredNetwork();
-    const walletStore: WalletStore = stores.Wallet;
     const processStore: ProcessStore = stores.Process;
     const validatorStore: ValidatorStore = stores.Validator;
     const classes = useStyles({ networkId });
     const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
-
     const buttonsData: ButtonData[] = [
       {
-        isShow: networkId !== MAINNET_NETWORK_ID,
+        isShow: !isMainnet(),
         subText: translations.VALIDATOR.GENERATE_KEY_SHARES.SPLIT_VIA_WEB_APP,
         wrapperProps: {
           className: classes.LinkButtonWrapper,
@@ -94,14 +90,6 @@ const GenerateKeyShares = () => {
         },
       },
     ];
-
-    useEffect(() => {
-      async function getNonce() {
-        await getOwnerNonce({ address: walletStore.accountAddress });
-      }
-
-      getNonce();
-    }, []);
 
     const nextPage = (mode: EValidatorFlowAction) => {
       navigate(getNextNavigation(mode));

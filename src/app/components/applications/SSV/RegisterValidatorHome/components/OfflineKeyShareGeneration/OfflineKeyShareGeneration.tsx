@@ -52,7 +52,7 @@ const OfflineKeyShareGeneration = () => {
   const [textCopied, setTextCopied] = useState(false);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
   const [addressValidationError, setAddressValidationError] = useState({ shouldDisplay: true, errorMessage: '' });
-  const [ownerNonce, setOwnerNonce] = useState<number | undefined>(-1);
+  const [ownerNonce, setOwnerNonce] = useState<number | undefined>(undefined);
   const notificationsStore: NotificationsStore = stores.Notifications;
   const { accountAddress } = walletStore;
   const { apiNetwork } = getStoredNetwork();

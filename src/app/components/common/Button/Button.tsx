@@ -46,6 +46,9 @@ const Button = (props: ButtonParams) => {
             await ssvStore.checkAllowance();
             if (ssvStore.approvedAllowance < Number(toWei(totalAmount))) {
                 setHasToRequestApproval(true);
+                setHasGotAllowanceApproval(false);
+            } else {
+                setHasToRequestApproval(false);
             }
             setHasCheckedAllowance(true);
         };
@@ -54,7 +57,7 @@ const Button = (props: ButtonParams) => {
         } else {
             setHasCheckedAllowance(true);
         }
-    }, []);
+    }, [totalAmount]);
 
     // TODO: reduce to single component for wallet connection
     const checkWalletConnected = async (onClickCallBack: any) => {

@@ -27,22 +27,6 @@ const PrimaryButton = (props: Props) => {
     const classes = useStyles({ errorButton });
     const appStateIsLoading = useAppSelector(getIsLoading);
 
-
-    // useEffect(() => {
-    //     const callback = (event: any) => {
-    //         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-    //             if (!disable && !applicationStore.isLoading) {
-    //                 submitHandler();
-    //             }
-    //         }
-    //     };
-    //
-    //     document.addEventListener('keydown', callback);
-    //     return () => {
-    //         document.removeEventListener('keydown', callback);
-    //     };
-    // }, [applicationStore.isLoading, disable, submitFunction]);
-
     // TODO: reduce to single component for wallet connection
     const submitHandler = async () => {
         // if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
@@ -57,7 +41,6 @@ const PrimaryButton = (props: Props) => {
     const isDisabledCondition = disable || appStateIsLoading;
 
     return (
-        // <Grid container item>
             <Button
                 type="submit"
                 onClick={submitHandler}
@@ -68,7 +51,6 @@ const PrimaryButton = (props: Props) => {
                 {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
                 {children}
             </Button>
-        // </Grid>
     );
 };
 

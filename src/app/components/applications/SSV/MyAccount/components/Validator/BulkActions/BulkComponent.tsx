@@ -32,8 +32,7 @@ const BULK_FLOWS_CONFIRMATION_DATA = {
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.EXIT,
 };
 
-// TODO: Add limitations
-const MAX_VALIDATORS_COUNT = 3;
+const MAX_VALIDATORS_COUNT = 100;
 
 const BulkComponent = () => {
   const [selectedValidators, setSelectedValidators] = useState<Record<string, BulkValidatorData>>({});

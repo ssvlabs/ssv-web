@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -19,6 +18,7 @@ import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const FundingPeriod = () => {
   const options = [
@@ -104,7 +104,7 @@ const FundingPeriod = () => {
                       Insufficient SSV balance. Acquire further SSV or pick a different amount.
                     </Grid>
                     <Grid container item xs>
-                      <LinkText className={classes.Link} text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
+                      <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
                     </Grid>
                   </Grid>
                 }

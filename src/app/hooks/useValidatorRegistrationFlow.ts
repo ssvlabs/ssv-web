@@ -11,8 +11,7 @@
  * */
 
 import config from '~app/common/config';
-import { NETWORKS } from '~lib/utils/envHelper';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
 import { getLocalStorageFlagValue, MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 
 type NavigationRoutes = Record<string, string | Record<number, string>>;
@@ -42,9 +41,9 @@ const MAX_VALIDATORS_PER_CLUSTER_SIZE: Record<number, number> = {
 };
 
 const NETWORK_TO_BULK_MODE = {
-  [NETWORKS.MAINNET]: EBulkMode.SINGLE,
-  [NETWORKS.HOLESKY]: EBulkMode.MULTI,
-  [NETWORKS.GOERLI]: EBulkMode.MULTI,
+  [`${MAINNET_NETWORK_ID}`]: EBulkMode.SINGLE,
+  [`${HOLESKY_NETWORK_ID}`]: EBulkMode.MULTI,
+  [`${GOERLI_NETWORK_ID}`]: EBulkMode.MULTI,
 };
 
 const BULK_MODE_TO_ROUTES: NavigationRoutes = {

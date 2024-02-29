@@ -59,9 +59,10 @@ const Button = (props: ButtonParams) => {
     // TODO: reduce to single component for wallet connection
     const checkWalletConnected = async (onClickCallBack: any) => {
         // if (!walletStore.wallet) walletStore.connect();
-        if (walletStore.isWrongNetwork) {
+        // if (walletStore.isWrongNetwork) {
             // await walletStore.networkHandler(10);
-        } else if (onClickCallBack) onClickCallBack();
+        // } else if (onClickCallBack) onClickCallBack();
+        if (onClickCallBack) onClickCallBack();
     };
 
     const handlePendingTransaction = ({ txHash }: { txHash: string }) => {

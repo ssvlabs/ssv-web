@@ -4,7 +4,6 @@ import Button from '@mui/material/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './SecondaryButton.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
@@ -24,17 +23,16 @@ type Props = {
 const SecondaryButton = (props: Props) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const notificationsStore: NotificationsStore = stores.Notifications;
     const { children, submitFunction, className, disable, withoutLoader, dataTestId, noCamelCase, withVerifyConnection, withoutBackgroundColor } = props;
     const classes = useStyles({ noCamelCase, withoutBackgroundColor });
     const isLoading = useAppSelector(getIsLoading);
 
     // TODO: reduce to single component for wallet connection
     const submit = async () => {
-        if (walletStore.isWrongNetwork) {
-            notificationsStore.showMessage('Please change network to Goerli', 'error');
-            return;
-        }
+        // if (walletStore.isWrongNetwork) {
+        //     notificationsStore.showMessage('Please change network to Goerli', 'error');
+        //     return;
+        // }
         if (withVerifyConnection && !walletStore.wallet) {
             // await walletStore.connect();
         }

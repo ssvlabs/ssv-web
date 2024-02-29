@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
@@ -16,6 +15,7 @@ import {
   SingleCluster as SingleClusterProcess,
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -202,7 +202,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
                 <LinksWrapper>
                   <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
                         logo={'/images/explorer/'}/>
-                  <Link onClick={() => openLink(`${ENV().BEACONCHA_URL}/validator/${validator.public_key}`)}
+                  <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)}
                         logo={'/images/beacon/'}/>
                 </LinksWrapper>
               </ValidatorWrapper>);

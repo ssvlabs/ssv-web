@@ -1,4 +1,4 @@
-import { API_VERSIONS, NETWORKS } from '~root/providers/networkInfo.provider';
+import { API_VERSIONS, MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 export const ABI_VERSION = {
   tokenContract: [
@@ -382,7 +382,7 @@ export const ABI_VERSION = {
     },
   ],
   setterContract: {
-    [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: [
+    [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'name': 'ApprovalNotWithinTimeframe',
@@ -2054,7 +2054,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.HOLESKY}_${API_VERSIONS.V4}`]: [
+    [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -3926,7 +3926,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
+    [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -5800,7 +5800,7 @@ export const ABI_VERSION = {
     ],
   },
   getterContract: {
-    [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: [
+    [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -6639,7 +6639,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.HOLESKY}_${API_VERSIONS.V4}`]: [
+    [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -7501,7 +7501,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
+    [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -8366,8 +8366,9 @@ export const ABI_VERSION = {
   },
 };
 
+// TODO: holesky abi missing
 export const DISTRIBUTION_ABI_VERSION = {
-  [NETWORKS.MAINNET]: [
+  [`${MAINNET_NETWORK_ID}`]: [
     {
       'inputs': [
         {
@@ -8466,7 +8467,7 @@ export const DISTRIBUTION_ABI_VERSION = {
       'stateMutability': 'nonpayable',
       'type': 'function',
     }],
-  [NETWORKS.GOERLI]: [
+  [`${GOERLI_NETWORK_ID}`]: [
     {
       'inputs': [
         {

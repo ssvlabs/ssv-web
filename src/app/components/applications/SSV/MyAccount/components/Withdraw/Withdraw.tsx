@@ -28,8 +28,8 @@ const Withdraw = () => {
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       interval = setInterval(async () => {
-        const balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-        setProcessItemBalance(fromWei(balance));
+        const balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true);
+        setProcessItemBalance(balance);
       }, 2000);
       return () => clearInterval(interval);
     }

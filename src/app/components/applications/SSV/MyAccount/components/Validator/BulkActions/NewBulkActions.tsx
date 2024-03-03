@@ -87,14 +87,15 @@ const TooltipLink = styled.p`
     cursor: pointer;
 `;
 
-const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount, tooltipTitle }: {
+const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount, tooltipTitle, checkboxTooltipTitle }: {
   title: string,
   nextStep: Function,
   onCheckboxClickHandler: Function,
   selectedValidators: Record<string, BulkValidatorData>,
   fillSelectedValidators: Function,
   maxValidatorsCount: number,
-  tooltipTitle: string
+  tooltipTitle: string,
+  checkboxTooltipTitle: string,
 }) => {
   const navigate = useNavigate();
   const validatorsListArray = Object.values(selectedValidators);
@@ -108,7 +109,7 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
     navigate(config.routes.SSV.VALIDATOR.CREATE);
   };
 
-  const TooltipTitle = validatorsListArray.length > maxValidatorsCount ? <TooltipTitleWrapper>{tooltipTitle}
+  const tooltipTitleComponent = (tooltipText: string) => validatorsListArray.length > maxValidatorsCount ? <TooltipTitleWrapper>{tooltipText}
     <TooltipLink onClick={createValidatorsLaunchpad}>Create via Ethereum Launchpad</TooltipLink>
   </TooltipTitleWrapper> : undefined;
 
@@ -123,11 +124,11 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
           <TitleWrapper>
             <Title>{title}</Title>
             {showIndicatorCondition && <AnchorTooltip
-              title={validatorsListArray.length > maxValidatorsCount ? TooltipTitle : null}
+              title={validatorsListArray.length > maxValidatorsCount ? tooltipTitleComponent(tooltipTitle) : null}
               placement={'top'}><SelectedIndicator>{selectedValidatorsCount} of {totalCount} selected</SelectedIndicator></AnchorTooltip>}
           </TitleWrapper>
           {showSubHeaderCondition && <SubHeader>Select up to {maxValidatorsCount} validators</SubHeader>}
-          <ValidatorsList checkboxTooltipTitle={TooltipTitle} maxValidatorsCount={maxValidatorsCount} onCheckboxClickHandler={onCheckboxClickHandler}
+          <ValidatorsList checkboxTooltipTitle={tooltipTitleComponent(checkboxTooltipTitle)} maxValidatorsCount={maxValidatorsCount} onCheckboxClickHandler={onCheckboxClickHandler}
                           selectedValidators={selectedValidators} fillSelectedValidators={fillSelectedValidators}/>
         </HeaderWrapper>
         <PrimaryButton children={'Next'} disable={disableButtonCondition} submitFunction={nextStep}/>

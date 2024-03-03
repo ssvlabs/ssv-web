@@ -15,6 +15,7 @@ import {
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { IOperator } from '~app/model/operator.model';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
+import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -27,12 +28,17 @@ const BULK_FLOWS_ACTION_TITLE = {
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TITLES.SELECT_EXIT_VALIDATORS,
 };
 
+const MAX_VALIDATORS_COUNT = Number(window.localStorage.getItem(MAXIMUM_VALIDATOR_COUNT_FLAG)) || 100;
+
+const BULK_ACTIONS_TOOLTIP_TITLES = {
+  [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.REMOVE_VALIDATORS(MAX_VALIDATORS_COUNT),
+  [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS(MAX_VALIDATORS_COUNT),
+};
+
 const BULK_FLOWS_CONFIRMATION_DATA = {
   [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.REMOVE,
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.EXIT,
 };
-
-const MAX_VALIDATORS_COUNT = 100;
 
 const BulkComponent = () => {
   const [selectedValidators, setSelectedValidators] = useState<Record<string, BulkValidatorData>>({});
@@ -46,7 +52,12 @@ const BulkComponent = () => {
 
   useEffect(() => {
     if (process.validator) {
-      setSelectedValidators({ [formatValidatorPublicKey(process.validator.public_key)] : { validator: process.validator, isSelected: true } });
+      setSelectedValidators({
+        [formatValidatorPublicKey(process.validator.public_key)]: {
+          validator: process.validator,
+          isSelected: true,
+        },
+      });
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     }
   }, []);
@@ -81,8 +92,8 @@ const BulkComponent = () => {
   };
 
   const nextStep = async () => {
-    const selectedValidatorKeys =  Object.keys(selectedValidators);
-    const selectedValidatorValues =  Object.values(selectedValidators);
+    const selectedValidatorKeys = Object.keys(selectedValidators);
+    const selectedValidatorValues = Object.values(selectedValidators);
     let res;
     const condition = selectedValidatorValues.filter(validator => validator.isSelected).length > 1;
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
@@ -112,6 +123,7 @@ const BulkComponent = () => {
 
   if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
     return <NewBulkActions nextStep={nextStep}
+                           tooltipTitle={BULK_ACTIONS_TOOLTIP_TITLES[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
                            maxValidatorsCount={MAX_VALIDATORS_COUNT}
                            title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
                            fillSelectedValidators={fillSelectedValidators}
@@ -120,13 +132,15 @@ const BulkComponent = () => {
   }
 
   if (currentStep === BULK_STEPS.BULK_CONFIRMATION) {
-    return  <ConfirmationStep stepBack={!process.validator ? stepBack : undefined}
-          flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-          selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)} nextStep={nextStep}/>;
+    return <ConfirmationStep stepBack={!process.validator ? stepBack : undefined}
+                             flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
+                             selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}
+                             nextStep={nextStep}/>;
   }
 
   // BULK_STEPS.BULK_EXIT_FINISH === currentStep
-  return <ExitFinishPage nextStep={nextStep} selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}/>;
+  return <ExitFinishPage nextStep={nextStep}
+                         selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}/>;
 };
 
 export default BulkComponent;

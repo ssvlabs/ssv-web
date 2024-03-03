@@ -10,7 +10,7 @@ import ConfirmationStep
 import {
   ProcessStore,
   ValidatorStore,
-  SingleCluster as SingleClusterProcess,
+  SingleCluster as SingleClusterProcess, WalletStore,
 } from '~app/common/stores/applications/SsvWeb';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { IOperator } from '~app/model/operator.model';
@@ -45,6 +45,7 @@ const BulkComponent = () => {
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
+  const walletStore: WalletStore = stores.Wallet;
   const process: SingleClusterProcess = processStore.getProcess;
   const navigate = useNavigate();
   const currentBulkFlow = process.currentBulkFlow;
@@ -103,7 +104,7 @@ const BulkComponent = () => {
       const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
       const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
       res = condition ? await exitBulk() : await exitSingle();
-      if (res) {
+      if (res && !walletStore.isContractWallet) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
@@ -113,7 +114,7 @@ const BulkComponent = () => {
       const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
       const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
       res = condition ? await bulkRemove() : await singleRemove();
-      if (res) {
+      if (res && !walletStore.isContractWallet) {
         backToSingleClusterPage();
       }
     }

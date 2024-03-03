@@ -18,7 +18,7 @@ export const useStyles = makeStyles((theme: any) => ({
     Loader: {
         width: 100,
         marginTop: 20,
-        marginBottom: 40,
+        marginBottom: (props: any) => props.loaderBottom,
     },
     gridContainer: {
         margin: 'auto',

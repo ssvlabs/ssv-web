@@ -87,13 +87,14 @@ const TooltipLink = styled.p`
     cursor: pointer;
 `;
 
-const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount }: {
+const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount, tooltipTitle }: {
   title: string,
   nextStep: Function,
   onCheckboxClickHandler: Function,
   selectedValidators: Record<string, BulkValidatorData>,
   fillSelectedValidators: Function,
-  maxValidatorsCount: number
+  maxValidatorsCount: number,
+  tooltipTitle: string
 }) => {
   const navigate = useNavigate();
   const validatorsListArray = Object.values(selectedValidators);
@@ -107,7 +108,7 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
     navigate(config.routes.SSV.VALIDATOR.CREATE);
   };
 
-  const TooltipTitle = validatorsListArray.length > maxValidatorsCount ? <TooltipTitleWrapper>{`The maximum number of validators for bulk exit is ${maxValidatorsCount}`}
+  const TooltipTitle = validatorsListArray.length > maxValidatorsCount ? <TooltipTitleWrapper>{tooltipTitle}
     <TooltipLink onClick={createValidatorsLaunchpad}>Create via Ethereum Launchpad</TooltipLink>
   </TooltipTitleWrapper> : undefined;
 

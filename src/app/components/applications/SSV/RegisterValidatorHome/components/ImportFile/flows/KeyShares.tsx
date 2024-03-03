@@ -174,7 +174,7 @@ const KeyShareFlow = () => {
             if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
               previousSmallCount = availableValidatorsAmount;
               warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
-              maxValidatorsCount = availableValidatorsAmount;
+              maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
             }
           }
           if (availableValidatorsAmount <= 0) {

@@ -25,13 +25,16 @@ const getClusterHash = (operators: (number | IOperator)[], ownerAddress: string)
   return keccak256(encodePacked(ownerAddress, ...operatorsIds));
 };
 
-const getClusterBalance = async (operators: number[] | IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any) => {
+const getClusterBalance = async (operators: number[] | IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, convertFromWei?: boolean, injectedClusterData?: any) => {
   const operatorsIds = getSortedOperatorsIds(operators);
   const contract = getContractByName(EContractName.GETTER);
   const clusterData = injectedClusterData ?? await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
   if (!clusterData) return;
   try {
     const balance = await contract.getBalance(ownerAddress, operatorsIds, clusterData);
+    if (convertFromWei) {
+      return fromWei(balance);
+    }
     return balance;
   } catch (e) {
     return 0;
@@ -117,7 +120,7 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
 
 const extendClusterEntity = async (cluster: any, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
   const clusterData = await getClusterData(getClusterHash(cluster.operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-  const newBalance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
+  const newBalance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
   const burnRate = await getClusterBurnRate(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
   const isLiquidated = await isClusterLiquidated(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
   const runWay = getClusterRunWay({

@@ -28,7 +28,7 @@ const Withdraw = () => {
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       interval = setInterval(async () => {
-        const balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+        const balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
       }, 2000);
       return () => clearInterval(interval);
@@ -47,7 +47,7 @@ const Withdraw = () => {
               body={[
                 <Grid item container>
                   <Grid item xs={12} className={classes.currentBalance}>
-                    {formatNumberToUi(toDecimalNumber(Number(processItemBalance)))} SSV
+                    {formatNumberToUi(toDecimalNumber(Number(processItemBalance?.toFixed(2))))} SSV
                   </Grid>
                   <Grid item xs={12} className={classes.currentBalanceDollar}></Grid>
                 </Grid>,

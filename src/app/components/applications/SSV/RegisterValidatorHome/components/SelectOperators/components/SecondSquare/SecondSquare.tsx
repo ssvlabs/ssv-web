@@ -18,16 +18,18 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { IOperator } from '~app/model/operator.model';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
@@ -36,7 +38,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const location = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const processStore: ProcessStore = stores.Process;
-  const clusterStore: ClusterStore = stores.Cluster;
+  const walletStore: WalletStore = stores.Wallet;
+  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const windowSize = useWindowSize();
@@ -111,7 +114,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     if (operatorStore.selectedEnoughOperators) {
       setClusterExist(false);
       setCheckClusterExistence(true);
-      clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
+      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
         if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
           setExistClusterData(clusterData);
           setClusterExist(true);

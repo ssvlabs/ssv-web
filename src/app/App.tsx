@@ -71,6 +71,7 @@ const App = () => {
 
   useEffect(() => {
     setTheme({ colors: getColors({ isDarkMode }) });
+    web3Onboard?.state.actions.updateTheme(isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   useEffect(() => {

@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { KeyShares, KeySharesItem } from 'ssv-keys';
 import { useConnectWallet } from '@web3-onboard/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Operator from '~lib/api/Operator';
 import {
   createValidatorsRecord,
   getResponse, getTooltipText, getValidatorCountErrorMessage,
@@ -15,7 +14,6 @@ import {
   validateConsistentOperatorIds,
   ValidatorType,
 } from '~root/services/keyShare.service';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import { equalsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
@@ -27,8 +25,8 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { AccountStore, ClusterStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
@@ -43,6 +41,11 @@ import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { getValidator } from '~root/services/validator.service';
+import { getOperatorsByIds } from '~root/services/operator.service';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { IOperator } from '~app/model/operator.model';
+import { getOwnerNonce } from '~root/services/account.service';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -52,10 +55,9 @@ const KeyShareFlow = () => {
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
     const walletStore: WalletStore = stores.Wallet;
-    const accountStore: AccountStore = stores.Account;
     const processStore: ProcessStore = stores.Process;
-    const clusterStore: ClusterStore = stores.Cluster;
     const operatorStore: OperatorStore = stores.Operator;
+    const ssvStore: SsvStore = stores.SSV;
     const validatorStore: ValidatorStore = stores.Validator;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -100,7 +102,7 @@ const KeyShareFlow = () => {
           }
         } else {
           const consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
-          const selectedOperators = await Operator.getInstance().getOperatorsByIds(consistentOperatorIds);
+          const selectedOperators = await getOperatorsByIds(consistentOperatorIds);
           const selectedOperatorsIds = selectedOperators.map((operator: IOperator) => operator.id);
           if (!selectedOperators.length) {
             return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
@@ -133,12 +135,16 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
         }
         const validators: Record<string, ValidatorType> = createValidatorsRecord(keyShareMulti);
-        await accountStore.getOwnerNonce(walletStore.accountAddress);
-        const { ownerNonce } = accountStore;
+        const ownerNonce = await getOwnerNonce({ address: walletStore.accountAddress });
+
+        if (!ownerNonce) {
+          // TODO: add proper error handling
+          return;
+        }
 
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
-            const res = await Validator.getInstance().getValidator(validator.publicKey, true);
+            const res = await getValidator(validator.publicKey, true);
             if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
               validators[`0x${res.public_key}`].registered = true;
             }
@@ -377,7 +383,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await clusterStore.getClusterData(clusterStore.getClusterHash(Object.values(operatorStore.selectedOperators)), true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: clusterData,

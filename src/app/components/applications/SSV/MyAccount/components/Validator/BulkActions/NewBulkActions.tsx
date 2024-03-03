@@ -1,10 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useStores } from '~app/hooks/useStores';
+import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
+import { BulkValidatorData } from '~app/model/validator.model';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { ProcessStore, SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb';
-import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
+import ValidatorsList
+  from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 
 const HeaderWrapper = styled.div`
     display: flex;
@@ -36,6 +39,7 @@ const SelectedIndicator = styled.div`
     color: ${({ theme }) => theme.colors.primaryBlue};
     font-size: 16px;
     font-weight: 500;
+    cursor: default;
 `;
 
 const SubHeader = styled.h3`
@@ -65,12 +69,47 @@ const ValidatorsWrapper = styled.div`
     background-color: ${({ theme }) => theme.colors.white};
 `;
 
-const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, selectUnselectAllValidators }: { title: string, nextStep: Function, onCheckboxClickHandler: Function, selectedValidators: string[], selectUnselectAllValidators: Function }) => {
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
-  const cluster = process?.item;
-  const disableButtonCondition = !selectedValidators.length;
+const TooltipTitleWrapper = styled.div`
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+`;
+
+const TooltipLink = styled.p`
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.colors.tint40};
+    text-decoration: underline;
+    white-space: nowrap;
+    cursor: pointer;
+`;
+
+const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount }: {
+  title: string,
+  nextStep: Function,
+  onCheckboxClickHandler: Function,
+  selectedValidators: Record<string, BulkValidatorData>,
+  fillSelectedValidators: Function,
+  maxValidatorsCount: number
+}) => {
+  const navigate = useNavigate();
+  const validatorsListArray = Object.values(selectedValidators);
+  const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
+  const disableButtonCondition = !selectedValidatorsCount;
+  const showIndicatorCondition = selectedValidatorsCount > 0;
+  const showSubHeaderCondition = validatorsListArray.length > maxValidatorsCount;
+  const totalCount = validatorsListArray.length > maxValidatorsCount ? maxValidatorsCount : validatorsListArray.length;
+
+  const createValidatorsLaunchpad = () => {
+    navigate(config.routes.SSV.VALIDATOR.CREATE);
+  };
+
+  const TooltipTitle = validatorsListArray.length > maxValidatorsCount ? <TooltipTitleWrapper>{`The maximum number of validators for bulk exit is ${maxValidatorsCount}`}
+    <TooltipLink onClick={createValidatorsLaunchpad}>Create via Ethereum Launchpad</TooltipLink>
+  </TooltipTitleWrapper> : undefined;
 
   return (
     <Wrapper>
@@ -79,14 +118,18 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
         header={'Cluster'}
       />
       <ValidatorsWrapper>
-            <HeaderWrapper>
-              <TitleWrapper>
-                <Title>{title}</Title>
-                {selectedValidators.length > 0 && <SelectedIndicator>{selectedValidators.length} of {cluster.validatorCount} selected</SelectedIndicator>}
-              </TitleWrapper>
-              <ValidatorsList onCheckboxClickHandler={onCheckboxClickHandler} selectedValidators={selectedValidators} selectUnselectAllValidators={selectUnselectAllValidators} />
-            </HeaderWrapper>
-        <PrimaryButton children={'Next'} disable={disableButtonCondition} submitFunction={nextStep} />
+        <HeaderWrapper>
+          <TitleWrapper>
+            <Title>{title}</Title>
+            {showIndicatorCondition && <AnchorTooltip
+              title={validatorsListArray.length > maxValidatorsCount ? TooltipTitle : null}
+              placement={'top'}><SelectedIndicator>{selectedValidatorsCount} of {totalCount} selected</SelectedIndicator></AnchorTooltip>}
+          </TitleWrapper>
+          {showSubHeaderCondition && <SubHeader>Select up to {maxValidatorsCount} validators</SubHeader>}
+          <ValidatorsList checkboxTooltipTitle={TooltipTitle} maxValidatorsCount={maxValidatorsCount} onCheckboxClickHandler={onCheckboxClickHandler}
+                          selectedValidators={selectedValidators} fillSelectedValidators={fillSelectedValidators}/>
+        </HeaderWrapper>
+        <PrimaryButton children={'Next'} disable={disableButtonCondition} submitFunction={nextStep}/>
       </ValidatorsWrapper>
     </Wrapper>
   );

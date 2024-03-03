@@ -1,15 +1,17 @@
-import axios from 'axios';
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
-import ApiParams from '~lib/api/ApiParams';
-import Validator from '~lib/api/Validator';
-import { ENV } from '~lib/utils/envHelper';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
+import { getValidator as getValidatorServiceCall, clustersByOwnerAddress } from '~root/services/validator.service';
+import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
+import { extendClusterEntity } from '~root/services/cluster.service';
+import { SsvStore } from '~app/common/stores/applications/SsvWeb/index';
+import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
+import { fromWei } from '~root/services/conversions.service';
+import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { IOperator } from '~app/model/operator.model';
 
 const INTERVAL_TIME = 30000;
 
@@ -22,12 +24,12 @@ class MyAccountStore extends BaseStore {
   lastUpdateValidators: number | undefined;
 
   // OPERATOR
-  ownerAddressOperators: any = [];
-  ownerAddressOperatorsPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressOperators: IOperator[] = [];
+  ownerAddressOperatorsPagination = DEFAULT_PAGINATION;
 
   // VALIDATOR
   ownerAddressClusters: any = [];
-  ownerAddressClustersPagination: any = ApiParams.DEFAULT_PAGINATION;
+  ownerAddressClustersPagination = DEFAULT_PAGINATION;
 
   // BEACONCHAIN
   beaconChaBalances: any = {};
@@ -64,39 +66,8 @@ class MyAccountStore extends BaseStore {
     clearInterval(this.validatorsInterval);
     this.ownerAddressOperators = [];
     this.ownerAddressClusters = [];
-    this.ownerAddressOperatorsPagination = ApiParams.DEFAULT_PAGINATION;
-    this.ownerAddressClustersPagination = ApiParams.DEFAULT_PAGINATION;
-  }
-
-  /**
-   * Returns true if entity exists in account, false otherwise
-   * @param entity
-   * @param identifierName
-   * @param currentValue
-   */
-  async checkEntityInAccount(entity: string, identifierName: string, currentValue: any): Promise<boolean> {
-    try {
-      let method: any;
-      switch (entity) {
-        case 'cluster':
-          method = 'getOwnerAddressClusters';
-          break;
-        case 'operator':
-          method = 'getOwnerAddressOperators';
-          break;
-        default:
-          // @ts-ignore
-          throw new Error(`MyAccountStore::checkEntityInAccount: "${entity}" entity is not supported`);
-      }
-      // @ts-ignore
-      const entities: any = await this[method]({});
-      return (entities || []).filter((e: any) => {
-        return currentValue === e[identifierName];
-      }).length > 0;
-    } catch (e) {
-      console.error('MyAccountStore::checkEntityInAccount Error:', e);
-      return false;
-    }
+    this.ownerAddressOperatorsPagination = DEFAULT_PAGINATION;
+    this.ownerAddressClustersPagination = DEFAULT_PAGINATION;
   }
 
   /**
@@ -142,17 +113,20 @@ class MyAccountStore extends BaseStore {
     const { page, per_page } = this.ownerAddressOperatorsPagination;
     const walletStore: WalletStore = this.getStore('Wallet');
     if (!walletStore.accountAddress) return;
-    const response = await Operator.getInstance().getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? per_page, walletStore.accountAddress);
+    const response = await getOperatorsByOwnerAddress(forcePage ?? page, this.forceBigList ? 10 : forcePerPage ?? per_page, walletStore.accountAddress);
     this.ownerAddressOperatorsPagination = response.pagination;
     this.ownerAddressOperators = await this.getOperatorsRevenue(response.operators);
     this.lastUpdateOperators = Date.now();
-    return this.ownerAddressOperators;
   }
 
   async getOperatorRevenue(operator: any) {
-    const operatorStore: OperatorStore = this.getStore('Operator');
-    // eslint-disable-next-line no-param-reassign
-    operator.revenue = await operatorStore.getOperatorRevenue(operator.id);
+    try {
+      const contract = getContractByName(EContractName.GETTER);
+      const response = await contract.totalEarningsOf(operator.id);
+      operator.revenue = fromWei(response.toString());
+    } catch (e: any) {
+      operator.revenue = 0;
+    }
     return operator;
   }
 
@@ -161,7 +135,7 @@ class MyAccountStore extends BaseStore {
   }
 
   async getValidator(publicKey: string, skipRetry?: boolean): Promise<any> {
-    const validator = await Validator.getInstance().getValidator(publicKey, skipRetry);
+    const validator = await getValidatorServiceCall(publicKey, skipRetry);
     const validatorPublicKey = `0x${validator.public_key}`;
     const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
     // eslint-disable-next-line no-await-in-loop
@@ -179,45 +153,17 @@ class MyAccountStore extends BaseStore {
 
   async getOwnerAddressClusters({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean }): Promise<any[]> {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const clusterStore: ClusterStore = this.getStore('Cluster');
+    const ssvStore: SsvStore = this.getStore('SSV');
     if (!walletStore.accountAddress) return [];
     const { page, per_page } = this.ownerAddressClustersPagination;
     const query = `${walletStore.accountAddress}?page=${forcePage ?? page}&perPage=${this.forceBigList ? 10 : (forcePerPage ?? per_page)}`;
-    const response = await Validator.getInstance().clustersByOwnerAddress(query, true);
+    const response = await clustersByOwnerAddress(query, true);
     if (!response) return [];
-    // @ts-ignore
     this.ownerAddressClustersPagination = response.pagination;
-    this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => clusterStore.extendClusterEntity(cluster))) || [];
+    this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => extendClusterEntity(cluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral))) || [];
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated);
     return this.ownerAddressClusters;
   }
-
-  async getValidatorsBalances(publicKeys: string[]): Promise<void> {
-    try {
-      const balanceUrl = `${ENV().BEACONCHA_URL}/api/v1/validator/${publicKeys.join(',')}`;
-      const response: any = (await axios.get(balanceUrl, { timeout: 2000 })).data;
-      let responseData = response.data;
-      if (!Array.isArray(responseData)) {
-        responseData = [responseData];
-      }
-      this.beaconChaBalances = responseData.reduce((obj: any, item: { pubkey: any; value: any; }) => ({
-        ...obj,
-        [item.pubkey]: item,
-      }), {});
-    } catch (e) {
-      console.log('[ERROR]: fetch balances from beacon failed');
-    }
-  }
-
-  getValidatorPerformance = async (publicKey: string): Promise<void> => {
-    const url = `${ENV().BEACONCHA_URL}/api/v1/validator/${publicKey}/performance`;
-    try {
-      const performance = (await axios.get(url)).data;
-      this.beaconChaPerformances[publicKey] = performance.data;
-    } catch (e: any) {
-      console.log('[ERROR]: fetch performances from beacon failed');
-    }
-  };
 }
 
 export default MyAccountStore;

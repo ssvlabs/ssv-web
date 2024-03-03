@@ -71,9 +71,6 @@ const config = {
             EXPIRED: '/my-account/operator/fee-update/expired',
           },
         },
-        MIGRATION: {
-          START_MIGRATION: '/my-account/migration',
-        },
         CLUSTER: {
           ROOT: '/my-account/cluster',
           DEPOSIT: '/my-account/cluster/deposit',
@@ -158,7 +155,6 @@ const config = {
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
-    LINK_COIN_EXCHANGE_API: process.env.REACT_APP_COIN_EXCHANGE_URL,
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
     SSV_KEYS_RELEASES_URL: 'https://github.com/bloxapp/ssv-keys/releases',
@@ -213,9 +209,6 @@ const config = {
     NETWORK_ID: networkId,
     PROJECT_ID: 'c93804911b583e5cacf856eee58655e6',
   },
-  COIN_KEY: {
-    COIN_EXCHANGE_KEY: process.env.REACT_APP_COIN_EXCHANGE_KEY,
-  },
   CONTRACTS: {
     SSV_TOKEN: {
       ADDRESS: tokenAddress,
@@ -236,5 +229,19 @@ const config = {
     },
   },
 };
+
+const HOLESKY_RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
+const GOERLI_RPC_URL = 'https://long-rough-season.ethereum-goerli.quiknode.pro/3f90b8bb4aaea263621f2522b6b9ae240c09c7c6';
+
+const MAINNET_RPC_URL = 'https://misty-purple-sailboat.quiknode.pro/7fea68f21d77d9b54fc35c3f6d68199a880f5cf0';
+
+const DEFAULT_PAGINATION = {
+  page: 1,
+  pages: 1,
+  total: 0,
+  per_page: 8,
+};
+
+export { HOLESKY_RPC_URL, GOERLI_RPC_URL, MAINNET_RPC_URL, DEFAULT_PAGINATION };
 
 export default config;

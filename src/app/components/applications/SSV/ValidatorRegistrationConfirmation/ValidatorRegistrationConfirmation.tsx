@@ -3,7 +3,6 @@ import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
 import { equalsAddresses } from '~lib/utils/strings';
@@ -22,7 +21,7 @@ import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
@@ -32,6 +31,8 @@ import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { IOperator } from '~app/model/operator.model';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -103,7 +104,7 @@ const ValidatorRegistrationConfirmation = () => {
           Insufficient SSV balance. There is not enough SSV in your wallet.
         </Grid>
         <Grid item>
-          <LinkText text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
+          <LinkText text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
         </Grid>
       </Grid>
     )}

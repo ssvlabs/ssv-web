@@ -1,11 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { useStores } from '~app/hooks/useStores';
 import Spinner from '~app/components/common/Spinner';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './PrimaryButton.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
@@ -25,30 +23,13 @@ type Props = {
 const PrimaryButton = (props: Props) => {
     const stores = useStores();
     const walletStore: WalletStore = stores.Wallet;
-    const notificationsStore: NotificationsStore = stores.Notifications;
     const { children, submitFunction, disable, wrapperClass, dataTestId, errorButton, withoutLoader, isLoading, withVerifyConnection } = props;
     const classes = useStyles({ errorButton });
     const appStateIsLoading = useAppSelector(getIsLoading);
 
-
-    // useEffect(() => {
-    //     const callback = (event: any) => {
-    //         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-    //             if (!disable && !applicationStore.isLoading) {
-    //                 submitHandler();
-    //             }
-    //         }
-    //     };
-    //
-    //     document.addEventListener('keydown', callback);
-    //     return () => {
-    //         document.removeEventListener('keydown', callback);
-    //     };
-    // }, [applicationStore.isLoading, disable, submitFunction]);
-
     // TODO: reduce to single component for wallet connection
     const submitHandler = async () => {
-        if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
+        // if (walletStore.isWrongNetwork) notificationsStore.showMessage('Please change network to Goerli', 'error');
         if (withVerifyConnection && !walletStore.wallet) {
             // await walletStore.connect();
         }
@@ -60,7 +41,6 @@ const PrimaryButton = (props: Props) => {
     const isDisabledCondition = disable || appStateIsLoading;
 
     return (
-        // <Grid container item>
             <Button
                 type="submit"
                 onClick={submitHandler}
@@ -71,7 +51,6 @@ const PrimaryButton = (props: Props) => {
                 {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
                 {children}
             </Button>
-        // </Grid>
     );
 };
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
@@ -19,6 +18,7 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getOperator } from '~root/services/operator.service';
 
 export type UpdateFeeProps = {
   error: ErrorType;
@@ -61,7 +61,7 @@ const UpdateFee = () => {
   useEffect(() => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
     dispatch(setIsLoading(true));
-    Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
+    getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
         const operatorFee = getFeeForYear(fromWei(response.fee));
         setOperator(response);

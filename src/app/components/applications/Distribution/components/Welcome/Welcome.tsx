@@ -8,7 +8,7 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
 import { useConnectWallet } from '@web3-onboard/react';
-import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
 
@@ -18,7 +18,7 @@ const Welcome = () => {
     const walletStore: WalletStore = stores.Wallet;
     const { networkId } = getStoredNetwork();
     const [_, connect] = useConnectWallet();
-    const titleNetwork = networkId === NETWORKS.MAINNET ? 'Mainnet' : 'Testnet';
+    const titleNetwork = networkId === MAINNET_NETWORK_ID ? 'Mainnet' : 'Testnet';
     const dispatch = useAppDispatch();
 
     const connectToWallet = async () => {

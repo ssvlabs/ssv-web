@@ -17,7 +17,6 @@ import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/RemainingDays';
 import OperatorDetails
@@ -26,6 +25,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { IOperator } from '~app/model/operator.model';
 
 type Props = {
   operators: any,

@@ -48,14 +48,14 @@ const translations = {
           texts: ['Removing your validator will cause your operators to stop managing it in your behalf, which will result in its inactivation (penalties on the Beacon Chain).', 'Please note that this action only applies to its removal from our network and does not exit your validator from the Beacon Chain.'],
           warningMessage: 'To avoid slashing, it is advised to wait at least 2 epochs prior to running the validator on an alternative service.',
           checkBoxes: ['I understand that my validator will be removed from the network and it will stop attesting on the beacon chain'],
-          buttonText: (count: number) => `Remove ${count} validators`,
+          buttonText: (count: number, isLoading: boolean) => `${ isLoading ? 'Removing' : 'Remove'} ${count > 1 ? `${count} validators` : 'validator' }`,
         },
         EXIT: {
           title: 'Exit Validator ',
           texts: ['Exiting your validator signals to the network that you wish to permanently cease your validator\'s participation in the Beacon Chain and retrieve your 32 ETH stake principal.', 'Initiating an exit places your validator in the exit queue. The duration in the queue depends on the number of validators already waiting. During this period, your validator must remain active, so it is crucial to maintain your validator\'s performance and keep it registered with the SSV network until it has fully exited.'],
           warningMessage: 'Exiting your validator from the Beacon Chain is permanent and cannot be reversed, preventing any future reactivation.',
           checkBoxes: ['I confirm that I have access to the withdrawal credentials of this validator.', 'I understand that my validator must remain active to perform its duties while in the exit queue, and it\'s up to me to remove it from the SSV network once completed to stop incurring fees.', 'I understand that a full exit is an irreversible decision. Once completed, the validator permanently leaves the Beacon Chain, and this action cannot be undone.'],
-          buttonText: (count: number) => `Exit ${count} validators`,
+          buttonText: (count: number, isLoading: boolean) => `${ isLoading ? 'Exiting' : 'Exit'} ${count > 1 ? `${count} validators` : 'validator' }`,
         },
       },
     },
@@ -262,6 +262,9 @@ const translations = {
   FAUCET: {
     FAUCET_DEPLETED: 'Depleted',
     REACHED_MAX_TRANSACTIONS: 'Reached max transactions per day',
+  },
+  DEFAULT: {
+    DEFAULT_ERROR_MESSAGE: 'Failed to receive response from your wallet provider. Please try again.',
   },
 };
 

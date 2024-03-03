@@ -47,7 +47,7 @@ const OperatorData = ({
       <Grid className={classes.OperatorLogo}/>
       <Typography className={classes.OperatorId}>ID: {operatorId}</Typography>
       {hoveredGrid && (
-        <OperatorCard classExtend={classes.OperatorCardExtendClass} operator={{ logo: operatorLogo, name, type }}/>
+        <OperatorCard classExtend={classes.OperatorCardExtendClass} operator={{ logo: operatorLogo, id: operatorId, name, type }}/>
       )}
     </Grid>
   );

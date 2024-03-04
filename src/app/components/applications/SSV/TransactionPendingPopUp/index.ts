@@ -1,1 +1,1 @@
-export { default } from './TransactionPendingPopUp';
+export { default as TransactionPendingPopUp } from './TransactionPendingPopUp';

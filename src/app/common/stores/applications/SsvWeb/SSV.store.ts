@@ -83,15 +83,12 @@ class SsvStore extends BaseStore {
    * Init User
    */
   async initUser() {
-    // TODO: do it only before interaction with the contract
     this.clearUserSyncInterval();
-    setTimeout(async () => {
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
       this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateralParams, 86400000); // once in 24 hours
       this.accountInterval = setInterval(this.getBalanceFromSsvContract, 10000);
       await this.getNetworkFeeAndLiquidationCollateralParams();
       await this.getBalanceFromSsvContract();
-    }, 5000);
   }
 
   clearUserSyncInterval() {

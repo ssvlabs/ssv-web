@@ -386,7 +386,7 @@ const KeyShareFlow = () => {
           await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
-                item: clusterData,
+                item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },
                 processName: 'cluster_registration',
               }, ProcessType.Validator);
               nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;

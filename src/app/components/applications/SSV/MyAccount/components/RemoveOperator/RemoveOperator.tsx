@@ -18,6 +18,7 @@ import {
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading, setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const RemoveOperator = () => {
   const stores = useStores();
@@ -27,6 +28,7 @@ const RemoveOperator = () => {
   // const [leavingReason, setLeavingReason] = useState(0);
   // const [userTextReason, setUserTextReason] = useState('');
   const processStore: ProcessStore = stores.Process;
+  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const process: RegisterOperator = processStore.process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -49,7 +51,9 @@ const RemoveOperator = () => {
     dispatch(setIsLoading(false));
     if (isRemoved) {
       myAccountStore.getOwnerAddressOperators({ forcePage: 1 }).finally(() => {
-        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+        if (!walletStore.isContractWallet) {
+          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+        }
       });
     }
   };

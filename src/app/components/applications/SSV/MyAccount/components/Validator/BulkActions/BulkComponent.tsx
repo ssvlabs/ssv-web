@@ -10,7 +10,7 @@ import ConfirmationStep
 import {
   ProcessStore,
   ValidatorStore,
-  SingleCluster as SingleClusterProcess,
+  SingleCluster as SingleClusterProcess, WalletStore,
 } from '~app/common/stores/applications/SsvWeb';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { IOperator } from '~app/model/operator.model';
@@ -35,6 +35,11 @@ const BULK_ACTIONS_TOOLTIP_TITLES = {
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS(MAX_VALIDATORS_COUNT),
 };
 
+const BULK_ACTIONS_TOOLTIP_CHECKBOX_TITLES = {
+  [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.REMOVE_VALIDATORS_CHECKBOX(MAX_VALIDATORS_COUNT),
+  [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS_CHECKBOX(MAX_VALIDATORS_COUNT),
+};
+
 const BULK_FLOWS_CONFIRMATION_DATA = {
   [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.REMOVE,
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.EXIT,
@@ -45,6 +50,7 @@ const BulkComponent = () => {
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
+  const walletStore: WalletStore = stores.Wallet;
   const process: SingleClusterProcess = processStore.getProcess;
   const navigate = useNavigate();
   const currentBulkFlow = process.currentBulkFlow;
@@ -103,7 +109,7 @@ const BulkComponent = () => {
       const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
       const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
       res = condition ? await exitBulk() : await exitSingle();
-      if (res) {
+      if (res && !walletStore.isContractWallet) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
@@ -113,7 +119,7 @@ const BulkComponent = () => {
       const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
       const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
       res = condition ? await bulkRemove() : await singleRemove();
-      if (res) {
+      if (res && !walletStore.isContractWallet) {
         backToSingleClusterPage();
       }
     }
@@ -124,6 +130,7 @@ const BulkComponent = () => {
   if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
     return <NewBulkActions nextStep={nextStep}
                            tooltipTitle={BULK_ACTIONS_TOOLTIP_TITLES[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
+                           checkboxTooltipTitle={BULK_ACTIONS_TOOLTIP_CHECKBOX_TITLES[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
                            maxValidatorsCount={MAX_VALIDATORS_COUNT}
                            title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
                            fillSelectedValidators={fillSelectedValidators}

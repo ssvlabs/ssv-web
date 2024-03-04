@@ -80,7 +80,7 @@ const ValidatorRegistrationConfirmation = () => {
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
     const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration() : await validatorStore.addNewValidator();
-    if (response) {
+    if (response && !walletStore.isContractWallet) {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
       setActionButtonText(actionButtonDefaultText);

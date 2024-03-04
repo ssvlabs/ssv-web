@@ -46,7 +46,7 @@ const FeeRecipient = () => {
 
   const submitFeeRecipient = async () => {
     dispatch(setIsLoading(true));
-    await setFeeRecipientAccountService({ feeRecipientAddress: userInput });
+    await setFeeRecipientAccountService({ feeRecipientAddress: userInput, isContractWallet: walletStore.isContractWallet });
     dispatch(setIsLoading(false));
   };
 

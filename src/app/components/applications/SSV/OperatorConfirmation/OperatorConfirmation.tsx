@@ -19,10 +19,12 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
+  const walletStore: WalletStore = stores.Wallet;
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
   const { checkedCondition } = useTermsAndConditions();
@@ -55,8 +57,10 @@ const OperatorConfirmation = () => {
                 ...operatorStore.newOperatorKeys,
                 id: operator.data.id,
               };
-              disableLoadingStates();
-              navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+              if (!walletStore.isContractWallet){
+                disableLoadingStates();
+                navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+              }
               return;
             }
           } catch (e) {

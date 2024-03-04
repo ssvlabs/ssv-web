@@ -24,7 +24,7 @@ const getOwnerNonce = async ({ address }: { address: string }) => {
   return undefined;
 };
 
-const setFeeRecipient = async ({ feeRecipientAddress }: { feeRecipientAddress: string }) => {
+const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeRecipientAddress: string, isContractWallet: boolean }) => {
   const contract = getContractByName(EContractName.SETTER);
   try {
     const tx = await contract.setFeeRecipientAddress(feeRecipientAddress);
@@ -32,6 +32,9 @@ const setFeeRecipient = async ({ feeRecipientAddress }: { feeRecipientAddress: s
       notifyService.hash(tx.hash);
       store.dispatch(setTxHash(tx.hash));
       store.dispatch(setIsShowTxPendingPopup(true));
+    }
+    if (isContractWallet) {
+      return true;
     }
     await tx.wait();
   } catch (e: any) {

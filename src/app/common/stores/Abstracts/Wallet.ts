@@ -4,13 +4,17 @@ import BaseStore from '~app/common/stores/BaseStore';
 export default abstract class Wallet extends BaseStore {
   wallet: any;
   accountAddress: string;
+  isWalletConnect = false;
 
   protected constructor() {
     super();
     this.wallet = null;
     this.accountAddress = '';
+    this.isWalletConnect = false;
   }
 
   // eslint-disable-next-line no-unused-vars
-  public abstract initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null): Promise<void>;
+  public abstract initWallet(wallet: WalletState, connectedChain: ConnectedChain): Promise<void>;
+
+  public abstract resetUser(): Promise<void>;
 }

@@ -18,9 +18,7 @@ const getAccountData = async (publicKey: string) => {
 
 const getOwnerNonce = async ({ address }: { address: string }) => {
   const res = await getAccountData(address);
-  console.log(res);
   if (res.data && (res.data.nonce || res.data.nonce === 0)) {
-    console.log(res.data.nonce);
     return Number(res.data.nonce);
   }
   return undefined;

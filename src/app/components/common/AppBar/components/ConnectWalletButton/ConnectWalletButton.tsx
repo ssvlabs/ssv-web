@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useConnectWallet } from '@web3-onboard/react';
+import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
@@ -13,8 +13,15 @@ const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const classes = useStyles({ walletConnected: !!walletStore.wallet });
-  const [{ wallet }, connect] = useConnectWallet();
+  const [{  wallet }, connect] = useConnectWallet();
+  const [{ connectedChain }] = useSetChain();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (wallet && connectedChain && !walletStore.wallet) {
+      walletStore.initWallet(wallet, connectedChain);
+    }
+  }, [wallet, connectedChain]);
 
   const onClick = async () => {
     if (walletStore.wallet) {
@@ -50,7 +57,7 @@ const ConnectWalletButton = () => {
       {walletStore.accountAddress && (
         <Grid item container>
           <Grid item><img className={classes.WalletImage} src={icon}
-                          alt={`Connected to ${walletStore.wallet.name}`}/></Grid>
+                          alt={`Connected to ${walletStore.wallet?.label}`}/></Grid>
           <Grid item className={classes.WalletAddress}>{walletDisplayName(walletStore.accountAddress)}</Grid>
         </Grid>
       )}

@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js';
-import { ethers } from 'ethers';
 import { KeySharesItem } from 'ssv-keys';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
@@ -25,6 +24,7 @@ import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -41,12 +41,6 @@ const PAYLOAD_KEYS = {
   TOTAL_COST: 'totalCost',
   CLUSTER_DATA: 'clusterData',
 };
-
-// eslint-disable-next-line no-unused-vars
-enum Mode {
-  KEYSHARE = 0,
-  KEYSTORE = 1,
-}
 
 const annotations = {
   isJsonFile: action.bound,
@@ -67,7 +61,6 @@ const annotations = {
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
-  newValidatorReceipt: observable,
   extractKeyStoreData: action.bound,
   getKeyStorePublicKey: action.bound,
   clearKeyShareFlowData: action.bound,
@@ -83,8 +76,7 @@ const annotations = {
 
 class ValidatorStore extends BaseStore {
   // general
-  registrationMode: Mode = 0;
-  newValidatorReceipt: any = null;
+  registrationMode = 0;
 
   // Key Stores flow
   keyStorePublicKey: string = '';
@@ -130,7 +122,6 @@ class ValidatorStore extends BaseStore {
     this.setMultiSharesMode(0);
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
-    this.newValidatorReceipt = null;
     this.validatorPublicKeyExist = false;
   }
 
@@ -163,7 +154,6 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
     const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
@@ -180,7 +170,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -201,7 +191,6 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
     const clusterData = await getClusterData(getClusterHash(operatorIds, walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
@@ -217,7 +206,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -307,7 +296,7 @@ class ValidatorStore extends BaseStore {
   async updateValidator() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      const { KEYSTORE_PUBLIC_KEY, OPERATOR_IDS } = PAYLOAD_KEYS;
+      const { KEYSTORE_PUBLIC_KEY } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const contract = getContractByName(EContractName.SETTER);
       const payload = await this.createKeystorePayload();
@@ -317,7 +306,6 @@ class ValidatorStore extends BaseStore {
         resolve(false);
         return;
       }
-      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const validatorBefore = await getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
       try {
         const tx = await contract.updateValidator(...payload.values()).send({ from: walletStore.accountAddress });
@@ -332,14 +320,13 @@ class ValidatorStore extends BaseStore {
         const event: boolean = receipt.hasOwnProperty('events');
         if (event) {
           this.keyStoreFile = null;
-          this.newValidatorReceipt = payload.get(OPERATOR_IDS);
           console.debug('Contract Receipt', receipt);
-          await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+          await executeAfterEvent(async () => await checkEntityChangedInAccount(
             async () => {
               return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
             },
             validatorBefore,
-          ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -357,9 +344,7 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
-        const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const contract = getContractByName(EContractName.SETTER);
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const payload = await this.createKeySharePayload();
         if (!payload) {
           resolve(false);
@@ -378,13 +363,12 @@ class ValidatorStore extends BaseStore {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             GoogleTagManager.getInstance().sendEvent({
               category: 'validators_register',
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
           }
         } else {
           resolve(false);
@@ -412,31 +396,12 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const payload = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
-        const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const contract = getContractByName(EContractName.SETTER);
         if (!payload) {
           resolve(false);
           return;
         }
-
-        this.newValidatorReceipt = null;
-
         console.debug('Add Validator Payload: ', payload);
-        const gasLimit = 4075000;
-
-        const provider = new ethers.providers.Web3Provider(walletStore.wallet.provider, 'any');
-        console.warn('[addNewValidator] Estimating gas price');
-        const gasPrice = await provider.getGasPrice();
-        console.warn('[addNewValidator] Estimating gas limit. Gas price: ', gasPrice);
-        // const gasLimit = await contract.estimateGas.registerValidator(...payload.values());
-        const txParams = {
-          gasLimit,
-          gasPrice,
-          // safeTxGas: gasPrice,
-        };
-        console.warn(txParams);
-        // let tx = await contract.registerValidator(...payload.values(), txParams);
         let tx = await contract.registerValidator(...payload.values());
 
         if (tx.hash) {
@@ -451,13 +416,12 @@ class ValidatorStore extends BaseStore {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             GoogleTagManager.getInstance().sendEvent({
               category: 'validator_register',
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
           }
         } else {
           resolve(false);
@@ -484,7 +448,6 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const processStore: ProcessStore = this.getStore('Process');
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const contract = getContractByName(EContractName.SETTER);
         const process: SingleCluster = <SingleCluster>processStore.process;
         const walletStore: WalletStore = this.getStore('Wallet');
@@ -512,7 +475,7 @@ class ValidatorStore extends BaseStore {
               action: 'reactivate_cluster',
             });
             resolve(true);
-            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
           }
         } else {
           resolve(false);
@@ -550,7 +513,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const ssvKeys = new SSVKeys();
-        const keyShares = new KeyShares();
+        // const keyShares = new KeyShares();
         const { accountAddress } = walletStore;
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);

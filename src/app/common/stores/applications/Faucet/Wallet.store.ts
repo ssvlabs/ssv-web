@@ -8,6 +8,7 @@ import notifyService from '~root/services/notify.service';
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
+  isWalletConnect = false;
 
   constructor() {
     super();
@@ -16,6 +17,7 @@ class WalletStore extends BaseStore implements Wallet {
       wallet: observable,
       accountAddress: observable,
       initWallet: action.bound,
+      resetUser: action.bound,
     });
   }
 
@@ -23,7 +25,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
-  async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
+  async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
     if (wallet && connectedChain) {
       this.wallet = wallet;
       const address = wallet.accounts[0]?.address;
@@ -38,6 +40,8 @@ class WalletStore extends BaseStore implements Wallet {
       notifyService.init(connectedChain.id);
     }
   }
+
+  resetUser = async () => {};
 }
 
 export default WalletStore;

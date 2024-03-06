@@ -14,11 +14,14 @@ const fromWei = (amount?: number | string): number => {
 
 const toWei = (amount?: number | string): string => {
   if (!amount) return '0';
-  // eslint-disable-next-line no-param-reassign
-  if (typeof amount === 'number') amount = roundNumber(amount, 16);
-  // eslint-disable-next-line no-param-reassign
-  if (typeof amount === 'string') amount = amount.slice(0, 16);
-  return utils.toWei(amount.toString(), 'ether');
+  let convertedAmount = amount;
+  if (typeof amount === 'number') {
+    convertedAmount = roundNumber(amount, 16);
+  }
+  if (typeof amount === 'string') {
+    convertedAmount = amount.slice(0, 16);
+  }
+  return utils.toWei(convertedAmount.toString(), 'ether');
 };
 
 const encodePacked = utils.encodePacked;

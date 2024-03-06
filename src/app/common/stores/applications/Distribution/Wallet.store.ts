@@ -11,6 +11,7 @@ class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   ssvBalance: any = 0;
   accountAddress: string = '';
+  isWalletConnect = false;
 
   private distributionStore: DistributionStore | DistributionTestnetStore | null = null;
 
@@ -22,6 +23,7 @@ class WalletStore extends BaseStore implements Wallet {
       ssvBalance: observable,
       accountAddress: observable,
       initWallet: action.bound,
+      resetUser: action.bound,
     });
   }
 
@@ -29,7 +31,7 @@ class WalletStore extends BaseStore implements Wallet {
    * Initialize SDK
    * @url https://docs.blocknative.com/onboard#initialization
    */
-  async initWallet(wallet: WalletState | null, connectedChain: ConnectedChain | null) {
+  async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
     // TODO: refactor
     if (wallet && connectedChain) {
       const networkId = parseInt(String(connectedChain.id), 16);
@@ -50,6 +52,8 @@ class WalletStore extends BaseStore implements Wallet {
       notifyService.init(connectedChain.id);
     }
   }
+
+  resetUser = async () => {};
 }
 
 export default WalletStore;

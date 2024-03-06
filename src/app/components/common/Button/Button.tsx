@@ -26,14 +26,14 @@ type ButtonParams = {
     checkBoxesCallBack?: any[],
     isLoading?: boolean,
     totalAmount?: string,
+    allowanceApprovedCB?: () => void
 };
 
-const Button = (props: ButtonParams) => {
+const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount, isLoading, allowanceApprovedCB }: ButtonParams) => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
-    const { testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount, isLoading } = props;
     const [hasCheckedAllowance, setHasCheckedAllowance] = useState(false);
     const [hasToRequestApproval, setHasToRequestApproval] = useState(false);
     const [hasGotAllowanceApproval, setHasGotAllowanceApproval] = useState(false);
@@ -59,29 +59,20 @@ const Button = (props: ButtonParams) => {
         }
     }, [totalAmount]);
 
-    // TODO: reduce to single component for wallet connection
-    const checkWalletConnected = (onClickCallBack: any) => {
-        // if (!walletStore.wallet) walletStore.connect();
-        // if (walletStore.isWrongNetwork) {
-            // await walletStore.networkHandler(10);
-        // } else if (onClickCallBack) onClickCallBack();
-        if (onClickCallBack) onClickCallBack();
-    };
-
     const handlePendingTransaction = ({ txHash }: { txHash: string }) => {
-        setApproveButtonText('Approving…');
         dispatch(setTxHash(txHash));
         dispatch(setIsShowTxPendingPopup(true));
         notifyService.hash(txHash);
     };
 
-    const allowNetworkContract = async () => {
+    const requestAllowance = async () => {
         try {
             setAllowanceButtonDisable(true);
-            setApproveButtonText('Waiting...');
+            setApproveButtonText('Approving…');
             await ssvStore.requestAllowance(handlePendingTransaction);
             setApproveButtonText('Approved');
             setHasGotAllowanceApproval(true);
+            allowanceApprovedCB && allowanceApprovedCB();
         } catch (e) {
             console.error('Error while approving allowance', e);
             setApproveButtonText('Approve SSV');
@@ -98,7 +89,7 @@ const Button = (props: ButtonParams) => {
             dataTestId={testId}
             errorButton={errorButton}
             isLoading={isLoading}
-            submitFunction={() => { checkWalletConnected(onClick); }}
+            submitFunction={onClick ? onClick : () => {}}
             children={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
           />
         );
@@ -113,14 +104,14 @@ const Button = (props: ButtonParams) => {
                 children={approveButtonText}
                 withoutLoader={hasGotAllowanceApproval}
                 disable={hasGotAllowanceApproval || disable}
-                submitFunction={() => { !allowanceButtonDisable && checkWalletConnected(allowNetworkContract); }}
+                submitFunction={() => { !allowanceButtonDisable && requestAllowance(); }}
               />
             </Grid>
             <Grid item xs>
               <PrimaryButton
                 dataTestId={testId}
                 disable={!hasGotAllowanceApproval || disable}
-                submitFunction={() => { checkWalletConnected(onClick); }}
+                submitFunction={onClick ? onClick : () => {}}
                 children={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
               />
             </Grid>
@@ -140,7 +131,7 @@ const Button = (props: ButtonParams) => {
     };
 
     if (!hasCheckedAllowance) {
-        return <Spinner size={35} />;
+        return <Grid alignContent="center" justifyContent="center"><Spinner size={35} /></Grid>;
     }
 
     return (

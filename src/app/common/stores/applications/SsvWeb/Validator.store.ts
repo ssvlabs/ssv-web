@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js';
-import { ethers } from 'ethers';
 import { KeySharesItem } from 'ssv-keys';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
@@ -43,12 +42,6 @@ const PAYLOAD_KEYS = {
   CLUSTER_DATA: 'clusterData',
 };
 
-// eslint-disable-next-line no-unused-vars
-enum Mode {
-  KEYSHARE = 0,
-  KEYSTORE = 1,
-}
-
 const annotations = {
   isJsonFile: action.bound,
   keyStoreFile: observable,
@@ -68,7 +61,6 @@ const annotations = {
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
-  newValidatorReceipt: observable,
   extractKeyStoreData: action.bound,
   getKeyStorePublicKey: action.bound,
   clearKeyShareFlowData: action.bound,
@@ -84,8 +76,7 @@ const annotations = {
 
 class ValidatorStore extends BaseStore {
   // general
-  registrationMode: Mode = 0;
-  newValidatorReceipt: any = null;
+  registrationMode = 0;
 
   // Key Stores flow
   keyStorePublicKey: string = '';
@@ -131,7 +122,6 @@ class ValidatorStore extends BaseStore {
     this.setMultiSharesMode(0);
     this.keyStorePublicKey = '';
     this.keyStorePrivateKey = '';
-    this.newValidatorReceipt = null;
     this.validatorPublicKeyExist = false;
   }
 
@@ -306,7 +296,7 @@ class ValidatorStore extends BaseStore {
   async updateValidator() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      const { KEYSTORE_PUBLIC_KEY, OPERATOR_IDS } = PAYLOAD_KEYS;
+      const { KEYSTORE_PUBLIC_KEY } = PAYLOAD_KEYS;
       const walletStore: WalletStore = this.getStore('Wallet');
       const contract = getContractByName(EContractName.SETTER);
       const payload = await this.createKeystorePayload();
@@ -330,7 +320,6 @@ class ValidatorStore extends BaseStore {
         const event: boolean = receipt.hasOwnProperty('events');
         if (event) {
           this.keyStoreFile = null;
-          this.newValidatorReceipt = payload.get(OPERATOR_IDS);
           console.debug('Contract Receipt', receipt);
           await executeAfterEvent(async () => await checkEntityChangedInAccount(
             async () => {
@@ -355,7 +344,6 @@ class ValidatorStore extends BaseStore {
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
-        const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const contract = getContractByName(EContractName.SETTER);
         const payload = await this.createKeySharePayload();
         if (!payload) {
@@ -375,7 +363,6 @@ class ValidatorStore extends BaseStore {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             GoogleTagManager.getInstance().sendEvent({
               category: 'validators_register',
               action: 'register_tx',
@@ -409,30 +396,12 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const payload = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
-        const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const contract = getContractByName(EContractName.SETTER);
         if (!payload) {
           resolve(false);
           return;
         }
-
-        this.newValidatorReceipt = null;
-
         console.debug('Add Validator Payload: ', payload);
-        const gasLimit = 4075000;
-
-        const provider = new ethers.providers.Web3Provider(walletStore.wallet.provider, 'any');
-        console.warn('[addNewValidator] Estimating gas price');
-        const gasPrice = await provider.getGasPrice();
-        console.warn('[addNewValidator] Estimating gas limit. Gas price: ', gasPrice);
-        // const gasLimit = await contract.estimateGas.registerValidator(...payload.values());
-        const txParams = {
-          gasLimit,
-          gasPrice,
-          // safeTxGas: gasPrice,
-        };
-        console.warn(txParams);
-        // let tx = await contract.registerValidator(...payload.values(), txParams);
         let tx = await contract.registerValidator(...payload.values());
 
         if (tx.hash) {
@@ -447,7 +416,6 @@ class ValidatorStore extends BaseStore {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             this.keyStoreFile = null;
-            this.newValidatorReceipt = payload.get(OPERATOR_IDS);
             GoogleTagManager.getInstance().sendEvent({
               category: 'validator_register',
               action: 'register_tx',

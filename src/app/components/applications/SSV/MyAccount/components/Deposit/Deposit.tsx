@@ -34,6 +34,7 @@ const Deposit = () => {
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
   const [inputValue, setInputValue] = useState('');
+  const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const { checkedCondition } = useTermsAndConditions();
   const dispatch = useAppDispatch();
 
@@ -104,6 +105,7 @@ const Deposit = () => {
                               value={inputValue}
                               placeholder={'0.0'}
                               onChange={inputHandler}
+                              disabled={wasAllowanceApproved}
                               className={classes.Balance}
                           />
                         </Grid>
@@ -134,6 +136,7 @@ const Deposit = () => {
                     onClick={depositSsv}
                     disable={Number(inputValue) <= 0 || !checkedCondition}
                     totalAmount={inputValue}
+                    allowanceApprovedCB={() => setAllowanceWasApproved(true)}
                 />
                 </TermsAndConditionsCheckbox>
             )]}

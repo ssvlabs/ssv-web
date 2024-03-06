@@ -57,7 +57,7 @@ const ConnectWalletButton = () => {
       {walletStore.accountAddress && (
         <Grid item container>
           <Grid item><img className={classes.WalletImage} src={icon}
-                          alt={`Connected to ${walletStore.wallet.name}`}/></Grid>
+                          alt={`Connected to ${walletStore.wallet?.label}`}/></Grid>
           <Grid item className={classes.WalletAddress}>{walletDisplayName(walletStore.accountAddress)}</Grid>
         </Grid>
       )}

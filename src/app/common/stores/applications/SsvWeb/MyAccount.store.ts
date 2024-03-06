@@ -70,29 +70,6 @@ class MyAccountStore extends BaseStore {
     this.ownerAddressClustersPagination = DEFAULT_PAGINATION;
   }
 
-  /**
-   * Returns true if entity has been changed, otherwise returns false
-   * @param getter
-   * @param valueBefore
-   */
-  async checkEntityChangedInAccount(getter: any, valueBefore: any): Promise<boolean> {
-    try {
-      const valueAfter = await getter();
-      return JSON.stringify(valueBefore) !== JSON.stringify(valueAfter);
-    } catch (e) {
-      console.error('MyAccountStore::checkEntityChangedInAccount', e);
-      return false;
-    }
-  }
-
-  /**
-   * Do some delay in a flow
-   * @param ms
-   */
-  async delay(ms?: number) {
-    return new Promise((r) => setTimeout(() => r(true), ms || 1000));
-  }
-
   setIntervals() {
     this.validatorsInterval = setInterval(() => {
       // @ts-ignore
@@ -151,7 +128,7 @@ class MyAccountStore extends BaseStore {
     };
   }
 
-  async getOwnerAddressClusters({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number, reFetchBeaconData?: boolean }): Promise<any[]> {
+  async getOwnerAddressClusters({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number }): Promise<any[]> {
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
     if (!walletStore.accountAddress) return [];

@@ -25,6 +25,7 @@ import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -163,7 +164,6 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
     const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
@@ -180,7 +180,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -201,7 +201,6 @@ class ValidatorStore extends BaseStore {
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const walletStore: WalletStore = this.getStore('Wallet');
     const ssvStore: SsvStore = this.getStore('SSV');
     const clusterData = await getClusterData(getClusterHash(operatorIds, walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
@@ -217,7 +216,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -317,7 +316,6 @@ class ValidatorStore extends BaseStore {
         resolve(false);
         return;
       }
-      const myAccountStore: MyAccountStore = this.getStore('MyAccount');
       const validatorBefore = await getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
       try {
         const tx = await contract.updateValidator(...payload.values()).send({ from: walletStore.accountAddress });
@@ -334,12 +332,12 @@ class ValidatorStore extends BaseStore {
           this.keyStoreFile = null;
           this.newValidatorReceipt = payload.get(OPERATOR_IDS);
           console.debug('Contract Receipt', receipt);
-          await executeAfterEvent(async () => await myAccountStore.checkEntityChangedInAccount(
+          await executeAfterEvent(async () => await checkEntityChangedInAccount(
             async () => {
               return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
             },
             validatorBefore,
-          ), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+          ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -359,7 +357,6 @@ class ValidatorStore extends BaseStore {
       try {
         const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
         const contract = getContractByName(EContractName.SETTER);
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const payload = await this.createKeySharePayload();
         if (!payload) {
           resolve(false);
@@ -384,7 +381,7 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
           }
         } else {
           resolve(false);
@@ -413,7 +410,6 @@ class ValidatorStore extends BaseStore {
       try {
         const payload = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
         const { OPERATOR_IDS, CLUSTER_DATA } = PAYLOAD_KEYS;
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const contract = getContractByName(EContractName.SETTER);
         if (!payload) {
           resolve(false);
@@ -457,7 +453,7 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
           }
         } else {
           resolve(false);
@@ -484,7 +480,6 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const processStore: ProcessStore = this.getStore('Process');
-        const myAccountStore: MyAccountStore = this.getStore('MyAccount');
         const contract = getContractByName(EContractName.SETTER);
         const process: SingleCluster = <SingleCluster>processStore.process;
         const walletStore: WalletStore = this.getStore('Wallet');
@@ -512,7 +507,7 @@ class ValidatorStore extends BaseStore {
               action: 'reactivate_cluster',
             });
             resolve(true);
-            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), myAccountStore.delay);
+            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
           }
         } else {
           resolve(false);
@@ -550,7 +545,7 @@ class ValidatorStore extends BaseStore {
     return new Promise(async (resolve) => {
       try {
         const ssvKeys = new SSVKeys();
-        const keyShares = new KeyShares();
+        // const keyShares = new KeyShares();
         const { accountAddress } = walletStore;
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);

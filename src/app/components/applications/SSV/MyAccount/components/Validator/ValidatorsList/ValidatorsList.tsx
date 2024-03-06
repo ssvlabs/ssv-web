@@ -16,6 +16,8 @@ import {
   NotificationsStore,
 } from '~app/common/stores/applications/SsvWeb';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode } from '~app/redux/appState.slice';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -81,14 +83,14 @@ const LinksWrapper = styled.div`
     gap: 8px;
 `;
 
-const Link = styled.div<{ logo: string }>`
+const Link = styled.div<{ isDarkMode: boolean; logo: string }>`
     width: 24px;
     height: 24px;
     cursor: pointer;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    background-image: ${({ theme, logo }) => `url(${logo}${theme.colors.isDarkTheme ? 'dark.svg' : 'light.svg'})`}
+    background-image: ${({ isDarkMode, logo }) => `url(${logo}${isDarkMode ? 'dark.svg' : 'light.svg'})`}
 }
 `;
 
@@ -107,6 +109,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   const cluster = process?.item;
   const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();
+  const isDarkMode = useAppSelector(getIsDarkMode);
   const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
@@ -196,14 +199,12 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
                                                                                isChecked={res}/>}
                     {longStringShorten(formattedPublicKey, 4, 4)}
                   </PublicKey>
-                  <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}/>
+                  <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'} isDarkMode={isDarkMode} />
                 </PublicKeyWrapper>
                 <Status item={validator}/>
                 <LinksWrapper>
-                  <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
-                        logo={'/images/explorer/'}/>
-                  <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)}
-                        logo={'/images/beacon/'}/>
+                  <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)} logo={'/images/explorer/'} isDarkMode={isDarkMode} />
+                  <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)} logo={'/images/beacon/'} isDarkMode={isDarkMode} />
                 </LinksWrapper>
               </ValidatorWrapper>);
           },

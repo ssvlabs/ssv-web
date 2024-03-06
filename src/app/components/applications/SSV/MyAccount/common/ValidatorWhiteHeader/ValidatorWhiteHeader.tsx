@@ -8,11 +8,12 @@ import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { SingleCluster } from '~app/model/processes.model';
 
 type Props = {
   text: string,

@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from '../../NewWhiteWrapper.styles';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterHash } from '~root/services/cluster.service';
+import { SingleCluster } from '~app/model/processes.model';
 
 type Props = {
   header: string,

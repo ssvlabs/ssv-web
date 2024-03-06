@@ -2,13 +2,14 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
 import { getClusterData, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb/index';
+import { SingleCluster, SingleOperator } from '~app/model/processes.model';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -32,7 +33,6 @@ class SsvStore extends BaseStore {
       deposit: action.bound,
       initUser: action.bound,
       networkFee: observable,
-      accountAddress: computed,
       withdrawSsv: action.bound,
       clearSettings: action.bound,
       accountInterval: observable,
@@ -52,13 +52,6 @@ class SsvStore extends BaseStore {
       getBalanceFromSsvContract: action.bound,
       minimumLiquidationCollateral: observable,
     });
-  }
-
-  /**
-   * Get user account address from wallet.
-   */
-  get accountAddress(): String {
-    return this.getStore('Wallet').accountAddress;
   }
 
   /**
@@ -112,7 +105,7 @@ class SsvStore extends BaseStore {
       }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
       const clusterData = await getClusterData(getClusterHash(cluster.operators, walletStore.accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
       const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
-      const tx = await contract.deposit(this.accountAddress, operatorsIds, ssvAmount, clusterData);
+      const tx = await contract.deposit(walletStore.accountAddress, operatorsIds, ssvAmount, clusterData);
       if (tx.hash) {
         notifyService.hash(tx.hash);
       }
@@ -139,9 +132,10 @@ class SsvStore extends BaseStore {
   async getBalanceFromSsvContract(): Promise<any> {
     console.warn('getBalanceFromSsvContract before');
     try {
+      const walletStore: WalletStore = this.getStore('Wallet');
       const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
       if (!ssvContract) return;
-      const balance = await ssvContract.balanceOf(this.accountAddress);
+      const balance = await ssvContract.balanceOf(walletStore.accountAddress);
       this.walletSsvBalance = parseFloat(String(fromWei(balance)));
       console.warn('getBalanceFromSsvContract after');
     } catch (e) {
@@ -161,6 +155,9 @@ class SsvStore extends BaseStore {
         const process: any = processStore.process;
         // const eventFlow = operatorFlow ? GasGroup.WITHDRAW_OPERATOR_BALANCE : GasGroup.WITHDRAW_CLUSTER_BALANCE;
         const contract = getContractByName(EContractName.SETTER);
+        if (!contract) {
+          resolve(false);
+        }
         // let gasLimit = getFixedGasLimit(eventFlow);
         let tx;
         if (processStore.isValidatorFlow) {
@@ -172,8 +169,7 @@ class SsvStore extends BaseStore {
           // @ts-ignore
           const newBalance = fromWei(cluster.balance) - Number(amount);
           if (getClusterRunWay({ ...process.item, balance: toWei(newBalance) }, this.liquidationCollateralPeriod, this.minimumLiquidationCollateral) <= 0) {
-
-            tx = await contract.liquidate(this.accountAddress, operatorsIds, clusterData);
+            tx = await contract.liquidate(walletStore.accountAddress, operatorsIds, clusterData);
             if (tx.hash) {
               notifyService.hash(tx.hash);
             }
@@ -276,10 +272,11 @@ class SsvStore extends BaseStore {
    */
   async checkAllowance(): Promise<void> {
     try {
+      const walletStore: WalletStore = this.getStore('Wallet');
       const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
       if (!ssvContract) return;
       console.warn('checkAllowance before');
-      const allowance = await ssvContract.allowance(this.accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
+      const allowance = await ssvContract.allowance(walletStore.accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
       this.approvedAllowance = allowance || 0;
       console.warn('checkAllowance after');
     } catch (e) {
@@ -294,8 +291,9 @@ class SsvStore extends BaseStore {
     return new Promise((async (resolve, reject) => {
       try {
         const ssvContract = getContractByName(EContractName.TOKEN_SETTER);
-        console.log('ssvContract', ssvContract);
-        console.log('config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS', config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
+        if (!ssvContract) {
+          resolve(false);
+        }
         const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, String(MAX_WEI_AMOUNT));
         if (tx.hash) {
           callBack && callBack({ txHash: tx.hash });
@@ -342,8 +340,9 @@ class SsvStore extends BaseStore {
    */
   async getAccountBurnRate(): Promise<void> {
     try {
+      const walletStore: WalletStore = this.getStore('Wallet');
       const contract = getContractByName(EContractName.GETTER);
-      const burnRate = await contract.getAddressBurnRate(this.accountAddress);
+      const burnRate = await contract.getAddressBurnRate(walletStore.accountAddress);
       this.accountBurnRate = fromWei(burnRate);
     } catch (e: any) {
       // TODO: handle error

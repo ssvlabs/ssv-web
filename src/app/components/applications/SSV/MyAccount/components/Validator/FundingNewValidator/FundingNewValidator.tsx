@@ -19,9 +19,10 @@ import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { SingleCluster } from '~app/model/processes.model';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -108,7 +109,7 @@ const FundingNewValidator = () => {
   };
 
   const moveToNextPage = () => {
-    process.registerValidator = { depositAmount: Number(depositSSV) };
+    Object.assign(process.registerValidator, { depositAmount: Number(depositSSV) });
     navigate(getNextNavigation());
   };
 

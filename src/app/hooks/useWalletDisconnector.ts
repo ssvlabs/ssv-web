@@ -13,13 +13,12 @@ const useWalletDisconnector = () => {
   const walletStore: WalletStore = stores.Wallet;
 
   const disconnectWallet = async () => {
-    cleanLocalStorageAndCookie();
     await disconnect({ label: walletStore.wallet.label });
+    cleanLocalStorageAndCookie();
     await walletStore.resetUser();
     resetContracts();
     navigate(config.routes.SSV.ROOT);
   };
-
 
   return {
     disconnectWallet,

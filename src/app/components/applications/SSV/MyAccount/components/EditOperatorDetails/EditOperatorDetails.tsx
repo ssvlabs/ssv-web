@@ -9,7 +9,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
-import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import {
   useStyles,
@@ -23,6 +23,7 @@ import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 import { IOperator } from '~app/model/operator.model';
+import { SingleOperator } from '~app/model/processes.model';
 
 const EditOperatorDetails = () => {
   const stores = useStores();

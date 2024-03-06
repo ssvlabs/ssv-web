@@ -6,12 +6,13 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
-import ProcessStore, { SingleCluster, SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/OperatorFlow';
 import ValidatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/ValidatorFlow';
 import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterBalance } from '~root/services/cluster.service';
+import { SingleOperator, SingleCluster } from '~app/model/processes.model';
 
 let interval: NodeJS.Timeout;
 

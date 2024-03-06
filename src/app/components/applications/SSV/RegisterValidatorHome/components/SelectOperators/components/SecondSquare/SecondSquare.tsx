@@ -21,7 +21,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails
@@ -30,6 +30,7 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
+import { SingleCluster } from '~app/model/processes.model';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();

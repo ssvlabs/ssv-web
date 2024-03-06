@@ -11,7 +11,6 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/RemoveOperator/RemoveOperator.styles';
@@ -19,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading, setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { RegisterOperator } from '~app/model/processes.model';
 
 const RemoveOperator = () => {
   const stores = useStores();

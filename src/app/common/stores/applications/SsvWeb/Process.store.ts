@@ -1,14 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
-import { SingleCluster } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
-import { SingleOperator } from '~app/common/stores/applications/SsvWeb/processes/SingleOperator';
-import { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
-import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
-
-export enum ProcessType {
-  Operator = 1,
-  Validator = 2,
-}
+import { RegisterValidator, RegisterOperator, SingleOperator, SingleCluster, ProcessType } from '~app/model/processes.model';
 
 class ProcessStore extends BaseStore {
   // Process data
@@ -44,10 +36,5 @@ class ProcessStore extends BaseStore {
     return 'registerValidator' in this.process;
   }
 }
-
-export { SingleCluster } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
-export { SingleOperator } from '~app/common/stores/applications/SsvWeb/processes/SingleOperator';
-export { RegisterOperator } from '~app/common/stores/applications/SsvWeb/processes/RegisterOperator';
-export { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
 
 export default ProcessStore;

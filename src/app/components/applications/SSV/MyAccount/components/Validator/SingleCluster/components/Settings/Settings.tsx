@@ -8,12 +8,9 @@ import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import {
-  BULK_FLOWS,
-  SingleCluster as SingleClusterProcess,
-} from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import { getBeaconChainLink, isMainnet } from '~root/providers/networkInfo.provider';
+import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
 
 const Settings = ({ validator }: { validator: any }) => {
   const stores = useStores();
@@ -21,7 +18,7 @@ const Settings = ({ validator }: { validator: any }) => {
   const navigate = useNavigate();
   const settingsRef = useRef(null);
   const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {

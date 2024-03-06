@@ -22,7 +22,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
-import ProcessStore, { SingleOperator as SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
@@ -31,6 +31,7 @@ import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperatorValidators } from '~root/services/operator.service';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { SingleOperator as SingleOperatorProcess } from '~app/model/processes.model';
 
 const SingleOperator = () => {
   const stores = useStores();

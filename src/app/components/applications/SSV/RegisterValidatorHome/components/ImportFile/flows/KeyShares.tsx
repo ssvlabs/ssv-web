@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
 import { KeyShares, KeySharesItem } from 'ssv-keys';
-import { useConnectWallet } from '@web3-onboard/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   createValidatorsRecord,
@@ -31,7 +30,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
-import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorData
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData';
 import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
@@ -46,6 +45,7 @@ import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
+import { SingleCluster, ProcessType } from '~app/model/processes.model';
 
 const KeyShareFlow = () => {
     const stores = useStores();
@@ -77,8 +77,7 @@ const KeyShareFlow = () => {
       subErrorMessage: '',
     });
     const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
-    const [{ wallet }] = useConnectWallet();
-    const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label));
+    const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, walletStore.wallet?.label));
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -163,7 +162,7 @@ const KeyShareFlow = () => {
         let currentNonce = ownerNonce;
         let incorrectNonceFlag = false;
         let warningTextMessage = '';
-        let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label) ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, wallet?.label);
+        let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, walletStore.wallet?.label) ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, walletStore.wallet?.label);
         let previousSmallCount = validatorStore.validatorsCount;
 
         const operatorsData: SelectedOperatorData[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {

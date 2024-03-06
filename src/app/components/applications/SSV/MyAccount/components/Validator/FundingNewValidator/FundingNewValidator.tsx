@@ -109,7 +109,8 @@ const FundingNewValidator = () => {
   };
 
   const moveToNextPage = () => {
-    Object.assign(process.registerValidator, { depositAmount: Number(depositSSV) });
+    // @ts-ignore
+    process.registerValidator = { depositAmount: Number(depositSSV) };
     navigate(getNextNavigation());
   };
 

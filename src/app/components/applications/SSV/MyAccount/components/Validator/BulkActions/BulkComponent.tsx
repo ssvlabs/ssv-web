@@ -2,20 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import { BULK_FLOWS } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
 import ExitFinishPage from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitFinishPage';
 import ConfirmationStep
   from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
-import {
-  ProcessStore,
-  ValidatorStore,
-  SingleCluster as SingleClusterProcess, WalletStore,
-} from '~app/common/stores/applications/SsvWeb';
+import { ProcessStore, ValidatorStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { IOperator } from '~app/model/operator.model';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
+import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -51,7 +47,7 @@ const BulkComponent = () => {
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const walletStore: WalletStore = stores.Wallet;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const navigate = useNavigate();
   const currentBulkFlow = process.currentBulkFlow;
   const [currentStep, setCurrentStep] = useState(BULK_STEPS.BULK_ACTIONS);

@@ -23,7 +23,7 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import ProcessStore, { RegisterValidator, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/ValidatorRegistrationConfirmation/ValidatorRegistrationConfirmation.styles';
@@ -33,6 +33,7 @@ import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();

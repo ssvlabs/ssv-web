@@ -13,8 +13,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
-import { RegisterValidator } from '~app/common/stores/applications/SsvWeb/processes/RegisterValidator';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
@@ -25,6 +24,7 @@ import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
+import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 
 type ClusterDataType = {
   active: boolean;

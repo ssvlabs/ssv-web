@@ -11,7 +11,8 @@ import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { SingleCluster } from '~app/model/processes.model';
 
 const RemoveValidator = () => {
   const stores = useStores();

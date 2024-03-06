@@ -20,9 +20,7 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard/Dashboard';
 import Settings
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
-import ProcessStore, {
-  SingleCluster as SingleClusterProcess,
-} from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorBox
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
 import ActionsButton
@@ -30,6 +28,7 @@ import ActionsButton
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 import { isMainnet } from '~root/providers/networkInfo.provider';
+import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -133,7 +132,7 @@ const SingleCluster = () => {
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
-    process.registerValidator = { depositAmount: 0 };
+    Object.assign(process.registerValidator, { depositAmount: 0 });
     operatorStore.selectOperators(cluster.operators);
     navigate(getNextNavigation());
   };

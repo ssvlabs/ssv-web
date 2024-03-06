@@ -17,11 +17,12 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei } from '~root/services/conversions.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { SingleCluster } from '~app/model/processes.model';
 
 const ReactivateCluster = () => {
   const options = [

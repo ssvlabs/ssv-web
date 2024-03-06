@@ -112,12 +112,13 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         } else if (walletStore.wallet) {
             if (walletStore.isWalletConnect) {
                 await disconnectWallet();
+                setShowNetworks(false);
             } else {
+                resetContracts();
                 ssvStore.clearUserSyncInterval();
                 myAccountStore.clearIntervals();
                 operatorStore.clearSettings();
                 ssvStore.clearSettings();
-                resetContracts();
                 changeNetwork(index);
                 setSelectedNetworkIndex(index);
                 setShowNetworks(false);

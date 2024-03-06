@@ -7,10 +7,7 @@ import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
-import {
-  BULK_FLOWS,
-  SingleCluster as SingleClusterProcess,
-} from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
+import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
 
 
 const ActionsButton = ({ extendClass, children }: { extendClass: string, children: string | JSX.Element }) => {
@@ -20,7 +17,7 @@ const ActionsButton = ({ extendClass, children }: { extendClass: string, childre
   const [showActions, setShowActions] = useState(false);
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
 
   useEffect(() => {
     /**

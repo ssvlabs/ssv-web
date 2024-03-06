@@ -9,15 +9,11 @@ import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
-import {
-  ProcessStore,
-  WalletStore,
-  SingleCluster as SingleClusterProcess,
-  NotificationsStore,
-} from '~app/common/stores/applications/SsvWeb';
+import { ProcessStore, WalletStore, NotificationsStore } from '~app/common/stores/applications/SsvWeb';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
+import { SingleCluster } from '~app/model/processes.model';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -105,7 +101,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   const walletStore: WalletStore = stores.Wallet;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const cluster = process?.item;
   const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();

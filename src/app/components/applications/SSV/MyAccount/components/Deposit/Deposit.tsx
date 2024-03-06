@@ -12,7 +12,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
-import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -21,6 +21,7 @@ import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleCluster, ProcessType } from '~app/model/processes.model';
 
 const Deposit = () => {
   const stores = useStores();

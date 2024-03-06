@@ -191,6 +191,9 @@ class OperatorStore extends BaseStore {
    */
   async updateOperatorValidatorsLimit(): Promise<void> {
     const contract = getContractByName(EContractName.GETTER);
+    if (!contract) {
+      return;
+    }
     try {
       if (this.operatorValidatorsLimit === 0) {
         this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();

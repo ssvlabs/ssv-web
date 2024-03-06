@@ -131,6 +131,11 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                 await operatorStore.initUser();
                 myAccountStore.setIntervals();
             }
+        } else {
+            dispatch(setShouldCheckCountryRestriction(index === 0));
+            changeNetwork(index);
+            setSelectedNetworkIndex(index);
+            setShowNetworks(false);
         }
     };
 

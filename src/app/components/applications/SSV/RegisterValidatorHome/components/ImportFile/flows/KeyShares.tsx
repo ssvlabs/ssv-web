@@ -136,7 +136,7 @@ const KeyShareFlow = () => {
         const validators: Record<string, ValidatorType> = createValidatorsRecord(keyShareMulti);
         const ownerNonce = await getOwnerNonce({ address: walletStore.accountAddress });
 
-        if (!ownerNonce) {
+        if (ownerNonce === undefined || ownerNonce === null) {
           // TODO: add proper error handling
           return;
         }

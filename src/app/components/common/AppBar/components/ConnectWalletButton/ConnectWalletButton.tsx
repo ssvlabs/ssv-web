@@ -13,15 +13,15 @@ const ConnectWalletButton = () => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const classes = useStyles({ walletConnected: !!walletStore.wallet });
-  const [{  wallet }, connect] = useConnectWallet();
+  const [{  wallet, connecting }, connect] = useConnectWallet();
   const [{ connectedChain }] = useSetChain();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (wallet && connectedChain && !walletStore.wallet) {
+    if (wallet && connectedChain && !connecting && !walletStore.wallet) {
       walletStore.initWallet(wallet, connectedChain);
     }
-  }, [wallet, connectedChain]);
+  }, [wallet, connectedChain, connecting]);
 
   const onClick = async () => {
     if (walletStore.wallet) {

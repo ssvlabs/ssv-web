@@ -16,7 +16,6 @@ import { GlobalStyle } from '~app/globalStyle';
 import BarMessage from '~app/components/common/BarMessage';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
-import DeveloperHelper from '~lib/utils/developerHelper';
 import { initOnboardOptions } from '~lib/utils/onboardHelper';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
@@ -102,7 +101,6 @@ const App = () => {
 
   return (
       <StyledEngineProvider injectFirst>
-        <DeveloperHelper />
         <ThemeProvider theme={MuiTheme}>
           <ThemeProviderLegacy theme={MuiTheme}>
             <ScThemeProvider theme={theme}>

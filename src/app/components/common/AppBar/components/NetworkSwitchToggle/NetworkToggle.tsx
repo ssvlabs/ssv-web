@@ -89,17 +89,13 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                 index = getNetworkInfoIndexByNetworkId(network.networkId);
                 notificationsStore.showMessage(`Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
             }
-            if (!walletStore.isWalletConnect) {
-                await setChain({ chainId: toHexString(network.networkId) });
-                changeNetwork(index);
-                setSelectedNetworkIndex(index);
-            } else {
-                await disconnectWallet();
-            }
+            await setChain({ chainId: toHexString(network.networkId) });
+            changeNetwork(index);
+            setSelectedNetworkIndex(index);
         };
 
         const network = getStoredNetwork();
-        if (connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId)) {
+        if (walletStore.wallet && !walletStore.isWalletConnect && connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId)) {
             networkInWalletChangedHandler();
         }
     }, [connectedChain]);

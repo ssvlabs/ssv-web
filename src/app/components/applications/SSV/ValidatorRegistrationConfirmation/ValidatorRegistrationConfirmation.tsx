@@ -120,7 +120,7 @@ const ValidatorRegistrationConfirmation = () => {
           testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={registerButtonDisabled}
-          totalAmount={formatNumberToUi(totalAmountOfSsv)}
+          totalAmount={totalAmountOfSsv.toString()}
         />
       </TermsAndConditionsCheckbox>
     </Grid>

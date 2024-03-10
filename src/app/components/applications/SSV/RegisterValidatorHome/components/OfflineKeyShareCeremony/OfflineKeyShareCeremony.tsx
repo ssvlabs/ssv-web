@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { ENV } from '~lib/utils/envHelper';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
@@ -15,6 +14,7 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/OfflineKeyShareCeremony.styles';
 import DirectoryBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/DirectoryBadge/DirectoryBadge';
+import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
 
 const OfflineKeyShareCeremony = () => {
   const stores = useStores();
@@ -98,12 +98,12 @@ const OfflineKeyShareCeremony = () => {
           <Grid className={classes.DkgText}>
             Activate your validator on the Beacon Chain by depositing 32 ETH into Ethereum's Deposit Contract.
             You can deposit your validator using <LinkText text={'Ethereum\'s LaunchPad'}
-                                                           link={ENV().LAUNCHPAD_URL}/>&nbsp;or
+                                                           link={getLaunchpadLink()}/>&nbsp;or
             refer to the <LinkText text={'validator activation'}
                                    link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide
             for assistance.
           </Grid>
-          <PrimaryButton text={'My validator has been activated'} submitFunction={handleValidatorActivatedClick}
+          <PrimaryButton children={'My validator has been activated'} submitFunction={handleValidatorActivatedClick}
                          disable={isValidatorActivated}/>
         </Grid>
       </Grid>
@@ -113,7 +113,7 @@ const OfflineKeyShareCeremony = () => {
             3:</Typography>&nbsp;Register Validator</Typography>
           <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing
             its key shares to your cluster operators.</Typography>
-          <PrimaryButton text={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]}
+          <PrimaryButton children={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]}
                          disable={!isValidatorActivated}/>
         </Grid>
       </Grid>

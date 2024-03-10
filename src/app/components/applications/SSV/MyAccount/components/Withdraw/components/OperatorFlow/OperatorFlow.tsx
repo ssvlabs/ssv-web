@@ -9,9 +9,10 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import { SingleOperator } from '~app/model/processes.model';
 
 const OperatorFlow = () => {
   const classes = useStyles();
@@ -29,7 +30,7 @@ const OperatorFlow = () => {
 
   const withdrawSsv = async () => {
     setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(inputValue.toString(), true);
+    const success = await ssvStore.withdrawSsv(inputValue.toString());
     setIsLoading(false);
     if (success) {
       setInputValue(0.0);

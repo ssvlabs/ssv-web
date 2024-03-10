@@ -4,22 +4,21 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/processes/SingleCluster';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
+import { getBeaconChainLink, isMainnet } from '~root/providers/networkInfo.provider';
+import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
 
 const Settings = ({ validator }: { validator: any }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const settingsRef = useRef(null);
-  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
+  const process: SingleCluster = processStore.getProcess;
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
@@ -57,7 +56,7 @@ const Settings = ({ validator }: { validator: any }) => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${publicKey}`);
+    window.open(`${getBeaconChainLink()}/validator/${publicKey}`);
   };
 
   const openExplorer = (publicKey: string) => {
@@ -69,9 +68,10 @@ const Settings = ({ validator }: { validator: any }) => {
     window.open(`${config.links.EXPLORER_URL}/validators/${publicKey}`, '_blank');
   };
 
-  const moveToRemoveValidator = () => {
+  const moveToRemoveValidator = (flow: BULK_FLOWS) => {
     process.validator = validator;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT);
+    process.currentBulkFlow = flow;
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
   };
 
   return (
@@ -88,10 +88,15 @@ const Settings = ({ validator }: { validator: any }) => {
               </Grid>
               <Grid className={classes.ChangeOperatorsLinkImage} />
             </Grid>
-            <Grid container item className={classes.Button} onClick={moveToRemoveValidator}>
+            <Grid container item className={classes.Button} onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_REMOVE)}>
               <Grid className={classes.RemoveValidatorImage} />
               <Typography>Remove Validator</Typography>
             </Grid>
+            {!isMainnet() && <Grid container item className={classes.Button}
+                   onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
+              <Grid className={classes.ExitValidatorImage}/>
+              <Typography>Exit Validator</Typography>
+            </Grid>}
           </Grid>
         </Grid>
         }

@@ -4,24 +4,26 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import FaucetStore from '~app/common/stores/applications/Faucet/Faucet.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
+import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
+import { useStores } from '~app/hooks/useStores';
 
 const SuccessPage = () => {
-    const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
-    const faucetStore: FaucetStore = stores.Faucet;
-    const applicationStore: ApplicationStore = stores.Application;
-    
+    const dispatch = useAppDispatch();
+  const stores = useStores();
+  const walletStore: WalletStore = stores.Wallet;
+
     const requestForSSV = () => {
-        applicationStore.setIsLoading(true);
+      dispatch(setIsLoading(true));
         setTimeout(() => {
-            applicationStore.setIsLoading(false);
+          dispatch(setIsLoading(false));
             navigate(config.routes.FAUCET.ROOT);
         }, 300);
     };
@@ -39,7 +41,7 @@ const SuccessPage = () => {
             </Grid>
             <Grid container item xs={12} className={classes.TextWrapper}>
               <Typography>Can&apos;t find your tokens?</Typography>
-              <Grid container item className={classes.AddToMetamask} onClick={faucetStore.registerSSVTokenInMetamask}>
+              <Grid container item className={classes.AddToMetamask} onClick={() => walletStore?.wallet && registerSSVTokenInMetamask({ provider: walletStore.wallet.provider })}>
                 <Grid className={classes.MetaMask} />
                 <Typography>Add SSV to Metamask</Typography>
               </Grid>
@@ -47,7 +49,7 @@ const SuccessPage = () => {
             <Grid container item xs={12} className={classes.TextWrapper}>
               <PrimaryButton
                 disable={false}
-                text={'Request More Funds'}
+                children={'Request More Funds'}
                 withVerifyConnection={false}
                 submitFunction={requestForSSV}
               />

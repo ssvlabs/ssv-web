@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
@@ -6,10 +6,8 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, isMainnet } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import useValidatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
@@ -27,7 +25,7 @@ type ButtonData = {
   buttonProps: {
     dataTestId: string,
     withVerifyConnection?: boolean,
-    text: string,
+    children: string,
     withoutBackgroundColor?: boolean,
     noCamelCase?: boolean,
     submitFunction: Function,
@@ -38,17 +36,14 @@ const GenerateKeyShares = () => {
     const stores = useStores();
     const navigate = useNavigate();
     const { networkId } = getStoredNetwork();
-    const walletStore: WalletStore = stores.Wallet;
-    const accountStore: AccountStore = stores.Account;
     const processStore: ProcessStore = stores.Process;
     const validatorStore: ValidatorStore = stores.Validator;
     const classes = useStyles({ networkId });
     const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
-
     const buttonsData: ButtonData[] = [
       {
-        isShow: networkId !== NETWORKS.MAINNET,
+        isShow: !isMainnet(),
         subText: translations.VALIDATOR.GENERATE_KEY_SHARES.SPLIT_VIA_WEB_APP,
         wrapperProps: {
           className: classes.LinkButtonWrapper,
@@ -56,7 +51,7 @@ const GenerateKeyShares = () => {
         buttonProps: {
           dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE.toLowerCase(),
           withVerifyConnection: true,
-          text: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE,
+          children: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE,
           submitFunction: () => {
             validatorStore.keyStoreFile = null;
             nextPage(EValidatorFlowAction.GENERATE_KEY_SHARES_ONLINE);
@@ -71,7 +66,7 @@ const GenerateKeyShares = () => {
         buttonProps: {
           dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE.toLowerCase(),
           withVerifyConnection: true,
-          text: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE,
+          children: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE,
           submitFunction: () => {
             validatorStore.keyShareFile = null;
             nextPage(EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE);
@@ -87,7 +82,7 @@ const GenerateKeyShares = () => {
           withVerifyConnection: true,
           withoutBackgroundColor: true,
           noCamelCase: true,
-          text: translations.VALIDATOR.GENERATE_KEY_SHARES.ALREADY_HAVE_KEY_SHARES,
+          children: translations.VALIDATOR.GENERATE_KEY_SHARES.ALREADY_HAVE_KEY_SHARES,
           submitFunction: () => {
             validatorStore.keyStoreFile = null;
             nextPage(EValidatorFlowAction.SECOND_REGISTER);
@@ -95,14 +90,6 @@ const GenerateKeyShares = () => {
         },
       },
     ];
-
-    useEffect(() => {
-      async function getNonce() {
-        return accountStore.getOwnerNonce(walletStore.accountAddress);
-      }
-
-      getNonce();
-    }, []);
 
     const nextPage = (mode: EValidatorFlowAction) => {
       navigate(getNextNavigation(mode));

@@ -1,4 +1,4 @@
-import { API_VERSIONS, NETWORKS } from '~root/providers/networkInfo.provider';
+import { API_VERSIONS, MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 export const ABI_VERSION = {
   tokenContract: [
@@ -382,7 +382,7 @@ export const ABI_VERSION = {
     },
   ],
   setterContract: {
-    [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: [
+    [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'name': 'ApprovalNotWithinTimeframe',
@@ -2054,7 +2054,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.HOLESKY}_${API_VERSIONS.V4}`]: [
+    [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -2128,6 +2128,17 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'IncorrectValidatorState',
+        'type': 'error',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'IncorrectValidatorStateWithData',
         'type': 'error',
       },
       {
@@ -2208,6 +2219,17 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'ValidatorAlreadyExists',
+        'type': 'error',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'ValidatorAlreadyExistsWithData',
         'type': 'error',
       },
       {
@@ -3005,6 +3027,24 @@ export const ABI_VERSION = {
             'name': 'operatorIds',
             'type': 'uint64[]',
           },
+        ],
+        'name': 'bulkExitValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
           {
             'internalType': 'bytes[]',
             'name': 'sharesData',
@@ -3049,6 +3089,56 @@ export const ABI_VERSION = {
           },
         ],
         'name': 'bulkRegisterValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
+          {
+            'components': [
+              {
+                'internalType': 'uint32',
+                'name': 'validatorCount',
+                'type': 'uint32',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'networkFeeIndex',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'index',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'bool',
+                'name': 'active',
+                'type': 'bool',
+              },
+              {
+                'internalType': 'uint256',
+                'name': 'balance',
+                'type': 'uint256',
+              },
+            ],
+            'internalType': 'struct ISSVNetworkCore.Cluster',
+            'name': 'cluster',
+            'type': 'tuple',
+          },
+        ],
+        'name': 'bulkRemoveValidator',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function',
@@ -3441,7 +3531,7 @@ export const ABI_VERSION = {
           },
           {
             'internalType': 'bytes',
-            'name': 'shares',
+            'name': 'sharesData',
             'type': 'bytes',
           },
           {
@@ -3836,7 +3926,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
+    [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -3910,6 +4000,17 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'IncorrectValidatorState',
+        'type': 'error',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'IncorrectValidatorStateWithData',
         'type': 'error',
       },
       {
@@ -3990,6 +4091,17 @@ export const ABI_VERSION = {
       {
         'inputs': [],
         'name': 'ValidatorAlreadyExists',
+        'type': 'error',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes',
+            'name': 'publicKey',
+            'type': 'bytes',
+          },
+        ],
+        'name': 'ValidatorAlreadyExistsWithData',
         'type': 'error',
       },
       {
@@ -4787,6 +4899,24 @@ export const ABI_VERSION = {
             'name': 'operatorIds',
             'type': 'uint64[]',
           },
+        ],
+        'name': 'bulkExitValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
           {
             'internalType': 'bytes[]',
             'name': 'sharesData',
@@ -4831,6 +4961,56 @@ export const ABI_VERSION = {
           },
         ],
         'name': 'bulkRegisterValidator',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+      },
+      {
+        'inputs': [
+          {
+            'internalType': 'bytes[]',
+            'name': 'publicKeys',
+            'type': 'bytes[]',
+          },
+          {
+            'internalType': 'uint64[]',
+            'name': 'operatorIds',
+            'type': 'uint64[]',
+          },
+          {
+            'components': [
+              {
+                'internalType': 'uint32',
+                'name': 'validatorCount',
+                'type': 'uint32',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'networkFeeIndex',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'uint64',
+                'name': 'index',
+                'type': 'uint64',
+              },
+              {
+                'internalType': 'bool',
+                'name': 'active',
+                'type': 'bool',
+              },
+              {
+                'internalType': 'uint256',
+                'name': 'balance',
+                'type': 'uint256',
+              },
+            ],
+            'internalType': 'struct ISSVNetworkCore.Cluster',
+            'name': 'cluster',
+            'type': 'tuple',
+          },
+        ],
+        'name': 'bulkRemoveValidator',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function',
@@ -5223,7 +5403,7 @@ export const ABI_VERSION = {
           },
           {
             'internalType': 'bytes',
-            'name': 'shares',
+            'name': 'sharesData',
             'type': 'bytes',
           },
           {
@@ -5620,7 +5800,7 @@ export const ABI_VERSION = {
     ],
   },
   getterContract: {
-    [`${NETWORKS.MAINNET}_${API_VERSIONS.V4}`]: [
+    [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -6459,7 +6639,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.HOLESKY}_${API_VERSIONS.V4}`]: [
+    [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -7321,7 +7501,7 @@ export const ABI_VERSION = {
         'type': 'function',
       },
     ],
-    [`${NETWORKS.GOERLI}_${API_VERSIONS.V4}`]: [
+    [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: [
       {
         'inputs': [],
         'stateMutability': 'nonpayable',
@@ -8186,8 +8366,9 @@ export const ABI_VERSION = {
   },
 };
 
+// TODO: holesky abi missing
 export const DISTRIBUTION_ABI_VERSION = {
-  [NETWORKS.MAINNET]: [
+  [`${MAINNET_NETWORK_ID}`]: [
     {
       'inputs': [
         {
@@ -8286,7 +8467,7 @@ export const DISTRIBUTION_ABI_VERSION = {
       'stateMutability': 'nonpayable',
       'type': 'function',
     }],
-  [NETWORKS.GOERLI]: [
+  [`${GOERLI_NETWORK_ID}`]: [
     {
       'inputs': [
         {

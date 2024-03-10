@@ -58,7 +58,7 @@ const SlashingWarning = () => {
           onClickCallBack={setUserAgreed}
           text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
         />
-        <PrimaryButton disable={!userAgreed} text={'Next'} dataTestId={'register-validator'}
+        <PrimaryButton disable={!userAgreed} children={'Next'} dataTestId={'register-validator'}
                        submitFunction={goToConfirmation}
         />
       </Grid>,

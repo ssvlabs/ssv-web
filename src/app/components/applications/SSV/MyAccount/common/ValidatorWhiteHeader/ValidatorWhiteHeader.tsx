@@ -3,16 +3,17 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { SingleCluster } from '~app/model/processes.model';
 
 type Props = {
   text: string,
@@ -27,7 +28,6 @@ type Props = {
 const ValidatorWhiteHeader = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
-  const beaconchaBaseUrl = ENV().BEACONCHA_URL;
   const processStore: ProcessStore = stores.Process;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleCluster = processStore.getProcess;
@@ -62,7 +62,7 @@ const ValidatorWhiteHeader = (props: Props) => {
       action: 'click',
       label: 'Open Beaconcha',
     });
-    window.open(`${beaconchaBaseUrl}/validator/${validator.public_key}`);
+    window.open(`${getBeaconChainLink()}/validator/${validator.public_key}`);
   };
 
   return (

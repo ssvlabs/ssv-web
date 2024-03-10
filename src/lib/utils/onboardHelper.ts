@@ -3,24 +3,33 @@ import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import config from '~app/common/config';
 import { getImage } from '~lib/utils/filePath';
-import { NETWORKS, TOKEN_NAMES } from '~lib/utils/envHelper';
+import { Theme } from '@web3-onboard/core';
+import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
+import { MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
+
+const TOKEN_NAMES = {
+  [`${MAINNET_NETWORK_ID}`]: 'ETH',
+  [`${GOERLI_NETWORK_ID}`]: 'GoerliETH',
+  [`${HOLESKY_NETWORK_ID}`]: 'ETH',
+};
 
 export const cleanLocalStorageAndCookie = () => {
-  const locationRestrictionDisabled = window.localStorage.getItem('locationRestrictionDisabled');
-  const currentNetwork = window.localStorage.getItem('networkSwitcherIndex');
-  const isDarkMode = window.localStorage.getItem('isDarkMode');
-  window.localStorage.clear();
+  const locationRestrictionDisabled = getFromLocalStorageByKey('locationRestrictionDisabled');
+  const currentNetwork = getFromLocalStorageByKey('networkSwitcherIndex');
+  const isDarkMode = getFromLocalStorageByKey('isDarkMode');
+  clearLocalStorage();
   document.cookie.split(';').forEach((c) => {
     document.cookie = c.replace(/^ +/, '').replace(/=.*/, `=;expires=${  new Date(0).toUTCString()  };path=/`);
   });
   if (locationRestrictionDisabled !== null) {
-    window.localStorage.setItem('locationRestrictionDisabled', '1');
+    saveInLocalStorage('locationRestrictionDisabled', '1');
   }
   if (currentNetwork !== null) {
-    window.localStorage.setItem('networkSwitcherIndex', currentNetwork);
+    saveInLocalStorage('networkSwitcherIndex', currentNetwork);
   }
   if (isDarkMode !== null) {
-    window.localStorage.setItem('isDarkMode', isDarkMode);
+    saveInLocalStorage('isDarkMode', isDarkMode);
   }
 };
 
@@ -28,15 +37,11 @@ const injected = injectedModule();
 const walletConnect = walletConnectModule({
   dappUrl: window.location.origin,
   projectId: config.ONBOARD.PROJECT_ID,
-  optionalChains: [Number(NETWORKS.MAINNET), Number(NETWORKS.GOERLI), Number(NETWORKS.HOLESKY)],
+  optionalChains: [MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID],
 });
 const safeWalletInstance = safeWallet();
 
-const initOnboardOptions = () => {
-  const theme = window.localStorage.getItem('isDarkMode') === '1' ? 'dark' : 'light';
-};
-
-const tmp = {
+const initOnboardOptions = {
   apiKey: config.ONBOARD.API_KEY,
   wallets: [
     injected,
@@ -62,20 +67,22 @@ const tmp = {
   },
   chains: [
     {
-      id: NETWORKS.MAINNET,
+      id: MAINNET_NETWORK_ID,
       label: 'Ethereum Mainnet',
-      token: TOKEN_NAMES[NETWORKS.MAINNET],
+      token: TOKEN_NAMES[`${MAINNET_NETWORK_ID}`],
+      rpcUrl: MAINNET_RPC_URL,
     },
     {
-      id: NETWORKS.GOERLI,
+      id: GOERLI_NETWORK_ID,
       label: 'Goerli testnet',
-      token: TOKEN_NAMES[NETWORKS.GOERLI],
+      token: TOKEN_NAMES[`${GOERLI_NETWORK_ID}`],
+      rpcUrl: GOERLI_RPC_URL,
     },
     {
-      id: NETWORKS.HOLESKY,
+      id: HOLESKY_NETWORK_ID,
       label: 'Holesky',
-      token: 'ETH',
-      rpcUrl: 'https://cool-prettiest-daylight.ethereum-holesky.quiknode.pro/0d8ffe59dc7865022b15bc0d56692593416330ab/',
+      token: TOKEN_NAMES[`${HOLESKY_NETWORK_ID}`],
+      rpcUrl: HOLESKY_RPC_URL,
       // rpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // publicRpcUrl: 'https://rpc.holesky.ethpandaops.io',
       // rpcUrl: 'https://ethereum-holesky.publicnode.com',
@@ -84,8 +91,6 @@ const tmp = {
       // publicRpcUrl: 'https://newest-fragrant-sponge.ethereum-holesky.quiknode.pro/626e253896d20dd8a3cf447cb286c3fc1755f511/',
       // rpcUrl: 'https://operators-holesky.testnet.fi/api/rpc?chainId=17000',
       // publicRpcUrl: 'https://operators-holesky.testnet.fi/api/rpc?chainId=17000',
-      // rpcUrl: window.localStorage.getItem('rpcUrl') || undefined,
-      // publicRpcUrl: window.localStorage.getItem('publicRpcUrl') || undefined,
     },
   ],
   appMetadata: {
@@ -102,15 +107,7 @@ const tmp = {
       privacyUrl: 'https://ssv.network/privacy-policy/',
     },
   },
+  theme: (getFromLocalStorageByKey('isDarkMode') === '1' ? 'dark' : 'light') as Theme,
 };
 
-// OLD
-// const initOnboard = (): OnboardAPI => {
-//   return Onboard(initOnboardOptions() as InitOptions);
-// };
-
-export {
-  initOnboardOptions,
-  // initOnboard,
-  tmp,
-};
+export { initOnboardOptions };

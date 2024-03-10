@@ -2,26 +2,62 @@ import React, { useEffect, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import Validator from '~lib/api/Validator';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
 import { longStringShorten } from '~lib/utils/strings';
 import ImageDiv from '~app/components/common/ImageDiv';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
+import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard/Dashboard';
-import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
-import ProcessStore, { SingleCluster as SingleClusterProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
+import Settings
+  from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import OperatorBox
+  from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
+import ActionsButton
+  from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
+import { getClusterHash } from '~root/services/cluster.service';
+import { validatorsByClusterHash } from '~root/services/validator.service';
+import { isMainnet } from '~root/providers/networkInfo.provider';
+import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
+
+const ButtonTextWrapper = styled.div`
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+`;
+
+const ButtonText = styled.p`
+    font-size: 16px;
+    font-weight: 600;
+    background-color: ${({ theme }) => theme.primaryBlue};
+`;
+
+const Icon = styled.div<{ theme: any, icon: string, withoutDarkMode: boolean }>`
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: ${({ theme, icon, withoutDarkMode }) => {
+        if (withoutDarkMode) {
+            return `url(${icon}.svg)`;
+        } else {
+            return `url(${icon}${theme.colors.isDarkTheme ? '-dark.svg' : '.svg'})`;
+        }
+    }};
+`;
 
 const SingleCluster = () => {
   const stores = useStores();
@@ -29,7 +65,6 @@ const SingleCluster = () => {
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
-  const clusterStore: ClusterStore = stores.Cluster;
   const operatorStore: OperatorStore = stores.Operator;
   const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleClusterProcess = processStore.getProcess;
@@ -51,7 +86,7 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(1, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -59,17 +94,17 @@ const SingleCluster = () => {
   }, []);
 
   const createData = (
-      publicKey: JSX.Element,
-      status: JSX.Element,
-      balance: JSX.Element,
-      apr: JSX.Element,
+    publicKey: JSX.Element,
+    status: JSX.Element,
+    balance: JSX.Element,
+    apr: JSX.Element,
   ) => {
     return { publicKey, status, balance, apr };
   };
 
   const extraButtons = (itemIndex: number) => {
     const validator: any = clusterValidators[itemIndex];
-    return <Settings validator={validator} />;
+    return <Settings validator={validator}/>;
   };
 
   const copyToClipboard = (publicKey: string) => {
@@ -81,30 +116,31 @@ const SingleCluster = () => {
     setClusterValidators(prevState => [...prevState.sort((a: any, b: any) => a.status === b.status ? 0 : a.status ? -1 : 1)]);
   };
 
-  useEffect(() =>{
-      setRows(clusterValidators?.map((validator: any)=>{
-          return createData(
-              <Grid container style={{ alignItems: 'center', gap: 8 }}>
-                  <Grid item>0x{longStringShorten(validator.public_key, 4)}</Grid>
-                  <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={24} height={24} />
-              </Grid>,
-              <Status item={validator} />,
-              <></>,
-              <></>,
-          );
-      }));
+  useEffect(() => {
+    setRows(clusterValidators?.map((validator: any) => {
+      return createData(
+        <Grid container style={{ alignItems: 'center', gap: 8 }}>
+          <Grid item>0x{longStringShorten(validator.public_key, 4)}</Grid>
+          <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={24} height={24}/>
+        </Grid>,
+        <Status item={validator}/>,
+        <></>,
+        <></>,
+      );
+    }));
   }, [clusterValidators]);
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
+    // @ts-ignore
     process.registerValidator = { depositAmount: 0 };
     operatorStore.selectOperators(cluster.operators);
     navigate(getNextNavigation());
   };
 
-  const onChangePage = _.debounce( async (newPage: number) =>  {
+  const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingValidators(true);
-    Validator.getInstance().validatorsByClusterHash(newPage, walletStore.accountAddress, clusterStore.getClusterHash(cluster.operators)).then((response: any) => {
+    validatorsByClusterHash(newPage, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
       setClusterValidators(response.validators);
       setClusterValidatorsPagination(response.pagination);
       setLoadingValidators(false);
@@ -112,49 +148,67 @@ const SingleCluster = () => {
   }, 200);
 
   return (
-      <Grid container className={classes.Wrapper}>
-        <NewWhiteWrapper
-            type={0}
-            header={'Cluster'}
-        />
-        <Grid container item className={classes.Section}>
-          {(cluster?.operators).map((operator: any, index: number) => {
-            return <OperatorBox key={index} operator={operator} />;
-          })}
+    <Grid container className={classes.Wrapper}>
+      <NewWhiteWrapper
+        type={0}
+        header={'Cluster'}
+      />
+      <Grid container item className={classes.Section}>
+        {(cluster?.operators).map((operator: any, index: number) => {
+          return <OperatorBox key={index} operator={operator}/>;
+        })}
+      </Grid>
+      <Grid container item className={classes.Section}>
+        <Grid item>
+          <Balance/>
         </Grid>
-        <Grid container item className={classes.Section}>
-          <Grid item>
-            <Balance />
-          </Grid>
-          <Grid item xs>
-            {cluster.operators && <Dashboard
-                disable
-                rows={rows}
-                headerPadding={7}
-                loading={loadingValidators}
-                noItemsText={'No Validators'}
-                header={<Grid container className={classes.HeaderWrapper}>
-                  <Grid item className={classes.Header}>Validators</Grid>
-                  <SecondaryButton disable={showAddValidatorBtnCondition} className={classes.AddToCluster} text={'+ Add Validator'} submitFunction={addToCluster} />
-                </Grid>}
-                paginationActions={{
-                  onChangePage: onChangePage,
-                  page: clusterValidatorsPagination.page,
-                  count: clusterValidatorsPagination.total,
-                  totalPages: clusterValidatorsPagination.pages,
-                  rowsPerPage: clusterValidatorsPagination.per_page,
-                }}
-                columns={[
-                  { name: 'Public Key' },
-                  { name: 'Status', onClick: sortValidatorsByStatus, tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).' },
-                  { name: '' },
-                  { name: '' },
-                ]}
-                extraActions={extraButtons}
-            />}
-          </Grid>
+        <Grid item xs>
+          {cluster.operators && <Dashboard
+            disable
+            rows={rows}
+            headerPadding={7}
+            loading={loadingValidators}
+            noItemsText={'No Validators'}
+            header={<Grid container className={classes.HeaderWrapper}>
+              <Grid item className={classes.Header}>Validators</Grid>
+              <Grid className={classes.ButtonsWrapper}>
+                {cluster.validatorCount > 1 && !isMainnet() && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
+                  <ButtonText>
+                    Actions
+                  </ButtonText>
+                  <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode={true}/>
+                </ButtonTextWrapper>}/>}
+                <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
+                               children={<ButtonTextWrapper>
+                                 <ButtonText>
+                                   Add Validator
+                                 </ButtonText>
+                                 <Icon icon={'/images/plusIcon/plus'} withoutDarkMode={false}/>
+                               </ButtonTextWrapper>} submitFunction={addToCluster}/>
+              </Grid>
+            </Grid>}
+            paginationActions={{
+              onChangePage: onChangePage,
+              page: clusterValidatorsPagination.page,
+              count: clusterValidatorsPagination.total,
+              totalPages: clusterValidatorsPagination.pages,
+              rowsPerPage: clusterValidatorsPagination.per_page,
+            }}
+            columns={[
+              { name: 'Public Key' },
+              {
+                name: 'Status',
+                onClick: sortValidatorsByStatus,
+                tooltip: 'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).',
+              },
+              { name: '' },
+              { name: '' },
+            ]}
+            extraActions={extraButtons}
+          />}
         </Grid>
       </Grid>
+    </Grid>
   );
 };
 

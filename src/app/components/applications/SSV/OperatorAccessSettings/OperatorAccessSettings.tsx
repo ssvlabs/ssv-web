@@ -15,7 +15,8 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import ProcessStore, { SingleOperator as SingleOperatorProcess } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { SingleOperator } from '~app/model/processes.model';
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 
@@ -24,7 +25,7 @@ const OperatorAccessSettings = () => {
     const navigate = useNavigate();
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
-    const process: SingleOperatorProcess = processStore.getProcess;
+    const process: SingleOperator = processStore.getProcess;
     const operator = process?.item;
     const whiteListAddress = operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.address_whitelist : '';
     const isOperatorPermissioned = !!operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
@@ -69,7 +70,7 @@ const OperatorAccessSettings = () => {
                         <Grid className={classes.HeaderWrapper} container style={{ gap: 16 }}>
                             <Grid className={classes.HeaderInner}>
                                 <Typography className={classes.InfoText}>{translations.OPERATOR_WHITELIST_ADDRESS.SECOND_TITLE}</Typography>
-                                <Tooltip text={<Grid>Read more on <LinkText text={'Permissioned Operators'} link={config.links.SSV_DOCUMENTATION}/></Grid>} />
+                                <Tooltip text={<Grid>Read more on <LinkText textSize={12} text={'Permissioned Operators'} link={config.links.SSV_DOCUMENTATION}/></Grid>} />
                             </Grid>
                             <Switch checked={isPermissionedOperator}
                                     className={classes.SwitchClassName}
@@ -91,7 +92,7 @@ const OperatorAccessSettings = () => {
                                 <Typography className={classes.ErrorMessage}>{addressError.errorMessage}</Typography>
                             </Grid>}
                             <TermsAndConditionsCheckbox>
-                                <PrimaryButton disable={btnDisabledCondition} text={'Update'} submitFunction={updateAddressHandler}/>
+                                <PrimaryButton disable={btnDisabledCondition} children={'Update'} submitFunction={updateAddressHandler}/>
                             </TermsAndConditionsCheckbox>
                         </Grid>
                     </Grid>

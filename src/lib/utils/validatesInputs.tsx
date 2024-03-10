@@ -1,10 +1,10 @@
 import React from 'react';
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import { compareNumbers } from '~lib/utils/numbers';
 import { isAddress } from '~root/services/conversions.service';
 import LinkText from '~app/components/common/LinkText/LinkText';
+import { getOperatorByPublicKey } from '~root/services/operator.service';
 
 interface ErrorObject {
   errorMessage: any,
@@ -63,7 +63,7 @@ export const validateFeeInput = (value: string, callback: Function): void => {
 };
 
 export const validateOperatorPublicKey = async (publicKey: string): Promise<boolean> => {
-  const res = await Operator.getInstance().getOperatorByPublicKey(publicKey);
+  const res = await getOperatorByPublicKey(publicKey);
   return res.data;
 };
 

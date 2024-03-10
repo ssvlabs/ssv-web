@@ -93,7 +93,6 @@ const CustomizedBodyRow = styled(CustomizedBasicRow)`
 const Dashboard = (props: DashboardProps) => {
   const { columns, rows, rowBackgroundColor, rowsAction, noItemsText, paginationActions, header, extraActions, headerPadding, loading } = props;
   const classes = useStyles({ header, headerPadding, loading });
-
   return (
       <TableContainer className={classes.TableContainer}>
         {header && <ContainerHeader className={classes.HeaderColor}>{header}</ContainerHeader>}
@@ -112,24 +111,29 @@ const Dashboard = (props: DashboardProps) => {
             </CustomizedColumnRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index: number) => (
+            {rows.map((row, index: number) => {
+             return (
                 <CustomizedBodyRow
-                    key={index}
-                    onClick={(e: any)=>{rowsAction && rowsAction(index, e);}}
-                    style={{ backgroundColor: rowBackgroundColor ? rowBackgroundColor(index) : '' }}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  key={index}
+                  onClick={(e: any) => {
+                    rowsAction && rowsAction(index, e);
+                  }}
+                  style={{ backgroundColor: rowBackgroundColor ? rowBackgroundColor(index) : '' }}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   {Object.keys(row).map((key: string, secondIndex: number) => (
-                      <CustomizedCellBasic className={classes.BodyColumn} key={secondIndex} align="left" component="th" scope="row">
-                        {row[key]}
-                      </CustomizedCellBasic>
+                    <CustomizedCellBasic className={classes.BodyColumn} key={secondIndex} align="left" component="th"
+                                         scope="row">
+                      {row[key]}
+                    </CustomizedCellBasic>
                   ))}
                   {!extraActions && <CustomizedCellBasic align="right">
                     <Grid className={classes.Arrow}/>
                   </CustomizedCellBasic>}
                   {extraActions && <CustomizedCellBasic>{extraActions(index)}</CustomizedCellBasic>}
                 </CustomizedBodyRow>
-            ))}
+              );
+            })}
           </TableBody>
         </CustomizedTable>
         {paginationActions.totalPages > 1 && <PaginationActions {...paginationActions} />}

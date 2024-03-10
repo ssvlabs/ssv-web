@@ -1,9 +1,8 @@
-import React, { lazy, Suspense, useEffect } from 'react';
-import { Route, Routes as Wrapper, useLocation, useNavigate } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
+import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
-import { SsvAppBar } from '~app/components/common/AppBar';
-import { useStores } from '~app/hooks/useStores';
+import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
 const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
@@ -20,6 +19,7 @@ const RemoveOperator = lazy(() => import('~app/components/applications/SSV/MyAcc
 const UpdateFee = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee'));
 const OperatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/OperatorConfirmation'));
 const ClusterDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/ClusterDashboard'));
+const BulkComponent = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/BulkComponent'));
 const ImportFile = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile'));
 const ReactivateCluster = lazy(()=> import('~app/components/applications/SSV/MyAccount/components/ReactivateCluster'));
 const OperatorDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/OperatorDashboard'));
@@ -43,18 +43,11 @@ const OfflineKeyShareCeremony = lazy(() => import('~app/components/applications/
 const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
 const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
 
-const Migration = lazy(() => import('~app/components/applications/SSV/Migration/Migration'));
-
 const Routes: any = () => {
-  const stores = useStores();
-  const location = useLocation();
-  const navigate = useNavigate();
   const ssvRoutes = config.routes.SSV;
-  const walletStore = stores.Wallet;
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
-    { path: ssvRoutes.MY_ACCOUNT.MIGRATION.START_MIGRATION, Component: Migration },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },
@@ -71,6 +64,7 @@ const Routes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, Component: BulkComponent },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
@@ -105,15 +99,6 @@ const Routes: any = () => {
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
   ];
-
-  useEffect(() => {
-    const notLoggedInRoutes = ['/', '/join'];
-    if (walletStore.wallet && notLoggedInRoutes.includes(location.pathname)) {
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    } else if (!walletStore.wallet && !notLoggedInRoutes.includes(location.pathname)) {
-      navigate(config.routes.SSV.ROOT);
-    }
-  }, [walletStore.wallet]);
 
   return (
       <Layout>

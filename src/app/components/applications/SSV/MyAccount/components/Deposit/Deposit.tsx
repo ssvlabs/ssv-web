@@ -7,18 +7,21 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
-import ProcessStore, { ProcessType, SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleCluster, ProcessType } from '~app/model/processes.model';
 
 const Deposit = () => {
   const stores = useStores();
@@ -26,27 +29,27 @@ const Deposit = () => {
   const classes = useStyles();
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
-  const clusterStore: ClusterStore = stores.Cluster;
+  const walletStore: WalletStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
-  const applicationStore: ApplicationStore = stores.Application;
   const [inputValue, setInputValue] = useState('');
+  const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const { checkedCondition } = useTermsAndConditions();
-
+  const dispatch = useAppDispatch();
 
   async function depositSsv() {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
-      cluster.balance = await clusterStore.getClusterBalance(cluster.operators);
+      cluster.balance = await getClusterBalance(cluster.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
         label: 'success',
       });
         await myAccountStore.getOwnerAddressClusters({});
-        applicationStore.setIsLoading(false);
+        dispatch(setIsLoading(false));
       if (success) {
         processStore.setProcess({
           processName: 'single_cluster',
@@ -63,7 +66,7 @@ const Deposit = () => {
       console.error(error);
     });
     setInputValue('');
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(false));
   }
 
   function inputHandler(e: any) {
@@ -103,6 +106,7 @@ const Deposit = () => {
                               value={inputValue}
                               placeholder={'0.0'}
                               onChange={inputHandler}
+                              disabled={wasAllowanceApproved}
                               className={classes.Balance}
                           />
                         </Grid>
@@ -121,7 +125,7 @@ const Deposit = () => {
               ),
               (
                   <>
-                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : clusterStore.getClusterRunWay({ ...cluster, balance: toWei(newBalance) }) }}/>
+                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) }}/>
                   </>
               ),
             ]}
@@ -133,6 +137,7 @@ const Deposit = () => {
                     onClick={depositSsv}
                     disable={Number(inputValue) <= 0 || !checkedCondition}
                     totalAmount={inputValue}
+                    allowanceApprovedCB={() => setAllowanceWasApproved(true)}
                 />
                 </TermsAndConditionsCheckbox>
             )]}

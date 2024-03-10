@@ -8,11 +8,12 @@ import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Balance/Balance.styles';
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 import { fromWei } from '~root/services/conversions.service';
+import { SingleCluster } from '~app/model/processes.model';
 
 const Balance = () => {
   const stores = useStores();
@@ -45,7 +46,7 @@ const Balance = () => {
     if (liquidated) {
       return (
         <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-          <PrimaryButton text={'Reactivate Cluster'} submitFunction={moveToReactivateCluster} />
+          <PrimaryButton children={'Reactivate Cluster'} submitFunction={moveToReactivateCluster} />
         </Grid>
       );
     }
@@ -53,10 +54,10 @@ const Balance = () => {
     return (
         <Grid container item className={classes.ActionButtonWrapper}>
           <Grid item xs>
-            <PrimaryButton text={'Deposit'} submitFunction={moveToDeposit} />
+            <PrimaryButton children={'Deposit'} submitFunction={moveToDeposit} />
           </Grid>
           <Grid item xs>
-            <SecondaryButton text={'Withdraw'} submitFunction={moveToWithdraw} />
+            <SecondaryButton children={'Withdraw'} submitFunction={moveToWithdraw} />
           </Grid>
         </Grid>
     );

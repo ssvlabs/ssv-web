@@ -17,14 +17,15 @@ import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import RemainingDays from '~app/components/applications/SSV/MyAccount/common/RemainingDays';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt/OperatorsReceipt.style';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { IOperator } from '~app/model/operator.model';
 
 type Props = {
   operators: any,
@@ -40,10 +41,10 @@ const OperatorsReceipt = (props: Props) => {
   const ssvStore: SsvStore = stores.SSV;
   const walletStore: WalletStore = stores.Wallet;
   const validatorStore: ValidatorStore = stores.Validator;
-  const applicationStore: ApplicationStore = stores.Application;
   const classes = useStyles({ currentOperators });
   const [checked, setChecked] = React.useState(false);
   const [openRedirect, setOpenRedirect] = React.useState(false);
+  const dispatch = useAppDispatch();
 
   if (location.state?.success) {
     location.state = null;
@@ -68,8 +69,8 @@ const OperatorsReceipt = (props: Props) => {
     }, 0,
   );
 
-  const networkFee = ssvStore.getFeeForYear(ssvStore.networkFee, 11);
-  const operatorsYearlyFee = ssvStore.getFeeForYear(newOperatorsFee);
+  const networkFee = getFeeForYear(ssvStore.networkFee, 11);
+  const operatorsYearlyFee = getFeeForYear(newOperatorsFee);
   const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
 
   const checkBox = () => {
@@ -89,7 +90,7 @@ const OperatorsReceipt = (props: Props) => {
   };
 
   const updateValidator = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     const response = await validatorStore.updateValidator();
     if (response) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS);
@@ -127,7 +128,7 @@ const OperatorsReceipt = (props: Props) => {
               </Grid>
               <Grid item xs>
                 <SsvAndSubTitle gray80={currentOperators}
-                  ssv={formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))}
+                  ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))}
                   subText={'/year'} />
               </Grid>
             </Grid>

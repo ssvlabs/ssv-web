@@ -13,8 +13,9 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styles';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import ValidatorStore from '../../../common/stores/applications/SsvWeb/Validator.store';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsLoading } from '~app/redux/appState.slice';
 
 type Props = {
   header: any,
@@ -48,12 +49,12 @@ const WhiteWrapper = (props: Props) => {
     backButtonRedirect,
     withBackButton = true,
   } = props;
-  const applicationStore: ApplicationStore = stores.Application;
   const validatorStore: ValidatorStore = stores.Validator;
   const settingsRef = useRef(null);
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const isLoading = useAppSelector(getIsLoading);
 
   const cancelProcess = () => {
     validatorStore.clearKeyStoreFlowData();
@@ -65,7 +66,7 @@ const WhiteWrapper = (props: Props) => {
   };
 
   const dialogHandler = () => {
-    if (!applicationStore.isLoading) setOpenDialog(!openDialog);
+    if (!isLoading) setOpenDialog(!openDialog);
   };
 
   const ShowSettings = () => {
@@ -154,10 +155,10 @@ const WhiteWrapper = (props: Props) => {
             <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'} />
             <Grid container className={classes.ButtonsWrapper}>
               <Grid item xs>
-                <SecondaryButton text={'Yes, Cancel'} submitFunction={cancelProcess} />
+                <SecondaryButton children={'Yes, Cancel'} submitFunction={cancelProcess} />
               </Grid>
               <Grid item xs>
-                <PrimaryButton text={'No, Go Back'} submitFunction={dialogHandler} />
+                <PrimaryButton children={'No, Go Back'} submitFunction={dialogHandler} />
               </Grid>
             </Grid>
           </Grid>

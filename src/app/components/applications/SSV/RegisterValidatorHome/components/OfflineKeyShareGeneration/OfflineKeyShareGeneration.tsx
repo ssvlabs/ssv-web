@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,17 +17,19 @@ import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
-import { getStoredNetwork, NETWORKS } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, isMainnet } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { DEVELOPER_FLAGS, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
+import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import OperatorStore, { IOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { IOperator } from '~app/model/operator.model';
+import { getOwnerNonce } from '~root/services/account.service';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -44,23 +46,30 @@ const OfflineKeyShareGeneration = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
-  const accountStore: AccountStore = stores.Account;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
   const [addressValidationError, setAddressValidationError] = useState({ shouldDisplay: true, errorMessage: '' });
+  const [ownerNonce, setOwnerNonce] = useState<number | undefined>(undefined);
   const notificationsStore: NotificationsStore = stores.Notifications;
-  const { ownerNonce } = accountStore;
   const { accountAddress } = walletStore;
-  const { apiNetwork, networkId } = getStoredNetwork();
-  const isNotMainnet = networkId !== NETWORKS.MAINNET;
+  const { apiNetwork } = getStoredNetwork();
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
   const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
   const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
   const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
   const [isInvalidValidatorsCount, setIsInvalidValidatorsCount] = useState(false);
+
+  useEffect(() => {
+    const fetchOwnerNonce = async () => {
+      const nonce = await getOwnerNonce({ address: accountAddress });
+      // TODO: add proper error handling
+      setOwnerNonce(nonce);
+    };
+    fetchOwnerNonce();
+  }, []);
 
   const confirmWithdrawalAddressHandler = () => {
     if (!addressValidationError.shouldDisplay && withdrawalAddress) {
@@ -110,7 +119,7 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:latest & docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --generateInitiatorKeyIfNotExisting --configPath /data --logFilePath /data/debug.log --outputPath /data`;
+  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:latest & docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --generateInitiatorKeyIfNotExisting --logFilePath /data/debug.log --outputPath /data`;
 
   const instructions = [
     {
@@ -189,7 +198,8 @@ const OfflineKeyShareGeneration = () => {
     return true;
   };
 
-  const enableDesktopAppKeysharesGeneration = getLocalStorageFlagValue(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION);
+  // @ts-ignore
+  const enableDesktopAppKeysharesGeneration = JSON.parse(getFromLocalStorageByKey(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION));
 
   const MainScreen =
     <BorderScreen
@@ -197,7 +207,7 @@ const OfflineKeyShareGeneration = () => {
       withoutNavigation={processStore.secondRegistration}
       header={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.HEADER}
       overFlow={'none'}
-      width={isNotMainnet ? 872 : undefined}
+      width={!isMainnet() ? 872 : undefined}
       body={[
         <Grid container style={{ gap: 24 }}>
           <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
@@ -220,7 +230,7 @@ const OfflineKeyShareGeneration = () => {
                   <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
                 </Grid>
               </Grid>}/>
-            {isNotMainnet && <Grid container item
+            {!isMainnet() && <Grid container item
 																	 className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
 																	 onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
 							<Grid item xs={XS}
@@ -248,7 +258,7 @@ const OfflineKeyShareGeneration = () => {
 						</Grid>
 					</Grid>
           }
-          {selectedBox === OFFLINE_FLOWS.DKG && isNotMainnet && operatorsAcceptDkg &&
+          {selectedBox === OFFLINE_FLOWS.DKG && !isMainnet() && operatorsAcceptDkg &&
 						<Grid container item className={classes.DkgInstructionsWrapper}>
 							<Grid className={classes.DkgNotification}>
 								Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
@@ -320,7 +330,7 @@ const OfflineKeyShareGeneration = () => {
 								<CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
 						</Grid>
           }
-          {hideButtonCondition() && <PrimaryButton text={buttonLabel}
+          {hideButtonCondition() && <PrimaryButton children={buttonLabel}
 																									 submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
 																									 disable={disabledCondition()}/>}
         </Grid>,

@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme: any) => ({
         height: 80,
         alignItems: 'center',
         padding: theme.spacing(0, 6, 0, 6),
-        backgroundColor: (props: any) => props.backgroundColor ? props.backgroundColor : '',
+        backgroundColor: theme.colors.white,
     },
     AppBarIcon: {
         height: 40,

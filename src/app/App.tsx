@@ -1,29 +1,50 @@
-import { observer } from 'mobx-react';
 import { configure } from 'mobx';
-import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { InitOptions, OnboardAPI } from '@web3-onboard/core';
+import React, { useEffect, useState, useMemo } from 'react';
+import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { OnboardAPI } from '@web3-onboard/core';
 import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import Routes from '~app/Routes/Routes';
 import config from '~app/common/config';
-import { useStyles } from '~app/App.styles';
-import { globalStyle } from '~app/globalStyle';
-import { getImage } from '~lib/utils/filePath';
-import { useStores } from '~app/hooks/useStores';
+import { getColors } from '~root/themes';
+import { GlobalStyle } from '~app/globalStyle';
 import BarMessage from '~app/components/common/BarMessage';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
-import DeveloperHelper from '~lib/utils/developerHelper';
-import { tmp } from '~lib/utils/onboardHelper';
+import { initOnboardOptions } from '~lib/utils/onboardHelper';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
+import { AppTheme } from '~root/Theme';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { useDispatch } from 'react-redux';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getImage } from '~lib/utils/filePath';
 
-const onboardInstance = init(tmp);
+const LoaderWrapper = styled.div<{ theme: any }>`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  background-color: ${({ theme }) => theme.loaderColor};
+`;
+
+const Loader = styled.img`
+  width: 200px;
+`;
+
+const onboardInstance = init(initOnboardOptions);
 
 configure({ enforceActions: 'never' });
 
@@ -35,67 +56,69 @@ if (process.env.REACT_APP_FAUCET_PAGE) {
 }
 
 const App = () => {
+  const dispatch = useDispatch();
+  const isDarkMode = useAppSelector(getIsDarkMode);
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
+  const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
-  const stores = useStores();
-  const classes = useStyles();
   const navigate = useNavigate();
-  const GlobalStyle = globalStyle();
-  const applicationStore: ApplicationStore = stores.Application;
-
-  const location = useLocation();
 
   useEffect(() => {
     setWeb3Onboard(onboardInstance);
   }, []);
 
   useEffect(() => {
-    if (window?.localStorage.getItem('locationRestrictionDisabled')) {
+    setTheme({ colors: getColors({ isDarkMode }) });
+    web3Onboard?.state.actions.updateTheme(isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
-      applicationStore.userGeo = '';
-    } else {
-      if (applicationStore.shouldCheckCompliance) {
-        checkUserCountryRestriction().then((res: any) => {
-          if (res.restricted) {
-            applicationStore.userGeo = res.userGeo;
-            applicationStore.strategyRedirect = config.routes.COUNTRY_NOT_SUPPORTED;
-            navigate(config.routes.COUNTRY_NOT_SUPPORTED);
-          } else {
-            navigate(applicationStore.strategyRedirect);
-          }
-        });
-      } else {
-        if (location.pathname === config.routes.COUNTRY_NOT_SUPPORTED) {
-          applicationStore.userGeo = '';
-          applicationStore.strategyRedirect = config.routes.SSV.ROOT;
-          navigate(applicationStore.strategyRedirect);
+      dispatch(setRestrictedUserGeo(''));
+    } else if (shouldCheckCountryRestriction) {
+      checkUserCountryRestriction().then((res: any) => {
+        if (!!res) {
+          dispatch(setRestrictedUserGeo(res));
+          navigate(config.routes.COUNTRY_NOT_SUPPORTED);
+        } else {
+          dispatch(setRestrictedUserGeo(''));
+          navigate(config.routes.SSV.ROOT);
         }
-      }
+      });
+    } else {
+      dispatch(setRestrictedUserGeo(''));
+      navigate(config.routes.SSV.ROOT);
     }
-  }, [applicationStore.shouldCheckCompliance]);
+  }, [shouldCheckCountryRestriction]);
+
+  useEffect(() => {
+    navigate(strategyRedirect);
+  }, [strategyRedirect]);
+
+  const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);
 
   return (
       <StyledEngineProvider injectFirst>
-        <DeveloperHelper />
-        <ThemeProvider theme={applicationStore.theme}>
-          <ThemeProviderLegacy theme={applicationStore.theme}>
-            <GlobalStyle/>
-            {!web3Onboard && (
-                <Grid container className={classes.LoaderWrapper}>
-                  <img className={classes.Loader} src={getImage('ssv-loader.svg')} alt=""/>
-                </Grid>
-            )}
-            <BarMessage/>
-            <BrowserView>
-              {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
-            </BrowserView>
-            <MobileView>
-              <MobileNotSupported/>
-            </MobileView>
-            <CssBaseline/>
+        <ThemeProvider theme={MuiTheme}>
+          <ThemeProviderLegacy theme={MuiTheme}>
+            <ScThemeProvider theme={theme}>
+              <GlobalStyle/>
+              {!web3Onboard && (<LoaderWrapper><Loader src={getImage('ssv-loader.svg')} /></LoaderWrapper>)}
+              <BarMessage/>
+              <BrowserView>
+                {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}
+              </BrowserView>
+              <MobileView>
+                <MobileNotSupported/>
+              </MobileView>
+              <CssBaseline/>
+            </ScThemeProvider>
           </ThemeProviderLegacy>
         </ThemeProvider>
       </StyledEngineProvider>
   );
 };
 
-export default observer(App);
+export default App;

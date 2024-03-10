@@ -2,7 +2,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -15,27 +14,31 @@ import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { getOperatorByPublicKey } from '~root/services/operator.service';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
   const classes = useStyles();
+  const walletStore: WalletStore = stores.Wallet;
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const applicationStore: ApplicationStore = stores.Application;
   const { checkedCondition } = useTermsAndConditions();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
+  const dispatch = useAppDispatch();
 
   const disableLoadingStates = () => {
-    applicationStore.setIsLoading(false);
-    applicationStore.showTransactionPendingPopUp(false);
+    dispatch(setIsLoading(false));
+    dispatch(setIsShowTxPendingPopup(false));
   };
 
   const onRegisterClick = async () => {
     try {
-      applicationStore.setIsLoading(true);
+      dispatch(setIsLoading(true));
       setActionButtonText('Waiting for confirmation...');
       const operatorAdded = await operatorStore.addNewOperator();
       let publicKey = operatorStore.newOperatorKeys.publicKey;
@@ -47,15 +50,17 @@ const OperatorConfirmation = () => {
         }
         for (let i = 0; i < 20 && !operatorStore.newOperatorKeys.id; i++) {
           try {
-            const operator = await Operator.getInstance().getOperatorByPublicKey(publicKey, false);
+            const operator = await getOperatorByPublicKey(publicKey, false);
             console.log('Fetched operator by public key', operator);
             if (operator?.data?.id) {
               operatorStore.newOperatorKeys = {
                 ...operatorStore.newOperatorKeys,
                 id: operator.data.id,
               };
-              disableLoadingStates();
-              navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+              if (!walletStore.isContractWallet){
+                disableLoadingStates();
+                navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
+              }
               return;
             }
           } catch (e) {
@@ -119,7 +124,7 @@ const OperatorConfirmation = () => {
               </Grid>
               <Grid container item>
                <TermsAndConditionsCheckbox>
-                 <PrimaryButton disable={!checkedCondition} text={actionButtonText} submitFunction={onRegisterClick}/>
+                 <PrimaryButton disable={!checkedCondition} children={actionButtonText} submitFunction={onRegisterClick}/>
                </TermsAndConditionsCheckbox>
               </Grid>
             </Grid>,

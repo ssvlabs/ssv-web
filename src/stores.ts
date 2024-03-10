@@ -3,18 +3,13 @@ import BaseStore from '~app/common/stores/BaseStore';
 
 const stores = [
   'SSV',
-  'Event',
   'Wallet',
-  'Faucet',
   'Process',
   'Cluster',
-  'Account',
   'Checkbox',
   'Operator',
   'Validator',
   'MyAccount',
-  'Migration',
-  'Application',
   'Distribution',
   'Notifications',
   'OperatorMetadata',

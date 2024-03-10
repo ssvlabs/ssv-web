@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
     alignItems: 'start',
     color: theme.colors.gray80,
-    marginBottom: theme.spacing(5),
+    marginBottom: (props: any) => props.withoutMarginBottom ? 0 : theme.spacing(5),
   },
   BoxWrapper: {
     borderRadius: 2,
@@ -31,7 +31,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
       return '1px solid #5b6c84';
     },
     backgroundImage: (props: any) => {
-      if (props.checked) return 'url(/images/v/light.svg)';
+      if (props.checked) {
+        return props.smallLine ? 'url(/images/small_line/light.svg)' : 'url(/images/v/light.svg)';
+      }
       return 'none';
     },
   },

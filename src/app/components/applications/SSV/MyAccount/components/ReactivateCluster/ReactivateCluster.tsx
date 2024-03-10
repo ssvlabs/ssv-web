@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
@@ -18,9 +17,12 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei } from '~root/services/conversions.service';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { SingleCluster } from '~app/model/processes.model';
 
 const ReactivateCluster = () => {
   const options = [
@@ -34,9 +36,9 @@ const ReactivateCluster = () => {
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const applicationStore: ApplicationStore = stores.Application;
   const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
+  const dispatch = useAppDispatch();
   const timePeriodNotValid = customPeriod < 30;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
@@ -64,10 +66,10 @@ const ReactivateCluster = () => {
   const isChecked = (id: number) => checkedOption.id === id;
 
   const reactivateCluster = async () => {
-    applicationStore.setIsLoading(true);
+    dispatch(setIsLoading(true));
     const response = await validatorStore.reactivateCluster(totalCost.toString());
-    applicationStore.showTransactionPendingPopUp(false);
-    applicationStore.setIsLoading(false);
+    dispatch(setIsShowTxPendingPopup(false));
+    dispatch(setIsLoading(false));
     if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
@@ -119,7 +121,7 @@ const ReactivateCluster = () => {
                         Insufficient SSV balance. Acquire further SSV or pick a different amount.
                       </Grid>
                       <Grid container item xs>
-                        <LinkText className={classes.Link} text={'Need SSV?'} link={ENV().INSUFFICIENT_BALANCE_URL}/>
+                        <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
                       </Grid>
                     </Grid>
                   }

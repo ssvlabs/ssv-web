@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ProcessStore  from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -12,6 +11,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryBu
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { getOperator } from '~root/services/operator.service';
 
 const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();
@@ -27,7 +27,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         } else {
             await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
-            const operator = await Operator.getInstance().getOperator(operatorStore.processOperatorId);
+            const operator = await getOperator(operatorStore.processOperatorId);
             const balance = await operatorStore.getOperatorBalance(operator.id);
             processStore.setProcess({
                 processName: 'single_operator',
@@ -54,7 +54,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
                             Read more on fee changes
                         </Grid>
                     </Grid>}
-                    <PrimaryButton text={buttonText} submitFunction={onUpdateFeeHandle}/>
+                    <PrimaryButton children={buttonText} submitFunction={onUpdateFeeHandle}/>
                 </Grid>,
             ]}
         />

@@ -172,7 +172,7 @@ const SingleCluster = () => {
             header={<Grid container className={classes.HeaderWrapper}>
               <Grid item className={classes.Header}>Validators</Grid>
               <Grid className={classes.ButtonsWrapper}>
-                {cluster.validatorCount > 1 && !isMainnet() && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
+                {cluster.validatorCount > 1 && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
                   <ButtonText>
                     Actions
                   </ButtonText>

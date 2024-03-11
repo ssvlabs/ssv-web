@@ -11,7 +11,12 @@
  * */
 
 import config from '~app/common/config';
-import { getStoredNetwork, MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import {
+  getStoredNetwork,
+  MAINNET_NETWORK_ID,
+  GOERLI_NETWORK_ID,
+  HOLESKY_NETWORK_ID,
+} from '~root/providers/networkInfo.provider';
 import { getLocalStorageFlagValue, MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 
 type NavigationRoutes = Record<string, string | Record<number, string>>;
@@ -41,7 +46,7 @@ const MAX_VALIDATORS_PER_CLUSTER_SIZE: Record<number, number> = {
 };
 
 const NETWORK_TO_BULK_MODE = {
-  [`${MAINNET_NETWORK_ID}`]: EBulkMode.SINGLE,
+  [`${MAINNET_NETWORK_ID}`]: EBulkMode.MULTI,
   [`${HOLESKY_NETWORK_ID}`]: EBulkMode.MULTI,
   [`${GOERLI_NETWORK_ID}`]: EBulkMode.MULTI,
 };
@@ -93,14 +98,10 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
 const validatorRegistrationFlow = (currentRoute: string) => {
   const getMaxValidatorsCountPerRegistration = (clusterSize: number, walletLabel: string = '') => {
     let maximumCount;
-    if (isBulkMode(EBulkMode.SINGLE) ) {
+    if (isBulkMode(EBulkMode.SINGLE)) {
       maximumCount = config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION;
     } else {
-      if (walletLabel === 'WalletConnect') {
-        maximumCount = config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.WALLET_CONNECT;
-      } else {
-        maximumCount = MAX_VALIDATORS_PER_CLUSTER_SIZE[clusterSize];
-      }
+      maximumCount = MAX_VALIDATORS_PER_CLUSTER_SIZE[clusterSize];
     }
     return Number(getLocalStorageFlagValue(MAXIMUM_VALIDATOR_COUNT_FLAG)) || maximumCount;
   };

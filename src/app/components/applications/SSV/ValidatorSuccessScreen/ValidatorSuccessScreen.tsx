@@ -36,7 +36,7 @@ const ValidatorSuccessScreen = () => {
     dispatch(setIsLoading(true));
     setTimeout(() => {
       dispatch(setIsLoading(false));
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
     }, 5000);
 
     GoogleTagManager.getInstance().sendEvent({

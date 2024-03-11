@@ -214,6 +214,10 @@ const SingleOperator = () => {
       ], [isDarkMode],
   );
 
+  const backToClustersDashboard = () => {
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+  };
+
   const UpdateFeeButton = () => !Number(operator.fee) ?
       <Tooltip
           title={
@@ -235,6 +239,7 @@ const SingleOperator = () => {
         <NewWhiteWrapper
             type={1}
             mainFlow
+            stepBack={backToClustersDashboard}
             header={'Operator Details'}
         >
           <Grid item container className={classes.ItemsWrapper}>

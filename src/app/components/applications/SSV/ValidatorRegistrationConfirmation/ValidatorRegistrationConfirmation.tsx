@@ -86,8 +86,6 @@ const ValidatorRegistrationConfirmation = () => {
     } else {
       setActionButtonText(actionButtonDefaultText);
     }
-    dispatch(setIsShowTxPendingPopup(false));
-    dispatch(setIsLoading(false));
   };
 
   const TotalSection = <Grid container>

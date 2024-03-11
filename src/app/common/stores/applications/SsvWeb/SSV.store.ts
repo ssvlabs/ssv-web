@@ -10,6 +10,8 @@ import notifyService from '~root/services/notify.service';
 import { getClusterData, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb/index';
 import { SingleCluster, SingleOperator } from '~app/model/processes.model';
+import { store } from '~app/store';
+import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -106,7 +108,10 @@ class SsvStore extends BaseStore {
       const clusterData = await getClusterData(getClusterHash(cluster.operators, walletStore.accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
       const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
       const tx = await contract.deposit(walletStore.accountAddress, operatorsIds, ssvAmount, clusterData);
-      if (tx.hash) {
+      if (tx.hash && walletStore.isContractWallet) {
+        store.dispatch(setIsShowTxPendingPopup(true));
+        resolve(true);
+      } else {
         notifyService.hash(tx.hash);
       }
       const receipt = await tx.wait();
@@ -170,7 +175,10 @@ class SsvStore extends BaseStore {
           const newBalance = fromWei(cluster.balance) - Number(amount);
           if (getClusterRunWay({ ...process.item, balance: toWei(newBalance) }, this.liquidationCollateralPeriod, this.minimumLiquidationCollateral) <= 0) {
             tx = await contract.liquidate(walletStore.accountAddress, operatorsIds, clusterData);
-            if (tx.hash) {
+            if (tx.hash && walletStore.isContractWallet) {
+              store.dispatch(setIsShowTxPendingPopup(true));
+              resolve(true);
+            } else {
               notifyService.hash(tx.hash);
             }
             const receipt = await tx.wait();
@@ -178,7 +186,10 @@ class SsvStore extends BaseStore {
             resolve(result);
           } else {
             tx = await contract.withdraw(operatorsIds, prepareSsvAmountToTransfer(toWei(amount)), clusterData);
-            if (tx.hash) {
+            if (tx.hash && walletStore.isContractWallet) {
+              store.dispatch(setIsShowTxPendingPopup(true));
+              resolve(true);
+            } else {
               notifyService.hash(tx.hash);
             }
             const receipt = await tx.wait();
@@ -191,7 +202,10 @@ class SsvStore extends BaseStore {
           const operatorId = operator.id;
           const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
           tx = await contract.withdrawOperatorEarnings(operatorId, ssvAmount);
-          if (tx.hash) {
+          if (tx.hash && walletStore.isContractWallet) {
+            store.dispatch(setIsShowTxPendingPopup(true));
+            resolve(true);
+          } else {
             notifyService.hash(tx.hash);
           }
           const receipt = await tx.wait();

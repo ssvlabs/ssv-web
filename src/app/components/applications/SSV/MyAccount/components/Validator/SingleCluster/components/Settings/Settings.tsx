@@ -92,7 +92,7 @@ const Settings = ({ validator }: { validator: any }) => {
               <Grid className={classes.RemoveValidatorImage} />
               <Typography>Remove Validator</Typography>
             </Grid>
-            {!isMainnet() && <Grid container item className={classes.Button}
+            {false && !isMainnet() && <Grid container item className={classes.Button}
                    onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
               <Grid className={classes.ExitValidatorImage}/>
               <Typography>Exit Validator</Typography>

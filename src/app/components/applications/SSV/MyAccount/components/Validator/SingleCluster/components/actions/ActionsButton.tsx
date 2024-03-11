@@ -57,12 +57,12 @@ const ActionsButton = ({ extendClass, children }: { extendClass: string, childre
               <Typography>Remove Validators</Typography>
             </Grid>
           </Grid>
-          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
+          {false && <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
             <Grid container item xs style={{ gap: 8, width: '100%' }}>
-              <Grid className={classes.Exit} />
+              <Grid className={classes.Exit}/>
               <Typography>Exit Validators</Typography>
             </Grid>
-          </Grid>
+          </Grid>}
         </Grid>
       </Grid>
       }

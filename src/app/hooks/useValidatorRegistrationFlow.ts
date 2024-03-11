@@ -46,7 +46,7 @@ const MAX_VALIDATORS_PER_CLUSTER_SIZE: Record<number, number> = {
 };
 
 const NETWORK_TO_BULK_MODE = {
-  [`${MAINNET_NETWORK_ID}`]: EBulkMode.SINGLE,
+  [`${MAINNET_NETWORK_ID}`]: EBulkMode.MULTI,
   [`${HOLESKY_NETWORK_ID}`]: EBulkMode.MULTI,
   [`${GOERLI_NETWORK_ID}`]: EBulkMode.MULTI,
 };

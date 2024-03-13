@@ -23,6 +23,7 @@ import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
+import { getLiquidationCollateralPepValidator } from '~root/services/validator.service';
 
 const ReactivateCluster = () => {
   const options = [
@@ -54,10 +55,8 @@ const ReactivateCluster = () => {
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * validatorCount;
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
-  let liquidationCollateralCost = new Decimal(operatorsFee).add(ssvStore.networkFee * validatorCount).mul(ssvStore.liquidationCollateralPeriod);
-  if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
-    liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
-  }
+
+  let liquidationCollateralCost = getLiquidationCollateralPepValidator(operatorsFee, ssvStore.networkFee, ssvStore.liquidationCollateralPeriod, validatorCount, ssvStore.minimumLiquidationCollateral);
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;

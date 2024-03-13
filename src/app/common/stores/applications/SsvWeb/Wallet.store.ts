@@ -18,7 +18,7 @@ class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
   isContractWallet: boolean = false;
-  isWalletConnect = false;
+  isNotMetamask = false;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -30,7 +30,7 @@ class WalletStore extends BaseStore implements Wallet {
       resetUser: action.bound,
       accountAddress: observable,
       isContractWallet: observable,
-      isWalletConnect: observable,
+      isNotMetamask: observable,
       initWallet: action.bound,
     });
   }
@@ -40,12 +40,12 @@ class WalletStore extends BaseStore implements Wallet {
     this.wallet = wallet;
     this.accountAddress = wallet.accounts[0].address;
     notifyService.init(connectedChain.id);
-    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isWalletConnect });
-    this.isContractWallet = await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
+    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isNotMetamask });
+    this.isNotMetamask = wallet.label !== 'MetaMask';
+    this.isContractWallet = this.isNotMetamask && await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
     await this.ssvStore.initUser();
     await this.operatorStore.initUser();
     this.myAccountStore.setIntervals();
-    this.isWalletConnect = wallet.label === 'WalletConnect';
     await Promise.all([
       this.myAccountStore.getOwnerAddressOperators({}),
       this.myAccountStore.getOwnerAddressClusters({}),

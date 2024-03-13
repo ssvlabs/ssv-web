@@ -136,10 +136,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         }
     }, [connectedChain, settingChain]);
 
-    useEffect(() => {
-        console.log('settingChain ', settingChain);
-    }, [settingChain]);
-
     const onOptionClick = async (index: number) => {
         if (index === getStoredNetworkIndex()) {
             setShowNetworks(false);

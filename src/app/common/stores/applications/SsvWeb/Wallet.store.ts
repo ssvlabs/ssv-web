@@ -11,7 +11,7 @@ import { store } from '~app/store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import notifyService from '~root/services/notify.service';
 import { initContracts } from '~root/services/contracts.service';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { changeNetwork, getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkIfWalletIsContract } from '~root/services/wallet.service';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -40,6 +40,8 @@ class WalletStore extends BaseStore implements Wallet {
     this.wallet = wallet;
     this.accountAddress = wallet.accounts[0].address;
     notifyService.init(connectedChain.id);
+    const index = getNetworkInfoIndexByNetworkId(Number(connectedChain.id));
+    changeNetwork(index);
     initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isNotMetamask });
     this.isNotMetamask = wallet.label !== 'MetaMask';
     this.isContractWallet = this.isNotMetamask && await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });

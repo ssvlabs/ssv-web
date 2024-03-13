@@ -20,7 +20,19 @@ const clustersByOwnerAddress = async (query: string, skipRetry?: boolean): Promi
   }
 };
 
-const getLiquidationCollateralPepValidator = (operatorsFee: number, networkFee: number, liquidationCollateralPeriod: number, validatorsCount: number, minimumLiquidationCollateral: number) => {
+const getLiquidationCollateralPerValidator = ({
+                                                operatorsFee,
+                                                networkFee,
+                                                liquidationCollateralPeriod,
+                                                validatorsCount = 1,
+                                                minimumLiquidationCollateral,
+                                              }: {
+  operatorsFee: number,
+  networkFee: number,
+  liquidationCollateralPeriod: number,
+  validatorsCount?: number,
+  minimumLiquidationCollateral: number
+}) => {
   let liquidationCollateralCost = new Decimal(operatorsFee).add(networkFee).mul(liquidationCollateralPeriod).mul(validatorsCount);
   if (Number(liquidationCollateralCost) < minimumLiquidationCollateral) {
     liquidationCollateralCost = new Decimal(minimumLiquidationCollateral);
@@ -69,7 +81,7 @@ export {
   getOwnerAddressCost,
   clustersByOwnerAddress,
   validatorsByClusterHash,
-  getLiquidationCollateralPepValidator,
+  getLiquidationCollateralPerValidator,
   clusterByHash,
   getClusterData,
   getValidator,

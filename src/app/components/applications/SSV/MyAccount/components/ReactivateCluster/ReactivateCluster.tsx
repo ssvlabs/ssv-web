@@ -23,7 +23,7 @@ import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
-import { getLiquidationCollateralPepValidator } from '~root/services/validator.service';
+import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 
 const ReactivateCluster = () => {
   const options = [
@@ -43,7 +43,7 @@ const ReactivateCluster = () => {
   const timePeriodNotValid = customPeriod < 30;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
-  const validatorCount = cluster.validatorCount || 1;
+  const validatorsCount = cluster.validatorCount || 1;
 
   const checkBox = (option: any) => setCheckedOption(option);
 
@@ -51,12 +51,18 @@ const ReactivateCluster = () => {
   const operatorsFee = Object.values(cluster.operators).reduce(
         (previousValue: number, currentValue: any) => previousValue + fromWei(currentValue.fee),
         0,
-    ) * validatorCount;
+    ) * validatorsCount;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * validatorCount;
+  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * validatorsCount;
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
 
-  let liquidationCollateralCost = getLiquidationCollateralPepValidator(operatorsFee, ssvStore.networkFee, ssvStore.liquidationCollateralPeriod, validatorCount, ssvStore.minimumLiquidationCollateral);
+  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+    operatorsFee,
+    networkFee: ssvStore.networkFee,
+    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+    validatorsCount,
+    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+  });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;

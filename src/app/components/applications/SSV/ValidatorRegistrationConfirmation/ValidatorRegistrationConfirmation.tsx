@@ -34,7 +34,7 @@ import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice
 import { IOperator } from '~app/model/operator.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
-import { getLiquidationCollateralPepValidator } from '~root/services/validator.service';
+import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -56,7 +56,13 @@ const ValidatorRegistrationConfirmation = () => {
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
-  let liquidationCollateralCost = getLiquidationCollateralPepValidator(operatorStore.getSelectedOperatorsFee, ssvStore.networkFee, ssvStore.liquidationCollateralPeriod, validatorStore.validatorsCount, ssvStore.minimumLiquidationCollateral);
+  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+    operatorsFee: operatorStore.getSelectedOperatorsFee,
+    networkFee: ssvStore.networkFee,
+    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+    validatorsCount: validatorStore.validatorsCount,
+    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+  });
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
   const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {

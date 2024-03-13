@@ -18,7 +18,7 @@ import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
-import { getLiquidationCollateralPepValidator, getValidator } from '~root/services/validator.service';
+import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
@@ -580,7 +580,13 @@ class ValidatorStore extends BaseStore {
       if (process && 'fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-        let liquidationCollateralCost = getLiquidationCollateralPepValidator(operatorStore.getSelectedOperatorsFee, ssvStore.networkFee, ssvStore.liquidationCollateralPeriod, this.isMultiSharesMode ? this.validatorsCount : 1, ssvStore.minimumLiquidationCollateral);
+        let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+          operatorsFee: operatorStore.getSelectedOperatorsFee,
+          networkFee: ssvStore.networkFee,
+          validatorsCount: this.validatorsCount,
+          liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+          minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+        });
         totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(this.isMultiSharesMode ? this.validatorsCount : 1).toString()));
       }
       try {

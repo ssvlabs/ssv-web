@@ -75,7 +75,7 @@ const ClusterDashboard = () => {
 
   const rows = sortedClusters.map((cluster: any) => {
     const remainingDaysValue = formatNumberToUi(cluster.runWay, true);
-    const remainingDays = +remainingDaysValue > 0 ? `${remainingDaysValue} Days` : remainingDaysValue;
+    const remainingDays = cluster.runWay && cluster.runWay !== Infinity ? `${remainingDaysValue} Days` : remainingDaysValue;
     return createData(
       longStringShorten(getClusterHash(cluster.operators, walletStore.accountAddress).slice(2), 4),
       <Grid container style={{ gap: 8 }}>

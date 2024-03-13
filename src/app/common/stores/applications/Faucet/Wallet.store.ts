@@ -8,7 +8,7 @@ import notifyService from '~root/services/notify.service';
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
-  isWalletConnect = false;
+  isNotMetamask = false;
 
   constructor() {
     super();

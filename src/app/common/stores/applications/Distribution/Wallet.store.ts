@@ -11,7 +11,7 @@ class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   ssvBalance: any = 0;
   accountAddress: string = '';
-  isWalletConnect = false;
+  isNotMetamask = false;
 
   private distributionStore: DistributionStore | DistributionTestnetStore | null = null;
 

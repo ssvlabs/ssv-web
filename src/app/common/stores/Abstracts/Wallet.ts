@@ -4,13 +4,13 @@ import BaseStore from '~app/common/stores/BaseStore';
 export default abstract class Wallet extends BaseStore {
   wallet: any;
   accountAddress: string;
-  isNotMetamask = false;
+  isWalletConnect = false;
 
   protected constructor() {
     super();
     this.wallet = null;
     this.accountAddress = '';
-    this.isNotMetamask = false;
+    this.isWalletConnect = false;
   }
 
   // eslint-disable-next-line no-unused-vars

@@ -11,15 +11,14 @@ import { store } from '~app/store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import notifyService from '~root/services/notify.service';
 import { initContracts } from '~root/services/contracts.service';
-import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkIfWalletIsContract } from '~root/services/wallet.service';
-import { setConnectedNetwork } from '~app/redux/wallet.slice';
 
 class WalletStore extends BaseStore implements Wallet {
   wallet: any = null;
   accountAddress: string = '';
   isContractWallet: boolean = false;
-  isNotMetamask = false;
+  isWalletConnect = false;
   private ssvStore: SsvStore = this.getStore('SSV');
   private operatorStore: OperatorStore = this.getStore('Operator');
   private myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -31,7 +30,7 @@ class WalletStore extends BaseStore implements Wallet {
       resetUser: action.bound,
       accountAddress: observable,
       isContractWallet: observable,
-      isNotMetamask: observable,
+      isWalletConnect: observable,
       initWallet: action.bound,
     });
   }
@@ -41,14 +40,12 @@ class WalletStore extends BaseStore implements Wallet {
     this.wallet = wallet;
     this.accountAddress = wallet.accounts[0].address;
     notifyService.init(connectedChain.id);
-    const index = getNetworkInfoIndexByNetworkId(Number(connectedChain.id));
-    store.dispatch(setConnectedNetwork(index));
-    this.isNotMetamask = wallet.label !== 'MetaMask';
-    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isNotMetamask });
-    this.isContractWallet = this.isNotMetamask && await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
+    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: this.isWalletConnect });
+    this.isContractWallet = await checkIfWalletIsContract({ provider: wallet.provider, walletAddress: wallet.accounts[0].address });
     await this.ssvStore.initUser();
     await this.operatorStore.initUser();
     this.myAccountStore.setIntervals();
+    this.isWalletConnect = wallet.label === 'WalletConnect';
     await Promise.all([
       this.myAccountStore.getOwnerAddressOperators({}),
       this.myAccountStore.getOwnerAddressClusters({}),

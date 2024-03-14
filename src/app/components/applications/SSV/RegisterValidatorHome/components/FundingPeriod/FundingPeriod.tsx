@@ -20,7 +20,6 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator } from '~app/model/processes.model';
-import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 
 const FundingPeriod = () => {
   const options = [
@@ -46,13 +45,10 @@ const FundingPeriod = () => {
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, periodOfTime);
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
-    operatorsFee: operatorStore.getSelectedOperatorsFee,
-    networkFee: ssvStore.networkFee,
-    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-    validatorsCount: validatorStore.validatorsCount,
-    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
-  });
+  let liquidationCollateralCost = Number(new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod));
+  if ( Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral ) {
+    liquidationCollateralCost = ssvStore.minimumLiquidationCollateral;
+  }
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;

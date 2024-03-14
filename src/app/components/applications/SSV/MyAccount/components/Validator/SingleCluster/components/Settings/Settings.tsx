@@ -11,7 +11,6 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import { getBeaconChainLink, isMainnet } from '~root/providers/networkInfo.provider';
 import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
-import { ENABLE_EXIT_FLOW, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 
 const Settings = ({ validator }: { validator: any }) => {
   const stores = useStores();
@@ -21,7 +20,6 @@ const Settings = ({ validator }: { validator: any }) => {
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
   const [showSettings, setShowSettings] = useState(false);
-  const showExitFlow = getLocalStorageFlagValue(ENABLE_EXIT_FLOW);
 
   useEffect(() => {
     /**
@@ -94,7 +92,7 @@ const Settings = ({ validator }: { validator: any }) => {
               <Grid className={classes.RemoveValidatorImage} />
               <Typography>Remove Validator</Typography>
             </Grid>
-            {showExitFlow && !isMainnet() && <Grid container item className={classes.Button}
+            {!isMainnet() && <Grid container item className={classes.Button}
                    onClick={() => moveToRemoveValidator(BULK_FLOWS.BULK_EXIT)}>
               <Grid className={classes.ExitValidatorImage}/>
               <Typography>Exit Validator</Typography>

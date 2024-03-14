@@ -18,7 +18,7 @@ import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
-import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
+import { getValidator } from '~root/services/validator.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
@@ -178,10 +178,8 @@ class ValidatorStore extends BaseStore {
         notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -216,10 +214,8 @@ class ValidatorStore extends BaseStore {
         notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -253,10 +249,8 @@ class ValidatorStore extends BaseStore {
         notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -290,10 +284,8 @@ class ValidatorStore extends BaseStore {
         notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -377,8 +369,6 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -394,10 +384,8 @@ class ValidatorStore extends BaseStore {
         notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -434,8 +422,6 @@ class ValidatorStore extends BaseStore {
               label: 'success',
             });
             await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -451,10 +437,8 @@ class ValidatorStore extends BaseStore {
         notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
         resolve(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -492,8 +476,6 @@ class ValidatorStore extends BaseStore {
             });
             resolve(true);
             await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -580,13 +562,10 @@ class ValidatorStore extends BaseStore {
       if (process && 'fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-        let liquidationCollateralCost = getLiquidationCollateralPerValidator({
-          operatorsFee: operatorStore.getSelectedOperatorsFee,
-          networkFee: ssvStore.networkFee,
-          validatorsCount: this.validatorsCount,
-          liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-          minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
-        });
+        let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+        if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
+          liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+        }
         totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(this.isMultiSharesMode ? this.validatorsCount : 1).toString()));
       }
       try {
@@ -664,17 +643,14 @@ class ValidatorStore extends BaseStore {
   async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const walletStore: WalletStore = this.getStore('Wallet');
 
     return Promise.all([
       myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
     ])
       .then(() => {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
         resolve(true);
       })
       .catch((error) => {

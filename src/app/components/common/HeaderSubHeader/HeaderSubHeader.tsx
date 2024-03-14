@@ -1,6 +1,16 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
+import { useStyles } from '~app/components/common/HeaderSubHeader/HeaderSubHeader.styles';
 import styled from 'styled-components';
+
+type HeaderProps = {
+    title?: string,
+    subtitle?: any,
+    rewardPage?: boolean,
+    marginBottom?: number,
+    showCloseButton?: boolean,
+    closeButtonAction?: Function,
+};
 
 const HeaderTitleWrapper = styled.div`
     width: 100%;
@@ -18,49 +28,18 @@ const CloseButton = styled.div`
     background-image: ${({ theme }) => `url(/images/exit/${theme.colors.isDarkMode ? 'dark' : 'light'}.svg)`};
 `;
 
-const Header = styled.h1<{ theme: string, marginBottom: number | undefined }>`
-    margin: 0;
-    z-index: 9;
-    font-size: 20px;
-    font-weight: 800;
-    color: ${({ theme }) => theme.colors.gray90};
-    margin-bottom:${({ theme, marginBottom }) => {
-        if (marginBottom) return `${marginBottom}px`;
-        return '12px';
-    }}
-`;
-
-const SubHeader = styled.p<{ theme: string, marginBottom: number | undefined, rewardPage: boolean | undefined }>`
-    margin: 0;
-    z-index: 9;
-    font-size: 16px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.colors.gray80} ;
-    margin-bottom:${({ theme, marginBottom, rewardPage }) => {
-        if (marginBottom) return marginBottom;
-        if (rewardPage) return '16px';
-        return '32px';
-    }} 
-`;
-
-type HeaderProps = {
-  title?: string,
-  subtitle?: any,
-  rewardPage?: boolean,
-  marginBottom?: number,
-  showCloseButton?: boolean,
-  closeButtonAction?: Function,
-};
-
-const HeaderSubHeader = ({ title, subtitle, rewardPage, marginBottom, showCloseButton, closeButtonAction }: HeaderProps) =>
+const HeaderSubHeader = ({ title, subtitle, rewardPage, marginBottom, showCloseButton, closeButtonAction }: HeaderProps) => {
+    const classes = useStyles({ rewardPage, marginBottom });
+    return (
       <Grid container item>
         {title &&
           <HeaderTitleWrapper>
-              <Header marginBottom={marginBottom}>{title}</Header>
+              <Grid item xs={12} className={classes.Header}>{title}</Grid>
               {showCloseButton && closeButtonAction && <CloseButton onClick={() => closeButtonAction()}/>}
           </HeaderTitleWrapper>}
-        {subtitle && <SubHeader rewardPage={rewardPage} marginBottom={marginBottom}>{subtitle}</SubHeader>}
-      </Grid>;
-    
+        {subtitle && <Grid item className={classes.SubHeader}>{subtitle}</Grid>}
+      </Grid>
+    );
+};
 
 export default HeaderSubHeader;

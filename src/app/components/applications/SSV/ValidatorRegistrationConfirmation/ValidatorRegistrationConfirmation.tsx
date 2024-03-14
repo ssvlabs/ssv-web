@@ -34,7 +34,6 @@ import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice
 import { IOperator } from '~app/model/operator.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
-import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -56,13 +55,10 @@ const ValidatorRegistrationConfirmation = () => {
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
-    operatorsFee: operatorStore.getSelectedOperatorsFee,
-    networkFee: ssvStore.networkFee,
-    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-    validatorsCount: validatorStore.validatorsCount,
-    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
-  });
+  let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
+  if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
+    liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+  }
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
   const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
   const successPageNavigate = {
@@ -90,6 +86,8 @@ const ValidatorRegistrationConfirmation = () => {
     } else {
       setActionButtonText(actionButtonDefaultText);
     }
+    dispatch(setIsShowTxPendingPopup(false));
+    dispatch(setIsLoading(false));
   };
 
   const TotalSection = <Grid container>

@@ -86,12 +86,11 @@ const SingleCluster = () => {
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-      validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
-        console.log(response);
-        setClusterValidators(response.validators);
-        setClusterValidatorsPagination(response.pagination);
-        setLoadingValidators(false);
-      });
+    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
+      setClusterValidators(response.validators);
+      setClusterValidatorsPagination(response.pagination);
+      setLoadingValidators(false);
+    });
   }, []);
 
   const createData = (
@@ -139,10 +138,6 @@ const SingleCluster = () => {
     navigate(getNextNavigation());
   };
 
-  const backToClustersDashboard = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-  };
-
   const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingValidators(true);
     validatorsByClusterHash(newPage, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
@@ -155,7 +150,6 @@ const SingleCluster = () => {
   return (
     <Grid container className={classes.Wrapper}>
       <NewWhiteWrapper
-        stepBack={backToClustersDashboard}
         type={0}
         header={'Cluster'}
       />

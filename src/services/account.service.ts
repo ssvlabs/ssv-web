@@ -47,8 +47,8 @@ const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeR
 
 const getFeeRecipientAddress = async ({ address }: { address: string })=> {
   const res = await getAccountData(address);
-  if (res && res.data.recipientAddress) {
-    return res.data.recipientAddress;
+  if (res && res.recipientAddress) {
+    return res.recipientAddress;
   } else {
     // TODO: add error handling
     return '';

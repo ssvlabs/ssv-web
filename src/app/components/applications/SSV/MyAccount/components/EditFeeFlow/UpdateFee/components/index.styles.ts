@@ -22,7 +22,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
         gap: 24,
         display: 'flex',
         flexDirection:  'column',
-        color: theme.colors.black,
         justifyContent: 'space-around',
 },
     Stepper: {

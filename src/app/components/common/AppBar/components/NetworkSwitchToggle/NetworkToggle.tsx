@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { Typography } from '@mui/material';
 import { useSetChain } from '@web3-onboard/react';
-import styled from 'styled-components';
 import {
     API_VERSIONS,
     getNetworkInfoIndexByNetworkId,
@@ -16,38 +16,12 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
-import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
+import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
 import { toHexString } from '~lib/utils/strings';
-import Spinner from '~app/components/common/Spinner';
-import { getConnectedNetwork, setConnectedNetwork } from '~app/redux/wallet.slice';
-
-const CurrentNetworkWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-`;
-
-const NetworkIcon = styled.div<{ logo: string }>`
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url(/images/networks/${({ logo }) => logo}.svg);
-`;
-
-const NetworkText = styled.div<{ theme: any, hasSpinner?: boolean }>`
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.25;
-    color: ${({ theme }) => theme.colors.gray80};
-    margin-right: ${({ hasSpinner }) => hasSpinner ? 10 : 0}px;
-`;
 
 const NETWORK_VARIABLES = {
     [`${MAINNET_NETWORK_ID}_${API_VERSIONS.V4}`]: {
@@ -67,24 +41,25 @@ const NETWORK_VARIABLES = {
     },
 };
 
-const NetworkOption = ({ networkId, apiVersion, onClick }: { networkId: number; apiVersion: string; onClick: any; }) => {
+const NetworkOption = ({ networkId, apiVersion, onClick }: { networkId: number; apiVersion: string; onClick: any }) => {
     const { optionLabel, logo } = NETWORK_VARIABLES[`${networkId}_${apiVersion}`];
-    const classes = useStyles();
+    const classes = useStyles({ logo });
 
     return (
       <Grid container item className={classes.Button} onClick={onClick}>
-        <NetworkIcon logo={logo} />
-        <NetworkText>{optionLabel}</ NetworkText>
+          <Grid className={classes.NetworkIcon}/>
+          <Typography className={classes.NetworkLabel}>{optionLabel}</Typography>
       </Grid>
     );
 };
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
-    const { apiVersion, networkId } = useAppSelector(getConnectedNetwork);
+    const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(getStoredNetworkIndex());
+    const { apiVersion, networkId } = networks[selectedNetworkIndex];
     const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
     const [showNetworks, setShowNetworks] = useState(false);
-    const [{ connectedChain, settingChain }, setChain] = useSetChain();
+    const [{ connectedChain }, setChain] = useSetChain();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
     const walletStore: WalletStore = stores.Wallet;
@@ -109,44 +84,54 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
 
     useEffect(() => {
         const networkInWalletChangedHandler = async () => {
-            const index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
+            let index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
             if (index < 0) {
-                notificationsStore.showMessage(`Unsupported network. Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
+                index = getNetworkInfoIndexByNetworkId(network.networkId);
+                notificationsStore.showMessage(`Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
+            }
+            await setChain({ chainId: toHexString(network.networkId) });
+            changeNetwork(index);
+            setSelectedNetworkIndex(index);
+        };
+
+        const network = getStoredNetwork();
+        if (walletStore.wallet && !walletStore.isWalletConnect && connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId)) {
+            networkInWalletChangedHandler();
+        }
+    }, [connectedChain]);
+
+    const onOptionClick = async (index: number) => {
+        console.warn('NetworkToggle: onOptionClick', index);
+        if (index === getStoredNetworkIndex()) {
+            console.warn('NetworkToggle: onOptionClick: no wallet or network is the same!');
+            setShowNetworks(false);
+        } else if (walletStore.wallet) {
+            if (walletStore.isWalletConnect) {
+                await disconnectWallet();
+                setShowNetworks(false);
             } else {
+                resetContracts();
                 ssvStore.clearUserSyncInterval();
                 myAccountStore.clearIntervals();
                 operatorStore.clearSettings();
                 ssvStore.clearSettings();
-                resetContracts();
-                dispatch(setConnectedNetwork(index));
+                changeNetwork(index);
+                setSelectedNetworkIndex(index);
+                setShowNetworks(false);
+
                 dispatch(setShouldCheckCountryRestriction(index === 0));
-                initContracts({ provider: walletStore.wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: walletStore.isNotMetamask });
+                const network = getStoredNetwork();
+                const setChainParams = { chainId: toHexString(network.networkId) };
+                await setChain(setChainParams);
+                initContracts({ provider: walletStore.wallet.provider, network, shouldUseRpcUrl: walletStore.wallet.label === 'WalletConnect' });
                 await ssvStore.initUser();
                 await operatorStore.initUser();
                 myAccountStore.setIntervals();
             }
-        };
-
-        const network = getStoredNetwork();
-        if (walletStore.wallet && !walletStore.isNotMetamask && connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId) && !settingChain) {
-            networkInWalletChangedHandler();
-        }
-    }, [connectedChain, settingChain]);
-
-    const onOptionClick = async (index: number) => {
-        if (index === getStoredNetworkIndex()) {
-            setShowNetworks(false);
-        } else if (walletStore.wallet) {
-            if (walletStore.isNotMetamask) {
-                await disconnectWallet();
-                setShowNetworks(false);
-            } else {
-                setShowNetworks(false);
-                await setChain({ chainId: toHexString(networks[index].networkId) });
-            }
         } else {
             dispatch(setShouldCheckCountryRestriction(index === 0));
-            dispatch(setConnectedNetwork(index));
+            changeNetwork(index);
+            setSelectedNetworkIndex(index);
             setShowNetworks(false);
         }
     };
@@ -154,11 +139,8 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     return (
         <Grid>
           <Grid item container className={classes.NetworkToggleWrapper} onClick={() => setShowNetworks(!showNetworks)}>
-              <CurrentNetworkWrapper>
-                <NetworkIcon logo={NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo} />
-                <NetworkText hasSpinner={settingChain}>{NETWORK_VARIABLES[`${networkId}_${apiVersion}`].activeLabel}</NetworkText>
-                {settingChain && <Spinner size={20} />}
-              </CurrentNetworkWrapper>
+            <Grid item className={classes.NetworkIcon} />
+              <Typography className={classes.NetworkLabel}>{NETWORK_VARIABLES[`${networkId}_${apiVersion}`].activeLabel}</Typography>
             </Grid>
             {showNetworks && <Grid item className={classes.OptionsWrapper}>
               <Grid ref={optionsRef}  container item className={classes.Options}>

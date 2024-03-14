@@ -66,12 +66,14 @@ const AccountBalanceAndFee = () => {
         </Grid>
         <Checkbox
           grayBackGround
-          onClickCallBack={setFirstCheckBox}
+          toggleIsChecked={() => setFirstCheckBox(!firstCheckBox)}
+          isChecked={firstCheckBox}
           text={'I understand that fees might change according to market dynamics'}
         />
         <Checkbox
           grayBackGround
-          onClickCallBack={setSecondCheckBox}
+          toggleIsChecked={() => setSecondCheckBox(!secondCheckBox)}
+          isChecked={secondCheckBox}
           text={'I understand the risks of having my cluster liquidated'}
         />
         <PrimaryButton

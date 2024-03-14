@@ -9,7 +9,6 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -17,11 +16,12 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 const Deposit = () => {
   const stores = useStores();
@@ -36,7 +36,8 @@ const Deposit = () => {
   const clusterBalance = fromWei(cluster.balance);
   const [inputValue, setInputValue] = useState('');
   const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
-  const { checkedCondition } = useTermsAndConditions();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const [isChecked, setIsChecked] = useState(false);
   const dispatch = useAppDispatch();
 
   async function depositSsv() {
@@ -130,12 +131,12 @@ const Deposit = () => {
               ),
             ]}
             bottom={[(
-                <TermsAndConditionsCheckbox>
+                <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
                     <Button
                     withAllowance
                     text={'Deposit'}
                     onClick={depositSsv}
-                    disable={Number(inputValue) <= 0 || !checkedCondition}
+                    disable={Number(inputValue) <= 0 || (isMainnet && !isChecked)}
                     totalAmount={inputValue}
                     allowanceApprovedCB={() => setAllowanceWasApproved(true)}
                 />

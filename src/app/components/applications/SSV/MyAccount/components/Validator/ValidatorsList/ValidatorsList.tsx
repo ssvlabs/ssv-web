@@ -153,10 +153,10 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   return (
     <TableWrapper>
       <TableHeader>
-        {fillSelectedValidators && <Checkbox disable={false} grayBackGround text={''}
+        {fillSelectedValidators && <Checkbox grayBackGround text={''}
                                              withoutMarginBottom
                                              smallLine
-                                             onClickCallBack={() => {
+                                             toggleIsChecked={() => {
                                                fillSelectedValidators(clusterValidators, true);
                                              }}
                                              isChecked={selectedValidators && Object.values(selectedValidators).some((validator: {
@@ -187,11 +187,11 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
               <ValidatorWrapper>
                 <PublicKeyWrapper>
                   <PublicKey>
-                    {showingCheckboxCondition && <Checkbox disable={disableButtonCondition} grayBackGround text={''}
+                    {showingCheckboxCondition && <Checkbox isDisable={disableButtonCondition} grayBackGround text={''}
                                                                                withTooltip={disableButtonCondition}
                                                                                tooltipText={checkboxTooltipTitle}
                                                                                withoutMarginBottom
-                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
+                                                                               toggleIsChecked={() => onCheckboxClickHandler({ publicKey: formattedPublicKey })}
                                                                                isChecked={res}/>}
                     {longStringShorten(formattedPublicKey, 4, 4)}
                   </PublicKey>

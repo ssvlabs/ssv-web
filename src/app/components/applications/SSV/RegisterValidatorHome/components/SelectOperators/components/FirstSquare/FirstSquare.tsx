@@ -175,8 +175,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
           }}
         >
           <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-            <Checkbox disable={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''}
-                      isChecked={isSelected}/>
+            <Checkbox isDisable={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
           </StyledCell>
           <StyledCell>
             <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator}/>

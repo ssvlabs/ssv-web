@@ -23,10 +23,7 @@ import { RegisterOperator } from '~app/model/processes.model';
 const RemoveOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  // const [operator, setOperator] = useState(null);
-  const [checkbox, setCheckBox] = useState(false);
-  // const [leavingReason, setLeavingReason] = useState(0);
-  // const [userTextReason, setUserTextReason] = useState('');
+  const [isChecked, setIsChecked] = useState(false);
   const processStore: ProcessStore = stores.Process;
   const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
@@ -42,7 +39,7 @@ const RemoveOperator = () => {
   }, []);
 
   const checkboxHandler = () => {
-    setCheckBox(!checkbox);
+    setIsChecked(!isChecked);
   };
 
   const submitForm = async () => {
@@ -81,11 +78,10 @@ const RemoveOperator = () => {
                 Please note that this process is irreversible and you would not be able to reactive this operator in the
                 future.
               </Grid>
-              <CheckBox onClickCallBack={checkboxHandler}
-                        text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'}/>
+              <CheckBox toggleIsChecked={checkboxHandler} isChecked={isChecked}
+                        text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'} />
 
-              <PrimaryButton disable={!checkbox} errorButton children={'Remove Operator'}
-                             submitFunction={submitForm}/>
+              <PrimaryButton disable={!isChecked} errorButton children={'Remove Operator'} submitFunction={submitForm}/>
             </Grid>,
           ]}
         />

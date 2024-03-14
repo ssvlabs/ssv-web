@@ -7,12 +7,13 @@ import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { SingleOperator } from '~app/model/processes.model';
+import { getIsMainnet } from '~app/redux/wallet.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 
 const OperatorFlow = () => {
   const classes = useStyles();
@@ -26,7 +27,8 @@ const OperatorFlow = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const operator = process?.item;
   const operatorBalance = operator?.balance ?? 0;
-  const { checkedCondition } = useTermsAndConditions();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const [isChecked, setIsChecked] = useState(false);
 
   const withdrawSsv = async () => {
     setIsLoading(true);
@@ -92,13 +94,13 @@ const OperatorFlow = () => {
           withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
-          bottom={[<TermsAndConditionsCheckbox>
+          bottom={[<TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
             <Button
               text={'Withdraw'}
               withAllowance={false}
               onClick={withdrawSsv}
               isLoading={isLoading}
-              disable={Number(inputValue) === 0 || !checkedCondition}
+              disable={Number(inputValue) === 0 || (isMainnet && !isChecked)}
           />
           </TermsAndConditionsCheckbox>]}
       />

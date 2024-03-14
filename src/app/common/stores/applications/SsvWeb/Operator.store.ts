@@ -136,7 +136,6 @@ class OperatorStore extends BaseStore {
   async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
     const notificationsStore: NotificationsStore = this.getStore('Notifications');
-    const walletStore: WalletStore = this.getStore('Wallet');
     return Promise.all([
       myAccountStore.getOwnerAddressClusters({}),
       myAccountStore.getOwnerAddressOperators({}),
@@ -150,10 +149,8 @@ class OperatorStore extends BaseStore {
         }
         resolve(false);
       }).finally(() => {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       });
   }
 
@@ -325,8 +322,6 @@ class OperatorStore extends BaseStore {
             store.dispatch(setIsLoading(false));
             store.dispatch(setIsShowTxPendingPopup(false));
             resolve(true);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -393,8 +388,6 @@ class OperatorStore extends BaseStore {
               },
               operatorDataBefore,
             ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -508,8 +501,6 @@ class OperatorStore extends BaseStore {
               },
               operatorDataBefore,
             ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -560,8 +551,6 @@ class OperatorStore extends BaseStore {
               },
               operatorBefore,
             ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -604,6 +593,7 @@ class OperatorStore extends BaseStore {
         if (receipt.blockHash) {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
+
             await executeAfterEvent(async () => await checkEntityChangedInAccount(
                 async () => {
                   const operatorAfter = await getOperator(operatorId);
@@ -615,8 +605,6 @@ class OperatorStore extends BaseStore {
                 },
                 operatorBefore,
               ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -656,8 +644,6 @@ class OperatorStore extends BaseStore {
             await executeAfterEvent(async () => {
               return await getEventByTxHash(receipt.transactionHash);
             }, async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-          } else {
-            resolve(false);
           }
         } else {
           resolve(false);
@@ -666,10 +652,8 @@ class OperatorStore extends BaseStore {
         notificationsStore.showMessage(e.message, 'error');
         return false;
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsLoading(false));
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }
@@ -708,9 +692,7 @@ class OperatorStore extends BaseStore {
       } catch (e) {
         reject(false);
       } finally {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
+        store.dispatch(setIsShowTxPendingPopup(false));
       }
     });
   }

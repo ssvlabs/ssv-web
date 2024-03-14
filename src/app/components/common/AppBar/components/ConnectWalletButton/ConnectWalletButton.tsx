@@ -18,9 +18,6 @@ const ConnectWalletButton = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (walletStore.wallet && walletStore.wallet.accounts[0] !== wallet?.accounts[0]) {
-      window.location.reload();
-    }
     if (wallet && connectedChain && !connecting && !walletStore.wallet) {
       walletStore.initWallet(wallet, connectedChain);
     }

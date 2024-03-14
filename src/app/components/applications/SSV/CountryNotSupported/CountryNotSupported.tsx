@@ -22,7 +22,7 @@ const CountryNotSupported = () => {
     });
     window.open('https://ssv.network/');
   };
-  const websiteUrl = strategyName === 'distribution' ? 'claim.ssv.network' : 'app.prater.ssv.network';
+  const websiteUrl = strategyName === 'distribution' ? 'claim.ssv.network' : 'app.ssv.network';
 
   return (
     <BorderScreen

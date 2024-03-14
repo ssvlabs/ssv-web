@@ -3,6 +3,8 @@ import { saveInLocalStorage } from '~root/providers/localStorage.provider';
 
 export const MAXIMUM_VALIDATOR_COUNT_FLAG =  'maximumValidatorCount';
 
+export const ENABLE_EXIT_FLOW = 'enableExitFlow';
+
 export const getLocalStorageFlagValue = (flagName: string) => {
   if (!window?.localStorage) {
     return null;

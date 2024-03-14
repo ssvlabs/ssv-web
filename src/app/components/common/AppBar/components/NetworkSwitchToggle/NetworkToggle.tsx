@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
 import { useSetChain } from '@web3-onboard/react';
 import styled from 'styled-components';
 import {
@@ -17,13 +16,14 @@ import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notificat
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
-import { changeNetwork, getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
+import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
+import { getConnectedNetwork, setConnectedNetwork } from '~app/redux/wallet.slice';
 
 const CurrentNetworkWrapper = styled.div`
     display: flex;
@@ -81,8 +81,7 @@ const NetworkOption = ({ networkId, apiVersion, onClick }: { networkId: number; 
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const optionsRef = useRef(null);
-    const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(getStoredNetworkIndex());
-    const { apiVersion, networkId } = networks[selectedNetworkIndex];
+    const { apiVersion, networkId } = useAppSelector(getConnectedNetwork);
     const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
     const [showNetworks, setShowNetworks] = useState(false);
     const [{ connectedChain, settingChain }, setChain] = useSetChain();
@@ -119,11 +118,9 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                 operatorStore.clearSettings();
                 ssvStore.clearSettings();
                 resetContracts();
-                changeNetwork(index);
-                setSelectedNetworkIndex(index);
-
+                dispatch(setConnectedNetwork(index));
                 dispatch(setShouldCheckCountryRestriction(index === 0));
-                initContracts({ provider: walletStore.wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: walletStore.wallet.label === 'WalletConnect' });
+                initContracts({ provider: walletStore.wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: walletStore.isNotMetamask });
                 await ssvStore.initUser();
                 await operatorStore.initUser();
                 myAccountStore.setIntervals();
@@ -149,8 +146,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             }
         } else {
             dispatch(setShouldCheckCountryRestriction(index === 0));
-            changeNetwork(index);
-            setSelectedNetworkIndex(index);
+            dispatch(setConnectedNetwork(index));
             setShowNetworks(false);
         }
     };

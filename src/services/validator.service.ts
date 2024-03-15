@@ -1,5 +1,6 @@
 import config from '~app/common/config';
 import { getRequest } from '~root/services/httpApi.service';
+import Decimal from 'decimal.js';
 
 const getOwnerAddressCost = async (ownerAddress: string, skipRetry?: boolean): Promise<any> => {
   try {
@@ -17,6 +18,26 @@ const clustersByOwnerAddress = async (query: string, skipRetry?: boolean): Promi
   } catch (e) {
     return { clusters: [], pagination: {} };
   }
+};
+
+const getLiquidationCollateralPerValidator = ({
+                                                operatorsFee,
+                                                networkFee,
+                                                liquidationCollateralPeriod,
+                                                validatorsCount = 1,
+                                                minimumLiquidationCollateral,
+                                              }: {
+  operatorsFee: number,
+  networkFee: number,
+  liquidationCollateralPeriod: number,
+  validatorsCount?: number,
+  minimumLiquidationCollateral: number
+}) => {
+  let liquidationCollateralCost = new Decimal(operatorsFee).add(networkFee).mul(liquidationCollateralPeriod).mul(validatorsCount);
+  if (Number(liquidationCollateralCost) < minimumLiquidationCollateral) {
+    liquidationCollateralCost = new Decimal(minimumLiquidationCollateral);
+  }
+  return liquidationCollateralCost.div(validatorsCount);
 };
 
 const validatorsByClusterHash = async (page: number, clusterHash: string, perPage: number = 7): Promise<any> => {
@@ -55,4 +76,12 @@ const getValidator = async (publicKey: string, skipRetry?: boolean) => {
   }
 };
 
-export { getOwnerAddressCost, clustersByOwnerAddress, validatorsByClusterHash, clusterByHash, getClusterData, getValidator };
+export {
+  getOwnerAddressCost,
+  clustersByOwnerAddress,
+  validatorsByClusterHash,
+  getLiquidationCollateralPerValidator,
+  clusterByHash,
+  getClusterData,
+  getValidator,
+};

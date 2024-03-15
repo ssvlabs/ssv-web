@@ -16,7 +16,7 @@ type Props = {
   days?: number,
   networkCost?: number,
   operatorsCost?: number,
-  liquidationCollateralCost?: number | Decimal,
+  liquidationCollateralCost: number | Decimal,
 };
 
 const FundingSummeryColumns = {
@@ -49,8 +49,6 @@ const FundingSummary = (props: Props) => {
 
     const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
     const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
-    const liquidationCollateralCost = props.liquidationCollateralCost ?? new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-
 
     const paymentsValue = (paymentId: number): number | Decimal => {
       switch (paymentId) {
@@ -59,7 +57,7 @@ const FundingSummary = (props: Props) => {
         case PaymentId.NETWORK_FEE:
           return networkCost;
         case PaymentId.LIQUIDATION_COLLATERAL:
-          return liquidationCollateralCost;
+          return props.liquidationCollateralCost;
         default:
           return 0; // TODO throw exception. handle above.
       }

@@ -10,6 +10,7 @@ type Props = {
   header: any,
   children?: any,
   mainFlow?: boolean,
+  stepBack?: Function,
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -26,6 +27,7 @@ const NewWhiteWrapper = (props: Props) => {
     header,
     children,
     mainFlow,
+    stepBack,
   } = props;
   const classes = useStyles({ mainFlow });
 
@@ -33,7 +35,7 @@ const NewWhiteWrapper = (props: Props) => {
   return (
       <Grid container item className={classes.WhiteWrapper}>
         <Grid item container className={classes.Wrapper}>
-          {type === Type.OPERATOR ? <OperatorsFlow header={header} mainFlow={mainFlow} /> : <ValidatorsFlow header={header} />}
+          {type === Type.OPERATOR ? <OperatorsFlow header={header} mainFlow={mainFlow} /> : <ValidatorsFlow stepBack={stepBack} header={header} />}
           <Grid container item xs={12} className={classes.ChildWrapper}>
             {children}
           </Grid>

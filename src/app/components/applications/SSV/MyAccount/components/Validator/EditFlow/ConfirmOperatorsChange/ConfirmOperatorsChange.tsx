@@ -8,10 +8,11 @@ import BackNavigation from '~app/components/common/BackNavigation';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorWhiteHeader from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader';
 import OperatorsReceipt from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange/ConfirmOperatorsChange.styles';
+import { SingleCluster } from '~app/model/processes.model';
 
 const ConfirmOperatorsChange = () => {
   const stores = useStores();
@@ -23,7 +24,7 @@ const ConfirmOperatorsChange = () => {
   const [operators, setOperators] = useState(null);
   const process: SingleCluster = processStore.getProcess;
   const validator = process?.item;
-  
+
   useEffect(() => {
     if (!validator) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     myAccountStore.getValidator(validator.public_key).then((response: any) => {

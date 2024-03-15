@@ -54,15 +54,19 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   ChangeOperatorsImage: {
-    backgroundImage: `url(/images/validator_settings/${theme.darkMode ? 'dark_' : ''}change.svg)`,
+    backgroundImage: `url(/images/validator_settings/change-${theme.darkMode ? 'dark' : 'light'}.svg)`,
     ...imageDefaultProperties,
   },
   RemoveValidatorImage: {
-    backgroundImage: `url(/images/validator_settings/${theme.darkMode ? 'dark_' : ''}remove.svg)`,
+    backgroundImage: `url(/images/validator_settings/remove-${theme.darkMode ? 'dark' : 'light'}.svg)`,
+    ...imageDefaultProperties,
+  },
+  ExitValidatorImage: {
+    backgroundImage: `url(/images/exit-validator/exit-${theme.darkMode ? 'dark' : 'light'}.svg)`,
     ...imageDefaultProperties,
   },
   ChangeOperatorsLinkImage: {
-    backgroundImage: `url(/images/validator_settings/${theme.darkMode ? 'dark_' : ''}link.svg)`,
+    backgroundImage: 'url(/images/validator_settings/link.svg)',
     ...imageDefaultProperties,
   },
 }));

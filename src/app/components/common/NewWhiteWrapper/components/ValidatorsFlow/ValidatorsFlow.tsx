@@ -5,11 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { longStringShorten } from '~lib/utils/strings';
 import { useStyles } from '../../NewWhiteWrapper.styles';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { getClusterHash } from '~root/services/cluster.service';
+import { SingleCluster } from '~app/model/processes.model';
 
 type Props = {
   header: string,
+  stepBack?: Function
 };
 
 const ValidatorsFlow = (props: Props) => {
@@ -18,12 +21,17 @@ const ValidatorsFlow = (props: Props) => {
   const navigate = useNavigate();
   const classes = useStyles({ mainFlow: false });
   const processStore: ProcessStore = stores.Process;
-  const clusterStore: ClusterStore = stores.Cluster;
+  const walletStore: WalletStore = stores.Wallet;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process?.item;
 
-  const onNavigationClicked = async () => {
-    navigate(-1);
+  const onNavigationClicked = () => {
+    if (!props.stepBack) {
+      process.validator = undefined;
+      navigate(-1);
+    } else {
+      props.stepBack();
+    }
   };
 
   return (
@@ -32,7 +40,7 @@ const ValidatorsFlow = (props: Props) => {
           <Grid item className={classes.BackNavigation} onClick={onNavigationClicked} />
           <Grid item className={classes.HeaderText}>{header}</Grid>
           <Grid item className={classes.subHeaderText}>|</Grid>
-          <Grid item className={classes.subHeaderText}>{longStringShorten(clusterStore.getClusterHash(cluster.operators), 4, undefined, { '': /^0x/ })}</Grid>
+          <Grid item className={classes.subHeaderText}>{longStringShorten(getClusterHash(cluster.operators, walletStore.accountAddress), 4, undefined, { '': /^0x/ })}</Grid>
         </Grid>
       </Grid>
   );

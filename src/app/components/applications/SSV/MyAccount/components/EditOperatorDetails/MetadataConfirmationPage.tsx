@@ -7,8 +7,9 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
-import ProcessStore, { SingleOperator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import { SingleOperator } from '~app/model/processes.model';
 
 
 const MetadataConfirmationPage = () => {
@@ -41,10 +42,10 @@ const MetadataConfirmationPage = () => {
                 />
                 <Grid className={classes.ButtonGroup}>
                     <Grid className={classes.buttonWidth}>
-                        <SecondaryButton text={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.EXPLORER_BUTTON} submitFunction={openExplorer} />
+                        <SecondaryButton children={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.EXPLORER_BUTTON} submitFunction={openExplorer} />
                     </Grid>
                     <Grid className={classes.buttonWidth}>
-                        <PrimaryButton text={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.RETURN_TO_MY_ACCOUNT} submitFunction={goToDashboard}/>
+                        <PrimaryButton children={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.RETURN_TO_MY_ACCOUNT} submitFunction={goToDashboard}/>
                     </Grid>
                 </Grid>
             </Grid>

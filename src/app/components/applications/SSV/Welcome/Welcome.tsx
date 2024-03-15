@@ -7,22 +7,23 @@ import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import ApplicationStore from '~app/common/stores/Abstracts/Application';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsShowWalletPopup } from '~app/redux/appState.slice';
 
 const Welcome = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const walletStore: WalletStore = stores.Wallet;
-  const applicationStore: ApplicationStore = stores.Application;
   // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
   const [_, connect] = useConnectWallet();
+  const dispatch = useAppDispatch();
   const connectToWallet = async () => {
     if (!!walletStore.wallet) {
-      applicationStore.showWalletPopUp(true);
+      dispatch(setIsShowWalletPopup(true));
     } else {
       await connect();
     }
@@ -40,8 +41,9 @@ const Welcome = () => {
           <Grid container item className={classes.LinkButtonsWrapper}>
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
-                withVerifyConnection
-                text={'Distribute Validator'}
+                withVerifyConnection    
+                children={'Distribute Validator'}  
+                disable={!walletStore.wallet}     
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.VALIDATOR.HOME);
                 }}
@@ -50,7 +52,8 @@ const Welcome = () => {
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
                 withVerifyConnection
-                text={'Join as Operator'}
+                children={'Join as Operator'}
+                disable={!walletStore.wallet}
                 submitFunction={() => {
                   walletStore.wallet && navigate(config.routes.SSV.OPERATOR.HOME);
                 }}
@@ -67,7 +70,7 @@ const Welcome = () => {
           {!walletStore.wallet && false && (
             <PrimaryButton
               withVerifyConnection
-              text={'Connect Wallet'}
+              children={'Connect Wallet'}
               submitFunction={connectToWallet}
               dataTestId={'connect-to-wallet-button'}
             />

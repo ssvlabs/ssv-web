@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import WalletPopUp from '~app/components/applications/SSV/WalletPopUp';
 import { useStyles } from '~app/components/common/Layout/Layout.styles';
-import TransactionPendingPopUp from '~app/components/applications/SSV/TransactionPendingPopUp';
+import { TransactionPendingPopUp } from '~app/components/applications/SSV/TransactionPendingPopUp';
 
 const Layout = ({ children }: any) => {
     const classes = useStyles();

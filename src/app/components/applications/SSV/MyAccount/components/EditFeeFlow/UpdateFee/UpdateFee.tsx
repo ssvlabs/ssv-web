@@ -2,22 +2,23 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import Operator from '~lib/api/Operator';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import CancelUpdateFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee.styles';
 import ChangeFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
 import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import DecreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
-import { fromWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getOperator } from '~root/services/operator.service';
 
 export type UpdateFeeProps = {
   error: ErrorType;
@@ -44,10 +45,8 @@ enum FeeUpdateSteps {
 const UpdateFee = () => {
   const stores = useStores();
   const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const [operator, setOperator] = useState<any>(null);
-  const applicationStore: ApplicationStore = stores.Application;
   const [newFee, setNewFee] = useState<any>(0);
   const [nextIsDisabled, setNextIsDisabled] = useState(true);
   const { logo, id } = operator || {};
@@ -56,13 +55,15 @@ const UpdateFee = () => {
   const [currency, setCurrency] = useState('SSV');
   const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const dispatch = useAppDispatch();
+  const strategyRedirect = useAppSelector(getStrategyRedirect);
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) return navigate(applicationStore.strategyRedirect);
-    applicationStore.setIsLoading(true);
-    Operator.getInstance().getOperator(operatorStore.processOperatorId).then(async (response: any) => {
+    if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
+    dispatch(setIsLoading(true));
+    getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
-        const operatorFee = ssvStore.getFeeForYear(fromWei(response.fee));
+        const operatorFee = getFeeForYear(fromWei(response.fee));
         setOperator(response);
         setOldFee(Number(operatorFee));
         if (!operatorStore.operatorFutureFee) {
@@ -70,13 +71,13 @@ const UpdateFee = () => {
         }
         await operatorStore.syncOperatorFeeInfo(response.id);
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
-          setNewFee(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operatorStore.operatorFutureFee))));
+          setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorFutureFee))));
           setCurrentFlowStep(FeeUpdateSteps.INCREASE);
         } else {
           setCurrentFlowStep(FeeUpdateSteps.START);
         }
       }
-      applicationStore.setIsLoading(false);
+      dispatch(setIsLoading(false));
     });
   }, []);
 
@@ -104,7 +105,7 @@ const UpdateFee = () => {
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    validateFeeUpdate(Number(formatNumberToUi(ssvStore.getFeeForYear(fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
+    validateFeeUpdate(Number(formatNumberToUi(getFeeForYear(fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
   };
 
   const onNextHandler = () => {

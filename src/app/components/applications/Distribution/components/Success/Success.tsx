@@ -1,27 +1,24 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import Typography from '@mui/material/Typography';
 import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import { useDistributionStore } from '~app/hooks/useDistributionStore';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
-import { networkTitle, transactionLink } from '~lib/utils/envHelper';
-import ApplicationStore from '~app/common/stores/applications/Distribution/Application.store';
-import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
-import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getTransactionLink, isMainnet } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getTxHash } from '~app/redux/appState.slice';
+import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
+import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
+import { useStores } from '~app/hooks/useStores';
 
 const Success = () => {
-  const { networkId } = getStoredNetwork();
-  const stores = useStores();
   const classes = useStyles();
-  const applicationStore: ApplicationStore = stores.Application;
-  const distributionStore: DistributionStore | DistributionTestnetStore = useDistributionStore(networkId);
+  const stores = useStores();
+  const walletStore: WalletStore = stores.Wallet;
+  const txHash = useAppSelector(getTxHash);
 
   const openMarketingSite = () => {
     GoogleTagManager.getInstance().sendEvent({
@@ -40,21 +37,21 @@ const Success = () => {
           <HeaderSubHeader
             rewardPage
             title={'Rewards Successfully Claimed!'}
-            subtitle={<span>Thank you for joining the SSV network's {networkTitle} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
+            subtitle={<span>Thank you for joining the SSV network's {isMainnet() ? 'Mainnet' : 'Testnet'} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
           />
           <Grid item container className={classes.AddSsvToWallet}
-            onClick={distributionStore.registerSSVTokenInMetamask.bind(distributionStore)}>
+            onClick={() => registerSSVTokenInMetamask({ provider: walletStore.wallet.provider })}>
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>
           <Grid className={classes.LinkWrapper}>
-            <LinkText text={'View Transaction on Etherscan'}link={transactionLink(applicationStore.txHash)} />
+            <LinkText text={'View Transaction on Etherscan'} link={getTransactionLink(txHash)} />
           </Grid>
-          <SecondaryButton submitFunction={openMarketingSite} text={'Learn more about the SSV network'} />
+          <SecondaryButton submitFunction={openMarketingSite} children={'Learn more about the SSV network'} />
         </Grid>,
       ]}
     />
   );
 };
 
-export default observer(Success);
+export default Success;

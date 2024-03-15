@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { ENV } from '~lib/utils/envHelper';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import LinkText from '~app/components/common/LinkText';
@@ -17,11 +16,13 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
-import ClusterStore from '~app/common/stores/applications/SsvWeb/Cluster.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
-import ProcessStore, { SingleCluster } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { SingleCluster } from '~app/model/processes.model';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -31,7 +32,6 @@ const FundingNewValidator = () => {
   const ssvStore: SsvStore = stores.SSV;
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const processStore: ProcessStore = stores.Process;
-  const clusterStore: ClusterStore = stores.Cluster;
   const validatorStore: ValidatorStore = stores.Validator;
   const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
@@ -40,12 +40,12 @@ const FundingNewValidator = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
-  const newBurnRate = clusterStore.getClusterNewBurnRate(cluster, cluster.validatorCount + newValidatorsCount);
-  const newRunWay = clusterStore.getClusterRunWay({
+  const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, ssvStore.networkFee);
+  const newRunWay = getClusterRunWay({
     ...cluster,
     burnRate: toWei(parseFloat(newBurnRate.toString())),
     balance: toWei(fromWei(cluster.balance) + Number(depositSSV)),
-  });
+  }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
   const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1;
@@ -62,7 +62,7 @@ const FundingNewValidator = () => {
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         link: {
           text: 'Need SSV?',
-          path: ENV().INSUFFICIENT_BALANCE_URL,
+          path: getStoredNetwork().insufficientBalanceUrl,
         },
       });
       setShowErrorMessage(true);
@@ -109,6 +109,7 @@ const FundingNewValidator = () => {
   };
 
   const moveToNextPage = () => {
+    // @ts-ignore
     process.registerValidator = { depositAmount: Number(depositSSV) };
     navigate(getNextNavigation());
   };
@@ -193,7 +194,7 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={disableBtnCondition} text={'Next'}
+                    <PrimaryButton disable={disableBtnCondition} children={'Next'}
                                    submitFunction={moveToNextPage}/>
                   </Grid>
                 </Grid>

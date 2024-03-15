@@ -9,7 +9,8 @@ import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
-import ProcessStore, { RegisterValidator } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { RegisterValidator } from '~app/model/processes.model';
 
 type Props = {
   days?: number,
@@ -83,9 +84,9 @@ const FundingSummary = (props: Props) => {
     return (
       <Grid className={classes.Wrapper}>
         {mandatoryColumns.map((fundingSummeryColumnName: string) =>
-          <Grid className={columnStyles[fundingSummeryColumnName]}>
+          <Grid className={columnStyles[fundingSummeryColumnName]} key={fundingSummeryColumnName}>
             <Typography className={classes.Title}>{fundingSummeryColumnName}</Typography>
-            {payments.map((payment: any) => <Typography
+            {payments.map((payment: any) => <Typography key={payment.id}
               className={classes.Value}>{columnValues[fundingSummeryColumnName](payment.id)}</Typography>)}
           </Grid>,
         )}

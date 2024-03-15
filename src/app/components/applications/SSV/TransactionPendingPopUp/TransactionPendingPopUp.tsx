@@ -1,38 +1,102 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
-import { getImage } from '~lib/utils/filePath';
+import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
+import { getImage } from '~lib/utils/filePath';
 import LinkText from '~app/components/common/LinkText';
-import { ENV } from '~lib/utils/envHelper';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
-import { useStyles } from '~app/components/applications/SSV/TransactionPendingPopUp/TransactionPendingPopUp.styles';
+import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 
-const TransactionPendingPopUp = () => {
-    const stores = useStores();
-    const classes = useStyles();
-    const applicationStore: ApplicationStore = stores.Application;
+const DialogWrapper = styled(Dialog)<{ theme: any }>`
+    & > div > div {
+        border-radius: 16px;
+        background-color: ${({ theme }) => theme.colors.white};
+    }
+`;
 
-    return (
-      <Dialog className={classes.DialogWrapper} aria-labelledby="simple-dialog-title" open={applicationStore.transactionPendingPopUp}>
-        <Grid className={classes.gridWrapper} container>
-          <HeaderSubHeader title={'Sending Transaction'} subtitle={'Your transaction is pending on the blockchain - please wait while it\'s being confirmed'} />
-          <Grid item>
-            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
-          </Grid>
-          <Grid item container style={{ marginBottom: 20 }}>
-            <Grid item xs>
-              <div className={classes.validatorText}>Transaction Hash</div>
-            </Grid>
-            <AddressKeyInput whiteBackgroundColor withCopy address={applicationStore.txHash} />
-          </Grid>
-          <LinkText text={'View on Etherscan'} link={`${ENV().ETHERSCAN_URL}/tx/${applicationStore.txHash}`} />
-        </Grid>
-      </Dialog>
-    );
+const GridWrapper = styled(Grid)<{ theme: any }>`
+    width: 424px;
+    padding: 32px;
+    border-radius: 16px;
+    align-items: center;
+    flex-direction: column;
+    background-color: ${({ theme }) => theme.colors.white};
+`;
+
+const ImageWrapper = styled.img<{ hasMarginBottom: boolean }>`
+    width: 100px;
+    margin-top: 20px;
+    margin-bottom: ${({ hasMarginBottom }) => hasMarginBottom ? 40 : 0}px;
+`;
+
+const AdditionText = styled.div`
+    width: 100%;
+    font-size: 16px;,
+    font-weight: 500;
+    color: ${({ theme }) => theme.colors.gray80}
+`;
+
+const ValidatorText = styled.div<{ theme: any }>`
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.14;
+    text-align: left;
+    color: ${({ theme }) => theme.colors.gray40};
+    margin-bottom: 8px;
+`;
+
+const POP_UP_DATA = {
+  'false': {
+    title: 'Sending Transaction',
+    subTitles: 'Your transaction is pending on the blockchain - please wait while it\'s being confirmed',
+  },
+  'true': {
+    title: 'Transaction Initiated',
+    subTitles: 'Your transaction has been successfully initiated within the multi-sig wallet and is now pending approval from other participants.',
+  },
 };
 
-export default observer(TransactionPendingPopUp);
+const TransactionPendingPopUp = () => {
+  const stores = useStores();
+  const dispatch = useDispatch();
+  const walletStore: WalletStore = stores.Wallet;
+  const navigate = useNavigate();
+  const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
+  const txHash = useAppSelector(getTxHash);
+
+  const closeButtonAction = () => {
+    dispatch(setIsLoading(false));
+    dispatch(setIsShowTxPendingPopup(false));
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+  };
+
+  return (
+    <DialogWrapper aria-labelledby="simple-dialog-title" open={isShowTxPendingPopup}>
+      <GridWrapper container>
+        <HeaderSubHeader closeButtonAction={closeButtonAction} showCloseButton={walletStore.isContractWallet} title={POP_UP_DATA[`${walletStore.isContractWallet}`].title}
+                         subtitle={POP_UP_DATA[`${walletStore.isContractWallet}`].subTitles}/>
+        {walletStore.isContractWallet && <AdditionText>Please return to this web app once approved.</AdditionText>}
+        <Grid item>
+          <ImageWrapper src={getImage('ssv-loader.svg')} alt="loader" hasMarginBottom={!walletStore.isContractWallet} />
+        </Grid>
+        {!walletStore.isContractWallet && <Grid item container style={{ marginBottom: 20 }}>
+          <Grid item xs>
+            <ValidatorText>Transaction Hash</ValidatorText>
+          </Grid>
+          <AddressKeyInput whiteBackgroundColor withCopy address={txHash}/>
+        </Grid>}
+        {!walletStore.isContractWallet && <LinkText text={'View on Etherscan'} link={`${getEtherScanLink()}/tx/${txHash}`}/>}
+      </GridWrapper>
+    </DialogWrapper>
+  );
+};
+
+export default TransactionPendingPopUp;

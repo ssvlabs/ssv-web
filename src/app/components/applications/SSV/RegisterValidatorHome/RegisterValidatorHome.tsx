@@ -13,9 +13,10 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ProcessStore, { ProcessType } from '~app/common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
+import { ProcessType } from '~app/model/processes.model';
 
 type PreRequisiteType = {
   text: string;
@@ -100,10 +101,10 @@ const RegisterValidatorHome = () => {
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators}
+          <PrimaryButton children={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators}
                          withoutLoader/>
           <ButtonSeparator/>
-          <SecondaryButton text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare}
+          <SecondaryButton children={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare}
                            noCamelCase withoutLoader/>
         </Grid>,
       ]}

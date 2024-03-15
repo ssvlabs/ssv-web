@@ -31,7 +31,7 @@ const SuccessPage = () => {
             </Typography>
             <PrimaryButton
               disable={false}
-              text={'Go to Discord'}
+              children={'Go to Discord'}
               withVerifyConnection={false}
               submitFunction={requestForSSV}
               wrapperClass={classes.SubmitButton}

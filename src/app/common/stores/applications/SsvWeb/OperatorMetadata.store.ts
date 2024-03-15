@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import { makeObservable, observable } from 'mobx';
-import Operator from '~lib/api/Operator';
 import { translations } from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { checkSpecialCharacters } from '~lib/utils/strings';
@@ -16,6 +15,7 @@ import {
   OPERATOR_NODE_TYPES,
   validateDkgAddress,
 } from '~lib/utils/operatorMetadataHelper';
+import { getOperatorAvailableLocations, getOperatorNodes } from '~root/services/operator.service';
 
 export const fieldsToValidateSignature = [
   FIELD_KEYS.OPERATOR_NAME,
@@ -83,7 +83,7 @@ class OperatorMetadataStore extends BaseStore {
 
   async updateOperatorNodeOptions() {
     for (const key of Object.keys(OPERATOR_NODE_TYPES)) {
-      const options = await Operator.getInstance().getOperatorNodes(OPERATOR_NODE_TYPES[key]);
+      const options = await getOperatorNodes(OPERATOR_NODE_TYPES[key]);
       const data = this.metadata.get(key);
       data!.options = options;
       this.metadata.set(key, data!);
@@ -91,7 +91,7 @@ class OperatorMetadataStore extends BaseStore {
   }
 
   async updateOperatorLocations() {
-    const options: CountryType[] = await Operator.getInstance().getOperatorAvailableLocations();
+    const options: CountryType[] = await getOperatorAvailableLocations();
     options.forEach((option: CountryType) => this.locationsList[`${option.name} (${option['alpha-3']})`] = option.name);
     this.locationsData = options;
   }
@@ -135,7 +135,7 @@ class OperatorMetadataStore extends BaseStore {
     if (!relays) {
       return relays;
     }
-    let splitStr: string[] = [];
+    let splitStr: string[];
     if (typeof relays === 'string') {
       splitStr = relays.split(',');
     } else {
@@ -211,7 +211,7 @@ class OperatorMetadataStore extends BaseStore {
     return response;
   }
 
-  checkExceptionFields(fieldName: string, value: string): boolean {
+  checkExceptionFields(fieldName: string, value: any): boolean {
     return [FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(fieldName) && typeof value === 'string';
   }
 

@@ -12,7 +12,23 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginTop: 32,
     margin: 'auto',
   },
+  ButtonsWrapper: {
+    display: 'flex',
+    gap: 8,
+  },
   AddToCluster: {
+    width: 154,
+    height: 36,
+    fontSize: 16,
+    fontWeight: 600,
+    borderRadius: 8,
+    lineHeight: 1.25,
+    transition: 'none',
+    textTransform: 'unset',
+    fontFamily: 'Manrope !important',
+  },
+  Actions: {
+    width: 154,
     height: 36,
     fontSize: 16,
     fontWeight: 600,

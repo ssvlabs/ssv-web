@@ -1,25 +1,24 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
-import { useStores } from '~app/hooks/useStores';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from './DarkModeSwitcher.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode, toggleDarkMode } from '~app/redux/appState.slice';
 
 type Props = {
     margin?: boolean,
 };
 
 const DarkModeSwitcher = (props: Props) => {
-    const stores = useStores();
     const { margin } = props;
-    const applicationStore: ApplicationStore = stores.Application;
-    const classes = useStyles({ isDarkMode: applicationStore.darkMode, margin });
+    const isDarkMode = useAppSelector(getIsDarkMode);
+    const dispatch = useAppDispatch();
+    const classes = useStyles({ isDarkMode, margin });
 
     return (
-      <Grid item container onClick={() => { applicationStore.switchDarkMode(!applicationStore.darkMode); }}>
+      <Grid item container onClick={() => dispatch(toggleDarkMode())}>
         <Grid item className={classes.Image} />
       </Grid>
     );
 };
 
-export default observer(DarkModeSwitcher);
+export default DarkModeSwitcher;

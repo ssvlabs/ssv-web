@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { toChecksumAddress } from 'web3-utils';
@@ -10,10 +10,12 @@ import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
-import AccountStore from '~app/common/stores/applications/SsvWeb/Account.store';
-import ApplicationStore from '~app/common/stores/applications/SsvWeb/Application.store';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { getFeeRecipientAddress, setFeeRecipient as setFeeRecipientAccountService } from '~root/services/account.service';
+import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 
 
 const checkAddressChecksum = (address: string) => {
@@ -27,17 +29,25 @@ const checkAddressChecksum = (address: string) => {
 const FeeRecipient = () => {
   const stores = useStores();
   const classes = useStyles();
-  const accountStore: AccountStore = stores.Account;
-  const applicationStore: ApplicationStore = stores.Application;
+  const walletStore: WalletStore = stores.Wallet;
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
-  const [userInput, setUserInput] = useState(accountStore.recipientAddress);
+  const [userInput, setUserInput] = useState('');
   const { checkedCondition } = useTermsAndConditions();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchFeeRecipientAddress = async () => {
+      const res = await getFeeRecipientAddress({ address: walletStore.accountAddress });
+      setUserInput(res);
+    };
+    fetchFeeRecipientAddress();
+  }, []);
 
   const submitFeeRecipient = async () => {
-    applicationStore.setIsLoading(true);
-    await accountStore.setFeeRecipient(userInput);
-    applicationStore.setIsLoading(false);
+    dispatch(setIsLoading(true));
+    await setFeeRecipientAccountService({ feeRecipientAddress: userInput, isContractWallet: walletStore.isContractWallet });
+    dispatch(setIsLoading(false));
   };
 
   const setFeeRecipient = (e: any) => {
@@ -83,7 +93,7 @@ const FeeRecipient = () => {
                         <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
                       </Grid>
                         <TermsAndConditionsCheckbox>
-                            <PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} text={'Update'} submitFunction={submitFeeRecipient}/>
+                            <PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} children={'Update'} submitFunction={submitFeeRecipient}/>
                         </TermsAndConditionsCheckbox>
                     </Grid>
                   </Grid>

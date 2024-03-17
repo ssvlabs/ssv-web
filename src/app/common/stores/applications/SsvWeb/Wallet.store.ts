@@ -13,6 +13,7 @@ import notifyService from '~root/services/notify.service';
 import { initContracts } from '~root/services/contracts.service';
 import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkIfWalletIsContract } from '~root/services/wallet.service';
+import { getLocalStorageFlagValue, TEST_WALLET_ADDRESS } from '~lib/utils/developerHelper';
 import { setConnectedNetwork } from '~app/redux/wallet.slice';
 
 class WalletStore extends BaseStore implements Wallet {
@@ -39,7 +40,8 @@ class WalletStore extends BaseStore implements Wallet {
   async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
     console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
     this.wallet = wallet;
-    this.accountAddress = wallet.accounts[0].address;
+    const checkedWallet = window.localStorage.getItem(TEST_WALLET_ADDRESS);
+    this.accountAddress = checkedWallet || wallet.accounts[0].address;
     notifyService.init(connectedChain.id);
     const index = getNetworkInfoIndexByNetworkId(Number(connectedChain.id));
     store.dispatch(setConnectedNetwork(index));

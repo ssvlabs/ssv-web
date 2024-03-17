@@ -24,6 +24,7 @@ import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
+import { OperatorStore } from '~app/common/stores/applications/SsvWeb';
 
 const ReactivateCluster = () => {
   const options = [
@@ -44,16 +45,15 @@ const ReactivateCluster = () => {
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const validatorsCount = cluster.validatorCount || 1;
-
   const checkBox = (option: any) => setCheckedOption(option);
 
   const isCustomPayment = checkedOption.id === 3;
   const operatorsFee = Object.values(cluster.operators).reduce(
-        (previousValue: number, currentValue: any) => previousValue + fromWei(currentValue.fee),
-        0,
-    ) * validatorsCount;
+    (previousValue: number, currentValue: any) => previousValue + fromWei(currentValue.fee),
+    0,
+  );
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime) * validatorsCount;
+  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
 
   let liquidationCollateralCost = getLiquidationCollateralPerValidator({
@@ -63,7 +63,7 @@ const ReactivateCluster = () => {
     validatorsCount,
     minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
   });
-  const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
+  const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost).mul(validatorsCount);
   const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const disableCondition = insufficientBalance || customPeriod <= 0 || isNaN(customPeriod);
@@ -80,87 +80,89 @@ const ReactivateCluster = () => {
 
 
   return (
-      <Grid container>
-        <NewWhiteWrapper
-            type={0}
-            header={'Cluster'}
-        />
-        <BorderScreen
-            blackHeader
-            withConversion
-            withoutNavigation
-            sectionClass={classes.Section}
-            header={'Reactivate Cluster'}
-            body={[
-              <Grid container>
-                <Typography className={classes.Text}>Your cluster has been <LinkText withoutUnderline
-                                                                                     text={'liquidated'}
-                                                                                     link={config.links.REACTIVATION_LINK}/> due
-                  to insufficient balance for its operational
-                  <br/> costs. To resume its operation, you must deposit sufficient funds required for
-                  <br/> its reactivation. <LinkText withoutUnderline text={'Learn more on liquidations.'}
-                                                    link={config.links.MORE_ON_LIQUIDATION_LINK}/></Typography>
-                <Typography className={classes.BoxesHeader}>Select your cluster funding period</Typography>
-                <Grid container item style={{ gap: 16 }}>
-                  {options.map((option, index) => {
-                    const isCustom = option.id === 3;
-                    return <Grid key={index} container item
-                                 className={`${classes.Box} ${isChecked(option.id) ? classes.SelectedBox : ''}`}
-                                 onClick={() => checkBox(option)}>
-                      <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
-                        {isChecked(option.id) ? <Grid item className={classes.CheckedCircle}/> :
-                            <Grid item className={classes.CheckCircle}/>}
-                        <Grid item
-                              className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
-                      </Grid>
-                      <Grid item
-                            className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorsFee, isCustom ? customPeriod : option.days))} SSV</Grid>
-                      {isCustom && <TextInput value={customPeriod}
-                                              onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
-                                              extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
-                    </Grid>;
-                  })}
-                  {insufficientBalance && <ErrorMessage extendClasses={classes.ErrorBox} text={
-                    <Grid container style={{ gap: 8 }}>
-                      <Grid item>
-                        Insufficient SSV balance. Acquire further SSV or pick a different amount.
-                      </Grid>
-                      <Grid container item xs>
-                        <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
-                      </Grid>
-                    </Grid>
-                  }
-                  />}
-                  {showLiquidationError && <ErrorMessage extendClasses={classes.ErrorBox} text={
-                    <Grid>This funding period will put your validator at risk of liquidation. To avoid liquidation
-                      please pick a bigger funding period. <LinkText text={'Read more on liquidations'}
-                                                                     link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>
-                  }/>}
+    <Grid container>
+      <NewWhiteWrapper
+        type={0}
+        header={'Cluster'}
+      />
+      <BorderScreen
+        blackHeader
+        withConversion
+        withoutNavigation
+        sectionClass={classes.Section}
+        header={'Reactivate Cluster'}
+        body={[
+          <Grid container>
+            <Typography className={classes.Text}>Your cluster has been <LinkText withoutUnderline
+                                                                                 text={'liquidated'}
+                                                                                 link={config.links.REACTIVATION_LINK}/> due
+              to insufficient balance for its operational
+              <br/> costs. To resume its operation, you must deposit sufficient funds required for
+              <br/> its reactivation. <LinkText withoutUnderline text={'Learn more on liquidations.'}
+                                                link={config.links.MORE_ON_LIQUIDATION_LINK}/></Typography>
+            <Typography className={classes.BoxesHeader}>Select your cluster funding period</Typography>
+            <Grid container item style={{ gap: 16 }}>
+              {options.map((option, index) => {
+                const isCustom = option.id === 3;
+                return <Grid key={index} container item
+                             className={`${classes.Box} ${isChecked(option.id) ? classes.SelectedBox : ''}`}
+                             onClick={() => checkBox(option)}>
+                  <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
+                    {isChecked(option.id) ? <Grid item className={classes.CheckedCircle}/> :
+                      <Grid item className={classes.CheckCircle}/>}
+                    <Grid item
+                          className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
+                  </Grid>
+                  <Grid item
+                        className={classes.SsvPrice}>{formatNumberToUi(propertyCostByPeriod(operatorsFee, isCustom ? customPeriod : option.days) * validatorsCount)} SSV</Grid>
+                  {isCustom && <TextInput value={customPeriod}
+                                          onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
+                                          extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
+                </Grid>;
+              })}
+              {insufficientBalance && <ErrorMessage extendClasses={classes.ErrorBox} text={
+                <Grid container style={{ gap: 8 }}>
+                  <Grid item>
+                    Insufficient SSV balance. Acquire further SSV or pick a different amount.
+                  </Grid>
+                  <Grid container item xs>
+                    <LinkText className={classes.Link} text={'Need SSV?'}
+                              link={getStoredNetwork().insufficientBalanceUrl}/>
+                  </Grid>
                 </Grid>
-              </Grid>,
-              <FundingSummary
-                  networkCost={networkCost}
-                  operatorsCost={operatorsCost}
-                  liquidationCollateralCost={liquidationCollateralCost}
-                  days={isCustomPayment ? customPeriod : checkedOption.days}
-              />,
-              <Grid container>
-                <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
-                  <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
-                  <Typography className={classes.SsvPrice}
-                              style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
-                </Grid>
-                <Button
-                    withAllowance
-                    text={'Next'}
-                    onClick={reactivateCluster}
-                    disable={disableCondition}
-                    totalAmount={disableCondition ? '0' : formatNumberToUi(totalCost.toFixed(18))}
-                />
-              </Grid>,
-            ]}
-        />
-      </Grid>
+              }
+              />}
+              {showLiquidationError && <ErrorMessage extendClasses={classes.ErrorBox} text={
+                <Grid>This funding period will put your validator at risk of liquidation. To avoid liquidation
+                  please pick a bigger funding period. <LinkText text={'Read more on liquidations'}
+                                                                 link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>
+              }/>}
+            </Grid>
+          </Grid>,
+          <FundingSummary
+            validatorsCount={validatorsCount}
+            networkCost={networkCost}
+            operatorsCost={operatorsCost}
+            liquidationCollateralCost={liquidationCollateralCost}
+            days={isCustomPayment ? customPeriod : checkedOption.days}
+          />,
+          <Grid container>
+            <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
+              <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
+              <Typography className={classes.SsvPrice}
+                          style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
+            </Grid>
+            <Button
+              withAllowance
+              text={'Next'}
+              onClick={reactivateCluster}
+              disable={disableCondition}
+              totalAmount={disableCondition ? '0' : formatNumberToUi(totalCost.toFixed(18))}
+            />
+          </Grid>,
+        ]}
+      />
+    </Grid>
   );
 };
 export default observer(ReactivateCluster);

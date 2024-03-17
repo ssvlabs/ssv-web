@@ -9,6 +9,9 @@ import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorToolt
 import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import Spinner from '~app/components/common/Spinner';
+import { useStores } from '~app/hooks/useStores';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleCluster } from '~app/model/processes.model';
 
 const HeaderWrapper = styled.div`
     display: flex;
@@ -99,14 +102,16 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
   checkboxTooltipTitle: string,
 }) => {
   const navigate = useNavigate();
+  const stores = useStores();
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleCluster = processStore.getProcess;
   const validatorsListArray = Object.values(selectedValidators);
   const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
-  const showIndicatorCondition = selectedValidatorsCount > 0;
-  const showSubHeaderCondition = validatorsListArray.length > maxValidatorsCount;
-  const totalCount = validatorsListArray.length > maxValidatorsCount ? maxValidatorsCount : validatorsListArray.length;
+  const totalCount = process.item.validatorCount > maxValidatorsCount ? maxValidatorsCount : process.item.validatorCount;
   const [isLoading, setIsLoading] = useState(false);
   const disableButtonCondition = !selectedValidatorsCount || isLoading;
-
+  const showIndicatorCondition = selectedValidatorsCount > 0;
+  const showSubHeaderCondition = process.item.validatorCount > maxValidatorsCount;
   const createValidatorsLaunchpad = () => {
     navigate(config.routes.SSV.VALIDATOR.CREATE);
   };

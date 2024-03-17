@@ -36,7 +36,7 @@ const FundingNewValidator = () => {
   const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState<string | number>(0);
-  const [errorMessage, setErrorMessage] = useState({ text:'', link: { text:'', path:'' } });
+  const [errorMessage, setErrorMessage] = useState({ text:'', disableButton: false, link: { text:'', path:'' } });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const cluster = process.item;
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
@@ -48,18 +48,19 @@ const FundingNewValidator = () => {
   }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
-  const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1;
+  const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1 || errorMessage.disableButton;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
-      setErrorMessage({ text:'', link: { text:'', path:'' } });
+      setErrorMessage({ text:'', disableButton: false, link: { text:'', path:'' } });
       setShowErrorMessage(false);
       return;
     }
     if (Number(depositSSV) > ssvStore.walletSsvBalance) {
       setErrorMessage({
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
+        disableButton: true,
         link: {
           text: 'Need SSV?',
           path: getStoredNetwork().insufficientBalanceUrl,
@@ -71,6 +72,7 @@ const FundingNewValidator = () => {
     if ( newRunWay < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM ) {
       setErrorMessage({
         text: 'Your updated operational puts your cluster validators at risk. To avoid liquidation please top up your cluster balance with greater funds.',
+        disableButton: false,
         link: {
           text: 'Learn more on liquidations',
           path: config.links.MORE_ON_LIQUIDATION_LINK,
@@ -79,7 +81,7 @@ const FundingNewValidator = () => {
       setShowErrorMessage(true);
       return;
     }
-    setErrorMessage({ text:'', link: { text:'', path:'' } });
+    setErrorMessage({ text:'', disableButton: false, link: { text:'', path:'' } });
     setShowErrorMessage(false);
   }, [depositSSV, checkedId]);
 

@@ -206,7 +206,7 @@ const ValidatorsList = ({
                                                  validator: IValidator,
                                                  isSelected: boolean
                                                }) => validator.isSelected)}/>}
-          <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public
+          <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators ? 20 : 0}>Public
             Key</TableHeaderTitle>
           <TableHeaderTitle
             marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>

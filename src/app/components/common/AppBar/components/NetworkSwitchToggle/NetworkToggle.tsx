@@ -20,7 +20,7 @@ import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.pro
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
-import walletDisconnectorHook from '~app/hooks/walletDisconnector.hook';
+import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
 import { getConnectedNetwork, setConnectedNetwork } from '~app/redux/wallet.slice';
@@ -92,7 +92,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const myAccountStore: MyAccountStore = stores.MyAccount;
     const notificationsStore: NotificationsStore = stores.Notifications;
     const dispatch = useAppDispatch();
-    const { disconnectWallet } = walletDisconnectorHook();
+    const { disconnectWallet } = useWalletDisconnector();
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {

@@ -10,7 +10,7 @@ import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPo
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsShowWalletPopup, setIsShowWalletPopup } from '~app/redux/appState.slice';
-import walletDisconnectorHook from '~app/hooks/walletDisconnector.hook';
+import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 
 const WalletPopUp = () => {
     const classes = useStyles();
@@ -19,7 +19,7 @@ const WalletPopUp = () => {
     const [_, connect] = useConnectWallet();
     const dispatch = useAppDispatch();
     const isShowWalletPopup = useAppSelector(getIsShowWalletPopup);
-    const { disconnectWallet } = walletDisconnectorHook();
+    const { disconnectWallet } = useWalletDisconnector();
 
     const changeWallet = async () => {
         if (walletStore.wallet) {

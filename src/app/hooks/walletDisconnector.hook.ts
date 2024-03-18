@@ -6,7 +6,7 @@ import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { resetContracts } from '~root/services/contracts.service';
 
-const walletDisconnectorHook = () => {
+const useWalletDisconnector = () => {
   const [_, __, disconnect] = useConnectWallet();
   const navigate = useNavigate();
   const stores = useStores();
@@ -25,4 +25,4 @@ const walletDisconnectorHook = () => {
   };
 };
 
-export default walletDisconnectorHook;
+export default useWalletDisconnector;

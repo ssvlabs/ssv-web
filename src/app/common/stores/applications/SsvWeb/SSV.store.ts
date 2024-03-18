@@ -11,7 +11,7 @@ import { getClusterData, getClusterHash, getClusterRunWay } from '~root/services
 import { WalletStore } from '~app/common/stores/applications/SsvWeb/index';
 import { SingleCluster, SingleOperator } from '~app/model/processes.model';
 import { store } from '~app/store';
-import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -112,7 +112,8 @@ class SsvStore extends BaseStore {
         store.dispatch(setIsShowTxPendingPopup(true));
         resolve(true);
       } else {
-        notifyService.hash(tx.hash);
+        store.dispatch(setIsShowTxPendingPopup(true));
+        store.dispatch(setTxHash(tx.hash));
       }
       const receipt = await tx.wait();
       const result = receipt.blockHash;
@@ -179,7 +180,8 @@ class SsvStore extends BaseStore {
               store.dispatch(setIsShowTxPendingPopup(true));
               resolve(true);
             } else {
-              notifyService.hash(tx.hash);
+              store.dispatch(setIsShowTxPendingPopup(true));
+              store.dispatch(setTxHash(tx.hash));
             }
             const receipt = await tx.wait();
             const result = receipt.blockHash;
@@ -190,7 +192,8 @@ class SsvStore extends BaseStore {
               store.dispatch(setIsShowTxPendingPopup(true));
               resolve(true);
             } else {
-              notifyService.hash(tx.hash);
+              store.dispatch(setIsShowTxPendingPopup(true));
+              store.dispatch(setTxHash(tx.hash));
             }
             const receipt = await tx.wait();
             const result = receipt.blockHash;

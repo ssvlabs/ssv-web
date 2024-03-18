@@ -64,19 +64,33 @@ const BulkComponent = () => {
     }
   }, []);
 
+  const selectMaxValidatorsCount = (validators: IValidator[], validatorList: Record<string, BulkValidatorData>): Record<string, BulkValidatorData> => {
+    const isSelected = Object.values(selectedValidators).every((validator: {
+      validator: IValidator,
+      isSelected: boolean
+    }) => !validator.isSelected);
+    validators.forEach((validator: IValidator, index: number) => {
+      validatorList[formatValidatorPublicKey(validator.public_key)] = {
+        validator,
+        isSelected: isSelected && index < MAX_VALIDATORS_COUNT,
+      };
+    });
+    return validatorList;
+  };
+
   const fillSelectedValidators = (validators: IValidator[], selectAll: boolean = false) => {
     if (validators) {
       let validatorList: Record<string, BulkValidatorData> = {};
-      const isSelected = selectAll && Object.values(selectedValidators).every((validator: {
-        validator: IValidator,
-        isSelected: boolean
-      }) => !validator.isSelected);
-      validators.forEach((validator: IValidator, index: number) => {
-        validatorList[formatValidatorPublicKey(validator.public_key)] = {
-          validator,
-          isSelected: isSelected && index < MAX_VALIDATORS_COUNT,
-        };
-      });
+      if (selectAll) {
+        validatorList = selectMaxValidatorsCount(validators, validatorList);
+      } else {
+        validators.forEach((validator: IValidator) => {
+          validatorList[formatValidatorPublicKey(validator.public_key)] = {
+            validator,
+            isSelected: selectedValidators[formatValidatorPublicKey(validator.public_key)]?.isSelected || false,
+          };
+        });
+      }
       setSelectedValidators(validatorList);
     }
   };

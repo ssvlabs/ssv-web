@@ -63,6 +63,7 @@ const KeyShareFlow = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
     const [processingFile, setProcessFile] = useState(false);
+    const [hasPermissionedOperator, setHasPermissionedOperator] = useState(false);
     const [validatorsCount, setValidatorsCount] = useState(Object.values(validatorsList).length);
     const {
       getNextNavigation,
@@ -179,6 +180,11 @@ const KeyShareFlow = () => {
           if (availableValidatorsAmount <= 0) {
             maxValidatorsCount = 0;
             warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
+            hasError = true;
+          }
+          if (operator.address_whitelist && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST){
+            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
+            setHasPermissionedOperator(true);
             hasError = true;
           }
           return ({
@@ -408,7 +414,7 @@ const KeyShareFlow = () => {
     };
 
     const availableToRegisterValidatorsCount = Object.values(validatorsList).filter((validator: ValidatorType) => !validator.registered && !validator.errorMessage).length;
-    const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || !validatorsCount;
+    const buttonDisableConditions = processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || !validatorsCount || hasPermissionedOperator;
     const MainMultiKeyShare = <Grid className={classes.SummaryWrapper}>
       <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
       <Grid className={classes.SummaryInfoFieldWrapper}>

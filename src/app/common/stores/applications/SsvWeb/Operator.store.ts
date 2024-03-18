@@ -7,7 +7,7 @@ import { EContractName } from '~app/model/contracts.model';
 import { executeAfterEvent } from '~root/services/events.service';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
-import { getStoredNetwork, isMainnet, testNets } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { equalsAddresses } from '~lib/utils/strings';
@@ -277,25 +277,6 @@ class OperatorStore extends BaseStore {
       this.clearOperatorFeeInfo();
     }
   }
-
-  /**
-   * Check if operator is whitelisted
-   * @param accountAddress queried account
-   */
-  async isOperatorWhitelisted(accountAddress: string): Promise<boolean> {
-    if (!isMainnet()) {
-      return true;
-    }
-    const contract = getContractByName(EContractName.SETTER);
-    try {
-      const response = await contract.getRegisterAuth(accountAddress);
-      return response.authOperators;
-    }
-  catch (e: any) {
-    console.error(`Failed to check if operator ${accountAddress} is whitelisted: ${e.message}`);
-    return false;
-  }
-}
 
   /**
    * update operator address whitelist

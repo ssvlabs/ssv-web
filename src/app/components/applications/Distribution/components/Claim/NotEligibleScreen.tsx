@@ -9,12 +9,14 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Distribution/components/Claim/Claim.styles';
-import { isMainnet } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 const NotEligibleScreen = () => {
   const stores = useStores();
   const classes = useStyles();
   const walletStore: WalletStore = stores.Wallet;
+  const isMainnet = useAppSelector(getIsMainnet);
 
   const claimRewards = async () => {
       // await walletStore.connect();
@@ -27,7 +29,7 @@ const NotEligibleScreen = () => {
       body={[
         <Grid container>
           <HeaderSubHeader
-            title={`Claim ${isMainnet() ? 'Mainnet' : 'Testnet'} Rewards`}
+            title={`Claim ${isMainnet ? 'Mainnet' : 'Testnet'} Rewards`}
           />
           <InputLabel title="Recipient" />
           <Grid className={classes.RecipientWrapper}>

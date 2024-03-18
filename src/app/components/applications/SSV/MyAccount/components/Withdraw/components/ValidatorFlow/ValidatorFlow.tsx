@@ -19,6 +19,8 @@ import { extendClusterEntity, getClusterHash, getClusterRunWay } from '~root/ser
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { clusterByHash } from '~root/services/validator.service';
 import { SingleCluster } from '~app/model/processes.model';
+import { store } from '~app/store';
+import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 
 const ValidatorFlow = () => {
   const stores = useStores();
@@ -85,6 +87,9 @@ const ValidatorFlow = () => {
     }, 2);
     await myAccountStore.getOwnerAddressClusters({});
     setIsLoading(false);
+    if (!walletStore.isContractWallet) {
+      store.dispatch(setIsShowTxPendingPopup(false));
+    }
     if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {
       navigate(-1);
     }

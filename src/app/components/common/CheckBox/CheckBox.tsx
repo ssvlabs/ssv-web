@@ -7,7 +7,7 @@ type CheckboxProps = {
   text: any,
   width?: number,
   height?: number,
-  isDisable?: boolean,
+  isDisabled?: boolean,
   isChecked?: boolean,
   smallLine?: boolean,
   grayBackGround?: boolean,
@@ -21,7 +21,7 @@ const CheckBox = ({
                     width,
                     height,
                     text,
-                    isDisable = false,
+                    isDisabled = false,
                     isChecked,
                     grayBackGround,
                     withoutMarginBottom,
@@ -40,7 +40,7 @@ const CheckBox = ({
   });
 
   const Content = (
-    <Grid container={!!text} className={classes.CheckBoxWrapper} onClick={isDisable ? () => {} : toggleIsChecked}>
+    <Grid container={!!text} className={classes.CheckBoxWrapper} onClick={isDisabled ? () => {} : toggleIsChecked}>
       <Grid item>
         <Grid className={classes.BoxWrapper}/>
       </Grid>

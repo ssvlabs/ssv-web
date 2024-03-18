@@ -14,12 +14,16 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { SingleOperator } from '~app/model/processes.model';
 import { getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
+import { store } from '~app/store';
+import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const OperatorFlow = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
+  const walletStore: WalletStore = stores.Wallet;
   const [inputValue, setInputValue] = useState(0.0);
   const [isLoading, setIsLoading] = useState(false);
   const processStore: ProcessStore = stores.Process;
@@ -34,6 +38,9 @@ const OperatorFlow = () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(inputValue.toString());
     setIsLoading(false);
+    if (!walletStore.isContractWallet) {
+      store.dispatch(setIsShowTxPendingPopup(false));
+    }
     if (success) {
       setInputValue(0.0);
       const balance = await operatorStore.getOperatorBalance(operator.id);

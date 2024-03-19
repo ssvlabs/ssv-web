@@ -209,7 +209,8 @@ class SsvStore extends BaseStore {
             store.dispatch(setIsShowTxPendingPopup(true));
             resolve(true);
           } else {
-            notifyService.hash(tx.hash);
+            store.dispatch(setTxHash(tx.hash));
+            store.dispatch(setIsShowTxPendingPopup(true));
           }
           const receipt = await tx.wait();
           const result = receipt.blockHash;

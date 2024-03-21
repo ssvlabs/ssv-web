@@ -72,7 +72,7 @@ const OfflineKeyShareCeremony = () => {
             </Grid>
             <Grid>
               <code className={classes.DkgCode}>proofs.json</code>
-              <Typography className={classes.DkgCodeText}>This file contains the signatures indicating that the ceremony was conducted by the chosen operators.</Typography>
+              <Typography className={classes.DkgCodeText}>TThis file contains the signatures indicating that the ceremony was conducted by the cluster operators and is crucial for resharing your validator with a different set of operators in the future. Please ensure to  back up this file securely.</Typography>
             </Grid>
             <Grid className={classes.Line}/>
             <Typography className={classes.DkgCodeText}>For ceremonies generating more than one validator, you will find

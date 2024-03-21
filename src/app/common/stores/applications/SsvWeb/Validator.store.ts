@@ -170,7 +170,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+          await executeAfterEvent(async () => !await getValidator(publicKey), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }
@@ -208,7 +208,7 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+          await executeAfterEvent(async () => !await getValidator(validators[0]), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
         } else {
           resolve(false);
         }

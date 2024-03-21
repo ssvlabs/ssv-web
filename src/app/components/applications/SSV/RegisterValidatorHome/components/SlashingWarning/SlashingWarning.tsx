@@ -21,7 +21,7 @@ const SlashingWarning = () => {
   const navigate = useNavigate();
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const [userAgreed, setUserAgreed] = useState(false);
+  const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const publicKey = validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey;
 
   const goToConfirmation = () => {
@@ -55,10 +55,10 @@ const SlashingWarning = () => {
           run with our network.
         </Grid>
         <Checkbox
-          onClickCallBack={setUserAgreed}
+          toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} isChecked={hasUserAgreed}
           text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
         />
-        <PrimaryButton disable={!userAgreed} children={'Next'} dataTestId={'register-validator'}
+        <PrimaryButton disable={!hasUserAgreed} children={'Next'} dataTestId={'register-validator'}
                        submitFunction={goToConfirmation}
         />
       </Grid>,

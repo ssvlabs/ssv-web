@@ -1,31 +1,33 @@
 import React from 'react';
 import { Grid } from '@mui/material';
+import styled from 'styled-components';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
-import { useStyles } from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditions.styles';
-import { isMainnet } from '~root/providers/networkInfo.provider';
 
 type TermsAndConditionsType = {
     children: JSX.Element;
+    isChecked: boolean;
+    toggleIsChecked: () => void;
+    isMainnet: boolean;
 };
 
-const TermsAndConditionsCheckbox = ({ children } : TermsAndConditionsType) => {
-    const classes = useStyles();
-    const { checkedConditionHandler } = useTermsAndConditions();
+const Wrapper = styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+`;
 
-    return (
-        <Grid className={classes.BottomScreenWrapper}>
-            {isMainnet() && <Checkbox
-                grayBackGround
-                onClickCallBack={checkedConditionHandler}
-                text={<Grid>I have read and agreed to the <LinkText text={'terms and conditions'}
-                                                                    link={config.links.TERMS_OF_USE_LINK}/></Grid>}
-            />}
-            {children}
-        </Grid>
-    );
-};
+const TermsAndConditionsCheckbox = ({ children, isChecked, toggleIsChecked, isMainnet } : TermsAndConditionsType) => (
+    <Wrapper>
+        {isMainnet && <Checkbox
+          isChecked={isChecked}
+            grayBackGround
+            toggleIsChecked={toggleIsChecked}
+            text={<Grid>I have read and agreed to the <LinkText text={'terms and conditions'} link={config.links.TERMS_OF_USE_LINK}/></Grid>}
+        />}
+        {children}
+    </Wrapper>
+);
 
 export default TermsAndConditionsCheckbox;

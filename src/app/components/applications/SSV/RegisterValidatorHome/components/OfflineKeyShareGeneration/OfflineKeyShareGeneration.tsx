@@ -18,7 +18,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
-import { getStoredNetwork, isMainnet } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
 import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
@@ -30,6 +30,8 @@ import {
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -61,6 +63,7 @@ const OfflineKeyShareGeneration = () => {
   const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
   const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
   const [isInvalidValidatorsCount, setIsInvalidValidatorsCount] = useState(false);
+  const isMainnet = useAppSelector(getIsMainnet);
 
   useEffect(() => {
     const fetchOwnerNonce = async () => {
@@ -183,11 +186,7 @@ const OfflineKeyShareGeneration = () => {
       return !textCopied;
     } else if (selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg) {
       return !textCopied || isInvalidValidatorsCount;
-    } else if (selectedBox === 0) {
-      return true;
-    } else {
-      return false;
-    }
+    } else return selectedBox === 0;
   };
 
   const hideButtonCondition = () => {
@@ -206,7 +205,7 @@ const OfflineKeyShareGeneration = () => {
       withoutNavigation={processStore.secondRegistration}
       header={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.HEADER}
       overFlow={'none'}
-      width={!isMainnet() ? 872 : undefined}
+      width={!isMainnet ? 872 : undefined}
       body={[
         <Grid container style={{ gap: 24 }}>
           <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
@@ -229,7 +228,7 @@ const OfflineKeyShareGeneration = () => {
                   <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
                 </Grid>
               </Grid>}/>
-            {!isMainnet() && <Grid container item
+            {!isMainnet && <Grid container item
 																	 className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
 																	 onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
 							<Grid item xs={XS}
@@ -257,7 +256,7 @@ const OfflineKeyShareGeneration = () => {
 						</Grid>
 					</Grid>
           }
-          {selectedBox === OFFLINE_FLOWS.DKG && !isMainnet() && operatorsAcceptDkg &&
+          {selectedBox === OFFLINE_FLOWS.DKG && !isMainnet && operatorsAcceptDkg &&
 						<Grid container item className={classes.DkgInstructionsWrapper}>
 							<Grid className={classes.DkgNotification}>
 								Please note that this tool is yet to be audited. Please refrain from using it on mainnet.

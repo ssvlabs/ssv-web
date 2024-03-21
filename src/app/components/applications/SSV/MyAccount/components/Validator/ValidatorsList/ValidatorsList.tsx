@@ -195,10 +195,10 @@ const ValidatorsList = ({
         scrollableTarget={'scrollableDiv'}
       >
         <TableHeader>
-          {fillSelectedValidators && <Checkbox disable={isLoading} grayBackGround text={''}
+          {fillSelectedValidators && <Checkbox isDisabled={isLoading} grayBackGround text={''}
                                                withoutMarginBottom
                                                smallLine
-                                               onClickCallBack={() => {
+                                               toggleIsChecked={() => {
                                                  setIsLoading && setIsLoading(true);
                                                  onChangePage(true);
                                                }}
@@ -221,11 +221,11 @@ const ValidatorsList = ({
                 <ValidatorWrapper>
                   <PublicKeyWrapper>
                     <PublicKey>
-                      {showingCheckboxCondition && <Checkbox disable={disableButtonCondition} grayBackGround text={''}
+                      {showingCheckboxCondition && <Checkbox isDisabled={disableButtonCondition} grayBackGround text={''}
                                                              withTooltip={disableButtonCondition}
                                                              tooltipText={checkboxTooltipTitle}
                                                              withoutMarginBottom
-                                                             onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
+                                                             toggleIsChecked={() => onCheckboxClickHandler(formattedPublicKey, clusterValidators)}
                                                              isChecked={res}/>}
                       {longStringShorten(formattedPublicKey, 4, 4)}
                     </PublicKey>

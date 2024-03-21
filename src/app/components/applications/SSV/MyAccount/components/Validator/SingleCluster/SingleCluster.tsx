@@ -27,7 +27,6 @@ import ActionsButton
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
-import { isMainnet } from '~root/providers/networkInfo.provider';
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 
 const ButtonTextWrapper = styled.div`

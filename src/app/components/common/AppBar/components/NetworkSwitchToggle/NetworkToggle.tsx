@@ -20,7 +20,7 @@ import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.pro
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
-import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
+import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
 import { getConnectedNetwork, setConnectedNetwork } from '~app/redux/wallet.slice';

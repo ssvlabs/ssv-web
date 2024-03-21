@@ -1,5 +1,4 @@
 import Grid from '@mui/material/Grid';
-import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +15,6 @@ import FundingSummary from '~app/components/common/FundingSummary';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -29,12 +27,13 @@ import {
 } from '~app/components/applications/SSV/ValidatorRegistrationConfirmation/ValidatorRegistrationConfirmation.styles';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
-import { useAppDispatch } from '~app/hooks/redux.hook';
-import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
@@ -43,7 +42,6 @@ const ValidatorRegistrationConfirmation = () => {
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const { checkedCondition: acceptedTerms } = useTermsAndConditions();
   const validatorStore: ValidatorStore = stores.Validator;
   const walletStore: WalletStore = stores.Wallet;
   const [errorMessage, setErrorMessage] = useState('');
@@ -53,6 +51,8 @@ const ValidatorRegistrationConfirmation = () => {
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
   const dispatch = useAppDispatch();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const [isChecked, setIsChecked] = useState(false);
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
@@ -73,12 +73,12 @@ const ValidatorRegistrationConfirmation = () => {
   useEffect(() => {
     try {
       const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress)));
-      setRegisterButtonDisabled(!acceptedTerms || hasWhitelistedOperator);
+      setRegisterButtonDisabled((isMainnet && !isChecked) || hasWhitelistedOperator);
     } catch (e: any) {
       setRegisterButtonDisabled(true);
       console.error(`Something went wrong: ${e.message}`);
     }
-  }, [acceptedTerms]);
+  }, [isMainnet, isChecked]);
 
   const onRegisterValidatorClick = async () => {
     dispatch(setIsLoading(true));
@@ -115,7 +115,7 @@ const ValidatorRegistrationConfirmation = () => {
     {errorMessage && <ErrorMessage text={errorMessage}/>}
 
     <Grid container>
-      <TermsAndConditionsCheckbox>
+      <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
         <Button
           withAllowance
           text={actionButtonText}

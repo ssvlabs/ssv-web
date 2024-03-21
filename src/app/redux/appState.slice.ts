@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-import { isMainnet } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 export interface AppState {
   strategyName: string;
@@ -31,7 +31,7 @@ const initialState: AppState = {
   isShowTxPendingPopup: false,
   txHash: '',
   restrictedUserGeo: '',
-  shouldCheckCountryRestriction: isMainnet(),
+  shouldCheckCountryRestriction: getStoredNetwork().networkId === MAINNET_NETWORK_ID,
 };
 
 export const slice = createSlice({

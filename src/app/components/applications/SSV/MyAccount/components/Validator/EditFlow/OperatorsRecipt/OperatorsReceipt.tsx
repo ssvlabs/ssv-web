@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
@@ -42,8 +42,8 @@ const OperatorsReceipt = (props: Props) => {
   const walletStore: WalletStore = stores.Wallet;
   const validatorStore: ValidatorStore = stores.Validator;
   const classes = useStyles({ currentOperators });
-  const [checked, setChecked] = React.useState(false);
-  const [openRedirect, setOpenRedirect] = React.useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [openRedirect, setOpenRedirect] = useState(false);
   const dispatch = useAppDispatch();
 
   if (location.state?.success) {
@@ -74,17 +74,8 @@ const OperatorsReceipt = (props: Props) => {
   const remainingDays = ssvStore.getRemainingDays({ newBurnRate: ssvStore.getNewAccountBurnRate(oldOperatorsFee, newOperatorsFee) });
 
   const checkBox = () => {
-    // @ts-ignore
     if (remainingDays < 30 && remainingDays !== 0) {
-      return (
-        <Checkbox
-          disable={false}
-          text={'I understand the risks of having my account liquidated'}
-          onClickCallBack={() => {
-            setChecked(!checked);
-          }}
-        />
-      );
+      return <Checkbox text={'I understand the risks of having my account liquidated'} toggleIsChecked={() => { setIsChecked(!isChecked); }} isChecked={isChecked} />;
     }
     return null;
   };
@@ -114,7 +105,7 @@ const OperatorsReceipt = (props: Props) => {
               title={'Your Validator Has been Updated'}
               subtitle={'You are being redirected to your validator'}
             />
-            <img className={classes.Loader} src={getImage('ssv-loader.svg')} />
+            <img className={classes.Loader} src={getImage('ssv-loader.svg')}  alt="loader" />
           </Grid>
         </Dialog>
         {operators.map((operator: any, index: number) => {

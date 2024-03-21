@@ -122,8 +122,7 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:latest & docker run -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:latest" init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --generateInitiatorKeyIfNotExisting --logFilePath /data/debug.log --outputPath /data`;
-
+  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:v2.0.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.0.0" init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
   const instructions = [
     {
       id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [

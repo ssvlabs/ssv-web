@@ -19,7 +19,8 @@ import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
-import { NotificationsStore } from '~app/common/stores/applications/SsvWeb';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 const OperatorDashboard = () => {
   const stores = useStores();
@@ -28,7 +29,7 @@ const OperatorDashboard = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const notificationStore: NotificationsStore = stores.Notifications;
+  const dispatch = useAppDispatch();
   const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState({});
   const [loadingOperators, setLoadingOperators] = useState(false);
@@ -42,7 +43,7 @@ const OperatorDashboard = () => {
       }));
       await Promise.all(promises);
     } catch (e: any) {
-      notificationStore.showMessage(e.message, 'error');
+      dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
     }
   };
 

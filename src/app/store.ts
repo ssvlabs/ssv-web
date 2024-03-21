@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { appStateReducer } from '~app/redux/appState.slice';
 import { navStateReducer } from '~app/redux/navigation.slice';
 import { walletStateReducer } from '~app/redux/wallet.slice';
+import { notificationsStateReducer } from '~app/redux/notifications.slice';
 
 export const store = configureStore({
   reducer: {
     appState: appStateReducer,
     navState: navStateReducer,
     walletState: walletStateReducer,
+    notificationsState: notificationsStateReducer,
   },
 });
 

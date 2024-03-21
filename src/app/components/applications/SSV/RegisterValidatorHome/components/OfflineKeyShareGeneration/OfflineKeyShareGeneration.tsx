@@ -21,7 +21,6 @@ import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton'
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import {
@@ -30,8 +29,9 @@ import {
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -55,7 +55,6 @@ const OfflineKeyShareGeneration = () => {
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
   const [addressValidationError, setAddressValidationError] = useState({ shouldDisplay: true, errorMessage: '' });
   const [ownerNonce, setOwnerNonce] = useState<number | undefined>(undefined);
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const { accountAddress } = walletStore;
   const { apiNetwork } = getStoredNetwork();
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
@@ -63,6 +62,7 @@ const OfflineKeyShareGeneration = () => {
   const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
   const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
   const [isInvalidValidatorsCount, setIsInvalidValidatorsCount] = useState(false);
+  const dispatch = useAppDispatch();
   const isMainnet = useAppSelector(getIsMainnet);
 
   useEffect(() => {
@@ -147,7 +147,7 @@ const OfflineKeyShareGeneration = () => {
   const copyToClipboard = () => {
     const command = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
     navigator.clipboard.writeText(command);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
     setTextCopied(true);
   };
 

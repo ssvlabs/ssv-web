@@ -33,7 +33,6 @@ class WalletStore extends BaseStore implements Wallet {
       //   // this.wrongNetwork = false;
       // } else {
       //   // this.wrongNetwork = true;
-      //   // this.notificationsStore.showMessage('Please change network', 'error');
       // }
       // this.accountAddress = address;
       notifyService.init(connectedChain.id);

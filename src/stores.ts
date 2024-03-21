@@ -10,7 +10,6 @@ const stores = [
   'Validator',
   'MyAccount',
   'Distribution',
-  'Notifications',
   'OperatorMetadata',
   'DistributionTestnet',
 ];

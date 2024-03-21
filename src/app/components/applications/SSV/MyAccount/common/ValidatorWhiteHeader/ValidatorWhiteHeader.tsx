@@ -7,13 +7,14 @@ import { useStores } from '~app/hooks/useStores';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 type Props = {
   text: string,
@@ -29,13 +30,13 @@ const ValidatorWhiteHeader = (props: Props) => {
   const stores = useStores();
   const classes = useStyles();
   const processStore: ProcessStore = stores.Process;
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleCluster = processStore.getProcess;
   const validator = process?.item;
+  const dispatch = useAppDispatch();
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(props.address ?? validator.public_key);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const openExplorer = () => {

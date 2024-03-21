@@ -9,13 +9,14 @@ import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
-import { ProcessStore, WalletStore, NotificationsStore } from '~app/common/stores/applications/SsvWeb';
+import { ProcessStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { SingleCluster } from '~app/model/processes.model';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Spinner from '~app/components/common/Spinner';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -119,7 +120,6 @@ const ValidatorsList = ({
 }) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process?.item;
@@ -135,6 +135,7 @@ const ValidatorsList = ({
     rowsPerPage: 14,
     onChangePage: console.log,
   });
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
@@ -179,7 +180,7 @@ const ValidatorsList = ({
 
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const openLink = (url: string) => window.open(url, '_blank');

@@ -18,10 +18,11 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { useAppDispatch } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
+import { store } from '~app/store';
 
 const Deposit = () => {
   const stores = useStores();
@@ -67,6 +68,9 @@ const Deposit = () => {
     });
     setInputValue('');
     dispatch(setIsLoading(false));
+    if (!walletStore.isContractWallet) {
+      store.dispatch(setIsShowTxPendingPopup(false));
+    }
   }
 
   function inputHandler(e: any) {

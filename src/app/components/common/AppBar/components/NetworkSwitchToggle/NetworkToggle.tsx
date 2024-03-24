@@ -12,7 +12,6 @@ import {
 import { useStores } from '~app/hooks/useStores';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
@@ -24,6 +23,7 @@ import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
 import { getConnectedNetwork, setConnectedNetwork } from '~app/redux/wallet.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const CurrentNetworkWrapper = styled.div`
     display: flex;
@@ -90,7 +90,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const myAccountStore: MyAccountStore = stores.MyAccount;
-    const notificationsStore: NotificationsStore = stores.Notifications;
     const dispatch = useAppDispatch();
     const { disconnectWallet } = useWalletDisconnector();
 
@@ -111,7 +110,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         const networkInWalletChangedHandler = async () => {
             const index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
             if (index < 0) {
-                notificationsStore.showMessage(`Unsupported network. Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
+                dispatch(setMessageAndSeverity({ message: `Unsupported network. Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, severity: 'error' }));
             } else {
                 ssvStore.clearUserSyncInterval();
                 myAccountStore.clearIntervals();

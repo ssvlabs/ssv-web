@@ -16,7 +16,6 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard/Dashboard';
 import Settings
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
@@ -28,6 +27,8 @@ import ActionsButton
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -65,8 +66,8 @@ const SingleCluster = () => {
   const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleClusterProcess = processStore.getProcess;
+  const dispatch = useAppDispatch();
   const [rows, setRows] = useState<any[]>([]);
   const [clusterValidators, setClusterValidators] = useState<any[]>([]);
   const [loadingValidators, setLoadingValidators] = useState<boolean>(false);
@@ -108,7 +109,7 @@ const SingleCluster = () => {
 
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const sortValidatorsByStatus = () => {

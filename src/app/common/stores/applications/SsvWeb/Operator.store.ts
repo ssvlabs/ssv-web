@@ -9,7 +9,6 @@ import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conve
 import { getContractByName } from '~root/services/contracts.service';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { equalsAddresses } from '~lib/utils/strings';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
@@ -18,6 +17,7 @@ import { getOperator } from '~root/services/operator.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 export interface NewOperator {
   id: number,
@@ -135,7 +135,6 @@ class OperatorStore extends BaseStore {
    */
   async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return Promise.all([
       myAccountStore.getOwnerAddressClusters({}),
@@ -146,7 +145,7 @@ class OperatorStore extends BaseStore {
       })
       .catch((error) => {
         if (showError) {
-          notificationsStore.showMessage(error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+          store.dispatch(setMessageAndSeverity({ message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         }
         resolve(false);
       }).finally(() => {
@@ -282,7 +281,6 @@ class OperatorStore extends BaseStore {
    * update operator address whitelist
    */
   async updateOperatorAddressWhitelist(operatorId: string, address: string) {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
@@ -314,7 +312,7 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         console.debug('Contract Error', e.message);
-        notificationsStore.showMessage(e.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -339,7 +337,6 @@ class OperatorStore extends BaseStore {
    * Cancel change fee process for operator
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     await this.syncOperatorFeeInfo(operatorId);
     const operatorDataBefore = {
@@ -381,7 +378,7 @@ class OperatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -450,7 +447,6 @@ class OperatorStore extends BaseStore {
    * @param newFee
    */
   async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
@@ -497,7 +493,7 @@ class OperatorStore extends BaseStore {
         }
       } catch (e: any) {
         console.debug('Contract Error', e.message);
-        notificationsStore.showMessage(e.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -507,7 +503,6 @@ class OperatorStore extends BaseStore {
   }
 
   async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
@@ -548,7 +543,7 @@ class OperatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -562,7 +557,6 @@ class OperatorStore extends BaseStore {
    * @param operatorId
    */
   async approveOperatorFee(operatorId: number): Promise<boolean> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
@@ -603,7 +597,7 @@ class OperatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -617,7 +611,6 @@ class OperatorStore extends BaseStore {
    * @param operatorId
    */
   async removeOperator(operatorId: number): Promise<any> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     const contractInstance = getContractByName(EContractName.SETTER);
     return new Promise(async (resolve) => {
@@ -644,7 +637,7 @@ class OperatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         return false;
       } finally {
         if (!walletStore.isContractWallet) {
@@ -657,7 +650,6 @@ class OperatorStore extends BaseStore {
 
   async addNewOperator() {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve, reject) => {
       try {
         const payload: any[] = [];
@@ -681,9 +673,9 @@ class OperatorStore extends BaseStore {
             await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
             resolve(true);
           }
-        } catch (err: any) {
-          console.error(`Error during setting fee recipient: ${err.message}`);
-          notificationsStore.showMessage(err.message, 'error');
+        } catch (e: any) {
+          console.error(`Error during setting fee recipient: ${e.message}`);
+          store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
           resolve(false);
         }
       } catch (e) {

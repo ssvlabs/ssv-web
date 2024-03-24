@@ -12,6 +12,8 @@ import { setIsLoading } from '~app/redux/appState.slice';
 import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
 import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 import { useStores } from '~app/hooks/useStores';
+import { AlertColor } from '@mui/material/Alert';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const SuccessPage = () => {
     const classes = useStyles();
@@ -28,6 +30,10 @@ const SuccessPage = () => {
         }, 300);
     };
 
+  const notificationHandler = ({ message, severity }: { message: string; severity: AlertColor }) => {
+    dispatch(setMessageAndSeverity({ message, severity }));
+  };
+
     return (
       <BorderScreen
         blackHeader
@@ -41,7 +47,7 @@ const SuccessPage = () => {
             </Grid>
             <Grid container item xs={12} className={classes.TextWrapper}>
               <Typography>Can&apos;t find your tokens?</Typography>
-              <Grid container item className={classes.AddToMetamask} onClick={() => walletStore?.wallet && registerSSVTokenInMetamask({ provider: walletStore.wallet.provider })}>
+              <Grid container item className={classes.AddToMetamask} onClick={() => walletStore?.wallet && registerSSVTokenInMetamask({ provider: walletStore.wallet.provider, notificationHandler })}>
                 <Grid className={classes.MetaMask} />
                 <Typography>Add SSV to Metamask</Typography>
               </Grid>

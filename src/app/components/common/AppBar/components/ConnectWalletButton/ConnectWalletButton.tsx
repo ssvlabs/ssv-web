@@ -21,7 +21,7 @@ const ConnectWalletButton = () => {
     if (walletStore.wallet && wallet && walletStore.wallet.accounts[0].address !== wallet.accounts[0].address) {
       window.location.reload();
     }
-    if (wallet && connectedChain && !connecting && !walletStore.wallet) {
+    if (wallet && connectedChain && !connecting) {
       walletStore.initWallet(wallet, connectedChain);
     }
   }, [wallet, connectedChain, connecting]);

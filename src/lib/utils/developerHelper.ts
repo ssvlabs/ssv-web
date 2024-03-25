@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { saveInLocalStorage } from '~root/providers/localStorage.provider';
 
+export const SKIP_VALIDATION = 'skipValidation';
 export const MAXIMUM_VALIDATOR_COUNT_FLAG =  'maximumValidatorCount';
 export const TEST_WALLET_ADDRESS =  'testWalletAddress';
 export const ENABLE_EXIT_FLOW = 'enableExitFlow';

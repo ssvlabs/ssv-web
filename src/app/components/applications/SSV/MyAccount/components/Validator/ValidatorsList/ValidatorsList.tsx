@@ -111,7 +111,7 @@ const NoValidatorImage = styled.div`
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    margin: 24px auto;
+    margin: 50px auto 15px auto;
     background-image: url(/images/logo/no_validators.svg);
 `;
 const NoValidatorText = styled.div`
@@ -119,6 +119,7 @@ const NoValidatorText = styled.div`
     font-weight: 500;
     text-align: center;
     color: ${({ theme }) => theme.colors.gray80};
+    margin-bottom: 80px;
 `;
 
 const ValidatorsList = ({

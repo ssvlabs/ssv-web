@@ -1,14 +1,14 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList.styles';
 import { longStringShorten } from '~lib/utils/strings';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelected }: {
   validatorPublicKey: string,
@@ -17,12 +17,11 @@ const ValidatorSlot = ({ validatorPublicKey, errorMessage, registered, isSelecte
   isSelected: boolean
 }) => {
   const classes = useStyles();
-  const stores = useStores();
-  const notificationsStore: NotificationsStore = stores.Notifications;
+  const dispatch = useAppDispatch();
 
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const openBeaconcha = (publicKey: string) => {

@@ -95,9 +95,9 @@ const BulkComponent = () => {
     }
   };
 
-  const onCheckboxClickHandler = (isChecked: boolean, publicKey: string) => {
+  const onCheckboxClickHandler = ({ publicKey }: { publicKey: string }) => {
     setSelectedValidators((prevState: any) => {
-      prevState[publicKey].isSelected = isChecked && !prevState[publicKey].isSelected;
+      prevState[publicKey].isSelected = !prevState[publicKey].isSelected;
       return { ...prevState };
     });
   };

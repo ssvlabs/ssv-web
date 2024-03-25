@@ -21,15 +21,16 @@ type ButtonParams = {
     onClick?: any,
     testId?: string,
     errorButton?: boolean,
-    checkboxesText?: any[],
     withAllowance?: boolean,
-    checkBoxesCallBack?: any[],
+    checkboxText?: string | null,
+    checkBoxCallBack?: (() => void) | null,
+    isCheckboxChecked?: boolean,
     isLoading?: boolean,
     totalAmount?: string,
     allowanceApprovedCB?: () => void
 };
 
-const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount, isLoading, allowanceApprovedCB }: ButtonParams) => {
+const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, checkboxText, checkBoxCallBack, isCheckboxChecked, totalAmount, isLoading, allowanceApprovedCB }: ButtonParams) => {
     const stores = useStores();
     const classes = useStyles();
     const ssvStore: SsvStore = stores.SSV;
@@ -136,13 +137,11 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
 
     return (
       <Grid container>
-        {checkboxesText?.map((checkboxText: string, index: number) => {
-                return (
-                  <Grid key={index} item xs={12}>
-                    <CheckBox onClickCallBack={checkBoxesCallBack && checkBoxesCallBack[index]} text={checkboxText} />
-                  </Grid>
-                );
-            })}
+        {checkboxText && checkBoxCallBack && (
+          <Grid item xs={12}>
+              <CheckBox toggleIsChecked={checkBoxCallBack} text={checkboxText} isChecked={isCheckboxChecked} />
+          </Grid>
+        )}
         {hasToRequestApproval ? userNeedApproval() : regularButton()}
       </Grid>
     );

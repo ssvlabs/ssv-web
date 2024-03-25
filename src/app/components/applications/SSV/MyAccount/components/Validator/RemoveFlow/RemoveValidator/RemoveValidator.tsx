@@ -20,7 +20,7 @@ const RemoveValidator = () => {
   const navigate = useNavigate();
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const [removeButtonEnabled, setRemoveButtonEnabled] = useState(false);
+  const [isRemoveButtonEnabled, setIsRemoveButtonEnabled] = useState(false);
   const process: SingleCluster = processStore.getProcess;
   const validator = process?.validator;
 
@@ -29,7 +29,7 @@ const RemoveValidator = () => {
   }, []);
 
   const checkboxChange = () => {
-    setRemoveButtonEnabled(!removeButtonEnabled);
+    setIsRemoveButtonEnabled(!isRemoveButtonEnabled);
   };
 
   const removeValidator = async () => {
@@ -69,14 +69,14 @@ const RemoveValidator = () => {
               </Grid>
               <Grid container item>
                 <Checkbox
-                    onClickCallBack={checkboxChange}
+                    toggleIsChecked={checkboxChange} isChecked={isRemoveButtonEnabled}
                     text={'I understand that my validator will be removed from the network and it will stop attesting on the beacon chain'}
                 />
                 <Button
                     errorButton
                     text={'Remove Validator'}
                     onClick={removeValidator}
-                    disable={!removeButtonEnabled}
+                    disable={!isRemoveButtonEnabled}
                 />
               </Grid>
           </Grid>,

@@ -17,6 +17,8 @@ import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettin
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
+import { getIsMainnet } from '~app/redux/wallet.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 
@@ -36,6 +38,8 @@ const OperatorAccessSettings = () => {
     const isFirstUsage = !operator?.address_whitelist && address === config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
     const btnDisabledCondition = addressError.shouldDisplay || !address || isFirstUsage || address.toString() === operator.address_whitelist?.toString();
     const classes = useStyles({ isPermissionedOperator });
+    const isMainnet = useAppSelector(getIsMainnet);
+    const [isChecked, setIsChecked] = useState(false);
 
     const changeAddressHandler = (e: any) => {
         const { value } = e.target;
@@ -91,7 +95,7 @@ const OperatorAccessSettings = () => {
                                 />
                                 <Typography className={classes.ErrorMessage}>{addressError.errorMessage}</Typography>
                             </Grid>}
-                            <TermsAndConditionsCheckbox>
+                            <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
                                 <PrimaryButton disable={btnDisabledCondition} children={'Update'} submitFunction={updateAddressHandler}/>
                             </TermsAndConditionsCheckbox>
                         </Grid>

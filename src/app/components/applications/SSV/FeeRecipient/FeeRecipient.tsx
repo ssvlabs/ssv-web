@@ -9,13 +9,13 @@ import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getFeeRecipientAddress, setFeeRecipient as setFeeRecipientAccountService } from '~root/services/account.service';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 
 const checkAddressChecksum = (address: string) => {
@@ -33,7 +33,8 @@ const FeeRecipient = () => {
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState('');
-  const { checkedCondition } = useTermsAndConditions();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const [isChecked, setIsChecked] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -92,8 +93,8 @@ const FeeRecipient = () => {
                         />
                         <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
                       </Grid>
-                        <TermsAndConditionsCheckbox>
-                            <PrimaryButton disable={readOnlyState || submitDisable || !checkedCondition} children={'Update'} submitFunction={submitFeeRecipient}/>
+                        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
+                            <PrimaryButton disable={readOnlyState || submitDisable || (isMainnet && !isChecked)} children={'Update'} submitFunction={submitFeeRecipient}/>
                         </TermsAndConditionsCheckbox>
                     </Grid>
                   </Grid>

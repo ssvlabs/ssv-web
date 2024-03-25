@@ -1,38 +1,33 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-import { useStores } from '~app/hooks/useStores';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from './BarMessage.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { clearMessage, getMessageAndSeverity } from '~app/redux/notifications.slice';
+
+const AUTO_HIDE_DURATION = 5000;
 
 const BarMessage = () => {
   const classes = useStyles();
-  classes;
-  const stores = useStores();
-  const notificationsStore: NotificationsStore = stores.Notifications;
-  const snackbarAnchorOrigin: any = { vertical: 'top', horizontal: 'center' };
+  const { message, severity } = useAppSelector(getMessageAndSeverity);
+  const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    notificationsStore.setShowSnackBar(false);
+    dispatch(clearMessage());
   };
 
   return (
     <Snackbar
       onClose={handleClose}
-      anchorOrigin={snackbarAnchorOrigin}
-      open={notificationsStore.showSnackBar}
-      autoHideDuration={notificationsStore.autoHideDuration || 5000}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={!!message}
+      autoHideDuration={AUTO_HIDE_DURATION}
     >
-      <Alert
-        onClose={handleClose}
-        className={classes.messageBar}
-        severity={notificationsStore.messageSeverity}
-      >
-        {notificationsStore.message}
+      <Alert onClose={handleClose} className={classes.messageBar} severity={severity}>
+        {message}
       </Alert>
     </Snackbar>
   );
 };
 
-export default observer(BarMessage);
+export default BarMessage;

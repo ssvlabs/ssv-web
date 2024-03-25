@@ -1,19 +1,18 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { truncateText } from '~lib/utils/strings';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails.styles';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 type Props = {
   gray80?: boolean;
@@ -29,8 +28,6 @@ type Props = {
 
 const OperatorDetails = (props: Props) => {
   const { gray80, operator, withCopy, withoutExplorer, setOpenExplorerRefs, logoSize, nameFontSize, idFontSize, isFullOperatorName } = props;
-  const stores = useStores();
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const classes = useStyles({
     nameFontSize,
     idFontSize,
@@ -41,10 +38,11 @@ const OperatorDetails = (props: Props) => {
   });
   let operatorName = operator?.name;
   const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+  const dispatch = useAppDispatch();
 
   const copyId = () => {
     navigator.clipboard.writeText(operator?.id);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const openExplorer = () => {
@@ -96,4 +94,4 @@ const OperatorDetails = (props: Props) => {
   );
 };
 
-export default observer(OperatorDetails);
+export default OperatorDetails;

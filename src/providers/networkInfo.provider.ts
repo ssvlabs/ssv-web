@@ -83,8 +83,6 @@ const getStoredNetwork = () => {
   return networks[savedNetworkIndex];
 };
 
-const isMainnet = () => getStoredNetwork().networkId === MAINNET_NETWORK_ID;
-
 const currentNetworkName = () => NETWORK_NAMES[getStoredNetwork().networkId];
 
 const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
@@ -107,7 +105,6 @@ export {
   changeNetwork,
   getStoredNetwork,
   getStoredNetworkIndex,
-  isMainnet,
   currentNetworkName,
   testNets,
   getLink,

@@ -1,13 +1,12 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/OperatorId/OperatorId.styles';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 type Props = {
   id: number,
@@ -16,15 +15,13 @@ type Props = {
   withoutExplorer?: boolean,
 };
 
-const OperatorId = (props: Props) => {
-  const stores = useStores();
-  const { id, text, successPage, withoutExplorer } = props;
+const OperatorId = ({ id, text, successPage, withoutExplorer }: Props) => {
   const classes = useStyles({ successPage });
-  const notificationsStore: NotificationsStore = stores.Notifications;
+  const dispatch = useAppDispatch();
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(String(props.id));
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    navigator.clipboard.writeText(String(id));
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const openExplorer = () => {
@@ -45,4 +42,4 @@ const OperatorId = (props: Props) => {
   );
 };
 
-export default observer(OperatorId);
+export default OperatorId;

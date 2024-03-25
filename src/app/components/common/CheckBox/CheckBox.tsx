@@ -1,77 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
-import CheckboxStore from '~app/common/stores/applications/SsvWeb/Checkbox.store';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 
 type CheckboxProps = {
   text: any,
   width?: number,
   height?: number,
-  disable?: boolean,
+  isDisabled?: boolean,
   isChecked?: boolean,
   smallLine?: boolean,
-  onClickCallBack?: any,
   grayBackGround?: boolean,
   withTooltip?: boolean,
   tooltipText?: JSX.Element | string,
-  withoutMarginBottom?: boolean
+  withoutMarginBottom?: boolean,
+  toggleIsChecked: () => void,
 };
 
 const CheckBox = ({
                     width,
                     height,
                     text,
-                    disable,
+                    isDisabled = false,
                     isChecked,
-                    onClickCallBack,
                     grayBackGround,
                     withoutMarginBottom,
                     smallLine,
                     withTooltip,
                     tooltipText,
+                    toggleIsChecked,
                   }: CheckboxProps) => {
-  const stores = useStores();
-  const checkboxStore: CheckboxStore = stores.Checkbox;
-  const [checked, setChecked] = useState(isChecked);
   const classes = useStyles({
     grayBackGround,
-    checked: isChecked ?? checked,
+    checked: isChecked,
     width,
     height,
     withoutMarginBottom,
     smallLine,
   });
-  useEffect(() => {
-    if (!isChecked) {
-      checkboxStore.setCheckboxStateFalse();
-    }
-  }, []);
 
-  const checkAction = () => {
-    if (disable) return;
-    setChecked(!checked);
-    onClickCallBack && onClickCallBack(!checked);
-  };
-
-  if (withTooltip && tooltipText) {
-    return (
-      <AnchorTooltip title={tooltipText} placement={'top'}>
-        <Grid container={!!text} className={classes.CheckBoxWrapper} onClick={checkAction}>
-          <Grid item>
-            <Grid className={classes.BoxWrapper}/>
-          </Grid>
-          <Grid item className={classes.Text}>
-            <Grid>{text}</Grid>
-          </Grid>
-        </Grid>
-      </AnchorTooltip>
-    );
-  }
-
-  return (
-    <Grid container={!!text} className={classes.CheckBoxWrapper} onClick={checkAction}>
+  const Content = (
+    <Grid container={!!text} className={classes.CheckBoxWrapper} onClick={isDisabled ? () => {} : toggleIsChecked}>
       <Grid item>
         <Grid className={classes.BoxWrapper}/>
       </Grid>
@@ -80,6 +49,8 @@ const CheckBox = ({
       </Grid>
     </Grid>
   );
+
+  return withTooltip && tooltipText ? <AnchorTooltip title={tooltipText} placement={'top'}>{Content}</AnchorTooltip> : Content;
 };
 
 export default CheckBox;

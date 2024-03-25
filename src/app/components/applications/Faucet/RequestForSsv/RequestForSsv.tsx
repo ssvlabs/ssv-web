@@ -14,8 +14,9 @@ import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, setIsLoading } from '~app/redux/appState.slice';
-import { currentNetworkName, isMainnet } from '~root/providers/networkInfo.provider';
+import { currentNetworkName } from '~root/providers/networkInfo.provider';
 import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 const RequestForSsv = () => {
   const stores = useStores();
@@ -30,6 +31,7 @@ const RequestForSsv = () => {
   const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
   const [amountToTransfer, setAmountToTransfer] = useState(undefined);
   const isDarkMode = useAppSelector(getIsDarkMode);
+  const isMainnet = useAppSelector(getIsMainnet);
 
   useEffect(() => {
     setError('');
@@ -96,7 +98,7 @@ const RequestForSsv = () => {
             sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
           />
           <PrimaryButton wrapperClass={classes.SubmitButton} children={buttonText} submitFunction={requestForSSV}
-                         disable={isMainnet() || disabled || reachedMaxTransactionPerDay}
+                         disable={isMainnet || disabled || reachedMaxTransactionPerDay}
                          withVerifyConnection={false}/>
         </Grid>,
       ]}

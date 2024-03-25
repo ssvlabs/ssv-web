@@ -39,7 +39,7 @@ const FeeRecipient = () => {
   useEffect(() => {
     const fetchFeeRecipientAddress = async () => {
       const res = await getFeeRecipientAddress({ address: walletStore.accountAddress });
-      setUserInput(res);
+      setUserInput(res || walletStore.accountAddress);
     };
     fetchFeeRecipientAddress();
   }, []);

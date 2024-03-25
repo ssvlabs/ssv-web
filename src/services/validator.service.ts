@@ -42,10 +42,11 @@ const getLiquidationCollateralPerValidator = ({
 
 const validatorsByClusterHash = async (page: number, clusterHash: string, perPage: number = 7): Promise<any> => {
   try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/?&search=${clusterHash}&page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/hash/${clusterHash}/?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
     return await getRequest(url, true);
   } catch (e) {
-    return { clusters: [], pagination: {} };
+    console.log(`Error, Failed to get validators info. ${e}`);
+    return { operators: [], clusters: [], pagination: {} };
   }
 };
 

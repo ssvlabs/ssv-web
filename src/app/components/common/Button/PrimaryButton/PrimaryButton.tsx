@@ -20,7 +20,7 @@ type Props = {
   withoutLoader?: boolean;
   withVerifyConnection?: boolean;
   tooltipText?: string;
-  disableTooltipHoverListener?: boolean;
+  shouldDisableTooltipHoverListener?: boolean;
 };
 
 const PrimaryButton = (props: Props) => {
@@ -28,7 +28,7 @@ const PrimaryButton = (props: Props) => {
   const walletStore: WalletStore = stores.Wallet;
   const {
     tooltipText,
-    disableTooltipHoverListener,
+    shouldDisableTooltipHoverListener,
     children,
     submitFunction,
     disable,
@@ -58,7 +58,7 @@ const PrimaryButton = (props: Props) => {
   return (
     <AnchorTooltip
       title={tooltipText}
-      disableHoverListener={disableTooltipHoverListener}
+      shouldDisableHoverListener={shouldDisableTooltipHoverListener}
       placement="top">
       <div>
         <Button

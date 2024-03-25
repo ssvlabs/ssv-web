@@ -187,7 +187,7 @@ const SingleCluster = () => {
                   </ButtonTextWrapper>}/>}
                 <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
                                tooltipText={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
-                               disableTooltipHoverListener={!hasPrivateOperator}
+                               shouldDisableTooltipHoverListener={!hasPrivateOperator}
                                children={<ButtonTextWrapper>
                                  <ButtonText>
                                    Add Validator

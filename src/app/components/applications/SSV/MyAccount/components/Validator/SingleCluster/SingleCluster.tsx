@@ -8,7 +8,7 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { useStyles } from './SingleCluster.styles';
-import { longStringShorten } from '~lib/utils/strings';
+import { equalsAddresses, longStringShorten } from '~lib/utils/strings';
 import ImageDiv from '~app/components/common/ImageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
@@ -80,17 +80,18 @@ const SingleCluster = () => {
     onChangePage: console.log,
   });
   const cluster = process?.item;
-  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated;
+  const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   useEffect(() => {
     if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     setLoadingValidators(true);
-      validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
-        setClusterValidators(response.validators);
-        setClusterValidatorsPagination(response.pagination);
-        setLoadingValidators(false);
-      });
+    validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
+      setClusterValidators(response.validators);
+      setClusterValidatorsPagination(response.pagination);
+      setLoadingValidators(false);
+    });
   }, []);
 
   const createData = (
@@ -177,13 +178,16 @@ const SingleCluster = () => {
             header={<Grid container className={classes.HeaderWrapper}>
               <Grid item className={classes.Header}>Validators</Grid>
               <Grid className={classes.ButtonsWrapper}>
-                {cluster.validatorCount > 1 && <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
-                  <ButtonText>
-                    Actions
-                  </ButtonText>
-                  <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode={true}/>
-                </ButtonTextWrapper>}/>}
+                {cluster.validatorCount > 1 &&
+                  <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
+                    <ButtonText>
+                      Actions
+                    </ButtonText>
+                    <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode={true}/>
+                  </ButtonTextWrapper>}/>}
                 <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
+                               tooltipText={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
+                               shouldDisableTooltipHoverListener={!hasPrivateOperator}
                                children={<ButtonTextWrapper>
                                  <ButtonText>
                                    Add Validator

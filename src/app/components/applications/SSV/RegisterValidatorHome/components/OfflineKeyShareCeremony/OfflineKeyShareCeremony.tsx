@@ -55,28 +55,24 @@ const OfflineKeyShareCeremony = () => {
           </Grid>
           <Typography className={classes.DkgText}>
             Following the successful completion of the ceremony, several files have been generated and placed in the
-            <DirectoryBadge directoryPath={'ceremony-[timestamp]/[validator-pubkey]'}/>. folder under the directory the
+            <DirectoryBadge directoryPath={'ceremony-[timestamp]/[owner-nonce]-[validator-pubkey]'}/>. folder under the directory the
             command was initiated:
           </Typography>
           <Grid className={classes.DkgNotification}>
             <Grid>
-              <code className={classes.DkgCode}>deposit_data-[validator-pubkey].json</code>
+              <code className={classes.DkgCode}>deposit_data.json</code>
               <Typography className={classes.DkgCodeText}> This file contains the deposit data needed to activate your
                 validator on the Beacon Chain.</Typography>
             </Grid>
             <Grid>
               <code
-                className={classes.DkgCode}>keyshares-[validator-pubkey]-[owner-address]-[owner-nonce]-[instance-id].json</code>
+                className={classes.DkgCode}>keyshares.json</code>
               <Typography className={classes.DkgCodeText}> This file contains the keyshares necessary to register your
                 validator on the SSV Network.</Typography>
             </Grid>
             <Grid>
-              <code className={classes.DkgCode}>instance_id.json</code>
-              <Typography className={classes.DkgCodeText}>This file contains the ceremony identifier, which, in
-                combination with the <code className={classes.DkgCode}>initiator_encrypted_key.json </code> and <code
-                  className={classes.DkgCode}>initiator_password</code> files located in the directory the command was
-                initiated from folder, are vital for resharing your validator with a
-                different set of operators in the future.</Typography>
+              <code className={classes.DkgCode}>proofs.json</code>
+              <Typography className={classes.DkgCodeText}>TThis file contains the signatures indicating that the ceremony was conducted by the cluster operators and is crucial for resharing your validator with a different set of operators in the future. Please ensure to back up this file securely.</Typography>
             </Grid>
             <Grid className={classes.Line}/>
             <Typography className={classes.DkgCodeText}>For ceremonies generating more than one validator, you will find

@@ -10,13 +10,15 @@ import { validatorsByClusterHash } from '~root/services/validator.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
 import { ProcessStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
-import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { SingleCluster } from '~app/model/processes.model';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Spinner from '~app/components/common/Spinner';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import Settings
+  from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -40,6 +42,9 @@ const TableHeaderTitle = styled.h6<{ theme: any, marginLeft?: number }>`
     font-size: 12px;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.gray40};
+    display: flex;
+    gap: 4px;
+    align-items: center;
     margin-left: ${({ marginLeft }) => `${marginLeft}px`};
 `;
 
@@ -101,6 +106,23 @@ const SpinnerWrapper = styled.div`
     align-items: center;
 `;
 
+const NoValidatorImage = styled.div`
+    width: 120px;
+    height: 120px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 50px auto 15px auto;
+    background-image: url(/images/logo/no_validators.svg);
+`;
+const NoValidatorText = styled.div`
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: ${({ theme }) => theme.colors.gray80};
+    margin-bottom: 80px;
+`;
+
 const ValidatorsList = ({
                           onCheckboxClickHandler,
                           selectedValidators,
@@ -109,11 +131,13 @@ const ValidatorsList = ({
                           checkboxTooltipTitle,
                           setIsLoading,
                           isLoading,
+                          withoutSettings,
                         }: {
   onCheckboxClickHandler?: Function,
   selectedValidators?: Record<string, BulkValidatorData>,
   fillSelectedValidators?: Function
   maxValidatorsCount?: number
+  withoutSettings?: boolean
   checkboxTooltipTitle?: JSX.Element | string
   setIsLoading?: Function;
   isLoading?: boolean;
@@ -127,6 +151,7 @@ const ValidatorsList = ({
   const navigate = useNavigate();
   const isDarkMode = useAppSelector(getIsDarkMode);
   const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
+  const [noValidatorsData, setNoValidatorsData] = useState(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     total: cluster.validatorCount,
@@ -146,7 +171,11 @@ const ValidatorsList = ({
       }) => validator.validator));
     } else {
       validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
-        setClusterValidators(response.validators);
+        if (response.validators && response.validators.length) {
+          setClusterValidators(response.validators);
+        } else {
+          setNoValidatorsData(true);
+        }
         if (fillSelectedValidators) fillSelectedValidators(response.validators);
         setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: cluster.validatorCount });
       });
@@ -183,7 +212,22 @@ const ValidatorsList = ({
     dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
-  const openLink = (url: string) => window.open(url, '_blank');
+  if (clusterValidators.length === 0 && !noValidatorsData) {
+    return (
+      <SpinnerWrapper>
+        <Spinner/>
+      </SpinnerWrapper>);
+  }
+
+  if (noValidatorsData) {
+    return (
+      <div>
+        <NoValidatorImage/>
+        <NoValidatorText>No Validators</NoValidatorText>
+      </div>
+    );
+  }
+
   return (
     <TableWrapper id={'scrollableDiv'}>
       <InfiniteScroll
@@ -192,7 +236,7 @@ const ValidatorsList = ({
           return await onChangePage();
         }}
         hasMore={clusterValidators.length !== clusterValidatorsPagination.total}
-        loader={<SpinnerWrapper><Spinner /></SpinnerWrapper>}
+        loader={<SpinnerWrapper><Spinner/></SpinnerWrapper>}
         scrollableTarget={'scrollableDiv'}
       >
         <TableHeader>
@@ -210,7 +254,8 @@ const ValidatorsList = ({
           <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators ? 20 : 0}>Public
             Key</TableHeaderTitle>
           <TableHeaderTitle
-            marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>
+            marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status <ToolTip
+            text={'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'}/></TableHeaderTitle>
         </TableHeader>
         <ValidatorsListWrapper>
           {clusterValidators?.map((validator: IValidator) => {
@@ -235,10 +280,7 @@ const ValidatorsList = ({
                   </PublicKeyWrapper>
                   <Status item={validator}/>
                   <LinksWrapper>
-                    <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
-                          logo={'/images/explorer/'} isDarkMode={isDarkMode}/>
-                    <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)}
-                          logo={'/images/beacon/'} isDarkMode={isDarkMode}/>
+                    <Settings withoutSettings={withoutSettings} validator={validator}/>
                   </LinksWrapper>
                 </ValidatorWrapper>);
             },

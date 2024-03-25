@@ -15,7 +15,7 @@ import { ENABLE_EXIT_FLOW, getLocalStorageFlagValue } from '~lib/utils/developer
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
 
-const Settings = ({ validator }: { validator: any }) => {
+const Settings = ({ validator, withoutSettings }: { validator: any, withoutSettings?: boolean }) => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ const Settings = ({ validator }: { validator: any }) => {
       <Grid container className={classes.ExtraButtonsWrapper}>
         <ImageDiv onClick={()=> openBeaconcha(validator.public_key)} image={'beacon'} width={24} height={24}/>
         <ImageDiv onClick={()=> openExplorer(validator.public_key)} image={'explorer'} width={24} height={24}/>
-        <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>
+        {!withoutSettings && <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>}
         {showSettings && <Grid item className={classes.SettingsWrapper}>
           <Grid ref={settingsRef} container item className={classes.Settings}>
             <Grid  container item className={classes.Button} onClick={() => openLink(config.links.UPDATE_OPERATORS_LINK)} style={{ justifyContent: 'space-between' }}>

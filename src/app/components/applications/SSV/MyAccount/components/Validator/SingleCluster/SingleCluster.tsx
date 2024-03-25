@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SingleCluster.styles';
+import { equalsAddresses, longStringShorten } from '~lib/utils/strings';
+import ImageDiv from '~app/components/common/ImageDiv';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
@@ -19,6 +21,7 @@ import ActionsButton
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
+import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -89,7 +92,9 @@ const SingleCluster = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process?.item;
-  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated;
+  const walletStore: WalletStore = stores.Wallet;
+  const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   const addToCluster = () => {
@@ -136,6 +141,8 @@ const SingleCluster = () => {
                     <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode={true}/>
                   </ButtonTextWrapper>}/>}
                 <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
+                               tooltipText={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
+                               shouldDisableTooltipHoverListener={!hasPrivateOperator}
                                children={<ButtonTextWrapper>
                                  <ButtonText>
                                    Add Validator

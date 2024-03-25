@@ -89,7 +89,7 @@ export default function AnchorElTooltips(props: ToolTipProps) {
             },
           }}
       >
-        <Grid ref={areaRef} onMouseMove={handleMouseMove}>
+        <Grid style={{ maxWidth: '100%' }} ref={areaRef} onMouseMove={handleMouseMove}>
           {children}
         </Grid>
       </LightTooltip>

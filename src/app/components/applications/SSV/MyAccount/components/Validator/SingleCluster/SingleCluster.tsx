@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SingleCluster.styles';
-import { equalsAddresses, longStringShorten } from '~lib/utils/strings';
-import ImageDiv from '~app/components/common/ImageDiv';
+import { equalsAddresses } from '~lib/utils/strings';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
@@ -140,15 +140,20 @@ const SingleCluster = () => {
                     </ButtonText>
                     <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode={true}/>
                   </ButtonTextWrapper>}/>}
-                <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
-                               tooltipText={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
-                               shouldDisableTooltipHoverListener={!hasPrivateOperator}
-                               children={<ButtonTextWrapper>
-                                 <ButtonText>
-                                   Add Validator
-                                 </ButtonText>
-                                 <Icon icon={'/images/plusIcon/plus'} withoutDarkMode={false}/>
-                               </ButtonTextWrapper>} submitFunction={addToCluster}/>
+                <AnchorTooltip
+                  title={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
+                  shouldDisableHoverListener={!hasPrivateOperator}
+                  placement="top">
+                  <div>
+                    <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
+                                   children={<ButtonTextWrapper>
+                                     <ButtonText>
+                                       Add Validator
+                                     </ButtonText>
+                                     <Icon icon={'/images/plusIcon/plus'} withoutDarkMode={false}/>
+                                   </ButtonTextWrapper>} submitFunction={addToCluster}/>
+                  </div>
+                </AnchorTooltip>
               </Grid>
             </Grid>
             <ValidatorsList/>

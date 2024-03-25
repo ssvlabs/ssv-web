@@ -14,6 +14,8 @@ import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { SingleCluster } from '~app/model/processes.model';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Spinner from '~app/components/common/Spinner';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -90,12 +92,30 @@ const Link = styled.div<{ isDarkMode: boolean; logo: string }>`
 }
 `;
 
-const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelectedValidators, maxValidatorsCount, checkboxTooltipTitle }: {
+const SpinnerWrapper = styled.div`
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const ValidatorsList = ({
+                          onCheckboxClickHandler,
+                          selectedValidators,
+                          fillSelectedValidators,
+                          maxValidatorsCount,
+                          checkboxTooltipTitle,
+                          setIsLoading,
+                          isLoading,
+                        }: {
   onCheckboxClickHandler?: Function,
   selectedValidators?: Record<string, BulkValidatorData>,
   fillSelectedValidators?: Function
   maxValidatorsCount?: number
   checkboxTooltipTitle?: JSX.Element | string
+  setIsLoading?: Function;
+  isLoading?: boolean;
 }) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
@@ -112,7 +132,7 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
     total: cluster.validatorCount,
     pages: 1,
     per_page: 5,
-    rowsPerPage: cluster.validatorCount,
+    rowsPerPage: 14,
     onChangePage: console.log,
   });
 
@@ -132,16 +152,30 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
     }
   }, []);
 
-  // TODO: Implement infinite scroll on using this component for single cluster page
-  // const onChangePage = async (newPage: number, rowsPerPage?: number) => {
-  //   validatorsByClusterHash(newPage, clusterStore.getClusterHash(cluster.operators), undefined, clusterValidatorsPagination.total).then((response: any) => {
-  //     setClusterValidators([...clusterValidators, ...response.validators]);
-  //     setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: clusterValidatorsPagination.total + 1 });
-  //     if (selectAllValidators && selectUnselectAllValidators) {
-  //       selectUnselectAllValidators([...clusterValidators, ...response.validators].map((validator: any) => validator.public_key),  setSelectAllValidators);
-  //     }
-  //   });
-  // };
+  const onChangePage = async (selectAll?: boolean) => {
+    if (selectAll && fillSelectedValidators && maxValidatorsCount && (clusterValidators.length >= maxValidatorsCount || clusterValidators.length >= clusterValidatorsPagination.total)) {
+      fillSelectedValidators(clusterValidators, true);
+      setIsLoading && setIsLoading(false);
+      return;
+    }
+    let arraySize = clusterValidators.length;
+    let nextPage = clusterValidatorsPagination.page + 1;
+    let validators = clusterValidators;
+    let pagination = clusterValidatorsPagination;
+    do {
+      const response = await validatorsByClusterHash(nextPage, getClusterHash(cluster.operators, walletStore.accountAddress), 14);
+      validators = [...validators, ...response.validators];
+      pagination = { ...response.pagination };
+      if (fillSelectedValidators) {
+        nextPage += 1;
+        arraySize += response.validators.length;
+        fillSelectedValidators(validators, selectAll);
+      }
+    } while (selectAll && arraySize < clusterValidatorsPagination.total && maxValidatorsCount && arraySize < maxValidatorsCount);
+    setClusterValidators(validators);
+    setClusterValidatorsPagination(pagination);
+    setIsLoading && setIsLoading(false);
+  };
 
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
@@ -149,64 +183,67 @@ const ValidatorsList = ({ onCheckboxClickHandler, selectedValidators, fillSelect
   };
 
   const openLink = (url: string) => window.open(url, '_blank');
-
   return (
-    <TableWrapper>
-      <TableHeader>
-        {fillSelectedValidators && <Checkbox disable={false} grayBackGround text={''}
-                                             withoutMarginBottom
-                                             smallLine
-                                             onClickCallBack={() => {
-                                               fillSelectedValidators(clusterValidators, true);
-                                             }}
-                                             isChecked={selectedValidators && Object.values(selectedValidators).some((validator: {
-                                               validator: IValidator,
-                                               isSelected: boolean
-                                             }) => validator.isSelected)}/>}
-        <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators && 20}>Public Key</TableHeaderTitle>
-        <TableHeaderTitle
-          marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>
-      </TableHeader>
-      <ValidatorsListWrapper id="scrollableDiv">
-        {/*// TODO: Implement infinite scroll on using this component for single cluster page*/}
-        {/*<InfiniteScroll*/}
-        {/*  dataLength={rows.length}*/}
-        {/*  next={async () => {*/}
-        {/*    return await onChangePage(clusterValidatorsPagination.page + 1);*/}
-        {/*  }}*/}
-        {/*  hasMore={true}*/}
-        {/*  loader={<h4>Loading...</h4>}*/}
-        {/*  scrollableTarget="scrollableDiv"*/}
-        {/*>*/}
-        {clusterValidators?.map((validator: IValidator) => {
-            const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
-            const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
-            const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
-            const disableButtonCondition = selectValidatorDisableCondition && !res;
-            return (
-              <ValidatorWrapper>
-                <PublicKeyWrapper>
-                  <PublicKey>
-                    {showingCheckboxCondition && <Checkbox disable={disableButtonCondition} grayBackGround text={''}
-                                                                               withTooltip={disableButtonCondition}
-                                                                               tooltipText={checkboxTooltipTitle}
-                                                                               withoutMarginBottom
-                                                                               onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
-                                                                               isChecked={res}/>}
-                    {longStringShorten(formattedPublicKey, 4, 4)}
-                  </PublicKey>
-                  <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'} isDarkMode={isDarkMode} />
-                </PublicKeyWrapper>
-                <Status item={validator}/>
-                <LinksWrapper>
-                  <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)} logo={'/images/explorer/'} isDarkMode={isDarkMode} />
-                  <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)} logo={'/images/beacon/'} isDarkMode={isDarkMode} />
-                </LinksWrapper>
-              </ValidatorWrapper>);
-          },
-        )}
-        {/*</InfiniteScroll>*/}
-      </ValidatorsListWrapper>
+    <TableWrapper id={'scrollableDiv'}>
+      <InfiniteScroll
+        dataLength={clusterValidators.length}
+        next={async () => {
+          return await onChangePage();
+        }}
+        hasMore={clusterValidators.length !== clusterValidatorsPagination.total}
+        loader={<SpinnerWrapper><Spinner /></SpinnerWrapper>}
+        scrollableTarget={'scrollableDiv'}
+      >
+        <TableHeader>
+          {fillSelectedValidators && <Checkbox disable={isLoading} grayBackGround text={''}
+                                               withoutMarginBottom
+                                               smallLine
+                                               onClickCallBack={() => {
+                                                 setIsLoading && setIsLoading(true);
+                                                 onChangePage(true);
+                                               }}
+                                               isChecked={selectedValidators && Object.values(selectedValidators).some((validator: {
+                                                 validator: IValidator,
+                                                 isSelected: boolean
+                                               }) => validator.isSelected)}/>}
+          <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators ? 20 : 0}>Public
+            Key</TableHeaderTitle>
+          <TableHeaderTitle
+            marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>Status</TableHeaderTitle>
+        </TableHeader>
+        <ValidatorsListWrapper>
+          {clusterValidators?.map((validator: IValidator) => {
+              const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
+              const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
+              const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
+              const disableButtonCondition = selectValidatorDisableCondition && !res || isLoading;
+              return (
+                <ValidatorWrapper>
+                  <PublicKeyWrapper>
+                    <PublicKey>
+                      {showingCheckboxCondition && <Checkbox disable={disableButtonCondition} grayBackGround text={''}
+                                                             withTooltip={disableButtonCondition}
+                                                             tooltipText={checkboxTooltipTitle}
+                                                             withoutMarginBottom
+                                                             onClickCallBack={(isChecked: boolean) => onCheckboxClickHandler(isChecked, formattedPublicKey, clusterValidators)}
+                                                             isChecked={res}/>}
+                      {longStringShorten(formattedPublicKey, 4, 4)}
+                    </PublicKey>
+                    <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'}
+                          isDarkMode={isDarkMode}/>
+                  </PublicKeyWrapper>
+                  <Status item={validator}/>
+                  <LinksWrapper>
+                    <Link onClick={() => openLink(`${config.links.EXPLORER_URL}/validators/${validator.public_key}`)}
+                          logo={'/images/explorer/'} isDarkMode={isDarkMode}/>
+                    <Link onClick={() => openLink(`${getBeaconChainLink()}/validator/${validator.public_key}`)}
+                          logo={'/images/beacon/'} isDarkMode={isDarkMode}/>
+                  </LinksWrapper>
+                </ValidatorWrapper>);
+            },
+          )}
+        </ValidatorsListWrapper>
+      </InfiniteScroll>
     </TableWrapper>
   );
 };

@@ -10,10 +10,11 @@ import { getImage } from '~lib/utils/filePath';
 import LinkText from '~app/components/common/LinkText';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { ProcessStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { ProcessType } from '~app/model/processes.model';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
     & > div > div {
@@ -39,7 +40,7 @@ const ImageWrapper = styled.img<{ hasMarginBottom: boolean }>`
 
 const AdditionText = styled.div`
     width: 100%;
-    font-size: 16px;,
+    font-size: 16px;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.gray80}
 `;
@@ -64,18 +65,25 @@ const POP_UP_DATA = {
   },
 };
 
+const ROUTES_BY_PROCESS = {
+  [ProcessType.Operator]: config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT,
+  [ProcessType.Validator]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT,
+};
+
 const TransactionPendingPopUp = () => {
   const stores = useStores();
   const dispatch = useDispatch();
   const walletStore: WalletStore = stores.Wallet;
+  const processStore: ProcessStore = stores.Process;
   const navigate = useNavigate();
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);
 
   const closeButtonAction = () => {
+    const nextNavigation = processStore.type  ? ROUTES_BY_PROCESS[processStore.type] : config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     dispatch(setIsLoading(false));
     dispatch(setIsShowTxPendingPopup(false));
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+    navigate(nextNavigation);
   };
 
   return (

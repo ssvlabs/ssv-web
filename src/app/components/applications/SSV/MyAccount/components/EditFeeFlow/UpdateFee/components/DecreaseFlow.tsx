@@ -45,7 +45,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
             withoutBorderBottom={true}
             body={[
                 <Grid container className={classes.ChangeFeeWrapper}>
-                    <Typography fontSize={16}>{updated ? 'You have successfully updated your fee. The new fee will take effect immediately.' : 'Your new operator annual fee will be updated to.'}</Typography>
+                    <Typography>{updated ? 'You have successfully updated your fee. The new fee will take effect immediately.' : 'Your new operator annual fee will be updated to.'}</Typography>
                     <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee}/>
                     {!updated && <Grid item className={classes.Notice}>
                        <Grid item className={classes.BulletsWrapper}>

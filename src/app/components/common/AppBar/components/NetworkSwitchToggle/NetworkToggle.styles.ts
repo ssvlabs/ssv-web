@@ -3,27 +3,13 @@ import { Theme } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme: Theme) => ({
     NetworkToggleWrapper: {
-        width: 125,
+        width: 200,
         height: 56,
-        marginRight: 29,
+        marginRight: 15,
         display: 'flex',
         cursor: 'pointer',
         alignItems: 'center',
         justifyContent: 'space-around',
-    },
-    NetworkIcon: {
-        width: 24,
-        height: 24,
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundImage: (props: any) => `url(/images/networks/${props.logo}.svg)`,
-    },
-    NetworkLabel: {
-        fontSize: 16,
-        fontWeight: 600,
-        lineHeight: 1.25,
-        color: theme.colors.gray80,
     },
     OptionsWrapper: {
         zIndex: 999,

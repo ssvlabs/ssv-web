@@ -18,6 +18,8 @@ import ToggleDashboards
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { IOperator } from '~app/model/operator.model';
+import { NotificationsStore } from '~app/common/stores/applications/SsvWeb';
 
 const OperatorDashboard = () => {
   const stores = useStores();
@@ -26,16 +28,21 @@ const OperatorDashboard = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
+  const notificationStore: NotificationsStore = stores.Notifications;
   const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState({});
   const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
 
   const fetchData = async () => {
-    for (const operator of myAccountStore.ownerAddressOperators) {
-      const balance = await operatorStore.getOperatorBalance(operator.id);
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
-      setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
+    try {
+      const promises = myAccountStore.ownerAddressOperators.map((operator: IOperator) => new Promise(async () => {
+        const balance = await operatorStore.getOperatorBalance(operator.id);
+        setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
+      }));
+      await Promise.all(promises);
+    } catch (e: any) {
+      notificationStore.showMessage(e.message, 'error');
     }
   };
 
@@ -62,11 +69,10 @@ const OperatorDashboard = () => {
   };
 
   const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
-
     return createData(
         <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
         <Status item={operator} />,
-        `${operator.performance['30d'] === 0 ? '-' : `${operator.performance['30d'].toFixed(2)  }%`}`,
+        `${operator.validators_count === 0 ? '--' : `${operator.performance['30d'].toFixed(2)  }%`}`,
         // @ts-ignore
         <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
         <SsvAndSubTitle

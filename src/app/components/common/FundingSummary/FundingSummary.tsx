@@ -16,7 +16,8 @@ type Props = {
   days?: number,
   networkCost?: number,
   operatorsCost?: number,
-  liquidationCollateralCost?: number | Decimal,
+  liquidationCollateralCost: number | Decimal,
+  validatorsCount?: number;
 };
 
 const FundingSummeryColumns = {
@@ -39,6 +40,8 @@ const FundingSummary = (props: Props) => {
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
+    const isMultiSharesMode = validatorStore.isMultiSharesMode || props.validatorsCount && props.validatorsCount > 1;
+    const countOfValidators = props.validatorsCount || validatorStore.validatorsCount;
     const process: RegisterValidator = processStore.process as RegisterValidator;
     const daysPeriod = props.days ?? process.fundingPeriod;
     const payments = [
@@ -49,8 +52,6 @@ const FundingSummary = (props: Props) => {
 
     const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
     const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
-    const liquidationCollateralCost = props.liquidationCollateralCost ?? new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-
 
     const paymentsValue = (paymentId: number): number | Decimal => {
       switch (paymentId) {
@@ -59,19 +60,19 @@ const FundingSummary = (props: Props) => {
         case PaymentId.NETWORK_FEE:
           return networkCost;
         case PaymentId.LIQUIDATION_COLLATERAL:
-          return liquidationCollateralCost;
+          return props.liquidationCollateralCost;
         default:
           return 0; // TODO throw exception. handle above.
       }
     };
 
-    const mandatoryColumns = validatorStore.isMultiSharesMode ? Object.values(FundingSummeryColumns) : Object.values(FundingSummeryColumns).filter((flow: string) => flow !== FundingSummeryColumns.FEE && flow !== FundingSummeryColumns.VALIDATORS);
+    const mandatoryColumns = isMultiSharesMode ? Object.values(FundingSummeryColumns) : Object.values(FundingSummeryColumns).filter((flow: string) => flow !== FundingSummeryColumns.FEE && flow !== FundingSummeryColumns.VALIDATORS);
 
     const columnValues = {
       [FundingSummeryColumns.FUNDING_SUMMARY]: (value: number) => payments.find(payment => payment.id === value)?.name,
       [FundingSummeryColumns.FEE]: (value: number) => `${formatNumberToUi(paymentsValue(value))} SSV`,
-      [FundingSummeryColumns.VALIDATORS]: () => validatorStore.validatorsCount,
-      [FundingSummeryColumns.SUBTOTAL]: (value: number) => `${formatNumberToUi(validatorStore.isMultiSharesMode ? ((Number(paymentsValue(value)) * validatorStore.validatorsCount).toFixed(2)) : paymentsValue(value))} SSV`,
+      [FundingSummeryColumns.VALIDATORS]: () => countOfValidators,
+      [FundingSummeryColumns.SUBTOTAL]: (value: number) => `${formatNumberToUi(isMultiSharesMode ? ((Number(paymentsValue(value)) * countOfValidators).toFixed(2)) : paymentsValue(value))} SSV`,
     };
 
     const columnStyles: any = {

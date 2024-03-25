@@ -10,7 +10,7 @@ import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPo
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsShowWalletPopup, setIsShowWalletPopup } from '~app/redux/appState.slice';
-import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
+import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 
 const WalletPopUp = () => {
     const classes = useStyles();

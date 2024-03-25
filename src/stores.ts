@@ -6,12 +6,10 @@ const stores = [
   'Wallet',
   'Process',
   'Cluster',
-  'Checkbox',
   'Operator',
   'Validator',
   'MyAccount',
   'Distribution',
-  'Notifications',
   'OperatorMetadata',
   'DistributionTestnet',
 ];

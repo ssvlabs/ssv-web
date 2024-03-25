@@ -1,15 +1,14 @@
 import config from '~app/common/config';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
-import { useStores } from '~app/hooks/useStores';
 import { IMerkleData } from '~app/model/merkleTree.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getRequest } from '~root/services/httpApi.service';
 import { ethers } from 'ethers';
 import { EIP1193Provider } from '@web3-onboard/core';
+import { AlertColor } from '@mui/material/Alert';
 
-const registerSSVTokenInMetamask = async ({ provider }: { provider: EIP1193Provider }) => {
-  const stores = useStores();
-  const notificationsStore: NotificationsStore = stores.Notifications;
+type NotificationHandler =  ({ message, severity }: { message: string; severity: AlertColor }) => void;
+
+const registerSSVTokenInMetamask = async ({ provider, notificationHandler }: { provider: EIP1193Provider; notificationHandler: NotificationHandler }) => {
   const wrappedProvider = new ethers.providers.Web3Provider(provider, 'any');
   try {
     await wrappedProvider.send('wallet_watchAsset', [{
@@ -20,10 +19,10 @@ const registerSSVTokenInMetamask = async ({ provider }: { provider: EIP1193Provi
         decimals: 18,
       },
     }]);
-    notificationsStore.showMessage('Can not add SSV to wallet!', 'error');
+    notificationHandler({ message: 'Added SSV token to the wallet!', severity: 'success' });
   } catch (error: any) {
     console.error('Can not add SSV token to wallet', error);
-    notificationsStore.showMessage(`Can not add SSV to wallet: ${error.message}`, 'error');
+    notificationHandler({ message: `Failed to add SSV token to the wallet: ${error.message}`, severity: 'error' });
   }
 };
 

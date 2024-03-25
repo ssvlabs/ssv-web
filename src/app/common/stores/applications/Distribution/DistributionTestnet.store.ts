@@ -3,10 +3,11 @@ import { action, computed, observable } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
 import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import merkleTree from '~app/components/applications/Distribution/assets/merkleTreeTestnet.json';
-import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
 import { fromWei } from '~root/services/conversions.service';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { translations } from '~app/common/config';
 
 /**
  * Base store provides singe source of true
@@ -28,7 +29,6 @@ class DistributionTestnetStore extends BaseStore {
     return new Promise(async (resolve) => {
       const contract = this.distributionContract;
       const walletStore: WalletStore = this.getStore('Wallet');
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
       store.dispatch(setIsLoading(true));
       await contract.methods.claim(
         this.rewardIndex,
@@ -50,7 +50,7 @@ class DistributionTestnetStore extends BaseStore {
         })
         .on('error', (error: any) => {
           store.dispatch(setIsLoading(false));
-          notificationsStore.showMessage(error.message, 'error');
+          store.dispatch(setMessageAndSeverity({ message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
           store.dispatch(setIsShowTxPendingPopup(false));
           resolve(false);
         });

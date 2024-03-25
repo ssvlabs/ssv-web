@@ -12,14 +12,14 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import { decodeParameter } from '~root/services/conversions.service';
 import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
 import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 const OperatorConfirmation = () => {
   const stores = useStores();
@@ -27,9 +27,10 @@ const OperatorConfirmation = () => {
   const walletStore: WalletStore = stores.Wallet;
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const { checkedCondition } = useTermsAndConditions();
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
   const dispatch = useAppDispatch();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const [isChecked, setIsChecked] = useState(false);
 
   const disableLoadingStates = () => {
     dispatch(setIsLoading(false));
@@ -123,8 +124,8 @@ const OperatorConfirmation = () => {
                 </Grid>
               </Grid>
               <Grid container item>
-               <TermsAndConditionsCheckbox>
-                 <PrimaryButton disable={!checkedCondition} children={actionButtonText} submitFunction={onRegisterClick}/>
+               <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
+                 <PrimaryButton disable={isMainnet && !isChecked} children={actionButtonText} submitFunction={onRegisterClick}/>
                </TermsAndConditionsCheckbox>
               </Grid>
             </Grid>,

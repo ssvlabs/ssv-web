@@ -38,6 +38,7 @@ class WalletStore extends BaseStore implements Wallet {
   }
 
   async initWallet(wallet: WalletState, connectedChain: ConnectedChain) {
+    await this.resetUser();
     console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< initWallet', wallet, connectedChain);
     this.wallet = wallet;
     const checkedWallet = window.localStorage.getItem(TEST_WALLET_ADDRESS);

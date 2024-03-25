@@ -11,7 +11,6 @@ import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { store } from '~app/store';
@@ -25,6 +24,7 @@ import { getOwnerNonce } from '~root/services/account.service';
 import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 type ClusterDataType = {
   active: boolean;
@@ -151,7 +151,6 @@ class ValidatorStore extends BaseStore {
   }
 
   async removeValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
     const walletStore: WalletStore = this.getStore('Wallet');
@@ -175,7 +174,7 @@ class ValidatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         if (!walletStore.isContractWallet) {
@@ -190,7 +189,6 @@ class ValidatorStore extends BaseStore {
    * Bulk remove validators
    */
   async bulkRemoveValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
     const walletStore: WalletStore = this.getStore('Wallet');
@@ -213,7 +211,7 @@ class ValidatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         if (!walletStore.isContractWallet) {
@@ -228,7 +226,6 @@ class ValidatorStore extends BaseStore {
    * Exit validator
    */
   async exitValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
@@ -250,7 +247,7 @@ class ValidatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         if (!walletStore.isContractWallet) {
@@ -266,7 +263,6 @@ class ValidatorStore extends BaseStore {
    */
   async bulkExitValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
     const walletStore: WalletStore = this.getStore('Wallet');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const contract = getContractByName(EContractName.SETTER);
     store.dispatch(setIsLoading(true));
 
@@ -287,7 +283,7 @@ class ValidatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         if (!walletStore.isContractWallet) {
@@ -348,7 +344,6 @@ class ValidatorStore extends BaseStore {
   }
 
   async bulkRegistration() {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
@@ -391,7 +386,7 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         if (!walletStore.isContractWallet) {
@@ -403,7 +398,6 @@ class ValidatorStore extends BaseStore {
   }
 
   async addNewValidator() {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
     return new Promise(async (resolve) => {
       try {
@@ -448,7 +442,7 @@ class ValidatorStore extends BaseStore {
           action: 'register_tx',
           label: isRejected ? 'rejected' : 'error',
         });
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         if (!walletStore.isContractWallet) {
@@ -460,7 +454,6 @@ class ValidatorStore extends BaseStore {
   }
 
   async reactivateCluster(amount: string) {
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     return new Promise(async (resolve) => {
       try {
         const processStore: ProcessStore = this.getStore('Process');
@@ -505,7 +498,7 @@ class ValidatorStore extends BaseStore {
           action: 'reactivate_cluster',
           label: isRejected ? 'rejected' : 'error',
         });
-        notificationsStore.showMessage(e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -663,7 +656,6 @@ class ValidatorStore extends BaseStore {
    */
   async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
     const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const notificationsStore: NotificationsStore = this.getStore('Notifications');
     const walletStore: WalletStore = this.getStore('Wallet');
 
     return Promise.all([
@@ -677,10 +669,10 @@ class ValidatorStore extends BaseStore {
         }
         resolve(true);
       })
-      .catch((error) => {
+      .catch((e) => {
         store.dispatch(setIsLoading(false));
         if (showError) {
-          notificationsStore.showMessage(error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, 'error');
+          store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         }
         store.dispatch(setIsShowTxPendingPopup(false));
         resolve(false);

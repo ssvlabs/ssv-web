@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 type ToolTipProps = {
   title?: any,
   children: any,
+  shouldDisableHoverListener?: boolean,
   placement:
       | 'bottom-end'
       | 'bottom-start'
@@ -32,7 +33,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
     padding: 10,
     zIndex: 9999,
     fontSize: 12,
-    maxWidth: 600,
+    maxWidth: 474,
     fontWeight: 500,
     lineHeight: 1.62,
     textAlign: 'left',
@@ -51,7 +52,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 }));
 
 export default function AnchorElTooltips(props: ToolTipProps) {
-  const { children, placement, title } = props;
+  const { children, placement, title, shouldDisableHoverListener } = props;
   const positionRef = React.useRef<{ x: number; y: number }>({
     x: 0,
     y: 0,
@@ -72,6 +73,7 @@ export default function AnchorElTooltips(props: ToolTipProps) {
           title={title}
           // style={{ alignItems: alignItems ?? 'center', display: 'flex' }}
           placement={placement ?? 'top'}
+          disableHoverListener={shouldDisableHoverListener}
           arrow
           PopperProps={{
             popperRef,

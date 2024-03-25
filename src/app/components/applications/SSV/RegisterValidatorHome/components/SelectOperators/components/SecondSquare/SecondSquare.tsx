@@ -31,6 +31,8 @@ import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
@@ -108,7 +110,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
     const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
-    setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
+    if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
+      setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
+    }
   }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   useEffect(() => {

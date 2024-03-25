@@ -8,10 +8,11 @@ import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 type Props = {
   header: string,
@@ -26,9 +27,9 @@ const OperatorsFlow = (props: Props) => {
   const classes = useStyles({ mainFlow });
   const processStore: ProcessStore = stores.Process;
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const process: SingleOperator = processStore.getProcess;
   const operator = process?.item;
+  const dispatch = useAppDispatch();
 
   const [showSettings, setShowSettings] = useState(false);
 
@@ -62,7 +63,7 @@ const OperatorsFlow = (props: Props) => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(operator.id);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const goToAccessSettings = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS);

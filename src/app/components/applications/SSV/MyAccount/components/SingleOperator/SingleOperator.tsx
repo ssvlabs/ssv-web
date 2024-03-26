@@ -147,7 +147,7 @@ const SingleOperator = () => {
         {
           key: <Typography>30D Performance</Typography>,
           value: <Grid item container className={classes.ItemWrapper} xs={12}>
-            <Typography className={classes.TableValueText}>{validator30dPerformance === 0 ? '-' : validator30dPerformance}</Typography>
+            <Typography className={classes.TableValueText}>{validators_count === 0 ? '- -' : validator30dPerformance}</Typography>
           </Grid>,
         },
       ], [operator, isDarkMode],

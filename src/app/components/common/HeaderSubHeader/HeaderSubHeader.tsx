@@ -61,6 +61,6 @@ const HeaderSubHeader = ({ title, subtitle, rewardPage, marginBottom, showCloseB
           </HeaderTitleWrapper>}
         {subtitle && <SubHeader rewardPage={rewardPage} marginBottom={marginBottom}>{subtitle}</SubHeader>}
       </Grid>;
-    
+
 
 export default HeaderSubHeader;

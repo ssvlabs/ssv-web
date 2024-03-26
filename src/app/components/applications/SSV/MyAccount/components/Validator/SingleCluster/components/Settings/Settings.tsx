@@ -80,7 +80,7 @@ const Settings = ({ validator, withoutSettings }: { validator: any, withoutSetti
     <Grid container className={classes.ExtraButtonsWrapper}>
       <ImageDiv onClick={() => openBeaconcha(validator.public_key)} image={'beacon'} width={24} height={24}/>
       <ImageDiv onClick={() => openExplorer(validator.public_key)} image={'explorer'} width={24} height={24}/>
-      {!withoutSettings && <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>}
+      <ImageDiv onClick={() => setShowSettings(true)} image={'setting'} width={24} height={24}/>
       {showSettings && <Grid item className={classes.SettingsWrapper}>
         <Grid ref={settingsRef} container item className={classes.Settings}>
           <Grid container item className={classes.Button} onClick={() => openLink(config.links.UPDATE_OPERATORS_LINK)}

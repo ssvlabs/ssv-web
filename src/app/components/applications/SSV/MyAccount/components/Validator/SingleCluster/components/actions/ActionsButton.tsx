@@ -6,7 +6,9 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
+import {
+  useStyles,
+} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
 import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
 
 const ActionsButton = ({ extendClass, children }: { extendClass: string, children: string | JSX.Element }) => {
@@ -50,9 +52,10 @@ const ActionsButton = ({ extendClass, children }: { extendClass: string, childre
       <SecondaryButton children={children} className={extendClass} submitFunction={onButtonClickHandler}/>
       {showActions && <Grid item className={classes.SettingsWrapper}>
         <Grid ref={actionsRef} className={classes.Settings}>
-          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)} style={{ justifyContent: 'space-between' }}>
+          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)}
+                style={{ justifyContent: 'space-between' }}>
             <Grid container item xs style={{ gap: 8, width: '100%' }}>
-              <Grid className={classes.Remove} />
+              <Grid className={classes.Remove}/>
               <Typography>Remove Validators</Typography>
             </Grid>
           </Grid>

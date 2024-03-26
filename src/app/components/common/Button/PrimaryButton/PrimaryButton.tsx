@@ -7,7 +7,6 @@ import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import { useStyles } from './PrimaryButton.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 
 type Props = {
   children: string | JSX.Element;
@@ -19,16 +18,12 @@ type Props = {
   errorButton?: boolean;
   withoutLoader?: boolean;
   withVerifyConnection?: boolean;
-  tooltipText?: string;
-  shouldDisableTooltipHoverListener?: boolean;
 };
 
 const PrimaryButton = (props: Props) => {
   const stores = useStores();
   const walletStore: WalletStore = stores.Wallet;
   const {
-    tooltipText,
-    shouldDisableTooltipHoverListener,
     children,
     submitFunction,
     disable,
@@ -56,23 +51,16 @@ const PrimaryButton = (props: Props) => {
   const isDisabledCondition = disable || appStateIsLoading;
 
   return (
-    <AnchorTooltip
-      title={tooltipText}
-      shouldDisableHoverListener={shouldDisableTooltipHoverListener}
-      placement="top">
-      <div>
-        <Button
-          type="submit"
-          onClick={submitHandler}
-          data-testid={dataTestId}
-          disabled={isDisabledCondition}
-          className={`${isLoadingClassCondition ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
-        >
-          {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
-          {children}
-        </Button>
-      </div>
-    </AnchorTooltip>
+    <Button
+      type="submit"
+      onClick={submitHandler}
+      data-testid={dataTestId}
+      disabled={isDisabledCondition}
+      className={`${isLoadingClassCondition ? classes.Loading : classes.PrimaryButton} ${wrapperClass}`}
+    >
+      {showLoaderCondition && <Spinner errorSpinner={errorButton}/>}
+      {children}
+    </Button>
   );
 };
 

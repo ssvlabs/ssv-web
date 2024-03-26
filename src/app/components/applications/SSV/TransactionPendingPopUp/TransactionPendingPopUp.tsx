@@ -14,7 +14,7 @@ import { ProcessStore, WalletStore } from '~app/common/stores/applications/SsvWe
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { ProcessType } from '~app/model/processes.model';
+import { ProcessType, SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
     & > div > div {
@@ -78,9 +78,16 @@ const TransactionPendingPopUp = () => {
   const navigate = useNavigate();
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);
+  const process: SingleClusterProcess = processStore.getProcess;
+  const cluster = process?.item;
 
   const closeButtonAction = () => {
-    const nextNavigation = processStore.type  ? ROUTES_BY_PROCESS[processStore.type] : config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+    let nextNavigation;
+    if (!processStore.type || processStore.type === ProcessType.Validator && !cluster) {
+      nextNavigation = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
+    } else {
+      nextNavigation = ROUTES_BY_PROCESS[processStore.type];
+    }
     dispatch(setIsLoading(false));
     dispatch(setIsShowTxPendingPopup(false));
     navigate(nextNavigation);
@@ -89,11 +96,12 @@ const TransactionPendingPopUp = () => {
   return (
     <DialogWrapper aria-labelledby="simple-dialog-title" open={isShowTxPendingPopup}>
       <GridWrapper container>
-        <HeaderSubHeader closeButtonAction={closeButtonAction} showCloseButton={walletStore.isContractWallet} title={POP_UP_DATA[`${walletStore.isContractWallet}`].title}
+        <HeaderSubHeader closeButtonAction={closeButtonAction} showCloseButton={walletStore.isContractWallet}
+                         title={POP_UP_DATA[`${walletStore.isContractWallet}`].title}
                          subtitle={POP_UP_DATA[`${walletStore.isContractWallet}`].subTitles}/>
         {walletStore.isContractWallet && <AdditionText>Please return to this web app once approved.</AdditionText>}
         <Grid item>
-          <ImageWrapper src={getImage('ssv-loader.svg')} alt="loader" hasMarginBottom={!walletStore.isContractWallet} />
+          <ImageWrapper src={getImage('ssv-loader.svg')} alt="loader" hasMarginBottom={!walletStore.isContractWallet}/>
         </Grid>
         {!walletStore.isContractWallet && <Grid item container style={{ marginBottom: 20 }}>
           <Grid item xs>
@@ -101,7 +109,8 @@ const TransactionPendingPopUp = () => {
           </Grid>
           <AddressKeyInput whiteBackgroundColor withCopy address={txHash}/>
         </Grid>}
-        {!walletStore.isContractWallet && <LinkText text={'View on Etherscan'} link={`${getEtherScanLink()}/tx/${txHash}`}/>}
+        {!walletStore.isContractWallet &&
+          <LinkText text={'View on Etherscan'} link={`${getEtherScanLink()}/tx/${txHash}`}/>}
       </GridWrapper>
     </DialogWrapper>
   );

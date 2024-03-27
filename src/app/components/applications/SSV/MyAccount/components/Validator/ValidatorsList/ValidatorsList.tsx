@@ -9,7 +9,7 @@ import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
-import { ProcessStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
@@ -19,6 +19,7 @@ import Spinner from '~app/components/common/Spinner';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import Settings
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const TableWrapper = styled.div`
     margin-top: 12px;
@@ -142,8 +143,8 @@ const ValidatorsList = ({
   setIsLoading?: Function;
   isLoading?: boolean;
 }) => {
+  const accountAddress = useAppSelector(getAccountAddress);
   const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process?.item;
@@ -170,7 +171,7 @@ const ValidatorsList = ({
         isSelected: boolean
       }) => validator.validator));
     } else {
-      validatorsByClusterHash(1, getClusterHash(cluster.operators, walletStore.accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
+      validatorsByClusterHash(1, getClusterHash(cluster.operators, accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
         if (response.validators && response.validators.length) {
           setClusterValidators(response.validators);
         } else {
@@ -193,7 +194,7 @@ const ValidatorsList = ({
     let validators = clusterValidators;
     let pagination = clusterValidatorsPagination;
     do {
-      const response = await validatorsByClusterHash(nextPage, getClusterHash(cluster.operators, walletStore.accountAddress), 14);
+      const response = await validatorsByClusterHash(nextPage, getClusterHash(cluster.operators, accountAddress), 14);
       validators = [...validators, ...response.validators];
       pagination = { ...response.pagination };
       if (fillSelectedValidators) {

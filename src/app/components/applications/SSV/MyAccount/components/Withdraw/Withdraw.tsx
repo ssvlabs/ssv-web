@@ -10,17 +10,19 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/OperatorFlow';
 import ValidatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/ValidatorFlow';
 import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
-import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterBalance } from '~root/services/cluster.service';
 import { SingleOperator, SingleCluster } from '~app/model/processes.model';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 let interval: NodeJS.Timeout;
 
 const Withdraw = () => {
+  const accountAddress = useAppSelector(getAccountAddress);
   const stores = useStores();
   const classes = useStyles();
   const processStore: ProcessStore = stores.Process;
-  const walletStore: WalletStore = stores.Wallet;
   const ssvStore: SsvStore = stores.SSV;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
@@ -29,7 +31,7 @@ const Withdraw = () => {
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       interval = setInterval(async () => {
-        const balance = await getClusterBalance(processItem.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true);
+        const balance = await getClusterBalance(processItem.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
       }, 2000);
       return () => clearInterval(interval);

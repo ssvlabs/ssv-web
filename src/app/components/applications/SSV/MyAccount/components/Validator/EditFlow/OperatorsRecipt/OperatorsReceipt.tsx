@@ -11,7 +11,6 @@ import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
 import Checkbox from '~app/components/common/CheckBox';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { addNumber, formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -23,9 +22,10 @@ import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/OperatorsRecipt/OperatorsReceipt.style';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 type Props = {
   operators: any,
@@ -34,17 +34,17 @@ type Props = {
   currentOperators?: boolean,
 };
 const OperatorsReceipt = (props: Props) => {
-  const stores = useStores();
-  const navigate = useNavigate();
-  const location: any = useLocation();
-  const { operators, header, previousOperators, currentOperators } = props;
-  const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
-  const validatorStore: ValidatorStore = stores.Validator;
-  const classes = useStyles({ currentOperators });
   const [isChecked, setIsChecked] = useState(false);
   const [openRedirect, setOpenRedirect] = useState(false);
+  const navigate = useNavigate();
+  const location: any = useLocation();
   const dispatch = useAppDispatch();
+  const accountAddress = useAppSelector(getAccountAddress);
+  const stores = useStores();
+  const { operators, header, previousOperators, currentOperators } = props;
+  const ssvStore: SsvStore = stores.SSV;
+  const validatorStore: ValidatorStore = stores.Validator;
+  const classes = useStyles({ currentOperators });
 
   if (location.state?.success) {
     location.state = null;
@@ -61,7 +61,7 @@ const OperatorsReceipt = (props: Props) => {
 
   const newOperatorsFee = operators.reduce(
     (previousValue: number, currentValue: IOperator) => {
-      if (currentValue.ownerAddress !== walletStore.accountAddress) {
+      if (currentValue.ownerAddress !== accountAddress) {
         // eslint-disable-next-line no-param-reassign
         previousValue += fromWei(currentValue.fee);
       }

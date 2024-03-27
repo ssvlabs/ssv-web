@@ -11,13 +11,9 @@ const getOwnerAddressCost = async (ownerAddress: string, skipRetry?: boolean): P
   }
 };
 
-const clustersByOwnerAddress = async (query: string, skipRetry?: boolean): Promise<any> => {
-  try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
-    return await getRequest(url, skipRetry);
-  } catch (e) {
-    return { clusters: [], pagination: {} };
-  }
+const clustersByOwnerAddress = async (query: string): Promise<any> => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
+  return await getRequest(url);
 };
 
 const getLiquidationCollateralPerValidator = ({

@@ -26,7 +26,6 @@ type ButtonData = {
   },
   buttonProps: {
     dataTestId: string,
-    withVerifyConnection?: boolean,
     children: string,
     withoutBackgroundColor?: boolean,
     noCamelCase?: boolean,
@@ -53,7 +52,6 @@ const GenerateKeyShares = () => {
         },
         buttonProps: {
           dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE.toLowerCase(),
-          withVerifyConnection: true,
           children: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE,
           submitFunction: () => {
             validatorStore.keyStoreFile = null;
@@ -68,7 +66,6 @@ const GenerateKeyShares = () => {
         },
         buttonProps: {
           dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE.toLowerCase(),
-          withVerifyConnection: true,
           children: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE,
           submitFunction: () => {
             validatorStore.keyShareFile = null;
@@ -82,7 +79,6 @@ const GenerateKeyShares = () => {
         },
         buttonProps: {
           dataTestId: 'secondRegister',
-          withVerifyConnection: true,
           withoutBackgroundColor: true,
           noCamelCase: true,
           children: translations.VALIDATOR.GENERATE_KEY_SHARES.ALREADY_HAVE_KEY_SHARES,

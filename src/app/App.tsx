@@ -16,7 +16,7 @@ import { GlobalStyle } from '~app/globalStyle';
 import BarMessage from '~app/components/common/BarMessage';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
-import { initOnboardOptions } from '~lib/utils/onboardHelper';
+import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { AppTheme } from '~root/Theme';

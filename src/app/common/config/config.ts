@@ -238,7 +238,7 @@ const DEFAULT_PAGINATION = {
   page: 1,
   pages: 1,
   total: 0,
-  per_page: 8,
+  per_page: 10,
 };
 
 export { HOLESKY_RPC_URL, GOERLI_RPC_URL, MAINNET_RPC_URL, DEFAULT_PAGINATION };

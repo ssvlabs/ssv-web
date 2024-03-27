@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -6,9 +6,7 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import notifyService from '~root/services/notify.service';
 import { getClusterData, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb/index';
 import { SingleCluster, SingleOperator } from '~app/model/processes.model';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
@@ -43,7 +41,7 @@ class SsvStore extends BaseStore {
       walletSsvBalance: observable,
       approvedAllowance: observable,
       checkAllowance: action.bound,
-      getNetworkFeeAndLiquidationCollateralParams: action.bound,
+      getNetworkFeeAndLiquidationCollateral: action.bound,
       getRemainingDays: action.bound,
       requestAllowance: action.bound,
       getAccountBurnRate: action.bound,
@@ -80,9 +78,9 @@ class SsvStore extends BaseStore {
   async initUser() {
     this.clearUserSyncInterval();
       console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateralParams, 86400000); // once in 24 hours
+      this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateral, 86400000); // once in 24 hours
       this.accountInterval = setInterval(this.getBalanceFromSsvContract, 10000);
-      await this.getNetworkFeeAndLiquidationCollateralParams();
+      await this.getNetworkFeeAndLiquidationCollateral();
       await this.getBalanceFromSsvContract();
   }
 
@@ -98,17 +96,18 @@ class SsvStore extends BaseStore {
   async deposit(amount: string) {
     return new Promise<boolean>(async (resolve) => {
       const processStore: ProcessStore = this.getStore('Process');
-      const walletStore: WalletStore = this.getStore('Wallet');
+      const isContractWallet = store.getState().walletState.isContractWallet;
+      const accountAddress = store.getState().walletState.accountAddress;
       const process: SingleCluster = processStore.getProcess;
       const cluster = process.item;
       const contract = getContractByName(EContractName.SETTER);
       const operatorsIds = cluster.operators.map((operator: {
         id: any;
       }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
-      const clusterData = await getClusterData(getClusterHash(cluster.operators, walletStore.accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
+      const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
       const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
-      const tx = await contract.deposit(walletStore.accountAddress, operatorsIds, ssvAmount, clusterData);
-      if (tx.hash && walletStore.isContractWallet) {
+      const tx = await contract.deposit(accountAddress, operatorsIds, ssvAmount, clusterData);
+      if (tx.hash && isContractWallet) {
         store.dispatch(setIsShowTxPendingPopup(true));
         resolve(true);
       } else {
@@ -138,10 +137,10 @@ class SsvStore extends BaseStore {
   async getBalanceFromSsvContract(): Promise<any> {
     console.warn('getBalanceFromSsvContract before');
     try {
-      const walletStore: WalletStore = this.getStore('Wallet');
       const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
       if (!ssvContract) return;
-      const balance = await ssvContract.balanceOf(walletStore.accountAddress);
+      const accountAddress = store.getState().walletState.accountAddress;
+      const balance = await ssvContract.balanceOf(accountAddress);
       this.walletSsvBalance = parseFloat(String(fromWei(balance)));
       console.warn('getBalanceFromSsvContract after');
     } catch (e) {
@@ -157,7 +156,8 @@ class SsvStore extends BaseStore {
     return new Promise<boolean>(async (resolve) => {
       try {
         const processStore: ProcessStore = this.getStore('Process');
-        const walletStore: WalletStore = this.getStore('Wallet');
+        const accountAddress = store.getState().walletState.accountAddress;
+        const isContractWallet = store.getState().walletState.isContractWallet;
         const process: any = processStore.process;
         // const eventFlow = operatorFlow ? GasGroup.WITHDRAW_OPERATOR_BALANCE : GasGroup.WITHDRAW_CLUSTER_BALANCE;
         const contract = getContractByName(EContractName.SETTER);
@@ -171,12 +171,12 @@ class SsvStore extends BaseStore {
           const operatorsIds = cluster.operators.map((operator: {
             id: any;
           }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
-          const clusterData = await getClusterData(getClusterHash(cluster.operators, walletStore.accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
+          const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
           // @ts-ignore
           const newBalance = fromWei(cluster.balance) - Number(amount);
           if (getClusterRunWay({ ...process.item, balance: toWei(newBalance) }, this.liquidationCollateralPeriod, this.minimumLiquidationCollateral) <= 0) {
-            tx = await contract.liquidate(walletStore.accountAddress, operatorsIds, clusterData);
-            if (tx.hash && walletStore.isContractWallet) {
+            tx = await contract.liquidate(accountAddress, operatorsIds, clusterData);
+            if (tx.hash && isContractWallet) {
               store.dispatch(setIsShowTxPendingPopup(true));
               resolve(true);
             } else {
@@ -188,7 +188,7 @@ class SsvStore extends BaseStore {
             resolve(result);
           } else {
             tx = await contract.withdraw(operatorsIds, prepareSsvAmountToTransfer(toWei(amount)), clusterData);
-            if (tx.hash && walletStore.isContractWallet) {
+            if (tx.hash && isContractWallet) {
               store.dispatch(setIsShowTxPendingPopup(true));
               resolve(true);
             } else {
@@ -205,7 +205,7 @@ class SsvStore extends BaseStore {
           const operatorId = operator.id;
           const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
           tx = await contract.withdrawOperatorEarnings(operatorId, ssvAmount);
-          if (tx.hash && walletStore.isContractWallet) {
+          if (tx.hash && isContractWallet) {
             store.dispatch(setIsShowTxPendingPopup(true));
             resolve(true);
           } else {
@@ -290,11 +290,11 @@ class SsvStore extends BaseStore {
    */
   async checkAllowance(): Promise<void> {
     try {
-      const walletStore: WalletStore = this.getStore('Wallet');
+      const accountAddress = store.getState().walletState.accountAddress;
       const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
       if (!ssvContract) return;
       console.warn('checkAllowance before');
-      const allowance = await ssvContract.allowance(walletStore.accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
+      const allowance = await ssvContract.allowance(accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
       this.approvedAllowance = allowance || 0;
       console.warn('checkAllowance after');
     } catch (e) {
@@ -331,8 +331,8 @@ class SsvStore extends BaseStore {
     }));
   }
 
-  async getNetworkFeeAndLiquidationCollateralParams() {
-    console.warn('getNetworkFeeAndLiquidationCollateralParams called');
+  async getNetworkFeeAndLiquidationCollateral() {
+    console.warn('getNetworkFeeAndLiquidationCollateral called');
     try {
       const contract = getContractByName(EContractName.GETTER);
       if (!contract) return;
@@ -349,7 +349,7 @@ class SsvStore extends BaseStore {
         this.minimumLiquidationCollateral = fromWei(await contract.getMinimumLiquidationCollateral());
       }
     } catch (e) {
-      console.warn('getNetworkFeeAndLiquidationCollateralParams error', e);
+      console.warn('getNetworkFeeAndLiquidationCollateral error', e);
     }
   }
 
@@ -358,9 +358,9 @@ class SsvStore extends BaseStore {
    */
   async getAccountBurnRate(): Promise<void> {
     try {
-      const walletStore: WalletStore = this.getStore('Wallet');
+      const accountAddress = store.getState().walletState.accountAddress;
       const contract = getContractByName(EContractName.GETTER);
-      const burnRate = await contract.getAddressBurnRate(walletStore.accountAddress);
+      const burnRate = await contract.getAddressBurnRate(accountAddress);
       this.accountBurnRate = fromWei(burnRate);
     } catch (e: any) {
       // TODO: handle error

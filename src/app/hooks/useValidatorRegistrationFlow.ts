@@ -96,7 +96,7 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
 };
 
 const validatorRegistrationFlow = (currentRoute: string) => {
-  const getMaxValidatorsCountPerRegistration = (clusterSize: number, walletLabel: string = '') => {
+  const getMaxValidatorsCountPerRegistration = (clusterSize: number) => {
     let maximumCount;
     if (isBulkMode(EBulkMode.SINGLE)) {
       maximumCount = config.GLOBAL_VARIABLE.MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION;

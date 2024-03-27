@@ -19,32 +19,32 @@ import { fromWei, toWei } from '~root/services/conversions.service';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
 import { store } from '~app/store';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 
 const Deposit = () => {
-  const stores = useStores();
+  const [inputValue, setInputValue] = useState('');
+  const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
   const classes = useStyles();
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
+  const isMainnet = useAppSelector(getIsMainnet);
+  const dispatch = useAppDispatch();
+  const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
-  const walletStore: WalletStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
-  const [inputValue, setInputValue] = useState('');
-  const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
-  const isMainnet = useAppSelector(getIsMainnet);
-  const [isChecked, setIsChecked] = useState(false);
-  const dispatch = useAppDispatch();
 
   async function depositSsv() {
     dispatch(setIsLoading(true));
     await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
-      cluster.balance = await getClusterBalance(cluster.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+      cluster.balance = await getClusterBalance(cluster.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
@@ -69,7 +69,7 @@ const Deposit = () => {
     });
     setInputValue('');
     dispatch(setIsLoading(false));
-    if (!walletStore.isContractWallet) {
+    if (!isContractWallet) {
       store.dispatch(setIsShowTxPendingPopup(false));
     }
   }

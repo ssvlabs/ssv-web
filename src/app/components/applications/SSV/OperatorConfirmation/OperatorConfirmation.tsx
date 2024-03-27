@@ -18,19 +18,18 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 
 const OperatorConfirmation = () => {
+  const [isChecked, setIsChecked] = useState(false);
+  const [actionButtonText, setActionButtonText] = useState('Register Operator');
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const isContractWallet = useAppSelector(getIsContractWallet);
+  const isMainnet = useAppSelector(getIsMainnet);
   const stores = useStores();
   const classes = useStyles();
-  const walletStore: WalletStore = stores.Wallet;
-  const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const [actionButtonText, setActionButtonText] = useState('Register Operator');
-  const dispatch = useAppDispatch();
-  const isMainnet = useAppSelector(getIsMainnet);
-  const [isChecked, setIsChecked] = useState(false);
 
   const disableLoadingStates = () => {
     dispatch(setIsLoading(false));
@@ -58,7 +57,7 @@ const OperatorConfirmation = () => {
                 ...operatorStore.newOperatorKeys,
                 id: operator.data.id,
               };
-              if (!walletStore.isContractWallet){
+              if (!isContractWallet){
                 disableLoadingStates();
                 navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
               }

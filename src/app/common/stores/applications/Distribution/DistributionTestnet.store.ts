@@ -1,7 +1,6 @@
 import { Contract } from 'ethers';
 import { action, computed, observable } from 'mobx';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import merkleTree from '~app/components/applications/Distribution/assets/merkleTreeTestnet.json';
 import { fromWei } from '~root/services/conversions.service';
 import { store } from '~app/store';
@@ -28,14 +27,14 @@ class DistributionTestnetStore extends BaseStore {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       const contract = this.distributionContract;
-      const walletStore: WalletStore = this.getStore('Wallet');
+      const accountAddress = store.getState().walletState.accountAddress;
       store.dispatch(setIsLoading(true));
       await contract.methods.claim(
         this.rewardIndex,
         this.userAddress,
         String(this.rewardAmount),
         this.rewardMerkleProof,
-      ).send({ from: walletStore.accountAddress })
+      ).send({ from: accountAddress })
         .on('receipt', async (receipt: any) => {
           console.log(receipt);
           store.dispatch(setIsLoading(false));
@@ -72,8 +71,8 @@ class DistributionTestnetStore extends BaseStore {
     const contract = this.distributionContract;
     // @ts-ignore
     const merkleTreeAddresses = Object.keys(merkleTree.claims);
-    const walletStore: WalletStore = this.getStore('Wallet');
-    const ownerAddress = merkleTreeAddresses.filter(address => address.toLowerCase() === walletStore.accountAddress.toLowerCase());
+    const accountAddress = store.getState().walletState.accountAddress;
+    const ownerAddress = merkleTreeAddresses.filter(address => address.toLowerCase() === accountAddress.toLowerCase());
     if (!ownerAddress.length) return;
     // @ts-ignore
     const user = merkleTree.claims[ownerAddress[0]];
@@ -86,9 +85,9 @@ class DistributionTestnetStore extends BaseStore {
     await this.cleanState();
     // @ts-ignore
     const merkleTreeAddresses = Object.keys(merkleTree.claims);
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const accountAddress = store.getState().walletState.accountAddress;
     merkleTreeAddresses.forEach((address: string) => {
-      if (address.toLowerCase() === walletStore.accountAddress.toLowerCase()) {
+      if (address.toLowerCase() === accountAddress.toLowerCase()) {
         // @ts-ignore
         const merkleTreeUser = merkleTree.claims[address];
         this.userAddress = address;

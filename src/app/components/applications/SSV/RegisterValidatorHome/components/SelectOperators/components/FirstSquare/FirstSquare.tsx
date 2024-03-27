@@ -19,7 +19,6 @@ import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
@@ -38,6 +37,8 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,
@@ -45,20 +46,20 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   setClusterSize: Function,
   clusterBox: number[]
 }) => {
-  const stores = useStores();
   const [loading, setLoading] = useState(false);
-  const classes = useStyles({ loading });
-  const wrapperRef = useRef(null);
-  const scrollRef: any = useRef(null);
-  const walletStore: WalletStore = stores.Wallet;
   const [sortBy, setSortBy] = useState('');
-  const operatorStore: OperatorStore = stores.Operator;
   const [filterBy, setFilterBy] = useState([]);
   const [sortOrder, setSortOrder] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
   const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
+  const accountAddress = useAppSelector(getAccountAddress);
+  const wrapperRef = useRef(null);
+  const scrollRef: any = useRef(null);
+  const classes = useStyles({ loading });
+  const stores = useStores();
+  const operatorStore: OperatorStore = stores.Operator;
 
   const headers = [
     { type: '', displayName: '' },
@@ -159,7 +160,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       const hasValidators = operator.validators_count !== 0;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
       const reachedMaxValidators = operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count);
-      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress);
+      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, accountAddress);
       const disabled = isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;

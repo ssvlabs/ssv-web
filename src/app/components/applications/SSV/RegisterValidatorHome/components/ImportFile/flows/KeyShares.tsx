@@ -24,7 +24,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
@@ -38,7 +38,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
@@ -46,15 +46,16 @@ import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
+import { getAccountAddress, getWalletLabel } from '~app/redux/wallet.slice';
 
 const KeyShareFlow = () => {
+  const accountAddress = useAppSelector(getAccountAddress);
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
     const location = useLocation();
     const inputRef = useRef(null);
     const removeButtons = useRef(null);
-    const walletStore: WalletStore = stores.Wallet;
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const ssvStore: SsvStore = stores.SSV;
@@ -135,7 +136,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
         }
         const validators: Record<string, ValidatorType> = createValidatorsRecord(keyShareMulti);
-        const ownerNonce = await getOwnerNonce({ address: walletStore.accountAddress });
+        const ownerNonce = await getOwnerNonce({ address: accountAddress });
 
         if (ownerNonce === undefined || ownerNonce === null) {
           // TODO: add proper error handling
@@ -145,7 +146,7 @@ const KeyShareFlow = () => {
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
             const res = await getValidator(validator.publicKey, true);
-            if (res && equalsAddresses(res.owner_address, walletStore.accountAddress)) {
+            if (res && equalsAddresses(res.owner_address, accountAddress)) {
               validators[`0x${res.public_key}`].registered = true;
             }
             if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
@@ -163,7 +164,7 @@ const KeyShareFlow = () => {
         let currentNonce = ownerNonce;
         let incorrectNonceFlag = false;
         let warningTextMessage = '';
-        let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, walletStore.wallet?.label) ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration(operatorStore.clusterSize, walletStore.wallet?.label);
+        let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize) ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration(operatorStore.clusterSize);
         let previousSmallCount = validatorStore.validatorsCount;
 
         const operatorsData: SelectedOperatorData[] = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => {
@@ -182,7 +183,7 @@ const KeyShareFlow = () => {
             warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
             hasError = true;
           }
-          if (operator.address_whitelist && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST){
+          if (operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST){
             warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
             setHasPermissionedOperator(true);
             hasError = true;
@@ -219,7 +220,7 @@ const KeyShareFlow = () => {
           }
           if (!validatorsArray[i].registered && !incorrectOwnerNonceCondition) {
             await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
-              ownerAddress: walletStore.accountAddress,
+              ownerAddress: accountAddress,
               ownerNonce: currentNonce,
               publicKey: validatorsArray[i].publicKey,
             });
@@ -388,7 +389,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },

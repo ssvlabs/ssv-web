@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
-import { toChecksumAddress } from 'web3-utils';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
@@ -14,22 +11,13 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getFeeRecipientAddress, setFeeRecipient as setFeeRecipientAccountService } from '~root/services/account.service';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
-import { getIsMainnet } from '~app/redux/wallet.slice';
-
-
-const checkAddressChecksum = (address: string) => {
-  try {
-    return toChecksumAddress(address) === address;
-  } catch (e) {
-    return false;
-  }
-};
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { checkAddressChecksum } from '~lib/utils/strings';
 
 const FeeRecipient = () => {
-  const stores = useStores();
   const classes = useStyles();
-  const walletStore: WalletStore = stores.Wallet;
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState('');
@@ -39,23 +27,22 @@ const FeeRecipient = () => {
 
   useEffect(() => {
     const fetchFeeRecipientAddress = async () => {
-      const res = await getFeeRecipientAddress({ address: walletStore.accountAddress });
-      setUserInput(res || walletStore.accountAddress);
+      const res = await getFeeRecipientAddress({ address: accountAddress });
+      setUserInput(res || accountAddress);
     };
     fetchFeeRecipientAddress();
   }, []);
 
   const submitFeeRecipient = async () => {
     dispatch(setIsLoading(true));
-    await setFeeRecipientAccountService({ feeRecipientAddress: userInput, isContractWallet: walletStore.isContractWallet });
+    await setFeeRecipientAccountService({ feeRecipientAddress: userInput, isContractWallet });
     dispatch(setIsLoading(false));
   };
 
   const setFeeRecipient = (e: any) => {
     const textInput = e.target.value.trim();
     try {
-      const checksumInput = toChecksumAddress(textInput);
-      const isChecksumAddress = checkAddressChecksum(checksumInput);
+      const isChecksumAddress = checkAddressChecksum(textInput);
       setIsAddressValid(isChecksumAddress);
     } catch {
       setIsAddressValid(false);
@@ -104,4 +91,4 @@ const FeeRecipient = () => {
   );
 };
 
-export default observer(FeeRecipient);
+export default FeeRecipient;

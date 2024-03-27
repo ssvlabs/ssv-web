@@ -1,6 +1,6 @@
 import { Contract } from 'ethers';
 import { store } from '~app/store';
-import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
 import { executeAfterEventV2 } from '~root/services/events.service';
@@ -60,7 +60,7 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
       const event: boolean = receipt.hasOwnProperty('events');
       if (event) {
         let finishExecuteData = '';
-        if (methodType === TransactionMethod.RegisterValidator || methodType ===  TransactionMethod.BulkRegisterValidator || methodType ===  TransactionMethod.ReactivateCluster || methodType ===  TransactionMethod.UpdateValidator) {
+        if (methodType === TransactionMethod.RegisterValidator || methodType === TransactionMethod.BulkRegisterValidator || methodType === TransactionMethod.ReactivateCluster || methodType === TransactionMethod.UpdateValidator) {
           finishExecuteData = receipt.transactionHash;
         }
         if (methodType === TransactionMethod.RemoveValidator) {
@@ -88,6 +88,10 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
     return false;
   } finally {
     await callbackAfterExecution();
+    if (!isContractWallet) {
+      store.dispatch(setIsLoading(false));
+      store.dispatch(setIsShowTxPendingPopup(false));
+    }
   }
 };
 

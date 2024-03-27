@@ -21,7 +21,8 @@ import ActionsButton
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -92,8 +93,8 @@ const SingleCluster = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process?.item;
-  const walletStore: WalletStore = stores.Wallet;
-  const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, walletStore.accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  const accountAddress = useAppSelector(getAccountAddress);
+  const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 

@@ -11,16 +11,13 @@ import { getTransactionLink } from '~root/providers/networkInfo.provider';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getTxHash } from '~app/redux/appState.slice';
 import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
-import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
-import { useStores } from '~app/hooks/useStores';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getIsMainnet, getWalletProvider } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { AlertColor } from '@mui/material/Alert';
 
 const Success = () => {
   const classes = useStyles();
-  const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
+  const provider = useAppSelector(getWalletProvider);
   const txHash = useAppSelector(getTxHash);
   const isMainnet = useAppSelector(getIsMainnet);
   const dispatch = useAppDispatch();
@@ -49,7 +46,7 @@ const Success = () => {
             subtitle={<span>Thank you for joining the SSV network's {isMainnet ? 'Mainnet' : 'Testnet'} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
           />
           <Grid item container className={classes.AddSsvToWallet}
-            onClick={() => registerSSVTokenInMetamask({ provider: walletStore.wallet.provider, notificationHandler })}>
+            onClick={() => provider && registerSSVTokenInMetamask({ provider, notificationHandler })}>
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>

@@ -17,22 +17,22 @@ import {
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading, setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { RegisterOperator } from '~app/model/processes.model';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const RemoveOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const processStore: ProcessStore = stores.Process;
-  const walletStore: WalletStore = stores.Wallet;
   const operatorStore: OperatorStore = stores.Operator;
   const process: RegisterOperator = processStore.process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(getIsLoading);
-  const classes = useStyles({ isLoading });
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const isContractWallet = useAppSelector(getIsContractWallet);
+  const classes = useStyles({ isLoading });
 
   useEffect(() => {
     if (!process.item) return navigate(strategyRedirect);
@@ -48,7 +48,7 @@ const RemoveOperator = () => {
     dispatch(setIsLoading(false));
     if (isRemoved) {
       myAccountStore.getOwnerAddressOperators({ forcePage: 1 }).finally(() => {
-        if (!walletStore.isContractWallet) {
+        if (!isContractWallet) {
           navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }
       });

@@ -43,7 +43,7 @@ const OfflineKeyShareCeremony = lazy(() => import('~app/components/applications/
 const ConfirmOperatorsChange = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/EditFlow/ConfirmOperatorsChange'));
 const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
 
-const Routes: any = () => {
+const SsvWebRoutes: any = () => {
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: any = [
@@ -133,4 +133,4 @@ const Routes: any = () => {
   );
 };
 
-export default Routes;
+export default SsvWebRoutes;

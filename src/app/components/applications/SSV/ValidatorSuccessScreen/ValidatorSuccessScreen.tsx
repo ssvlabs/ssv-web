@@ -14,23 +14,23 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterHash } from '~root/services/cluster.service';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const ValidatorSuccessScreen = () => {
+  const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const accountAddress = useAppSelector(getAccountAddress);
+  const timeoutRef = useRef<any>(null);
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const buttonText = 'Manage Validator';
   const operatorStore: OperatorStore = stores.Operator;
-  const walletStore: WalletStore = stores.Wallet;
   const operators = Object.values(operatorStore.selectedOperators);
-  const clusterHash = getClusterHash(operators, walletStore.accountAddress);
-  const timeoutRef = useRef<any>(null);
-  const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
-  const dispatch = useAppDispatch();
+  const clusterHash = getClusterHash(operators, accountAddress);
 
   const redirectTo = async () => {
     dispatch(setIsLoading(true));
@@ -101,37 +101,6 @@ const ValidatorSuccessScreen = () => {
           </Grid>,
         ]}
       />
-      {/* <BorderScreen */}
-      {/*  borderRadius={'0 0 16px 16px'} */}
-      {/*  wrapperClass={classes.Incentivized} */}
-      {/*  withoutNavigation */}
-      {/*  body={[ */}
-      {/*    <Grid container item> */}
-      {/*      <Typography className={classes.IncentivizedTitle}>The &apos;Primus&apos; Incentivized Testnet is Live</Typography> */}
-      {/*      <Typography className={classes.IncentivizedSubTitle}> */}
-      {/*        All eligible validators will receive SSV rewards for participation */}
-      {/*        <LinkText link={'https://snapshot.org/#/mainnet.ssvnetwork.eth/proposal/QmSbouw5SCUmKMQwW7s1bEwhfXJ9LQJHetsruU8MrUTwBE'} text={'(conditions)'} /> */}
-      {/*      </Typography> */}
-      {/*      <Typography className={classes.IncentivizedSmallHeader}>Stakers Earn More</Typography> */}
-      {/*      <Typography className={classes.IncentivizedSubTitle}> */}
-      {/*        Validators who also <b>stake SSV</b> tokens are generating <b>over x5 more rewards</b> comparing to non staking validators. */}
-      {/*      </Typography> */}
-      {/*      <Typography className={classes.IncentivizedSmallHeader}>Get SSV tokens</Typography> */}
-      {/*      <Grid container item className={classes.IncentivizedLogos} justifyContent={'space-between'}> */}
-      {/*        <Grid item onClick={() => { linkToExchange('https://coinmarketcap.com/currencies/ssv-network/', 'coinmarketcap'); }} /> */}
-      {/*        <Grid item onClick={() => { linkToExchange('https://www.binance.com/en/trade/SSV_BTC', 'binance'); }} /> */}
-      {/*        <Grid item onClick={() => { linkToExchange('https://www.gate.io/trade/SSV_USDT', 'gate'); }} /> */}
-      {/*        <Grid item onClick={() => { linkToExchange('https://app.uniswap.org/', 'uniswap'); }} /> */}
-      {/*        <Grid item onClick={() => { linkToExchange('https://www.mexc.com/exchange/SSV_USDT', 'mexc'); }} /> */}
-      {/*        <Grid item onClick={() => { linkToExchange('https://www.xt.com/trade/ssv_usdt/', 'xt'); }} /> */}
-      {/*      </Grid> */}
-      {/*      <Typography className={classes.IncentivizedSubTitle}> */}
-      {/*        To receive staking rewards you must hold SSV tokens with the same wallet address that you used to register your validator to the network. */}
-      {/*      </Typography> */}
-      {/*    </Grid>, */}
-
-      {/*  ]} */}
-      {/* /> */}
     </>
   );
 };

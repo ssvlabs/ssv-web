@@ -32,7 +32,6 @@ const FundingPeriod = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  // const walletStore: WalletStore = stores.Wallet;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;

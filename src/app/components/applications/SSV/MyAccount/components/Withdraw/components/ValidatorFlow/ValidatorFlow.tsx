@@ -15,12 +15,11 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { extendClusterEntity, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { clusterByHash } from '~root/services/validator.service';
 import { SingleCluster } from '~app/model/processes.model';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
 
 const ValidatorFlow = () => {
@@ -28,7 +27,8 @@ const ValidatorFlow = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
@@ -80,16 +80,16 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await clusterByHash(getClusterHash(cluster.operators, walletStore.accountAddress));
+    const response = await clusterByHash(getClusterHash(cluster.operators, accountAddress));
     const newCluster = response.cluster;
     newCluster.operators = cluster.operators;
     processStore.setProcess({
       processName: 'single_cluster',
-      item: await extendClusterEntity(newCluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
+      item: await extendClusterEntity(newCluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
     }, 2);
     await myAccountStore.getOwnerAddressClusters({});
     setIsLoading(false);
-    if (!walletStore.isContractWallet) {
+    if (!isContractWallet) {
       store.dispatch(setIsShowTxPendingPopup(false));
     }
     if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {

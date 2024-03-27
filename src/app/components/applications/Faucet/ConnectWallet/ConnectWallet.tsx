@@ -1,20 +1,17 @@
 import React, { useEffect } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import Typography from '@mui/material/Typography';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Faucet/ConnectWallet/ConnectWallet.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
 import { currentNetworkName } from '~root/providers/networkInfo.provider';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 // TODO: reduce to single component for wallet connection
 const ConnectWallet = () => {
-  const stores = useStores();
   const classes = useStyles();
-  const walletStore: WalletStore = stores.Wallet;
+  const accountAddress = useAppSelector(getAccountAddress);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -25,10 +22,9 @@ const ConnectWallet = () => {
   }, []);
 
   const connectToWallet = () => {
-    if (walletStore.wallet) {
+    if (accountAddress) {
       dispatch(setIsShowWalletPopup(true));
     } else {
-      // walletStore.connect();
     }
   };
 
@@ -41,11 +37,11 @@ const ConnectWallet = () => {
         <Grid container>
           <Typography className={classes.SubHeader}>Connect your wallet to receive testnet SSV for testing purposes.</Typography>
           <Grid item className={classes.Warning}>Funds received through the SSV faucet are not real funds and hold no value.</Grid>
-          <PrimaryButton children={'Connect Wallet'} submitFunction={connectToWallet} disable={false} withVerifyConnection={false}/>
+          <PrimaryButton children={'Connect Wallet'} submitFunction={connectToWallet} disable={false} />
         </Grid>,
       ]}
     />
   );
 };
 
-export default observer(ConnectWallet);
+export default ConnectWallet;

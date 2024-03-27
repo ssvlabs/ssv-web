@@ -1,6 +1,6 @@
-import SsvRoutes from '~app/common/stores/applications/SsvWeb/Routes';
-import FaucetRoutes from '~app/common/stores/applications/Faucet/Routes';
-import DistributionRoutes from '~app/common/stores/applications/Distribution/Routes';
+import DistributionRoutes from './DistributionRoutes';
+import FaucetRoutes from './FaucetRoutes';
+import SsvRoutes from './SsvWebRoutes';
 
 let AppRoutes = SsvRoutes;
 

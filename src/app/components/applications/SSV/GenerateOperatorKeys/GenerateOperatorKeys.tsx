@@ -9,7 +9,6 @@ import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
 import InputLabel from '~app/components/common/InputLabel';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { getRandomOperatorKey } from '~lib/utils/contract/operator';
@@ -18,14 +17,15 @@ import { encodeParameter } from '~root/services/conversions.service';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const GenerateOperatorKeys = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const walletStore: WalletStore = stores.Wallet;
+  const accountAddress = useAppSelector(getAccountAddress);
   const operatorStore: OperatorStore = stores.Operator;
   let initialOperatorKey = '';
   if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
@@ -41,19 +41,14 @@ const GenerateOperatorKeys = () => {
   // Inputs validation
   useEffect(() => {
     const isRegisterButtonEnabled = !inputsData.publicKey
-      || !walletStore.accountAddress
+      || !accountAddress
       || publicKeyError.shouldDisplay
       || addressError.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
     };
-  }, [inputsData,
-    inputsData.publicKey,
-    walletStore.accountAddress,
-    addressError.shouldDisplay,
-    publicKeyError.shouldDisplay,
-  ]);
+  }, [inputsData, inputsData.publicKey, accountAddress, addressError.shouldDisplay, publicKeyError.shouldDisplay]);
 
   const onInputChange = (name: string, value: string) => {
     if (operatorExist) setOperatorExist(false);
@@ -64,12 +59,7 @@ const GenerateOperatorKeys = () => {
     setOperatorExist(false);
     dispatch(setIsLoading(true));
 
-    const operatorKeys: NewOperator = {
-      fee: 0,
-      id: 0,
-      address: walletStore.accountAddress,
-      publicKey: encodeParameter('string', inputsData.publicKey),
-    };
+    const operatorKeys: NewOperator = { fee: 0, id: 0, address: accountAddress, publicKey: encodeParameter('string', inputsData.publicKey) };
     operatorKeys.id = operatorStore.getOperatorId;
     operatorStore.setOperatorKeys(operatorKeys);
     const isExists = await validateOperatorPublicKey(inputsData.publicKey);
@@ -92,7 +82,7 @@ const GenerateOperatorKeys = () => {
               <TextInput
                 disable
                 data-testid="new-operator-address"
-                value={walletStore.accountAddress}
+                value={accountAddress}
                 onBlurCallBack={(event: any) => {
                   validateAddressInput(event.target.value, setAddressError);
                 }}

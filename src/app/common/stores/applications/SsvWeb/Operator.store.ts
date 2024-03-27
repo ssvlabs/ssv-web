@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
-import config, { translations } from '~app/common/config';
+import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import { executeAfterEvent } from '~root/services/events.service';
@@ -15,7 +15,6 @@ import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/app
 import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
@@ -74,6 +73,8 @@ class OperatorStore extends BaseStore {
   operatorValidatorsLimit: number = 0;
   clusterSize: number = 4;
 
+  private myAccountStore: MyAccountStore = this.getStore('MyAccount');
+
   constructor() {
     // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
     super();
@@ -126,34 +127,6 @@ class OperatorStore extends BaseStore {
       updateOperatorValidatorsLimit: action.bound,
       hasOperatorReachedValidatorLimit: action.bound,
     });
-  }
-
-  /**
-   * Updating operators and validators data
-   * @param resolve
-   * @param showError
-   */
-  async refreshOperatorsAndClusters(resolve: any, showError?: boolean) {
-    const myAccountStore: MyAccountStore = this.getStore('MyAccount');
-    const walletStore: WalletStore = this.getStore('Wallet');
-    return Promise.all([
-      myAccountStore.getOwnerAddressClusters({}),
-      myAccountStore.getOwnerAddressOperators({}),
-    ])
-      .then(() => {
-        resolve(true);
-      })
-      .catch((error) => {
-        if (showError) {
-          store.dispatch(setMessageAndSeverity({ message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        }
-        resolve(false);
-      }).finally(() => {
-        if (!walletStore.isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      });
   }
 
   clearOperatorFeeInfo() {
@@ -281,7 +254,7 @@ class OperatorStore extends BaseStore {
    * update operator address whitelist
    */
   async updateOperatorAddressWhitelist(operatorId: string, address: string) {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     return new Promise(async (resolve) => {
       try {
         const contractInstance = getContractByName(EContractName.SETTER);
@@ -290,7 +263,7 @@ class OperatorStore extends BaseStore {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
-        if (walletStore.isContractWallet) {
+        if (isContractWallet) {
           resolve(true);
         }
         const receipt = await tx.wait();
@@ -300,9 +273,7 @@ class OperatorStore extends BaseStore {
             await executeAfterEvent(async () => {
               const operator = await getOperator(operatorId);
               return equalsAddresses(operator.address_whitelist.toString(), address.toString());
-            }, async () => this.refreshOperatorsAndClusters(resolve, true), delay);
-            store.dispatch(setIsLoading(false));
-            store.dispatch(setIsShowTxPendingPopup(false));
+            }, async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
             resolve(true);
           } else {
             resolve(false);
@@ -337,7 +308,7 @@ class OperatorStore extends BaseStore {
    * Cancel change fee process for operator
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     await this.syncOperatorFeeInfo(operatorId);
     const operatorDataBefore = {
       operatorFutureFee: this.operatorFutureFee,
@@ -352,7 +323,7 @@ class OperatorStore extends BaseStore {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
-        if (walletStore.isContractWallet) {
+        if (isContractWallet) {
           resolve(true);
         }
         const receipt = await tx.wait();
@@ -370,7 +341,8 @@ class OperatorStore extends BaseStore {
                 };
               },
               operatorDataBefore,
-            ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+            ), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            resolve(true);
           } else {
             resolve(false);
           }
@@ -447,7 +419,7 @@ class OperatorStore extends BaseStore {
    * @param newFee
    */
   async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     return new Promise(async (resolve) => {
       try {
         const contractInstance = getContractByName(EContractName.SETTER);
@@ -467,7 +439,7 @@ class OperatorStore extends BaseStore {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
-        if (walletStore.isContractWallet) {
+        if (isContractWallet) {
           resolve(true);
         }
         const receipt = await tx.wait();
@@ -484,7 +456,8 @@ class OperatorStore extends BaseStore {
                 };
               },
               operatorDataBefore,
-            ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+            ), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            resolve(true);
           } else {
             resolve(false);
           }
@@ -492,7 +465,6 @@ class OperatorStore extends BaseStore {
           resolve(false);
         }
       } catch (e: any) {
-        console.debug('Contract Error', e.message);
         store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         resolve(false);
       } finally {
@@ -503,7 +475,7 @@ class OperatorStore extends BaseStore {
   }
 
   async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     return new Promise(async (resolve) => {
       try {
         const contractInstance = getContractByName(EContractName.SETTER);
@@ -519,7 +491,7 @@ class OperatorStore extends BaseStore {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
-        if (walletStore.isContractWallet) {
+        if (isContractWallet) {
           resolve(true);
         }
         const receipt = await tx.wait();
@@ -535,7 +507,8 @@ class OperatorStore extends BaseStore {
                 };
               },
               operatorBefore,
-            ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+            ), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            resolve(true);
           } else {
             resolve(false);
           }
@@ -557,7 +530,7 @@ class OperatorStore extends BaseStore {
    * @param operatorId
    */
   async approveOperatorFee(operatorId: number): Promise<boolean> {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     return new Promise(async (resolve) => {
       try {
         let operatorBefore = await getOperator(operatorId);
@@ -572,7 +545,7 @@ class OperatorStore extends BaseStore {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
-        if (walletStore.isContractWallet) {
+        if (isContractWallet) {
           resolve(true);
         }
         const receipt = await tx.wait();
@@ -589,7 +562,8 @@ class OperatorStore extends BaseStore {
                   };
                 },
                 operatorBefore,
-              ), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+              ), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            resolve(true);
           } else {
             resolve(false);
           }
@@ -611,7 +585,7 @@ class OperatorStore extends BaseStore {
    * @param operatorId
    */
   async removeOperator(operatorId: number): Promise<any> {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     const contractInstance = getContractByName(EContractName.SETTER);
     return new Promise(async (resolve) => {
       try {
@@ -620,7 +594,7 @@ class OperatorStore extends BaseStore {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
         }
-        if (walletStore.isContractWallet) {
+        if (isContractWallet) {
           resolve(true);
         }
         const receipt = await tx.wait();
@@ -629,7 +603,8 @@ class OperatorStore extends BaseStore {
           if (event) {
             await executeAfterEvent(async () => {
               return await getEventByTxHash(receipt.transactionHash);
-            }, async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+            }, async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            resolve(true);
           } else {
             resolve(false);
           }
@@ -640,7 +615,7 @@ class OperatorStore extends BaseStore {
         store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
         return false;
       } finally {
-        if (!walletStore.isContractWallet) {
+        if (!isContractWallet) {
           store.dispatch(setIsLoading(false));
           store.dispatch(setIsShowTxPendingPopup(false));
         }
@@ -649,7 +624,7 @@ class OperatorStore extends BaseStore {
   }
 
   async addNewOperator() {
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const isContractWallet = store.getState().walletState.isContractWallet;
     return new Promise(async (resolve, reject) => {
       try {
         const payload: any[] = [];
@@ -665,23 +640,23 @@ class OperatorStore extends BaseStore {
             store.dispatch(setTxHash(tx.hash));
             store.dispatch(setIsShowTxPendingPopup(true));
           }
-          if (walletStore.isContractWallet) {
+          if (isContractWallet) {
             resolve(true);
           }
           const receipt = await tx.wait();
           if (receipt.blockHash) {
-            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.refreshOperatorsAndClusters(resolve, true), delay);
+            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
             resolve(true);
           }
+          resolve(false);
         } catch (e: any) {
-          console.error(`Error during setting fee recipient: ${e.message}`);
           store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
           resolve(false);
         }
       } catch (e) {
         reject(false);
       } finally {
-        if (!walletStore.isContractWallet) {
+        if (!isContractWallet) {
           store.dispatch(setIsShowTxPendingPopup(false));
         }
       }

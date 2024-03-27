@@ -16,3 +16,20 @@ export const executeAfterEvent = async (condition: Function, callBack: Function,
   }
   return true;
 };
+
+
+export const executeAfterEventV2 = async (condition: Function, delay: Function) => {
+  let iterations = 0;
+  while (iterations <= config.GLOBAL_VARIABLE.CHECK_UPDATES_MAX_ITERATIONS) {
+    iterations += 1;
+    const res = await condition();
+    if (res) {
+      iterations = config.GLOBAL_VARIABLE.CHECK_UPDATES_MAX_ITERATIONS + 1;
+      continue;
+    } else {
+      console.log('Transaction still not caught...');
+    }
+    await delay();
+  }
+  return true;
+};

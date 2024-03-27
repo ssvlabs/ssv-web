@@ -80,16 +80,16 @@ const OperatorsReceipt = (props: Props) => {
     return null;
   };
 
-  const updateValidator = async () => {
-    dispatch(setIsLoading(true));
-    const response = await validatorStore.updateValidator();
-    if (response) {
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS);
-      setTimeout(() => {
-        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
-      }, 10000);
-    }
-  };
+  // const updateValidator = async () => {
+  //   dispatch(setIsLoading(true));
+  //   const response = await validatorStore.updateValidator();
+  //   if (response) {
+  //     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.SUCCESS);
+  //     setTimeout(() => {
+  //       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
+  //     }, 10000);
+  //   }
+  // };
 
   const body = [
     <Grid container item>
@@ -175,7 +175,7 @@ const OperatorsReceipt = (props: Props) => {
         <Button
           // @ts-ignore
           text={'Update Operators'}
-          onClick={updateValidator}
+          // onClick={updateValidator}
           // @ts-ignore
           disable={remainingDays === 0 || (remainingDays < 30 && !checked)}
         />

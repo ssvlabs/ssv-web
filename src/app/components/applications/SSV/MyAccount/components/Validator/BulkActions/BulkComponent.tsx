@@ -13,8 +13,7 @@ import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
 import { setIsLoading } from '~app/redux/appState.slice';
-import { useAppDispatch } from '~app/hooks/redux.hook';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 enum BULK_STEPS {

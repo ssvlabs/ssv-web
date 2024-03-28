@@ -86,7 +86,7 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
 
 const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, fullData = false) => {
     const response = await getClusterDataValidatorService(clusterHash);
-    const clusterData = response.cluster;
+    const clusterData = response?.cluster;
     if (clusterData === null) {
       return {
         validatorCount: 0,

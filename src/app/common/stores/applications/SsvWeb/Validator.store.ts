@@ -18,7 +18,6 @@ import { getLiquidationCollateralPerValidator, getValidator } from '~root/servic
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { transactionExecutor } from '~root/services/transaction.service';
-import { TransactionMethod } from '~app/enums/transactions.enum';
 
 type ClusterDataType = {
   active: boolean;

@@ -3,7 +3,7 @@ import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
-import { executeAfterEventV2 } from '~root/services/events.service';
+import { executeAfterEvent } from '~root/services/events.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { delay } from '~root/services/utils.service';
 import { getValidator } from '~root/services/validator.service';
@@ -21,12 +21,12 @@ const contractMethods = {
 };
 
 const finishTransactionExecutor = {
-  [TransactionMethod.RegisterValidator]: async (hash: string) => await executeAfterEventV2(async () => !!await getEventByTxHash(hash), delay),
-  [TransactionMethod.BulkRegisterValidator]: async (hash: string) => await executeAfterEventV2(async () => !!await getEventByTxHash(hash), delay),
-  [TransactionMethod.RemoveValidator]: async (publicKey: string) => await executeAfterEventV2(async () => !await getValidator(publicKey, true), delay),
-  [TransactionMethod.BulkRemoveValidator]: async (publicKey: string) => await executeAfterEventV2(async () => !await getValidator(publicKey, true), delay),
-  [TransactionMethod.ReactivateCluster]: async (hash: string) => await executeAfterEventV2(async () => !!await getEventByTxHash(hash), delay),
-  [TransactionMethod.UpdateValidator]: async (hash: string) => await executeAfterEventV2(async () => !!await getEventByTxHash(hash), delay),
+  [TransactionMethod.RegisterValidator]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
+  [TransactionMethod.BulkRegisterValidator]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
+  [TransactionMethod.RemoveValidator]: async (publicKey: string, callback: Function) => await executeAfterEvent(async () => !await getValidator(publicKey, true), callback, delay),
+  [TransactionMethod.BulkRemoveValidator]: async (publicKey: string, callback: Function) => await executeAfterEvent(async () => !await getValidator(publicKey, true), callback, delay),
+  [TransactionMethod.ReactivateCluster]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
+  [TransactionMethod.UpdateValidator]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
 };
 
 export const transactionExecutor = async ({ methodType, contract, payload, isContractWallet, callbackAfterExecution }: {
@@ -62,14 +62,13 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
         if (methodType === TransactionMethod.ExitValidator || methodType === TransactionMethod.BulkExitValidator) {
           return true;
         }
-        await finishTransactionExecutor[methodType](finishExecuteData);
+         return await finishTransactionExecutor[methodType](finishExecuteData, callbackAfterExecution);
       } else {
         return false;
       }
     } else {
       return false;
     }
-    return false;
   } catch (e: any) {
     store.dispatch(setMessageAndSeverity({
       message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
@@ -78,7 +77,6 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
     store.dispatch(setIsLoading(false));
     return false;
   } finally {
-    await callbackAfterExecution();
     if (!isContractWallet) {
       store.dispatch(setIsLoading(false));
       store.dispatch(setIsShowTxPendingPopup(false));

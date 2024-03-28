@@ -4,7 +4,6 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
 import { executeAfterEvent } from '~root/services/events.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { delay } from '~root/services/utils.service';
 
 export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, callbackAfterExecution, getterTransactionState, skipNextStateExecution }: {
   contractMethod: Function,
@@ -31,16 +30,16 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
           await callbackAfterExecution();
           return true;
         }
-        let executeNextState;
+        let updatedStateGetter;
         if (getterTransactionState) {
-          executeNextState = getterTransactionState;
+          updatedStateGetter = getterTransactionState;
         } else {
-          executeNextState = async () => {
+          updatedStateGetter = async () => {
             const res = await getEventByTxHash(tx.hash);
             return res.data;
           };
         }
-         return await executeAfterEvent(executeNextState, callbackAfterExecution, delay);
+         return await executeAfterEvent({ updatedStateGetter, callBack: callbackAfterExecution });
       } else {
         return false;
       }

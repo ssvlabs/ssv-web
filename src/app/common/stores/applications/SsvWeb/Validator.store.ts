@@ -21,7 +21,6 @@ import { getLiquidationCollateralPerValidator, getValidator } from '~root/servic
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
-import { checkEntityChangedInAccount, delay } from '~root/services/utils.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
@@ -171,7 +170,8 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !await getValidator(publicKey), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+          const updatedStateGetter = async () => !await getValidator(publicKey);
+          await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
           resolve(true);
         } else {
           resolve(false);
@@ -210,7 +210,8 @@ class ValidatorStore extends BaseStore {
         }
         const receipt = await tx.wait();
         if (receipt.blockHash) {
-          await executeAfterEvent(async () => !await getValidator(validators[0]), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+          const updatedStateGetter = async () => !await getValidator(validators[0]);
+          await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
         } else {
           resolve(false);
         }
@@ -329,13 +330,10 @@ class ValidatorStore extends BaseStore {
         const event: boolean = receipt.hasOwnProperty('events');
         if (event) {
           this.keyStoreFile = null;
-          console.debug('Contract Receipt', receipt);
-          await executeAfterEvent(async () => await checkEntityChangedInAccount(
-            async () => {
-              return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-            },
-            validatorBefore,
-          ), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+          const updatedStateGetter = async () => {
+            return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
+          };
+          await executeAfterEvent({ updatedStateGetter, prevState: validatorBefore, callBack: this.myAccountStore.refreshOperatorsAndClusters });
           resolve(true);
         } else {
           resolve(false);
@@ -377,7 +375,8 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            const updatedStateGetter = async () => !!await getEventByTxHash(receipt.transactionHash);
+            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
           } else {
             resolve(false);
           }
@@ -433,7 +432,8 @@ class ValidatorStore extends BaseStore {
               action: 'register_tx',
               label: 'success',
             });
-            await executeAfterEvent(async () =>  !!await getEventByTxHash(receipt.transactionHash), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            const updatedStateGetter = async () =>  !!await getEventByTxHash(receipt.transactionHash);
+            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
           } else {
             resolve(false);
           }
@@ -490,8 +490,8 @@ class ValidatorStore extends BaseStore {
               category: 'single_cluster',
               action: 'reactivate_cluster',
             });
-            resolve(true);
-            await executeAfterEvent(async () => !!await getEventByTxHash(receipt.transactionHash), async () => this.myAccountStore.refreshOperatorsAndClusters(), delay);
+            const updatedStateGetter = async () => !!await getEventByTxHash(receipt.transactionHash);
+            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
             resolve(true);
           } else {
             resolve(false);

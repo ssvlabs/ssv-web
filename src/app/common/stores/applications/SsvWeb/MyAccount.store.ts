@@ -69,8 +69,8 @@ class MyAccountStore extends BaseStore {
     return Promise.all(operatorsList.map((operator: any) => this.getOperatorRevenue(operator)));
   }
 
-  async getValidator(publicKey: string, skipRetry?: boolean): Promise<any> {
-    const validator = await getValidatorServiceCall(publicKey, skipRetry);
+  async getValidator(publicKey: string): Promise<any> {
+    const validator = await getValidatorServiceCall(publicKey);
     const validatorPublicKey = `0x${validator.public_key}`;
     const validatorBalance = formatNumberFromBeaconcha(this.beaconChaBalances[validatorPublicKey]?.balance);
     const performance7days = this.beaconChaPerformances[validator.public_key] ? formatNumberFromBeaconcha(this.beaconChaPerformances[validator.public_key].performance7d) : 0;

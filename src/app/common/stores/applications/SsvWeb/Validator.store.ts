@@ -6,23 +6,18 @@ import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
-import { executeAfterEvent } from '~root/services/events.service';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { store } from '~app/store';
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
 import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { translations } from '~app/common/config';
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { transactionExecutor } from '~root/services/transaction.service';
 
 type ClusterDataType = {
   active: boolean;
@@ -47,7 +42,6 @@ const annotations = {
   keyShareFile: observable,
   setKeyStore: action.bound,
   registrationMode: observable,
-  updateValidator: action.bound,
   addNewValidator: action.bound,
   keyStorePublicKey: observable,
   keySharePublicKey: observable,
@@ -151,40 +145,22 @@ class ValidatorStore extends BaseStore {
   }
 
   async removeValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
-    const contract = getContractByName(EContractName.SETTER);
-    store.dispatch(setIsLoading(true));
     const isContractWallet = store.getState().walletState.isContractWallet;
     const accountAddress = store.getState().walletState.accountAddress;
     const ssvStore: SsvStore = this.getStore('SSV');
     const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
     const clusterData = await getClusterData(getClusterHash(operatorIds, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    return new Promise(async (resolve) => {
-      try {
-        const tx = await contract.removeValidator(publicKey, sortedOperatorIds, clusterData);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const updatedStateGetter = async () => !await getValidator(publicKey);
-          await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    const payload =  [publicKey, sortedOperatorIds, clusterData] ;
+    const contract = getContractByName(EContractName.SETTER);
+    if (!payload) {
+      return false;
+    }
+    return await transactionExecutor({
+      contractMethod: contract.removeValidator,
+      payload,
+      getterTransactionState: async () => !await getValidator(publicKey),
+      isContractWallet: isContractWallet,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -192,38 +168,22 @@ class ValidatorStore extends BaseStore {
    * Bulk remove validators
    */
   async bulkRemoveValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
-    const contract = getContractByName(EContractName.SETTER);
-    store.dispatch(setIsLoading(true));
     const isContractWallet = store.getState().walletState.isContractWallet;
     const accountAddress = store.getState().walletState.accountAddress;
     const ssvStore: SsvStore = this.getStore('SSV');
+    const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
     const clusterData = await getClusterData(getClusterHash(operatorIds, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    return new Promise(async (resolve) => {
-      try {
-        const tx = await contract.bulkRemoveValidator(validators, operatorIds, clusterData);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const updatedStateGetter = async () => !await getValidator(validators[0]);
-          await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    const payload = [validators, sortedOperatorIds, clusterData];
+    const contract = getContractByName(EContractName.SETTER);
+    if (!payload) {
+      return false;
+    }
+    return await transactionExecutor({
+      contractMethod: contract.bulkRemoveValidator,
+      payload,
+      getterTransactionState: async () => !await getValidator(validators[0]),
+      isContractWallet: isContractWallet,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -232,34 +192,14 @@ class ValidatorStore extends BaseStore {
    */
   async exitValidator(publicKey: string, operatorIds: number[]): Promise<boolean> {
     const isContractWallet = store.getState().walletState.isContractWallet;
+    const payload = [publicKey, operatorIds];
     const contract = getContractByName(EContractName.SETTER);
-    store.dispatch(setIsLoading(true));
-
-    return new Promise(async (resolve) => {
-      try {
-        const tx = await contract.exitValidator(publicKey, operatorIds);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    return await transactionExecutor({
+      contractMethod: contract.exitValidator,
+      payload,
+      isContractWallet: isContractWallet,
+      skipNextStateExecution: true,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -268,250 +208,66 @@ class ValidatorStore extends BaseStore {
    */
   async bulkExitValidators(validators: string[], operatorIds: number[]): Promise<boolean> {
     const isContractWallet = store.getState().walletState.isContractWallet;
+    const payload = [validators, operatorIds];
     const contract = getContractByName(EContractName.SETTER);
-    store.dispatch(setIsLoading(true));
-
-    return new Promise(async (resolve) => {
-      try {
-        const tx = await contract.bulkExitValidator(validators, operatorIds);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
-    });
-  }
-
-  /**
-   * Update validator
-   */
-  async updateValidator() {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      const { KEYSTORE_PUBLIC_KEY } = PAYLOAD_KEYS;
-      const isContractWallet = store.getState().walletState.isContractWallet;
-      const accountAddress = store.getState().walletState.accountAddress;
-      const contract = getContractByName(EContractName.SETTER);
-      const payload = await this.createKeystorePayload();
-      if (!payload) {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-        resolve(false);
-        return;
-      }
-      const validatorBefore = await getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-      try {
-        const tx = await contract.updateValidator(...payload.values()).send({ from: accountAddress });
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        const event: boolean = receipt.hasOwnProperty('events');
-        if (event) {
-          this.keyStoreFile = null;
-          const updatedStateGetter = async () => {
-            return getValidator(`0x${payload.get(KEYSTORE_PUBLIC_KEY)}`);
-          };
-          await executeAfterEvent({ updatedStateGetter, prevState: validatorBefore, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      } catch (e) {
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    return await transactionExecutor({
+      contractMethod: contract.bulkExitValidator,
+      payload,
+      isContractWallet: isContractWallet,
+      skipNextStateExecution: true,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
   async bulkRegistration() {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve) => {
-      try {
-        const contract = getContractByName(EContractName.SETTER);
-        const payload = await this.createKeySharePayload();
-        if (!payload) {
-          resolve(false);
-          return;
-        }
-        let tx = await contract.bulkRegisterValidator(...payload.values());
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            GoogleTagManager.getInstance().sendEvent({
-              category: 'validators_register',
-              action: 'register_tx',
-              label: 'success',
-            });
-            const updatedStateGetter = async () => !!await getEventByTxHash(receipt.transactionHash);
-            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        console.log(e.data);
-        const isRejected: boolean = e.hasOwnProperty('code');
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'register_tx',
-          label: isRejected ? 'rejected' : 'error',
-        });
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    const payload = await this.createKeySharePayload();
+    const contract = getContractByName(EContractName.SETTER);
+    if (!payload) {
+      return false;
+    }
+    return await transactionExecutor({
+      contractMethod: contract.bulkRegisterValidator,
+      payload: payload.values(),
+      isContractWallet: isContractWallet,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
   async addNewValidator() {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve) => {
-      try {
-        const payload = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
-        const contract = getContractByName(EContractName.SETTER);
-        if (!payload) {
-          resolve(false);
-          return;
-        }
-        console.debug('Add Validator Payload: ', payload);
-        let tx = await contract.registerValidator(...payload.values());
-
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            GoogleTagManager.getInstance().sendEvent({
-              category: 'validator_register',
-              action: 'register_tx',
-              label: 'success',
-            });
-            const updatedStateGetter = async () =>  !!await getEventByTxHash(receipt.transactionHash);
-            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-        resolve(false);
-      } catch (e: any) {
-        const isRejected: boolean = e.hasOwnProperty('code');
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'validator_register',
-          action: 'register_tx',
-          label: isRejected ? 'rejected' : 'error',
-        });
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    const payload = this.registrationMode === 0 ? await this.createKeySharePayload() : await this.createKeystorePayload();
+    const contract = getContractByName(EContractName.SETTER);
+    if (!payload) {
+      return false;
+    }
+    return await transactionExecutor({
+      contractMethod: contract.registerValidator,
+      payload: payload.values(),
+      isContractWallet: isContractWallet,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
   async reactivateCluster(amount: string) {
-    return new Promise(async (resolve) => {
-      try {
-        const processStore: ProcessStore = this.getStore('Process');
-        const contract = getContractByName(EContractName.SETTER);
-        const process: SingleCluster = <SingleCluster>processStore.process;
-        const isContractWallet = store.getState().walletState.isContractWallet;
-        const accountAddress = store.getState().walletState.accountAddress;
-        const ssvStore: SsvStore = this.getStore('SSV');
-        const cluster = process.item;
-        // @ts-ignore
-        const operatorsIds = cluster.operators.map(({ id }) => Number(id)).sort((a: number, b: number) => a - b);
-        const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-        const tx = await contract.reactivate(operatorsIds, toWei(amount), clusterData);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            this.keyStoreFile = null;
-            GoogleTagManager.getInstance().sendEvent({
-              label: 'success',
-              category: 'single_cluster',
-              action: 'reactivate_cluster',
-            });
-            const updatedStateGetter = async () => !!await getEventByTxHash(receipt.transactionHash);
-            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        const isRejected: boolean = e.hasOwnProperty('code');
-        GoogleTagManager.getInstance().sendEvent({
-          category: 'single_cluster',
-          action: 'reactivate_cluster',
-          label: isRejected ? 'rejected' : 'error',
-        });
-        store.dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    const processStore: ProcessStore = this.getStore('Process');
+    const process: SingleCluster = <SingleCluster>processStore.process;
+    const isContractWallet = store.getState().walletState.isContractWallet;
+    const accountAddress = store.getState().walletState.accountAddress;
+    const ssvStore: SsvStore = this.getStore('SSV');
+    const cluster = process.item;
+    const operatorsIds = cluster.operators.map(({ id }: {
+      id: number
+    }) => Number(id)).sort((a: number, b: number) => a - b);
+    const amountInWei = toWei(amount);
+    const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    const payload = [operatorsIds, amountInWei, clusterData];
+    const contract = getContractByName(EContractName.SETTER);
+    return await transactionExecutor({
+      contractMethod: contract.reactivate,
+      payload,
+      isContractWallet: isContractWallet,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -546,14 +302,14 @@ class ValidatorStore extends BaseStore {
           totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
         const keysharePayload = await (new KeySharesItem()).buildPayload({
-            publicKey: threshold.publicKey,
-            operators,
-            encryptedShares,
-          }, {
-            ownerAddress: accountAddress,
-            ownerNonce: ownerNonce as number,
-            privateKey: this.keyStorePrivateKey,
-          });
+          publicKey: threshold.publicKey,
+          operators,
+          encryptedShares,
+        }, {
+          ownerAddress: accountAddress,
+          ownerNonce: ownerNonce as number,
+          privateKey: this.keyStorePrivateKey,
+        });
 
         const payload = this.createPayload(this.keyStorePublicKey,
           keysharePayload.operatorIds,
@@ -635,7 +391,7 @@ class ValidatorStore extends BaseStore {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;
       this.keyStorePublicKey = await this.getKeyStorePublicKey();
-      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey, true));
+      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey));
     } catch (e: any) {
       console.log(e.message);
     }

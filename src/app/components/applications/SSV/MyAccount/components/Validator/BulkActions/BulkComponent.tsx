@@ -12,7 +12,8 @@ import { IOperator } from '~app/model/operator.model';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { setIsLoading } from '~app/redux/appState.slice';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 enum BULK_STEPS {
@@ -53,6 +54,7 @@ const BulkComponent = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const process: SingleCluster = processStore.getProcess;
   const currentBulkFlow = process.currentBulkFlow;
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (process.validator) {
@@ -117,6 +119,7 @@ const BulkComponent = () => {
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
+      dispatch(setIsLoading(true));
       const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
       const exitSingle = async () => await validatorStore.exitValidator(singleFormattedPublicKey, process.item.operators.map((operator: IOperator) => operator.id));
       const exitBulk = async () => await validatorStore.bulkExitValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));
@@ -127,6 +130,7 @@ const BulkComponent = () => {
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
       backToSingleClusterPage();
     } else {
+      dispatch(setIsLoading(true));
       const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
       const singleRemove = async () => await validatorStore.removeValidator(singleFormattedPublicKey, process.item.operators);
       const bulkRemove = async () => await validatorStore.bulkRemoveValidators(selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected), process.item.operators.map((operator: IOperator) => operator.id));

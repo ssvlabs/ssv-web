@@ -272,7 +272,7 @@ const ValidatorsList = ({
                                                              withTooltip={disableButtonCondition}
                                                              tooltipText={checkboxTooltipTitle}
                                                              withoutMarginBottom
-                                                             toggleIsChecked={() => onCheckboxClickHandler(formattedPublicKey, clusterValidators)}
+                                                             toggleIsChecked={() => onCheckboxClickHandler({ publicKey: formattedPublicKey })}
                                                              isChecked={res}/>}
                       {longStringShorten(formattedPublicKey, 4, 4)}
                     </PublicKey>

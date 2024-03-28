@@ -31,7 +31,7 @@ const putRequest = async <T>(url: string, data?: any, requestConfig?: AxiosReque
   }
 };
 
-const getRequest = async (url: string, skipRetry?: boolean) => {
+const getRequest = async (url: string, skipRetry: boolean = true) => {
   try {
     return (await axios.get(url)).data;
   } catch (e) {

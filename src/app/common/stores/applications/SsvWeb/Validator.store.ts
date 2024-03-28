@@ -157,9 +157,9 @@ class ValidatorStore extends BaseStore {
       return false;
     }
     return await transactionExecutor({
-      methodType: TransactionMethod.RemoveValidator,
+      contractMethod: contract.removeValidator,
       payload,
-      contract,
+      getterTransactionState: async () => !await getValidator(publicKey),
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -180,9 +180,9 @@ class ValidatorStore extends BaseStore {
       return false;
     }
     return await transactionExecutor({
-      methodType: TransactionMethod.BulkRemoveValidator,
+      contractMethod: contract.bulkRemoveValidator,
       payload,
-      contract,
+      getterTransactionState: async () => !await getValidator(validators[0]),
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -196,10 +196,10 @@ class ValidatorStore extends BaseStore {
     const payload = [publicKey, operatorIds];
     const contract = getContractByName(EContractName.SETTER);
     return await transactionExecutor({
-      methodType: TransactionMethod.ExitValidator,
+      contractMethod: contract.exitValidator,
       payload,
-      contract,
       isContractWallet: isContractWallet,
+      skipNextStateExecution: true,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
@@ -212,10 +212,10 @@ class ValidatorStore extends BaseStore {
     const payload = [validators, operatorIds];
     const contract = getContractByName(EContractName.SETTER);
     return await transactionExecutor({
-      methodType: TransactionMethod.BulkExitValidator,
+      contractMethod: contract.bulkExitValidator,
       payload,
-      contract,
       isContractWallet: isContractWallet,
+      skipNextStateExecution: true,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
@@ -228,9 +228,8 @@ class ValidatorStore extends BaseStore {
       return false;
     }
     return await transactionExecutor({
-      methodType: TransactionMethod.BulkRegisterValidator,
-      payload,
-      contract,
+      contractMethod: contract.bulkRegisterValidator,
+      payload: payload.values(),
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -243,10 +242,9 @@ class ValidatorStore extends BaseStore {
     if (!payload) {
       return false;
     }
-    await transactionExecutor({
-      methodType: TransactionMethod.RegisterValidator,
-      payload,
-      contract,
+    return await transactionExecutor({
+      contractMethod: contract.registerValidator,
+      payload: payload.values(),
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -267,9 +265,8 @@ class ValidatorStore extends BaseStore {
     const payload = [operatorsIds, amountInWei, clusterData];
     const contract = getContractByName(EContractName.SETTER);
     return await transactionExecutor({
-      methodType: TransactionMethod.ReactivateCluster,
+      contractMethod: contract.reactivate,
       payload,
-      contract,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -395,7 +392,7 @@ class ValidatorStore extends BaseStore {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;
       this.keyStorePublicKey = await this.getKeyStorePublicKey();
-      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey, true));
+      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey));
     } catch (e: any) {
       console.log(e.message);
     }

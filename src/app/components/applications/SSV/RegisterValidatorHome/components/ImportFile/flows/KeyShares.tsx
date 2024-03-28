@@ -145,7 +145,7 @@ const KeyShareFlow = () => {
 
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
-            const res = await getValidator(validator.publicKey, true);
+            const res = await getValidator(validator.publicKey);
             if (res && equalsAddresses(res.owner_address, accountAddress)) {
               validators[`0x${res.public_key}`].registered = true;
             }

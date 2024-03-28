@@ -1,4 +1,3 @@
-import { Contract } from 'ethers';
 import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
@@ -6,38 +5,17 @@ import { translations } from '~app/common/config';
 import { executeAfterEvent } from '~root/services/events.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { delay } from '~root/services/utils.service';
-import { getValidator } from '~root/services/validator.service';
-import { TransactionMethod } from '~app/enums/transactions.enum';
 
-const contractMethods = {
-  [TransactionMethod.RegisterValidator]: async (contract: Contract, payload: any) => await contract.registerValidator(...payload.values()),
-  [TransactionMethod.BulkRegisterValidator]: async (contract: Contract, payload: any) => await contract.bulkRegisterValidator(...payload.values()),
-  [TransactionMethod.RemoveValidator]: async (contract: Contract, payload: any) => await contract.removeValidator(...payload),
-  [TransactionMethod.BulkRemoveValidator]: async (contract: Contract, payload: any) => await contract.bulkRemoveValidator(...payload),
-  [TransactionMethod.ExitValidator]: async (contract: Contract, payload: any) => await contract.exitValidator(...payload),
-  [TransactionMethod.BulkExitValidator]: async (contract: Contract, payload: any) => await contract.bulkExitValidator(...payload),
-  [TransactionMethod.ReactivateCluster]: async (contract: Contract, payload: any) => await contract.reactivate(...payload),
-  [TransactionMethod.UpdateValidator]: async (contract: Contract, payload: any) => await contract.reactivate(...payload),
-};
-
-const finishTransactionExecutor = {
-  [TransactionMethod.RegisterValidator]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
-  [TransactionMethod.BulkRegisterValidator]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
-  [TransactionMethod.RemoveValidator]: async (publicKey: string, callback: Function) => await executeAfterEvent(async () => !await getValidator(publicKey, true), callback, delay),
-  [TransactionMethod.BulkRemoveValidator]: async (publicKey: string, callback: Function) => await executeAfterEvent(async () => !await getValidator(publicKey, true), callback, delay),
-  [TransactionMethod.ReactivateCluster]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
-  [TransactionMethod.UpdateValidator]: async (hash: string, callback: Function) => await executeAfterEvent(async () => !!await getEventByTxHash(hash), callback, delay),
-};
-
-export const transactionExecutor = async ({ methodType, contract, payload, isContractWallet, callbackAfterExecution }: {
-  methodType: TransactionMethod,
-  contract: Contract,
+export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, callbackAfterExecution, getterTransactionState, skipNextStateExecution }: {
+  contractMethod: Function,
   payload: any,
   isContractWallet: boolean,
   callbackAfterExecution: Function,
+  getterTransactionState?: Function,
+  skipNextStateExecution?: boolean,
 }) => {
   try {
-    let tx = await contractMethods[methodType](contract, payload);
+    let tx = await contractMethod(...payload);
     if (tx.hash) {
       store.dispatch(setTxHash(tx.hash));
       store.dispatch(setIsShowTxPendingPopup(true));
@@ -49,20 +27,20 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
     if (receipt.blockHash) {
       const event: boolean = receipt.hasOwnProperty('events');
       if (event) {
-        let finishExecuteData = '';
-        if (methodType === TransactionMethod.RegisterValidator || methodType === TransactionMethod.BulkRegisterValidator || methodType === TransactionMethod.ReactivateCluster || methodType === TransactionMethod.UpdateValidator) {
-          finishExecuteData = receipt.transactionHash;
-        }
-        if (methodType === TransactionMethod.RemoveValidator) {
-          finishExecuteData = payload.publicKey;
-        }
-        if (methodType === TransactionMethod.BulkRemoveValidator) {
-          finishExecuteData = payload.publicKey[0];
-        }
-        if (methodType === TransactionMethod.ExitValidator || methodType === TransactionMethod.BulkExitValidator) {
+        if (skipNextStateExecution) {
+          await callbackAfterExecution();
           return true;
         }
-         return await finishTransactionExecutor[methodType](finishExecuteData, callbackAfterExecution);
+        let executeNextState;
+        if (getterTransactionState) {
+          executeNextState = getterTransactionState;
+        } else {
+          executeNextState = async () => {
+            const res = await getEventByTxHash(tx.hash);
+            return res.data;
+          };
+        }
+         return await executeAfterEvent(executeNextState, callbackAfterExecution, delay);
       } else {
         return false;
       }
@@ -83,4 +61,3 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
     }
   }
 };
-

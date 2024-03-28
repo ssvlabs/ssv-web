@@ -85,7 +85,6 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
 };
 
 const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, fullData = false) => {
-  try {
     const response = await getClusterDataValidatorService(clusterHash);
     const clusterData = response.cluster;
     if (clusterData === null) {
@@ -113,9 +112,6 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
         active: clusterData.active,
       };
     }
-  } catch (e) {
-    return null;
-  }
 };
 
 const extendClusterEntity = async (cluster: any, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {

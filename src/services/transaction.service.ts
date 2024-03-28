@@ -7,27 +7,17 @@ import { executeAfterEventV2 } from '~root/services/events.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { delay } from '~root/services/utils.service';
 import { getValidator } from '~root/services/validator.service';
-
-export enum TransactionMethod {
-  RegisterValidator = 'RegisterValidator',
-  BulkRegisterValidator = 'BulkRegisterValidator',
-  RemoveValidator = 'RemoveValidator',
-  BulkRemoveValidator = 'BulkRemoveValidator',
-  ExitValidator = 'ExitValidator',
-  BulkExitValidator = 'BulkExitValidator',
-  ReactivateCluster = 'ReactivateCluster',
-  UpdateValidator = 'UpdateValidator',
-}
+import { TransactionMethod } from '~app/enums/transactions.enum';
 
 const contractMethods = {
   [TransactionMethod.RegisterValidator]: async (contract: Contract, payload: any) => await contract.registerValidator(...payload.values()),
   [TransactionMethod.BulkRegisterValidator]: async (contract: Contract, payload: any) => await contract.bulkRegisterValidator(...payload.values()),
-  [TransactionMethod.RemoveValidator]: async (contract: Contract, payload: any) => await contract.removeValidator(...Object.values(payload)),
-  [TransactionMethod.BulkRemoveValidator]: async (contract: Contract, payload: any) => await contract.bulkRemoveValidator(...Object.values(payload)),
-  [TransactionMethod.ExitValidator]: async (contract: Contract, payload: any) => await contract.exitValidator(...Object.values(payload)),
-  [TransactionMethod.BulkExitValidator]: async (contract: Contract, payload: any) => await contract.bulkExitValidator(...Object.values(payload)),
-  [TransactionMethod.ReactivateCluster]: async (contract: Contract, payload: any) => await contract.reactivate(...Object.values(payload)),
-  [TransactionMethod.UpdateValidator]: async (contract: Contract, payload: any) => await contract.reactivate(...Object.values(payload)),
+  [TransactionMethod.RemoveValidator]: async (contract: Contract, payload: any) => await contract.removeValidator(...payload),
+  [TransactionMethod.BulkRemoveValidator]: async (contract: Contract, payload: any) => await contract.bulkRemoveValidator(...payload),
+  [TransactionMethod.ExitValidator]: async (contract: Contract, payload: any) => await contract.exitValidator(...payload),
+  [TransactionMethod.BulkExitValidator]: async (contract: Contract, payload: any) => await contract.bulkExitValidator(...payload),
+  [TransactionMethod.ReactivateCluster]: async (contract: Contract, payload: any) => await contract.reactivate(...payload),
+  [TransactionMethod.UpdateValidator]: async (contract: Contract, payload: any) => await contract.reactivate(...payload),
 };
 
 const finishTransactionExecutor = {
@@ -85,6 +75,7 @@ export const transactionExecutor = async ({ methodType, contract, payload, isCon
       message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
       severity: 'error',
     }));
+    store.dispatch(setIsLoading(false));
     return false;
   } finally {
     await callbackAfterExecution();

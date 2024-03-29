@@ -6,9 +6,10 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
+import {
+  useStyles,
+} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
 import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
-import { ENABLE_EXIT_FLOW, getLocalStorageFlagValue } from '~lib/utils/developerHelper';
 
 const ActionsButton = ({ extendClass, children }: { extendClass: string, children: string | JSX.Element }) => {
   const classes = useStyles();
@@ -18,7 +19,6 @@ const ActionsButton = ({ extendClass, children }: { extendClass: string, childre
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
-  const showExitFlow = getLocalStorageFlagValue(ENABLE_EXIT_FLOW);
 
   useEffect(() => {
     /**
@@ -52,18 +52,19 @@ const ActionsButton = ({ extendClass, children }: { extendClass: string, childre
       <SecondaryButton children={children} className={extendClass} submitFunction={onButtonClickHandler}/>
       {showActions && <Grid item className={classes.SettingsWrapper}>
         <Grid ref={actionsRef} className={classes.Settings}>
-          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)} style={{ justifyContent: 'space-between' }}>
+          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)}
+                style={{ justifyContent: 'space-between' }}>
             <Grid container item xs style={{ gap: 8, width: '100%' }}>
-              <Grid className={classes.Remove} />
+              <Grid className={classes.Remove}/>
               <Typography>Remove Validators</Typography>
             </Grid>
           </Grid>
-          {showExitFlow && <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
+          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
             <Grid container item xs style={{ gap: 8, width: '100%' }}>
               <Grid className={classes.Exit}/>
               <Typography>Exit Validators</Typography>
             </Grid>
-          </Grid>}
+          </Grid>
         </Grid>
       </Grid>
       }

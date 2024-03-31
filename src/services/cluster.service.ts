@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import Decimal from 'decimal.js';
-import { keccak256 } from 'web3-utils';
+import { keccak256, encodePacked } from 'web3-utils';
 import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { getContractByName } from '~root/services/contracts.service';
-import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getClusterByHash } from '~root/services/validator.service';
 import { IOperator } from '~app/model/operator.model';
 
@@ -12,8 +12,13 @@ const getSortedOperatorsIds = (operators: IOperator[]) => {
   return operators.map((operator: IOperator) => operator.id).map(Number).sort((a: number, b: number) => a - b);
 };
 
-const getClusterHash = (operators: IOperator[], ownerAddress: string) => {
-  const operatorsIds = getSortedOperatorsIds(operators);
+const getClusterHash = (operators: (number | IOperator)[], ownerAddress: string) => {
+  let operatorsIds;
+  if (typeof operators[0] === 'number') {
+    operatorsIds = operators.sort();
+  } else {
+    operatorsIds = getSortedOperatorsIds(operators as IOperator[]);
+  }
   return keccak256(encodePacked(ownerAddress, ...operatorsIds));
 };
 

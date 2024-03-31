@@ -6,18 +6,18 @@ import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
 import { AlertColor } from '@mui/material/Alert';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { getWalletProvider } from '~app/redux/wallet.slice';
+import { useConnectWallet } from '@web3-onboard/react';
 
 const SuccessPage = () => {
     const classes = useStyles();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-  const provider = useAppSelector(getWalletProvider);
+  const [{  wallet }] = useConnectWallet();
 
     const requestForSSV = () => {
       dispatch(setIsLoading(true));
@@ -44,7 +44,7 @@ const SuccessPage = () => {
             </Grid>
             <Grid container item xs={12} className={classes.TextWrapper}>
               <Typography>Can&apos;t find your tokens?</Typography>
-              <Grid container item className={classes.AddToMetamask} onClick={() => provider && registerSSVTokenInMetamask({ provider, notificationHandler })}>
+              <Grid container item className={classes.AddToMetamask} onClick={() => wallet && registerSSVTokenInMetamask({ provider: wallet.provider, notificationHandler })}>
                 <Grid className={classes.MetaMask} />
                 <Typography>Add SSV to Metamask</Typography>
               </Grid>

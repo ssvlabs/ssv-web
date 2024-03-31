@@ -24,8 +24,6 @@ const toWei = (amount?: number | string): string => {
   return utils.toWei(convertedAmount.toString(), 'ether');
 };
 
-const encodePacked = utils.encodePacked;
-
 const web3 = new Web3();
 
 const encodeParameter = (type: string, value: any) => {
@@ -51,4 +49,4 @@ const getFeeForYear = (fee: number, decimalPlaces?: number): string => {
   return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
 };
 
-export { fromWei, toWei, encodePacked, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear };
+export { fromWei, toWei, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear };

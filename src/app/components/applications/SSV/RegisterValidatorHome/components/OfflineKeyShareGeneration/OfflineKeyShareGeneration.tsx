@@ -15,7 +15,6 @@ import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
@@ -30,7 +29,7 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const OFFLINE_FLOWS = {
@@ -44,26 +43,25 @@ const MIN_VALIDATORS_COUNT = 1;
 const MAX_VALIDATORS_COUNT = 100;
 
 const OfflineKeyShareGeneration = () => {
-  const stores = useStores();
-  const classes = useStyles();
-  const navigate = useNavigate();
-  const walletStore: WalletStore = stores.Wallet;
-  const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
   const [addressValidationError, setAddressValidationError] = useState({ shouldDisplay: true, errorMessage: '' });
   const [ownerNonce, setOwnerNonce] = useState<number | undefined>(undefined);
-  const { accountAddress } = walletStore;
-  const { apiNetwork } = getStoredNetwork();
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
-  const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
-  const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
   const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
   const [isInvalidValidatorsCount, setIsInvalidValidatorsCount] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isMainnet = useAppSelector(getIsMainnet);
+  const accountAddress = useAppSelector(getAccountAddress);
+  const stores = useStores();
+  const classes = useStyles();
+  const processStore: ProcessStore = stores.Process;
+  const operatorStore: OperatorStore = stores.Operator;
+  const { apiNetwork } = getStoredNetwork();
+  const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
+  const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
 
   useEffect(() => {
     const fetchOwnerNonce = async () => {
@@ -122,7 +120,7 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:v2.0.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.0.0" init --owner ${walletStore.accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
+  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:v2.0.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.0.0" init --owner ${accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
   const instructions = [
     {
       id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [

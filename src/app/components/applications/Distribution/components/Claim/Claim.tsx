@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
-import { useStores } from '~app/hooks/useStores';
 import { useDistributionStore } from '~app/hooks/useDistributionStore';
-import WalletStore from '~app/common/stores/applications/Distribution/Wallet.store';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import EligibleScreen from '~app/components/applications/Distribution/components/Claim/EligibleScreen';
 import NotEligibleScreen from '~app/components/applications/Distribution/components/Claim/NotEligibleScreen';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const CLAIM_FLOW = {
   NOT_ELIGIBLE: 0,
@@ -15,17 +14,16 @@ const CLAIM_FLOW = {
 };
 
 const Claim = () => {
-  const stores = useStores();
+  const accountAddress = useAppSelector(getAccountAddress);
   const { networkId } = getStoredNetwork();
   const distributionStore: DistributionStore | DistributionTestnetStore = useDistributionStore(networkId);
-  const walletStore: WalletStore = stores.Wallet;
   const [currentClaimFlow, setCurrentClaimFlow] = useState(distributionStore.userAddress ? CLAIM_FLOW.ELIGIBLE : CLAIM_FLOW.NOT_ELIGIBLE);
 
   console.log(distributionStore);
 
   useEffect(() => {
     setCurrentClaimFlow(distributionStore.userAddress ? CLAIM_FLOW.ELIGIBLE : CLAIM_FLOW.NOT_ELIGIBLE);
-  }, [walletStore.accountAddress]);
+  }, [accountAddress]);
 
   const components = {
     [CLAIM_FLOW.ELIGIBLE]: EligibleScreen,
@@ -39,4 +37,4 @@ const Claim = () => {
   );
 };
 
-export default observer(Claim);
+export default Claim;

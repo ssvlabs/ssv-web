@@ -1,5 +1,4 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -7,20 +6,18 @@ import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
-import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
-import { useStores } from '~app/hooks/useStores';
 import { AlertColor } from '@mui/material/Alert';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { getWalletProvider } from '~app/redux/wallet.slice';
 
 const SuccessPage = () => {
     const classes = useStyles();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-  const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
+  const provider = useAppSelector(getWalletProvider);
 
     const requestForSSV = () => {
       dispatch(setIsLoading(true));
@@ -47,18 +44,13 @@ const SuccessPage = () => {
             </Grid>
             <Grid container item xs={12} className={classes.TextWrapper}>
               <Typography>Can&apos;t find your tokens?</Typography>
-              <Grid container item className={classes.AddToMetamask} onClick={() => walletStore?.wallet && registerSSVTokenInMetamask({ provider: walletStore.wallet.provider, notificationHandler })}>
+              <Grid container item className={classes.AddToMetamask} onClick={() => provider && registerSSVTokenInMetamask({ provider, notificationHandler })}>
                 <Grid className={classes.MetaMask} />
                 <Typography>Add SSV to Metamask</Typography>
               </Grid>
             </Grid>
             <Grid container item xs={12} className={classes.TextWrapper}>
-              <PrimaryButton
-                disable={false}
-                children={'Request More Funds'}
-                withVerifyConnection={false}
-                submitFunction={requestForSSV}
-              />
+              <PrimaryButton disable={false} children={'Request More Funds'} submitFunction={requestForSSV} />
             </Grid>
           </Grid>,
         ]}
@@ -66,4 +58,4 @@ const SuccessPage = () => {
     );
 };
 
-export default observer(SuccessPage);
+export default SuccessPage;

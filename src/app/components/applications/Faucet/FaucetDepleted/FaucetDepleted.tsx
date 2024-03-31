@@ -32,7 +32,6 @@ const SuccessPage = () => {
             <PrimaryButton
               disable={false}
               children={'Go to Discord'}
-              withVerifyConnection={false}
               submitFunction={requestForSSV}
               wrapperClass={classes.SubmitButton}
             />

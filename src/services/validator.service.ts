@@ -11,13 +11,9 @@ const getOwnerAddressCost = async (ownerAddress: string, skipRetry?: boolean): P
   }
 };
 
-const clustersByOwnerAddress = async (query: string, skipRetry?: boolean): Promise<any> => {
-  try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
-    return await getRequest(url, skipRetry);
-  } catch (e) {
-    return { clusters: [], pagination: {} };
-  }
+const clustersByOwnerAddress = async (query: string): Promise<any> => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
+  return await getRequest(url);
 };
 
 const getLiquidationCollateralPerValidator = ({
@@ -41,40 +37,19 @@ const getLiquidationCollateralPerValidator = ({
 };
 
 const validatorsByClusterHash = async (page: number, clusterHash: string, perPage: number = 7): Promise<any> => {
-  try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/hash/${clusterHash}/?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
-    return await getRequest(url, true);
-  } catch (e) {
-    console.log(`Error, Failed to get validators info. ${e}`);
-    return { operators: [], clusters: [], pagination: {} };
-  }
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/hash/${clusterHash}/?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+  const res = await getRequest(url);
+  return res ?? { operators: [], clusters: [], pagination: {} };
 };
 
-const clusterByHash = async (clusterHash: string): Promise<any> => {
-  try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
-    return await getRequest(url, true);
-  } catch (e) {
-    return { clusters: [], pagination: {} };
-  }
+const getClusterByHash = async (clusterHash: string): Promise<any> => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+  return await getRequest(url);
 };
 
-const getClusterData = async (clusterHash: string): Promise<any> => {
-  try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
-    return await getRequest(url, true);
-  } catch (e) {
-    return null;
-  }
-};
-
-const getValidator = async (publicKey: string, skipRetry?: boolean) => {
-  try {
+const getValidator = async (publicKey: string) => {
     const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
-    return await getRequest(url, skipRetry);
-  } catch (e) {
-    return null;
-  }
+    return await getRequest(url);
 };
 
 export {
@@ -82,7 +57,6 @@ export {
   clustersByOwnerAddress,
   validatorsByClusterHash,
   getLiquidationCollateralPerValidator,
-  clusterByHash,
-  getClusterData,
+  getClusterByHash,
   getValidator,
 };

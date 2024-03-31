@@ -93,7 +93,6 @@ const config = {
             SUCCESS: '/my-account/validator/update/success',
           },
           VALIDATOR_REMOVE: {
-            ROOT: '/my-account/cluster/remove-validator',
             REMOVED: '/my-account/cluster/removed',
             BULK: '/my-account/cluster/bulk',
           },
@@ -137,9 +136,6 @@ const config = {
       VALID_KEY_LENGTH: 612,
       SELECT_MINIMUM_OPERATORS: 4,
       AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
-    },
-    TESTING: {
-      GENERATE_RANDOM_OPERATOR_KEY: process.env.REACT_APP_DEBUG,
     },
   },
   links: {

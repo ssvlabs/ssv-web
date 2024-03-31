@@ -46,7 +46,8 @@ import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
-import { getAccountAddress, getWalletLabel } from '~app/redux/wallet.slice';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import { isJsonFile } from '~root/utils/dkg.utils';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -78,7 +79,7 @@ const KeyShareFlow = () => {
       errorMessage: '',
       subErrorMessage: '',
     });
-    const keyShareFileIsJson = validatorStore.isJsonFile(validatorStore.keyShareFile);
+    const keyShareFileIsJson = isJsonFile(validatorStore.keyShareFile);
     const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(0);
     const dispatch = useAppDispatch();
 

@@ -6,7 +6,6 @@ import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
-import { getImage } from '~lib/utils/filePath';
 import LinkText from '~app/components/common/LinkText';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -102,7 +101,7 @@ const TransactionPendingPopUp = () => {
                          subtitle={POP_UP_DATA[`${isContractWallet}`].subTitles}/>
         {isContractWallet && <AdditionText>Please return to this web app once approved.</AdditionText>}
         <Grid item>
-          <ImageWrapper src={getImage('ssv-loader.svg')} alt="loader" hasMarginBottom={!isContractWallet}/>
+          <ImageWrapper src={'/images/ssv-loader.svg'} alt="loader" hasMarginBottom={!isContractWallet}/>
         </Grid>
         {!isContractWallet && <Grid item container style={{ marginBottom: 20 }}>
           <Grid item xs>

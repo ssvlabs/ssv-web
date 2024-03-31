@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
-import { getImage } from '~lib/utils/filePath';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ConnectWalletButton.styles';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
@@ -69,21 +68,15 @@ const ConnectWalletButton = () => {
   };
 
   let icon;
-  if (storedWalletLabel) {
-    switch (storedWalletLabel) {
-      case 'Ledger':
-        icon = getImage('wallets/ledger.svg');
-        break;
-      case 'Trezor':
-        icon = getImage('wallets/trezor.svg');
-        break;
-        case 'WalletConnect':
-        icon = getImage('wallets/walletconnect.svg');
-        break;
-      default:
-        icon = getImage('wallets/metamask.svg');
-        break;
-    }
+  if (storedWalletLabel === 'Ledger') {
+    icon = '/images/wallets/ledger.svg';
+  } else if (storedWalletLabel === 'Trezor') {
+    icon = '/images/wallets/trezor.svg';
+  } else if (storedWalletLabel === 'WalletConnect') {
+    icon = '/images/wallets/walletconnect.svg';
+  } else if (storedWalletLabel === 'Ledger') {
+  } else {
+    icon = '/images/wallets/metamask.svg';
   }
 
   const walletDisplayName = (address: string) => `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;

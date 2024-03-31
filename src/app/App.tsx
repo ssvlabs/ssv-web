@@ -23,7 +23,6 @@ import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { useDispatch } from 'react-redux';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { getImage } from '~lib/utils/filePath';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -105,7 +104,7 @@ const App = () => {
           <ThemeProviderLegacy theme={MuiTheme}>
             <ScThemeProvider theme={theme}>
               <GlobalStyle/>
-              {!web3Onboard && (<LoaderWrapper><Loader src={getImage('ssv-loader.svg')} /></LoaderWrapper>)}
+              {!web3Onboard && (<LoaderWrapper><Loader src={'/images/ssv-loader.svg'} /></LoaderWrapper>)}
               <BarMessage/>
               <BrowserView>
                 {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}

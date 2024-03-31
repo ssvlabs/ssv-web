@@ -42,15 +42,9 @@ const validatorsByClusterHash = async (page: number, clusterHash: string, perPag
   return res ?? { operators: [], clusters: [], pagination: {} };
 };
 
-const clusterByHash = async (clusterHash: string): Promise<any> => {
+const getClusterByHash = async (clusterHash: string): Promise<any> => {
   const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
-  const res = await getRequest(url);
-  return res ?? { clusters: [], pagination: {} };
-};
-
-const getClusterData = async (clusterHash: string): Promise<any> => {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
-    return await getRequest(url);
+  return await getRequest(url);
 };
 
 const getValidator = async (publicKey: string) => {
@@ -63,7 +57,6 @@ export {
   clustersByOwnerAddress,
   validatorsByClusterHash,
   getLiquidationCollateralPerValidator,
-  clusterByHash,
-  getClusterData,
+  getClusterByHash,
   getValidator,
 };

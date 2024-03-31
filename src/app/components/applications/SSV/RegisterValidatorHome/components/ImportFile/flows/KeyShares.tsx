@@ -278,7 +278,9 @@ const KeyShareFlow = () => {
     async function processKeyShareFile(): Promise<KeyShareValidationResponse> {
       try {
         if (!validatorStore.keyShareFile) {
-          throw Error('KeyShares file undefined.');
+          setValidatorsList({});
+          setValidatorsCount(0);
+          return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'KeyShares file undefined.');
         }
         const fileJson = await validatorStore.keyShareFile.text();
         const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);

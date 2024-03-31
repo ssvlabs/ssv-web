@@ -126,10 +126,10 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async removeValidator({ accountAddress, isContractWallet, publicKey, operatorIds }: { accountAddress: string; isContractWallet: boolean; publicKey: string; operatorIds: number[] }): Promise<boolean> {
+  async removeValidator({ accountAddress, isContractWallet, publicKey, operators }: { accountAddress: string; isContractWallet: boolean; publicKey: string; operators: IOperator[] }): Promise<boolean> {
     const ssvStore: SsvStore = this.getStore('SSV');
-    const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
-    const clusterData = await getClusterData(getClusterHash(operatorIds, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    const sortedOperatorIds = getSortedOperatorsIds(operators);
+    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
     const payload =  [publicKey, sortedOperatorIds, clusterData] ;
     const contract = getContractByName(EContractName.SETTER);
     if (!payload) {
@@ -147,10 +147,10 @@ class ValidatorStore extends BaseStore {
   /**
    * Bulk remove validators
    */
-  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operatorIds }: { accountAddress: string; isContractWallet: boolean; validatorIds: string[]; operatorIds: number[] }): Promise<boolean> {
+  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators }: { accountAddress: string; isContractWallet: boolean; validatorIds: string[]; operators: IOperator[] }): Promise<boolean> {
     const ssvStore: SsvStore = this.getStore('SSV');
-    const sortedOperatorIds = getSortedOperatorsIds(operatorIds);
-    const clusterData = await getClusterData(getClusterHash(operatorIds, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    const sortedOperatorIds = getSortedOperatorsIds(operators);
+    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
     const payload = [validatorIds, sortedOperatorIds, clusterData];
     const contract = getContractByName(EContractName.SETTER);
     if (!payload) {
@@ -286,7 +286,7 @@ class ValidatorStore extends BaseStore {
           keysharePayload.operatorIds,
           keysharePayload.sharesData || keysharePayload.shares,
           `${totalCost}`,
-          await getClusterData(getClusterHash(operators.map(item => item.id), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral));
+          await getClusterData(getClusterHash(operators as unknown as IOperator[], accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral));
 
         resolve(payload);
       } catch (e: any) {
@@ -340,7 +340,7 @@ class ValidatorStore extends BaseStore {
             publicKeys,
             operatorIds,
             sharesData, `${totalCost}`,
-            await getClusterData(getClusterHash(operatorIds, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral));
+            await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral));
           resolve(payload);
         }
         resolve(null);

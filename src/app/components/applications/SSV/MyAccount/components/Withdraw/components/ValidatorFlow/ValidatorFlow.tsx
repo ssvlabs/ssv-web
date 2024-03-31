@@ -15,7 +15,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { extendClusterEntity, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
-import { clusterByHash } from '~root/services/validator.service';
+import { getClusterByHash } from '~root/services/validator.service';
 import { SingleCluster } from '~app/model/processes.model';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
@@ -80,25 +80,28 @@ const ValidatorFlow = () => {
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await clusterByHash(getClusterHash(cluster.operators, accountAddress));
-    const newCluster = response.cluster;
-    newCluster.operators = cluster.operators;
-    processStore.setProcess({
-      processName: 'single_cluster',
-      item: await extendClusterEntity(newCluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
-    }, 2);
-    await myAccountStore.getOwnerAddressClusters({});
+    const response = await getClusterByHash(getClusterHash(cluster.operators, accountAddress));
+    if (response) {
+      const newCluster = response.cluster;
+      newCluster.operators = cluster.operators;
+      processStore.setProcess({
+        processName: 'single_cluster',
+        item: await extendClusterEntity(newCluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
+      }, 2);
+      await myAccountStore.getOwnerAddressClusters({});
+
+      if (!isContractWallet) {
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+      if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {
+        navigate(-1);
+      }
+      if (success) {
+        setWithdrawValue(0.0);
+        navigate(-1);
+      }
+    }
     setIsLoading(false);
-    if (!isContractWallet) {
-      store.dispatch(setIsShowTxPendingPopup(false));
-    }
-    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {
-      navigate(-1);
-    }
-    if (success) {
-      setWithdrawValue(0.0);
-      navigate(-1);
-    }
   };
 
   function inputHandler(e: any) {

@@ -34,7 +34,6 @@ const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/Re
 const OperatorAccessSettings = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings'));
 const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator'));
 const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
-const RemoveValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/RemoveFlow/RemoveValidator'));
 const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
 const OfflineKeyShareGeneration = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration'));
 const OfflineKeyShareCeremony = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony'));
@@ -60,7 +59,6 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SLASHING_WARNING, Component: SlashingWarning },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.ROOT, Component: RemoveValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, Component: BulkComponent },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },

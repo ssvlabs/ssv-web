@@ -11,7 +11,6 @@ import config, { translations } from '~app/common/config';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
-import { getRandomOperatorKey } from '~lib/utils/contract/operator';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { encodeParameter } from '~root/services/conversions.service';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -27,13 +26,9 @@ const GenerateOperatorKeys = () => {
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
   const operatorStore: OperatorStore = stores.Operator;
-  let initialOperatorKey = '';
-  if (config.FEATURE.TESTING.GENERATE_RANDOM_OPERATOR_KEY) {
-    initialOperatorKey = getRandomOperatorKey(false);
-  }
   const [operatorExist, setOperatorExist] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
-  const [inputsData, setInputsData] = useState({ publicKey: initialOperatorKey });
+  const [inputsData, setInputsData] = useState({ publicKey: '' });
   const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
   const dispatch = useAppDispatch();

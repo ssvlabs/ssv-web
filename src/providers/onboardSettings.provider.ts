@@ -2,7 +2,6 @@ import safeWallet from '@web3-onboard/gnosis';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import config from '~app/common/config';
-import { getImage } from '~lib/utils/filePath';
 import { Theme } from '@web3-onboard/core';
 import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
@@ -95,8 +94,8 @@ const initOnboardOptions = {
   ],
   appMetadata: {
     name: 'SSV Network',
-    icon: getImage('ssvIcons/logo.svg'),
-    logo: getImage('ssvIcons/logo.svg'),
+    icon: '/images/ssvIcons/logo.svg',
+    logo: '/images/ssvIcons/logo.svg',
     description: 'SSV Network',
     recommendedInjectedWallets: [
       { name: 'MetaMask', url: 'https://metamask.io' },

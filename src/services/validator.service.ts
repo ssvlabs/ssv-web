@@ -37,7 +37,7 @@ const getLiquidationCollateralPerValidator = ({
 };
 
 const validatorsByClusterHash = async (page: number, clusterHash: string, perPage: number = 7): Promise<any> => {
-  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/hash/${clusterHash}/?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/hash/${clusterHash}/?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
   const res = await getRequest(url);
   return res ?? { operators: [], clusters: [], pagination: {} };
 };
@@ -49,13 +49,13 @@ const clusterByHash = async (clusterHash: string): Promise<any> => {
 };
 
 const getClusterData = async (clusterHash: string): Promise<any> => {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
-    return await getRequest(url);
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+  return await getRequest(url);
 };
 
 const getValidator = async (publicKey: string) => {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
-    return await getRequest(url);
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+  return await getRequest(url);
 };
 
 export {

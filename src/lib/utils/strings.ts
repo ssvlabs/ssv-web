@@ -1,5 +1,4 @@
-import { web3 } from 'ssv-keys/dist/tsc/src/lib/helpers/web3.helper';
-import { toChecksumAddress } from 'web3-utils';
+import { utils } from 'ethers';
 
 export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
   if (!value) return '';
@@ -30,13 +29,13 @@ export const checkSpecialCharacters = (value: string) => {
     return linkRegex.test(value);
 };
 
-export const equalsAddresses = (a: string, b: string): boolean => web3.utils.toChecksumAddress(a) === web3.utils.toChecksumAddress(b);
+export const equalsAddresses = (a: string, b: string): boolean => utils.getAddress(a) === utils.getAddress(b);
 
 export const formatValidatorPublicKey = (publicKey: string) => publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
 
 const checkAddressChecksum = (address: string) => {
   try {
-    return toChecksumAddress(address) === address;
+    return utils.getAddress(address) === address;
   } catch (e) {
     return false;
   }

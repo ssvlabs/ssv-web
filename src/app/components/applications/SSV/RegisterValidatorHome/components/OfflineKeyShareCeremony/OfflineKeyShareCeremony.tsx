@@ -15,6 +15,11 @@ import {
 import DirectoryBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/DirectoryBadge/DirectoryBadge';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
+import styled from 'styled-components';
+
+const BoldText = styled.span`
+   font-weight: 800;
+`;
 
 const OfflineKeyShareCeremony = () => {
   const stores = useStores();
@@ -73,8 +78,8 @@ const OfflineKeyShareCeremony = () => {
             <Grid>
               <code className={classes.DkgCode}>proofs.json</code>
               <Typography className={classes.DkgCodeText}>This file contains the signatures indicating that the
-                ceremony was conducted by the cluster operators and is crucial for resharing your validator with a
-                different set of operators in the future. Please ensure to back up this file securely.</Typography>
+                ceremony was conducted by the cluster operators and is <BoldText>crucial for resharing</BoldText> your validator with a
+                different set of operators in the future. Please ensure to <BoldText>back up</BoldText> this file securely.</Typography>
             </Grid>
             <Grid className={classes.Line}/>
             <Typography className={classes.DkgCodeText}>For ceremonies generating more than one validator, you will find

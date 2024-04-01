@@ -51,15 +51,20 @@ const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOf
   return clusterBurnRate * newAmountOfValidators;
 };
 
-const isClusterLiquidated = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any): Promise<boolean> => {
+const isClusterLiquidated = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData: any): Promise<boolean> => {
+  console.log(operators);
   const operatorsIds = operators.sort();
   const contract = getContractByName(EContractName.GETTER);
-  const clusterData: any = injectedClusterData ?? await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
+  const clusterData: any = injectedClusterData;
   if (!clusterData) return false;
   try {
+    console.log(ownerAddress);
+    console.log(operatorsIds);
+    console.log(clusterData);
     const isLiquidated = await contract.isLiquidated(ownerAddress, operatorsIds, clusterData);
     return isLiquidated;
   } catch (e) {
+    console.log(e);
     return false;
   }
 };
@@ -68,13 +73,13 @@ const getClusterBurnRate = async (operators: number[], ownerAddress: string, liq
   const contract = getContractByName(EContractName.GETTER);
   const operatorsIds = operators.sort();
   const clusterData = injectedClusterData;
-  console.log(injectedClusterData);
-  console.log(ownerAddress);
-  console.log(operators);
+  // console.log(injectedClusterData);
+  // console.log(ownerAddress);
+  // console.log(operators);
   try {
-    console.log(contract);
+    // console.log(contract);
     const burnRate = await contract.getBurnRate(ownerAddress, operatorsIds, clusterData);
-    console.log(burnRate);
+    // console.log(burnRate);
     return burnRate;
   } catch (e) {
     return 0;

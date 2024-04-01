@@ -1,6 +1,6 @@
 import config from '~app/common/config';
 import { getRequest } from '~root/services/httpApi.service';
-import { web3 } from 'ssv-keys/dist/tsc/src/lib/helpers/web3.helper';
+import { utils } from 'ethers';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
@@ -9,7 +9,7 @@ import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 
 const getAccountData = async (publicKey: string) => {
   try {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${web3.utils.toChecksumAddress(publicKey)}`;
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/accounts/${utils.getAddress(publicKey)}`;
     return await getRequest(url);
   } catch (e) {
     return null;

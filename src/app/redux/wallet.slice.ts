@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { WalletState } from '@web3-onboard/core';
+import { EIP1193Provider } from '@web3-onboard/core';
 import { RootState } from '~app/store';
 import { changeNetwork, getStoredNetwork, MAINNET_NETWORK_ID, NetworkInfo } from '~root/providers/networkInfo.provider';
 import { checkIfWalletIsContract } from '~root/services/wallet.service';
@@ -8,8 +8,8 @@ import { TEST_WALLET_ADDRESS } from '~lib/utils/developerHelper';
 import { METAMASK_LABEL } from '~app/constants/constants';
 
 export interface WalletSliceState {
-  wallet: WalletState | null;
   accountAddress: string;
+  label: string;
   isNotMetamask: boolean;
   isContractWallet: boolean;
   connectedNetwork: NetworkInfo;
@@ -17,18 +17,18 @@ export interface WalletSliceState {
 }
 
 const initialState: WalletSliceState = {
-  wallet: null,
   accountAddress: '',
+  label: '',
   isNotMetamask: false,
   isContractWallet: false,
   connectedNetwork: getStoredNetwork(),
   isMainnet: getStoredNetwork().networkId === MAINNET_NETWORK_ID,
 };
 
-const checkIfWalletIsContractAction = createAsyncThunk('wallet/checkIfWalletIsContractStatus', async (_, thunkAPI) => {
+const checkIfWalletIsContractAction = createAsyncThunk('wallet/checkIfWalletIsContractStatus', async (provider: EIP1193Provider, thunkAPI) => {
   const walletState = (thunkAPI.getState() as RootState).walletState;
-  if (walletState.wallet && walletState.isNotMetamask) {
-    return await checkIfWalletIsContract({ provider: walletState.wallet.provider, walletAddress: walletState.accountAddress });
+  if (walletState.accountAddress && walletState.isNotMetamask) {
+    return await checkIfWalletIsContract({ provider, walletAddress: walletState.accountAddress });
   }
   return false;
 });
@@ -37,14 +37,14 @@ export const slice = createSlice({
   name: 'walletState',
   initialState,
   reducers: {
-    setWallet: (state, action: { payload: WalletState }) => {
-      state.wallet = action.payload;
+    setWallet: (state, action: { payload: { label: string, address: string } }) => {
+      state.label = action.payload.label;
       const testWalletAddress = getFromLocalStorageByKey(TEST_WALLET_ADDRESS);
-      state.accountAddress = testWalletAddress ?? action.payload.accounts[0].address;
+      state.accountAddress = testWalletAddress ?? action.payload.address;
       state.isNotMetamask = action.payload.label !== METAMASK_LABEL;
     },
     resetWallet: (state) => {
-      state.wallet = null;
+      state.label = '';
       state.accountAddress = '';
       state.isNotMetamask = false;
       state.isContractWallet = false;
@@ -67,8 +67,7 @@ export const { setWallet, resetWallet, setConnectedNetwork } = slice.actions;
 
 export { checkIfWalletIsContractAction };
 
-export const getWalletProvider = (state: RootState) => state.walletState.wallet?.provider;
-export const getWalletLabel = (state: RootState) => state.walletState.wallet?.label;
+export const getWalletLabel = (state: RootState) => state.walletState.label;
 export const getAccountAddress = (state: RootState) => state.walletState.accountAddress;
 export const getIsContractWallet = (state: RootState) => state.walletState.isContractWallet;
 export const getIsNotMetamask = (state: RootState) => state.walletState.isNotMetamask;

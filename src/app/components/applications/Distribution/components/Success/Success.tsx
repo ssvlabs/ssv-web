@@ -11,13 +11,14 @@ import { getTransactionLink } from '~root/providers/networkInfo.provider';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getTxHash } from '~app/redux/appState.slice';
 import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
-import { getIsMainnet, getWalletProvider } from '~app/redux/wallet.slice';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { AlertColor } from '@mui/material/Alert';
+import { useConnectWallet } from '@web3-onboard/react';
 
 const Success = () => {
   const classes = useStyles();
-  const provider = useAppSelector(getWalletProvider);
+  const [{  wallet }] = useConnectWallet();
   const txHash = useAppSelector(getTxHash);
   const isMainnet = useAppSelector(getIsMainnet);
   const dispatch = useAppDispatch();
@@ -46,7 +47,7 @@ const Success = () => {
             subtitle={<span>Thank you for joining the SSV network's {isMainnet ? 'Mainnet' : 'Testnet'} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
           />
           <Grid item container className={classes.AddSsvToWallet}
-            onClick={() => provider && registerSSVTokenInMetamask({ provider, notificationHandler })}>
+            onClick={() => wallet && registerSSVTokenInMetamask({ provider: wallet.provider, notificationHandler })}>
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>

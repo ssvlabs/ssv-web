@@ -11,7 +11,7 @@ const fromWei = (amount?: number | string): number => {
   if (typeof amount === 'number' && amount === 0) return 0;
   if (typeof amount === 'string' && Number(amount) === 0) return 0;
 
-  return parseFloat(utils.formatUnits(amount.toString(), 'ether'));
+  return parseFloat(utils.formatEther(amount.toString()));
 };
 
 const toWei = (amount?: number | string): string => {
@@ -23,7 +23,7 @@ const toWei = (amount?: number | string): string => {
   if (typeof amount === 'string') {
     convertedAmount = amount.slice(0, 16);
   }
-  return utils.formatUnits(convertedAmount.toString(), 'wei');
+  return utils.parseUnits(convertedAmount.toString(), 'ether').toString();
 };
 
 const web3 = new Web3();

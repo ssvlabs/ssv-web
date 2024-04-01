@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import Web3 from 'web3';
+import { utils as web3Utils } from 'web3';
 import { utils } from 'ethers';
 import { roundNumber } from '~lib/utils/numbers';
 import Decimal from 'decimal.js';
@@ -27,6 +28,8 @@ const toWei = (amount?: number | string): string => {
 
 const web3 = new Web3();
 
+const encodePacked = web3Utils.encodePacked;
+
 const encodeParameter = (type: string, value: any) => {
   return web3.eth.abi.encodeParameter(type, value);
 };
@@ -50,4 +53,4 @@ const getFeeForYear = (fee: number, decimalPlaces?: number): string => {
   return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
 };
 
-export { fromWei, toWei, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear };
+export { fromWei, toWei, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear, encodePacked };

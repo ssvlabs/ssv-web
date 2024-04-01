@@ -64,7 +64,7 @@ const isClusterLiquidated = async (operators: number[], ownerAddress: string, li
   }
 };
 
-const getClusterBurnRate = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any) => {
+const getClusterBurnRate = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any) => {
   const contract = getContractByName(EContractName.GETTER);
   const operatorsIds = operators.sort();
   const clusterData = injectedClusterData;

@@ -53,15 +53,15 @@ const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOf
 
 const isClusterLiquidated = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData: any): Promise<boolean> => {
   console.log(operators);
-  const operatorsIds = operators.sort();
+  // const operatorsIds = operators.sort();
   const contract = getContractByName(EContractName.GETTER);
   const clusterData: any = injectedClusterData;
   if (!clusterData) return false;
   try {
     console.log(ownerAddress);
-    console.log(operatorsIds);
+    // console.log(operatorsIds);
     console.log(clusterData);
-    const isLiquidated = await contract.isLiquidated(ownerAddress, operatorsIds, clusterData);
+    const isLiquidated = await contract.isLiquidated(ownerAddress, operators, clusterData);
     return isLiquidated;
   } catch (e) {
     console.log(e);

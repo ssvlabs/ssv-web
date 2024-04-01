@@ -31,6 +31,35 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import styled from 'styled-components';
+import { OperatingSystemsEnum } from '~app/enums/os.enum';
+
+const DkgTitleWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`;
+
+const OsButtonsWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+`;
+
+const OsButtons = styled.div<{ isSelected: boolean, theme: any }>`
+    height: 24px;
+    padding: 1px 8px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: ${({ isSelected, theme }) => isSelected ? theme.colors.primaryBlue : theme.colors.gray60};
+    border-radius: 4px;
+    border: ${({ isSelected, theme }) => `1px solid ${isSelected ? theme.colors.primaryBlue : theme.colors.gray30}`};
+`;
+
 
 const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
@@ -42,6 +71,17 @@ const XS = 12;
 const MIN_VALIDATORS_COUNT = 1;
 const MAX_VALIDATORS_COUNT = 100;
 
+const OPERATING_SYSTEMS = [{
+  title: 'Windows',
+  systemName: OperatingSystemsEnum.Windows,
+}, {
+  title: 'MacOS',
+  systemName: OperatingSystemsEnum.MacOS,
+}, {
+  title: 'Linux (and WSL)',
+  systemName: OperatingSystemsEnum.Linux,
+}];
+
 const OfflineKeyShareGeneration = () => {
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
@@ -51,6 +91,7 @@ const OfflineKeyShareGeneration = () => {
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
   const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
   const [isInvalidValidatorsCount, setIsInvalidValidatorsCount] = useState(false);
+  const [operatingSystemName, setOperatingSystemName] = useState(osName);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isMainnet = useAppSelector(getIsMainnet);
@@ -61,7 +102,8 @@ const OfflineKeyShareGeneration = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const { apiNetwork } = getStoredNetwork();
   const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
-  const dynamicFullPath = isWindows ? '%cd%' : '$(pwd)';
+  const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
+  const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
 
   useEffect(() => {
     const fetchOwnerNonce = async () => {
@@ -113,10 +155,10 @@ const OfflineKeyShareGeneration = () => {
       ip: operator.dkg_address,
     }));
     let jsonOperatorInfo = JSON.stringify(operatorsInfo);
-    if (isWindows) {
+    if (isWindowOs) {
       jsonOperatorInfo = jsonOperatorInfo.replace(/"/g, '\\"');
     }
-    return isWindows ? `"${jsonOperatorInfo}"` : `'${jsonOperatorInfo}'`;
+    return isWindowOs ? `"${jsonOperatorInfo}"` : `'${jsonOperatorInfo}'`;
   };
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
@@ -124,8 +166,9 @@ const OfflineKeyShareGeneration = () => {
   const instructions = [
     {
       id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [
-        <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.linkText}
-                                                                        link={config.links.SSV_KEYS_RELEASES_URL}/></Grid>,
+        <Grid>1. Download the <b>{osName}</b> executable from <LinkText
+          text={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.linkText}
+          link={config.links.SSV_KEYS_RELEASES_URL}/></Grid>,
         translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.COMMAND_LINE_INSTRUCTIONS.secondStep,
         translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.COMMAND_LINE_INSTRUCTIONS.thirdStep,
         translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.COMMAND_LINE_INSTRUCTIONS.fourthStep,
@@ -133,8 +176,9 @@ const OfflineKeyShareGeneration = () => {
     },
     {
       id: OFFLINE_FLOWS.DESKTOP_APP, instructions: [
-        <Grid>1. Download the <b>{osName}</b> executable from <LinkText text={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.linkText}
-                                                                        link={config.links.SSV_KEYS_RELEASES_URL}/></Grid>,
+        <Grid>1. Download the <b>{osName}</b> executable from <LinkText
+          text={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.linkText}
+          link={config.links.SSV_KEYS_RELEASES_URL}/></Grid>,
         translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.DESKTOP_APP.secondStep,
         translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.DESKTOP_APP.thirdStep,
       ],
@@ -227,22 +271,22 @@ const OfflineKeyShareGeneration = () => {
                 </Grid>
               </Grid>}/>
             {!isMainnet && <Grid container item
-																	 className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
-																	 onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
-							<Grid item xs={XS}
-										className={`${classes.Image} ${classes.DkgImage} ${!isSelected(OFFLINE_FLOWS.DKG) && classes.DkgImageUnselected}`}/>
-							<Grid className={classes.OptionTextWrapper}>
-								<Typography className={classes.BlueText}>DKG</Typography>
-								<Typography className={classes.AdditionalGrayText}>Generate from New Key</Typography>
-							</Grid>
-						</Grid>}
+                                 className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
+                                 onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
+              <Grid item xs={XS}
+                    className={`${classes.Image} ${classes.DkgImage} ${!isSelected(OFFLINE_FLOWS.DKG) && classes.DkgImageUnselected}`}/>
+              <Grid className={classes.OptionTextWrapper}>
+                <Typography className={classes.BlueText}>DKG</Typography>
+                <Typography className={classes.AdditionalGrayText}>Generate from New Key</Typography>
+              </Grid>
+            </Grid>}
           </Grid>
           {selectedBox === OFFLINE_FLOWS.DESKTOP_APP && <Grid container item className={classes.UnofficialTool}>
-						This app is an unofficial tool built as a public good by the OneStar team.
-					</Grid>}
+            This app is an unofficial tool built as a public good by the OneStar team.
+          </Grid>}
           {selectedBox !== 0 && selectedBox !== OFFLINE_FLOWS.DKG && <Grid container item>
-						<Typography className={classes.GrayText} style={{ marginBottom: 16 }}>instructions:</Typography>
-						<Grid container className={classes.ColumnDirection} item style={{ gap: 24 }}>
+            <Typography className={classes.GrayText} style={{ marginBottom: 16 }}>instructions:</Typography>
+            <Grid container className={classes.ColumnDirection} item style={{ gap: 24 }}>
               {instructions.map((instruction) => {
                 if (instruction.id === selectedBox) {
                   return instruction.instructions.map((text, index: number) => {
@@ -251,64 +295,73 @@ const OfflineKeyShareGeneration = () => {
                   });
                 }
               })}
-						</Grid>
-					</Grid>
+            </Grid>
+          </Grid>
           }
           {selectedBox === OFFLINE_FLOWS.DKG && !isMainnet && operatorsAcceptDkg &&
-						<Grid container item className={classes.DkgInstructionsWrapper}>
-							<Grid className={classes.DkgNotification}>
-								Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
-							</Grid>
-							<Grid className={classes.DkgSectionWrapper}>
-								<Typography className={classes.DkgTitle}>Prerequisite</Typography>
-								<Grid className={classes.DkgText}><LinkText text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.DOCKER_INSTALLED}
-																														link={config.links.DKG_DOCKER_INSTALL_URL}/>&nbsp;on
-									the machine hosting the DKG client</Grid>
-							</Grid>
-							<Grid className={classes.DkgSectionWrapper}>
-								<Typography className={classes.DkgTitle}>Instructions</Typography>
-								<Grid className={classes.DkgText}>1. Select how many validators to generate</Grid>
-								<Grid className={classes.DkgWithdrawAddressWrapper}>
-									<TextInput value={validatorsCount}
-														 onChangeCallback={changeValidatorsCountHandler}/>
+            <Grid container item className={classes.DkgInstructionsWrapper}>
+              <Grid className={classes.DkgNotification}>
+                Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
+              </Grid>
+              <Grid className={classes.DkgSectionWrapper}>
+                <Typography className={classes.DkgTitle}>Prerequisite</Typography>
+                <Grid className={classes.DkgText}><LinkText
+                  text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.DOCKER_INSTALLED}
+                  link={config.links.DKG_DOCKER_INSTALL_URL}/>&nbsp;on
+                  the machine hosting the DKG client</Grid>
+              </Grid>
+              <Grid className={classes.DkgSectionWrapper}>
+                <Typography className={classes.DkgTitle}>Instructions</Typography>
+                <Grid className={classes.DkgText}>1. Select how many validators to generate</Grid>
+                <Grid className={classes.DkgWithdrawAddressWrapper}>
+                  <TextInput value={validatorsCount}
+                             onChangeCallback={changeValidatorsCountHandler}/>
                   {isInvalidValidatorsCount &&
-										<Typography className={classes.DkgErrorMessage}>Validators count must be a number between
-											1-100.</Typography>}
-								</Grid>
-							</Grid>
-							<Grid className={classes.DkgSectionWrapper}>
-								<Grid className={classes.DkgText}>2. Set Withdrawal Address <CustomTooltip
-									text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.DKG_WITHDRAWAL_ADDRESS}/></Grid>
-								<Grid className={classes.DkgWithdrawAddressWrapper}>
-									<TextInput value={withdrawalAddress}
-														 onChangeCallback={changeWithdrawalAddressHandler}
-														 sideButton={true}
-														 sideButtonLabel={confirmedWithdrawalAddress ? 'Confirmed' : 'Confirm'}
-														 sideButtonClicked={confirmedWithdrawalAddress}
-														 sideButtonAction={confirmWithdrawalAddressHandler}
-														 sideButtonDisabled={!withdrawalAddress || addressValidationError.shouldDisplay}/>
+                    <Typography className={classes.DkgErrorMessage}>Validators count must be a number between
+                      1-100.</Typography>}
+                </Grid>
+              </Grid>
+              <Grid className={classes.DkgSectionWrapper}>
+                <Grid className={classes.DkgText}>2. Set Withdrawal Address <CustomTooltip
+                  text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.DKG_WITHDRAWAL_ADDRESS}/></Grid>
+                <Grid className={classes.DkgWithdrawAddressWrapper}>
+                  <TextInput value={withdrawalAddress}
+                             onChangeCallback={changeWithdrawalAddressHandler}
+                             sideButton={true}
+                             sideButtonLabel={confirmedWithdrawalAddress ? 'Confirmed' : 'Confirm'}
+                             sideButtonClicked={confirmedWithdrawalAddress}
+                             sideButtonAction={confirmWithdrawalAddressHandler}
+                             sideButtonDisabled={!withdrawalAddress || addressValidationError.shouldDisplay}/>
                   {addressValidationError.errorMessage && withdrawalAddress &&
-										<Typography className={classes.DkgErrorMessage}>{addressValidationError.errorMessage}</Typography>}
-								</Grid>
-							</Grid>
+                    <Typography className={classes.DkgErrorMessage}>{addressValidationError.errorMessage}</Typography>}
+                </Grid>
+              </Grid>
               {cliCommandPanelCondition && <Grid className={classes.DkgSectionWrapper}>
-								<Typography className={classes.DkgText}>2. Initiate the DKG ceremony with the following
-									command:</Typography>
-								<Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
-									<Grid item xs className={classes.CopyText}>{commandCli}</Grid>
+                <DkgTitleWrapper>
+                  <Typography className={classes.DkgText}>3. Initiate the DKG ceremony with the following
+                    command:</Typography>
+                  <OsButtonsWrapper>
+                    {OPERATING_SYSTEMS.map((system) => <OsButtons key={system.systemName} onClick={() => {
+                      setTextCopied(false);
+                      setOperatingSystemName(system.systemName);
+                    }} isSelected={system.systemName === operatingSystemName}>{system.title}</OsButtons>)}
+                  </OsButtonsWrapper>
+                </DkgTitleWrapper>
+                <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
+                  <Grid item xs className={classes.CopyText}>{commandCli}</Grid>
                   {showCopyButtonCondition &&
-										<CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
-								</Grid>
-								<Typography className={classes.DkgCliAdditionalText}>Experiencing issues initiating the ceremony?
-									Explore solutions in the <LinkText
-										style={{ fontSize: 14, fontWeight: 500 }}
-										link={config.links.DKG_TROUBLESHOOTING_LINK}
-										text={'troubleshooting guide.'}/></Typography>
-							</Grid>}
-						</Grid>}
+                    <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
+                </Grid>
+                <Typography className={classes.DkgCliAdditionalText}>Experiencing issues initiating the ceremony?
+                  Explore solutions in the <LinkText
+                    style={{ fontSize: 14, fontWeight: 500 }}
+                    link={config.links.DKG_TROUBLESHOOTING_LINK}
+                    text={'troubleshooting guide.'}/></Typography>
+              </Grid>}
+            </Grid>}
           {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
-						<ErrorMessage
-							text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.OPERATOR_DOESNT_SUPPORT_DKG_ERROR_TEXT}/>
+            <ErrorMessage
+              text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.OPERATOR_DOESNT_SUPPORT_DKG_ERROR_TEXT}/>
             {Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => {
               if (a.dkg_address && !b.dkg_address) {
                 return 1;
@@ -318,17 +371,17 @@ const OfflineKeyShareGeneration = () => {
               return a.id - b.id;
             }).map((operator: IOperator) => <DkgOperator
               operator={operator}/>)}
-					</Grid>}
+          </Grid>}
           {selectedBox === 1 &&
-						<Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
-							<Grid item xs className={classes.CopyText}>{commandCli}</Grid>
+            <Grid container item className={classes.CopyWrapper} style={{ gap: textCopied ? 7 : 40 }}>
+              <Grid item xs className={classes.CopyText}>{commandCli}</Grid>
               {showCopyButtonCondition &&
-								<CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
-						</Grid>
+                <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
+            </Grid>
           }
           {hideButtonCondition() && <PrimaryButton children={buttonLabel}
-																									 submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
-																									 disable={disabledCondition()}/>}
+                                                   submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
+                                                   disable={disabledCondition()}/>}
         </Grid>,
       ]}
     />;

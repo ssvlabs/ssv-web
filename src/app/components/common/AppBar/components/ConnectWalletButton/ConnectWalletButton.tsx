@@ -30,12 +30,14 @@ const ConnectWalletButton = () => {
   const myAccountStore: MyAccountStore = stores.MyAccount;
 
   const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
-    dispatch(setWallet(connectedWallet));
-    await dispatch(checkIfWalletIsContractAction());
+    dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
+    wallet && await dispatch(checkIfWalletIsContractAction(wallet.provider));
     notifyService.init(chain.id);
     const index = getNetworkInfoIndexByNetworkId(Number(chain.id));
     dispatch(setConnectedNetwork(index));
     initContracts({ provider: connectedWallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: connectedWallet.label !== METAMASK_LABEL });
+    await ssvStore.initUser();
+    await operatorStore.initUser();
     await myAccountStore.getOwnerAddressOperators({});
     await myAccountStore.getOwnerAddressClusters({});
     if (myAccountStore.ownerAddressClusters?.length) {
@@ -46,8 +48,6 @@ const ConnectWalletButton = () => {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
     await operatorStore.updateOperatorValidatorsLimit();
-    await ssvStore.initUser();
-    await operatorStore.initUser();
   };
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useSetChain } from '@web3-onboard/react';
+import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import styled from 'styled-components';
 import {
     API_VERSIONS,
@@ -21,13 +21,7 @@ import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
-import {
-    getAccountAddress,
-    getConnectedNetwork,
-    getIsNotMetamask,
-    getWalletProvider,
-    setConnectedNetwork,
-} from '~app/redux/wallet.slice';
+import { getAccountAddress, getConnectedNetwork, getIsNotMetamask, setConnectedNetwork } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const CurrentNetworkWrapper = styled.div`
@@ -90,10 +84,10 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const { apiVersion, networkId } = useAppSelector(getConnectedNetwork);
     const accountAddress = useAppSelector(getAccountAddress);
     const isNotMetamask = useAppSelector(getIsNotMetamask);
-    const walletProvider = useAppSelector(getWalletProvider);
     const optionsRef = useRef(null);
     const { disconnectWallet } = useWalletDisconnector();
     const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
+    const [{  wallet }] = useConnectWallet();
     const [{ connectedChain, settingChain }, setChain] = useSetChain();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
@@ -125,8 +119,8 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                 resetContracts();
                 dispatch(setConnectedNetwork(index));
                 dispatch(setShouldCheckCountryRestriction(index === 0));
-                if (walletProvider) {
-                    initContracts({ provider: walletProvider, network: getStoredNetwork(), shouldUseRpcUrl: isNotMetamask });
+                if (wallet) {
+                    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: isNotMetamask });
                 }
                 await ssvStore.initUser();
                 await operatorStore.initUser();

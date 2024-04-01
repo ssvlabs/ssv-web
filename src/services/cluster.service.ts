@@ -7,7 +7,6 @@ import { getContractByName } from '~root/services/contracts.service';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getClusterByHash } from '~root/services/validator.service';
 import { IOperator } from '~app/model/operator.model';
-import { utils } from 'ethers';
 
 const getSortedOperatorsIds = (operators: IOperator[]) => {
   return operators.map((operator: IOperator) => operator.id).map(Number).sort((a: number, b: number) => a - b);
@@ -15,16 +14,12 @@ const getSortedOperatorsIds = (operators: IOperator[]) => {
 
 const getClusterHash = (operators: (number | IOperator)[], ownerAddress: string) => {
   let operatorsIds;
-  // let operatorsIds;
   if (typeof operators[0] === 'number') {
-    operatorsIds = operators.sort();
+    operatorsIds = (operators as number[]).sort((a, b) => a - b);
   } else {
     operatorsIds = getSortedOperatorsIds(operators as IOperator[]);
   }
   return keccak256(encodePacked(ownerAddress, ...operatorsIds));
-  // const types = operatorsIds.map(() => 'uint8');
-  // // return utils.solidityKeccak256(['string', ...types], [ownerAddress, ...operatorsIds]);
-  // return utils.keccak256(encodePacked(ownerAddress, ...operatorsIds));
 };
 
 const getClusterBalance = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, convertFromWei?: boolean, injectedClusterData?: any) => {
@@ -51,35 +46,24 @@ const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOf
   return clusterBurnRate * newAmountOfValidators;
 };
 
-const isClusterLiquidated = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData: any): Promise<boolean> => {
-  console.log(operators);
-  const operatorsIds = operators.sort();
+const isClusterLiquidated = async (operators: number[], ownerAddress: string, injectedClusterData: any): Promise<boolean> => {
+  const operatorsIds = operators.sort((a, b) => a - b);
   const contract = getContractByName(EContractName.GETTER);
   const clusterData: any = injectedClusterData;
   if (!clusterData) return false;
   try {
-    console.log(ownerAddress);
-    console.log(operatorsIds);
-    console.log(clusterData);
     const isLiquidated = await contract.isLiquidated(ownerAddress, operatorsIds, clusterData);
     return isLiquidated;
   } catch (e) {
-    console.log(e);
     return false;
   }
 };
 
-const getClusterBurnRate = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any) => {
+const getClusterBurnRate = async (operators: number[], ownerAddress: string, injectedClusterData?: any) => {
   const contract = getContractByName(EContractName.GETTER);
-  const operatorsIds = operators.sort();
-  const clusterData = injectedClusterData;
-  // console.log(injectedClusterData);
-  // console.log(ownerAddress);
-  // console.log(operators);
+  const operatorsIds = operators.sort((a, b) => a - b);
   try {
-    // console.log(contract);
-    const burnRate = await contract.getBurnRate(ownerAddress, operatorsIds, clusterData);
-    // console.log(burnRate);
+    const burnRate = await contract.getBurnRate(ownerAddress, operatorsIds, injectedClusterData);
     return burnRate;
   } catch (e) {
     return 0;
@@ -108,8 +92,8 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
         active: true,
       };
     } else if (fullData) {
-      const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
-      const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
+      const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
+      const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
       console.log(burnRate);
       const runWay: number = getClusterRunWay({
         ...clusterData,

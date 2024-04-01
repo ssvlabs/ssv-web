@@ -51,8 +51,8 @@ const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOf
   return clusterBurnRate * newAmountOfValidators;
 };
 
-const isClusterLiquidated = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any): Promise<boolean> => {
-  const operatorsIds = getSortedOperatorsIds(operators);
+const isClusterLiquidated = async (operators: number[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any): Promise<boolean> => {
+  const operatorsIds = operators.sort();
   const contract = getContractByName(EContractName.GETTER);
   const clusterData: any = injectedClusterData ?? await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
   if (!clusterData) return false;
@@ -66,7 +66,7 @@ const isClusterLiquidated = async (operators: IOperator[], ownerAddress: string,
 
 const getClusterBurnRate = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, injectedClusterData?: any) => {
   const contract = getContractByName(EContractName.GETTER);
-  const operatorsIds = getSortedOperatorsIds(operators);
+  const operatorsIds = operators.sort();
   const clusterData = injectedClusterData;
   console.log(injectedClusterData);
   console.log(ownerAddress);
@@ -105,7 +105,7 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
     } else if (fullData) {
       const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
       const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, clusterData);
-
+      console.log(burnRate);
       const runWay: number = getClusterRunWay({
         ...clusterData,
         burnRate,

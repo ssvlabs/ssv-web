@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
@@ -30,6 +30,7 @@ const ClusterDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const timeoutRef = useRef(null);
+  const clusterIntervalRef = useRef<any>(null);
   const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const processStore: ProcessStore = stores.Process;
@@ -38,6 +39,15 @@ const ClusterDashboard = () => {
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+
+  useEffect(() => {
+    clusterIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 2000);
+    return () => {
+      if (clusterIntervalRef.current) {
+        clearInterval(clusterIntervalRef.current);
+      }
+    };
+  }, []);
 
   const moveToRegisterValidator = () => {
     navigate(getNextNavigation());

@@ -5,13 +5,14 @@ import { formatNumberFromBeaconcha, formatNumberToUi } from '~lib/utils/numbers'
 import { getValidator as getValidatorServiceCall, clustersByOwnerAddress } from '~root/services/validator.service';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 import { extendClusterEntity } from '~root/services/cluster.service';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb/index';
+import { ProcessStore, SsvStore } from '~app/common/stores/applications/SsvWeb/index';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import { fromWei } from '~root/services/conversions.service';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { IOperator } from '~app/model/operator.model';
 import { store } from '~app/store';
+import { SingleCluster } from '~app/model/processes.model';
 
 class MyAccountStore extends BaseStore {
   // OPERATOR
@@ -87,6 +88,8 @@ class MyAccountStore extends BaseStore {
 
   async getOwnerAddressClusters({ forcePage, forcePerPage }: { forcePage?: number, forcePerPage?: number }): Promise<any[]> {
     const ssvStore: SsvStore = this.getStore('SSV');
+    const processStore: ProcessStore = this.getStore('Process');
+    const process: SingleCluster = processStore.getProcess;
     const accountAddress = store.getState().walletState.accountAddress;
     if (!accountAddress) return [];
     const { page, per_page } = this.ownerAddressClustersPagination;
@@ -96,6 +99,10 @@ class MyAccountStore extends BaseStore {
     this.ownerAddressClustersPagination = response.pagination;
     this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral))) || [];
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated);
+    if (process && process.processName === 'single_cluster') {
+        const updatedCluster = this.ownerAddressClusters.find((cluster: any) => cluster.id === process.item.id);
+        process.item = updatedCluster;
+    }
     return this.ownerAddressClusters;
   }
 

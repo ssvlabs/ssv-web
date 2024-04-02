@@ -94,7 +94,6 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
     } else if (fullData) {
       const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
       const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
-      console.log(burnRate);
       const runWay: number = getClusterRunWay({
         ...clusterData,
         burnRate,

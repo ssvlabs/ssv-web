@@ -77,11 +77,11 @@ class SsvStore extends BaseStore {
    */
   async initUser() {
     this.clearUserSyncInterval();
-      console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateral, 86400000); // once in 24 hours
-      this.accountInterval = setInterval(this.getBalanceFromSsvContract, 10000);
-      await this.getNetworkFeeAndLiquidationCollateral();
-      await this.getBalanceFromSsvContract();
+    console.warn('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<userSyncInterval>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    this.feesInterval = setInterval(this.getNetworkFeeAndLiquidationCollateral, 86400000); // once in 24 hours
+    this.accountInterval = setInterval(this.getBalanceFromSsvContract, 10000);
+    await this.getNetworkFeeAndLiquidationCollateral();
+    await this.getBalanceFromSsvContract();
   }
 
   clearUserSyncInterval() {
@@ -174,7 +174,10 @@ class SsvStore extends BaseStore {
           const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
           // @ts-ignore
           const newBalance = fromWei(cluster.balance) - Number(amount);
-          if (getClusterRunWay({ ...process.item, balance: toWei(newBalance) }, this.liquidationCollateralPeriod, this.minimumLiquidationCollateral) <= 0) {
+          if (getClusterRunWay({
+            ...process.item,
+            balance: toWei(newBalance),
+          }, this.liquidationCollateralPeriod, this.minimumLiquidationCollateral) <= 0) {
             tx = await contract.liquidate(accountAddress, operatorsIds, clusterData);
             if (tx.hash && isContractWallet) {
               store.dispatch(setIsShowTxPendingPopup(true));

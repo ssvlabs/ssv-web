@@ -126,7 +126,7 @@ const BulkComponent = () => {
       const exitBulk = async () => {
         const validatorIds = selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected);
         const operatorIds = process.item.operators.map((operator: IOperator) => operator.id);
-        await validatorStore.bulkExitValidators({ isContractWallet, validatorIds, operatorIds });
+        return await validatorStore.bulkExitValidators({ isContractWallet, validatorIds, operatorIds });
       };
       res = condition ? await exitBulk() : await exitSingle();
       if (res && !isContractWallet) {
@@ -140,7 +140,7 @@ const BulkComponent = () => {
       const singleRemove = async () => await validatorStore.removeValidator({ accountAddress, isContractWallet, publicKey: singleFormattedPublicKey, operators: process.item.operators });
       const bulkRemove = async () => {
         const validatorIds = selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected);
-        await validatorStore.bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators: process.item.operators });
+        return await validatorStore.bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators: process.item.operators });
       };
       res = condition ? await bulkRemove() : await singleRemove();
       if (res && !isContractWallet) {

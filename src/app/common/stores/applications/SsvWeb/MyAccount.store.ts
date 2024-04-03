@@ -101,7 +101,7 @@ class MyAccountStore extends BaseStore {
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated);
     if (process && process.processName === 'single_cluster') {
         const updatedCluster = this.ownerAddressClusters.find((cluster: any) => cluster.id === process.item.id);
-        process.item = updatedCluster;
+        process.item = { ...process.item, ...updatedCluster };
     }
     return this.ownerAddressClusters;
   }

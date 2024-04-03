@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
@@ -11,7 +11,6 @@ import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
-import WalletStore from '~app/common/stores/applications/SsvWeb/Wallet.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
@@ -23,6 +22,7 @@ import ClusterWarnings
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getClusterHash } from '~root/services/cluster.service';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -30,14 +30,24 @@ const ClusterDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const timeoutRef = useRef(null);
-  const walletStore: WalletStore = stores.Wallet;
+  const clusterIntervalRef = useRef<any>(null);
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isDarkMode = useAppSelector(getIsDarkMode);
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
-  const isDarkMode = useAppSelector(getIsDarkMode);
+
+  useEffect(() => {
+    clusterIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 2000);
+    return () => {
+      if (clusterIntervalRef.current) {
+        clearInterval(clusterIntervalRef.current);
+      }
+    };
+  }, []);
 
   const moveToRegisterValidator = () => {
     navigate(getNextNavigation());
@@ -77,7 +87,7 @@ const ClusterDashboard = () => {
     const remainingDaysValue = formatNumberToUi(cluster.runWay, true);
     const remainingDays = cluster.runWay && cluster.runWay !== Infinity ? `${remainingDaysValue} Days` : remainingDaysValue;
     return createData(
-      longStringShorten(getClusterHash(cluster.operators, walletStore.accountAddress).slice(2), 4),
+      longStringShorten(getClusterHash(cluster.operators, accountAddress).slice(2), 4),
       <Grid container style={{ gap: 8 }}>
         {cluster.operators.map((operator: any, index: number) => {
           return <Grid item
@@ -85,9 +95,9 @@ const ClusterDashboard = () => {
                        key={index}
                        onMouseLeave={handleGridLeave}
                        className={classes.CircleImageOperatorWrapper}
-                       onMouseEnter={() => handleGridHover(getClusterHash(cluster.operators, walletStore.accountAddress) + operator.id)}
+                       onMouseEnter={() => handleGridHover(getClusterHash(cluster.operators, accountAddress) + operator.id)}
           >
-            {(hoveredGrid === getClusterHash(cluster.operators, walletStore.accountAddress) + operator.id) && (
+            {(hoveredGrid === getClusterHash(cluster.operators, accountAddress) + operator.id) && (
               <OperatorCard operator={operator}/>
             )}
             <OperatorCircleImage operatorLogo={operator.logo}/>

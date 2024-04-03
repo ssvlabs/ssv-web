@@ -1,12 +1,11 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
-import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/AddressKeyInput/AddressKeyInput.styles';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { getBeaconChainLink, getEtherScanLink } from '~root/providers/networkInfo.provider';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 type ValidatorPrivateKeyInputProps = {
     address: string,
@@ -16,15 +15,13 @@ type ValidatorPrivateKeyInputProps = {
     whiteBackgroundColor?: boolean,
 };
 
-const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
-    const stores = useStores();
+const AddressKeyInput = ( { address, withBeaconcha, withEtherScan, whiteBackgroundColor, withCopy }: ValidatorPrivateKeyInputProps) => {
     const classes = useStyles();
-    const { address, withBeaconcha, withEtherScan, whiteBackgroundColor, withCopy } = props;
-    const notificationsStore: NotificationsStore = stores.Notifications;
+    const dispatch = useAppDispatch();
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(address);
-        notificationsStore.showMessage('Copied to clipboard.', 'success');
+        dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
     };
 
     const openBeaconcha = () => {
@@ -59,4 +56,4 @@ const AddressKeyInput = (props: ValidatorPrivateKeyInputProps) => {
     );
 };
 
-export default observer(AddressKeyInput);
+export default AddressKeyInput;

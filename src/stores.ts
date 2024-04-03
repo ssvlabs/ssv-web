@@ -3,15 +3,12 @@ import BaseStore from '~app/common/stores/BaseStore';
 
 const stores = [
   'SSV',
-  'Wallet',
   'Process',
   'Cluster',
-  'Checkbox',
   'Operator',
   'Validator',
   'MyAccount',
   'Distribution',
-  'Notifications',
   'OperatorMetadata',
   'DistributionTestnet',
 ];

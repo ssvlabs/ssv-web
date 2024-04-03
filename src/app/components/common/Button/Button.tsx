@@ -5,15 +5,15 @@ import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/common/Button/Button.styles';
 import { toWei } from '~root/services/conversions.service';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import notifyService from '~root/services/notify.service';
 import Spinner from '~app/components/common/Spinner';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 type ButtonParams = {
     text: string,
@@ -21,25 +21,26 @@ type ButtonParams = {
     onClick?: any,
     testId?: string,
     errorButton?: boolean,
-    checkboxesText?: any[],
     withAllowance?: boolean,
-    checkBoxesCallBack?: any[],
+    checkboxText?: string | null,
+    checkBoxCallBack?: (() => void) | null,
+    isCheckboxChecked?: boolean,
     isLoading?: boolean,
     totalAmount?: string,
     allowanceApprovedCB?: () => void
 };
 
-const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, checkboxesText, checkBoxesCallBack, totalAmount, isLoading, allowanceApprovedCB }: ButtonParams) => {
-    const stores = useStores();
-    const classes = useStyles();
-    const ssvStore: SsvStore = stores.SSV;
-    const walletStore: WalletStore = stores.Wallet;
+const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, checkboxText, checkBoxCallBack, isCheckboxChecked, totalAmount, isLoading, allowanceApprovedCB }: ButtonParams) => {
     const [hasCheckedAllowance, setHasCheckedAllowance] = useState(false);
     const [hasToRequestApproval, setHasToRequestApproval] = useState(false);
     const [hasGotAllowanceApproval, setHasGotAllowanceApproval] = useState(false);
     const [approveButtonText, setApproveButtonText] = useState('Approve SSV');
     const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
     const dispatch = useAppDispatch();
+    const accountAddress = useAppSelector(getAccountAddress);
+    const classes = useStyles();
+    const stores = useStores();
+    const ssvStore: SsvStore = stores.SSV;
 
     useEffect(() => {
         const checkUserAllowance = async () => {
@@ -90,7 +91,7 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
             errorButton={errorButton}
             isLoading={isLoading}
             submitFunction={onClick ? onClick : () => {}}
-            children={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
+            children={!!accountAddress ? text : translations.CTA_BUTTON.CONNECT}
           />
         );
     };
@@ -112,7 +113,7 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
                 dataTestId={testId}
                 disable={!hasGotAllowanceApproval || disable}
                 submitFunction={onClick ? onClick : () => {}}
-                children={!!walletStore.wallet ? text : translations.CTA_BUTTON.CONNECT}
+                children={!!accountAddress ? text : translations.CTA_BUTTON.CONNECT}
               />
             </Grid>
             <Grid container item xs={12}>
@@ -136,13 +137,11 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
 
     return (
       <Grid container>
-        {checkboxesText?.map((checkboxText: string, index: number) => {
-                return (
-                  <Grid key={index} item xs={12}>
-                    <CheckBox onClickCallBack={checkBoxesCallBack && checkBoxesCallBack[index]} text={checkboxText} />
-                  </Grid>
-                );
-            })}
+        {checkboxText && checkBoxCallBack && (
+          <Grid item xs={12}>
+              <CheckBox toggleIsChecked={checkBoxCallBack} text={checkboxText} isChecked={isCheckboxChecked} />
+          </Grid>
+        )}
         {hasToRequestApproval ? userNeedApproval() : regularButton()}
       </Grid>
     );

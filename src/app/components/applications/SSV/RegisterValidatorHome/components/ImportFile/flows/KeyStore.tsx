@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -22,7 +21,7 @@ import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useV
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
-import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { isJsonFile } from '~root/utils/dkg.utils';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -38,7 +37,7 @@ const KeyStoreFlow = () => {
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const dispatch = useAppDispatch();
-  const keyStoreFileIsJson = validatorStore.isJsonFile(validatorStore.keyStoreFile);
+  const keyStoreFileIsJson = isJsonFile(validatorStore.keyStoreFile);
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -59,17 +58,17 @@ const KeyStoreFlow = () => {
     }
   };
 
-  const isDeposited = async (): Promise<boolean> => {
-    const beaconChaValidatorUrl = `${getBeaconChainLink()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
-    try {
-      const response: any = (await axios.get(beaconChaValidatorUrl, { timeout: 5000 })).data;
-      const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
-      return !(response.status === 'OK' && conditionalDataExtraction?.valid_signature === undefined);
-    } catch (e: any) {
-      console.log(e.message);
-      return true;
-    }
-  };
+  // const isDeposited = async (): Promise<boolean> => {
+  //   const beaconChaValidatorUrl = `${getBeaconChainLink()}/api/v1/validator/${validatorStore.keyStorePublicKey}/deposits`;
+  //   try {
+  //     const response: any = (await axios.get(beaconChaValidatorUrl, { timeout: 5000 })).data;
+  //     const conditionalDataExtraction = Array.isArray(response.data) ? response.data[0] : response.data;
+  //     return !(response.status === 'OK' && conditionalDataExtraction?.valid_signature === undefined);
+  //   } catch (e: any) {
+  //     console.log(e.message);
+  //     return true;
+  //   }
+  // };
 
   const removeFile = () => {
     setIsProcessingFile(true);

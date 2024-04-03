@@ -7,18 +7,21 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
-import { getTransactionLink, isMainnet } from '~root/providers/networkInfo.provider';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { getTransactionLink } from '~root/providers/networkInfo.provider';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getTxHash } from '~app/redux/appState.slice';
 import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
-import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
-import { useStores } from '~app/hooks/useStores';
+import { getIsMainnet } from '~app/redux/wallet.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { AlertColor } from '@mui/material/Alert';
+import { useConnectWallet } from '@web3-onboard/react';
 
 const Success = () => {
   const classes = useStyles();
-  const stores = useStores();
-  const walletStore: WalletStore = stores.Wallet;
+  const [{  wallet }] = useConnectWallet();
   const txHash = useAppSelector(getTxHash);
+  const isMainnet = useAppSelector(getIsMainnet);
+  const dispatch = useAppDispatch();
 
   const openMarketingSite = () => {
     GoogleTagManager.getInstance().sendEvent({
@@ -29,6 +32,10 @@ const Success = () => {
     window.open('https://ssv.network/');
   };
 
+  const notificationHandler = ({ message, severity }: { message: string; severity: AlertColor }) => {
+    dispatch(setMessageAndSeverity({ message, severity }));
+  };
+
   return (
     <BorderScreen
       withoutNavigation
@@ -37,10 +44,10 @@ const Success = () => {
           <HeaderSubHeader
             rewardPage
             title={'Rewards Successfully Claimed!'}
-            subtitle={<span>Thank you for joining the SSV network's {isMainnet() ? 'Mainnet' : 'Testnet'} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
+            subtitle={<span>Thank you for joining the SSV network's {isMainnet ? 'Mainnet' : 'Testnet'} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
           />
           <Grid item container className={classes.AddSsvToWallet}
-            onClick={() => registerSSVTokenInMetamask({ provider: walletStore.wallet.provider })}>
+            onClick={() => wallet && registerSSVTokenInMetamask({ provider: wallet.provider, notificationHandler })}>
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>

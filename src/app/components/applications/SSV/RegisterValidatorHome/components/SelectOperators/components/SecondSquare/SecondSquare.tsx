@@ -27,10 +27,14 @@ import MevIcon
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { SsvStore, WalletStore } from '~app/common/stores/applications/SsvWeb';
+import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
@@ -38,8 +42,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const navigate = useNavigate();
   const location = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const accountAddress = useAppSelector(getAccountAddress);
   const processStore: ProcessStore = stores.Process;
-  const walletStore: WalletStore = stores.Wallet;
   const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
@@ -108,14 +112,16 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
     const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
-    setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
+    if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
+      setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
+    }
   }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   useEffect(() => {
     if (operatorStore.selectedEnoughOperators) {
       setClusterExist(false);
       setCheckClusterExistence(true);
-      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), walletStore.accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
         if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
           setExistClusterData(clusterData);
           setClusterExist(true);

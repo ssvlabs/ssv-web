@@ -11,7 +11,7 @@ type Props = {
   dkgEnabled: boolean;
 };
 
-const Filters = (props: Props) => {
+const Filters = ({ setFilterBy, selectDkgEnabled, dkgEnabled }: Props) => {
   const classes = useStyles();
   const wrapperRef = useRef(null);
   const [shouldOpen, openPopUp] = useState(false);
@@ -23,11 +23,8 @@ const Filters = (props: Props) => {
     if (verifySelected) {
       filters.push('verified_operator');
     }
-    // if (dappNodeSelected) {
-    //   filters.push('dapp_node');
-    // }
-    props.setFilterBy(filters);
-  }, [verifySelected, props.dkgEnabled]);
+    setFilterBy(filters);
+  }, [verifySelected, dkgEnabled]);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
@@ -48,8 +45,7 @@ const Filters = (props: Props) => {
 
   let filterSelected = 0;
   if (verifySelected) filterSelected += 1;
-  if (props.dkgEnabled) filterSelected += 1;
-  // if (dappNodeSelected) filterSelected += 1;
+  if (dkgEnabled) filterSelected += 1;
 
   return (
     <Grid item container ref={wrapperRef}
@@ -63,7 +59,7 @@ const Filters = (props: Props) => {
             width={24}
             height={24}
             isChecked={verifySelected}
-            onClickCallBack={() => {
+            toggleIsChecked={() => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'validator_register',
                 action: 'filter',
@@ -76,38 +72,17 @@ const Filters = (props: Props) => {
           <CheckBox
             width={24}
             height={24}
-            isChecked={props.dkgEnabled}
-            onClickCallBack={() => {
+            isChecked={dkgEnabled}
+            toggleIsChecked={() => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'validator_register',
                 action: 'filter',
                 label: 'dkg_enabled',
               });
-              props.selectDkgEnabled(!props.dkgEnabled);
+              selectDkgEnabled(!dkgEnabled);
             }}
             text={<Grid item className={classes.Text}>DKG Enabled</Grid>}
           />
-          {/*<CheckBox*/}
-          {/*  width={24}*/}
-          {/*  height={24}*/}
-          {/*  isChecked={dappNodeSelected}*/}
-          {/*  onClickCallBack={() => {*/}
-          {/*    GoogleTagManager.getInstance().sendEvent({*/}
-          {/*      category: 'validator_register',*/}
-          {/*      action: 'filter',*/}
-          {/*      label: 'dapp_node',*/}
-          {/*    });*/}
-          {/*    selectDappNode(!dappNodeSelected);*/}
-          {/*  }}*/}
-          {/*  text={<Grid item className={classes.Text}>DappNode</Grid>}*/}
-          {/*/>*/}
-          {/* <Grid item className={`${classes.Checkbox} ${verifySelected ? classes.Checked : ''}`} /> */}
-          {/* <Grid item className={classes.Text}>Verified</Grid> */}
-          {/* <Grid item container xs={12} onClick={() => selectDappNode(!dappNodeSelected)} */}
-          {/*  className={classes.Item}> */}
-          {/*  <Grid item className={`${classes.Checkbox} ${dappNodeSelected ? classes.Checked : ''}`} /> */}
-          {/*  <Grid item className={classes.Text}>DappNode</Grid> */}
-          {/* </Grid> */}
         </Grid>
       )}
     </Grid>

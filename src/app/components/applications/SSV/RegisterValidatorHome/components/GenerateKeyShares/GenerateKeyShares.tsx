@@ -7,7 +7,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { getStoredNetwork, isMainnet } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import useValidatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
@@ -15,6 +15,8 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares/GenerateKeyShares.styles';
 import { translations } from '~app/common/config';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsMainnet } from '~app/redux/wallet.slice';
 
 type ButtonData = {
   isShow: boolean
@@ -24,7 +26,6 @@ type ButtonData = {
   },
   buttonProps: {
     dataTestId: string,
-    withVerifyConnection?: boolean,
     children: string,
     withoutBackgroundColor?: boolean,
     noCamelCase?: boolean,
@@ -40,17 +41,17 @@ const GenerateKeyShares = () => {
     const validatorStore: ValidatorStore = stores.Validator;
     const classes = useStyles({ networkId });
     const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
+    const isMainnet = useAppSelector(getIsMainnet);
 
     const buttonsData: ButtonData[] = [
       {
-        isShow: !isMainnet(),
+        isShow: !isMainnet,
         subText: translations.VALIDATOR.GENERATE_KEY_SHARES.SPLIT_VIA_WEB_APP,
         wrapperProps: {
           className: classes.LinkButtonWrapper,
         },
         buttonProps: {
           dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE.toLowerCase(),
-          withVerifyConnection: true,
           children: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE,
           submitFunction: () => {
             validatorStore.keyStoreFile = null;
@@ -65,7 +66,6 @@ const GenerateKeyShares = () => {
         },
         buttonProps: {
           dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE.toLowerCase(),
-          withVerifyConnection: true,
           children: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE,
           submitFunction: () => {
             validatorStore.keyShareFile = null;
@@ -79,7 +79,6 @@ const GenerateKeyShares = () => {
         },
         buttonProps: {
           dataTestId: 'secondRegister',
-          withVerifyConnection: true,
           withoutBackgroundColor: true,
           noCamelCase: true,
           children: translations.VALIDATOR.GENERATE_KEY_SHARES.ALREADY_HAVE_KEY_SHARES,

@@ -19,19 +19,22 @@ import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.sto
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei } from '~root/services/conversions.service';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
-import { OperatorStore } from '~app/common/stores/applications/SsvWeb';
+import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
+
+const options = [
+  { id: 1, timeText: '6 Months', days: 182.5 },
+  { id: 2, timeText: '1 Year', days: 365 },
+  { id: 3, timeText: 'Custom Period', days: 365 },
+];
 
 const ReactivateCluster = () => {
-  const options = [
-    { id: 1, timeText: '6 Months', days: 182.5 },
-    { id: 2, timeText: '1 Year', days: 365 },
-    { id: 3, timeText: 'Custom Period', days: 365 },
-  ];
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -72,7 +75,7 @@ const ReactivateCluster = () => {
 
   const reactivateCluster = async () => {
     dispatch(setIsLoading(true));
-    const response = await validatorStore.reactivateCluster(totalCost.toString());
+    const response = await validatorStore.reactivateCluster({ accountAddress, isContractWallet, amount: totalCost.toString() });
     dispatch(setIsShowTxPendingPopup(false));
     dispatch(setIsLoading(false));
     if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);

@@ -20,28 +20,28 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperatorValidators } from '~root/services/operator.service';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { SingleOperator as SingleOperatorProcess } from '~app/model/processes.model';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const SingleOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleOperatorProcess = processStore.getProcess;
-  const notificationsStore: NotificationsStore = stores.Notifications;
   const operator = process?.item;
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
@@ -84,7 +84,7 @@ const SingleOperator = () => {
 
   const copyToClipboard = (key: string) => {
     navigator.clipboard.writeText(key);
-    notificationsStore.showMessage('Copied to clipboard.', 'success');
+    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
   const openExplorer = (key: string, linkType: string) => {
@@ -147,7 +147,7 @@ const SingleOperator = () => {
         {
           key: <Typography>30D Performance</Typography>,
           value: <Grid item container className={classes.ItemWrapper} xs={12}>
-            <Typography className={classes.TableValueText}>{validator30dPerformance === 0 ? '-' : validator30dPerformance}</Typography>
+            <Typography className={classes.TableValueText}>{validators_count === 0 ? '- -' : validator30dPerformance}</Typography>
           </Grid>,
         },
       ], [operator, isDarkMode],

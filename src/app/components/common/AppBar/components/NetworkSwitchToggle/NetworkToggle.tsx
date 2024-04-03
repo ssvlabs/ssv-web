@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useSetChain } from '@web3-onboard/react';
+import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import styled from 'styled-components';
 import {
     API_VERSIONS,
@@ -10,9 +10,7 @@ import {
     MAINNET_NETWORK_ID,
 } from '~root/providers/networkInfo.provider';
 import { useStores } from '~app/hooks/useStores';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import NotificationsStore from '~app/common/stores/applications/SsvWeb/Notifications.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
@@ -20,10 +18,11 @@ import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.pro
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
-import useWalletDisconnector from '~app/hooks/useWalletDisconnector';
+import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
-import { getConnectedNetwork, setConnectedNetwork } from '~app/redux/wallet.slice';
+import { getAccountAddress, getConnectedNetwork, getIsNotMetamask, setConnectedNetwork } from '~app/redux/wallet.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 const CurrentNetworkWrapper = styled.div`
     display: flex;
@@ -80,19 +79,20 @@ const NetworkOption = ({ networkId, apiVersion, onClick }: { networkId: number; 
 };
 
 const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
-    const optionsRef = useRef(null);
-    const { apiVersion, networkId } = useAppSelector(getConnectedNetwork);
-    const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
     const [showNetworks, setShowNetworks] = useState(false);
+    const dispatch = useAppDispatch();
+    const { apiVersion, networkId } = useAppSelector(getConnectedNetwork);
+    const accountAddress = useAppSelector(getAccountAddress);
+    const isNotMetamask = useAppSelector(getIsNotMetamask);
+    const optionsRef = useRef(null);
+    const { disconnectWallet } = useWalletDisconnector();
+    const classes = useStyles({ logo: NETWORK_VARIABLES[`${networkId}_${apiVersion}`].logo });
+    const [{  wallet }] = useConnectWallet();
     const [{ connectedChain, settingChain }, setChain] = useSetChain();
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
-    const walletStore: WalletStore = stores.Wallet;
     const operatorStore: OperatorStore = stores.Operator;
     const myAccountStore: MyAccountStore = stores.MyAccount;
-    const notificationsStore: NotificationsStore = stores.Notifications;
-    const dispatch = useAppDispatch();
-    const { disconnectWallet } = useWalletDisconnector();
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {
@@ -111,24 +111,25 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
         const networkInWalletChangedHandler = async () => {
             const index = getNetworkInfoIndexByNetworkId(Number(connectedChain?.id));
             if (index < 0) {
-                notificationsStore.showMessage(`Unsupported network. Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, 'error');
+                dispatch(setMessageAndSeverity({ message: `Unsupported network. Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, severity: 'error' }));
             } else {
                 ssvStore.clearUserSyncInterval();
-                myAccountStore.clearIntervals();
                 operatorStore.clearSettings();
                 ssvStore.clearSettings();
                 resetContracts();
                 dispatch(setConnectedNetwork(index));
                 dispatch(setShouldCheckCountryRestriction(index === 0));
-                initContracts({ provider: walletStore.wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: walletStore.isNotMetamask });
+                if (wallet) {
+                    initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: isNotMetamask });
+                }
                 await ssvStore.initUser();
                 await operatorStore.initUser();
-                myAccountStore.setIntervals();
+                await myAccountStore.refreshOperatorsAndClusters();
             }
         };
 
         const network = getStoredNetwork();
-        if (walletStore.wallet && !walletStore.isNotMetamask && connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId) && !settingChain) {
+        if (accountAddress && !isNotMetamask && connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId) && !settingChain) {
             networkInWalletChangedHandler();
         }
     }, [connectedChain, settingChain]);
@@ -136,8 +137,8 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const onOptionClick = async (index: number) => {
         if (index === getStoredNetworkIndex()) {
             setShowNetworks(false);
-        } else if (walletStore.wallet) {
-            if (walletStore.isNotMetamask) {
+        } else if (accountAddress) {
+            if (isNotMetamask) {
                 await disconnectWallet();
                 setShowNetworks(false);
             } else {

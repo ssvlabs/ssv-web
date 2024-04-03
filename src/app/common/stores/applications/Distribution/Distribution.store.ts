@@ -1,8 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import { equalsAddresses } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
-import NotificationsStore from '~app/common/stores/applications/Distribution/Notifications.store';
 import { IMerkleTreeData } from '~app/model/merkleTree.model';
 import { fromWei } from '~root/services/conversions.service';
 import { store } from '~app/store';
@@ -10,6 +8,8 @@ import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/app
 import { fetchMerkleTreeStructure } from '~root/services/distribution.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { translations } from '~app/common/config';
 
 class DistributionStore extends BaseStore {
   @observable merkleRoot: string = '';
@@ -25,7 +25,6 @@ class DistributionStore extends BaseStore {
   async claimRewards() {
     return new Promise(async (resolve) => {
       const contract = getContractByName((EContractName.DISTRIBUTION));
-      const notificationsStore: NotificationsStore = this.getStore('Notifications');
       store.dispatch(setIsLoading(true));
       try {
         const tx = await contract.claim(
@@ -43,7 +42,7 @@ class DistributionStore extends BaseStore {
         this.claimed = true;
         resolve(true);
       } catch (error: any) {
-        notificationsStore.showMessage(error.message, 'error');
+        store.dispatch(setMessageAndSeverity({ message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -76,9 +75,9 @@ class DistributionStore extends BaseStore {
   async eligibleForReward() {
     await this.cleanState();
     const merkle = await fetchMerkleTreeStructure();
-    const walletStore: WalletStore = this.getStore('Wallet');
+    const accountAddress = store.getState().walletState.accountAddress;
       merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
-      if (equalsAddresses(merkleTreeUser.address, walletStore.accountAddress)) {
+      if (equalsAddresses(merkleTreeUser.address, accountAddress)) {
         this.merkleRoot = merkle.tree.root;
         this.userAddress = merkleTreeUser.address;
         this.rewardIndex = index;

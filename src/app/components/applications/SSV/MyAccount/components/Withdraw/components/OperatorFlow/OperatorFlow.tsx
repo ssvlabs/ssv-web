@@ -7,36 +7,37 @@ import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { SingleOperator } from '~app/model/processes.model';
+import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 
 const OperatorFlow = () => {
-  const classes = useStyles();
-  const stores = useStores();
-  const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
   const [inputValue, setInputValue] = useState(0.0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const navigate = useNavigate();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const isContractWallet = useAppSelector(getIsContractWallet);
+  const classes = useStyles();
+  const stores = useStores();
+  const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
   const operatorStore: OperatorStore = stores.Operator;
   const operator = process?.item;
   const operatorBalance = operator?.balance ?? 0;
-  const { checkedCondition } = useTermsAndConditions();
 
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(inputValue.toString());
     setIsLoading(false);
-    if (!walletStore.isContractWallet) {
+    if (!isContractWallet) {
       store.dispatch(setIsShowTxPendingPopup(false));
     }
     if (success) {
@@ -99,13 +100,13 @@ const OperatorFlow = () => {
           withoutNavigation
           header={'Withdraw'}
           body={secondBorderScreen}
-          bottom={[<TermsAndConditionsCheckbox>
+          bottom={[<TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
             <Button
               text={'Withdraw'}
               withAllowance={false}
               onClick={withdrawSsv}
               isLoading={isLoading}
-              disable={Number(inputValue) === 0 || !checkedCondition}
+              disable={Number(inputValue) === 0 || (isMainnet && !isChecked)}
           />
           </TermsAndConditionsCheckbox>]}
       />

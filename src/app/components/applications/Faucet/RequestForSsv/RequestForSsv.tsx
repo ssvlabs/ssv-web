@@ -1,35 +1,33 @@
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import React, { useState, useRef, useEffect } from 'react';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
 import translations from '~app/common/config/translations';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import WalletStore from '~app/common/stores/applications/Faucet/Wallet.store';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, setIsLoading } from '~app/redux/appState.slice';
-import { currentNetworkName, isMainnet } from '~root/providers/networkInfo.provider';
+import { currentNetworkName } from '~root/providers/networkInfo.provider';
 import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 
 const RequestForSsv = () => {
-  const stores = useStores();
-  const dispatch = useAppDispatch();
-  const classes = useStyles();
   const navigate = useNavigate();
-  const captchaRef = useRef(null);
-  const walletStore: WalletStore = stores.Wallet;
   const [error, setError] = useState('');
   const [disabled, setDisabled] = useState(true);
   const [buttonText, setButtonText] = useState('Request');
   const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
   const [amountToTransfer, setAmountToTransfer] = useState(undefined);
+  const dispatch = useAppDispatch();
+  const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
+  const isMainnet = useAppSelector(getIsMainnet);
+  const classes = useStyles();
+  const captchaRef = useRef(null);
 
   useEffect(() => {
     setError('');
@@ -40,13 +38,13 @@ const RequestForSsv = () => {
       setAmountToTransfer(res);
     };
     fetchAmountToTransfer();
-  }, [walletStore.accountAddress]);
+  }, [accountAddress]);
 
   const requestForSSV = async () => {
     setError('');
     setButtonText('Requesting...');
     dispatch(setIsLoading(true));
-    const response = await requestSsvFromFaucet({ address: walletStore.accountAddress });
+    const response = await requestSsvFromFaucet({ address: accountAddress });
     if (!response.status) {
       if (response.type === translations.FAUCET.FAUCET_DEPLETED) {
         dispatch(setIsLoading(false));
@@ -76,7 +74,7 @@ const RequestForSsv = () => {
             <TextInput
               disable
               data-testid="recipient-wallet"
-              value={walletStore.accountAddress}
+              value={accountAddress}
             />
           </Grid>
           <Grid item xs={12}>
@@ -96,12 +94,11 @@ const RequestForSsv = () => {
             sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
           />
           <PrimaryButton wrapperClass={classes.SubmitButton} children={buttonText} submitFunction={requestForSSV}
-                         disable={isMainnet() || disabled || reachedMaxTransactionPerDay}
-                         withVerifyConnection={false}/>
+                         disable={isMainnet || disabled || reachedMaxTransactionPerDay} />
         </Grid>,
       ]}
     />
   );
 };
 
-export default observer(RequestForSsv);
+export default RequestForSsv;

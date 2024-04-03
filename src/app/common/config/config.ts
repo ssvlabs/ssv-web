@@ -93,7 +93,6 @@ const config = {
             SUCCESS: '/my-account/validator/update/success',
           },
           VALIDATOR_REMOVE: {
-            ROOT: '/my-account/cluster/remove-validator',
             REMOVED: '/my-account/cluster/removed',
             BULK: '/my-account/cluster/bulk',
           },
@@ -137,9 +136,6 @@ const config = {
       VALID_KEY_LENGTH: 612,
       SELECT_MINIMUM_OPERATORS: 4,
       AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
-    },
-    TESTING: {
-      GENERATE_RANDOM_OPERATOR_KEY: process.env.REACT_APP_DEBUG,
     },
   },
   links: {
@@ -194,7 +190,6 @@ const config = {
     OPERATORS_PER_PAGE: 50,
     BLOCKS_PER_YEAR: 2613400,
     DEFAULT_CLUSTER_PERIOD: 730,
-    CHECK_UPDATES_MAX_ITERATIONS: 60,
     NUMBERS_OF_WEEKS_IN_YEAR: 52.1429,
     MAX_VALIDATORS_COUNT_MULTI_FLOW: 50,
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
@@ -238,7 +233,7 @@ const DEFAULT_PAGINATION = {
   page: 1,
   pages: 1,
   total: 0,
-  per_page: 8,
+  per_page: 10,
 };
 
 export { HOLESKY_RPC_URL, GOERLI_RPC_URL, MAINNET_RPC_URL, DEFAULT_PAGINATION };

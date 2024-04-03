@@ -135,7 +135,7 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
               placement={'top'}><SelectedIndicator>{selectedValidatorsCount} of {totalCount} selected</SelectedIndicator></AnchorTooltip>)}
           </TitleWrapper>
           {showSubHeaderCondition && <SubHeader>Select up to {maxValidatorsCount} validators</SubHeader>}
-          <ValidatorsList setIsLoading={setIsLoading} isLoading={isLoading} checkboxTooltipTitle={tooltipTitleComponent(checkboxTooltipTitle)} maxValidatorsCount={maxValidatorsCount} onCheckboxClickHandler={onCheckboxClickHandler}
+          <ValidatorsList withoutSettings setIsLoading={setIsLoading} isLoading={isLoading} checkboxTooltipTitle={tooltipTitleComponent(checkboxTooltipTitle)} maxValidatorsCount={maxValidatorsCount} onCheckboxClickHandler={onCheckboxClickHandler}
                           selectedValidators={selectedValidators} fillSelectedValidators={fillSelectedValidators}/>
         </HeaderWrapper>
         <PrimaryButton children={'Next'} disable={disableButtonCondition} submitFunction={nextStep}/>

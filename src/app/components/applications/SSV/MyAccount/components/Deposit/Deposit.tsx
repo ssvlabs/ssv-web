@@ -9,7 +9,6 @@ import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -17,33 +16,35 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
 import { store } from '~app/store';
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 
 const Deposit = () => {
-  const stores = useStores();
+  const [inputValue, setInputValue] = useState('');
+  const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
   const classes = useStyles();
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
+  const isMainnet = useAppSelector(getIsMainnet);
+  const dispatch = useAppDispatch();
+  const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
-  const walletStore: WalletStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
-  const [inputValue, setInputValue] = useState('');
-  const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
-  const { checkedCondition } = useTermsAndConditions();
-  const dispatch = useAppDispatch();
 
   async function depositSsv() {
     dispatch(setIsLoading(true));
     await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
-      cluster.balance = await getClusterBalance(cluster.operators, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+      cluster.balance = await getClusterBalance(cluster.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
@@ -68,7 +69,7 @@ const Deposit = () => {
     });
     setInputValue('');
     dispatch(setIsLoading(false));
-    if (!walletStore.isContractWallet) {
+    if (!isContractWallet) {
       store.dispatch(setIsShowTxPendingPopup(false));
     }
   }
@@ -134,12 +135,12 @@ const Deposit = () => {
               ),
             ]}
             bottom={[(
-                <TermsAndConditionsCheckbox>
+                <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
                     <Button
                     withAllowance
                     text={'Deposit'}
                     onClick={depositSsv}
-                    disable={Number(inputValue) <= 0 || !checkedCondition}
+                    disable={Number(inputValue) <= 0 || (isMainnet && !isChecked)}
                     totalAmount={inputValue}
                     allowanceApprovedCB={() => setAllowanceWasApproved(true)}
                 />

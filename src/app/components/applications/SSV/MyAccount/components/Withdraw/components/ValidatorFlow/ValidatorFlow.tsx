@@ -8,7 +8,6 @@ import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { useTermsAndConditions } from '~app/hooks/useTermsAndConditions';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -16,43 +15,46 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { extendClusterEntity, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
-import { WalletStore } from '~app/common/stores/applications/SsvWeb';
-import { clusterByHash } from '~root/services/validator.service';
+import { getClusterByHash } from '~root/services/validator.service';
 import { SingleCluster } from '~app/model/processes.model';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 
 const ValidatorFlow = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const walletStore: WalletStore = stores.Wallet;
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
   const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
   const [isLoading, setIsLoading] = useState(false);
-  const [userAgree, setUserAgreement] = useState(false);
-  const { checkedCondition } = useTermsAndConditions();
+  const [hasUserAgreed, setHasUserAgreed] = useState(false);
+  const isMainnet = useAppSelector(getIsMainnet);
+  const [isChecked, setIsChecked] = useState(false);
   const [checkBoxText, setCheckBoxText] = useState('');
   const [errorButton, setErrorButton] = useState(false);
   const [showCheckBox, setShowCheckBox] = useState(false);
   const [newBalance, setNewBalance] = useState<string | number>(clusterBalance);
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
-  const [buttonColor, setButtonColor] = useState({ userAgree: '', default: '' });
+  const [buttonColor, setButtonColor] = useState({ hasUserAgreed: '', default: '' });
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
 
   useEffect(() => {
-    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && userAgree) {
-      setUserAgreement(false);
+    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && hasUserAgreed) {
+      setHasUserAgreed(false);
     }
     if (withdrawValue === clusterBalance) {
-      setButtonColor({ userAgree: '#d3030d', default: '#ec1c2640' });
+      setButtonColor({ hasUserAgreed: '#d3030d', default: '#ec1c2640' });
     } else if (buttonColor.default === '#ec1c2640') {
-      setButtonColor({ userAgree: '', default: '' });
+      setButtonColor({ hasUserAgreed: '', default: '' });
     }
 
     const balance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
@@ -63,7 +65,7 @@ const ValidatorFlow = () => {
     setNewBalance(balance);
     setErrorButton(errorConditionButton);
     setShowCheckBox(showCheckboxCondition);
-    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !userAgree || Number(withdrawValue) === 0 || !checkedCondition);
+    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !hasUserAgreed || Number(withdrawValue) === 0 || (isMainnet && !isChecked));
 
     setCheckBoxText(errorConditionButton && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK);
     if (errorConditionButton) {
@@ -73,30 +75,33 @@ const ValidatorFlow = () => {
     } else {
       setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
     }
-  }, [withdrawValue, userAgree, checkedCondition]);
+  }, [withdrawValue, hasUserAgreed, isMainnet, isChecked]);
 
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await ssvStore.withdrawSsv(withdrawValue.toString());
-    const response = await clusterByHash(getClusterHash(cluster.operators, walletStore.accountAddress));
-    const newCluster = response.cluster;
-    newCluster.operators = cluster.operators;
-    processStore.setProcess({
-      processName: 'single_cluster',
-      item: await extendClusterEntity(newCluster, walletStore.accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
-    }, 2);
-    await myAccountStore.getOwnerAddressClusters({});
+    const response = await getClusterByHash(getClusterHash(cluster.operators, accountAddress));
+    if (response) {
+      const newCluster = response.cluster;
+      newCluster.operators = cluster.operators;
+      processStore.setProcess({
+        processName: 'single_cluster',
+        item: await extendClusterEntity(newCluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
+      }, 2);
+      await myAccountStore.getOwnerAddressClusters({});
+
+      if (!isContractWallet) {
+        store.dispatch(setIsShowTxPendingPopup(false));
+      }
+      if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {
+        navigate(-1);
+      }
+      if (success) {
+        setWithdrawValue(0.0);
+        navigate(-1);
+      }
+    }
     setIsLoading(false);
-    if (!walletStore.isContractWallet) {
-      store.dispatch(setIsShowTxPendingPopup(false));
-    }
-    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) <= 0) {
-      navigate(-1);
-    }
-    if (success) {
-      setWithdrawValue(0.0);
-      navigate(-1);
-    }
   };
 
   function inputHandler(e: any) {
@@ -153,15 +158,16 @@ const ValidatorFlow = () => {
           header={'Withdraw'}
           body={secondBorderScreen}
           bottom={[
-              <TermsAndConditionsCheckbox>
+              <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
                 <Button
                   text={buttonText}
                   withAllowance={false}
                   onClick={withdrawSsv}
                   errorButton={errorButton}
                   isLoading={isLoading}
-                  checkboxesText={showCheckBox ? [checkBoxText] : []}
-                  checkBoxesCallBack={showCheckBox ? [setUserAgreement] : []}
+                  checkboxText={showCheckBox ? checkBoxText : null}
+                  checkBoxCallBack={showCheckBox ? () => setHasUserAgreed(!hasUserAgreed) : null}
+                  isCheckboxChecked={hasUserAgreed}
                   disable={buttonDisableCondition || isLoading}
               />
               </TermsAndConditionsCheckbox>,

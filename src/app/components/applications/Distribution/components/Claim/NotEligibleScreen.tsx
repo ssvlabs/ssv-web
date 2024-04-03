@@ -1,23 +1,20 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import InputLabel from '~app/components/common/InputLabel';
-import WalletStore from '~app/common/stores/Abstracts/Wallet';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Distribution/components/Claim/Claim.styles';
-import { isMainnet } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 
 const NotEligibleScreen = () => {
-  const stores = useStores();
   const classes = useStyles();
-  const walletStore: WalletStore = stores.Wallet;
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isMainnet = useAppSelector(getIsMainnet);
 
   const claimRewards = async () => {
-      // await walletStore.connect();
       return;
   };
 
@@ -27,13 +24,11 @@ const NotEligibleScreen = () => {
       body={[
         <Grid container>
           <HeaderSubHeader
-            title={`Claim ${isMainnet() ? 'Mainnet' : 'Testnet'} Rewards`}
+            title={`Claim ${isMainnet ? 'Mainnet' : 'Testnet'} Rewards`}
           />
           <InputLabel title="Recipient" />
           <Grid className={classes.RecipientWrapper}>
-            <Typography className={classes.RecipientAddress}>
-              {walletStore.accountAddress}
-            </Typography>
+            <Typography className={classes.RecipientAddress}>{accountAddress}</Typography>
           </Grid>
             <Grid container item className={classes.ErrorMessage}>
               Address is not eligible for any rewards
@@ -50,4 +45,4 @@ const NotEligibleScreen = () => {
   );
 };
 
-export default observer(NotEligibleScreen);
+export default NotEligibleScreen;

@@ -3,6 +3,9 @@ import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
+import styled from 'styled-components';
+import Announcement from '~app/components/common/Annotation/Announcement';
+
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
 const SetOperatorFee = lazy(() => import('~app/components/applications/SSV/SetOperatorFee'));
@@ -21,7 +24,7 @@ const OperatorTransactionConfirmation = lazy(() => import('~app/components/appli
 const ClusterDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/ClusterDashboard'));
 const BulkComponent = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/BulkComponent'));
 const ImportFile = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile'));
-const ReactivateCluster = lazy(()=> import('~app/components/applications/SSV/MyAccount/components/ReactivateCluster'));
+const ReactivateCluster = lazy(() => import('~app/components/applications/SSV/MyAccount/components/ReactivateCluster'));
 const OperatorDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/OperatorDashboard'));
 const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
 const EditOperatorDetails = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails'));
@@ -63,7 +66,7 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares  },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION, Component: MetadataConfirmationPage },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
   ];
@@ -92,35 +95,36 @@ const SsvWebRoutes: any = () => {
   ];
 
   return (
-      <Layout>
-        <SsvAppBar/>
-        <Suspense fallback={<div className="container"></div>}>
-          <Wrapper>
-            <Route path={'/'} element={<Welcome />} />
-            <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
-            <Route path={ssvRoutes.ROOT} element={<Welcome />} />
-            <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>
-              {dashboardRoutes.map((route: any, index: number) => {
-                if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
-                return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
-              })}
-            </Route>
-            <Route path={ssvRoutes.OPERATOR.HOME}>
-              <Route index element={<RegisterOperatorHome/>}/>
-              {operatorRoutes.map((route, index: number) => {
-                return <Route key={index} path={route.path} element={<route.Component/>}/>;
-              })}
-            </Route>
-            <Route path={ssvRoutes.VALIDATOR.HOME}>
-              <Route index element={<RegisterValidatorHome/>}/>
-              {validatorsRoutes.map((route, index: number) => {
-                if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
-                return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
-              })}
-            </Route>
-          </Wrapper>
-        </Suspense>
-      </Layout>
+    <Layout>
+      <Announcement />
+      <SsvAppBar />
+      <Suspense fallback={<div className="container"></div>}>
+        <Wrapper>
+          <Route path={'/'} element={<Welcome/>}/>
+          <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported/>}/>
+          <Route path={ssvRoutes.ROOT} element={<Welcome/>}/>
+          <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>
+            {dashboardRoutes.map((route: any, index: number) => {
+              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
+              return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
+            })}
+          </Route>
+          <Route path={ssvRoutes.OPERATOR.HOME}>
+            <Route index element={<RegisterOperatorHome/>}/>
+            {operatorRoutes.map((route, index: number) => {
+              return <Route key={index} path={route.path} element={<route.Component/>}/>;
+            })}
+          </Route>
+          <Route path={ssvRoutes.VALIDATOR.HOME}>
+            <Route index element={<RegisterValidatorHome/>}/>
+            {validatorsRoutes.map((route, index: number) => {
+              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
+              return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
+            })}
+          </Route>
+        </Wrapper>
+      </Suspense>
+    </Layout>
   );
 };
 

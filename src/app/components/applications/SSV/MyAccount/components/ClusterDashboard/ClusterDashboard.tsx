@@ -41,7 +41,7 @@ const ClusterDashboard = () => {
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   useEffect(() => {
-    clusterIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 2000);
+    clusterIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 10000);
     return () => {
       if (clusterIntervalRef.current) {
         clearInterval(clusterIntervalRef.current);

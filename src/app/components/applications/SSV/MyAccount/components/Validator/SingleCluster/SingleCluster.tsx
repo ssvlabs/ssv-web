@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
@@ -23,7 +23,6 @@ import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 
 const ButtonTextWrapper = styled.div`
     display: flex;
@@ -93,22 +92,11 @@ const SingleCluster = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
-  const balanceIntervalRef = useRef<any>(null);
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const cluster = process?.item;
   const accountAddress = useAppSelector(getAccountAddress);
   const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
-
-  useEffect(() => {
-    balanceIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 2000);
-    return () => {
-      if (balanceIntervalRef.current) {
-        clearInterval(balanceIntervalRef.current);
-      }
-    };
-  }, []);
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';

@@ -102,7 +102,7 @@ const SingleCluster = () => {
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   useEffect(() => {
-    balanceIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 2000);
+    balanceIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 12000);
     return () => {
       if (balanceIntervalRef.current) {
         clearInterval(balanceIntervalRef.current);

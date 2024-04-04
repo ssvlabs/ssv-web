@@ -80,7 +80,7 @@ const KeyShareFlow = () => {
       subErrorMessage: '',
     });
     const keyShareFileIsJson = isJsonFile(validatorStore.keyShareFile);
-    const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(0);
+    const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize));
     const dispatch = useAppDispatch();
 
     useEffect(() => {

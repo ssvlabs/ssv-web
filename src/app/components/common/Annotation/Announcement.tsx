@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { getStoredNetwork, GOERLI_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import { useAppSelector } from '~app/hooks/redux.hook';
 
 const AnnouncementWrapper = styled.div`
     width: 100%;
@@ -36,12 +37,12 @@ const CloseButton = styled.div`
 `;
 
 const Announcement = () => {
-  const { networkId } = getStoredNetwork();
-  const [showAnnotation, setShowAnnotation] = useState(networkId === GOERLI_NETWORK_ID);
+  const network = useAppSelector(getStoredNetwork);
+  const [showAnnotation, setShowAnnotation] = useState(true);
 
   const closeAnnotation = () => setShowAnnotation(false);
 
-  if (showAnnotation) {
+  if (showAnnotation && network.networkId === GOERLI_NETWORK_ID) {
     return (
       <div>
         <AnnouncementWrapper><AttentionIcon/>Goerli network support will be deprecated on April 18th, 2024. As of this

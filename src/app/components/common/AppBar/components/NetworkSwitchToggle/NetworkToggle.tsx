@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import {
     API_VERSIONS,
     getNetworkInfoIndexByNetworkId,
-    getStoredNetwork, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID,
+    getStoredNetwork, HOLESKY_NETWORK_ID,
     MAINNET_NETWORK_ID,
 } from '~root/providers/networkInfo.provider';
 import { useStores } from '~app/hooks/useStores';
@@ -53,11 +53,6 @@ const NETWORK_VARIABLES = {
         logo: 'dark',
         activeLabel: 'Ethereum',
         optionLabel: 'Ethereum Mainnet',
-    },
-    [`${GOERLI_NETWORK_ID}_${API_VERSIONS.V4}`]: {
-        logo: 'light',
-        activeLabel: 'Goerli',
-        optionLabel: 'Goerli Testnet',
     },
     [`${HOLESKY_NETWORK_ID}_${API_VERSIONS.V4}`]: {
         logo: 'light',

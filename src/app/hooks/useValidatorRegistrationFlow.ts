@@ -14,7 +14,6 @@ import config from '~app/common/config';
 import {
   getStoredNetwork,
   MAINNET_NETWORK_ID,
-  GOERLI_NETWORK_ID,
   HOLESKY_NETWORK_ID,
 } from '~root/providers/networkInfo.provider';
 import { getLocalStorageFlagValue, MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
@@ -48,7 +47,6 @@ const MAX_VALIDATORS_PER_CLUSTER_SIZE: Record<number, number> = {
 const NETWORK_TO_BULK_MODE = {
   [`${MAINNET_NETWORK_ID}`]: EBulkMode.MULTI,
   [`${HOLESKY_NETWORK_ID}`]: EBulkMode.MULTI,
-  [`${GOERLI_NETWORK_ID}`]: EBulkMode.MULTI,
 };
 
 const BULK_MODE_TO_ROUTES: NavigationRoutes = {

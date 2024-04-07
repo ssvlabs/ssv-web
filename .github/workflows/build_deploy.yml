@@ -46,19 +46,6 @@ jobs:
             \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
           },
           {
-            \"networkId\": 5,
-            \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"prater\",
-            \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://goerli.explorer.ssv.network\",
-            \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
-            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
-            \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_TESTNET }}\",
-            \"tokenAddress\": \"0x3a9f01091C446bdE031E39ea8354647AFef091E7\",
-            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_TESTNET }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_TESTNET }}\"
-          },
-          {
             \"networkId\": 17000,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"holesky\",

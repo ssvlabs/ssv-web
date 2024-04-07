@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { getStoredNetwork, GOERLI_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 
 const AnnouncementWrapper = styled.div`
@@ -36,17 +36,15 @@ const CloseButton = styled.div`
     margin-left: 421px;
 `;
 
-const Announcement = () => {
-  const network = useAppSelector(getStoredNetwork);
-  const [showAnnotation, setShowAnnotation] = useState(true);
+const Announcement = ({ text }: { text?: string }) => {
+  const [showAnnotation, setShowAnnotation] = useState(false);
 
   const closeAnnotation = () => setShowAnnotation(false);
 
-  if (showAnnotation && network.networkId === GOERLI_NETWORK_ID) {
+  if (text && showAnnotation) {
     return (
       <div>
-        <AnnouncementWrapper><AttentionIcon/>Goerli network support will be deprecated on April 18th, 2024. As of this
-          date, the official testnet will shift to the Holesky testnet. <CloseButton
+        <AnnouncementWrapper><AttentionIcon/>{text}<CloseButton
             onClick={closeAnnotation}/></AnnouncementWrapper>
       </div>
     );

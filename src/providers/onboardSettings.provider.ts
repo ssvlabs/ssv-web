@@ -4,12 +4,11 @@ import walletConnectModule from '@web3-onboard/walletconnect';
 import config from '~app/common/config';
 import { Theme } from '@web3-onboard/core';
 import { clearLocalStorage, getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-import { GOERLI_RPC_URL, HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
-import { MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import { HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
+import { MAINNET_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 const TOKEN_NAMES = {
   [`${MAINNET_NETWORK_ID}`]: 'ETH',
-  [`${GOERLI_NETWORK_ID}`]: 'GoerliETH',
   [`${HOLESKY_NETWORK_ID}`]: 'ETH',
 };
 
@@ -36,7 +35,7 @@ const injected = injectedModule();
 const walletConnect = walletConnectModule({
   dappUrl: window.location.origin,
   projectId: config.ONBOARD.PROJECT_ID,
-  optionalChains: [MAINNET_NETWORK_ID, GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID],
+  optionalChains: [MAINNET_NETWORK_ID, HOLESKY_NETWORK_ID],
 });
 const safeWalletInstance = safeWallet();
 
@@ -70,12 +69,6 @@ const initOnboardOptions = {
       label: 'Ethereum Mainnet',
       token: TOKEN_NAMES[`${MAINNET_NETWORK_ID}`],
       rpcUrl: MAINNET_RPC_URL,
-    },
-    {
-      id: GOERLI_NETWORK_ID,
-      label: 'Goerli testnet',
-      token: TOKEN_NAMES[`${GOERLI_NETWORK_ID}`],
-      rpcUrl: GOERLI_RPC_URL,
     },
     {
       id: HOLESKY_NETWORK_ID,

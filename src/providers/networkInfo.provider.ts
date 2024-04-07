@@ -22,21 +22,14 @@ export const API_VERSIONS = {
 };
 
 export const MAINNET_NETWORK_ID = 1;
-export const GOERLI_NETWORK_ID = 5;
 export const HOLESKY_NETWORK_ID = 17000;
 
 const NETWORK_NAMES = {
   [`${MAINNET_NETWORK_ID}`]: 'Mainnet',
-  [`${GOERLI_NETWORK_ID}`]: 'Goerli',
   [`${HOLESKY_NETWORK_ID}`]: 'Holesky',
 };
 
 const LINKS = {
-  [`${GOERLI_NETWORK_ID}`]: {
-    [NetworksEnum.BEACONCHA_URL]: 'https://prater.beaconcha.in',
-    [NetworksEnum.LAUNCHPAD_URL]: 'https://prater.launchpad.ethereum.org/en/',
-    [NetworksEnum.ETHERSCAN_URL]: 'https://goerli.etherscan.io',
-  },
   [`${HOLESKY_NETWORK_ID}`]: {
     [NetworksEnum.BEACONCHA_URL]: 'https://holesky.beaconcha.in',
     [NetworksEnum.LAUNCHPAD_URL]: 'https://holesky.launchpad.ethereum.org/en/',
@@ -85,7 +78,7 @@ const getStoredNetwork = () => {
 
 const currentNetworkName = () => NETWORK_NAMES[getStoredNetwork().networkId];
 
-const testNets = [GOERLI_NETWORK_ID, HOLESKY_NETWORK_ID];
+const testNets = [HOLESKY_NETWORK_ID];
 
 const getLink = ({ type }: { type: NetworksEnum }) => LINKS[`${getStoredNetwork().networkId}`][type];
 

@@ -36,16 +36,15 @@ const CloseButton = styled.div`
     margin-left: 421px;
 `;
 
-const Announcement = () => {
+const Announcement = ({ text }: { text?: string }) => {
   const [showAnnotation, setShowAnnotation] = useState(false);
 
   const closeAnnotation = () => setShowAnnotation(false);
 
-  if (showAnnotation) {
+  if (text && showAnnotation) {
     return (
       <div>
-        <AnnouncementWrapper><AttentionIcon/>Goerli network support will be deprecated on April 18th, 2024. As of this
-          date, the official testnet will shift to the Holesky testnet. <CloseButton
+        <AnnouncementWrapper><AttentionIcon/>{text}<CloseButton
             onClick={closeAnnotation}/></AnnouncementWrapper>
       </div>
     );

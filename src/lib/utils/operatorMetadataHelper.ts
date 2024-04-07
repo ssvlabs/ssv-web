@@ -90,6 +90,7 @@ export const OPERATOR_NODE_TYPES = {
 export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
 
 export const HTTP_PREFIX = 'http://';
+export const HTTPS_PREFIX = 'https://';
 
 export const FIELDS: { [key: string]: MetadataEntity } = {
     [FIELD_KEYS.OPERATOR_NAME]: {
@@ -207,17 +208,17 @@ export const isLink = (value: string) => {
 };
 
 export const validateDkgAddress = (value: string, isForm?: boolean) => {
-    if (isForm && value === HTTP_PREFIX) return false;
+    if (isForm && (value === HTTP_PREFIX || value === HTTPS_PREFIX)) return false;
 
-    if (!value.startsWith(HTTP_PREFIX)) return true;
+    if (!value.startsWith(HTTP_PREFIX) && !value.startsWith(HTTPS_PREFIX)) return true;
 
     const addressWithoutHttp = value.substring(HTTP_PREFIX.length);
 
-    const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}';
+    const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}';
     const ipPattern = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
     const portPattern = ':\\d{1,5}';
 
-    const pattern = new RegExp(`^(${domainPattern}|${ipPattern})${portPattern}$`);
+    const pattern = new RegExp(`(${domainPattern}|${ipPattern})${portPattern}$`);
 
     return !pattern.test(addressWithoutHttp);
 };

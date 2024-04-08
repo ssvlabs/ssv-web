@@ -23,8 +23,7 @@ const putRequest = async <T>(url: string, data?: any, requestConfig?: AxiosReque
     return { error: null, data: response.data, result: HttpResult.SUCCESS };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log(httpErrorMessage(url, error.code!, error.message, `Data: ${JSON.stringify(data)}`));
-      return { error: error.response!.data, data: null, result: HttpResult.FAIL };
+      return { error: error.message, data: null, result: HttpResult.FAIL };
     } else {
       return { error: httpGeneralErrorMessage(url), data: null, result: HttpResult.FAIL };
     }

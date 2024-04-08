@@ -35,12 +35,6 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
     const onChangeHandler = (event: any) => {
         const { value } = event.target;
         if (fieldKey === FIELD_KEYS.DKG_ADDRESS) {
-            // Ensure http:// is always present
-            if (!value.startsWith(HTTP_PREFIX)) {
-                setCurrentValue(HTTP_PREFIX);
-                metadataStore.setMetadataValue(fieldKey, '');
-                return;
-            }
             setCurrentValue(value);
             metadataStore.setMetadataValue(fieldKey, value);
         } else {

@@ -20,7 +20,7 @@ const SuccessPage = () => {
       <BorderScreen
         blackHeader
         withoutNavigation
-        header={'SSV Faucet Goerli Testnet'}
+        header={'SSV Faucet Holesky Testnet'}
         body={[
           <Grid container className={classes.Wrapper}>
             <Typography className={classes.BlueText}>

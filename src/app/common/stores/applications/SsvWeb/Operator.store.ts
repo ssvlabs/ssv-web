@@ -337,7 +337,11 @@ class OperatorStore extends BaseStore {
                 operatorApprovalBeginTime: this.operatorApprovalBeginTime,
               };
             };
-            await executeAfterEvent({ updatedStateGetter, prevState: operatorDataBefore, callBack: this.myAccountStore.refreshOperatorsAndClusters });
+            await executeAfterEvent({
+              updatedStateGetter,
+              prevState: operatorDataBefore,
+              callBack: this.myAccountStore.refreshOperatorsAndClusters,
+            });
             resolve(true);
           } else {
             resolve(false);
@@ -450,7 +454,11 @@ class OperatorStore extends BaseStore {
                 operatorApprovalBeginTime: this.operatorApprovalBeginTime,
               };
             };
-            await executeAfterEvent({ updatedStateGetter, prevState: operatorDataBefore, callBack: this.myAccountStore.refreshOperatorsAndClusters });
+            await executeAfterEvent({
+              updatedStateGetter,
+              prevState: operatorDataBefore,
+              callBack: this.myAccountStore.refreshOperatorsAndClusters,
+            });
             resolve(true);
           } else {
             resolve(false);
@@ -492,7 +500,11 @@ class OperatorStore extends BaseStore {
               const operatorAfter = await getOperator(operatorId);
               return { id: operatorAfter.id, fee: operatorAfter.fee };
             };
-            await executeAfterEvent({ updatedStateGetter, prevState: operatorBefore, callBack: this.myAccountStore.refreshOperatorsAndClusters });
+            await executeAfterEvent({
+              updatedStateGetter,
+              prevState: operatorBefore,
+              callBack: this.myAccountStore.refreshOperatorsAndClusters,
+            });
             resolve(true);
           } else {
             resolve(false);
@@ -545,7 +557,11 @@ class OperatorStore extends BaseStore {
                 previous_fee: operatorAfter.previous_fee,
               };
             };
-            await executeAfterEvent({ updatedStateGetter, prevState: operatorBefore, callBack: this.myAccountStore.refreshOperatorsAndClusters });
+            await executeAfterEvent({
+              updatedStateGetter,
+              prevState: operatorBefore,
+              callBack: this.myAccountStore.refreshOperatorsAndClusters,
+            });
             resolve(true);
           } else {
             resolve(false);
@@ -585,7 +601,11 @@ class OperatorStore extends BaseStore {
           const event: boolean = receipt.hasOwnProperty('events');
           if (event) {
             const updatedStateGetter = await getEventByTxHash(receipt.transactionHash);
-            await executeAfterEvent({ updatedStateGetter, prevState: operatorId, callBack: this.myAccountStore.refreshOperatorsAndClusters });
+            await executeAfterEvent({
+              updatedStateGetter,
+              prevState: operatorId,
+              callBack: this.myAccountStore.refreshOperatorsAndClusters,
+            });
             resolve(true);
           } else {
             resolve(false);
@@ -627,11 +647,14 @@ class OperatorStore extends BaseStore {
           }
           const receipt = await tx.wait();
           if (receipt.blockHash) {
-            const updatedStateGetter = async () =>  !!await getEventByTxHash(receipt.transactionHash);
+            const updatedStateGetter = async () => !!await getEventByTxHash(receipt.transactionHash);
             await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
+            console.log('before resolve true');
             resolve(true);
+          } else {
+            console.log('before resolve false');
+            resolve(false);
           }
-          resolve(false);
         } catch (e: any) {
           store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
           resolve(false);

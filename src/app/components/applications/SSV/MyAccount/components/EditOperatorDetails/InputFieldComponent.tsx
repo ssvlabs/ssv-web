@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
-import { FIELD_KEYS, HTTP_PREFIX } from '~lib/utils/operatorMetadataHelper';
+import { FIELD_KEYS, HTTPS_PREFIX } from '~lib/utils/operatorMetadataHelper';
 
 import {
     useStyles,
@@ -22,13 +22,13 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
             // Get the pasted value from clipboard
             let pastedValue = event.clipboardData.getData('text');
 
-            // If the value starts with HTTP_PREFIX, remove it
-            if (pastedValue.startsWith(HTTP_PREFIX)) {
-                pastedValue = pastedValue.substring(HTTP_PREFIX.length);
+            // If the value starts with HTTPS_PREFIX, remove it
+            if (pastedValue.startsWith(HTTPS_PREFIX)) {
+                pastedValue = pastedValue.substring(HTTPS_PREFIX.length);
             }
 
-            setCurrentValue(HTTP_PREFIX + pastedValue);
-            metadataStore.setMetadataValue(fieldKey, HTTP_PREFIX + pastedValue);
+            setCurrentValue(HTTPS_PREFIX + pastedValue);
+            metadataStore.setMetadataValue(fieldKey, HTTPS_PREFIX + pastedValue);
         }
     };
 
@@ -45,7 +45,7 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder  }: { fieldKey
 
     const onFocusHandler = () => {
         if (fieldKey === FIELD_KEYS.DKG_ADDRESS && !currentValue) {
-            setCurrentValue(HTTP_PREFIX);
+            setCurrentValue(HTTPS_PREFIX);
         }
     };
 

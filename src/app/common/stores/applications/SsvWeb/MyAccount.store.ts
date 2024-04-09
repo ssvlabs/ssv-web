@@ -97,7 +97,7 @@ class MyAccountStore extends BaseStore {
     const response = await clustersByOwnerAddress(query);
     if (!response) return [];
     this.ownerAddressClustersPagination = response.pagination;
-    this.ownerAddressClusters = await Promise.all(response?.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral))) || [];
+    this.ownerAddressClusters = await Promise.all(response.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral))) || [];
     this.ownerAddressClusters = this.ownerAddressClusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated);
     if (process && process.processName === 'single_cluster') {
         const updatedCluster = this.ownerAddressClusters.find((cluster: any) => cluster.id === process.item.id);

@@ -5,8 +5,17 @@ import { keccak256 } from 'web3-utils';
 import { EContractName } from '~app/model/contracts.model';
 import { getContractByName } from '~root/services/contracts.service';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { getClusterByHash } from '~root/services/validator.service';
 import { IOperator } from '~app/model/operator.model';
+import { ICluster } from '~app/model/cluster.model';
+import { getRequest } from '~root/services/httpApi.service';
+
+const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
+  validatorCount: cluster.validatorCount,
+  networkFeeIndex: `${cluster.networkFeeIndex}`,
+  index: `${cluster.index}`,
+  balance: cluster.balance,
+  active: cluster.active,
+});
 
 const getSortedOperatorsIds = (operators: IOperator[]) => {
   return operators.map((operator: IOperator) => operator.id).map(Number).sort((a: number, b: number) => a - b);
@@ -20,6 +29,11 @@ const getClusterHash = (operators: (number | IOperator)[], ownerAddress: string)
     operatorsIds = getSortedOperatorsIds(operators as IOperator[]);
   }
   return keccak256(encodePacked(ownerAddress, ...operatorsIds));
+};
+
+const getClusterByHash = async (clusterHash: string): Promise<any> => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/${clusterHash}`;
+  return await getRequest(url);
 };
 
 const getClusterBalance = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, convertFromWei?: boolean, injectedClusterData?: any) => {
@@ -46,27 +60,29 @@ const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOf
   return clusterBurnRate * newAmountOfValidators;
 };
 
-const isClusterLiquidated = async (operators: number[], ownerAddress: string, injectedClusterData: any): Promise<boolean> => {
-  const operatorsIds = operators.sort((a, b) => a - b);
+const isClusterLiquidated = async (operatorsIds: number[], ownerAddress: string, clusterData: any): Promise<boolean> => {
+  const sortedOperatorsIds = operatorsIds.sort((a, b) => a - b);
   const contract = getContractByName(EContractName.GETTER);
-  const clusterData: any = injectedClusterData;
-  if (!clusterData) return false;
+  if (!clusterData || !contract) return false;
   try {
-    const isLiquidated = await contract.isLiquidated(ownerAddress, operatorsIds, clusterData);
+    const isLiquidated = await contract.isLiquidated(ownerAddress, sortedOperatorsIds, clusterData);
     return isLiquidated;
   } catch (e) {
     return false;
   }
 };
 
-const getClusterBurnRate = async (operators: number[], ownerAddress: string, injectedClusterData?: any) => {
+const getClusterBurnRate = async (operators: number[], ownerAddress: string, clusterData: any): Promise<string> => {
   const contract = getContractByName(EContractName.GETTER);
+  if (!contract) {
+    return '';
+  }
   const operatorsIds = operators.sort((a, b) => a - b);
   try {
-    const burnRate = await contract.getBurnRate(ownerAddress, operatorsIds, injectedClusterData);
+    const burnRate = await contract.getBurnRate(ownerAddress, operatorsIds, clusterData);
     return burnRate;
   } catch (e) {
-    return 0;
+    return '';
   }
 };
 
@@ -110,27 +126,32 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
     }
 };
 
-const extendClusterEntity = async (cluster: any, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
-  const fullClusterData = await getClusterData(getClusterHash(cluster.operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true);
-  const newBalance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, fullClusterData);
+const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
   const keys = Object.keys(cluster);
-  let camelKeysCluster: any = {};
+  let camelKeysCluster = {} as ICluster;
   keys.forEach((key: string) => {
+    // @ts-ignore
     camelKeysCluster[_.camelCase(key)] = cluster[key];
   });
-
-  return {
-    ...camelKeysCluster,
-    runWay: fullClusterData.runWay,
-    burnRate: fullClusterData.burnRate,
-    balance: newBalance,
-    isLiquidated: fullClusterData.isLiquidated,
-  };
+  const operatorIds = cluster.operators.map((operator) => operator.id);
+  const tmp = await getClusterData(getClusterHash(operatorIds, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
+  console.log('getClusterData >>> ', tmp);
+  const clusterData = clusterDataDTO({ cluster: camelKeysCluster });
+  // clusterData.operators = operatorIds;
+  clusterData.balance = tmp.balance;
+  console.log('combined data ', clusterData);
+  const isLiquidated = await isClusterLiquidated(operatorIds, ownerAddress, clusterData);
+  const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
+  const newBalance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
+  const runWay: number = getClusterRunWay({ balance: newBalance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
+  return { ...camelKeysCluster, runWay, burnRate, balance: newBalance, isLiquidated };
 };
 
 export {
+  clusterDataDTO,
   getSortedOperatorsIds,
   getClusterHash,
+  getClusterByHash,
   getClusterBalance,
   getClusterNewBurnRate,
   getClusterRunWay,

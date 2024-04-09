@@ -14,7 +14,6 @@ import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -36,22 +35,21 @@ const Deposit = () => {
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const clusterBalance = fromWei(cluster.balance);
 
   async function depositSsv() {
     dispatch(setIsLoading(true));
-    await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
+    await ssvStore.deposit({ amount: inputValue.toString(), cluster }).then(async (success: boolean) => {
       cluster.balance = await getClusterBalance(cluster.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
         label: 'success',
       });
-        await myAccountStore.getOwnerAddressClusters({});
-        dispatch(setIsLoading(false));
+      // await myAccountStore.getOwnerAddressClusters({});
+      dispatch(setIsLoading(false));
       if (success) {
         processStore.setProcess({
           processName: 'single_cluster',

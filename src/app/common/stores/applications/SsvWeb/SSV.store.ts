@@ -6,10 +6,11 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import { getClusterData, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
+import { clusterDataDTO, getClusterData, getClusterHash, getClusterRunWay } from '~root/services/cluster.service';
 import { SingleCluster, SingleOperator } from '~app/model/processes.model';
 import { store } from '~app/store';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { ICluster } from '~app/model/cluster.model';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -89,22 +90,15 @@ class SsvStore extends BaseStore {
     clearInterval(this.feesInterval);
   }
 
-  /**
-   * Deposit ssv
-   * @param amount
-   */
-  async deposit(amount: string) {
+  async deposit({ amount, cluster }: { amount: string, cluster: ICluster }) {
     return new Promise<boolean>(async (resolve) => {
-      const processStore: ProcessStore = this.getStore('Process');
       const isContractWallet = store.getState().walletState.isContractWallet;
       const accountAddress = store.getState().walletState.accountAddress;
-      const process: SingleCluster = processStore.getProcess;
-      const cluster = process.item;
       const contract = getContractByName(EContractName.SETTER);
       const operatorsIds = cluster.operators.map((operator: {
-        id: any;
+        id: number;
       }) => operator.id).map(Number).sort((a: number, b: number) => a - b);
-      const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), this.liquidationCollateralPeriod, this.minimumLiquidationCollateral);
+      const clusterData = clusterDataDTO({ cluster });
       const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
       const tx = await contract.deposit(accountAddress, operatorsIds, ssvAmount, clusterData);
       if (tx.hash && isContractWallet) {

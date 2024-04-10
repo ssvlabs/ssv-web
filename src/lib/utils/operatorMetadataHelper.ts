@@ -148,7 +148,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
         label: 'DKG Endpoint',
         value: HTTPS_PREFIX,
         errorMessage: '',
-        placeholderText: 'http://ip:port',
+        placeholderText: 'https://ip:port',
         toolTipText: 'The IP address or domain name of the machine running the operator DKG client, along with the port number ("3030" is the default port). Example: "http://192.168.1.1:3030 or "http://my.example.com:3030"',
     },
     [FIELD_KEYS.WEBSITE_URL]: {

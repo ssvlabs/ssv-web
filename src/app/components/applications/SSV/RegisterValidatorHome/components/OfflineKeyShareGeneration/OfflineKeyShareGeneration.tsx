@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { isWindows, osName } from 'react-device-detect';
+import { osName } from 'react-device-detect';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
@@ -29,7 +29,7 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { IOperator } from '~app/model/operator.model';
 import { getOwnerNonce } from '~root/services/account.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import styled from 'styled-components';
 import { OperatingSystemsEnum } from '~app/enums/os.enum';
@@ -94,7 +94,6 @@ const OfflineKeyShareGeneration = () => {
   const [operatingSystemName, setOperatingSystemName] = useState(osName);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isMainnet = useAppSelector(getIsMainnet);
   const accountAddress = useAppSelector(getAccountAddress);
   const stores = useStores();
   const classes = useStyles();
@@ -162,7 +161,7 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
-  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:v2.0.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.0.0" init --owner ${accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
+  const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --owner ${accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
   const instructions = [
     {
       id: OFFLINE_FLOWS.COMMAND_LINE, instructions: [
@@ -247,7 +246,7 @@ const OfflineKeyShareGeneration = () => {
       withoutNavigation={processStore.secondRegistration}
       header={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.HEADER}
       overFlow={'none'}
-      width={!isMainnet ? 872 : undefined}
+      width={872}
       body={[
         <Grid container style={{ gap: 24 }}>
           <Grid container wrap={'nowrap'} item style={{ gap: 24 }}>
@@ -270,7 +269,7 @@ const OfflineKeyShareGeneration = () => {
                   <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
                 </Grid>
               </Grid>}/>
-            {!isMainnet && <Grid container item
+          <Grid container item
                                  className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`}
                                  onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
               <Grid item xs={XS}
@@ -279,7 +278,7 @@ const OfflineKeyShareGeneration = () => {
                 <Typography className={classes.BlueText}>DKG</Typography>
                 <Typography className={classes.AdditionalGrayText}>Generate from New Key</Typography>
               </Grid>
-            </Grid>}
+            </Grid>
           </Grid>
           {selectedBox === OFFLINE_FLOWS.DESKTOP_APP && <Grid container item className={classes.UnofficialTool}>
             This app is an unofficial tool built as a public good by the OneStar team.
@@ -298,11 +297,8 @@ const OfflineKeyShareGeneration = () => {
             </Grid>
           </Grid>
           }
-          {selectedBox === OFFLINE_FLOWS.DKG && !isMainnet && operatorsAcceptDkg &&
+          {selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg &&
             <Grid container item className={classes.DkgInstructionsWrapper}>
-              <Grid className={classes.DkgNotification}>
-                Please note that this tool is yet to be audited. Please refrain from using it on mainnet.
-              </Grid>
               <Grid className={classes.DkgSectionWrapper}>
                 <Typography className={classes.DkgTitle}>Prerequisite</Typography>
                 <Grid className={classes.DkgText}><LinkText

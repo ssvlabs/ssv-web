@@ -1,13 +1,32 @@
-import * as _ from 'lodash';
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { keccak256 } from 'web3-utils';
 import { EContractName } from '~app/model/contracts.model';
 import { getContractByName } from '~root/services/contracts.service';
-import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
+import {
+  encodePacked,
+  fromWei,
+  getFeeForYear,
+  prepareSsvAmountToTransfer,
+  toWei,
+} from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { ICluster } from '~app/model/cluster.model';
 import { getRequest } from '~root/services/httpApi.service';
+import { transactionExecutor } from '~root/services/transaction.service';
+import { EClusterOperation } from '~app/enums/clusterOperation.enum';
+import { getEventByTxHash } from '~root/services/contractEvent.service';
+
+interface ClusterBalanceInteractionProps {
+  amount: string;
+  cluster: ICluster;
+  isContractWallet: boolean;
+  accountAddress: string;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
+  callbackAfterExecution: Function;
+  operation: EClusterOperation
+}
 
 const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
   validatorCount: cluster.validatorCount,
@@ -40,7 +59,9 @@ const getClusterBalance = async (operators: IOperator[], ownerAddress: string, l
   const operatorsIds = getSortedOperatorsIds(operators);
   const contract = getContractByName(EContractName.GETTER);
   const clusterData = injectedClusterData ?? await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-  if (!clusterData) return;
+  if (!clusterData || !contract) {
+    return 0;
+  }
   try {
     const balance = await contract.getBalance(ownerAddress, operatorsIds, clusterData);
     if (convertFromWei) {
@@ -127,24 +148,59 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
 };
 
 const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
-  const keys = Object.keys(cluster);
-  let camelKeysCluster = {} as ICluster;
-  keys.forEach((key: string) => {
-    // @ts-ignore
-    camelKeysCluster[_.camelCase(key)] = cluster[key];
-  });
   const operatorIds = cluster.operators.map((operator) => operator.id);
-  const tmp = await getClusterData(getClusterHash(operatorIds, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-  console.log('getClusterData >>> ', tmp);
-  const clusterData = clusterDataDTO({ cluster: camelKeysCluster });
-  // clusterData.operators = operatorIds;
-  clusterData.balance = tmp.balance;
-  console.log('combined data ', clusterData);
+  const clusterData = clusterDataDTO({ cluster });
   const isLiquidated = await isClusterLiquidated(operatorIds, ownerAddress, clusterData);
+  const balance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
   const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
-  const newBalance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
-  const runWay: number = getClusterRunWay({ balance: newBalance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-  return { ...camelKeysCluster, runWay, burnRate, balance: newBalance, isLiquidated };
+  const runWay: number = getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
+  return { ...cluster, runWay, burnRate, balance, isLiquidated, clusterData };
+};
+
+const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWallet, liquidationCollateralPeriod, minimumLiquidationCollateral, callbackAfterExecution, operation }: ClusterBalanceInteractionProps)=> {
+  const contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+  const operatorsIds = getSortedOperatorsIds(cluster.operators);
+  const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
+  const clusterHash = getClusterHash(cluster.operators, accountAddress);
+  let contractMethod;
+  let payload;
+  if (operation === EClusterOperation.DEPOSIT) {
+    contractMethod = contract.deposit;
+    payload = [accountAddress, operatorsIds, ssvAmount, cluster.clusterData];
+  } else if (operation === EClusterOperation.WITHDRAW) {
+    contractMethod = contract.withdraw;
+    payload = [operatorsIds, ssvAmount, cluster.clusterData];
+  } else {
+    contractMethod = contract.liquidate;
+    payload = [accountAddress, operatorsIds, cluster.clusterData];
+  }
+  return await transactionExecutor({
+    contractMethod,
+    payload,
+    getterTransactionState: async () => (await getClusterData(clusterHash, liquidationCollateralPeriod, minimumLiquidationCollateral)).balance,
+    prevState: cluster.clusterData.balance,
+    isContractWallet,
+    callbackAfterExecution,
+  });
+};
+
+const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, amount, liquidationCollateralPeriod, minimumLiquidationCollateral, callbackAfterExecution }:
+                                   { cluster: ICluster; accountAddress: string; isContractWallet: boolean; amount: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; callbackAfterExecution: Function }) => {
+  const operatorsIds = getSortedOperatorsIds(cluster.operators);
+  const amountInWei = toWei(amount);
+  const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
+  const payload = [operatorsIds, amountInWei, clusterData];
+  const contract = getContractByName(EContractName.SETTER);
+  return await transactionExecutor({
+    contractMethod: contract.reactivate,
+    payload,
+    getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
+    isContractWallet: isContractWallet,
+    callbackAfterExecution,
+  });
 };
 
 export {
@@ -157,4 +213,6 @@ export {
   getClusterRunWay,
   getClusterData,
   extendClusterEntity,
+  depositOrWithdraw,
+  reactivateCluster,
 };

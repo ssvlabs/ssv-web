@@ -3,6 +3,10 @@ import { putRequest, getRequest, IHttpResponse } from '~root/services/httpApi.se
 import { IOperator } from '~app/model/operator.model';
 import { IPagination } from '~app/model/pagination.model';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
+import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { transactionExecutor } from '~root/services/transaction.service';
 
 type OperatorsListQuery = {
   page?: number,
@@ -115,6 +119,37 @@ const getOperatorValidators = async (props: OperatorValidatorListQuery, skipRetr
   }
 };
 
+const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
+  const contract = getContractByName(EContractName.GETTER);
+  if (!contract) {
+    return 0;
+  }
+  try {
+    const res = await contract.getOperatorEarnings(id);
+    return fromWei(res);
+  } catch (e) {
+    // TODO: add error handling
+    console.error(e);
+    return 0;
+  }
+};
+
+const withdrawRewards = async ({ operator, amount, isContractWallet, callbackAfterExecution }: { operator: IOperator; amount: string; isContractWallet: boolean; callbackAfterExecution: Function; }) => {
+  const contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+  const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
+  return await transactionExecutor({
+    contractMethod: contract.withdrawOperatorEarnings,
+    payload: [operator.id, ssvAmount],
+    getterTransactionState: async () => await getOperatorBalance({ id: operator.id }),
+    prevState: operator.balance,
+    isContractWallet,
+    callbackAfterExecution,
+  });
+};
+
 export {
   getOperatorsByOwnerAddress,
   getOperator,
@@ -125,5 +160,7 @@ export {
   getOperatorNodes,
   getOperatorAvailableLocations,
   getOperatorValidators,
+  getOperatorBalance,
+  withdrawRewards,
 };
 

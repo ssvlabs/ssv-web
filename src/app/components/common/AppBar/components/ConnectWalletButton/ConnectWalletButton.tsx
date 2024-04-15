@@ -16,6 +16,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import config from '~app/common/config';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 
 const ConnectWalletButton = () => {
   const [{  wallet, connecting }, connect] = useConnectWallet();
@@ -30,7 +31,6 @@ const ConnectWalletButton = () => {
   const myAccountStore: MyAccountStore = stores.MyAccount;
 
   const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
-    dispatch(setIsShowSsvLoader(true));
     dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
     wallet && await dispatch(checkIfWalletIsContractAction(wallet.provider));
     notifyService.init(chain.id);
@@ -58,6 +58,9 @@ const ConnectWalletButton = () => {
     }
     if (wallet && connectedChain && !connecting) {
       initiateWallet({ connectedWallet: wallet, chain: connectedChain });
+    }
+    if (!getFromLocalStorageByKey('onboard.js:last_connected_wallet')) {
+      dispatch(setIsShowSsvLoader(false));
     }
   }, [wallet, connectedChain, connecting]);
 

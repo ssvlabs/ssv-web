@@ -30,7 +30,7 @@ const initialState: AppState = {
   isLoading: false,
   isShowWalletPopup: false,
   isShowTxPendingPopup: false,
-  isShowSsvLoader: false,
+  isShowSsvLoader: true,
   txHash: '',
   restrictedUserGeo: '',
   shouldCheckCountryRestriction: getStoredNetwork().networkId === MAINNET_NETWORK_ID,

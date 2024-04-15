@@ -11,6 +11,7 @@ import NaDisplay from '~app/components/common/NaDisplay';
 import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
@@ -32,6 +33,7 @@ const ClusterDashboard = () => {
   const clusterIntervalRef = useRef<any>(null);
   const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
+  const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
@@ -111,6 +113,10 @@ const ClusterDashboard = () => {
   });
 
   const openSingleCluster = (listIndex: string) => {
+    processStore.setProcess({
+      processName: 'single_cluster',
+      item: sortedClusters[listIndex],
+    }, 2);
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT, { state: { index: listIndex } });
   };
 

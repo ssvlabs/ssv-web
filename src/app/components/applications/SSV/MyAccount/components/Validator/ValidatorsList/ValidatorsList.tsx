@@ -86,6 +86,7 @@ const LinksWrapper = styled.div`
     flex-direction: row-reverse;
     align-items: center;
     gap: 8px;
+    position: static;
 `;
 
 const Link = styled.div<{ isDarkMode: boolean; logo: string }>`

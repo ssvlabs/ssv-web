@@ -4,6 +4,8 @@ import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Announcement from '~app/components/common/Annotation/Announcement';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsShowSsvLoader } from '~app/redux/appState.slice';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -43,6 +45,7 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 
 const SsvWebRoutes: any = () => {
   const ssvRoutes = config.routes.SSV;
+  const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
@@ -97,7 +100,7 @@ const SsvWebRoutes: any = () => {
     <Layout>
       <Announcement />
       <SsvAppBar />
-      <Suspense fallback={<div className="container"></div>}>
+      {!isShowSsvLoader && <Suspense fallback={<div className="container"></div>}>
         <Wrapper>
           <Route path={'/'} element={<Welcome/>}/>
           <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported/>}/>
@@ -122,7 +125,7 @@ const SsvWebRoutes: any = () => {
             })}
           </Route>
         </Wrapper>
-      </Suspense>
+      </Suspense>}
     </Layout>
   );
 };

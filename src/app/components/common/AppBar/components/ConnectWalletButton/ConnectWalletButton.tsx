@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ConnectWalletButton.styles';
-import { setIsShowWalletPopup } from '~app/redux/appState.slice';
+import { setIsShowSsvLoader, setIsShowWalletPopup } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import notifyService from '~root/services/notify.service';
 import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
@@ -30,6 +30,7 @@ const ConnectWalletButton = () => {
   const myAccountStore: MyAccountStore = stores.MyAccount;
 
   const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
+    dispatch(setIsShowSsvLoader(true));
     dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
     wallet && await dispatch(checkIfWalletIsContractAction(wallet.provider));
     notifyService.init(chain.id);
@@ -48,6 +49,7 @@ const ConnectWalletButton = () => {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
     await operatorStore.updateOperatorValidatorsLimit();
+    dispatch(setIsShowSsvLoader(false));
   };
 
   useEffect(() => {

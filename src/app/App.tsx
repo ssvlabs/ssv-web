@@ -18,7 +18,12 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
+import {
+  getIsDarkMode,
+  getIsShowSsvLoader,
+  getShouldCheckCountryRestriction,
+  setRestrictedUserGeo,
+} from '~app/redux/appState.slice';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { useDispatch } from 'react-redux';
@@ -36,7 +41,7 @@ const LoaderWrapper = styled.div<{ theme: any }>`
   right: 0;
   bottom: 0;
   z-index: 999999;
-  background-color: ${({ theme }) => theme.loaderColor};
+  background-color: ${({ theme }) => theme.colors.loaderColor};
 `;
 
 const Loader = styled.img`
@@ -58,6 +63,7 @@ const App = () => {
   const dispatch = useDispatch();
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
   const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
   const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
@@ -104,7 +110,7 @@ const App = () => {
           <ThemeProviderLegacy theme={MuiTheme}>
             <ScThemeProvider theme={theme}>
               <GlobalStyle/>
-              {!web3Onboard && (<LoaderWrapper><Loader src={'/images/ssv-loader.svg'} /></LoaderWrapper>)}
+              {isShowSsvLoader && (<LoaderWrapper><Loader src={'/images/ssv-loader.svg'} /></LoaderWrapper>)}
               <BarMessage/>
               <BrowserView>
                 {web3Onboard && <Web3OnboardProvider web3Onboard={web3Onboard}><Routes/></Web3OnboardProvider>}

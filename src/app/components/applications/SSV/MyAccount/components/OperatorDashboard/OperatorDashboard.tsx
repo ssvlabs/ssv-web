@@ -21,6 +21,7 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
+import { getOperatorBalance } from '~root/services/operator.service';
 
 const OperatorDashboard = () => {
   const stores = useStores();
@@ -38,7 +39,7 @@ const OperatorDashboard = () => {
   const fetchData = async () => {
     try {
       const promises = myAccountStore.ownerAddressOperators.map((operator: IOperator) => new Promise(async () => {
-        const balance = await operatorStore.getOperatorBalance(operator.id);
+        const balance = await getOperatorBalance({ id: operator.id });
         setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
       }));
       await Promise.all(promises);

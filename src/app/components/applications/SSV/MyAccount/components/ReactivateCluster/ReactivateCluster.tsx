@@ -2,7 +2,7 @@ import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
@@ -14,17 +14,15 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { fromWei } from '~root/services/conversions.service';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { SingleCluster } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
+import { reactivateCluster } from '~root/services/cluster.service';
 
 const options = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -35,18 +33,16 @@ const options = [
 const ReactivateCluster = () => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
+  const location = useLocation();
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const ssvStore: SsvStore = stores.SSV;
-  const processStore: ProcessStore = stores.Process;
-  const validatorStore: ValidatorStore = stores.Validator;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
-  const dispatch = useAppDispatch();
   const timePeriodNotValid = customPeriod < 30;
-  const process: SingleCluster = processStore.getProcess;
-  const cluster = process.item;
+  const cluster = myAccountStore.ownerAddressClusters[location.state.index];
   const validatorsCount = cluster.validatorCount || 1;
   const checkBox = (option: any) => setCheckedOption(option);
 
@@ -73,11 +69,16 @@ const ReactivateCluster = () => {
 
   const isChecked = (id: number) => checkedOption.id === id;
 
-  const reactivateCluster = async () => {
-    dispatch(setIsLoading(true));
-    const response = await validatorStore.reactivateCluster({ accountAddress, isContractWallet, amount: totalCost.toString() });
-    dispatch(setIsShowTxPendingPopup(false));
-    dispatch(setIsLoading(false));
+  const reactivateClusterHandler = async () => {
+    const response = await reactivateCluster({
+      cluster,
+      accountAddress,
+      isContractWallet,
+      amount: totalCost.toString(),
+      liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+      minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+      callbackAfterExecution: myAccountStore.refreshOperatorsAndClusters,
+    });
     if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
@@ -158,7 +159,7 @@ const ReactivateCluster = () => {
             <Button
               withAllowance
               text={'Next'}
-              onClick={reactivateCluster}
+              onClick={reactivateClusterHandler}
               disable={disableCondition}
               totalAmount={disableCondition ? '0' : formatNumberToUi(totalCost.toFixed(18))}
             />

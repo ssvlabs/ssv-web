@@ -2,51 +2,31 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { store } from '~app/store';
-import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { IOperator } from '~app/model/operator.model';
+import { withdrawRewards } from '~root/services/operator.service';
 
-const OperatorFlow = () => {
-  const [inputValue, setInputValue] = useState(0.0);
+const OperatorFlow = ({ operator, callbackAfterExecution }: { operator: IOperator; callbackAfterExecution: Function }) => {
+  const [inputValue, setInputValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
   const isMainnet = useAppSelector(getIsMainnet);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const classes = useStyles();
-  const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const operatorStore: OperatorStore = stores.Operator;
-  const operator = process?.item;
-  const operatorBalance = operator?.balance ?? 0;
+  const operatorBalance = operator.balance ?? 0;
 
   const withdrawSsv = async () => {
     setIsLoading(true);
-    const success = await ssvStore.withdrawSsv(inputValue.toString());
+    const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet, callbackAfterExecution });
     setIsLoading(false);
-    if (!isContractWallet) {
-      store.dispatch(setIsShowTxPendingPopup(false));
-    }
     if (success) {
-      setInputValue(0.0);
-      const balance = await operatorStore.getOperatorBalance(operator.id);
-      processStore.setProcess({
-        processName: 'single_operator',
-        item: { ...operator, balance },
-      }, 1);
       navigate(-1);
     }
   };

@@ -9,6 +9,7 @@ export interface AppState {
   isLoading: boolean;
   isShowWalletPopup: boolean;
   isShowTxPendingPopup: boolean;
+  isShowSsvLoader: boolean;
   txHash: string;
   restrictedUserGeo: string;
   shouldCheckCountryRestriction: boolean;
@@ -29,6 +30,7 @@ const initialState: AppState = {
   isLoading: false,
   isShowWalletPopup: false,
   isShowTxPendingPopup: false,
+  isShowSsvLoader: false,
   txHash: '',
   restrictedUserGeo: '',
   shouldCheckCountryRestriction: getStoredNetwork().networkId === MAINNET_NETWORK_ID,
@@ -55,6 +57,9 @@ export const slice = createSlice({
     setIsLoading: (state, action: { payload: boolean }) => {
       state.isLoading = action.payload;
     },
+    setIsShowSsvLoader: (state, action: { payload: boolean }) => {
+      state.isShowSsvLoader = action.payload;
+    },
     setIsShowWalletPopup: (state, action: { payload: boolean }) => {
       state.isShowWalletPopup = action.payload;
     },
@@ -69,12 +74,13 @@ export const slice = createSlice({
 
 export const appStateReducer = slice.reducer;
 
-export const { toggleDarkMode, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setShouldCheckCountryRestriction } = slice.actions;
+export const { toggleDarkMode, setIsShowSsvLoader, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setShouldCheckCountryRestriction } = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
 export const getIsDarkMode = (state: RootState) => state.appState.isDarkMode;
 export const getShouldCheckCountryRestriction = (state: RootState) => state.appState.shouldCheckCountryRestriction;
 export const getRestrictedUserGeo = (state: RootState) => state.appState.restrictedUserGeo;
+export const getIsShowSsvLoader = (state: RootState) => state.appState.isShowSsvLoader;
 export const getIsLoading = (state: RootState) => state.appState.isLoading;
 export const getIsShowWalletPopup = (state: RootState) => state.appState.isShowWalletPopup;
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;

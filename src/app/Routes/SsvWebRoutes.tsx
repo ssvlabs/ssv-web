@@ -3,8 +3,9 @@ import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
-import styled from 'styled-components';
 import Announcement from '~app/components/common/Annotation/Announcement';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsShowSsvLoader } from '~app/redux/appState.slice';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -28,7 +29,7 @@ const ReactivateCluster = lazy(() => import('~app/components/applications/SSV/My
 const OperatorDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/OperatorDashboard'));
 const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
 const EditOperatorDetails = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails'));
-const SingleValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster'));
+const SingleCluster = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster'));
 const CreateValidator = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator'));
 const SlashingWarning = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning'));
 const SelectOperators = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators'));
@@ -44,12 +45,13 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 
 const SsvWebRoutes: any = () => {
   const ssvRoutes = config.routes.SSV;
+  const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleValidator },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleCluster },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
@@ -98,7 +100,7 @@ const SsvWebRoutes: any = () => {
     <Layout>
       <Announcement />
       <SsvAppBar />
-      <Suspense fallback={<div className="container"></div>}>
+      {!isShowSsvLoader && <Suspense fallback={<div className="container"></div>}>
         <Wrapper>
           <Route path={'/'} element={<Welcome/>}/>
           <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported/>}/>
@@ -123,7 +125,7 @@ const SsvWebRoutes: any = () => {
             })}
           </Route>
         </Wrapper>
-      </Suspense>
+      </Suspense>}
     </Layout>
   );
 };

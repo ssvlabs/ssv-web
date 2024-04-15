@@ -18,11 +18,10 @@ type Props = {
   isInputFilled?: boolean | null,
 };
 
-const NewRemainingDays = (props: Props) => {
+const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Props) => {
   let errorType;
   let showError: boolean;
   let warningLiquidationState: boolean;
-  const { cluster, withdrawState, isInputFilled = null } = props;
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
   let remainingDays: number = clusterRunWay;
   const typeOfiIsInputFilled =  typeof isInputFilled === 'boolean';

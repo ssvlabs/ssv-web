@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SingleCluster.styles';
@@ -10,10 +10,11 @@ import { equalsAddresses } from '~lib/utils/strings';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorBox
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
 import ActionsButton
@@ -44,13 +45,7 @@ const Icon = styled.div<{ theme: any, icon: string, withoutDarkMode: boolean }>`
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    background-image: ${({ theme, icon, withoutDarkMode }) => {
-        if (withoutDarkMode) {
-            return `url(${icon}.svg)`;
-        } else {
-            return `url(${icon}${theme.colors.isDarkTheme ? '-dark.svg' : '.svg'})`;
-        }
-    }};
+    background-image: ${({ theme, icon, withoutDarkMode }) => (withoutDarkMode ? `url(${icon}.svg)` : `url(${icon}${theme.colors.isDarkMode ? '-dark.svg' : '.svg'})`)};
 `;
 
 const ValidatorsWrapper = styled.div`
@@ -89,10 +84,12 @@ const SingleCluster = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const location = useLocation();
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
-  const cluster = process?.item;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
+  const cluster = myAccountStore.ownerAddressClusters[location.state.index];
   const accountAddress = useAppSelector(getAccountAddress);
   const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
@@ -110,6 +107,18 @@ const SingleCluster = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
+  const moveToReactivateCluster = ()=> {
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE, { state: { index: location.state.index } });
+  };
+
+  const moveToDeposit = () => {
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT, { state: { index: location.state.index } });
+  };
+
+  const moveToWithdraw = ()=> {
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW, { state: { index: location.state.index, isValidatorFlow: true } });
+  };
+
   return (
     <Grid container className={classes.Wrapper}>
       <NewWhiteWrapper
@@ -124,7 +133,7 @@ const SingleCluster = () => {
       </Grid>
       <Section>
         <Grid item>
-          <Balance/>
+          <Balance cluster={cluster} moveToReactivateCluster={moveToReactivateCluster} moveToDeposit={moveToDeposit} moveToWithdraw={moveToWithdraw}  />
         </Grid>
         <div>
           <ValidatorsWrapper>
@@ -139,20 +148,19 @@ const SingleCluster = () => {
                     <ButtonText>
                       Actions
                     </ButtonText>
-                    <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode={true}/>
+                    <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode />
                   </ButtonTextWrapper>}/>}
                 <AnchorTooltip
                   title={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
                   shouldDisableHoverListener={!hasPrivateOperator}
                   placement="top">
                   <div>
-                    <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster}
-                                   children={<ButtonTextWrapper>
-                                     <ButtonText>
-                                       Add Validator
-                                     </ButtonText>
-                                     <Icon icon={'/images/plusIcon/plus'} withoutDarkMode={false}/>
-                                   </ButtonTextWrapper>} submitFunction={addToCluster}/>
+                    <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster} children={
+                      <ButtonTextWrapper>
+                        <ButtonText>Add Validator</ButtonText>
+                        <Icon icon={'/images/plusIcon/plus'} withoutDarkMode={false} />
+                      </ButtonTextWrapper>}
+                                   submitFunction={addToCluster}/>
                   </div>
                 </AnchorTooltip>
               </Grid>

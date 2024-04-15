@@ -13,16 +13,21 @@ import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAcco
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import ProcessStore from '../../../../../../../../common/stores/applications/SsvWeb/Process.store';
+import { SingleOperator } from '~app/model/processes.model';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({});
   const operatorStore: OperatorStore = stores.Operator;
   const dispatch = useAppDispatch();
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator = processStore.getProcess;
+  const operator = process.item;
 
   const changeOperatorFee = async () => {
     dispatch(setIsLoading(true));
-    const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee);
+    const response = await operatorStore.updateOperatorFee(operator, newFee);
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore

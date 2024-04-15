@@ -4,18 +4,17 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
-import { executeAfterEvent } from '~root/services/events.service';
+import { checkIfStateChanged } from '~root/services/events.service';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { equalsAddresses } from '~lib/utils/strings';
 import { store } from '~app/store';
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
+import { transactionExecutor } from '~root/services/transaction.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
 export interface NewOperator {
   id: number,
@@ -120,6 +119,7 @@ class OperatorStore extends BaseStore {
       operatorApprovalBeginTime: observable,
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
+      refreshAndGetOperatorFeeInfo: action.bound,
       updateOperatorAddressWhitelist: observable,
       newOperatorRegisterSuccessfully: observable,
       updateOperatorValidatorsLimit: action.bound,
@@ -145,6 +145,18 @@ class OperatorStore extends BaseStore {
    */
   get selectedEnoughOperators(): boolean {
     return this.stats.selected >= this.clusterSize;
+  }
+
+  /**
+   * Refresh and return current operator fee data
+   */
+  async refreshAndGetOperatorFeeInfo(id: number) {
+    await this.syncOperatorFeeInfo(id);
+    return {
+      operatorFutureFee: this.operatorFutureFee,
+      operatorApprovalBeginTime: this.operatorApprovalBeginTime,
+      operatorApprovalEndTime: this.operatorApprovalEndTime,
+    };
   }
 
   /**
@@ -251,99 +263,44 @@ class OperatorStore extends BaseStore {
   /**
    * update operator address whitelist
    */
-  async updateOperatorAddressWhitelist(operatorId: string, address: string) {
+  async updateOperatorAddressWhitelist({ operator, address }: { operator: IOperator, address: string }) {
+    const payload = [operator.id, address];
+    const contract = getContractByName(EContractName.SETTER);
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve) => {
-      try {
-        const contractInstance = getContractByName(EContractName.SETTER);
-        const tx = await contractInstance.setOperatorWhitelist(operatorId, address);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            const updatedStateGetter = async () => {
-              const operator = await getOperator(operatorId);
-              return equalsAddresses(operator.address_whitelist.toString(), address.toString());
-            };
-            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        console.debug('Contract Error', e.message);
-        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    const updatedStateGetter = async () => {
+      const operatorAfter = await getOperator(operator.id);
+      return operatorAfter.address_whitelist;
+    };
+
+    return await transactionExecutor({
+      contractMethod: contract.setOperatorWhitelist,
+      payload,
+      getterTransactionState: async () => {
+        const newAddress = await updatedStateGetter();
+        return equalsAddresses(newAddress, address);
+      },
+      isContractWallet,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
   /**
    * Cancel change fee process for operator
    */
-  async cancelChangeFeeProcess(operatorId: number): Promise<any> {
+  async cancelChangeFeeProcess(operator: IOperator): Promise<any> {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    await this.syncOperatorFeeInfo(operatorId);
-    const operatorDataBefore = {
-      operatorFutureFee: this.operatorFutureFee,
-      operatorApprovalEndTime: this.operatorApprovalEndTime,
-      operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-    };
-    return new Promise(async (resolve) => {
-      try {
-        const contract: Contract = getContractByName(EContractName.SETTER);
-        const tx = await contract.cancelDeclaredOperatorFee(operatorId);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            const updatedStateGetter = async () => {
-              await this.syncOperatorFeeInfo(operatorId);
-              return {
-                operatorFutureFee: this.operatorFutureFee,
-                operatorApprovalEndTime: this.operatorApprovalEndTime,
-                operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-              };
-            };
-            await executeAfterEvent({
-              updatedStateGetter,
-              prevState: operatorDataBefore,
-              callBack: this.myAccountStore.refreshOperatorsAndClusters,
-            });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    const contract: Contract = getContractByName(EContractName.SETTER);
+    const payload = [operator.id];
+    const operatorDataBefore = await this.refreshAndGetOperatorFeeInfo(operator.id);
+    const updatedStateGetter = async () => await this.refreshAndGetOperatorFeeInfo(operator.id);
+
+    return await transactionExecutor({
+      contractMethod: contract.cancelDeclaredOperatorFee,
+      payload,
+      isContractWallet,
+      getterTransactionState: updatedStateGetter,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
+      prevState: operatorDataBefore,
     });
   }
 
@@ -403,110 +360,49 @@ class OperatorStore extends BaseStore {
 
   /**
    * Check if operator already exists in the contract
-   * @param operatorId
+   * @param operator
    * @param newFee
    */
-  async updateOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
+  async updateOperatorFee(operator: IOperator, newFee: any): Promise<boolean> {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve) => {
-      try {
-        const contractInstance = getContractByName(EContractName.SETTER);
-        const formattedFee = prepareSsvAmountToTransfer(
-          toWei(
-            new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
-          ),
-        );
-        await this.syncOperatorFeeInfo(operatorId);
-        const operatorDataBefore = {
-          operatorFutureFee: this.operatorFutureFee,
-          operatorApprovalEndTime: this.operatorApprovalEndTime,
-          operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-        };
-        const tx = await contractInstance.declareOperatorFee(operatorId, formattedFee);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            const updatedStateGetter = async () => {
-              await this.syncOperatorFeeInfo(operatorId);
-              return {
-                operatorFutureFee: this.operatorFutureFee,
-                operatorApprovalEndTime: this.operatorApprovalEndTime,
-                operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-              };
-            };
-            await executeAfterEvent({
-              updatedStateGetter,
-              prevState: operatorDataBefore,
-              callBack: this.myAccountStore.refreshOperatorsAndClusters,
-            });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    const contract: Contract = getContractByName(EContractName.SETTER);
+    const formattedFee = prepareSsvAmountToTransfer(
+      toWei(
+        new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
+      ),
+    );
+    const payload = [operator.id, formattedFee];
+    const operatorDataBefore = await this.refreshAndGetOperatorFeeInfo(operator.id);
+    const updatedStateGetter = async () => await this.refreshAndGetOperatorFeeInfo(operator.id);
+
+    return await transactionExecutor({
+      contractMethod: contract.declareOperatorFee,
+      payload,
+      isContractWallet,
+      getterTransactionState: updatedStateGetter,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
+      prevState: operatorDataBefore,
     });
   }
 
-  async decreaseOperatorFee(operatorId: number, newFee: any): Promise<boolean> {
+  async decreaseOperatorFee(operator: IOperator, newFee: any): Promise<boolean> {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve) => {
-      try {
-        const contractInstance = getContractByName(EContractName.SETTER);
-        const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
-        const { id, fee } = await getOperator(operatorId);
-        const operatorBefore = { id, fee };
-        const tx = await contractInstance.reduceOperatorFee(operatorId, formattedFee);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            const updatedStateGetter = async () => {
-              const operatorAfter = await getOperator(operatorId);
-              return { id: operatorAfter.id, fee: operatorAfter.fee };
-            };
-            await executeAfterEvent({
-              updatedStateGetter,
-              prevState: operatorBefore,
-              callBack: this.myAccountStore.refreshOperatorsAndClusters,
-            });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    const contract: Contract = getContractByName(EContractName.SETTER);
+    const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
+    const payload = [operator.id, formattedFee];
+    const operatorBefore = { id: operator.id, fee: operator.fee };
+    const updatedStateGetter = async () => {
+        const { id, fee } = await getOperator(operator.id);
+        return { id, fee };
+      };
+
+    return await transactionExecutor({
+      contractMethod: contract.reduceOperatorFee,
+      payload,
+      isContractWallet,
+      getterTransactionState: updatedStateGetter,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
+      prevState: operatorBefore,
     });
   }
 
@@ -514,56 +410,27 @@ class OperatorStore extends BaseStore {
    * Check if operator already exists in the contract
    * @param operatorId
    */
-  async approveOperatorFee(operatorId: number): Promise<boolean> {
+  async approveOperatorFee(operator: IOperator): Promise<boolean> {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve) => {
-      try {
-        let operatorBefore = await getOperator(operatorId);
-        operatorBefore = {
-          id: operatorBefore.id,
-          declared_fee: operatorBefore.declared_fee,
-          previous_fee: operatorBefore.previous_fee,
-        };
-        const contract = getContractByName(EContractName.SETTER);
-        const tx = await contract.executeOperatorFee(operatorId);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            const updatedStateGetter = async () => {
-              const operatorAfter = await getOperator(operatorId);
-              return {
-                id: operatorAfter.id,
-                declared_fee: operatorAfter.declared_fee,
-                previous_fee: operatorAfter.previous_fee,
-              };
-            };
-            await executeAfterEvent({
-              updatedStateGetter,
-              prevState: operatorBefore,
-              callBack: this.myAccountStore.refreshOperatorsAndClusters,
-            });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-        resolve(false);
-      } finally {
-        store.dispatch(setIsLoading(false));
-        store.dispatch(setIsShowTxPendingPopup(false));
-      }
+    const contract: Contract = getContractByName(EContractName.SETTER);
+    const payload = [operator.id];
+    const operatorBefore = {
+      id: operator.id,
+      declared_fee: operator.declared_fee,
+      previous_fee: operator.previous_fee,
+    };
+    const updatedStateGetter = async () => {
+        const { id, declared_fee, previous_fee } = await getOperator(operator.id);
+        return { id, declared_fee, previous_fee };
+      };
+
+    return await transactionExecutor({
+      contractMethod: contract.executeOperatorFee,
+      payload,
+      isContractWallet,
+      getterTransactionState: updatedStateGetter,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
+      prevState: operatorBefore,
     });
   }
 
@@ -573,87 +440,32 @@ class OperatorStore extends BaseStore {
    */
   async removeOperator(operatorId: number): Promise<any> {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    const contractInstance = getContractByName(EContractName.SETTER);
-    return new Promise(async (resolve) => {
-      try {
-        const tx = await contractInstance.removeOperator(operatorId);
-        if (tx.hash) {
-          store.dispatch(setTxHash(tx.hash));
-          store.dispatch(setIsShowTxPendingPopup(true));
-        }
-        if (isContractWallet) {
-          resolve(true);
-        }
-        const receipt = await tx.wait();
-        if (receipt.blockHash) {
-          const event: boolean = receipt.hasOwnProperty('events');
-          if (event) {
-            const updatedStateGetter = await getEventByTxHash(receipt.transactionHash);
-            await executeAfterEvent({
-              updatedStateGetter,
-              prevState: operatorId,
-              callBack: this.myAccountStore.refreshOperatorsAndClusters,
-            });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } else {
-          resolve(false);
-        }
-      } catch (e: any) {
-        store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-        return false;
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsLoading(false));
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    const contract: Contract = getContractByName(EContractName.SETTER);
+    const payload = [operatorId];
+    const updatedStateGetter = async () => !await getOperator(operatorId);
+
+    return await transactionExecutor({
+      contractMethod: contract.removeOperator,
+      payload,
+      isContractWallet,
+      getterTransactionState: updatedStateGetter,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
   async addNewOperator() {
     const isContractWallet = store.getState().walletState.isContractWallet;
-    return new Promise(async (resolve, reject) => {
-      try {
-        const payload: any[] = [];
-        const contract: Contract = getContractByName(EContractName.SETTER);
-        const transaction: NewOperator = this.newOperatorKeys;
-        const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+    const contract: Contract = getContractByName(EContractName.SETTER);
+    const transaction: NewOperator = this.newOperatorKeys;
+    const feePerBlock = new Decimal(transaction.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+    const payload = [transaction.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))];
 
-        // Send add operator transaction
-        payload.push(transaction.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock)));
-        try {
-          const tx = await contract.registerOperator(...payload);
-          if (tx.hash) {
-            store.dispatch(setTxHash(tx.hash));
-            store.dispatch(setIsShowTxPendingPopup(true));
-          }
-          if (isContractWallet) {
-            resolve(true);
-          }
-          const receipt = await tx.wait();
-          if (receipt.blockHash) {
-            const updatedStateGetter = async () => !!await getEventByTxHash(receipt.transactionHash);
-            await executeAfterEvent({ updatedStateGetter, callBack: this.myAccountStore.refreshOperatorsAndClusters });
-            console.log('before resolve true');
-            resolve(true);
-          } else {
-            console.log('before resolve false');
-            resolve(false);
-          }
-        } catch (e: any) {
-          store.dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
-          resolve(false);
-        }
-      } catch (e) {
-        reject(false);
-      } finally {
-        if (!isContractWallet) {
-          store.dispatch(setIsShowTxPendingPopup(false));
-        }
-      }
+    return await transactionExecutor({
+      contractMethod: contract.registerOperator,
+      payload,
+      isContractWallet,
+      getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
+      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 

@@ -14,16 +14,21 @@ import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/co
 import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import { SingleOperator } from '~app/model/processes.model';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({ step: StepperSteps.EXECUTION });
   const operatorStore: OperatorStore = stores.Operator;
   const dispatch = useAppDispatch();
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator = processStore.getProcess;
+  const operator = process.item;
 
   const submitFeeChange = async () => {
     dispatch(setIsLoading(true));
-    const response = await operatorStore.approveOperatorFee(Number(operatorStore.processOperatorId));
+    const response = await operatorStore.approveOperatorFee(operator);
     if (response) {
         getCurrentState(true);
     }

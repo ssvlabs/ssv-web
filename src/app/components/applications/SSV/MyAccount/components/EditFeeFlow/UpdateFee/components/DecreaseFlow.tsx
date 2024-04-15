@@ -11,7 +11,7 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryBu
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { getOperator } from '~root/services/operator.service';
+import { getOperator, getOperatorBalance } from '~root/services/operator.service';
 
 const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();
@@ -28,7 +28,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
         } else {
             await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
             const operator = await getOperator(operatorStore.processOperatorId);
-            const balance = await operatorStore.getOperatorBalance(operator.id);
+            const balance = await getOperatorBalance({ id: operator.id });
             processStore.setProcess({
                 processName: 'single_operator',
                 item: { ...operator, balance },

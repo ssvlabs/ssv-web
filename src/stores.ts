@@ -4,7 +4,6 @@ import BaseStore from '~app/common/stores/BaseStore';
 const stores = [
   'SSV',
   'Process',
-  'Cluster',
   'Operator',
   'Validator',
   'MyAccount',

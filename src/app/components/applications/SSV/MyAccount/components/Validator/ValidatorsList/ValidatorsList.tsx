@@ -265,7 +265,7 @@ const ValidatorsList = ({
               const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
               const disableButtonCondition = selectValidatorDisableCondition && !res || isLoading;
               return (
-                <ValidatorWrapper>
+                <ValidatorWrapper key={validator.public_key}>
                   <PublicKeyWrapper>
                     <PublicKey>
                       {showingCheckboxCondition && <Checkbox isDisabled={disableButtonCondition} grayBackGround text={''}

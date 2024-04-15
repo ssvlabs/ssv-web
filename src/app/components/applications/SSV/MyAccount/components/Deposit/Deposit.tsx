@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
@@ -11,67 +11,57 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getClusterBalance, getClusterRunWay } from '~root/services/cluster.service';
-import { SingleCluster, ProcessType } from '~app/model/processes.model';
-import { store } from '~app/store';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { depositOrWithdraw, getClusterRunWay } from '~root/services/cluster.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { EClusterOperation } from '~app/enums/clusterOperation.enum';
 
 const Deposit = () => {
   const [inputValue, setInputValue] = useState('');
   const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
+  const { state: { index } } = useLocation();
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
-  const dispatch = useAppDispatch();
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
-  const processStore: ProcessStore = stores.Process;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const process: SingleCluster = processStore.getProcess;
-  const cluster = process.item;
+  const cluster = myAccountStore.ownerAddressClusters[index];
   const clusterBalance = fromWei(cluster.balance);
 
   async function depositSsv() {
-    dispatch(setIsLoading(true));
-    await ssvStore.deposit(inputValue.toString()).then(async (success: boolean) => {
-      cluster.balance = await getClusterBalance(cluster.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    const success = await depositOrWithdraw({
+      cluster,
+      amount: inputValue.toString(),
+      isContractWallet,
+      accountAddress,
+      liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+      minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+      callbackAfterExecution: myAccountStore.refreshOperatorsAndClusters,
+      operation: EClusterOperation.DEPOSIT,
+    });
+    if (success) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
         label: 'success',
       });
-        await myAccountStore.getOwnerAddressClusters({});
-        dispatch(setIsLoading(false));
-      if (success) {
-        processStore.setProcess({
-          processName: 'single_cluster',
-          item: { ...cluster, balance: cluster.balance },
-        }, ProcessType.Validator);
-        navigate(-1);
-      }
-    }).catch((error) => {
+      navigate(-1);
+    } else {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
         label: 'error',
       });
-      console.error(error);
-    });
-    setInputValue('');
-    dispatch(setIsLoading(false));
-    if (!isContractWallet) {
-      store.dispatch(setIsShowTxPendingPopup(false));
     }
+    setInputValue('');
   }
 
   function inputHandler(e: any) {

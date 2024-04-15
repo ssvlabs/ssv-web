@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/OperatorFlow';
-import ValidatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/components/ValidatorFlow';
-import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { SsvStore } from '~app/common/stores/applications/SsvWeb';
+import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import { getClusterBalance } from '~root/services/cluster.service';
 import { SingleOperator, SingleCluster } from '~app/model/processes.model';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress } from '~app/redux/wallet.slice';
+import OperatorFlow from './OperatorFlow';
+import ClusterFlow from './ClusterFlow';
 
 let interval: NodeJS.Timeout;
 
 const Withdraw = () => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const stores = useStores();
+  const location = useLocation();
   const classes = useStyles();
+  const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const ssvStore: SsvStore = stores.SSV;
+  const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
-  const processItem = process?.item;
+  const processItem = location?.state?.isValidatorFlow ? myAccountStore.ownerAddressClusters[location.state.index] : process?.item;
   const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
 
   useEffect(() => {
@@ -33,7 +37,7 @@ const Withdraw = () => {
       interval = setInterval(async () => {
         const balance = await getClusterBalance(processItem.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
-      }, 2000);
+      }, 12000);
       return () => clearInterval(interval);
     }
   }, []);
@@ -56,7 +60,14 @@ const Withdraw = () => {
                 </Grid>,
               ]}
           />
-          {processStore.isValidatorFlow ? <ValidatorFlow /> : <OperatorFlow />}
+          {processStore.isValidatorFlow ?
+            <ClusterFlow
+              cluster={processItem}
+              callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters}
+              minimumLiquidationCollateral={ssvStore.minimumLiquidationCollateral}
+              liquidationCollateralPeriod={ssvStore.liquidationCollateralPeriod}
+            />
+            : <OperatorFlow operator={processItem} callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters} />}
         </Grid>
       </Grid>
   );

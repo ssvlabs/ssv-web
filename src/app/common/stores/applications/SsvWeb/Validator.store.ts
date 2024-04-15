@@ -18,6 +18,7 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { createPayload } from '~root/utils/dkg.utils';
+import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 const annotations = {
   keyStoreFile: observable,
@@ -175,7 +176,6 @@ class ValidatorStore extends BaseStore {
       contractMethod: contract.exitValidator,
       payload,
       isContractWallet: isContractWallet,
-      skipNextStateExecution: true,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
@@ -190,7 +190,6 @@ class ValidatorStore extends BaseStore {
       contractMethod: contract.bulkExitValidator,
       payload,
       isContractWallet: isContractWallet,
-      skipNextStateExecution: true,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
@@ -204,6 +203,7 @@ class ValidatorStore extends BaseStore {
     return await transactionExecutor({
       contractMethod: contract.bulkRegisterValidator,
       payload: payload.values(),
+      getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -218,26 +218,7 @@ class ValidatorStore extends BaseStore {
     return await transactionExecutor({
       contractMethod: contract.registerValidator,
       payload: payload.values(),
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  async reactivateCluster({ accountAddress, isContractWallet, amount }: { accountAddress: string; isContractWallet: boolean; amount: string }) {
-    const processStore: ProcessStore = this.getStore('Process');
-    const process: SingleCluster = <SingleCluster>processStore.process;
-    const ssvStore: SsvStore = this.getStore('SSV');
-    const cluster = process.item;
-    const operatorsIds = cluster.operators.map(({ id }: {
-      id: number
-    }) => Number(id)).sort((a: number, b: number) => a - b);
-    const amountInWei = toWei(amount);
-    const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    const payload = [operatorsIds, amountInWei, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.reactivate,
-      payload,
+      getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });

@@ -20,6 +20,7 @@ import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleOperator } from '~app/model/processes.model';
 import { IOperator } from '~app/model/operator.model';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
@@ -33,11 +34,12 @@ const CancelUpdateFee = () => {
   const [successPage, showSuccessPage] = useState(false);
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const isContractWallet = useAppSelector(getIsContractWallet);
 
   const cancelUpdateProcess = async () => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
     dispatch(setIsLoading(true));
-    const response = await operatorStore.cancelChangeFeeProcess(operator);
+    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
     if (response) {
       // @ts-ignore
       setFutureFee(operatorStore.operatorFutureFee);

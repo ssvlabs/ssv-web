@@ -12,10 +12,11 @@ import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFee
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { SingleOperator } from '~app/model/processes.model';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -25,10 +26,11 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
+  const isContractWallet = useAppSelector(getIsContractWallet);
 
   const submitFeeChange = async () => {
     dispatch(setIsLoading(true));
-    const response = await operatorStore.approveOperatorFee(operator);
+    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet });
     if (response) {
         getCurrentState(true);
     }

@@ -17,7 +17,7 @@ import { initContracts, resetContracts } from '~root/services/contracts.service'
 import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
+import { setIsShowSsvLoader, setShouldCheckCountryRestriction } from '~app/redux/appState.slice';
 import useWalletDisconnector from '~app/hooks/walletDisconnector.hook';
 import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
@@ -125,7 +125,9 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
 
         const network = getStoredNetwork();
         if (accountAddress && !isNotMetamask && connectedChain?.id && toHexString(connectedChain?.id) !== toHexString(network.networkId) && !settingChain) {
+            dispatch(setIsShowSsvLoader(true));
             networkInWalletChangedHandler();
+            dispatch(setIsShowSsvLoader(false));
         }
     }, [connectedChain, settingChain]);
 

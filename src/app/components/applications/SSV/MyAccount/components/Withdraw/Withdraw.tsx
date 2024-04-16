@@ -29,7 +29,7 @@ const Withdraw = () => {
   const ssvStore: SsvStore = stores.SSV;
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
-  const processItem = location?.state?.isValidatorFlow ? myAccountStore.ownerAddressClusters[location.state.index] : process?.item;
+  const processItem = location.state?.isValidatorFlow ? myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId) : process?.item;
   const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
 
   useEffect(() => {

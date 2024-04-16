@@ -2,6 +2,7 @@ import { IOperator } from '~app/model/operator.model';
 
 interface ICluster {
   id: number;
+  clusterId: string;
   ownerAddress: string;
   validatorCount: number;
   networkFeeIndex: number;

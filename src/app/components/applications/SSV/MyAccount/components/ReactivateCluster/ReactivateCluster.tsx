@@ -42,7 +42,7 @@ const ReactivateCluster = () => {
   const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
   const timePeriodNotValid = customPeriod < 30;
-  const cluster = myAccountStore.ownerAddressClusters[location.state.index];
+  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
   const validatorsCount = cluster.validatorCount || 1;
   const checkBox = (option: any) => setCheckedOption(option);
 

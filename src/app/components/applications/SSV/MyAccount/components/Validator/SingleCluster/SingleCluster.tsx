@@ -89,7 +89,7 @@ const SingleCluster = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const cluster = myAccountStore.ownerAddressClusters[location.state.index];
+  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
   const accountAddress = useAppSelector(getAccountAddress);
   const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
@@ -108,15 +108,15 @@ const SingleCluster = () => {
   };
 
   const moveToReactivateCluster = ()=> {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE, { state: { index: location.state.index } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE, { state: { clusterId: location.state.clusterId } });
   };
 
   const moveToDeposit = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT, { state: { index: location.state.index } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT, { state: { clusterId: location.state.clusterId } });
   };
 
   const moveToWithdraw = ()=> {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW, { state: { index: location.state.index, isValidatorFlow: true } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW, { state: { clusterId: location.state.clusterId, isValidatorFlow: true } });
   };
 
   return (

@@ -25,7 +25,7 @@ const Deposit = () => {
   const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
-  const { state: { index } } = useLocation();
+  const location = useLocation();
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
@@ -33,7 +33,7 @@ const Deposit = () => {
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const cluster = myAccountStore.ownerAddressClusters[index];
+  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
   const clusterBalance = fromWei(cluster.balance);
 
   async function depositSsv() {

@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SingleCluster.styles';
@@ -10,7 +10,6 @@ import { equalsAddresses } from '~lib/utils/strings';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
@@ -84,12 +83,10 @@ const SingleCluster = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const location = useLocation();
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
-  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
+  const cluster = process.item;
   const accountAddress = useAppSelector(getAccountAddress);
   const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
@@ -108,15 +105,15 @@ const SingleCluster = () => {
   };
 
   const moveToReactivateCluster = ()=> {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE, { state: { clusterId: location.state.clusterId } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE, { state: { clusterId: cluster.clusterId } });
   };
 
   const moveToDeposit = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT, { state: { clusterId: location.state.clusterId } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT, { state: { clusterId: cluster.clusterId } });
   };
 
   const moveToWithdraw = ()=> {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW, { state: { clusterId: location.state.clusterId, isValidatorFlow: true } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW, { state: { clusterId: cluster.clusterId, isValidatorFlow: true } });
   };
 
   return (

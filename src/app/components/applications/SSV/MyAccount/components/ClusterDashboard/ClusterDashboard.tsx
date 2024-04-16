@@ -117,7 +117,7 @@ const ClusterDashboard = () => {
       processName: 'single_cluster',
       item: sortedClusters[listIndex],
     }, 2);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT, { state: { index: listIndex } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT, { state: { clusterId: sortedClusters[listIndex].clusterId } });
   };
 
   const moveToFeeRecipient = () => {

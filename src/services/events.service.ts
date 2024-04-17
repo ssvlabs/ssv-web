@@ -12,7 +12,12 @@ const checkIfStateChanged = async (updatedStateGetter: any, prevState: any): Pro
 
 const delay = async (ms?: number) => (new Promise((r) => setTimeout(() => r(true), ms || 1000)));
 
-export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBack, txHash }: { updatedStateGetter: any; prevState?: any; callBack: Function; txHash?: string }) => {
+export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBack, txHash }: {
+  updatedStateGetter: any;
+  prevState?: any;
+  callBack: Function;
+  txHash?: string
+}) => {
   let iterations = 0;
   while (iterations <= CHECK_UPDATES_MAX_ITERATIONS) {
     iterations += 1;

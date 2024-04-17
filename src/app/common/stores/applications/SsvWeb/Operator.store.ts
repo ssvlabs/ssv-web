@@ -292,18 +292,6 @@ class OperatorStore extends BaseStore {
   }
 
   /**
-   * Get operator balance
-   */
-  async getOperatorBalance(id: number): Promise<any> {
-    return new Promise((resolve) => {
-      const contract = getContractByName(EContractName.GETTER);
-      contract.getOperatorEarnings(id).then((response: any) => {
-        resolve(fromWei(response));
-      }).catch(() => resolve(true));
-    });
-  }
-
-  /**
    * Cancel change fee process for operator
    */
   async cancelChangeFeeProcess(operatorId: number): Promise<any> {

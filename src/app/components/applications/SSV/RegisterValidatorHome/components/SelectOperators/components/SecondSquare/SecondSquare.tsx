@@ -19,7 +19,6 @@ import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon
@@ -35,6 +34,7 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import { getValidator } from '~root/services/validator.service';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
@@ -46,7 +46,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const processStore: ProcessStore = stores.Process;
   const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const windowSize = useWindowSize();
   const [clusterExist, setClusterExist] = useState(false);
   const [existClusterData, setExistClusterData] = useState<any>(null);
@@ -63,7 +62,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     const process: SingleCluster = processStore.getProcess;
     if (editPage) {
       if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-      myAccountStore.getValidator(process.item.publicKey).then((validator: any) => {
+      getValidator(process.item.publicKey).then((validator: any) => {
         if (validator?.operators) {
           // @ts-ignore
           setPreviousOperatorsIds(validator.operators.map(({ id }) => id));

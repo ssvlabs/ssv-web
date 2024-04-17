@@ -86,6 +86,7 @@ const LinksWrapper = styled.div`
     flex-direction: row-reverse;
     align-items: center;
     gap: 8px;
+    position: static;
 `;
 
 const Link = styled.div<{ isDarkMode: boolean; logo: string }>`
@@ -265,7 +266,7 @@ const ValidatorsList = ({
               const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
               const disableButtonCondition = selectValidatorDisableCondition && !res || isLoading;
               return (
-                <ValidatorWrapper>
+                <ValidatorWrapper key={validator.public_key}>
                   <PublicKeyWrapper>
                     <PublicKey>
                       {showingCheckboxCondition && <Checkbox isDisabled={disableButtonCondition} grayBackGround text={''}

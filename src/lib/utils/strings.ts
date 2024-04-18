@@ -29,7 +29,7 @@ export const checkSpecialCharacters = (value: string) => {
   return linkRegex.test(value);
 };
 
-export const equalsAddresses = (a: string, b: string): boolean => {
+export const isEqualsAddresses = (a: string, b: string): boolean => {
   try {
     return utils.getAddress(a) === utils.getAddress(b);
   } catch (e: any) {

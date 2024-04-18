@@ -77,7 +77,6 @@ const ReactivateCluster = () => {
       amount: totalCost.toString(),
       liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
       minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
-      callbackAfterExecution: myAccountStore.refreshOperatorsAndClusters,
     });
     if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };

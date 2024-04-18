@@ -11,7 +11,10 @@ import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryBu
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { getOperator, getOperatorBalance } from '~root/services/operator.service';
+import { getOperator } from '~root/services/operator.service';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { getOperatorBalance } from '~root/services/operatorContract.service';
 
 const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();
@@ -21,12 +24,13 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const operatorStore: OperatorStore = stores.Operator;
     const [buttonText, setButtonText] = useState('Update Fee');
     const [updated, setUpdated] = useState(false);
+    const isContractWallet = useAppSelector(getIsContractWallet);
 
     const onUpdateFeeHandle = async () => {
         if (updated) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         } else {
-            await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
+            await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee, isContractWallet);
             const operator = await getOperator(operatorStore.processOperatorId);
             const balance = await getOperatorBalance({ id: operator.id });
             processStore.setProcess({

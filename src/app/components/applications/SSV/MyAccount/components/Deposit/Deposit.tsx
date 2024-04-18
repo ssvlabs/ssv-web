@@ -44,7 +44,6 @@ const Deposit = () => {
       accountAddress,
       liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
       minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
-      callbackAfterExecution: myAccountStore.refreshOperatorsAndClusters,
       operation: EClusterOperation.DEPOSIT,
     });
     if (success) {

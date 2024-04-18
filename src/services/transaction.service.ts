@@ -3,12 +3,12 @@ import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/app
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
 import { executeAfterEvent } from '~root/services/events.service';
+import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
 
-export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, callbackAfterExecution, getterTransactionState, prevState }: {
+export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState }: {
   contractMethod: Function,
   payload: any,
   isContractWallet: boolean,
-  callbackAfterExecution: Function,
   getterTransactionState?: Function,
   prevState?: any,
 }) => {
@@ -26,10 +26,10 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
       const event: boolean = receipt.hasOwnProperty('events');
       if (event) {
         if (!getterTransactionState) {
-          await callbackAfterExecution();
+          await store.dispatch(refreshOperatorsAndClusters());
           return true;
         }
-        return await executeAfterEvent({ updatedStateGetter: getterTransactionState, prevState, callBack: callbackAfterExecution, txHash: tx.hash });
+        return await executeAfterEvent({ updatedStateGetter: getterTransactionState, prevState, callBack: () => store.dispatch(refreshOperatorsAndClusters()), txHash: tx.hash });
       } else {
         return false;
       }

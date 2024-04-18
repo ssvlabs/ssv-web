@@ -12,7 +12,6 @@ import {
 import { useStores } from '~app/hooks/useStores';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
 import { useStyles } from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle.styles';
@@ -23,6 +22,7 @@ import { toHexString } from '~lib/utils/strings';
 import Spinner from '~app/components/common/Spinner';
 import { getAccountAddress, getConnectedNetwork, getIsNotMetamask, setConnectedNetwork } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
 
 const CurrentNetworkWrapper = styled.div`
     display: flex;
@@ -87,7 +87,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const stores = useStores();
     const ssvStore: SsvStore = stores.SSV;
     const operatorStore: OperatorStore = stores.Operator;
-    const myAccountStore: MyAccountStore = stores.MyAccount;
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {
@@ -119,7 +118,7 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
                 }
                 await ssvStore.initUser();
                 await operatorStore.initUser();
-                await myAccountStore.refreshOperatorsAndClusters();
+                await dispatch(refreshOperatorsAndClusters());
             }
         };
 

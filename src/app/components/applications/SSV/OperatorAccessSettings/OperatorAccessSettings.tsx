@@ -17,7 +17,7 @@ import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettin
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
@@ -39,6 +39,7 @@ const OperatorAccessSettings = () => {
     const btnDisabledCondition = addressError.shouldDisplay || !address || isFirstUsage || address.toString() === operator.address_whitelist?.toString();
     const classes = useStyles({ isPermissionedOperator });
     const isMainnet = useAppSelector(getIsMainnet);
+    const isContractWallet = useAppSelector(getIsContractWallet);
     const [isChecked, setIsChecked] = useState(false);
 
     const changeAddressHandler = (e: any) => {
@@ -48,7 +49,7 @@ const OperatorAccessSettings = () => {
     };
 
     const updateAddressHandler = async () => {
-        const res = await operatorStore.updateOperatorAddressWhitelist(operator.id, address);
+        const res = await operatorStore.updateOperatorAddressWhitelist(operator.id, address, isContractWallet);
         if (res) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }

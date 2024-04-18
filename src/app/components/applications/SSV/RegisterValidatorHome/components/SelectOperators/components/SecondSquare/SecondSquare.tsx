@@ -32,24 +32,26 @@ import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { getValidator } from '~root/services/validator.service';
+import { setSelectedClusterId } from '~app/redux/account.slice';
+import { ICluster } from '~app/model/cluster.model';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const accountAddress = useAppSelector(getAccountAddress);
   const processStore: ProcessStore = stores.Process;
   const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const windowSize = useWindowSize();
-  const [clusterExist, setClusterExist] = useState(false);
-  const [existClusterData, setExistClusterData] = useState<any>(null);
-  const [previousOperatorsIds, setPreviousOperatorsIds] = useState([]);
+  const [existClusterData, setExistClusterData] = useState<ICluster | null>(null);
+  const [previousOperatorsIds, setPreviousOperatorsIds] = useState<number[]>([]);
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
   const [operatorHasMaxCountValidators, setOperatorHasMaxCountValidators] = useState(false);
@@ -70,6 +72,32 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
       });
     }
   }, [editPage]);
+
+  useEffect(() => {
+    const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
+    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
+    setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
+    if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
+      setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
+    }
+  }, [JSON.stringify(operatorStore.selectedOperators)]);
+
+  useEffect(() => {
+    if (operatorStore.selectedEnoughOperators) {
+      setExistClusterData(null);
+      setCheckClusterExistence(true);
+      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+        if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
+          setExistClusterData(clusterData);
+        }
+        setCheckClusterExistence(false);
+      }).catch((error: any) => {
+        console.log(error);
+      });
+    } else {
+      setCheckClusterExistence(false);
+    }
+  }, [operatorStore.selectedEnoughOperators]);
 
   const removeOperator = (index: number) => {
     operatorStore.unselectOperator(index);
@@ -92,11 +120,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   };
 
   const disableButton = (): boolean => {
-    return operatorHasMaxCountValidators || clusterExist || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).reduce((acc: boolean, operator: IOperator) => {
-      // @ts-ignore
-      if (!previousOperatorsIds.includes(operator.id)) acc = true;
-      return acc;
-    }, false);
+    return operatorHasMaxCountValidators || !!existClusterData || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).every((operator: IOperator) => {
+      return !previousOperatorsIds.includes(operator.id);
+    });
   };
 
   const openSingleCluster = () => {
@@ -104,39 +130,11 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
       processName: 'single_cluster',
       item: { ...existClusterData, operators: [...Object.values(operatorStore.selectedOperators)] },
     }, 2);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
+    if (existClusterData) {
+      dispatch(setSelectedClusterId(existClusterData.clusterId));
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
+    }
   };
-
-  useEffect(() => {
-    const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
-    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
-    setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
-    if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
-      setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
-    }
-  }, [JSON.stringify(operatorStore.selectedOperators)]);
-
-  useEffect(() => {
-    if (operatorStore.selectedEnoughOperators) {
-      setClusterExist(false);
-      setCheckClusterExistence(true);
-      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
-        if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
-          setExistClusterData(clusterData);
-          setClusterExist(true);
-        } else {
-          setClusterExist(false);
-        }
-        setCheckClusterExistence(false);
-      }).catch((error: any) => {
-        console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
-        console.log(error);
-        console.log('<<<<<<<<<<<<<<<<<<<error>>>>>>>>>>>>>>>>>>>');
-      });
-    } else {
-      setCheckClusterExistence(false);
-    }
-  }, [operatorStore.selectedEnoughOperators]);
 
   return (
     <BorderScreen
@@ -210,7 +208,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
               />
             </Grid>
           </Grid>
-          {clusterExist && (
+          {existClusterData && (
             <Grid item xs={12}>
               <ErrorMessage text={
                 <Grid item xs={12}>To register an additional validator to this cluster, navigate to this&nbsp;
@@ -229,7 +227,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                 </Grid>}/>
             </Grid>
           )}
-          {!allSelectedOperatorsVerified && !clusterExist && (
+          {!allSelectedOperatorsVerified && !existClusterData && (
             <Grid container item xs={12} className={classes.WarningMessage}>
               <Grid item xs={12} className={classes.WarningHeader}>
                 You have selected one or more operators that are&nbsp;

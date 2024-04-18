@@ -24,7 +24,6 @@ interface ClusterBalanceInteractionProps {
   accountAddress: string;
   liquidationCollateralPeriod: number;
   minimumLiquidationCollateral: number;
-  callbackAfterExecution: Function;
   operation: EClusterOperation
 }
 
@@ -35,6 +34,11 @@ const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
   balance: cluster.balance,
   active: cluster.active,
 });
+
+const getClustersByOwnerAddress = async ({ page, perPage, accountAddress }: { page: number; perPage: number; accountAddress: string }): Promise<any> => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${accountAddress}?page=${page}&perPage=${perPage})&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
+  return await getRequest(url);
+};
 
 const getSortedOperatorsIds = (operators: IOperator[]) => {
   return operators.map((operator: IOperator) => operator.id).map(Number).sort((a: number, b: number) => a - b);
@@ -157,7 +161,7 @@ const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liqu
   return { ...cluster, runWay, burnRate, balance, isLiquidated, clusterData };
 };
 
-const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWallet, liquidationCollateralPeriod, minimumLiquidationCollateral, callbackAfterExecution, operation }: ClusterBalanceInteractionProps)=> {
+const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWallet, liquidationCollateralPeriod, minimumLiquidationCollateral, operation }: ClusterBalanceInteractionProps)=> {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -183,12 +187,11 @@ const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWa
     getterTransactionState: async () => (await getClusterData(clusterHash, liquidationCollateralPeriod, minimumLiquidationCollateral)).balance,
     prevState: cluster.clusterData.balance,
     isContractWallet,
-    callbackAfterExecution,
   });
 };
 
-const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, amount, liquidationCollateralPeriod, minimumLiquidationCollateral, callbackAfterExecution }:
-                                   { cluster: ICluster; accountAddress: string; isContractWallet: boolean; amount: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; callbackAfterExecution: Function }) => {
+const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, amount, liquidationCollateralPeriod, minimumLiquidationCollateral }:
+                                   { cluster: ICluster; accountAddress: string; isContractWallet: boolean; amount: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; }) => {
   const operatorsIds = getSortedOperatorsIds(cluster.operators);
   const amountInWei = toWei(amount);
   const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
@@ -199,11 +202,11 @@ const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, am
     payload,
     getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
     isContractWallet: isContractWallet,
-    callbackAfterExecution,
   });
 };
 
 export {
+  getClustersByOwnerAddress,
   clusterDataDTO,
   getSortedOperatorsIds,
   getClusterHash,

@@ -15,7 +15,7 @@ import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux
 import { ICluster } from '~app/model/cluster.model';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
 
-const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollateral, liquidationCollateralPeriod }: { cluster: ICluster; callbackAfterExecution: Function; minimumLiquidationCollateral: number; liquidationCollateralPeriod: number; }) => {
+const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollateralPeriod }: { cluster: ICluster; minimumLiquidationCollateral: number; liquidationCollateralPeriod: number; }) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -66,7 +66,6 @@ const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollat
       isContractWallet,
       minimumLiquidationCollateral,
       liquidationCollateralPeriod,
-      callbackAfterExecution,
       operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
     });
     if (success) {

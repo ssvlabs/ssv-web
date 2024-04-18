@@ -19,16 +19,18 @@ import ToggleDashboards from '~app/components/applications/SSV/MyAccount/compone
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import { getClustersPagination, refreshOperatorsAndClusters, setSelectedClusterId } from '~app/redux/account.slice';
 
 const ClusterDashboard = () => {
   const stores = useStores();
   const classes = useStyles({});
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const timeoutRef = useRef(null);
   const clusterIntervalRef = useRef<any>(null);
   const accountAddress = useAppSelector(getAccountAddress);
@@ -37,11 +39,11 @@ const ClusterDashboard = () => {
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
-  const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
+  const { page, pages, per_page, total } = useAppSelector(getClustersPagination);
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   useEffect(() => {
-    clusterIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 10000);
+    clusterIntervalRef.current = setInterval(() => dispatch(refreshOperatorsAndClusters), 10000);
     return () => {
       if (clusterIntervalRef.current) {
         clearInterval(clusterIntervalRef.current);
@@ -117,7 +119,8 @@ const ClusterDashboard = () => {
       processName: 'single_cluster',
       item: sortedClusters[listIndex],
     }, 2);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT, { state: { clusterId: sortedClusters[listIndex].clusterId } });
+    dispatch(setSelectedClusterId(sortedClusters[listIndex].clusterId));
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
   const moveToFeeRecipient = () => {

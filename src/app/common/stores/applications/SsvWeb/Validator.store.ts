@@ -8,7 +8,6 @@ import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { IOperator } from '~app/model/operator.model';
@@ -69,8 +68,6 @@ class ValidatorStore extends BaseStore {
   processedKeyShare: KeyShares | null = null;
   validatorsCount: number = 0;
   registerValidatorsPublicKeys: string[] = [];
-
-  private myAccountStore: MyAccountStore = this.getStore('MyAccount');
 
   constructor() {
     super();
@@ -141,7 +138,6 @@ class ValidatorStore extends BaseStore {
       payload,
       getterTransactionState: async () => !await getValidator(publicKey),
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -162,7 +158,6 @@ class ValidatorStore extends BaseStore {
       payload,
       getterTransactionState: async () => !await getValidator(validatorIds[0]),
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -176,7 +171,6 @@ class ValidatorStore extends BaseStore {
       contractMethod: contract.exitValidator,
       payload,
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -190,7 +184,6 @@ class ValidatorStore extends BaseStore {
       contractMethod: contract.bulkExitValidator,
       payload,
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -205,7 +198,6 @@ class ValidatorStore extends BaseStore {
       payload: payload.values(),
       getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 
@@ -220,7 +212,6 @@ class ValidatorStore extends BaseStore {
       payload: payload.values(),
       getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
   }
 

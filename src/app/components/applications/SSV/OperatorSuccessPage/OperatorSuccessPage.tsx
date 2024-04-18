@@ -10,27 +10,24 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/OperatorSuccessPage.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
-
+import { fetchOperators } from '~app/redux/account.slice';
 
 const SetOperatorFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const dispatch = useAppDispatch();
 
   const moveToMyAccount = async () => {
     dispatch(setIsLoading(true));
-    await myAccountStore.getOwnerAddressOperators({}).then(() => {
-      dispatch(setIsLoading(false));
-      navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-    });
+    await dispatch(fetchOperators());
+    dispatch(setIsLoading(false));
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
   };
 
   return (

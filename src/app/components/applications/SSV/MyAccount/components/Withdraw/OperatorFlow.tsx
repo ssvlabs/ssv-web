@@ -10,9 +10,9 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { withdrawRewards } from '~root/services/operator.service';
+import { withdrawRewards } from '~root/services/operatorContract.service';
 
-const OperatorFlow = ({ operator, callbackAfterExecution }: { operator: IOperator; callbackAfterExecution: Function }) => {
+const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
   const [inputValue, setInputValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -24,7 +24,7 @@ const OperatorFlow = ({ operator, callbackAfterExecution }: { operator: IOperato
 
   const withdrawSsv = async () => {
     setIsLoading(true);
-    const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet, callbackAfterExecution });
+    const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet });
     setIsLoading(false);
     if (success) {
       navigate(-1);

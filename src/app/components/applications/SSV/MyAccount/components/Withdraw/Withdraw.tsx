@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useAppSelector } from '~app/hooks/redux.hook';
@@ -10,7 +9,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import { getClusterBalance } from '~root/services/cluster.service';
@@ -22,12 +20,10 @@ let interval: NodeJS.Timeout;
 
 const Withdraw = () => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const location = useLocation();
   const classes = useStyles();
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const ssvStore: SsvStore = stores.SSV;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
   const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
@@ -61,13 +57,8 @@ const Withdraw = () => {
               ]}
           />
           {processStore.isValidatorFlow ?
-            <ClusterFlow
-              cluster={processItem}
-              callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters}
-              minimumLiquidationCollateral={ssvStore.minimumLiquidationCollateral}
-              liquidationCollateralPeriod={ssvStore.liquidationCollateralPeriod}
-            />
-            : <OperatorFlow operator={processItem} callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters} />}
+            <ClusterFlow cluster={processItem} minimumLiquidationCollateral={ssvStore.minimumLiquidationCollateral} liquidationCollateralPeriod={ssvStore.liquidationCollateralPeriod} />
+            : <OperatorFlow operator={processItem} />}
         </Grid>
       </Grid>
   );

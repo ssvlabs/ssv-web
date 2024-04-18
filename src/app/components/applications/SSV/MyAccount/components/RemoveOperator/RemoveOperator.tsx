@@ -9,7 +9,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import {
   useStyles,
@@ -19,6 +18,7 @@ import { getIsLoading, setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { RegisterOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { fetchOperators } from '~app/redux/account.slice';
 
 const RemoveOperator = () => {
   const stores = useStores();
@@ -27,7 +27,6 @@ const RemoveOperator = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: RegisterOperator = processStore.process;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(getIsLoading);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
@@ -47,11 +46,10 @@ const RemoveOperator = () => {
     const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
     dispatch(setIsLoading(false));
     if (isRemoved) {
-      myAccountStore.getOwnerAddressOperators({ forcePage: 1 }).finally(() => {
-        if (!isContractWallet) {
-          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-        }
-      });
+      await dispatch(fetchOperators({ forcePage: 1 }));
+      if (!isContractWallet) {
+        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+      }
     }
   };
 

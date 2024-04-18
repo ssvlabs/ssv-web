@@ -17,6 +17,9 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleOperator } from '~app/model/processes.model';
+import { IOperator } from '~app/model/operator.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const CancelUpdateFee = () => {
@@ -24,6 +27,9 @@ const CancelUpdateFee = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator = processStore.getProcess;
+  const operator: IOperator = process.item;
   const [futureFee, setFutureFee] = useState(0);
   const [successPage, showSuccessPage] = useState(false);
   const dispatch = useAppDispatch();
@@ -33,7 +39,7 @@ const CancelUpdateFee = () => {
   const cancelUpdateProcess = async () => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
     dispatch(setIsLoading(true));
-    const response = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId, isContractWallet);
+    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
     if (response) {
       // @ts-ignore
       setFutureFee(operatorStore.operatorFutureFee);

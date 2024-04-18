@@ -13,6 +13,8 @@ import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAcco
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
@@ -20,11 +22,14 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   const classes = useStyles({});
   const operatorStore: OperatorStore = stores.Operator;
   const dispatch = useAppDispatch();
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator = processStore.getProcess;
+  const operator = process.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
 
   const changeOperatorFee = async () => {
     dispatch(setIsLoading(true));
-    const response = await operatorStore.updateOperatorFee(operatorStore.processOperatorId, newFee, isContractWallet);
+    const response = await operatorStore.updateOperatorFee({ operator, newFee, isContractWallet });
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore

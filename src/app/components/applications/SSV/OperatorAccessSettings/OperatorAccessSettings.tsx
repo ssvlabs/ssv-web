@@ -39,8 +39,8 @@ const OperatorAccessSettings = () => {
     const btnDisabledCondition = addressError.shouldDisplay || !address || isFirstUsage || address.toString() === operator.address_whitelist?.toString();
     const classes = useStyles({ isPermissionedOperator });
     const isMainnet = useAppSelector(getIsMainnet);
-    const isContractWallet = useAppSelector(getIsContractWallet);
     const [isChecked, setIsChecked] = useState(false);
+    const isContractWallet = useAppSelector(getIsContractWallet);
 
     const changeAddressHandler = (e: any) => {
         const { value } = e.target;
@@ -49,7 +49,7 @@ const OperatorAccessSettings = () => {
     };
 
     const updateAddressHandler = async () => {
-        const res = await operatorStore.updateOperatorAddressWhitelist(operator.id, address, isContractWallet);
+        const res = await operatorStore.updateOperatorAddressWhitelist({ operator, address, isContractWallet });
         if (res) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }

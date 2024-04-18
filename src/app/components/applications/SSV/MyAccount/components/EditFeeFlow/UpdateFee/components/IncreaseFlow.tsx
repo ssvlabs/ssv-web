@@ -8,6 +8,9 @@ import FeeUpdated from '~app/components/applications/SSV/MyAccount/components/Ed
 import WaitingPeriod from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
 import PendingExpired from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
 import PendingExecution from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleOperator } from '~app/model/processes.model';
+import { IOperator } from '~app/model/operator.model';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
@@ -39,6 +42,9 @@ enum IncreaseSteps {
 const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : UpdateFeeProps) => {
     const stores = useStores();
     const operatorStore: OperatorStore = stores.Operator;
+    const processStore: ProcessStore = stores.Process;
+    const process: SingleOperator = processStore.getProcess;
+    const operator: IOperator = process.item;
     const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
     const isContractWallet = useAppSelector(getIsContractWallet);
 
@@ -79,7 +85,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
     };
 
     const cancelUpdateFee = async () => {
-        const res = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId as number, isContractWallet);
+        const res = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
         res && setCurrentStep(IncreaseSteps.CANCEL);
     };
 

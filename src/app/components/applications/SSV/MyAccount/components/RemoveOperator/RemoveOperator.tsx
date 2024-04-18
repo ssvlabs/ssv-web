@@ -43,7 +43,9 @@ const RemoveOperator = () => {
 
   const submitForm = async () => {
     dispatch(setIsLoading(true));
-    const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
+    const isRemoved = await operatorStore.removeOperator({
+      operatorId: Number(process.item.id), isContractWallet,
+    });
     dispatch(setIsLoading(false));
     if (isRemoved) {
       await dispatch(fetchOperators({ forcePage: 1 }));
@@ -55,7 +57,7 @@ const RemoveOperator = () => {
 
   return (
     <Grid container item>
-      <NewWhiteWrapper type={1} header={'Operator Details'} />
+      <NewWhiteWrapper type={1} header={'Operator Details'}/>
       <Grid className={classes.BodyWrapper}>
         <BorderScreen
           marginTop={0}
@@ -77,7 +79,7 @@ const RemoveOperator = () => {
                 future.
               </Grid>
               <CheckBox toggleIsChecked={checkboxHandler} isChecked={isChecked}
-                        text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'} />
+                        text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'}/>
 
               <PrimaryButton disable={!isChecked} errorButton children={'Remove Operator'} submitFunction={submitForm}/>
             </Grid>,

@@ -33,7 +33,8 @@ export const equalsAddresses = (a: string, b: string): boolean => utils.getAddre
 
 export const formatValidatorPublicKey = (publicKey: string) => publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
 
-const checkAddressChecksum = (address: string) => {
+const checkAddressChecksum
+  = (address: string) => {
   try {
     return utils.getAddress(address) === address;
   } catch (e) {

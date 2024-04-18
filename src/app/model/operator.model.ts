@@ -14,7 +14,9 @@ export interface IOperator {
   mev_relays?: string;
   autoSelected?: boolean
   validators_count: number;
-  address_whitelist: string
+  declared_fee: string,
+  previous_fee: string,
+  address_whitelist: string,
   verified_operator?: boolean;
   balance: number;
 }

@@ -3,21 +3,21 @@ import { utils } from 'ethers';
 export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
   if (!value) return '';
   if (replacements) {
-        for (let key in replacements) {
-            value = value.replace(replacements[key], key);
-        }
+    for (let key in replacements) {
+      value = value.replace(replacements[key], key);
     }
+  }
   let str = `${value.slice(0, firstFriction)}...${value.slice(value.length - secondFriction, value.length)}`;
 
   return str;
 };
 
 export const truncateText = (text: string, maxCharacters: number): string => {
-    if (text.length <= maxCharacters) {
-        return text;
-    } else {
-        return `${text.slice(0, maxCharacters - 3)  }...`;
-    }
+  if (text.length <= maxCharacters) {
+    return text;
+  } else {
+    return `${text.slice(0, maxCharacters - 3)}...`;
+  }
 };
 
 export const normalizeNumber = (number: number, friction: number = 2) => {
@@ -25,11 +25,17 @@ export const normalizeNumber = (number: number, friction: number = 2) => {
 };
 
 export const checkSpecialCharacters = (value: string) => {
-    const linkRegex = /^[A-Za-z0-9 _!$#’'|-]+$/;
-    return linkRegex.test(value);
+  const linkRegex = /^[A-Za-z0-9 _!$#’'|-]+$/;
+  return linkRegex.test(value);
 };
 
-export const equalsAddresses = (a: string, b: string): boolean => utils.getAddress(a) === utils.getAddress(b);
+export const equalsAddresses = (a: string, b: string): boolean => {
+  try {
+    return utils.getAddress(a) === utils.getAddress(b);
+  } catch (e: any) {
+    return false;
+  }
+};
 
 export const formatValidatorPublicKey = (publicKey: string) => publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
 

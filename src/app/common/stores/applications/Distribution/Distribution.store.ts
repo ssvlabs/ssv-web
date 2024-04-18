@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { equalsAddresses } from '~lib/utils/strings';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import BaseStore from '~app/common/stores/BaseStore';
 import { IMerkleTreeData } from '~app/model/merkleTree.model';
 import { fromWei } from '~root/services/conversions.service';
@@ -77,7 +77,7 @@ class DistributionStore extends BaseStore {
     const merkle = await fetchMerkleTreeStructure();
     const accountAddress = store.getState().walletState.accountAddress;
       merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
-      if (equalsAddresses(merkleTreeUser.address, accountAddress)) {
+      if (isEqualsAddresses(merkleTreeUser.address, accountAddress)) {
         this.merkleRoot = merkle.tree.root;
         this.userAddress = merkleTreeUser.address;
         this.rewardIndex = index;

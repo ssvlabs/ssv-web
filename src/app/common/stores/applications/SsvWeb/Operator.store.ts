@@ -9,7 +9,7 @@ import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conve
 import { getContractByName } from '~root/services/contracts.service';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import { equalsAddresses } from '~lib/utils/strings';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import { store } from '~app/store';
 import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
@@ -282,7 +282,7 @@ class OperatorStore extends BaseStore {
       payload: [operator.id, address],
       getterTransactionState: async () => {
         const newAddress = await updatedStateGetter();
-        return equalsAddresses(newAddress, address);
+        return isEqualsAddresses(newAddress, address);
       },
       isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Checkbox from '~app/components/common/CheckBox';
 import WarningBox from '~app/components/common/WarningBox';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { BULK_FLOWS } from '~app/model/processes.model';
+import ErrorButton from '~app/atomics/ErrorButton';
 
 type FlowData = {
   title: string;
@@ -55,12 +58,19 @@ const ConfirmationText = styled.p`
     color: ${({ theme }) => theme.colors.gray60};
 `;
 
-const initialState = (checkBoxes: string[]) =>  checkBoxes.reduce((acc: boolean[]) => {
+const initialState = (checkBoxes: string[]) => checkBoxes.reduce((acc: boolean[]) => {
   acc.push(false);
   return acc;
 }, []);
 
-const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack }: { nextStep: Function, selectedValidators: string[], flowData: FlowData, stepBack?: Function }) => {
+const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack, currentBulkFlow, isLoading }: {
+  nextStep: Function,
+  selectedValidators: string[],
+  flowData: FlowData,
+  stepBack?: Function,
+  currentBulkFlow: BULK_FLOWS,
+  isLoading: boolean
+}) => {
   const { title, texts, warningMessage, checkBoxes } = flowData;
   const [isSelectedCheckboxes, setIsSelectedCheckboxes] = useState(initialState(checkBoxes));
   const disableCButtonCondition = isSelectedCheckboxes.some((isSelected: boolean) => !isSelected);
@@ -74,6 +84,8 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack }: 
     });
   };
 
+  const Button = currentBulkFlow === BULK_FLOWS.BULK_REMOVE ? ErrorButton : PrimaryButton;
+
   return (
     <Wrapper>
       <NewWhiteWrapper
@@ -86,11 +98,14 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack }: 
           <ConfirmationTitle>{title}</ConfirmationTitle>
           {texts.map((text: string) => <ConfirmationText key={text}>{text}</ConfirmationText>)}
           <WarningBox text={warningMessage}/>
-          {checkBoxes.map((checkBoxText, index) => <Checkbox key={index} withoutMarginBottom toggleIsChecked={() => clickCheckboxHandler({ index })} grayBackGround text={checkBoxText}
-                                                      isChecked={isSelectedCheckboxes[index]}/>)}
-          <PrimaryButton children={flowData.buttonText(selectedValidators.length, appStateIsLoading)} disable={disableCButtonCondition} submitFunction={nextStep} />
+          {checkBoxes.map((checkBoxText, index) => <Checkbox key={index} withoutMarginBottom
+                                                             toggleIsChecked={() => clickCheckboxHandler({ index })}
+                                                             grayBackGround text={checkBoxText}
+                                                             isChecked={isSelectedCheckboxes[index]}/>)}
+          <Button text={flowData.buttonText(selectedValidators.length, appStateIsLoading)}
+                  isDisabled={disableCButtonCondition} isLoading={isLoading} onClick={nextStep} size={ButtonSize.XL}/>
         </Confirmation>
-        <Summary selectedValidators={selectedValidators} />
+        <Summary selectedValidators={selectedValidators}/>
       </ConfirmationWrapper>
     </Wrapper>
   );

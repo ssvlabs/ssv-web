@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
 import ExitIndicator from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitIndicator';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const Wrapper = styled.div`
     display: flex;
@@ -75,7 +76,7 @@ const ExitFinishPage = ({ nextStep, selectedValidators }: { nextStep: Function, 
             Once your validator has fully exited, you can remove it from the SSV Network. Keep in mind that you will
             continue to incur operational fees until it's removed, regardless of the validator's state on the Beacon
             Chain.</ExitText>
-          <PrimaryButton children={'Go to Cluster Page'} submitFunction={nextStep}/>
+          <PrimaryButton text={'Go to Cluster Page'} onClick={nextStep} size={ButtonSize.XL}/>
         </Exit>
         <Summary selectedValidators={selectedValidators}/>
       </ExitWrapper>

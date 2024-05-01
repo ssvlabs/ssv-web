@@ -5,14 +5,14 @@ import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/SSV/FeeRecipient/FeeRecipient.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getFeeRecipientAddress, setFeeRecipient as setFeeRecipientAccountService } from '~root/services/account.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { checkAddressChecksum } from '~lib/utils/strings';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const FeeRecipient = () => {
   const classes = useStyles();
@@ -21,9 +21,9 @@ const FeeRecipient = () => {
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const isMainnet = useAppSelector(getIsMainnet);
   const [isChecked, setIsChecked] = useState(false);
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchFeeRecipientAddress = async () => {
@@ -34,9 +34,9 @@ const FeeRecipient = () => {
   }, []);
 
   const submitFeeRecipient = async () => {
-    dispatch(setIsLoading(true));
+    setIsLoading(true);
     await setFeeRecipientAccountService({ feeRecipientAddress: userInput, isContractWallet });
-    dispatch(setIsLoading(false));
+    setIsLoading(false);
   };
 
   const setFeeRecipient = (e: any) => {
@@ -53,41 +53,46 @@ const FeeRecipient = () => {
   const submitDisable = !isAddressValid || userInput.length !== 42;
 
   return (
-      <BorderScreen
-          blackHeader
-          header={'Fee Recipient Address'}
-          body={[
-              (
-                  <Grid container item style={{ gap: 32 }}>
-                    <Grid container style={{ gap: 24 }}>
-                    <Grid item className={classes.Text}>
-                      Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText text={'What are proposal rewards?'} link={config.links.SSV_DOCUMENTATION} />
-                    </Grid>
-                    <Grid className={`${classes.Warning} ${classes.Text}`}>
-                      Standard rewards from performing other duties will remain to be credited to your validators balance on the Beacon Chain.
-                    </Grid>
-                    </Grid>
-                    <Grid container gap={{ gap: 17 }}>
-                      <Grid item container>
-                        <InputLabel title="Fee Recipient Address" />
-                        <TextInput
-                            value={userInput}
-                            disable={readOnlyState}
-                            showError={!isAddressValid}
-                            data-testid="new-fee-recipient"
-                            onChangeCallback={setFeeRecipient}
-                            icon={<Grid onClick={()=> setReadOnlyState(false)} className={classes.EditIcon}/>}
-                        />
-                        <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
-                      </Grid>
-                        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-                            <PrimaryButton disable={readOnlyState || submitDisable || (isMainnet && !isChecked)} children={'Update'} submitFunction={submitFeeRecipient}/>
-                        </TermsAndConditionsCheckbox>
-                    </Grid>
-                  </Grid>
-              ),
-          ]}
-      />
+    <BorderScreen
+      blackHeader
+      header={'Fee Recipient Address'}
+      body={[
+        (
+          <Grid container item style={{ gap: 32 }}>
+            <Grid container style={{ gap: 24 }}>
+              <Grid item className={classes.Text}>
+                Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText
+                text={'What are proposal rewards?'} link={config.links.SSV_DOCUMENTATION}/>
+              </Grid>
+              <Grid className={`${classes.Warning} ${classes.Text}`}>
+                Standard rewards from performing other duties will remain to be credited to your validators balance on
+                the Beacon Chain.
+              </Grid>
+            </Grid>
+            <Grid container gap={{ gap: 17 }}>
+              <Grid item container>
+                <InputLabel title="Fee Recipient Address"/>
+                <TextInput
+                  value={userInput}
+                  disable={readOnlyState}
+                  showError={!isAddressValid}
+                  data-testid="new-fee-recipient"
+                  onChangeCallback={setFeeRecipient}
+                  icon={<Grid onClick={() => setReadOnlyState(false)} className={classes.EditIcon}/>}
+                />
+                <Grid
+                  className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
+              </Grid>
+              <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
+                                          isMainnet={isMainnet}>
+                <PrimaryButton isDisabled={readOnlyState || submitDisable || (isMainnet && !isChecked)} text={'Update'}
+                               onClick={submitFeeRecipient} size={ButtonSize.XL} isLoading={isLoading}/>
+              </TermsAndConditionsCheckbox>
+            </Grid>
+          </Grid>
+        ),
+      ]}
+    />
   );
 };
 

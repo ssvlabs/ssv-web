@@ -6,13 +6,14 @@ import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import { getBeaconChainLink, getLaunchpadLink } from '~root/providers/networkInfo.provider';
+import { ButtonSize } from '~app/enums/Button.enum';
+import PrimaryButton from '~app/atomics/PrimaryButton';
 
 const DepositViaLaunchpad = () => {
   const stores = useStores();
@@ -67,7 +68,7 @@ const DepositViaLaunchpad = () => {
           <Grid item container xs={12}>
             <Grid item className={classes.rhinoImage} />
           </Grid>
-          <PrimaryButton children={'Visit Ethereum Launchpad'} submitFunction={redirectToLaunchpad} />
+          <PrimaryButton text={'Visit Ethereum Launchpad'} onClick={redirectToLaunchpad} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

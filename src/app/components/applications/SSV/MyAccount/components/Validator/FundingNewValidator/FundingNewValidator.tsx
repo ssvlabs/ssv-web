@@ -18,11 +18,12 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const FundingNewValidator = () => {
   const stores = useStores();
@@ -196,8 +197,8 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={disableBtnCondition} children={'Next'}
-                                   submitFunction={moveToNextPage}/>
+                    <PrimaryButton isDisabled={disableBtnCondition} text={'Next'}
+                                   onClick={moveToNextPage} size={ButtonSize.XL}/>
                   </Grid>
                 </Grid>
               </Grid>,

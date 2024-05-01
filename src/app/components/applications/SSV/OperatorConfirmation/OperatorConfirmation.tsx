@@ -11,17 +11,19 @@ import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import { decodeParameter } from '~root/services/conversions.service';
 import AddressKeyInput from '~app/components/common/AddressKeyInput';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const OperatorConfirmation = () => {
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -32,19 +34,19 @@ const OperatorConfirmation = () => {
   const operatorStore: OperatorStore = stores.Operator;
 
   const disableLoadingStates = () => {
-    dispatch(setIsLoading(false));
+    setIsLoading(false);
     dispatch(setIsShowTxPendingPopup(false));
   };
 
   const onRegisterClick = async () => {
     try {
-      dispatch(setIsLoading(true));
+      setIsLoading(true);
       setActionButtonText('Waiting for confirmation...');
       operatorStore.newOperatorKeys.id = 0;
       const operatorAdded = await operatorStore.addNewOperator(isContractWallet);
       let publicKey = operatorStore.newOperatorKeys.publicKey;
       if (operatorAdded) {
-        try  {
+        try {
           publicKey = String(decodeParameter('string', operatorStore.newOperatorKeys.publicKey));
         } finally {
           console.log('Decoded public key', publicKey);
@@ -58,7 +60,7 @@ const OperatorConfirmation = () => {
                 ...operatorStore.newOperatorKeys,
                 id: operator.data.id,
               };
-              if (!isContractWallet){
+              if (!isContractWallet) {
                 disableLoadingStates();
                 navigate(config.routes.SSV.OPERATOR.SUCCESS_PAGE);
               }
@@ -83,54 +85,56 @@ const OperatorConfirmation = () => {
   };
 
   return (
-      <BorderScreen
-          blackHeader
-          withConversion
-          sectionClass={classes.Section}
-          header={translations.OPERATOR.CONFIRMATION.TITLE}
-          body={[
-            <Grid container>
-              <Grid container style={{ gap: 34 }}>
-                <Grid container item>
-                  <Grid item className={classes.SubHeader}>Operator Key</Grid>
-                  <AddressKeyInput address={decodeParameter('string', operatorStore.newOperatorKeys.publicKey)}/>
-                </Grid>
-                <Grid container item>
-                  <Grid item xs={6}>
-                    <NameAndAddress name={'Owner Address'}/>
-                  </Grid>
-                  <Grid item xs={6} className={classes.AlignRight}>
-                    <NameAndAddress
-                        name={`0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`}/>
-                  </Grid>
-                </Grid>
+    <BorderScreen
+      blackHeader
+      withConversion
+      sectionClass={classes.Section}
+      header={translations.OPERATOR.CONFIRMATION.TITLE}
+      body={[
+        <Grid container>
+          <Grid container style={{ gap: 34 }}>
+            <Grid container item>
+              <Grid item className={classes.SubHeader}>Operator Key</Grid>
+              <AddressKeyInput address={decodeParameter('string', operatorStore.newOperatorKeys.publicKey)}/>
+            </Grid>
+            <Grid container item>
+              <Grid item xs={6}>
+                <NameAndAddress name={'Owner Address'}/>
               </Grid>
-            </Grid>,
-            <Grid container style={{ gap: 24 }}>
-              <Grid container item style={{ gap: 16 }}>
-                <Grid container item>
-                  <Grid item className={classes.SubHeader}>Details</Grid>
-                </Grid>
-                <Grid container item>
-                  <Grid item xs={6}>
-                    <NameAndAddress name={'Fee'}/>
-                  </Grid>
-                  <Grid item xs={6} className={classes.AlignRight}>
-                    <SsvAndSubTitle
-                        ssv={formatNumberToUi(operatorStore.newOperatorKeys.fee)}
-                        subText={'/year'}
-                    />
-                  </Grid>
-                </Grid>
+              <Grid item xs={6} className={classes.AlignRight}>
+                <NameAndAddress
+                  name={`0x${longStringShorten(operatorStore.newOperatorKeys.address.substring(2), 4)}`}/>
               </Grid>
-              <Grid container item>
-               <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-                 <PrimaryButton disable={isMainnet && !isChecked} children={actionButtonText} submitFunction={onRegisterClick}/>
-               </TermsAndConditionsCheckbox>
+            </Grid>
+          </Grid>
+        </Grid>,
+        <Grid container style={{ gap: 24 }}>
+          <Grid container item style={{ gap: 16 }}>
+            <Grid container item>
+              <Grid item className={classes.SubHeader}>Details</Grid>
+            </Grid>
+            <Grid container item>
+              <Grid item xs={6}>
+                <NameAndAddress name={'Fee'}/>
               </Grid>
-            </Grid>,
-          ]}
-      />
+              <Grid item xs={6} className={classes.AlignRight}>
+                <SsvAndSubTitle
+                  ssv={formatNumberToUi(operatorStore.newOperatorKeys.fee)}
+                  subText={'/year'}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid container item>
+            <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
+                                        isMainnet={isMainnet}>
+              <PrimaryButton isDisabled={isMainnet && !isChecked} isLoading={isLoading} text={actionButtonText}
+                             onClick={onRegisterClick} size={ButtonSize.XL}/>
+            </TermsAndConditionsCheckbox>
+          </Grid>
+        </Grid>,
+      ]}
+    />
   );
 };
 

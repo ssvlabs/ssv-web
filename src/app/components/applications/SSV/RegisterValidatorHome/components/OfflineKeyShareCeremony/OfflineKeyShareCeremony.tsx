@@ -7,7 +7,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import BackNavigation from '~app/components/common/BackNavigation';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
@@ -16,6 +15,8 @@ import DirectoryBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/DirectoryBadge/DirectoryBadge';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
 import styled from 'styled-components';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const BoldText = styled.span`
    font-weight: 800;
@@ -106,8 +107,8 @@ const OfflineKeyShareCeremony = () => {
                                    link={'https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys'}/>&nbsp;guide
             for assistance.
           </Grid>
-          <PrimaryButton children={'My validator has been activated'} submitFunction={handleValidatorActivatedClick}
-                         disable={isValidatorActivated}/>
+          <PrimaryButton text={'My validator has been activated'} onClick={handleValidatorActivatedClick}
+                         isDisabled={isValidatorActivated} size={ButtonSize.XL}/>
         </Grid>
       </Grid>
       <Grid className={`${classes.TitleBox} ${isValidatorActivated ? classes.SelectedBoxBorder : null}`}>
@@ -116,8 +117,8 @@ const OfflineKeyShareCeremony = () => {
             3:</Typography>&nbsp;Register Validator</Typography>
           <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing
             its key shares to your cluster operators.</Typography>
-          <PrimaryButton children={'Register Validator'} submitFunction={goToNextPage[`${processStore.secondRegistration}`]}
-                         disable={!isValidatorActivated}/>
+          <PrimaryButton text={'Register Validator'} onClick={goToNextPage[`${processStore.secondRegistration}`]}
+                         isDisabled={!isValidatorActivated} size={ButtonSize.XL}/>
         </Grid>
       </Grid>
     </Grid>

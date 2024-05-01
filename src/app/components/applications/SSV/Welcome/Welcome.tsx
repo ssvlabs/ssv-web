@@ -4,10 +4,11 @@ import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import SecondaryButton from '~app/atomics/SecondaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const Welcome = () => {
   const classes = useStyles();
@@ -26,16 +27,21 @@ const Welcome = () => {
           <Grid container item className={classes.LinkButtonsWrapper}>
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
-                children={'Distribute Validator'}
-                disable={!accountAddress}
-                submitFunction={() => { accountAddress && navigate(config.routes.SSV.VALIDATOR.HOME); }}
-              />
+                text={'Distribute Validator'}
+                isDisabled={!accountAddress}
+                onClick={() => {
+                  accountAddress && navigate(config.routes.SSV.VALIDATOR.HOME);
+                }}
+                size={ButtonSize.XL}/>
             </Grid>
             <Grid item className={classes.LinkButtonWrapper}>
               <SecondaryButton
-                children={'Join as Operator'}
-                disable={!accountAddress}
-                submitFunction={() => { accountAddress && navigate(config.routes.SSV.OPERATOR.HOME); }}
+                text={'Join as Operator'}
+                isDisabled={!accountAddress}
+                onClick={() => {
+                  accountAddress && navigate(config.routes.SSV.OPERATOR.HOME);
+                }}
+                size={ButtonSize.XL}
               />
             </Grid>
           </Grid>

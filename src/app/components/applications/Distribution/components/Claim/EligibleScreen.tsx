@@ -8,13 +8,14 @@ import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useDistributionStore } from '~app/hooks/useDistributionStore';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import { useStyles } from '~app/components/applications/Distribution/components/Claim/Claim.styles';
 import DistributionTestnetStore from '~app/common/stores/applications/Distribution/DistributionTestnet.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const EligibleScreen = () => {
   const classes = useStyles();
@@ -50,25 +51,24 @@ const EligibleScreen = () => {
               <Typography className={classes.RewardTitle}>Eligible Rewards</Typography>
               <Typography className={classes.RewardAmount}>{distributionStore.userEligibleRewards} SSV</Typography>
             </Grid>}
-          {(distributionStore instanceof DistributionStore) && distributionStore.claimedRewards && <Grid className={classes.RewardWrapper}>
-            <Typography className={classes.RewardTitle}>Claimed Rewards</Typography>
-            <Typography className={classes.RewardAmount}>{distributionStore.claimedRewards} SSV</Typography>
-          </Grid>}
-            <Grid container item className={classes.EligibleWrapper}>
-              <InputLabel title="Eligible Reward"/>
-              <Grid container className={classes.Eligible}>
-                <Grid item className={classes.EligibleAmount}>{distributionStore.userRewardAmount}</Grid>
-                <Grid item className={classes.CompanyIcon}/>
-                <Grid item className={classes.EligibleAmount}>SSV</Grid>
-              </Grid>
+          {(distributionStore instanceof DistributionStore) && distributionStore.claimedRewards &&
+            <Grid className={classes.RewardWrapper}>
+              <Typography className={classes.RewardTitle}>Claimed Rewards</Typography>
+              <Typography className={classes.RewardAmount}>{distributionStore.claimedRewards} SSV</Typography>
+            </Grid>}
+          <Grid container item className={classes.EligibleWrapper}>
+            <InputLabel title="Eligible Reward"/>
+            <Grid container className={classes.Eligible}>
+              <Grid item className={classes.EligibleAmount}>{distributionStore.userRewardAmount}</Grid>
+              <Grid item className={classes.CompanyIcon}/>
+              <Grid item className={classes.EligibleAmount}>SSV</Grid>
             </Grid>
+          </Grid>
           <PrimaryButton
-            disable={!claimedCondition}
-            submitFunction={claimRewards}
-            wrapperClass={classes.CtaButton}
-            dataTestId={'connect-to-wallet-button'}
-            children={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'}
-          />
+            isDisabled={!claimedCondition}
+            onClick={claimRewards}
+            text={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'}
+            size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

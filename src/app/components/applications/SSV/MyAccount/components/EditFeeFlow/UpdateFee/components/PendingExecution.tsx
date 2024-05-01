@@ -1,40 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import ReactStepper
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import {
+  IncreaseFlowProps,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import {
+  StepperSteps,
+  useStyles,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { SingleOperator } from '~app/model/processes.model';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { ButtonSize } from '~app/enums/Button.enum';
+import SecondaryButton from '~app/atomics/SecondaryButton';
+import PrimaryButton from '~app/atomics/PrimaryButton';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({ step: StepperSteps.EXECUTION });
+  const [isLoading, setIsLoading] = useState(false);
   const operatorStore: OperatorStore = stores.Operator;
-  const dispatch = useAppDispatch();
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
 
   const submitFeeChange = async () => {
-    dispatch(setIsLoading(true));
+    setIsLoading(true);
     const response = await operatorStore.approveOperatorFee({ operator, isContractWallet });
     if (response) {
         getCurrentState(true);
     }
-    dispatch(setIsLoading(false));
+    setIsLoading(false);
   };
 
   const operatorEndApprovalTime = new Date(Number(operatorStore.operatorApprovalEndTime) * 1000);
@@ -73,12 +79,11 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} children={'Cancel'}
-                               submitFunction={cancelUpdateFee} />
+              <SecondaryButton withoutBackgroundColor text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
-              <PrimaryButton withoutLoader={operatorStore.openCancelDialog} disable={false} children={'Execute'}
-                submitFunction={submitFeeChange} />
+              <PrimaryButton isDisabled={false} text={'Execute'}
+                onClick={submitFeeChange} isLoading={isLoading} size={ButtonSize.XL}/>
             </Grid>
           </Grid>
         </Grid>,

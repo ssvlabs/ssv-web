@@ -13,14 +13,17 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
+import {
+  useStyles,
+} from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const FundingPeriod = () => {
   const options = [
@@ -125,7 +128,7 @@ const FundingPeriod = () => {
                 <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
                 <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{totalAmount} SSV</Typography>
               </Grid>
-              <PrimaryButton children={'Next'} submitFunction={moveToNextPage} disable={buttonDisableCondition}/>
+              <PrimaryButton text={'Next'} onClick={moveToNextPage} isDisabled={buttonDisableCondition} size={ButtonSize.XL}/>
             </Grid>,
           ]}
       />

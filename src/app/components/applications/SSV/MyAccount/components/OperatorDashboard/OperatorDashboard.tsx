@@ -13,8 +13,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
-import ToggleDashboards
-  from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
+import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
@@ -22,6 +21,13 @@ import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { getOperatorBalance } from '~root/services/operator.service';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import styled from 'styled-components';
+
+const ButtonWrapper = styled.div`
+    width: 164px;
+`;
 
 const OperatorDashboard = () => {
   const stores = useStores();
@@ -60,31 +66,33 @@ const OperatorDashboard = () => {
   };
 
   const createData = (
-      operatorName: JSX.Element,
-      status: JSX.Element,
-      performance: string,
-      balance: JSX.Element,
-      yearlyFee: JSX.Element,
-      validators: number,
+    operatorName: JSX.Element,
+    status: JSX.Element,
+    performance: string,
+    balance: JSX.Element,
+    yearlyFee: JSX.Element,
+    validators: number,
   ) => {
     return { operatorName, status, performance, balance, yearlyFee, validators };
   };
 
   const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
     return createData(
-        <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
-        <Status item={operator} />,
-        `${operator.validators_count === 0 ? '- -' : `${operator.performance['30d'].toFixed(2)  }%`}`,
+      <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs}/>,
+      <Status item={operator}/>,
+      `${operator.validators_count === 0 ? '- -' : `${operator.performance['30d'].toFixed(2)}%`}`,
+      <SsvAndSubTitle
         // @ts-ignore
-        <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ?  'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
-        <SsvAndSubTitle
-            ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} leftTextAlign />,
-        operator.validators_count,
+        ssv={operatorBalances[operator.id] === undefined ? 'n/a' : formatNumberToUi(operatorBalances[operator.id])}
+        leftTextAlign/>,
+      <SsvAndSubTitle
+        ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} leftTextAlign/>,
+      operator.validators_count,
     );
   });
 
   const openSingleOperator = (listIndex: number, e: any) => {
-    if (openExplorerRefs.includes(e.target)){
+    if (openExplorerRefs.includes(e.target)) {
       return;
     }
     const operator = myAccountStore.ownerAddressOperators[listIndex];
@@ -97,7 +105,7 @@ const OperatorDashboard = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 
-  const onChangePage = _.debounce( async (newPage: number) =>  {
+  const onChangePage = _.debounce(async (newPage: number) => {
     setLoadingOperators(true);
     await myAccountStore.getOwnerAddressOperators({ forcePage: newPage });
     setLoadingOperators(false);
@@ -126,32 +134,38 @@ const OperatorDashboard = () => {
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
-        <ToggleDashboards title={'Operators'} type={'operator'} />
-        <Grid container item xs className={classes.HeaderButtonsWrapper}>
-          <Grid item className={classes.HeaderButton} onClick={moveToRegisterOperator}>Add Operator</Grid>
-        </Grid>
+        <ToggleDashboards title={'Operators'} type={'operator'}/>
+        {/*<Grid container item xs className={classes.HeaderButtonsWrapper}>*/}
+        <ButtonWrapper>
+          <PrimaryButton size={ButtonSize.MD} text={'Add Operator'} onClick={moveToRegisterOperator}/>
+        </ButtonWrapper>
+        {/*</Grid>*/}
       </Grid>
       <Dashboard
-          disable
-          rows={rows}
-          loading={loadingOperators}
-          noItemsText={'Seems that you have no operators click "Add Operator" in order to run first SSV operator'}
-          rowsAction={openSingleOperator}
-          paginationActions={{
-            page,
-            count: total,
-            totalPages: pages,
-            rowsPerPage: per_page,
-            onChangePage: onChangePage,
-          }}
-          columns={[
-            { name: 'Operator Name' },
-            { name: 'Status', onClick: sortOperatorsByStatus, tooltip: 'Is the operator performing duties for the majority of its validators for the last 2 epochs.' },
-            { name: '30D Performance' },
-            { name: 'Balance' },
-            { name: 'Yearly Fee' },
-            { name: 'Validators' },
-          ]}
+        disable
+        rows={rows}
+        loading={loadingOperators}
+        noItemsText={'Seems that you have no operators click "Add Operator" in order to run first SSV operator'}
+        rowsAction={openSingleOperator}
+        paginationActions={{
+          page,
+          count: total,
+          totalPages: pages,
+          rowsPerPage: per_page,
+          onChangePage: onChangePage,
+        }}
+        columns={[
+          { name: 'Operator Name' },
+          {
+            name: 'Status',
+            onClick: sortOperatorsByStatus,
+            tooltip: 'Is the operator performing duties for the majority of its validators for the last 2 epochs.',
+          },
+          { name: '30D Performance' },
+          { name: 'Balance' },
+          { name: 'Yearly Fee' },
+          { name: 'Validators' },
+        ]}
       />
     </Grid>
   );

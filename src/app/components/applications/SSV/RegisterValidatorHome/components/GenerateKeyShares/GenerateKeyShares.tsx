@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -17,6 +16,8 @@ import {
 import { translations } from '~app/common/config';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
+import { ButtonSize } from '~app/enums/Button.enum';
+import SecondaryButton from '~app/atomics/SecondaryButton';
 
 type ButtonData = {
   isShow: boolean
@@ -25,11 +26,10 @@ type ButtonData = {
     className: string,
   },
   buttonProps: {
-    dataTestId: string,
-    children: string,
+    size: ButtonSize,
+    text: string,
+    onClick: Function,
     withoutBackgroundColor?: boolean,
-    noCamelCase?: boolean,
-    submitFunction: Function,
   },
 };
 
@@ -51,9 +51,10 @@ const GenerateKeyShares = () => {
           className: classes.LinkButtonWrapper,
         },
         buttonProps: {
-          dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE.toLowerCase(),
-          children: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE,
-          submitFunction: () => {
+          size: ButtonSize.XL,
+          // dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE.toLowerCase(),
+          text: translations.VALIDATOR.GENERATE_KEY_SHARES.ONLINE,
+          onClick: () => {
             validatorStore.keyStoreFile = null;
             nextPage(EValidatorFlowAction.GENERATE_KEY_SHARES_ONLINE);
           },
@@ -65,9 +66,10 @@ const GenerateKeyShares = () => {
           className: classes.LinkButtonWrapper,
         },
         buttonProps: {
-          dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE.toLowerCase(),
-          children: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE,
-          submitFunction: () => {
+          size: ButtonSize.XL,
+          // dataTestId: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE.toLowerCase(),
+          text: translations.VALIDATOR.GENERATE_KEY_SHARES.OFFLINE,
+          onClick: () => {
             validatorStore.keyShareFile = null;
             nextPage(EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE);
           },
@@ -78,11 +80,11 @@ const GenerateKeyShares = () => {
           className: `${classes.LinkButtonWrapper} ${classes.SecondRegistrationExistKeyShares}`,
         },
         buttonProps: {
-          dataTestId: 'secondRegister',
+          size: ButtonSize.XL,
+          // dataTestId: 'secondRegister',
           withoutBackgroundColor: true,
-          noCamelCase: true,
-          children: translations.VALIDATOR.GENERATE_KEY_SHARES.ALREADY_HAVE_KEY_SHARES,
-          submitFunction: () => {
+          text: translations.VALIDATOR.GENERATE_KEY_SHARES.ALREADY_HAVE_KEY_SHARES,
+          onClick: () => {
             validatorStore.keyStoreFile = null;
             nextPage(EValidatorFlowAction.SECOND_REGISTER);
           },

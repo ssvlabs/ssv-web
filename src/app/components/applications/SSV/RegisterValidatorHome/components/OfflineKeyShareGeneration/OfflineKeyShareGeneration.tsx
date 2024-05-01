@@ -14,7 +14,6 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
@@ -33,6 +32,8 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import styled from 'styled-components';
 import { OperatingSystemsEnum } from '~app/enums/os.enum';
+import PrimaryButton from '~app/atomics/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const DkgTitleWrapper = styled.div`
     width: 100%;
@@ -375,9 +376,9 @@ const OfflineKeyShareGeneration = () => {
                 <CopyButton textCopied={textCopied} classes={classes} onClickHandler={copyToClipboard}/>}
             </Grid>
           }
-          {hideButtonCondition() && <PrimaryButton children={buttonLabel}
-                                                   submitFunction={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
-                                                   disable={disabledCondition()}/>}
+          {hideButtonCondition() && <PrimaryButton text={buttonLabel}
+                                                   onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
+                                                   isDisabled={disabledCondition()} size={ButtonSize.XL}/>}
         </Grid>,
       ]}
     />;

@@ -67,7 +67,7 @@ const Withdraw = () => {
               minimumLiquidationCollateral={ssvStore.minimumLiquidationCollateral}
               liquidationCollateralPeriod={ssvStore.liquidationCollateralPeriod}
             />
-            : <OperatorFlow operator={processItem} callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters} />}
+            : <OperatorFlow operator={processItem} />}
         </Grid>
       </Grid>
   );

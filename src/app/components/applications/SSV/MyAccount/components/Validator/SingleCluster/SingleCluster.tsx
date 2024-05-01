@@ -22,7 +22,7 @@ import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { ButtonSize, IconDirection } from '~app/enums/Button.enum';
+import { ButtonSize } from '~app/enums/Button.enum';
 import PrimaryButton from '~app/atomics/PrimaryButton';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 

@@ -3,8 +3,3 @@ export enum ButtonSize {
   MD,
   XL,
 }
-
-export enum IconDirection {
-  Left,
-  Right,
-}

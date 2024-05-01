@@ -24,7 +24,7 @@ import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import PrimaryButton from '~app/atomics/PrimaryButton';
-import { ButtonSize, IconDirection } from '~app/enums/Button.enum';
+import { ButtonSize } from '~app/enums/Button.enum';
 import SecondaryButton from '~app/atomics/SecondaryButton';
 
 const ClusterDashboard = () => {

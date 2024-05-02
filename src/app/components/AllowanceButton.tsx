@@ -1,12 +1,10 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { useStyles } from '~app/components/common/Button/Button.styles';
 import { toWei } from '~root/services/conversions.service';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -43,6 +41,48 @@ const ProgressStepsInner = styled.div`
     flex-direction: row;
 `;
 
+
+const Step = styled.div<{ isCurrent: boolean, isFinished?: boolean }>`
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    text-align: center;
+    padding: 3px 10px;
+    background-color: ${({
+                             theme,
+                             isCurrent,
+                         }) => isCurrent ? theme.colors.primarySuccessRegularOpacity : theme.colors.gray10};
+    border: ${({ theme, isCurrent }) => `1px solid ${isCurrent ? theme.colors.primarySuccessDark : theme.colors.gray30}`};
+    ${({ isFinished }) => {
+        if (isFinished) {
+            return {
+                border: 'none',
+                backgroundSize: 'contain',
+                backgroundColor: '#20eec8',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundImage: 'url(/images/step-done.svg)',
+            };
+        }
+    }}
+`;
+
+const StepText = styled.div`
+    width: 10px;
+    height: 22px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    color: ${({ theme }) => theme.colors.gray90};
+`;
+
+const Line = styled.div`
+    height: 1px;
+    width: 272px;
+    margin: 15.5px 0;
+    background-color: ${({ theme }) => theme.colors.gray40};
+    `;
+
 type ButtonParams = {
   text: string,
   disable: boolean,
@@ -76,7 +116,6 @@ const AllowanceButton = ({
   const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
   const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
-  const classes = useStyles();
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
 
@@ -138,40 +177,41 @@ const AllowanceButton = ({
     return (
       <Container>
         <ButtonWrapper>
-            <PrimaryButton
-              text={approveButtonText}
-              isDisabled={hasGotAllowanceApproval || disable}
-              onClick={() => {
-                !allowanceButtonDisable && requestAllowance();
-              }}
-              size={ButtonSize.XL}
-            />
-            <PrimaryButton
-              isDisabled={!hasGotAllowanceApproval || disable}
-              isLoading={isLoading}
-              onClick={onClick ? onClick : () => {
-              }}
-              text={!!accountAddress ? text : translations.CTA_BUTTON.CONNECT}
-             size={ButtonSize.XL}/>
+          <PrimaryButton
+            text={approveButtonText}
+            isDisabled={hasGotAllowanceApproval || disable}
+            onClick={() => {
+              !allowanceButtonDisable && requestAllowance();
+            }}
+            size={ButtonSize.XL}
+          />
+          <PrimaryButton
+            isDisabled={!hasGotAllowanceApproval || disable}
+            isLoading={isLoading}
+            onClick={onClick ? onClick : () => {
+            }}
+            text={!!accountAddress ? text : translations.CTA_BUTTON.CONNECT}
+            size={ButtonSize.XL}/>
         </ButtonWrapper>
-          <ProgressStepsWrapper>
-            <ProgressStepsInner>
-            <Grid item
-                  className={`${classes.Step} ${classes.Current} ${hasGotAllowanceApproval ? classes.Finish : ''}`}>
-              {!hasGotAllowanceApproval && <Typography className={classes.StepText}>1</Typography>}
-            </Grid>
-            <Grid item xs className={`${classes.Line} ${hasGotAllowanceApproval ? classes.Finish : ''}`}/>
-            <Grid item className={`${classes.Step} ${hasGotAllowanceApproval ? classes.Current : ''}`}>
-              <Typography className={classes.StepText}>2</Typography>
-            </Grid>
-            </ProgressStepsInner>
-          </ProgressStepsWrapper>
+        <ProgressStepsWrapper>
+          <ProgressStepsInner>
+            <Step
+              isFinished={hasGotAllowanceApproval}
+              isCurrent={!hasGotAllowanceApproval}>
+              {!hasGotAllowanceApproval && <StepText>1</StepText>}
+            </Step>
+            <Line />
+            <Step isCurrent={hasGotAllowanceApproval}>
+              <StepText>2</StepText>
+            </Step>
+          </ProgressStepsInner>
+        </ProgressStepsWrapper>
       </Container>
     );
   };
 
   if (!hasCheckedAllowance) {
-    return <Grid alignContent="center" justifyContent="center"><Spinner size={35}/></Grid>;
+    return <Spinner size={35}/>;
   }
 
   return (

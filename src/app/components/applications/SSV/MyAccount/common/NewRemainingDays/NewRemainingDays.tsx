@@ -24,7 +24,7 @@ const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Prop
   let warningLiquidationState: boolean;
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
   let remainingDays: number = clusterRunWay;
-  const typeOfiIsInputFilled =  typeof isInputFilled === 'boolean';
+  const typeOfiIsInputFilled = typeof isInputFilled === 'boolean';
   const remainingDaysValue = formatNumberToUi(remainingDays, true);
 
   if (clusterRunWay < 30) {
@@ -56,36 +56,36 @@ const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Prop
 
   const classes = useStyles({ warningLiquidationState, withdrawState });
 
-    return (
+  return (
+    <Grid item container>
       <Grid item container>
-        <Grid item container>
-          <Grid item container xs={12}>
-            <Typography className={classes.AmountOfDaysText}>Est. Operational Runway</Typography>
-            <Grid className={classes.Hint}>
-              <Tooltip text={'Estimated amount of days the cluster balance is sufficient to run all it’s validators.'} />
-            </Grid>
+        <Grid item container xs={12}>
+          <Typography className={classes.AmountOfDaysText}>Est. Operational Runway</Typography>
+          <Grid className={classes.Hint}>
+            <Tooltip text={'Estimated amount of days the cluster balance is sufficient to run all it’s validators.'}/>
           </Grid>
-          {remainingDays || cluster.isLiquidated ? (
-              <>
-                <Typography className={classes.AmountOfDays}>{remainingDaysValue}</Typography>
-                {+remainingDaysValue > 0 && <Typography className={classes.Days}>days</Typography>}
-              </>)
-              :
-              (<NaDisplay size={24} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
-          {cluster.newRunWay !== undefined && (
-              <Grid item xs className={classes.NewDaysEstimation}>
-                {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
-              </Grid>
-          )}
-          {showError && (
-            <Grid container>
-              <ProgressBar remainingDays={remainingDays ?? 0} />
-              <LiquidationStateError marginTop={'16px'} errorType={errorType} />
-            </Grid>
-          )}
         </Grid>
+        {remainingDays || cluster.isLiquidated ? (
+            <>
+              <Typography className={classes.AmountOfDays}>{remainingDaysValue}</Typography>
+              {+remainingDaysValue > 0 && <Typography className={classes.Days}>days</Typography>}
+            </>)
+          :
+          (<NaDisplay size={24} text={translations.NA_DISPLAY.TOOLTIP_TEXT}/>)}
+        {cluster.newRunWay !== undefined && (
+          <Grid item xs className={classes.NewDaysEstimation}>
+            {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
+          </Grid>
+        )}
+        {showError && (
+          <Grid container>
+            <ProgressBar remainingDays={remainingDays ?? 0}/>
+            <LiquidationStateError marginTop={'16px'} errorType={errorType}/>
+          </Grid>
+        )}
       </Grid>
-    );
+    </Grid>
+  );
 };
 
 export default observer(NewRemainingDays);

@@ -3,9 +3,6 @@ const CHECK_UPDATES_MAX_ITERATIONS = 60;
 export const checkIfStateChanged = async (updatedStateGetter: any, prevState: any): Promise<boolean> => {
   try {
     const newState = await updatedStateGetter();
-    console.log({ prevState });
-    console.log({ newState });
-    console.log(JSON.stringify(prevState) !== JSON.stringify(newState));
     return JSON.stringify(prevState) !== JSON.stringify(newState);
   } catch (e) {
     console.error('checkIfStateChanged ', e);

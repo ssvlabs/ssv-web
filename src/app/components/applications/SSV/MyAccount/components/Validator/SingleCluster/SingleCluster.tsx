@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SingleCluster.styles';
-import { equalsAddresses } from '~lib/utils/strings';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -88,7 +88,7 @@ const SingleCluster = () => {
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = process.item;
   const accountAddress = useAppSelector(getAccountAddress);
-  const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !isEqualsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 

@@ -62,8 +62,6 @@ class MyAccountStore extends BaseStore {
   }
 
   async refreshOperatorsAndClusters() {
-    this.ownerAddressOperatorsPagination = DEFAULT_PAGINATION;
-    this.ownerAddressClustersPagination = DEFAULT_PAGINATION;
     await this.getOwnerAddressClusters({});
     await this.getOwnerAddressOperators({});
   }

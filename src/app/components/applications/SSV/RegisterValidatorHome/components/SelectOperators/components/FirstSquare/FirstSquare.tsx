@@ -12,7 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
-import { equalsAddresses } from '~lib/utils/strings';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import Checkbox from '~app/components/common/CheckBox';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -160,7 +160,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       const hasValidators = operator.validators_count !== 0;
       const isSelected = operatorStore.isOperatorSelected(operator.id);
       const reachedMaxValidators = operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count);
-      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, accountAddress);
+      const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !isEqualsAddresses(operator.address_whitelist, accountAddress);
       const disabled = isDeleted || isPrivateOperator;
       const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;

@@ -11,6 +11,7 @@ import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
+import { isEqualsAddresses } from '~lib/utils/strings';
 
 export interface NewOperator {
   id: number,
@@ -392,13 +393,12 @@ class OperatorStore extends BaseStore {
       payload: [operator.id],
       isContractWallet,
       getterTransactionState: async () => {
-        const { id, declared_fee, previous_fee } = await getOperator(operator.id);
-        return { id, declared_fee, previous_fee };
+        const { id, fee } = await getOperator(operator.id);
+        return { id, fee };
       },
       prevState: {
         id: operator.id,
-        declared_fee: operator.declared_fee,
-        previous_fee: operator.previous_fee,
+        fee: operator.fee,
       },
       dispatch,
     });

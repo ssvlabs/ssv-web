@@ -21,8 +21,8 @@ type OperatorValidatorListQuery = {
 
 const PERFORMANCE_PERIOD = '24hours';
 
-const getOperatorsByOwnerAddress = async ({ page, perPage, accountAddress }: { page: number; perPage: number; accountAddress: string }): Promise<{ operators: IOperator[], pagination: IPagination }> => {
-  const url = `${getStoredNetwork().api}/operators/owned_by/${accountAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
+const getOperatorsByOwnerAddress = async ({ page = 1, perPage = 8, accountAddress }: { page: number; perPage: number; accountAddress: string }): Promise<{ operators: IOperator[], pagination: IPagination }> => {
+  const url = `${getStoredNetwork().api}/operators/owned_by/${accountAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:asc`;
   const res = await getRequest(url, false);
   return res ?? { operators: [], pagination: DEFAULT_PAGINATION };
 };

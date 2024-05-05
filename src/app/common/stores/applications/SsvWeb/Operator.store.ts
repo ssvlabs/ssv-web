@@ -439,14 +439,15 @@ class OperatorStore extends BaseStore {
       payload: [operator.id],
       isContractWallet,
       getterTransactionState: async () => {
-        const { id, declared_fee, previous_fee } = await getOperator(operator.id);
-        return { id, declared_fee, previous_fee };
+        const { id, declared_fee, previous_fee, fee } = await getOperator(operator.id);
+        return { id, declared_fee, previous_fee, fee };
       },
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
       prevState: {
         id: operator.id,
         declared_fee: operator.declared_fee,
         previous_fee: operator.previous_fee,
+        fee: operator.fee,
       },
     });
   }

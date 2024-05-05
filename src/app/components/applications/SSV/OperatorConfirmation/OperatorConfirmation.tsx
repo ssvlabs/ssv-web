@@ -41,7 +41,7 @@ const OperatorConfirmation = () => {
       dispatch(setIsLoading(true));
       setActionButtonText('Waiting for confirmation...');
       operatorStore.newOperatorKeys.id = 0;
-      const operatorAdded = await operatorStore.addNewOperator(isContractWallet);
+      const operatorAdded = await operatorStore.addNewOperator(isContractWallet, dispatch);
       let publicKey = operatorStore.newOperatorKeys.publicKey;
       if (operatorAdded) {
         try  {

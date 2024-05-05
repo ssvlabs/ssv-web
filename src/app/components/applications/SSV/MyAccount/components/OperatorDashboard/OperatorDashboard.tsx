@@ -35,6 +35,10 @@ const OperatorDashboard = () => {
   const { page, pages, per_page, total } = useAppSelector(getOperatorsPagination);
   const operators = useAppSelector(getAccountOperators);
 
+  useEffect(() => {
+    fetchData();
+  }, [page]);
+
   const fetchData = async () => {
     try {
       const promises = operators.map((operator: IOperator) => new Promise(async () => {
@@ -46,10 +50,6 @@ const OperatorDashboard = () => {
       dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [page]);
 
   const moveToRegisterOperator = () => {
     navigate(config.routes.SSV.OPERATOR.HOME);

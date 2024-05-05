@@ -30,7 +30,7 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
 
   const submitFeeChange = async () => {
     dispatch(setIsLoading(true));
-    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet });
+    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet, dispatch });
     if (response) {
         getCurrentState(true);
     }

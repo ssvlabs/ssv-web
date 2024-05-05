@@ -11,7 +11,7 @@ import PendingExecution from '~app/components/applications/SSV/MyAccount/compone
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleOperator } from '~app/model/processes.model';
 import { IOperator } from '~app/model/operator.model';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 export type IncreaseFlowProps = {
@@ -47,6 +47,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
     const operator: IOperator = process.item;
     const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
     const isContractWallet = useAppSelector(getIsContractWallet);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         getCurrentState();
@@ -85,7 +86,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
     };
 
     const cancelUpdateFee = async () => {
-        const res = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
+        const res = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
         res && setCurrentStep(IncreaseSteps.CANCEL);
     };
 

@@ -1,39 +1,38 @@
 import React, { useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
+import { useNavigate } from 'react-router-dom';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { depositOrWithdraw, getClusterRunWay } from '~root/services/cluster.service';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getClusterRunWay } from '~root/services/cluster.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
+import { getSelectedCluster } from '~app/redux/account.slice';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+import { depositOrWithdraw } from '~root/services/clusterContract.service';
 
 const Deposit = () => {
   const [inputValue, setInputValue] = useState('');
   const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const { walletSsvBalance } = useFetchWalletBalance();
   const navigate = useNavigate();
-  const location = useLocation();
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
-  const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
-  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
+  const cluster = useAppSelector(getSelectedCluster);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+  const dispatch = useAppDispatch();
   const clusterBalance = fromWei(cluster.balance);
 
   async function depositSsv() {
@@ -42,9 +41,10 @@ const Deposit = () => {
       amount: inputValue.toString(),
       isContractWallet,
       accountAddress,
-      liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-      minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral,
       operation: EClusterOperation.DEPOSIT,
+      dispatch,
     });
     if (success) {
       GoogleTagManager.getInstance().sendEvent({
@@ -69,12 +69,12 @@ const Deposit = () => {
         setInputValue(value);
         return;
     }
-    if (Number(value) > ssvStore.walletSsvBalance) value = String(ssvStore.walletSsvBalance);
+    if (Number(value) > walletSsvBalance) value = String(walletSsvBalance);
     setInputValue(value);
   }
 
   function maxDeposit() {
-    setInputValue(String(ssvStore.walletSsvBalance));
+    setInputValue(String(walletSsvBalance));
   }
 
   const newBalance = inputValue ? clusterBalance + Number(inputValue) : undefined;
@@ -112,14 +112,14 @@ const Deposit = () => {
                         </Grid>
                       </Grid>
                       <Grid item xs={12} className={classes.WalletBalance}>
-                        Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
+                        Wallet Balance: {formatNumberToUi(walletSsvBalance)} SSV
                       </Grid>
                     </Grid>
                   </Grid>
               ),
               (
                   <>
-                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) }}/>
+                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, liquidationCollateralPeriod, minimumLiquidationCollateral) }}/>
                   </>
               ),
             ]}
@@ -140,4 +140,4 @@ const Deposit = () => {
   );
 };
 
-export default observer(Deposit);
+export default Deposit;

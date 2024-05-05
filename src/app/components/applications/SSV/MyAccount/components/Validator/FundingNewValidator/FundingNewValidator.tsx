@@ -14,7 +14,6 @@ import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
@@ -23,29 +22,33 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 
 const FundingNewValidator = () => {
-  const stores = useStores();
-  const classes = useStyles();
-  const navigate = useNavigate();
-  const OPTION_USE_CURRENT_BALANCE = 1;
-  const ssvStore: SsvStore = stores.SSV;
-  const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
-  const processStore: ProcessStore = stores.Process;
-  const validatorStore: ValidatorStore = stores.Validator;
-  const process: SingleCluster = processStore.getProcess;
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState<string | number>(0);
   const [errorMessage, setErrorMessage] = useState({ text:'', disableButton: false, link: { text:'', path:'' } });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+  const stores = useStores();
+  const classes = useStyles();
+  const navigate = useNavigate();
+  const OPTION_USE_CURRENT_BALANCE = 1;
+  const { walletSsvBalance } = useFetchWalletBalance();
+  const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
+  const processStore: ProcessStore = stores.Process;
+  const validatorStore: ValidatorStore = stores.Validator;
+  const process: SingleCluster = processStore.getProcess;
   const cluster = process.item;
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
-  const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, ssvStore.networkFee);
+  const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, networkFee);
   const newRunWay = getClusterRunWay({
     ...cluster,
     burnRate: toWei(parseFloat(newBurnRate.toString())),
     balance: toWei(fromWei(cluster.balance) + Number(depositSSV)),
-  }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+  }, liquidationCollateralPeriod, minimumLiquidationCollateral);
   const calculateNewRunWayCondition = checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS ? Number(depositSSV) > 0 : true;
   const runWay = checkedId === OPTION_USE_CURRENT_BALANCE || checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) > 0 ? formatNumberToUi(newRunWay, true) : formatNumberToUi(cluster.runWay, true);
   const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1 || errorMessage.disableButton;
@@ -57,7 +60,7 @@ const FundingNewValidator = () => {
       setShowErrorMessage(false);
       return;
     }
-    if (Number(depositSSV) > ssvStore.walletSsvBalance) {
+    if (Number(depositSSV) > walletSsvBalance) {
       setErrorMessage({
         text: 'Insufficient SSV balance. Acquire further SSV or pick a different amount.',
         disableButton: true,

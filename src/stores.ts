@@ -2,11 +2,9 @@ import { createContext } from 'react';
 import BaseStore from '~app/common/stores/BaseStore';
 
 const stores = [
-  'SSV',
   'Process',
   'Operator',
   'Validator',
-  'MyAccount',
   'Distribution',
   'OperatorMetadata',
   'DistributionTestnet',

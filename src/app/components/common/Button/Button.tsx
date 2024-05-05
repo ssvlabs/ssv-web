@@ -1,11 +1,8 @@
-import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
-import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/common/Button/Button.styles';
 import { toWei } from '~root/services/conversions.service';
@@ -14,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import notifyService from '~root/services/notify.service';
 import Spinner from '~app/components/common/Spinner';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import { checkAllowance, requestAllowance } from '~root/services/tokenContract.service';
 
 type ButtonParams = {
     text: string,
@@ -39,17 +37,16 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
     const dispatch = useAppDispatch();
     const accountAddress = useAppSelector(getAccountAddress);
     const classes = useStyles();
-    const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
 
     useEffect(() => {
         const checkUserAllowance = async () => {
-            await ssvStore.checkAllowance();
-            if (ssvStore.approvedAllowance < Number(toWei(totalAmount))) {
+            const approvedAllowance = await checkAllowance({ accountAddress });
+            if (approvedAllowance < Number(toWei(totalAmount))) {
                 setHasToRequestApproval(true);
                 setHasGotAllowanceApproval(false);
             } else {
                 setHasToRequestApproval(false);
+                allowanceApprovedCB && allowanceApprovedCB();
             }
             setHasCheckedAllowance(true);
         };
@@ -58,7 +55,7 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
         } else {
             setHasCheckedAllowance(true);
         }
-    }, [totalAmount]);
+    }, [totalAmount, hasGotAllowanceApproval]);
 
     const handlePendingTransaction = ({ txHash }: { txHash: string }) => {
         dispatch(setTxHash(txHash));
@@ -66,14 +63,13 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
         notifyService.hash(txHash);
     };
 
-    const requestAllowance = async () => {
+    const requestAllowanceHandler = async () => {
         try {
             setAllowanceButtonDisable(true);
             setApproveButtonText('Approving…');
-            await ssvStore.requestAllowance(handlePendingTransaction);
+            await requestAllowance(handlePendingTransaction);
             setApproveButtonText('Approved');
             setHasGotAllowanceApproval(true);
-            allowanceApprovedCB && allowanceApprovedCB();
         } catch (e) {
             console.error('Error while approving allowance', e);
             setApproveButtonText('Approve SSV');
@@ -105,7 +101,7 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
                 children={approveButtonText}
                 withoutLoader={hasGotAllowanceApproval}
                 disable={hasGotAllowanceApproval || disable}
-                submitFunction={() => { !allowanceButtonDisable && requestAllowance(); }}
+                submitFunction={() => { !allowanceButtonDisable && requestAllowanceHandler(); }}
               />
             </Grid>
             <Grid item xs>
@@ -147,4 +143,4 @@ const Button = ({ testId, withAllowance, disable, onClick, text, errorButton, ch
     );
 };
 
-export default observer(Button);
+export default Button;

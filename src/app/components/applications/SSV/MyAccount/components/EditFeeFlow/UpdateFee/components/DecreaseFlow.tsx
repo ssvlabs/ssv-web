@@ -13,7 +13,7 @@ import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/compo
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { SingleOperator } from '~app/model/processes.model';
 import { getOperator } from '~root/services/operator.service';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getOperatorBalance } from '~root/services/operatorContract.service';
 
@@ -28,12 +28,13 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const isContractWallet = useAppSelector(getIsContractWallet);
     const process: SingleOperator = processStore.getProcess;
     const operator = process.item;
+    const dispatch = useAppDispatch();
 
     const onUpdateFeeHandle = async () => {
         if (updated) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         } else {
-            await operatorStore.decreaseOperatorFee({ operator, newFee, isContractWallet });
+            await operatorStore.decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
             const newOperatorData = await getOperator(operatorStore.processOperatorId);
             const balance = await getOperatorBalance(newOperatorData.id);
             processStore.setProcess({

@@ -43,9 +43,7 @@ const RemoveOperator = () => {
 
   const submitForm = async () => {
     dispatch(setIsLoading(true));
-    const isRemoved = await operatorStore.removeOperator({
-      operatorId: Number(process.item.id), isContractWallet,
-    });
+    const isRemoved = await operatorStore.removeOperator({ operatorId: Number(process.item.id), isContractWallet, dispatch });
     dispatch(setIsLoading(false));
     if (isRemoved) {
       await dispatch(fetchOperators({ forcePage: 1 }));

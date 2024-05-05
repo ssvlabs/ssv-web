@@ -26,7 +26,6 @@ import MevIcon
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
@@ -37,8 +36,10 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { getValidator } from '~root/services/validator.service';
 import { setSelectedClusterId } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const accountAddress = useAppSelector(getAccountAddress);
   const processStore: ProcessStore = stores.Process;
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
   const windowSize = useWindowSize();
   const [existClusterData, setExistClusterData] = useState<ICluster | null>(null);
@@ -86,7 +86,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     if (operatorStore.selectedEnoughOperators) {
       setExistClusterData(null);
       setCheckClusterExistence(true);
-      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
         if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
           setExistClusterData(clusterData);
         }

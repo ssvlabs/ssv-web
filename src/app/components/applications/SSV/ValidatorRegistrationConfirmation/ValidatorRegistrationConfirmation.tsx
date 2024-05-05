@@ -13,7 +13,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import FundingSummary from '~app/components/common/FundingSummary';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
@@ -33,6 +32,8 @@ import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -43,9 +44,10 @@ const ValidatorRegistrationConfirmation = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const accountAddress = useAppSelector(getAccountAddress);
   const isMainnet = useAppSelector(getIsMainnet);
+  const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
+  const { walletSsvBalance } = useFetchWalletBalance();
   const classes = useStyles();
-  const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -54,14 +56,14 @@ const ValidatorRegistrationConfirmation = () => {
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
 
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
+  const networkCost = propertyCostByPeriod(networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
   let liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: operatorStore.getSelectedOperatorsFee,
-    networkFee: ssvStore.networkFee,
-    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+    networkFee,
+    liquidationCollateralPeriod,
+    minimumLiquidationCollateral,
     validatorsCount: validatorStore.validatorsCount,
-    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
   });
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
   const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
@@ -84,7 +86,16 @@ const ValidatorRegistrationConfirmation = () => {
     dispatch(setIsLoading(true));
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
-    const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration({ accountAddress, isContractWallet }) : await validatorStore.addNewValidator({ accountAddress, isContractWallet });
+    const response = validatorStore.isMultiSharesMode ?
+      await validatorStore.bulkRegistration({ accountAddress, isContractWallet, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }) :
+      await validatorStore.addNewValidator({
+        accountAddress,
+        isContractWallet,
+        networkFee,
+        liquidationCollateralPeriod,
+        minimumLiquidationCollateral,
+        dispatch,
+      });
     if (response && !isContractWallet) {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
@@ -101,7 +112,7 @@ const ValidatorRegistrationConfirmation = () => {
         className={classes.TotalSSV}>{
         formatNumberToUi(totalAmountOfSsv)} SSV</Grid>
     </Grid>
-    {totalAmountOfSsv > ssvStore.walletSsvBalance && (
+    {totalAmountOfSsv > walletSsvBalance && (
       <Grid container item className={classes.InsufficientBalanceWrapper}>
         <Grid item xs>
           Insufficient SSV balance. There is not enough SSV in your wallet.

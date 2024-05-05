@@ -24,7 +24,6 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
@@ -48,9 +47,11 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, ProcessType } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isJsonFile } from '~root/utils/dkg.utils';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
@@ -59,7 +60,6 @@ const KeyShareFlow = () => {
     const removeButtons = useRef(null);
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
-    const ssvStore: SsvStore = stores.SSV;
     const validatorStore: ValidatorStore = stores.Validator;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -392,7 +392,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },

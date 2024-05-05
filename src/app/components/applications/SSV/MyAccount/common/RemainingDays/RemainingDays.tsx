@@ -1,8 +1,6 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import ProgressBar from '~app/components/applications/SSV/MyAccount/common/ProgressBar/ProgressBar';
@@ -11,7 +9,8 @@ import LiquidationStateError
   from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 import { toWei } from '~root/services/conversions.service';
 import { getClusterRunWay } from '~root/services/cluster.service';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 type Props = {
   cluster?: any,
@@ -22,16 +21,14 @@ type Props = {
   operatorChange?: boolean,
 };
 
-const RemainingDays = (props: Props) => {
-  const stores = useStores();
-  const { cluster, gray80, operatorChange, disableWarning = false } = props;
-  const ssvStore: SsvStore = stores.SSV;
+const RemainingDays = ({ cluster, gray80, operatorChange, disableWarning = false }: Props) => {
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   let withdrawState: boolean = false;
   let newRemainingDays: number | undefined;
   let warningLiquidationState: boolean = cluster.runWay < 30;
 
   if (typeof cluster.newBalance !== 'undefined' || typeof cluster.newBurnRate !== 'undefined') {
-    newRemainingDays = getClusterRunWay({ ...cluster, balance: toWei(cluster.newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
+    newRemainingDays = getClusterRunWay({ ...cluster, balance: toWei(cluster.newBalance) }, liquidationCollateralPeriod, minimumLiquidationCollateral);
     withdrawState = cluster.runWay > newRemainingDays;
     warningLiquidationState = newRemainingDays < 30;
   }
@@ -83,4 +80,4 @@ const RemainingDays = (props: Props) => {
   );
 };
 
-export default observer(RemainingDays);
+export default RemainingDays;

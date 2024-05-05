@@ -10,7 +10,6 @@ import {
     MAINNET_NETWORK_ID,
 } from '~root/providers/networkInfo.provider';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import { getStoredNetworkIndex, networks } from '~root/providers/networkInfo.provider';
@@ -23,6 +22,7 @@ import Spinner from '~app/components/common/Spinner';
 import { getAccountAddress, getConnectedNetwork, getIsNotMetamask, setConnectedNetwork } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
+import { fetchAndSetNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const CurrentNetworkWrapper = styled.div`
     display: flex;
@@ -85,7 +85,6 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
     const [{  wallet }] = useConnectWallet();
     const [{ connectedChain, settingChain }, setChain] = useSetChain();
     const stores = useStores();
-    const ssvStore: SsvStore = stores.SSV;
     const operatorStore: OperatorStore = stores.Operator;
 
     useEffect(() => {
@@ -107,16 +106,14 @@ const NetworkToggle = ({ excludeNetworks }: { excludeNetworks : number[] }) => {
             if (index < 0) {
                 dispatch(setMessageAndSeverity({ message: `Unsupported network. Please change network to ${NETWORK_VARIABLES[`${network.networkId}_${network.apiVersion}`].activeLabel}`, severity: 'error' }));
             } else {
-                ssvStore.clearUserSyncInterval();
                 operatorStore.clearSettings();
-                ssvStore.clearSettings();
                 resetContracts();
                 dispatch(setConnectedNetwork(index));
                 dispatch(setShouldCheckCountryRestriction(index === 0));
                 if (wallet) {
                     initContracts({ provider: wallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: isNotMetamask });
                 }
-                await ssvStore.initUser();
+                await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral());
                 await operatorStore.initUser();
                 await dispatch(refreshOperatorsAndClusters());
             }

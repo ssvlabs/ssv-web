@@ -4,7 +4,7 @@ import { IOperator } from '~app/model/operator.model';
 import { ICluster } from '~app/model/cluster.model';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
-import { extendClusterEntity, getClustersByOwnerAddress } from '~root/services/cluster.service';
+import { getClustersByOwnerAddress } from '~root/services/cluster.service';
 
 interface Pagination {
   page: number;
@@ -45,10 +45,10 @@ export const fetchOperators = createAsyncThunk('account/fetchOperators', async (
 export const fetchClusters = createAsyncThunk('account/fetchClusters', async ({ forcePage, forcePerPage }: { forcePage?: number; forcePerPage?: number }, thunkApi) => {
   const state = thunkApi.getState() as RootState;
   const accountAddress = state.walletState.accountAddress;
+  const liquidationCollateralPeriod = state.networkState.liquidationCollateralPeriod;
+  const minimumLiquidationCollateral = state.networkState.minimumLiquidationCollateral;
   const { page, per_page } = state.accountState.clustersPagination;
-  const res = await getClustersByOwnerAddress({ page: forcePage ?? page, perPage: forcePerPage ?? per_page, accountAddress });
-  const clusters = await Promise.all(res.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral)));
-  return { clusters: clusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated), pagination: res.pagination };
+  return await getClustersByOwnerAddress({ page: forcePage ?? page, perPage: forcePerPage ?? per_page, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral });
 });
 
 export const refreshOperatorsAndClusters = createAsyncThunk('account/refreshOperatorsAndClusters', async (_, thunkApi) => {
@@ -117,9 +117,10 @@ export const accountStateReducer = slice.reducer;
 export const { resetPagination, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus } = slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
-export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
+// export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
 export const getOperatorsPagination = (state: RootState) => state.accountState.operatorsPagination;
 export const getAccountClusters = (state: RootState) => state.accountState.clusters;
-export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
+// export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
-export const getSelectedCluster = (state: RootState) => state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId);
+export const getSelectedCluster = (state: RootState) => state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || {} as ICluster;
+export const getSelectedOperator = (state: RootState) => state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId) || {} as IOperator;

@@ -8,7 +8,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { withdrawRewards } from '~root/services/operatorContract.service';
 
@@ -21,10 +21,11 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const classes = useStyles();
   const operatorBalance = operator.balance ?? 0;
+  const dispatch = useAppDispatch();
 
   const withdrawSsv = async () => {
     setIsLoading(true);
-    const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet });
+    const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet, dispatch });
     setIsLoading(false);
     if (success) {
       navigate(-1);

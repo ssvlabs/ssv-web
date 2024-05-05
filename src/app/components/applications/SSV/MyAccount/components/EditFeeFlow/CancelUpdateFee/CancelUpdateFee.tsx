@@ -39,7 +39,7 @@ const CancelUpdateFee = () => {
   const cancelUpdateProcess = async () => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
     dispatch(setIsLoading(true));
-    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
+    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
     if (response) {
       // @ts-ignore
       setFutureFee(operatorStore.operatorFutureFee);

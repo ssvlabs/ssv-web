@@ -25,7 +25,7 @@ const SetOperatorFee = () => {
 
   const moveToMyAccount = async () => {
     dispatch(setIsLoading(true));
-    await dispatch(fetchOperators());
+    await dispatch(fetchOperators({}));
     dispatch(setIsLoading(false));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
   };

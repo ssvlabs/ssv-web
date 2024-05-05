@@ -29,7 +29,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
 
   const changeOperatorFee = async () => {
     dispatch(setIsLoading(true));
-    const response = await operatorStore.updateOperatorFee({ operator, newFee, isContractWallet });
+    const response = await operatorStore.updateOperatorFee({ operator, newFee, isContractWallet, dispatch });
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore

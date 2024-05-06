@@ -10,7 +10,7 @@ import { registerSSVTokenInMetamask } from '~root/services/distribution.service'
 import { AlertColor } from '@mui/material/Alert';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useConnectWallet } from '@web3-onboard/react';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const SuccessPage = () => {

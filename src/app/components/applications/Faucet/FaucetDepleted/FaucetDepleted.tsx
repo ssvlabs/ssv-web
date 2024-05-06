@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const SuccessPage = () => {

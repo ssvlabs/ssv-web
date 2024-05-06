@@ -10,7 +10,7 @@ import {
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const ChangeFee = ({ newFee, onChangeHandler, error, nextIsDisabled, onNextHandler, setCurrency }: UpdateFeeProps) => {

@@ -11,7 +11,7 @@ import Spinner from '~app/components/common/Spinner';
 import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster } from '~app/model/processes.model';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const HeaderWrapper = styled.div`

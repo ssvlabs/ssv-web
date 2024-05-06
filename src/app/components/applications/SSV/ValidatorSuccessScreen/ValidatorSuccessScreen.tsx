@@ -16,7 +16,7 @@ import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScre
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const ValidatorSuccessScreen = () => {

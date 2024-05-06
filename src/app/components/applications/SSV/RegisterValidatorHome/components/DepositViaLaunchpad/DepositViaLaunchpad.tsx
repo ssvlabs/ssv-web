@@ -13,7 +13,7 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import { getBeaconChainLink, getLaunchpadLink } from '~root/providers/networkInfo.provider';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 
 const DepositViaLaunchpad = () => {
   const stores = useStores();

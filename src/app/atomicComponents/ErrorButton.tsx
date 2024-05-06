@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';
 
-const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, isLoading: boolean, reverseDirection: boolean }>`
+const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, isLoading: boolean, isReverseDirection: boolean }>`
     width: 100%;
     height: ${({ size }) => {
         if (size === ButtonSize.SM) {
@@ -15,7 +15,7 @@ const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, i
         return '60px';
     }};
     display: flex;
-    flex-direction: ${({ reverseDirection }) => reverseDirection ? 'row-reverse' : 'row'};
+    flex-direction: ${({ isReverseDirection }) => isReverseDirection ? 'row-reverse' : 'row'};
     justify-content: center;
     align-items: center;
     border-radius: 8px;
@@ -30,7 +30,7 @@ const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, i
     cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};;
     background-color: ${({ theme, isDisabled }) => isDisabled ? theme.colors.gray20 : 'rgba(236, 28, 38, 0.03)'};
     :hover {
-        background-color: ${({ theme, isDisabled, isLoading }) => !isDisabled && !isLoading && 'rgba(236, 28, 38, 0.1)'};
+        background-color: ${({ isDisabled, isLoading }) => !isDisabled && !isLoading && 'rgba(236, 28, 38, 0.1)'};
     }
 `;
 
@@ -43,11 +43,11 @@ const Icon = styled.div<{ path: string }>`
     background-image: ${({ path }) => `url(${path})`};
 `;
 
-const ErrorButton = ({ size, text, icon, reverseDirection = false, onClick, isDisabled = false, isLoading = false }: {
+const ErrorButton = ({ size, text, icon, isReverseDirection = false, onClick, isDisabled = false, isLoading = false }: {
   size: ButtonSize,
   text: string,
   icon?: string,
-  reverseDirection?: boolean,
+  isReverseDirection?: boolean,
   onClick?: Function,
   isDisabled?: boolean,
   isLoading?: boolean
@@ -55,7 +55,7 @@ const ErrorButton = ({ size, text, icon, reverseDirection = false, onClick, isDi
   const handleOnClickFunction = () => onClick && !isDisabled && !isLoading && onClick();
 
   return (
-    <Button reverseDirection={reverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
+    <Button isReverseDirection={isReverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
       {isLoading && <Spinner errorSpinner={true} />}
       {text}
       {icon && <Icon path={icon}/>}

@@ -7,7 +7,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getRestrictedUserGeo, getStrategyName } from '~app/redux/appState.slice';
-import SecondaryButton from '~app/atomics/SecondaryButton';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const CountryNotSupported = () => {

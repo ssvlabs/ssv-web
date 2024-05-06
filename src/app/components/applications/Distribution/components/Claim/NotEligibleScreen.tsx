@@ -7,7 +7,7 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useStyles } from '~app/components/applications/Distribution/components/Claim/Claim.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const NotEligibleScreen = () => {

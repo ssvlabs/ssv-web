@@ -22,7 +22,7 @@ import {
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const FundingPeriod = () => {

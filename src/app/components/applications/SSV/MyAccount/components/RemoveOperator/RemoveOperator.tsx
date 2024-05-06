@@ -15,7 +15,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { RegisterOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import ErrorButton from '~app/atomics/ErrorButton';
+import ErrorButton from '~app/atomicComponents/ErrorButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const RemoveOperator = () => {

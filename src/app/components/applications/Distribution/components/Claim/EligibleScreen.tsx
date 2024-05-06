@@ -14,7 +14,7 @@ import DistributionTestnetStore from '~app/common/stores/applications/Distributi
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const EligibleScreen = () => {

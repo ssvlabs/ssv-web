@@ -21,8 +21,8 @@ import { SingleOperator } from '~app/model/processes.model';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomics/SecondaryButton';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -79,7 +79,7 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton withoutBackgroundColor text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
+              <SecondaryButton hasBgColor={false} text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
               <PrimaryButton isDisabled={false} text={'Execute'}

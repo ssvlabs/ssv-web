@@ -8,7 +8,7 @@ import { getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInf
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Welcome = () => {

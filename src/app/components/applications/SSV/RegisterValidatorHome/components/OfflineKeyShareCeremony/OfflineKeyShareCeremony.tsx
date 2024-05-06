@@ -15,7 +15,7 @@ import DirectoryBadge
   from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/DirectoryBadge/DirectoryBadge';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
 import styled from 'styled-components';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const BoldText = styled.span`

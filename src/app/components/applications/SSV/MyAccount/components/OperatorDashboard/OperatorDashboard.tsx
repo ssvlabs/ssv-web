@@ -21,7 +21,7 @@ import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { getOperatorBalance } from '~root/services/operator.service';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import styled from 'styled-components';
 
@@ -135,11 +135,9 @@ const OperatorDashboard = () => {
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
         <ToggleDashboards title={'Operators'} type={'operator'}/>
-        {/*<Grid container item xs className={classes.HeaderButtonsWrapper}>*/}
         <ButtonWrapper>
           <PrimaryButton size={ButtonSize.MD} text={'Add Operator'} onClick={moveToRegisterOperator}/>
         </ButtonWrapper>
-        {/*</Grid>*/}
       </Grid>
       <Dashboard
         disable

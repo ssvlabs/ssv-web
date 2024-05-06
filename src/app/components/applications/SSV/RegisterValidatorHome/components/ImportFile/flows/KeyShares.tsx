@@ -50,7 +50,7 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isJsonFile } from '~root/utils/dkg.utils';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const KeyShareFlow = () => {

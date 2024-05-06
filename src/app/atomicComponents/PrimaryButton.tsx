@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';
 
-const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, isLoading: boolean, reverseDirection: boolean }>`
+const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, isLoading: boolean, isReverseDirection: boolean }>`
     width: 100%;
     height: ${({ size }) => {
         if (size === ButtonSize.SM) {
@@ -22,14 +22,14 @@ const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, i
     font-size: 16px;
     padding: 0 18px;
     font-weight: 600;
-    flex-direction: ${({ reverseDirection }) => reverseDirection ? 'row-reverse' : 'row'};
+    flex-direction: ${({ isReverseDirection }) => isReverseDirection ? 'row-reverse' : 'row'};
     color: ${({ theme, isDisabled, isLoading }) => {
         if (isLoading) {
             return theme.colors.tint20;
         }
         return isDisabled ? theme.colors.gray40 : theme.colors.white;
     }};
-    cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};;
+    cursor: ${({ isDisabled, isLoading }) => isDisabled || isLoading ? 'default' : 'pointer'};;
     background-color: ${({ theme, isDisabled, isLoading }) => {
         if (isLoading) {
             return theme.colors.tint80;
@@ -55,11 +55,11 @@ const Icon = styled.div<{ path: string }>`
     background-image: ${({ path }) => `url(${path})`};
 `;
 
-const PrimaryButton = ({ size, text, icon, reverseDirection = false, onClick, isDisabled = false, isLoading = false }: {
+const PrimaryButton = ({ size, text, icon, isReverseDirection = false, onClick, isDisabled = false, isLoading = false }: {
   size: ButtonSize,
   text: string,
   icon?: string,
-  reverseDirection?: boolean,
+  isReverseDirection?: boolean,
   onClick?: Function,
   isDisabled?: boolean,
   isLoading?: boolean
@@ -67,7 +67,7 @@ const PrimaryButton = ({ size, text, icon, reverseDirection = false, onClick, is
   const handleOnClickFunction = () => onClick && !isDisabled && !isLoading && onClick();
 
   return (
-    <Button reverseDirection={reverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
+    <Button isReverseDirection={isReverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
       {isLoading && <Spinner/>}
       {text}
       {icon && <Icon path={icon}/>}

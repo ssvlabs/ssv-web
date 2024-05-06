@@ -23,9 +23,9 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomics/SecondaryButton';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -146,10 +146,9 @@ const ClusterDashboard = () => {
         <ToggleDashboards title={'Validator Clusters'}/>
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           {rows.length > 0 && (
-            <SecondaryButton onClick={moveToFeeRecipient} text={'Fee Address'} size={ButtonSize.MD}/>
+            <SecondaryButton onClick={moveToFeeRecipient} icon={'/images/test/Group.svg'} text={'Fee Address'} size={ButtonSize.MD}/>
           )}
           <PrimaryButton onClick={moveToRegisterValidator} text={'Add Cluster'} size={ButtonSize.MD}/>
-          {/*<Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>*/}
         </Grid>
       </Grid>
       <Dashboard

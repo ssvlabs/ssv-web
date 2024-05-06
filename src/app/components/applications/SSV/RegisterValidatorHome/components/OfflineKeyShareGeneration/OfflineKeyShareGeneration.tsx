@@ -32,7 +32,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import styled from 'styled-components';
 import { OperatingSystemsEnum } from '~app/enums/os.enum';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const DkgTitleWrapper = styled.div`

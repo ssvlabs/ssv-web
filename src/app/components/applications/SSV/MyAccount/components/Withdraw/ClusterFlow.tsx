@@ -13,8 +13,8 @@ import { depositOrWithdraw, getClusterRunWay } from '~root/services/cluster.serv
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
-import ErrorButton from '~app/atomics/ErrorButton';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import ErrorButton from '~app/atomicComponents/ErrorButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import CheckBox from '~app/components/common/CheckBox';
 import { ButtonSize } from '~app/enums/Button.enum';
 
@@ -154,9 +154,7 @@ const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollat
                                     isMainnet={isMainnet}>
           <div>
           {showCheckBox && (
-            // <Grid item xs={12}>
               <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText} isChecked={hasUserAgreed}/>
-            // </Grid>
           )}
           <Button
             text={buttonText}

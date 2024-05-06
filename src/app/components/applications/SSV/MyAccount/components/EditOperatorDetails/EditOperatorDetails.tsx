@@ -21,7 +21,7 @@ import { EContractName } from '~app/model/contracts.model';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleOperator } from '~app/model/processes.model';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const EditOperatorDetails = () => {

@@ -7,7 +7,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const CreateValidator = () => {

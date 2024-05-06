@@ -6,10 +6,10 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { BULK_FLOWS } from '~app/model/processes.model';
-import ErrorButton from '~app/atomics/ErrorButton';
+import ErrorButton from '~app/atomicComponents/ErrorButton';
 
 type FlowData = {
   title: string;

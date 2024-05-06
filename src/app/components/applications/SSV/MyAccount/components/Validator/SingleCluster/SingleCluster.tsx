@@ -23,7 +23,7 @@ import ValidatorsList
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 
 const ValidatorsWrapper = styled.div`

@@ -13,7 +13,7 @@ import { getIsDarkMode } from '~app/redux/appState.slice';
 import { currentNetworkName } from '~root/providers/networkInfo.provider';
 import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const RequestForSsv = () => {

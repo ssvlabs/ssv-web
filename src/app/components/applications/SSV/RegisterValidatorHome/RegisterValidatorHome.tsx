@@ -15,9 +15,9 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 import { ProcessType } from '~app/model/processes.model';
-import SecondaryButton from '~app/atomics/SecondaryButton';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 
 type PreRequisiteType = {
   text: string;

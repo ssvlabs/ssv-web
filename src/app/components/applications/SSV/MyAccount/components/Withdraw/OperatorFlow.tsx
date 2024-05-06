@@ -10,11 +10,11 @@ import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { getOperatorBalance, withdrawRewards } from '~root/services/operator.service';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { SingleOperator } from '~app/model/processes.model';
 import { useStores } from '~app/hooks/useStores';
-import ProcessStore from '../../../../../../common/stores/applications/SsvWeb/Process.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 
 const OperatorFlow = ({ operator }: { operator: IOperator }) => {
   const [inputValue, setInputValue] = useState(0);
@@ -83,9 +83,6 @@ const OperatorFlow = ({ operator }: { operator: IOperator }) => {
             </Grid>
             <Grid item className={classes.MaxButtonText}>SSV</Grid>
           </Grid>
-          {/* <Grid item xs={12} className={classes.BalanceInputDollar}> */}
-          {/*  ~$9485.67 */}
-          {/* </Grid> */}
         </Grid>
       </Grid>
     </Grid>

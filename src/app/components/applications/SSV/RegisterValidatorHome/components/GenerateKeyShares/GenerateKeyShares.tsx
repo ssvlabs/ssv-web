@@ -17,7 +17,7 @@ import { translations } from '~app/common/config';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomics/SecondaryButton';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 type ButtonData = {
   isShow: boolean

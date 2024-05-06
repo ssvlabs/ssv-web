@@ -14,7 +14,7 @@ import { getIsMainnet } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { AlertColor } from '@mui/material/Alert';
 import { useConnectWallet } from '@web3-onboard/react';
-import SecondaryButton from '~app/atomics/SecondaryButton';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Success = () => {

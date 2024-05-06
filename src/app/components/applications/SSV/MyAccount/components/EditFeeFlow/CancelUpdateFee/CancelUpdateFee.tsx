@@ -21,7 +21,7 @@ import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleOperator } from '~app/model/processes.model';
 import { IOperator } from '~app/model/operator.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const CancelUpdateFee = () => {

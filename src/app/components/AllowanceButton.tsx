@@ -12,7 +12,7 @@ import notifyService from '~root/services/notify.service';
 import Spinner from '~app/components/common/Spinner';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import styled from 'styled-components';
-import PrimaryButton from '~app/atomics/PrimaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Container = styled.div`
@@ -42,7 +42,7 @@ const ProgressStepsInner = styled.div`
 `;
 
 
-const Step = styled.div<{ isCurrent: boolean, isFinished?: boolean }>`
+const Step = styled.div<{ isCurrent: boolean, hasFinished?: boolean }>`
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -53,8 +53,8 @@ const Step = styled.div<{ isCurrent: boolean, isFinished?: boolean }>`
                              isCurrent,
                          }) => isCurrent ? theme.colors.primarySuccessRegularOpacity : theme.colors.gray10};
     border: ${({ theme, isCurrent }) => `1px solid ${isCurrent ? theme.colors.primarySuccessDark : theme.colors.gray30}`};
-    ${({ isFinished }) => {
-        if (isFinished) {
+    ${({ hasFinished }) => {
+        if (hasFinished) {
             return {
                 border: 'none',
                 backgroundSize: 'contain',
@@ -196,7 +196,7 @@ const AllowanceButton = ({
         <ProgressStepsWrapper>
           <ProgressStepsInner>
             <Step
-              isFinished={hasGotAllowanceApproval}
+              hasFinished={hasGotAllowanceApproval}
               isCurrent={!hasGotAllowanceApproval}>
               {!hasGotAllowanceApproval && <StepText>1</StepText>}
             </Step>

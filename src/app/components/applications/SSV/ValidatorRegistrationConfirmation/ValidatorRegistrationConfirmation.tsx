@@ -83,7 +83,8 @@ const ValidatorRegistrationConfirmation = () => {
    setIsLoading(true);
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
-    const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration({ accountAddress, isContractWallet }) : await validatorStore.addNewValidator({ accountAddress, isContractWallet });
+    const response = await validatorStore.addNewValidator({ accountAddress, isContractWallet, isBulk: validatorStore.isMultiSharesMode,
+      operators: Object.values(operatorStore.selectedOperators) });
     if (response && !isContractWallet) {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {

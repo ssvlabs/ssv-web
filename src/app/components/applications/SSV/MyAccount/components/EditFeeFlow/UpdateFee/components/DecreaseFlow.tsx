@@ -18,6 +18,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
+import LinkText from '~app/components/common/LinkText';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const stores = useStores();
@@ -64,7 +65,12 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
           <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee}/>
           {!updated && <Grid item className={classes.Notice}>
             <Grid item className={classes.BulletsWrapper}>
-              {Number(newFee) === 0 ? 'Please note that operators who have set their fee to 0 will not have the option to increase or modify their fee in the future.' : 'Keep in mind that the process of increasing your fee is different than decreasing it, and returning back to your current fee in the future would take longer. Read more on fee changes'}
+              {Number(newFee) === 0 ?
+                <div>Please note that operators who have set their fee to 0 will not have the option to increase or
+                  modify their fee in the future.'</div> :
+                <div>Keep in mind that the process of increasing your fee is different than decreasing it, and
+                  returning back to your current fee in the future would take longer. Read more on <LinkText link={config.links.SSV_UPDATE_FEE_DOCS} textSize={14}
+                    text={'fee changes'}/></div>}
             </Grid>
           </Grid>}
           <PrimaryButton text={buttonText} isLoading={isLoading} onClick={onUpdateFeeHandle} size={ButtonSize.XL}/>

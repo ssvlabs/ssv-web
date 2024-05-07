@@ -1,26 +1,28 @@
-import  { useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
-import { useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { observer } from 'mobx-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
-import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
-import { SingleOperator } from '~app/model/processes.model';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import {
+  useStyles,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
+import { SingleOperator } from '~app/model/processes.model';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
@@ -32,13 +34,11 @@ const CancelUpdateFee = () => {
   const operator: IOperator = process.item;
   const [futureFee, setFutureFee] = useState(0);
   const [successPage, showSuccessPage] = useState(false);
-  const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
 
   const cancelUpdateProcess = async () => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
-    dispatch(setIsLoading(true));
     const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
     if (response) {
       // @ts-ignore
@@ -49,7 +49,6 @@ const CancelUpdateFee = () => {
       });
       showSuccessPage(true);
     }
-    dispatch(setIsLoading(false));
   };
 
   const backToMyAccount = () => {
@@ -90,10 +89,10 @@ const CancelUpdateFee = () => {
             </Grid>
           </Grid>
           <PrimaryButton
-            disable={false}
-            children={'Back to My Account'}
-            submitFunction={backToMyAccount}
-            wrapperClass={classes.BackToMyAccount}
+            isDisabled={false}
+            text={'Back to My Account'}
+            onClick={backToMyAccount}
+            size={ButtonSize.XL}
           />
         </Grid>
       </Dialog>
@@ -116,10 +115,10 @@ const CancelUpdateFee = () => {
           <b>Declaring a new fee</b> will reset the current <br />
           process and start the process anew.
         </Grid>
-        <PrimaryButton wrapperClass={classes.FirstButton} disable={false} children={'Cancel Update Fee'}
-          submitFunction={cancelUpdateProcess} />
-        <PrimaryButton withoutLoader wrapperClass={classes.SecondButton} disable={false} children={'Declare a New Fee'}
-          submitFunction={declareNewFee} />
+        <PrimaryButton isDisabled={false} text={'Cancel Update Fee'}
+                       onClick={cancelUpdateProcess} size={ButtonSize.XL} />
+        <PrimaryButton isDisabled={false} text={'Declare a New Fee'}
+                       onClick={declareNewFee} size={ButtonSize.XL} />
       </Grid>
     </Dialog>
   );

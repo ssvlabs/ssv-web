@@ -2,44 +2,41 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
-import Button from '~app/components/common/Button';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import ErrorMessage from '~app/components/common/ErrorMessage';
-import BorderScreen from '~app/components/common/BorderScreen';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import FundingSummary from '~app/components/common/FundingSummary';
-import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import AllowanceButton from '~app/components/AllowanceButton';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
 import {
   useStyles,
 } from '~app/components/applications/SSV/ValidatorRegistrationConfirmation/ValidatorRegistrationConfirmation.styles';
-import OperatorDetails
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
+import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
+import FundingSummary from '~app/components/common/FundingSummary';
+import LinkText from '~app/components/common/LinkText';
+import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
-import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
+import { isEqualsAddresses } from '~lib/utils/strings';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
-  const dispatch = useAppDispatch();
   const isContractWallet = useAppSelector(getIsContractWallet);
   const accountAddress = useAppSelector(getAccountAddress);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -53,6 +50,7 @@ const ValidatorRegistrationConfirmation = () => {
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
+  const [isLoading, setIsLoading] = useState(false);
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
@@ -81,15 +79,17 @@ const ValidatorRegistrationConfirmation = () => {
   }, [isMainnet, isChecked]);
 
   const onRegisterValidatorClick = async () => {
-    dispatch(setIsLoading(true));
+   setIsLoading(true);
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
-    const response = validatorStore.isMultiSharesMode ? await validatorStore.bulkRegistration({ accountAddress, isContractWallet }) : await validatorStore.addNewValidator({ accountAddress, isContractWallet });
+    const response = await validatorStore.addNewValidator({ accountAddress, isContractWallet, isBulk: validatorStore.isMultiSharesMode,
+      operators: Object.values(operatorStore.selectedOperators) });
     if (response && !isContractWallet) {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
       setActionButtonText(actionButtonDefaultText);
     }
+    setIsLoading(false);
   };
 
   const TotalSection = <Grid container>
@@ -116,10 +116,10 @@ const ValidatorRegistrationConfirmation = () => {
 
     <Grid container>
       <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-        <Button
+        <AllowanceButton
           withAllowance
+          isLoading={isLoading}
           text={actionButtonText}
-          testId={'confirm-button'}
           onClick={onRegisterValidatorClick}
           disable={registerButtonDisabled}
           totalAmount={totalAmountOfSsv.toString()}

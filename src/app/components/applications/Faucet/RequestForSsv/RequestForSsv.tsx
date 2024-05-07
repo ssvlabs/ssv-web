@@ -1,19 +1,20 @@
-import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import  { useState, useRef, useEffect } from 'react';
+import Grid from '@mui/material/Grid';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import config from '~app/common/config';
-import TextInput from '~app/components/common/TextInput';
 import translations from '~app/common/config/translations';
-import InputLabel from '~app/components/common/InputLabel';
-import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode, setIsLoading } from '~app/redux/appState.slice';
+import BorderScreen from '~app/components/common/BorderScreen';
+import InputLabel from '~app/components/common/InputLabel';
+import TextInput from '~app/components/common/TextInput';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsDarkMode } from '~app/redux/appState.slice';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 import { currentNetworkName } from '~root/providers/networkInfo.provider';
 import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
-import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 
 const RequestForSsv = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const RequestForSsv = () => {
   const [buttonText, setButtonText] = useState('Request');
   const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
   const [amountToTransfer, setAmountToTransfer] = useState(undefined);
-  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -43,21 +44,21 @@ const RequestForSsv = () => {
   const requestForSSV = async () => {
     setError('');
     setButtonText('Requesting...');
-    dispatch(setIsLoading(true));
+    setIsLoading(true);
     const response = await requestSsvFromFaucet({ address: accountAddress });
     if (!response.status) {
       if (response.type === translations.FAUCET.FAUCET_DEPLETED) {
-        dispatch(setIsLoading(false));
+        setIsLoading(false);
         navigate(config.routes.FAUCET.DEPLETED);
       } else {
         setError(translations.FAUCET.REACHED_MAX_TRANSACTIONS);
         setReachedMaxTransactionPerDay(true);
-        dispatch(setIsLoading(false));
+        setIsLoading(false);
         setButtonText('Request');
       }
       return;
     }
-    dispatch(setIsLoading(false));
+    setIsLoading(false);
     navigate(config.routes.FAUCET.SUCCESS);
     setButtonText('Request');
   };
@@ -93,8 +94,8 @@ const RequestForSsv = () => {
             onVerify={() => setDisabled(false)}
             sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
           />
-          <PrimaryButton wrapperClass={classes.SubmitButton} children={buttonText} submitFunction={requestForSSV}
-                         disable={isMainnet || disabled || reachedMaxTransactionPerDay} />
+          <PrimaryButton text={buttonText} onClick={requestForSSV}
+                         isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

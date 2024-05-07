@@ -8,7 +8,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
-import Button from '~app/components/common/Button/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
@@ -23,6 +22,7 @@ import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
 import { reactivateCluster } from '~root/services/cluster.service';
+import AllowanceButton from '~app/components/AllowanceButton';
 
 const options = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -156,8 +156,7 @@ const ReactivateCluster = () => {
               <Typography className={classes.SsvPrice}
                           style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
             </Grid>
-            <Button
-              withAllowance
+            <AllowanceButton
               text={'Next'}
               onClick={reactivateClusterHandler}
               disable={disableCondition}

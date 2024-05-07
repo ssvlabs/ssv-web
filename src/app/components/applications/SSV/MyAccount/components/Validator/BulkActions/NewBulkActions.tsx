@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { BulkValidatorData } from '~app/model/validator.model';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import ValidatorsList
@@ -12,6 +11,8 @@ import Spinner from '~app/components/common/Spinner';
 import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster } from '~app/model/processes.model';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const HeaderWrapper = styled.div`
     display: flex;
@@ -138,7 +139,7 @@ const NewBulkActions = ({ title, nextStep, onCheckboxClickHandler, selectedValid
           <ValidatorsList withoutSettings setIsLoading={setIsLoading} isLoading={isLoading} checkboxTooltipTitle={tooltipTitleComponent(checkboxTooltipTitle)} maxValidatorsCount={maxValidatorsCount} onCheckboxClickHandler={onCheckboxClickHandler}
                           selectedValidators={selectedValidators} fillSelectedValidators={fillSelectedValidators}/>
         </HeaderWrapper>
-        <PrimaryButton children={'Next'} disable={disableButtonCondition} submitFunction={nextStep}/>
+        <PrimaryButton text={'Next'} isDisabled={disableButtonCondition} onClick={nextStep} size={ButtonSize.XL}/>
       </ValidatorsWrapper>
     </Wrapper>
   );

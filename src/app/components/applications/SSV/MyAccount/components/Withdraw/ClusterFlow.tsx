@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
@@ -14,8 +13,17 @@ import { depositOrWithdraw, getClusterRunWay } from '~root/services/cluster.serv
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
+import ErrorButton from '~app/atomicComponents/ErrorButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import CheckBox from '~app/components/common/CheckBox';
+import { ButtonSize } from '~app/enums/Button.enum';
 
-const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollateral, liquidationCollateralPeriod }: { cluster: ICluster; callbackAfterExecution: Function; minimumLiquidationCollateral: number; liquidationCollateralPeriod: number; }) => {
+const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollateral, liquidationCollateralPeriod }: {
+  cluster: ICluster;
+  callbackAfterExecution: Function;
+  minimumLiquidationCollateral: number;
+  liquidationCollateralPeriod: number;
+}) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -34,12 +42,18 @@ const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollat
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
 
   useEffect(() => {
-    if (getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, liquidationCollateralPeriod, minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && hasUserAgreed) {
+    if (getClusterRunWay({
+      ...cluster,
+      balance: toWei(newBalance),
+    }, liquidationCollateralPeriod, minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && hasUserAgreed) {
       setHasUserAgreed(false);
     }
 
     const balance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
-    const runWay = getClusterRunWay({ ...cluster, balance: toWei(balance) }, liquidationCollateralPeriod, minimumLiquidationCollateral);
+    const runWay = getClusterRunWay({
+      ...cluster,
+      balance: toWei(balance),
+    }, liquidationCollateralPeriod, minimumLiquidationCollateral);
     const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
 
     setNewBalance(balance);
@@ -92,57 +106,69 @@ const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollat
     setWithdrawValue(Number(clusterBalance));
   }
 
+  const Button = isClusterLiquidation ? ErrorButton : PrimaryButton;
+
   const secondBorderScreen = [(
-      <Grid item container>
-        <Grid container item xs={12} className={classes.BalanceWrapper}>
-          <Grid item container xs={12}>
-            <Grid item xs={6}>
-              <IntegerInput
-                  type="number"
-                  value={withdrawValue}
-                  placeholder={'0.0'}
-                  onChange={inputHandler}
-                  className={classes.Balance}
-              />
+    <Grid item container>
+      <Grid container item xs={12} className={classes.BalanceWrapper}>
+        <Grid item container xs={12}>
+          <Grid item xs={6}>
+            <IntegerInput
+              type="number"
+              value={withdrawValue}
+              placeholder={'0.0'}
+              onChange={inputHandler}
+              className={classes.Balance}
+            />
+          </Grid>
+          <Grid item container xs={6} className={classes.MaxButtonWrapper}>
+            <Grid item onClick={maxValue} className={classes.MaxButton}>
+              MAX
             </Grid>
-            <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-              <Grid item onClick={maxValue} className={classes.MaxButton}>
-                MAX
-              </Grid>
-              <Grid item className={classes.MaxButtonText}>SSV</Grid>
-            </Grid>
+            <Grid item className={classes.MaxButtonText}>SSV</Grid>
           </Grid>
         </Grid>
       </Grid>
+    </Grid>
   ), (
-      <NewRemainingDays
-        withdrawState
-        isInputFilled={!!withdrawValue}
-        cluster={{ ...cluster, newRunWay: !withdrawValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, liquidationCollateralPeriod, minimumLiquidationCollateral) }} />
+    <NewRemainingDays
+      withdrawState
+      isInputFilled={!!withdrawValue}
+      cluster={{
+        ...cluster,
+        newRunWay: !withdrawValue ? undefined : getClusterRunWay({
+          ...cluster,
+          balance: toWei(newBalance),
+        }, liquidationCollateralPeriod, minimumLiquidationCollateral),
+      }}/>
   )];
 
   return (
-      <BorderScreen
-          marginTop={0}
-          withoutNavigation
-          header={'Withdraw'}
-          body={secondBorderScreen}
-          bottom={[
-              <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-                <Button
-                  text={buttonText}
-                  withAllowance={false}
-                  onClick={withdrawSsv}
-                  errorButton={isClusterLiquidation}
-                  isLoading={isLoading}
-                  checkboxText={showCheckBox ? checkBoxText : null}
-                  checkBoxCallBack={showCheckBox ? () => setHasUserAgreed(!hasUserAgreed) : null}
-                  isCheckboxChecked={hasUserAgreed}
-                  disable={buttonDisableCondition || isLoading}
-              />
-              </TermsAndConditionsCheckbox>,
-          ]}
-      />
+    <BorderScreen
+      marginTop={0}
+      withoutNavigation
+      header={'Withdraw'}
+      body={secondBorderScreen}
+      bottom={[
+        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
+                                    isMainnet={isMainnet}>
+          <div>
+          {showCheckBox && (
+              <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText} isChecked={hasUserAgreed}/>
+          )}
+          <Button
+            text={buttonText}
+            onClick={withdrawSsv}
+            isLoading={isLoading}
+            // checkboxText={showCheckBox ? checkBoxText : null}
+            // checkBoxCallBack={showCheckBox ? () => setHasUserAgreed(!hasUserAgreed) : null}
+            // isCheckboxChecked={hasUserAgreed}
+            isDisabled={buttonDisableCondition}
+            size={ButtonSize.XL}/>
+          </div>
+        </TermsAndConditionsCheckbox>,
+      ]}
+    />
   );
 };
 

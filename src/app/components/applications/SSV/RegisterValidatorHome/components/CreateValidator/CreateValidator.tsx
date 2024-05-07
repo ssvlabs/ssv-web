@@ -1,13 +1,14 @@
 
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import Button from '~app/components/common/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const CreateValidator = () => {
   const classes = useStyles();
@@ -38,9 +39,9 @@ const CreateValidator = () => {
             Please note to backup your newly created validator files, you will need them for our setup.
           </Grid>
           <Grid item container xs={12}>
-            <Grid item className={classes.rhinoImage} />
+            <Grid item className={classes.rhinoImage}/>
           </Grid>
-          <Button text={'Visit Ethereum Launchpad'} onClick={redirectToLaunchpad} disable={false} />
+          <PrimaryButton text={'Visit Ethereum Launchpad'} onClick={redirectToLaunchpad} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

@@ -4,10 +4,11 @@ import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getStrategyName, getRestrictedUserGeo } from '~app/redux/appState.slice';
+import { getRestrictedUserGeo, getStrategyName } from '~app/redux/appState.slice';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const CountryNotSupported = () => {
   const classes = useStyles();
@@ -40,7 +41,7 @@ const CountryNotSupported = () => {
             )}
           />
           <Grid container item className={classes.ImageWrapper} />
-          <SecondaryButton noCamelCase submitFunction={openMarketingSite} children={'Learn more about the SSV network'} />
+          <SecondaryButton onClick={openMarketingSite} text={'Learn more about the SSV network'} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

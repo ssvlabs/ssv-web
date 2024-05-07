@@ -1,25 +1,29 @@
-
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import config from '~app/common/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import {
+  IncreaseFlowProps,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import {
+  StepperSteps,
+  useStyles,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import BorderScreen from '~app/components/common/BorderScreen';
+import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
     const backToMyAccount = async () => {
-        dispatch(setIsLoading(true));
+        setIsLoading(true);
         setTimeout(() => {
-            dispatch(setIsLoading(false));
+            setIsLoading(false);
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }, 5000);
     };
@@ -50,7 +54,7 @@ const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
                 <ChangeFeeDisplayValues currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
             </Grid>
             <Grid item container className={classes.ButtonsWrapper}>
-              <PrimaryButton disable={false} children={'Back to My Account'} submitFunction={backToMyAccount} />
+              <PrimaryButton isLoading={isLoading} text={'Back to My Account'} onClick={backToMyAccount} size={ButtonSize.XL}/>
             </Grid>
           </Grid>,
         ]}

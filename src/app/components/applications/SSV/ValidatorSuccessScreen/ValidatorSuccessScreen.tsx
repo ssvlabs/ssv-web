@@ -9,19 +9,18 @@ import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import { longStringShorten, truncateText } from '~lib/utils/strings';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const ValidatorSuccessScreen = () => {
   const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
-  const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
   const timeoutRef = useRef<any>(null);
   const stores = useStores();
@@ -31,11 +30,12 @@ const ValidatorSuccessScreen = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const operators = Object.values(operatorStore.selectedOperators);
   const clusterHash = getClusterHash(operators, accountAddress);
+  const [isLoading, setIsLoading] = useState(false);
 
   const redirectTo = async () => {
-    dispatch(setIsLoading(true));
+    setIsLoading(true);
     setTimeout(() => {
-      dispatch(setIsLoading(false));
+      setIsLoading(false);
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     }, 5000);
 
@@ -97,7 +97,7 @@ const ValidatorSuccessScreen = () => {
               })}
             </Grid>
             <Grid item className={classes.Text}>Your cluster operators have been notified and will start your validator operation instantly.</Grid>
-            <PrimaryButton children={buttonText} submitFunction={redirectTo} />
+            <PrimaryButton text={buttonText} onClick={redirectTo} size={ButtonSize.XL} isLoading={isLoading} />
           </Grid>,
         ]}
       />

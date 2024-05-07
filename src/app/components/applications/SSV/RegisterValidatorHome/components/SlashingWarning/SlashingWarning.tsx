@@ -7,13 +7,14 @@ import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const SlashingWarning = () => {
   const classes = useStyles();
@@ -58,9 +59,9 @@ const SlashingWarning = () => {
           toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} isChecked={hasUserAgreed}
           text={'I understand that running my validator simultaneously in multiple setups will cause slashing to my validator'}
         />
-        <PrimaryButton disable={!hasUserAgreed} children={'Next'} dataTestId={'register-validator'}
-                       submitFunction={goToConfirmation}
-        />
+        <PrimaryButton isDisabled={!hasUserAgreed} text={'Next'}
+                       onClick={goToConfirmation}
+                       size={ButtonSize.XL}/>
       </Grid>,
     ]}
   />;

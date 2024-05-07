@@ -3,13 +3,14 @@ import Grid from '@mui/material/Grid';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
 import { translations } from '~app/common/config';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Balance/Balance.styles';
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 import { fromWei } from '~root/services/conversions.service';
 import { ICluster } from '~app/model/cluster.model';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdraw }: { cluster: ICluster; moveToReactivateCluster: Function; moveToDeposit: Function; moveToWithdraw: Function }) => {
   const classes = useStyles();
@@ -48,15 +49,15 @@ const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdr
       {cluster.isLiquidated ?
         (
           <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-            <PrimaryButton children={'Reactivate Cluster'} submitFunction={moveToReactivateCluster} />
+            <PrimaryButton text={'Reactivate Cluster'} onClick={moveToReactivateCluster} size={ButtonSize.XL}/>
           </Grid>
         ) : (
           <Grid container item className={classes.ActionButtonWrapper}>
             <Grid item xs>
-              <PrimaryButton children={'Deposit'} submitFunction={moveToDeposit} />
+              <PrimaryButton text={'Deposit'} onClick={moveToDeposit} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
-              <SecondaryButton children={'Withdraw'} submitFunction={moveToWithdraw} />
+              <SecondaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL}/>
             </Grid>
           </Grid>
         )}

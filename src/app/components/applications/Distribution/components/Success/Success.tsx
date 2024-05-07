@@ -5,7 +5,6 @@ import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
 import { getTransactionLink } from '~root/providers/networkInfo.provider';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -15,6 +14,8 @@ import { getIsMainnet } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { AlertColor } from '@mui/material/Alert';
 import { useConnectWallet } from '@web3-onboard/react';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const Success = () => {
   const classes = useStyles();
@@ -54,7 +55,7 @@ const Success = () => {
           <Grid className={classes.LinkWrapper}>
             <LinkText text={'View Transaction on Etherscan'} link={getTransactionLink(txHash)} />
           </Grid>
-          <SecondaryButton submitFunction={openMarketingSite} children={'Learn more about the SSV network'} />
+          <SecondaryButton onClick={openMarketingSite} text={'Learn more about the SSV network'} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useStores } from '~app/hooks/useStores';
@@ -16,7 +16,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
 
     useEffect(() => setCurrentCountry(countryWithAlpha(currentCountry)), [metadataStore.locationsData.toString()]);
 
-    const customFilterOptions = (options: any, state: any) => {
+    const customFilterOptions = (_options: any, state: any) => {
         const inputValue = state.inputValue.toLowerCase();
         return metadataStore.locationsData.filter(d => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map(d => `${d.name} (${d['alpha-3']})`);
     };

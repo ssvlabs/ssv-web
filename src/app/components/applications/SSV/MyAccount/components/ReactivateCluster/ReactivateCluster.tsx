@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
@@ -55,7 +55,7 @@ const ReactivateCluster = () => {
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
 
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+  const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee,
     networkFee: ssvStore.networkFee,
     liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,

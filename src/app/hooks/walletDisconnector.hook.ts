@@ -13,7 +13,7 @@ import SsvStore from '../common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '../common/stores/applications/SsvWeb/Operator.store';
 
 const useWalletDisconnector = () => {
-  const [_, __, disconnect] = useConnectWallet();
+  const [,, disconnect] = useConnectWallet();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const label = useAppSelector(getWalletLabel);

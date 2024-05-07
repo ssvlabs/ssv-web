@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -10,9 +10,12 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { withdrawRewards } from '~root/services/operator.service';
+import { getOperatorBalance, withdrawRewards } from '~root/services/operator.service';
+import { useStores } from '~app/hooks/useStores';
+import { SingleOperator } from '~app/model/processes.model';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 
-const OperatorFlow = ({ operator, callbackAfterExecution }: { operator: IOperator; callbackAfterExecution: Function }) => {
+const OperatorFlow = ({ operator }: { operator: IOperator }) => {
   const [inputValue, setInputValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -21,6 +24,15 @@ const OperatorFlow = ({ operator, callbackAfterExecution }: { operator: IOperato
   const isContractWallet = useAppSelector(getIsContractWallet);
   const classes = useStyles();
   const operatorBalance = operator.balance ?? 0;
+  const stores = useStores();
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator = processStore.getProcess;
+
+  const callbackAfterExecution = async () => {
+    const balance = await getOperatorBalance({ id: operator.id });
+    process.item = { ...process.item, balance };
+  };
+
 
   const withdrawSsv = async () => {
     setIsLoading(true);

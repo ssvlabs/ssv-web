@@ -1,4 +1,3 @@
-import React from 'react';
 import Grid from '@mui/material/Grid';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -14,7 +13,7 @@ const Welcome = () => {
     const classes = useStyles();
     const accountAddress = useAppSelector(getAccountAddress);
     const { networkId } = getStoredNetwork();
-    const [_, connect] = useConnectWallet();
+    const [, connect] = useConnectWallet();
     const titleNetwork = networkId === MAINNET_NETWORK_ID ? 'Mainnet' : 'Testnet';
     const dispatch = useAppDispatch();
 

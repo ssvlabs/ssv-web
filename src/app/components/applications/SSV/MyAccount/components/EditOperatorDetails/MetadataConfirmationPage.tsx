@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';

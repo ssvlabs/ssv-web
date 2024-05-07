@@ -1,27 +1,26 @@
+/* eslint-disable no-async-promise-executor */
 import { action, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import BaseStore from '~app/common/stores/BaseStore';
-import { fromWei } from '~root/services/conversions.service';
-import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import { store } from '~app/store';
+import { getContractByName } from '~root/services/contracts.service';
+import { fromWei } from '~root/services/conversions.service';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
-class SsvStore extends BaseStore {
+class SsvStore {
   accountInterval: any = null;
   feesInterval: any = null;
   // Balances
-  walletSsvBalance: number = 0;
-  approvedAllowance: number = 0;
+  walletSsvBalance = 0;
+  approvedAllowance = 0;
 
   // Calculation props
-  networkFee: number = 0;
-  liquidationCollateralPeriod: number = 0;
-  minimumLiquidationCollateral: number = 0;
+  networkFee = 0;
+  liquidationCollateralPeriod = 0;
+  minimumLiquidationCollateral = 0;
 
   constructor() {
-    super();
     makeObservable(this, {
       initUser: action.bound,
       networkFee: observable,
@@ -36,7 +35,7 @@ class SsvStore extends BaseStore {
       clearUserSyncInterval: action.bound,
       liquidationCollateralPeriod: observable,
       getBalanceFromSsvContract: action.bound,
-      minimumLiquidationCollateral: observable,
+      minimumLiquidationCollateral: observable
     });
   }
 
@@ -105,7 +104,7 @@ class SsvStore extends BaseStore {
    * Request for MAX_WEI_AMOUNT, user can change so actual approved allowance is saved
    */
   async requestAllowance(callBack?: CallableFunction): Promise<any> {
-    return new Promise((async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const ssvContract = getContractByName(EContractName.TOKEN_SETTER);
         if (!ssvContract) {
@@ -127,7 +126,7 @@ class SsvStore extends BaseStore {
         this.approvedAllowance = 0;
         reject();
       }
-    }));
+    });
   }
 
   async getNetworkFeeAndLiquidationCollateral() {
@@ -150,4 +149,5 @@ class SsvStore extends BaseStore {
   }
 }
 
+export const ssvStore = new SsvStore();
 export default SsvStore;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
@@ -14,7 +14,7 @@ import {
   ValidatorType,
 } from '~root/services/keyShare.service';
 import { useStores } from '~app/hooks/useStores';
-import { equalsAddresses } from '~lib/utils/strings';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
 import WarningBox from '~app/components/common/WarningBox';
@@ -115,7 +115,7 @@ const KeyShareFlow = () => {
           operatorStore.setClusterSize(selectedOperators.length);
         }
 
-        for (let keyShare of shares) {
+        for (const keyShare of shares) {
           if (keyShare.data.operators?.some((operatorData: { id: number, operatorKey: string }) => {
             const selectedOperator = Object.values(operatorStore.selectedOperators).find((selected: IOperator) => selected.id === operatorData.id);
             return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
@@ -130,6 +130,7 @@ const KeyShareFlow = () => {
     }
 
     async function storeKeyShareData(keyShareMulti: KeyShares) {
+      // eslint-disable-next-line no-useless-catch
       try {
         validatorStore.setProcessedKeyShare(keyShareMulti);
         const keyShares = keyShareMulti.list();
@@ -144,10 +145,11 @@ const KeyShareFlow = () => {
           return;
         }
 
+        // eslint-disable-next-line no-async-promise-executor
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
             const res = await getValidator(validator.publicKey);
-            if (res && equalsAddresses(res.owner_address, accountAddress)) {
+            if (res && isEqualsAddresses(res.owner_address, accountAddress)) {
               validators[`0x${res.public_key}`].registered = true;
             }
             if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
@@ -184,7 +186,7 @@ const KeyShareFlow = () => {
             warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
             hasError = true;
           }
-          if (operator.address_whitelist && !equalsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST){
+          if (operator.address_whitelist && !isEqualsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST){
             warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
             setHasPermissionedOperator(true);
             hasError = true;

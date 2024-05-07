@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,7 @@ import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettin
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
-import { getIsMainnet } from '~app/redux/wallet.slice';
+import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppSelector } from '~app/hooks/redux.hook';
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
@@ -40,6 +40,7 @@ const OperatorAccessSettings = () => {
     const classes = useStyles({ isPermissionedOperator });
     const isMainnet = useAppSelector(getIsMainnet);
     const [isChecked, setIsChecked] = useState(false);
+    const isContractWallet = useAppSelector(getIsContractWallet);
 
     const changeAddressHandler = (e: any) => {
         const { value } = e.target;
@@ -48,7 +49,7 @@ const OperatorAccessSettings = () => {
     };
 
     const updateAddressHandler = async () => {
-        const res = await operatorStore.updateOperatorAddressWhitelist(operator.id, address);
+        const res = await operatorStore.updateOperatorAddressWhitelist({ operator, address, isContractWallet });
         if (res) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }

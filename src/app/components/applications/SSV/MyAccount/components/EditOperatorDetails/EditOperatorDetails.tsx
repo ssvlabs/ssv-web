@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Typography } from '@mui/material';
@@ -53,7 +53,7 @@ const EditOperatorDetails = () => {
     const isNotValidity = metadataStore.validateOperatorMetaData();
     setButtonDisable(isNotValidity);
     if (!isNotValidity) {
-      let payload = metadataStore.createMetadataPayload();
+      const payload = metadataStore.createMetadataPayload();
       let rawDataToValidate: any = [];
       fieldsToValidateSignature.forEach(field => {
         if (payload[field]) {
@@ -77,7 +77,7 @@ const EditOperatorDetails = () => {
       }
       const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
       if (updateOperatorResponse.data) {
-        let selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
+        const selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
         if (selectedOperator) {
           operator = { ...operator, ...updateOperatorResponse.data };
           Object.assign(selectedOperator, updateOperatorResponse.data);

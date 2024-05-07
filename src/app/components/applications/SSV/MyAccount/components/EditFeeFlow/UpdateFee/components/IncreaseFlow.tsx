@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
@@ -8,6 +8,11 @@ import FeeUpdated from '~app/components/applications/SSV/MyAccount/components/Ed
 import WaitingPeriod from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/WaitingPeriod';
 import PendingExpired from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExpired';
 import PendingExecution from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleOperator } from '~app/model/processes.model';
+import { IOperator } from '~app/model/operator.model';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 export type IncreaseFlowProps = {
     newFee: string | number;
@@ -37,7 +42,11 @@ enum IncreaseSteps {
 const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : UpdateFeeProps) => {
     const stores = useStores();
     const operatorStore: OperatorStore = stores.Operator;
+    const processStore: ProcessStore = stores.Process;
+    const process: SingleOperator = processStore.getProcess;
+    const operator: IOperator = process.item;
     const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
+    const isContractWallet = useAppSelector(getIsContractWallet);
 
     useEffect(() => {
         getCurrentState();
@@ -63,6 +72,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
                 setCurrentStep(IncreaseSteps.WAITING);
             } else if (todayDate > endPendingStateTime) {
                 setCurrentStep(IncreaseSteps.EXPIRED);
+            // eslint-disable-next-line no-dupe-else-if
             } else if (todayDate > endPendingStateTime ) {
                 if (daysFromEndPendingStateTime >= 3){
                     declareNewFeeHandler();
@@ -76,7 +86,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
     };
 
     const cancelUpdateFee = async () => {
-        const res = await operatorStore.cancelChangeFeeProcess(operatorStore.processOperatorId as number);
+        const res = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
         res && setCurrentStep(IncreaseSteps.CANCEL);
     };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +44,9 @@ const RemoveOperator = () => {
 
   const submitForm = async () => {
     dispatch(setIsLoading(true));
-    const isRemoved = await operatorStore.removeOperator(Number(process.item.id));
+    const isRemoved = await operatorStore.removeOperator({
+      operatorId: Number(process.item.id), isContractWallet,
+    });
     dispatch(setIsLoading(false));
     if (isRemoved) {
       myAccountStore.getOwnerAddressOperators({ forcePage: 1 }).finally(() => {
@@ -57,7 +59,7 @@ const RemoveOperator = () => {
 
   return (
     <Grid container item>
-      <NewWhiteWrapper type={1} header={'Operator Details'} />
+      <NewWhiteWrapper type={1} header={'Operator Details'}/>
       <Grid className={classes.BodyWrapper}>
         <BorderScreen
           marginTop={0}
@@ -79,7 +81,7 @@ const RemoveOperator = () => {
                 future.
               </Grid>
               <CheckBox toggleIsChecked={checkboxHandler} isChecked={isChecked}
-                        text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'} />
+                        text={'I understand that by removing my operator I am potentially putting all of my managed validators at risk.'}/>
 
               <PrimaryButton disable={!isChecked} errorButton children={'Remove Operator'} submitFunction={submitForm}/>
             </Grid>,

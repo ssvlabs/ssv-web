@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
@@ -19,7 +19,7 @@ import config from '~app/common/config';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 
 const ConnectWalletButton = () => {
-  const [{  wallet, connecting }, connect] = useConnectWallet();
+  const [{ wallet, connecting }, connect] = useConnectWallet();
   const [{ connectedChain }] = useSetChain();
   const dispatch = useAppDispatch();
   const storedWalletLabel = useAppSelector(getWalletLabel);
@@ -33,7 +33,7 @@ const ConnectWalletButton = () => {
   const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
     dispatch(setIsShowSsvLoader(true));
     dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
-    wallet && await dispatch(checkIfWalletIsContractAction(wallet.provider));
+    wallet && (await dispatch(checkIfWalletIsContractAction(wallet.provider)));
     notifyService.init(chain.id);
     const index = getNetworkInfoIndexByNetworkId(Number(chain.id));
     dispatch(setConnectedNetwork(index));
@@ -80,7 +80,6 @@ const ConnectWalletButton = () => {
     icon = '/images/wallets/trezor.svg';
   } else if (storedWalletLabel === 'WalletConnect') {
     icon = '/images/wallets/walletconnect.svg';
-  } else if (storedWalletLabel === 'Ledger') {
   } else {
     icon = '/images/wallets/metamask.svg';
   }
@@ -92,9 +91,12 @@ const ConnectWalletButton = () => {
       {!storedWalletAddress && <Grid item>Connect Wallet</Grid>}
       {storedWalletAddress && (
         <Grid item container>
-          <Grid item><img className={classes.WalletImage} src={icon}
-                          alt={`Connected to ${storedWalletLabel}`}/></Grid>
-          <Grid item className={classes.WalletAddress}>{walletDisplayName(storedWalletAddress)}</Grid>
+          <Grid item>
+            <img className={classes.WalletImage} src={icon} alt={`Connected to ${storedWalletLabel}`} />
+          </Grid>
+          <Grid item className={classes.WalletAddress}>
+            {walletDisplayName(storedWalletAddress)}
+          </Grid>
         </Grid>
       )}
     </Grid>

@@ -13,7 +13,7 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
   prevState?: any,
 }) => {
   try {
-    let tx = await contractMethod(...payload);
+    const tx = await contractMethod(...payload);
     if (tx.hash) {
       store.dispatch(setTxHash(tx.hash));
       store.dispatch(setIsShowTxPendingPopup(true));

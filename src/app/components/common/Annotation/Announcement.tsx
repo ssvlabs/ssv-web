@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { useAppSelector } from '~app/hooks/redux.hook';
 
 const AnnouncementWrapper = styled.div`
     width: 100%;

@@ -1,4 +1,22 @@
-const _stores: Record<string, any> = {};
+import { distributionStore } from './applications/Distribution/Distribution.store';
+import { distributionTestnetStore } from './applications/Distribution/DistributionTestnet.store';
+import { myAccountStore } from './applications/SsvWeb/MyAccount.store';
+import { operatorStore } from './applications/SsvWeb/Operator.store';
+import { operatorMetadataStore } from './applications/SsvWeb/OperatorMetadata.store';
+import { processStore } from './applications/SsvWeb/Process.store';
+import { ssvStore } from './applications/SsvWeb/SSV.store';
+import { validatorStore } from './applications/SsvWeb/Validator.store';
+
+const _stores = {
+  SSV: ssvStore,
+  Process: processStore,
+  Operator: operatorStore,
+  Validator: validatorStore,
+  MyAccount: myAccountStore,
+  Distribution: distributionStore,
+  OperatorMetadata: operatorMetadataStore,
+  DistributionTestnet: distributionTestnetStore
+} as const;
 /**
  * Base store provides singe source of true
  * for keeping all stores instances in one place
@@ -7,14 +25,13 @@ class BaseStore {
   // protected static stores: Record<string, any> = {};
   protected static instance: BaseStore | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor() {
-  }
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor, @typescript-eslint/no-empty-function
+  constructor() {}
 
   /**
    * Return stores registry to use it in provider and context
    */
-  getStores() {
+  getStores(): typeof _stores {
     return _stores;
   }
 
@@ -27,12 +44,13 @@ class BaseStore {
   }
 
   applicationStrategy(): string {
-      if (process.env.REACT_APP_FAUCET_PAGE) {
-          return 'Faucet';
-      } if (process.env.REACT_APP_CLAIM_PAGE) {
-          return 'Distribution';
-      }
-      return 'SsvWeb';
+    if (import.meta.env.VITE_FAUCET_PAGE) {
+      return 'Faucet';
+    }
+    if (import.meta.env.VITE_CLAIM_PAGE) {
+      return 'Distribution';
+    }
+    return 'SsvWeb';
   }
 
   /**
@@ -50,30 +68,15 @@ class BaseStore {
    *
    * @param name
    */
-  getStore(name: string): any {
-    const storeNameParts = name.split('/');
-    const storeName = storeNameParts[storeNameParts.length - 1];
-    if (!_stores[storeName]) {
-      // @ts-ignore
-      const isTest: boolean = window?.Cypress;
-      try {
-        const StoreClass = require(`~app/common/stores/applications/${this.applicationStrategy()}/${isTest ? 'WalletTest' : name}.store`).default;
-        _stores[storeName] = new StoreClass();
-      } catch (e: any) {
-        console.log('error: ', storeName, e.message);
-      }
-    }
-    return _stores[storeName];
+  getStore(name: keyof typeof _stores): any {
+    return _stores[name];
   }
 
   /**
    * Bunch stores loading
    * @param stores
    */
-  preloadStores(stores: string[]): Record<string, any> {
-    stores.map((store: string) => {
-      return this.getStore(store);
-    });
+  preloadStores(): Record<string, any> {
     return this.getStores();
   }
 

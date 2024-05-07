@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { truncateText } from '~lib/utils/strings';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';

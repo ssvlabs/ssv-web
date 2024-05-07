@@ -1,10 +1,10 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import Button from '~app/components/common/Button';
-import { equalsAddresses } from '~lib/utils/strings';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
@@ -56,7 +56,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+  const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: operatorStore.getSelectedOperatorsFee,
     networkFee: ssvStore.networkFee,
     liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
@@ -72,7 +72,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   useEffect(() => {
     try {
-      const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !equalsAddresses(operator.address_whitelist, accountAddress)));
+      const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operator.address_whitelist && (operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !isEqualsAddresses(operator.address_whitelist, accountAddress)));
       setRegisterButtonDisabled((isMainnet && !isChecked) || hasWhitelistedOperator);
     } catch (e: any) {
       setRegisterButtonDisabled(true);

@@ -7,9 +7,9 @@ export interface NavState {
 }
 
 const getInitialState = () => {
-  if (process.env.REACT_APP_FAUCET_PAGE) {
+  if (import.meta.env.VITE_FAUCET_PAGE) {
     return config.routes.FAUCET.ROOT;
-  } if (process.env.REACT_APP_CLAIM_PAGE) {
+  } if (import.meta.env.VITE_CLAIM_PAGE) {
     return config.routes.DISTRIBUTION.ROOT;
   }
   return config.routes.SSV.ROOT;

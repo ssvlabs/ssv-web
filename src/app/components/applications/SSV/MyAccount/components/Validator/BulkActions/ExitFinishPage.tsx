@@ -1,4 +1,4 @@
-import React from 'react';
+
 import styled from 'styled-components';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';

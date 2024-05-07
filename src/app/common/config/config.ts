@@ -18,7 +18,7 @@ const {
 } = distributionHelper(networkId);
 
 const config = {
-  DEBUG: process.env.REACT_APP_DEBUG || false,
+  DEBUG: import.meta.env.VITE_DEBUG || false,
   retry: {
     default: {
       maxAttempts: 5,
@@ -131,11 +131,11 @@ const config = {
     },
   },
   FEATURE: {
-    DOLLAR_CALCULATION: process.env.REACT_APP_SHOULD_CALCULATE_DOLLAR,
+    DOLLAR_CALCULATION: import.meta.env.VITE_SHOULD_CALCULATE_DOLLAR,
     OPERATORS: {
       VALID_KEY_LENGTH: 612,
       SELECT_MINIMUM_OPERATORS: 4,
-      AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
+      AUTO_SELECT: import.meta.env.VITE_FEATURE_AUTO_SELECT_OPERATORS,
     },
   },
   links: {
@@ -147,7 +147,7 @@ const config = {
     DISCORD_LINK: 'https://discord.gg/ssvnetworkofficial',
     TERMS_OF_USE_LINK: 'https://ssv.network/terms-of-use/',
     PRIVACY_POLICY_LINK: 'https://ssv.network/privacy-policy/',
-    LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
+    LINK_SSV_DEV_DOCS: import.meta.env.VITE_LINK_SSV_DEV_DOCS,
     LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
@@ -160,7 +160,7 @@ const config = {
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     // TODO: blox-infra-api calls organization-center, if organization center will be archived, need to update this endpoint
-    COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
+    COMPLIANCE_URL: `${import.meta.env.VITE_BLOX_API}/compliance/countries/restricted`,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ABOUT_UPDATE_FEES: 'https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
@@ -171,8 +171,8 @@ const config = {
   },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {
-      GAS_PRICE: process.env.REACT_APP_GAS_PRICE,
-      GAS_LIMIT: process.env.REACT_APP_GAS_LIMIT,
+      GAS_PRICE: import.meta.env.VITE_GAS_PRICE,
+      GAS_LIMIT: import.meta.env.VITE_GAS_LIMIT,
     },
     CLUSTER_SIZES: {
       QUAD_CLUSTER: 4,
@@ -199,7 +199,7 @@ const config = {
     DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000',
   },
   ONBOARD: {
-    API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
+    API_KEY: import.meta.env.VITE_BLOCKNATIVE_KEY,
     NETWORK_ID: networkId,
     PROJECT_ID: 'c93804911b583e5cacf856eee58655e6',
   },

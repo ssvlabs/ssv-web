@@ -1,10 +1,6 @@
 module.exports = {
   extends: 'airbnb-typescript',
-  plugins: [
-    'react',
-    'jsx-a11y',
-    'import',
-  ],
+  plugins: ['react', 'jsx-a11y', 'import'],
   rules: {
     'prettier/prettier': 0,
     // A temporary hack related to IDE not resolving correct package.json
@@ -27,8 +23,8 @@ module.exports = {
         // NOTE: If this error triggers, either disable it or add
         // your custom components, labels and attributes via these options
         // See https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/label-has-associated-control.md
-        controlComponents: ['Input'],
-      },
+        controlComponents: ['Input']
+      }
     ],
     'jsx-a11y/label-has-for': 0,
     'jsx-a11y/mouse-events-have-key-events': 2,
@@ -85,6 +81,7 @@ module.exports = {
     'comma-dangle': 0,
     'operator-linebreak': 0,
     'no-return-await': 0,
+    '@typescript-eslint/comma-dangle': 0,
     '@typescript-eslint/return-await': 0,
     '@typescript-eslint/indent': 0,
     '@typescript-eslint/camelcase': 0,
@@ -102,35 +99,29 @@ module.exports = {
     '@typescript-eslint/no-unused-expressions': 0,
     '@typescript-eslint/naming-convention': 0,
     '@typescript-eslint/no-unused-vars': 0,
-    '@typescript-eslint/brace-style': 0,
+    '@typescript-eslint/brace-style': 0
   },
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
-    createDefaultProgram: true,
+    createDefaultProgram: true
   },
   settings: {
     'import/resolver': {
       // See https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-575727774 for line below
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        moduleDirectory: ['node_modules', 'app/'],
-      },
+        moduleDirectory: ['node_modules', 'app/']
+      }
     },
     react: {
-      version: 'detect',
+      version: 'detect'
     },
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx'],
-    },
+      '@typescript-eslint/parser': ['.ts', '.tsx']
+    }
   },
-  'ignorePatterns': [
-    '**/*.svg',
-    '**/*.jpg',
-    '**/*.jpeg',
-    '**/*.png',
-    '**/*.json',
-  ],
+  ignorePatterns: ['**/*.svg', '**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.json']
 };

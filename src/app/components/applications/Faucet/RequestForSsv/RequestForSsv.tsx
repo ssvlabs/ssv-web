@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import React, { useState, useRef, useEffect } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import config from '~app/common/config';
 import TextInput from '~app/components/common/TextInput';
 import translations from '~app/common/config/translations';

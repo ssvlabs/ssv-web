@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -12,6 +12,9 @@ import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFee
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { getOperator, getOperatorBalance } from '~root/services/operator.service';
+import { SingleOperator } from '~app/model/processes.model';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const stores = useStores();
@@ -21,17 +24,20 @@ const DecreaseFlow = ({ oldFee, newFee, currency } : UpdateFeeProps) => {
     const operatorStore: OperatorStore = stores.Operator;
     const [buttonText, setButtonText] = useState('Update Fee');
     const [updated, setUpdated] = useState(false);
+    const isContractWallet = useAppSelector(getIsContractWallet);
+    const process: SingleOperator = processStore.getProcess;
+    const operator = process.item;
 
     const onUpdateFeeHandle = async () => {
         if (updated) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         } else {
-            await operatorStore.decreaseOperatorFee(operatorStore.processOperatorId, newFee);
-            const operator = await getOperator(operatorStore.processOperatorId);
-            const balance = await getOperatorBalance({ id: operator.id });
+            await operatorStore.decreaseOperatorFee({ operator, newFee, isContractWallet });
+            const newOperatorData = await getOperator(operatorStore.processOperatorId);
+            const balance = await getOperatorBalance(newOperatorData.id);
             processStore.setProcess({
                 processName: 'single_operator',
-                item: { ...operator, balance },
+                item: { ...newOperatorData, balance },
             }, 1);
             setButtonText('Back To My Account');
             setUpdated(true);

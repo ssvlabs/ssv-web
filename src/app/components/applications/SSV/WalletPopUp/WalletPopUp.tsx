@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import { useConnectWallet } from '@web3-onboard/react';
@@ -13,7 +13,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 const WalletPopUp = () => {
     const classes = useStyles();
     const accountAddress = useAppSelector(getAccountAddress);
-    const [_, connect] = useConnectWallet();
+    const [, connect] = useConnectWallet();
     const dispatch = useAppDispatch();
     const isShowWalletPopup = useAppSelector(getIsShowWalletPopup);
     const { disconnectWallet } = useWalletDisconnector();

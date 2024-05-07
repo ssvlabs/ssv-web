@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -15,16 +15,15 @@ const ConnectWallet = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-      // if (isMainnet() && walletStore.wallet) {
-      //   // TODO use useSetChain hook instead
-      //     // walletStore.changeNetwork(NETWORKS.HOLESKY);
-      // }
+    // if (isMainnet() && walletStore.wallet) {
+    //   // TODO use useSetChain hook instead
+    //     // walletStore.changeNetwork(NETWORKS.HOLESKY);
+    // }
   }, []);
 
   const connectToWallet = () => {
     if (accountAddress) {
       dispatch(setIsShowWalletPopup(true));
-    } else {
     }
   };
 
@@ -36,9 +35,11 @@ const ConnectWallet = () => {
       body={[
         <Grid container>
           <Typography className={classes.SubHeader}>Connect your wallet to receive testnet SSV for testing purposes.</Typography>
-          <Grid item className={classes.Warning}>Funds received through the SSV faucet are not real funds and hold no value.</Grid>
+          <Grid item className={classes.Warning}>
+            Funds received through the SSV faucet are not real funds and hold no value.
+          </Grid>
           <PrimaryButton children={'Connect Wallet'} submitFunction={connectToWallet} disable={false} />
-        </Grid>,
+        </Grid>
       ]}
     />
   );

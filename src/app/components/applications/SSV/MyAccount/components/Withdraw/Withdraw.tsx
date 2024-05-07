@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress } from '~app/redux/wallet.slice';
-import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import { observer } from 'mobx-react';
+import { useEffect, useState } from 'react';
+import { SsvStore } from '~app/common/stores/applications/SsvWeb';
+import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
-import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { useStores } from '~app/hooks/useStores';
+import { SingleCluster, SingleOperator } from '~app/model/processes.model';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterBalance } from '~root/services/cluster.service';
-import { SingleOperator, SingleCluster } from '~app/model/processes.model';
-import OperatorFlow from './OperatorFlow';
+import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import ClusterFlow from './ClusterFlow';
+import OperatorFlow from './OperatorFlow';
 
 let interval: NodeJS.Timeout;
 
 const Withdraw = () => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const location = useLocation();
   const classes = useStyles();
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
@@ -67,7 +65,7 @@ const Withdraw = () => {
               minimumLiquidationCollateral={ssvStore.minimumLiquidationCollateral}
               liquidationCollateralPeriod={ssvStore.liquidationCollateralPeriod}
             />
-            : <OperatorFlow operator={processItem} callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters} />}
+            : <OperatorFlow operator={processItem} />}
         </Grid>
       </Grid>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
@@ -52,7 +52,7 @@ const WhiteWrapper = (props: Props) => {
   const validatorStore: ValidatorStore = stores.Validator;
   const settingsRef = useRef(null);
 
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const isLoading = useAppSelector(getIsLoading);
 

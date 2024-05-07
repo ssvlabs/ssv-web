@@ -26,7 +26,7 @@ type OperatorValidatorListQuery = {
 const PERFORMANCE_PERIOD = '24hours';
 
 const getOperatorsByOwnerAddress = async (page: number = 1, perPage: number = 8, ownerAddress: string): Promise<{ operators: IOperator[], pagination: IPagination }> => {
-  const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:desc`;
+  const url = `${getStoredNetwork().api}/operators/owned_by/${ownerAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:asc`;
   try {
     return await getRequest(url, false);
   } catch (e) {
@@ -66,7 +66,7 @@ const getOperatorsByIds = async (operatorIds: number[]): Promise<IOperator[]> =>
   try {
     const promises = operatorIds.map(operatorId => getOperator(operatorId, false));
     const responses = await Promise.all(promises);
-    for (let response of responses) {
+    for (const response of responses) {
       if (!response) {
         return [];
       }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -96,6 +96,7 @@ const Deposit = () => {
                       <Grid item container xs={12}>
                         <Grid item xs={6}>
                           <IntegerInput
+                              // @ts-ignore
                               min={'0'}
                               type="number"
                               value={inputValue}

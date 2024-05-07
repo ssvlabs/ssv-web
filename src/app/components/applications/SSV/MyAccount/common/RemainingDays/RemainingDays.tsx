@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -12,6 +12,7 @@ import LiquidationStateError
 import { toWei } from '~root/services/conversions.service';
 import { getClusterRunWay } from '~root/services/cluster.service';
 import { SsvStore } from '~app/common/stores/applications/SsvWeb';
+import { useEffect } from 'react';
 
 type Props = {
   cluster?: any,
@@ -26,7 +27,7 @@ const RemainingDays = (props: Props) => {
   const stores = useStores();
   const { cluster, gray80, operatorChange, disableWarning = false } = props;
   const ssvStore: SsvStore = stores.SSV;
-  let withdrawState: boolean = false;
+  let withdrawState = false;
   let newRemainingDays: number | undefined;
   let warningLiquidationState: boolean = cluster.runWay < 30;
 
@@ -50,7 +51,8 @@ const RemainingDays = (props: Props) => {
     return newRemainingDays ? 1 : 0;
   };
 
-  React.useEffect(() => {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  useEffect(() => {
   }, [cluster.balance]);
 
   return (

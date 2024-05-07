@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -52,7 +52,6 @@ const SingleOperator = () => {
   }, []);
 
   const loadOperatorValidators = async (props: { page: number, perPage: number }) => {
-    // eslint-disable-next-line react/prop-types
     const { page, perPage } = props;
     const response = await getOperatorValidators({
       // @ts-ignore
@@ -118,7 +117,7 @@ const SingleOperator = () => {
     setOperatorsValidators(prevState => [...prevState.sort((a: any, b: any) => a.status === b.status ? 0 : a.status ? -1 : 1)]);
   };
 
-  const operatorView = React.useMemo(
+  const operatorView = useMemo(
       () => [
         {
           key: <Typography>Name</Typography>,
@@ -153,7 +152,7 @@ const SingleOperator = () => {
       ], [operator, isDarkMode],
   );
 
-  const data = React.useMemo(
+  const data = useMemo(
       () => {
         // return validator operators mapped with additional fields fee and performance
         // @ts-ignore
@@ -182,7 +181,7 @@ const SingleOperator = () => {
       [operatorsValidators, isDarkMode],
   );
 
-  const columns = React.useMemo(
+  const columns = useMemo(
       () => [
         {
           id: 'col13',

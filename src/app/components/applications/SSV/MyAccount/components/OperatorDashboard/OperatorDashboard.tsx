@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
@@ -38,6 +38,7 @@ const OperatorDashboard = () => {
 
   const fetchData = async () => {
     try {
+      // eslint-disable-next-line no-async-promise-executor
       const promises = myAccountStore.ownerAddressOperators.map((operator: IOperator) => new Promise(async () => {
         const balance = await getOperatorBalance({ id: operator.id });
         setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));

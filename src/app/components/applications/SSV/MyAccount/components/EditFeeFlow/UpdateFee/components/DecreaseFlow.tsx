@@ -46,7 +46,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       setUpdated(true);
     }
   };
-    
+
   return (
     <BorderScreen
       blackHeader
@@ -59,9 +59,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
           <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee}/>
           {!updated && <Grid item className={classes.Notice}>
             <Grid item className={classes.BulletsWrapper}>
-              Keep in mind that the process of increasing your fee is different than decreasing it, and
-              returning back to your current fee in the future would take longer.
-              Read more on fee changes
+              {Number(newFee) === 0 ? 'Please note that operators who have set their fee to 0 will not have the option to increase or modify their fee in the future.' : 'Keep in mind that the process of increasing your fee is different than decreasing it, andreturning back to your current fee in the future would take longer. Read more on fee changes'}
             </Grid>
           </Grid>}
           <PrimaryButton text={buttonText} onClick={onUpdateFeeHandle} size={ButtonSize.XL}/>

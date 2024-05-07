@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useAppSelector } from '~app/hooks/redux.hook';
@@ -22,7 +21,6 @@ let interval: NodeJS.Timeout;
 
 const Withdraw = () => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const location = useLocation();
   const classes = useStyles();
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;

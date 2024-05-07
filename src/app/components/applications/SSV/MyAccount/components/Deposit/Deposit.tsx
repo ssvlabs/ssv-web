@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
@@ -19,6 +18,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { depositOrWithdraw, getClusterRunWay } from '~root/services/cluster.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
+import AllowanceButton from '~app/components/AllowanceButton';
 
 const Deposit = () => {
   const [inputValue, setInputValue] = useState('');
@@ -33,7 +33,9 @@ const Deposit = () => {
   const stores = useStores();
   const ssvStore: SsvStore = stores.SSV;
   const myAccountStore: MyAccountStore = stores.MyAccount;
-  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
+  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: {
+    clusterId: string
+  }) => clusterId === location.state.clusterId);
   const clusterBalance = fromWei(cluster.balance);
 
   async function depositSsv() {
@@ -67,8 +69,8 @@ const Deposit = () => {
   function inputHandler(e: any) {
     let value = e.target.value.trim();
     if (value === '') {
-        setInputValue(value);
-        return;
+      setInputValue(value);
+      return;
     }
     if (Number(value) > ssvStore.walletSsvBalance) value = String(ssvStore.walletSsvBalance);
     setInputValue(value);
@@ -81,63 +83,70 @@ const Deposit = () => {
   const newBalance = inputValue ? clusterBalance + Number(inputValue) : undefined;
 
   return (
-      <Grid container>
-        <NewWhiteWrapper
-            type={0}
-            header={'Cluster'}
-        />
-        <BorderScreen
-            withoutNavigation
-            header={'Deposit'}
-            body={[
-              (
-                  <Grid item container>
-                    <Grid container item xs={12} className={classes.BalanceWrapper}>
-                      <Grid item container xs={12}>
-                        <Grid item xs={6}>
-                          <IntegerInput
-                              min={'0'}
-                              type="number"
-                              value={inputValue}
-                              placeholder={'0.0'}
-                              onChange={inputHandler}
-                              disabled={wasAllowanceApproved}
-                              className={classes.Balance}
-                          />
-                        </Grid>
-                        <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                          <Grid item onClick={maxDeposit} className={classes.MaxButton}>
-                            MAX
-                          </Grid>
-                          <Grid item className={classes.MaxButtonText}>SSV</Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item xs={12} className={classes.WalletBalance}>
-                        Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
-                      </Grid>
-                    </Grid>
+    <Grid container>
+      <NewWhiteWrapper
+        type={0}
+        header={'Cluster'}
+      />
+      <BorderScreen
+        withoutNavigation
+        header={'Deposit'}
+        body={[
+          (
+            <Grid item container>
+              <Grid container item xs={12} className={classes.BalanceWrapper}>
+                <Grid item container xs={12}>
+                  <Grid item xs={6}>
+                    <IntegerInput
+                      min={'0'}
+                      type="number"
+                      value={inputValue}
+                      placeholder={'0.0'}
+                      onChange={inputHandler}
+                      disabled={wasAllowanceApproved}
+                      className={classes.Balance}
+                    />
                   </Grid>
-              ),
-              (
-                  <>
-                    <NewRemainingDays isInputFilled={!!inputValue} cluster={{ ...cluster, newRunWay: !inputValue ? undefined : getClusterRunWay({ ...cluster, balance: toWei(newBalance) }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral) }}/>
-                  </>
-              ),
-            ]}
-            bottom={[(
-                <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-                    <Button
-                    withAllowance
-                    text={'Deposit'}
-                    onClick={depositSsv}
-                    disable={Number(inputValue) <= 0 || (isMainnet && !isChecked)}
-                    totalAmount={inputValue}
-                    allowanceApprovedCB={() => setAllowanceWasApproved(true)}
-                />
-                </TermsAndConditionsCheckbox>
-            )]}
-        />
-      </Grid>
+                  <Grid item container xs={6} className={classes.MaxButtonWrapper}>
+                    <Grid item onClick={maxDeposit} className={classes.MaxButton}>
+                      MAX
+                    </Grid>
+                    <Grid item className={classes.MaxButtonText}>SSV</Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={12} className={classes.WalletBalance}>
+                  Wallet Balance: {formatNumberToUi(ssvStore.walletSsvBalance)} SSV
+                </Grid>
+              </Grid>
+            </Grid>
+          ),
+          (
+            <>
+              <NewRemainingDays isInputFilled={!!inputValue} cluster={{
+                ...cluster,
+                newRunWay: !inputValue ? undefined : getClusterRunWay({
+                  ...cluster,
+                  balance: toWei(newBalance),
+                }, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral),
+              }}/>
+            </>
+          ),
+        ]}
+        bottom={[(
+          <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
+                                      isMainnet={isMainnet}>
+            <AllowanceButton
+              withAllowance
+              text={'Deposit'}
+              onClick={depositSsv}
+              disable={Number(inputValue) <= 0 || (isMainnet && !isChecked)}
+              totalAmount={inputValue}
+              allowanceApprovedCB={() => setAllowanceWasApproved(true)}
+            />
+          </TermsAndConditionsCheckbox>
+        )]}
+      />
+    </Grid>
   );
 };
 

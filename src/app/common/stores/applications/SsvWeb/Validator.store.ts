@@ -142,7 +142,11 @@ class ValidatorStore extends BaseStore {
     return await transactionExecutor({
       contractMethod: contract.removeValidator,
       payload,
-      getterTransactionState: async () => !await getValidator(publicKey),
+      getterTransactionState: async () => {
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        return validatorCount;
+      },
+      prevState: clusterData.validatorCount,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -168,7 +172,11 @@ class ValidatorStore extends BaseStore {
     return await transactionExecutor({
       contractMethod: contract.bulkRemoveValidator,
       payload,
-      getterTransactionState: async () => !await getValidator(validatorIds[0]),
+      getterTransactionState: async () => {
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        return validatorCount;
+      },
+      prevState: clusterData.validatorCount,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -24,12 +24,19 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
   const stores = useStores();
   const classes = useStyles({});
   const operatorStore: OperatorStore = stores.Operator;
+  const [isLoading, setIsLoading] = useState(false);
 
   // @ts-ignore
   const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
   const endDay = operatorEndApprovalTime.getUTCDate();
   let today = new Date();
   const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });
+
+  const cancelUpdateFeeHandler = async () => {
+    setIsLoading(true);
+    await cancelUpdateFee();
+    setIsLoading(false);
+  };
 
   return (
     <BorderScreen
@@ -67,7 +74,7 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton hasBgColor={false} text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
+              <SecondaryButton hasBgColor={false} text={'Cancel'} isLoading={isLoading} onClick={cancelUpdateFeeHandler} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
               <PrimaryButton isDisabled text={'Execute'} size={ButtonSize.XL}/>

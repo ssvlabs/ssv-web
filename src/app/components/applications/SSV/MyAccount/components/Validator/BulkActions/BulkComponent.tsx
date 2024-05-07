@@ -120,7 +120,7 @@ const BulkComponent = () => {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
       setIsLoading(true);
-      const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
+      const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorValues.filter(selectedValidator => selectedValidator.isSelected)[0].validator.public_key);
       const exitSingle = async () => await validatorStore.exitValidator({ isContractWallet, publicKey: singleFormattedPublicKey, operatorIds: process.item.operators.map((operator: IOperator) => operator.id) });
       const exitBulk = async () => {
         const validatorIds = selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected);
@@ -131,11 +131,12 @@ const BulkComponent = () => {
       if (res && !isContractWallet) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
+      setIsLoading(false);
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
       backToSingleClusterPage();
     } else {
       setIsLoading(true);
-      const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
+      const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorValues.filter(selectedValidator => selectedValidator.isSelected)[0].validator.public_key);
       const singleRemove = async () => await validatorStore.removeValidator({ accountAddress, isContractWallet, publicKey: singleFormattedPublicKey, operators: process.item.operators });
       const bulkRemove = async () => {
         const validatorIds = selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected);

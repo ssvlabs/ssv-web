@@ -30,20 +30,25 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
+  const [isLoading, setIsLoading] = useState(false);
 
   const onUpdateFeeHandle = async () => {
     if (updated) {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     } else {
-      await operatorStore.decreaseOperatorFee({ operator, newFee, isContractWallet });
-      const newOperatorData = await getOperator(operatorStore.processOperatorId);
-      const balance = await getOperatorBalance(newOperatorData.id);
-      processStore.setProcess({
-        processName: 'single_operator',
-        item: { ...newOperatorData, balance },
-      }, 1);
-      setButtonText('Back To My Account');
-      setUpdated(true);
+      setIsLoading(true);
+      const res = await operatorStore.decreaseOperatorFee({ operator, newFee, isContractWallet });
+      if (res) {
+        const newOperatorData = await getOperator(operatorStore.processOperatorId);
+        const balance = await getOperatorBalance(newOperatorData.id);
+        processStore.setProcess({
+          processName: 'single_operator',
+          item: { ...newOperatorData, balance },
+        }, 1);
+        setButtonText('Back To My Account');
+        setUpdated(true);
+      }
+      setIsLoading(false);
     }
   };
 
@@ -59,10 +64,10 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
           <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee}/>
           {!updated && <Grid item className={classes.Notice}>
             <Grid item className={classes.BulletsWrapper}>
-              {Number(newFee) === 0 ? 'Please note that operators who have set their fee to 0 will not have the option to increase or modify their fee in the future.' : 'Keep in mind that the process of increasing your fee is different than decreasing it, andreturning back to your current fee in the future would take longer. Read more on fee changes'}
+              {Number(newFee) === 0 ? 'Please note that operators who have set their fee to 0 will not have the option to increase or modify their fee in the future.' : 'Keep in mind that the process of increasing your fee is different than decreasing it, and returning back to your current fee in the future would take longer. Read more on fee changes'}
             </Grid>
           </Grid>}
-          <PrimaryButton text={buttonText} onClick={onUpdateFeeHandle} size={ButtonSize.XL}/>
+          <PrimaryButton text={buttonText} isLoading={isLoading} onClick={onUpdateFeeHandle} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

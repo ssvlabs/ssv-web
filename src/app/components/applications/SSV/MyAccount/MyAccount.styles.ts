@@ -101,6 +101,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundImage: 'url(/images/diagramArrow/light.svg)',
   },
   HeaderButtonsWrapper: {
+    flexWrap: 'nowrap',
+    maxWidth: '344px',
     gap: 16,
     justifyContent: 'flex-end',
   },

@@ -5,13 +5,14 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton/SecondaryButton';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
-import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
+import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
-const ActionsButton = ({ extendClass, children }: { extendClass: string, children: string | JSX.Element }) => {
+const ActionsButton = () => {
   const classes = useStyles();
   const actionsRef = useRef(null);
   const navigate = useNavigate();
@@ -49,7 +50,8 @@ const ActionsButton = ({ extendClass, children }: { extendClass: string, childre
 
   return (
     <Grid>
-      <SecondaryButton children={children} className={extendClass} submitFunction={onButtonClickHandler}/>
+      <SecondaryButton text={'Actions'} onClick={onButtonClickHandler} icon={'/images/arrowDown/arrow.svg'}
+                       size={ButtonSize.SM}/>
       {showActions && <Grid item className={classes.SettingsWrapper}>
         <Grid ref={actionsRef} className={classes.Settings}>
           <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)}

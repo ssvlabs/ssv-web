@@ -27,7 +27,6 @@ const annotations = {
   setKeyStore: action.bound,
   registrationMode: observable,
   addNewValidator: action.bound,
-  keyStorePublicKey: observable,
   keySharePublicKey: observable,
   setKeySharePublicKey: action.bound,
   removeValidator: action.bound,
@@ -40,7 +39,6 @@ const annotations = {
   extractKeyStoreData: action.bound,
   clearKeyShareFlowData: action.bound,
   clearKeyStoreFlowData: action.bound,
-  bulkRegistration: action.bound,
   validatorPublicKeyExist: observable,
   isMultiSharesMode: observable,
   setMultiSharesMode: action.bound,
@@ -127,11 +125,16 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async removeValidator({ accountAddress, isContractWallet, publicKey, operators }: { accountAddress: string; isContractWallet: boolean; publicKey: string; operators: IOperator[] }): Promise<boolean> {
+  async removeValidator({ accountAddress, isContractWallet, publicKey, operators }: {
+    accountAddress: string;
+    isContractWallet: boolean;
+    publicKey: string;
+    operators: IOperator[]
+  }): Promise<boolean> {
     const ssvStore: SsvStore = this.getStore('SSV');
     const sortedOperatorIds = getSortedOperatorsIds(operators);
     const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    const payload =  [publicKey, sortedOperatorIds, clusterData] ;
+    const payload = [publicKey, sortedOperatorIds, clusterData];
     const contract = getContractByName(EContractName.SETTER);
     if (!payload) {
       return false;
@@ -139,7 +142,11 @@ class ValidatorStore extends BaseStore {
     return await transactionExecutor({
       contractMethod: contract.removeValidator,
       payload,
-      getterTransactionState: async () => !await getValidator(publicKey),
+      getterTransactionState: async () => {
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        return validatorCount;
+      },
+      prevState: clusterData.validatorCount,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -148,7 +155,12 @@ class ValidatorStore extends BaseStore {
   /**
    * Bulk remove validators
    */
-  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators }: { accountAddress: string; isContractWallet: boolean; validatorIds: string[]; operators: IOperator[] }): Promise<boolean> {
+  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators }: {
+    accountAddress: string;
+    isContractWallet: boolean;
+    validatorIds: string[];
+    operators: IOperator[]
+  }): Promise<boolean> {
     const ssvStore: SsvStore = this.getStore('SSV');
     const sortedOperatorIds = getSortedOperatorsIds(operators);
     const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
@@ -160,7 +172,11 @@ class ValidatorStore extends BaseStore {
     return await transactionExecutor({
       contractMethod: contract.bulkRemoveValidator,
       payload,
-      getterTransactionState: async () => !await getValidator(validatorIds[0]),
+      getterTransactionState: async () => {
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        return validatorCount;
+      },
+      prevState: clusterData.validatorCount,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -169,7 +185,11 @@ class ValidatorStore extends BaseStore {
   /**
    * Exit validator
    */
-  async exitValidator({ isContractWallet, publicKey, operatorIds }: { isContractWallet: boolean; publicKey: string; operatorIds: number[] }): Promise<boolean> {
+  async exitValidator({ isContractWallet, publicKey, operatorIds }: {
+    isContractWallet: boolean;
+    publicKey: string;
+    operatorIds: number[]
+  }): Promise<boolean> {
     const payload = [publicKey, operatorIds];
     const contract = getContractByName(EContractName.SETTER);
     return await transactionExecutor({
@@ -183,7 +203,11 @@ class ValidatorStore extends BaseStore {
   /**
    * Bulk exit validator
    */
-  async bulkExitValidators({ isContractWallet, validatorIds, operatorIds }: { isContractWallet: boolean; validatorIds: string[]; operatorIds: number[] }): Promise<boolean> {
+  async bulkExitValidators({ isContractWallet, validatorIds, operatorIds }: {
+    isContractWallet: boolean;
+    validatorIds: string[];
+    operatorIds: number[]
+  }): Promise<boolean> {
     const payload = [validatorIds, operatorIds];
     const contract = getContractByName(EContractName.SETTER);
     return await transactionExecutor({
@@ -194,31 +218,30 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async bulkRegistration({ accountAddress, isContractWallet }: { accountAddress: string; isContractWallet: boolean }) {
-    const payload = await this.createKeySharePayload({ accountAddress });
+  /**
+   * Add new validator
+   */
+  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators }: {
+    accountAddress: string;
+    isContractWallet: boolean,
+    isBulk: boolean,
+    operators: IOperator[]
+  }) {
     const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.bulkRegisterValidator,
-      payload: payload.values(),
-      getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  async addNewValidator({ accountAddress, isContractWallet }: { accountAddress: string; isContractWallet: boolean }) {
+    const contractMethod = isBulk ? contract.bulkRegisterValidator : contract.registerValidator;
     const payload = this.registrationMode === 0 ? await this.createKeySharePayload({ accountAddress }) : await this.createKeystorePayload({ accountAddress });
-    const contract = getContractByName(EContractName.SETTER);
     if (!payload) {
       return false;
     }
+
     return await transactionExecutor({
-      contractMethod: contract.registerValidator,
+      contractMethod,
       payload: payload.values(),
-      getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
+      getterTransactionState: async () => {
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        return validatorCount;
+      },
+      prevState: payload.get('clusterData').validatorCount,
       isContractWallet: isContractWallet,
       callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
     });
@@ -355,7 +378,7 @@ class ValidatorStore extends BaseStore {
    * @param keyShare
    * @param callBack
    */
-async setKeyShareFile(keyShare: any, callBack?: any) {
+  async setKeyShareFile(keyShare: any, callBack?: any) {
     try {
       this.keyShareFile = keyShare;
     } catch (e: any) {

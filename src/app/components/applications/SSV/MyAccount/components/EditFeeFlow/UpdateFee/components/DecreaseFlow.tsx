@@ -7,7 +7,6 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import {
@@ -17,6 +16,8 @@ import { getOperator, getOperatorBalance } from '~root/services/operator.service
 import { SingleOperator } from '~app/model/processes.model';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const stores = useStores();
@@ -45,6 +46,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       setUpdated(true);
     }
   };
+
   return (
     <BorderScreen
       blackHeader
@@ -60,7 +62,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
               {Number(newFee) === 0 ? 'Please note that operators who have set their fee to 0 will not have the option to increase or modify their fee in the future.' : 'Keep in mind that the process of increasing your fee is different than decreasing it, andreturning back to your current fee in the future would take longer. Read more on fee changes'}
             </Grid>
           </Grid>}
-          <PrimaryButton children={buttonText} submitFunction={onUpdateFeeHandle}/>
+          <PrimaryButton text={buttonText} onClick={onUpdateFeeHandle} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

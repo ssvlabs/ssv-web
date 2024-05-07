@@ -7,7 +7,6 @@ import LinkText from '~app/components/common/LinkText';
 import { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -15,6 +14,8 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
@@ -77,12 +78,12 @@ const AccountBalanceAndFee = () => {
           text={'I understand the risks of having my cluster liquidated'}
         />
         <PrimaryButton
-          disable={!firstCheckBox || !secondCheckBox}
-          children={'Next'}
-          submitFunction={() => {
+          isDisabled={!firstCheckBox || !secondCheckBox}
+          text={'Next'}
+          onClick={() => {
             navigate(getNextNavigation());
           }}
-        />
+         size={ButtonSize.XL}/>
       </Grid>,
     ]}
   />;

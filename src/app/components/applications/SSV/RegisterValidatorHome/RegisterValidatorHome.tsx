@@ -18,12 +18,13 @@ import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useV
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 import { ProcessType } from '~app/model/processes.model';
 
+const SELECT_MINIMUM_OPERATORS = 4;
+
 type PreRequisiteType = {
   text: string;
   tooltip?: string;
   tooltipLinkText?: string;
 };
-
 
 const ButtonSeparator = styled.div`
   width: 100%;
@@ -65,7 +66,7 @@ const RegisterValidatorHome = () => {
       processName: 'register_validator',
     }, ProcessType.Validator);
     operatorStore.unselectAllOperators();
-    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
+    operatorStore.setClusterSize(SELECT_MINIMUM_OPERATORS);
     navigate(getNextNavigation(EValidatorFlowAction.GENERATE_NEW_SHARE));
   };
 

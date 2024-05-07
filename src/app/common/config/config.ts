@@ -18,21 +18,6 @@ const {
 } = distributionHelper(networkId);
 
 const config = {
-  DEBUG: process.env.REACT_APP_DEBUG || false,
-  retry: {
-    default: {
-      maxAttempts: 5,
-      backOff: 500,
-      exponentialOption: {
-        maxInterval: 5000,
-        multiplier: 2,
-      },
-      doRetry: (e: Error) => {
-        console.error(`Error: ${e.message || e.stack || e}. Retrying..`);
-        return true;
-      },
-    },
-  },
   routes: {
     COUNTRY_NOT_SUPPORTED: '/compliance',
     DISTRIBUTION: {
@@ -128,14 +113,6 @@ const config = {
         CONFIRMATION_PAGE: '/join/validator/confirm-transaction',
         ACCOUNT_BALANCE_AND_FEE: '/join/validator/balance-warning',
       },
-    },
-  },
-  FEATURE: {
-    DOLLAR_CALCULATION: process.env.REACT_APP_SHOULD_CALCULATE_DOLLAR,
-    OPERATORS: {
-      VALID_KEY_LENGTH: 612,
-      SELECT_MINIMUM_OPERATORS: 4,
-      AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
     },
   },
   links: {

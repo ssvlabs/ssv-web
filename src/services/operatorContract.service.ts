@@ -4,8 +4,7 @@ import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conve
 import { IOperator } from '~app/model/operator.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getOperator } from '~root/services/operator.service';
-import { equalsAddresses } from '~lib/utils/strings';
-import { Contract } from 'ethers';
+import { isEqualsAddresses } from '~lib/utils/strings';
 
 const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   const contract = getContractByName(EContractName.GETTER);
@@ -53,7 +52,7 @@ const updateOperatorAddressWhitelist = async ({ operator, address, isContractWal
     payload: [operator.id, address],
     getterTransactionState: async () => {
       const newAddress = await updatedStateGetter();
-      return equalsAddresses(newAddress, address);
+      return isEqualsAddresses(newAddress, address);
     },
     isContractWallet,
     dispatch,

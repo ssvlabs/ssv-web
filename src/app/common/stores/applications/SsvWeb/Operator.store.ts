@@ -11,7 +11,6 @@ import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { isEqualsAddresses } from '~lib/utils/strings';
 
 export interface NewOperator {
   id: number,
@@ -134,16 +133,10 @@ class OperatorStore extends BaseStore {
     );
   }
 
-  /**
-   * Check if selected necessary minimum of operators
-   */
   get selectedEnoughOperators(): boolean {
     return this.stats.selected >= this.clusterSize;
   }
 
-  /**
-   * Refresh and return current operator fee data
-   */
   async refreshAndGetOperatorFeeInfo(id: number) {
     await this.syncOperatorFeeInfo(id);
     return {
@@ -254,9 +247,6 @@ class OperatorStore extends BaseStore {
     }
   }
 
-  /**
-   * Cancel change fee process for operator
-   */
   async cancelChangeFeeProcess({ operator, isContractWallet, dispatch }: { operator: IOperator, isContractWallet: boolean; dispatch: Function }): Promise<any> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
@@ -273,9 +263,6 @@ class OperatorStore extends BaseStore {
     });
   }
 
-  /**
-   * get validators of operator
-   */
   async getOperatorValidatorsCount(operatorId: number): Promise<any> {
     return new Promise((resolve) => {
       const contract = getContractByName(EContractName.GETTER);

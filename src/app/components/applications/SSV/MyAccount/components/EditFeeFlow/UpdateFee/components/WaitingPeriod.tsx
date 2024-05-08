@@ -74,7 +74,7 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton hasBgColor={false} text={'Cancel'} isLoading={isLoading} onClick={cancelUpdateFeeHandler} size={ButtonSize.XL}/>
+              <SecondaryButton text={'Cancel'} isLoading={isLoading} onClick={cancelUpdateFeeHandler} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
               <PrimaryButton isDisabled text={'Execute'} size={ButtonSize.XL}/>

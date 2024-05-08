@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperator } from '~root/services/operator.service';
+import config from '~app/common/config';
 
 export type UpdateFeeProps = {
   error: ErrorType;
@@ -105,7 +106,8 @@ const UpdateFee = () => {
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    validateFeeUpdate(Number(formatNumberToUi(getFeeForYear(fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
+    const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+    validateFeeUpdate(Number(formatNumberToUi(getFeeForYear(fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, isPrivateOperator, updateFeeErrorHandler);
   };
 
   const onNextHandler = () => {

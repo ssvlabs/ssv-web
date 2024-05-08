@@ -79,7 +79,7 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton hasBgColor={false} text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
+              <SecondaryButton text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
               <PrimaryButton isDisabled={false} text={'Execute'}

@@ -48,7 +48,7 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
 export const validateFeeInput = (value: string, callback: Function): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
   // eslint-disable-next-line radix
-  if (value !== '0' && new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
+  if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
     response.shouldDisplay = true;
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
     response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;

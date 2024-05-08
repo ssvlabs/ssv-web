@@ -1,9 +1,15 @@
-import { http, createConfig } from 'wagmi';
-import { mainnet, holesky } from 'wagmi/chains';
+import { walletConnect } from '@wagmi/connectors';
+import { createConfig, http } from 'wagmi';
+import { holesky, mainnet } from 'wagmi/chains';
+import { config as projectConfig } from '~app/common/config/config';
 
-//@ts-ignore This is a
 export const config = createConfig({
   chains: [mainnet, holesky],
+  connectors: [
+    walletConnect({
+      projectId: projectConfig.ONBOARD.PROJECT_ID
+    })
+  ],
   transports: {
     [mainnet.id]: http(),
     [holesky.id]: http()

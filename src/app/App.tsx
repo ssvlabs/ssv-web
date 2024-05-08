@@ -18,10 +18,12 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, getIsShowSsvLoader, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
+import { cn } from '~lib/utils/tailwind';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { getColors } from '~root/themes';
+import './globals.css';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -60,7 +62,7 @@ const App = () => {
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
   const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
-  const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
+  const theme = { colors: getColors({ isDarkMode }) };
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const navigate = useNavigate();
 
@@ -69,7 +71,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    setTheme({ colors: getColors({ isDarkMode }) });
     web3Onboard?.state.actions.updateTheme(isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
@@ -104,24 +105,31 @@ const App = () => {
       <ThemeProvider theme={MuiTheme}>
         <ThemeProviderLegacy theme={MuiTheme}>
           <ScThemeProvider theme={theme}>
-            <GlobalStyle />
-            {isShowSsvLoader && (
-              <LoaderWrapper>
-                <Loader src={'/images/ssv-loader.svg'} />
-              </LoaderWrapper>
-            )}
-            <BarMessage />
-            <BrowserView>
-              {web3Onboard && (
-                <Web3OnboardProvider web3Onboard={web3Onboard}>
-                  <Routes />
-                </Web3OnboardProvider>
+            <div
+              className={cn({ dark: isDarkMode })}
+              style={{
+                color: theme.colors.black
+              }}
+            >
+              <GlobalStyle />
+              {isShowSsvLoader && (
+                <LoaderWrapper>
+                  <Loader src={'/images/ssv-loader.svg'} />
+                </LoaderWrapper>
               )}
-            </BrowserView>
-            <MobileView>
-              <MobileNotSupported />
-            </MobileView>
-            <CssBaseline />
+              <BarMessage />
+              <BrowserView>
+                {web3Onboard && (
+                  <Web3OnboardProvider web3Onboard={web3Onboard}>
+                    <Routes />
+                  </Web3OnboardProvider>
+                )}
+              </BrowserView>
+              <MobileView>
+                <MobileNotSupported />
+              </MobileView>
+              <CssBaseline />
+            </div>
           </ScThemeProvider>
         </ThemeProviderLegacy>
       </ThemeProvider>

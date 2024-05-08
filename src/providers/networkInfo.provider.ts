@@ -44,6 +44,13 @@ const LINKS = {
 
 const rawNetworksData: string = import.meta.env.VITE_SSV_NETWORKS as string;
 const networks: NetworkInfo[] = JSON.parse(rawNetworksData);
+// const networksMap = networks.reduce(
+//   (acc, network) => {
+//     acc[network.networkId] = network;
+//     return acc;
+//   },
+//   {} as Record<number, NetworkInfo>
+// );
 
 for (let i = 0; i < networks.length; i++) {
   const network = networks[i];

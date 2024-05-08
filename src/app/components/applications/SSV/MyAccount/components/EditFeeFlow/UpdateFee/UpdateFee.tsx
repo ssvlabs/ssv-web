@@ -73,7 +73,7 @@ const UpdateFee = () => {
         }
         await operatorStore.syncOperatorFeeInfo(response.id);
         if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee){
-          setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorFutureFee), 2)));
+          setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorFutureFee))));
           setCurrentFlowStep(FeeUpdateSteps.INCREASE);
         } else {
           setCurrentFlowStep(FeeUpdateSteps.START);

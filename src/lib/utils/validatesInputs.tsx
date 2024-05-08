@@ -50,7 +50,8 @@ export const validateFeeInput = (value: string, callback: Function): void => {
   // eslint-disable-next-line radix
   if (value !== '0' && new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
     response.shouldDisplay = true;
-    response.errorMessage = 'Please set a greater fee amount.';
+    const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
+    response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
   } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
@@ -66,7 +67,7 @@ export const validateOperatorPublicKey = async (publicKey: string): Promise<bool
   return res.data;
 };
 
-export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, callback: any): void => {
+export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, isPrivateOperator: boolean, callback: any): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
   const feeMaximumIncrease = new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01);
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
@@ -87,7 +88,11 @@ export const validateFeeUpdate = (previousValue: number, newValue: string, maxFe
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
     response.shouldDisplay = true;
     response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
-  } else {
+  } else if (Number(newValue) === 0 && !isPrivateOperator) {
+    response.shouldDisplay = true;
+    response.errorMessage = 'You must set your operator as private before updating your fee to 0.';
+  }
+  else {
     response.errorMessage = '';
     response.shouldDisplay = false;
   }

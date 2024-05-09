@@ -125,7 +125,6 @@ const config = {
     TERMS_OF_USE_LINK: 'https://ssv.network/terms-of-use/',
     PRIVACY_POLICY_LINK: 'https://ssv.network/privacy-policy/',
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
-    LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',

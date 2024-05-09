@@ -16,7 +16,7 @@ import {
   StepperSteps,
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { SingleOperator } from '~app/model/processes.model';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getIsContractWallet } from '~app/redux/wallet.slice';

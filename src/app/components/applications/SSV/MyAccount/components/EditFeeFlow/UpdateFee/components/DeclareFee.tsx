@@ -16,7 +16,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';

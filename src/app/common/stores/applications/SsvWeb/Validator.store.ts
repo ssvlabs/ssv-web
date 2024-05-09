@@ -16,7 +16,6 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { createPayload } from '~root/utils/dkg.utils';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 const annotations = {
   keyStoreFile: observable,
@@ -195,12 +194,14 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }: {
-    accountAddress: string; isContractWallet: boolean; isBulk: boolean; operators: IOperator[]; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function;
+  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }: {
+    accountAddress: string; isContractWallet: boolean; isBulk: boolean; operators: IOperator[]; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function;
   }) {
     const contract = getContractByName(EContractName.SETTER);
     const contractMethod = isBulk ? contract.bulkRegisterValidator : contract.registerValidator;
-    const payload = this.registrationMode === 0 ? await this.createKeySharePayload({ accountAddress }) : await this.createKeystorePayload({ accountAddress });
+    const payload = this.registrationMode === 0 ?
+      await this.createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }) :
+      await this.createKeystorePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral });
     if (!payload) {
       return false;
     }

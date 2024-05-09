@@ -87,7 +87,7 @@ const ValidatorRegistrationConfirmation = () => {
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
     const response = await validatorStore.addNewValidator({ accountAddress, isContractWallet, isBulk: validatorStore.isMultiSharesMode,
-      operators: Object.values(operatorStore.selectedOperators), dispatch });
+      operators: Object.values(operatorStore.selectedOperators), networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch });
     if (response && !isContractWallet) {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {

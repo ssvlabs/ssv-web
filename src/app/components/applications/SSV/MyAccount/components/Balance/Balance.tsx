@@ -11,8 +11,18 @@ import { ICluster } from '~app/model/cluster.model';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import styled from 'styled-components';
 
-const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdraw }: { cluster: ICluster; moveToReactivateCluster: Function; moveToDeposit: Function; moveToWithdraw: Function }) => {
+const OperationRunwayWrapper = styled.div`
+    width: 100%
+`;
+
+const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdraw }: {
+  cluster: ICluster;
+  moveToReactivateCluster: Function;
+  moveToDeposit: Function;
+  moveToWithdraw: Function
+}) => {
   const classes = useStyles();
 
   return (
@@ -21,46 +31,50 @@ const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdr
         <Grid container item className={classes.Header} xs={12}>
           <span>Balance</span>
           {cluster.isLiquidated && <Grid className={classes.Liquidated}>Liquidated</Grid>}
-          {cluster.runWay < 30 && <Grid className={classes.LowRunWay}>Low Runway</Grid>}
+          {(cluster.runWay < 30 && !cluster.isLiquidated && !!Number(cluster.balance) && !cluster.validatorCount) &&
+            <Grid className={classes.LowRunWay}>Low Runway</Grid>}
         </Grid>
         <Grid container item>
           {cluster.balance || cluster.isLiquidated ?
-              (<Grid item xs={12}
-                 className={cluster.runWay < 30 ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
-            {formatNumberToUi(fromWei(cluster.balance))} SSV
-          </Grid>) : (<NaDisplay size={28} weight={800} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
+            (<Grid item xs={12}
+                   className={cluster.runWay < 30 ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
+              {formatNumberToUi(fromWei(cluster.balance))} SSV
+            </Grid>) : (<NaDisplay size={28} weight={800} text={translations.NA_DISPLAY.TOOLTIP_TEXT}/>)}
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item className={classes.SeparationLine} xs={12} />
-        <Grid container item className={classes.SecondSectionWrapper}>
-          <NewRemainingDays cluster={cluster} />
-          {cluster.isLiquidated && (
-            <Grid className={classes.ErrorMessageWrapper}>
-              <ErrorText
-                marginTop={'16px'}
-                errorType={2}
-              />
-            </Grid>
-          )}
-        </Grid>
-      <Grid item className={classes.SeparationLine} xs={12} />
-      {cluster.isLiquidated ?
-        (
-          <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-            <PrimaryButton text={'Reactivate Cluster'} onClick={moveToReactivateCluster} size={ButtonSize.XL}/>
+      {(!!cluster.validatorCount || cluster.isLiquidated) &&
+        <OperationRunwayWrapper>
+          <Grid item className={classes.SeparationLine} xs={12}/>
+          <Grid container item className={classes.SecondSectionWrapper}>
+            <NewRemainingDays cluster={cluster}/>
+            {cluster.isLiquidated && (
+              <Grid className={classes.ErrorMessageWrapper}>
+                <ErrorText
+                  marginTop={'16px'}
+                  errorType={2}
+                />
+              </Grid>
+            )}
           </Grid>
-        ) : (
-          <Grid container item className={classes.ActionButtonWrapper}>
-            <Grid item xs>
-              <PrimaryButton text={'Deposit'} onClick={moveToDeposit} size={ButtonSize.XL}/>
-            </Grid>
-            <Grid item xs>
-              <SecondaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL}/>
-            </Grid>
-          </Grid>
-        )}
+          <Grid item className={classes.SeparationLine} xs={12}/>
+          {cluster.isLiquidated ?
+            (
+              <Grid container item xs={12} className={classes.ActionButtonWrapper}>
+                <PrimaryButton text={'Reactivate Cluster'} onClick={moveToReactivateCluster} size={ButtonSize.XL}/>
+              </Grid>
+            ) : (
+              <Grid container item className={classes.ActionButtonWrapper}>
+                <Grid item xs>
+                  <PrimaryButton text={'Deposit'} onClick={moveToDeposit} size={ButtonSize.XL}/>
+                </Grid>
+                <Grid item xs>
+                  <SecondaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL}/>
+                </Grid>
+              </Grid>
+            )}
+        </OperationRunwayWrapper>}
     </Grid>
   );
 };

@@ -9,7 +9,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
 import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const ActionsButton = () => {

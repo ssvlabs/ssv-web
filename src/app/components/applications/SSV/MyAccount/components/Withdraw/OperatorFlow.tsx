@@ -8,7 +8,7 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { withdrawRewards } from '~root/services/operatorContract.service';
 

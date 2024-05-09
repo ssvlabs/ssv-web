@@ -23,7 +23,7 @@ import ValidatorsList
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getSelectedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 

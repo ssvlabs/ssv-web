@@ -14,8 +14,7 @@ import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styl
 import ValidatorStore from '../../../common/stores/applications/SsvWeb/Validator.store';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 type Props = {

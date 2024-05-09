@@ -16,7 +16,7 @@ import { SingleOperator } from '~app/model/processes.model';
 import { getOperator } from '~root/services/operator.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import LinkText from '~app/components/common/LinkText';
 import { getOperatorBalance } from '~root/services/operatorContract.service';

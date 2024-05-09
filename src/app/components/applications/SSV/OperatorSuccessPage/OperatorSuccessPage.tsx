@@ -14,7 +14,7 @@ import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { fetchOperators } from '~app/redux/account.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 

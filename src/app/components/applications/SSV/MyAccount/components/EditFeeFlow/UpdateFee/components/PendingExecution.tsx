@@ -21,8 +21,7 @@ import { SingleOperator } from '~app/model/processes.model';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();

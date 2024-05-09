@@ -25,12 +25,10 @@ import {
   fetchClusters,
   getAccountClusters,
   getClustersPagination,
-  refreshOperatorsAndClusters,
   setSelectedClusterId,
 } from '~app/redux/account.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const ClusterDashboard = () => {
   const stores = useStores();

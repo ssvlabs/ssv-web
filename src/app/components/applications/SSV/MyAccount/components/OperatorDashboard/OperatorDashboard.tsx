@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -20,9 +21,8 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getOperatorBalance } from '~root/services/operatorContract.service';
 import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import styled from 'styled-components';
 
 const ButtonWrapper = styled.div`
     width: 164px;

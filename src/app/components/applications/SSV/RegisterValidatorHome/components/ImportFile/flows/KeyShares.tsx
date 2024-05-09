@@ -40,7 +40,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
@@ -49,7 +49,7 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isJsonFile } from '~root/utils/dkg.utils';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
@@ -86,7 +86,6 @@ const KeyShareFlow = () => {
     const keyShareFileIsJson = isJsonFile(validatorStore.keyShareFile);
     const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(operatorStore.clusterSize));
     const [isLoading, setIsLoading] = useState(false);
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
       if (!processStore.secondRegistration) {

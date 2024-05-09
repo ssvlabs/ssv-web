@@ -124,7 +124,7 @@ class ValidatorStore extends BaseStore {
                           { accountAddress: string; isContractWallet: boolean; publicKey: string; operators: IOperator[]; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function; }): Promise<boolean> {
     const sortedOperatorIds = getSortedOperatorsIds(operators);
     const clusterData = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-    const payload =  [publicKey, sortedOperatorIds, clusterData] ;
+    const payload = [publicKey, sortedOperatorIds, clusterData];
     const contract = getContractByName(EContractName.SETTER);
     if (!payload) {
       return false;

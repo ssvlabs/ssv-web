@@ -52,7 +52,6 @@ export const fetchClusters = createAsyncThunk('account/fetchClusters', async ({ 
 });
 
 export const refreshOperatorsAndClusters = createAsyncThunk('account/refreshOperatorsAndClusters', async (_, thunkApi) => {
-  thunkApi.dispatch(resetPagination());
   await thunkApi.dispatch(fetchOperators({}));
   await thunkApi.dispatch(fetchClusters({}));
 });

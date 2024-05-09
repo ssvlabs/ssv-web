@@ -51,7 +51,7 @@ const toDecimalNumber = (fee: number, decimalPlaces?: number): string => {
 const getFeeForYear = (fee: number, decimalPlaces?: number): string => {
   const wrapFee = new Decimal(fee);
   const feePerYear = Number(wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
-  const places = feePerYear < 1 ? 10 : 2;
+  const places = feePerYear < 0.0099 ? 10 : 2;
   return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? places).toString();
 };
 

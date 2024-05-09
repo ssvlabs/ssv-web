@@ -51,7 +51,7 @@ export const validateFeeInput = (value: string, callback: Function): void => {
   if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
     response.shouldDisplay = true;
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
-    response.errorMessage = `Fee must be higher than ${formatNumberToUi(minimumFeePerYear)} SSV`;
+    response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
   } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
@@ -87,7 +87,7 @@ export const validateFeeUpdate = (previousValue: Decimal, newValue: string, maxF
   else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(newValue) > 0) {
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
     response.shouldDisplay = true;
-    response.errorMessage = `Fee must be higher than ${formatNumberToUi(feeMaximumIncrease)} SSV`;
+    response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
   } else if (Number(newValue) === 0 && !isPrivateOperator) {
     response.shouldDisplay = true;
     response.errorMessage = 'You must set your operator as private before updating your fee to 0.';

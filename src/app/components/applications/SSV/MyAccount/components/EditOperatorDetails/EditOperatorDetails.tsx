@@ -7,7 +7,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import {
@@ -18,12 +17,13 @@ import OperatorMetadataStore, {
 } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import { useAppDispatch } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleOperator } from '~app/model/processes.model';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchOperators } from '~app/redux/account.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
@@ -35,6 +35,7 @@ const EditOperatorDetails = () => {
   let operator: IOperator = process?.item;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -62,7 +63,7 @@ const EditOperatorDetails = () => {
         }
       });
       rawDataToValidate = rawDataToValidate.join(',');
-      dispatch(setIsLoading(true));
+      setIsLoading(true);
       let signatureHash;
       try {
         const contract = getContractByName(EContractName.SETTER);
@@ -71,7 +72,7 @@ const EditOperatorDetails = () => {
       } catch (e: any) {
         console.log(`Error message: ${e.message}`);
         setErrorMessage(['You must confirm the signature request through your wallet']);
-        dispatch(setIsLoading(false));
+        setIsLoading(false);
         return;
       }
       const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
@@ -81,7 +82,7 @@ const EditOperatorDetails = () => {
       } else {
         setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
       }
-      dispatch(setIsLoading(false));
+      setIsLoading(false);
     }
   };
 
@@ -97,10 +98,11 @@ const EditOperatorDetails = () => {
           return (<FieldWrapper fieldKey={key}/>);
         }),
         ...errorMessage.map(error => <Typography className={classes.ErrorMessage}>{error}</Typography>),
-        <PrimaryButton children={'Update'}
-                       disable={buttonDisable}
-                       wrapperClass={classes.marginBottom}
-                       submitFunction={submitHandler}/>,
+        <PrimaryButton text={'Update'}
+                       isDisabled={buttonDisable}
+                       isLoading={isLoading}
+                       onClick={submitHandler}
+                       size={ButtonSize.XL}/>,
       ]}
     />
   );

@@ -118,7 +118,7 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
   return Math.max((fromWei(cluster.balance) - liquidationCollateralCost) / burnRatePerDay, 0);
 };
 
-const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, fullData = false) => {
+const getClusterData = async (clusterHash: string, liquidationCollateralPeriod?: number, minimumLiquidationCollateral?: number, fullData = false) => {
     const response = await getClusterByHash(clusterHash);
     const clusterData = response?.cluster;
     if (clusterData === null) {
@@ -129,7 +129,7 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod: 
         balance: 0,
         active: true,
       };
-    } else if (fullData) {
+    } else if (fullData && liquidationCollateralPeriod && minimumLiquidationCollateral) {
       const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
       const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
       const runWay: number = getClusterRunWay({

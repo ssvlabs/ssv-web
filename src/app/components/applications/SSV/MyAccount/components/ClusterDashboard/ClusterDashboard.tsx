@@ -28,6 +28,9 @@ import {
   refreshOperatorsAndClusters,
   setSelectedClusterId,
 } from '~app/redux/account.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -150,12 +153,9 @@ const ClusterDashboard = () => {
         <ToggleDashboards title={'Validator Clusters'}/>
         <Grid container item xs className={classes.HeaderButtonsWrapper}>
           {rows.length > 0 && (
-            <Grid item className={`${classes.HeaderButton} ${classes.lightHeaderButton}`} onClick={moveToFeeRecipient}>
-              Fee Address
-              <Grid item className={classes.Pencil}/>
-            </Grid>
+            <SecondaryButton onClick={moveToFeeRecipient} icon={'/images/test/Group.svg'} text={'Fee Address'} size={ButtonSize.MD}/>
           )}
-          <Grid item className={classes.HeaderButton} onClick={moveToRegisterValidator}>Add Cluster</Grid>
+          <PrimaryButton onClick={moveToRegisterValidator} text={'Add Cluster'} size={ButtonSize.MD}/>
         </Grid>
       </Grid>
       <Dashboard

@@ -50,7 +50,9 @@ const toDecimalNumber = (fee: number, decimalPlaces?: number): string => {
 
 const getFeeForYear = (fee: number, decimalPlaces?: number): string => {
   const wrapFee = new Decimal(fee);
-  return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? 2).toString();
+  const feePerYear = Number(wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
+  const places = feePerYear < 1 ? 10 : 2;
+  return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? places).toString();
 };
 
 export { fromWei, toWei, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear, encodePacked };

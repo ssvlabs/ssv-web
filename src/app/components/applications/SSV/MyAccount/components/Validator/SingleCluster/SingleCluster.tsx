@@ -8,7 +8,6 @@ import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SingleCluster.styles';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
@@ -23,30 +22,10 @@ import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import { ButtonSize } from '~app/enums/Button.enum';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getSelectedCluster, setSelectedClusterId } from '~app/redux/account.slice';
-
-const ButtonTextWrapper = styled.div`
-    display: flex;
-    height: 100%;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-`;
-
-const ButtonText = styled.p`
-    font-size: 16px;
-    font-weight: 600;
-    background-color: ${({ theme }) => theme.primaryBlue};
-`;
-
-const Icon = styled.div<{ theme: any, icon: string, withoutDarkMode: boolean }>`
-    width: 24px;
-    height: 24px;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: ${({ theme, icon, withoutDarkMode }) => (withoutDarkMode ? `url(${icon}.svg)` : `url(${icon}${theme.colors.isDarkMode ? '-dark.svg' : '.svg'})`)};
-`;
 
 const ValidatorsWrapper = styled.div`
     width: 872px;
@@ -89,6 +68,7 @@ const SingleCluster = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = useAppSelector(getSelectedCluster);
+  const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
 
   if (!cluster) {
@@ -144,7 +124,8 @@ const SingleCluster = () => {
       </Grid>
       <Section>
         <Grid item>
-          <Balance cluster={cluster} moveToReactivateCluster={moveToReactivateCluster} moveToDeposit={moveToDeposit} moveToWithdraw={moveToWithdraw}  />
+          <Balance cluster={cluster} moveToReactivateCluster={moveToReactivateCluster} moveToDeposit={moveToDeposit}
+                   moveToWithdraw={moveToWithdraw}/>
         </Grid>
         <div>
           <ValidatorsWrapper>
@@ -154,24 +135,16 @@ const SingleCluster = () => {
                 {cluster.validatorCount > 0 && <ValidatorsCountBadge>{cluster.validatorCount}</ValidatorsCountBadge>}
               </TitleWrapper>
               <Grid className={classes.ButtonsWrapper}>
-                {cluster.validatorCount > 1 &&
-                  <ActionsButton extendClass={classes.Actions} children={<ButtonTextWrapper>
-                    <ButtonText>
-                      Actions
-                    </ButtonText>
-                    <Icon icon={'/images/arrowDown/arrow'} withoutDarkMode />
-                  </ButtonTextWrapper>}/>}
+                {cluster.validatorCount > 1 && <ActionsButton/>}
                 <AnchorTooltip
                   title={'One of your chosen operators has shifted to a permissioned status. To onboard validators, you\'ll need to select a new cluster.'}
                   shouldDisableHoverListener={!hasPrivateOperator}
                   placement="top">
                   <div>
-                    <PrimaryButton disable={showAddValidatorBtnCondition} wrapperClass={classes.AddToCluster} children={
-                      <ButtonTextWrapper>
-                        <ButtonText>Add Validator</ButtonText>
-                        <Icon icon={'/images/plusIcon/plus'} withoutDarkMode={false} />
-                      </ButtonTextWrapper>}
-                                   submitFunction={addToCluster}/>
+                    <PrimaryButton isDisabled={showAddValidatorBtnCondition} text={'Add Validator'}
+                                   icon={`/images/plusIcon/plus${isDarkMode ? '-dark' : ''}.svg`}
+                                   size={ButtonSize.SM}
+                                   onClick={addToCluster}/>
                   </div>
                 </AnchorTooltip>
               </Grid>

@@ -11,12 +11,14 @@ import InputLabel from '~app/components/common/InputLabel';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { updateOperatorAddressWhitelist } from '~root/services/operatorContract.service';
 
@@ -97,7 +99,7 @@ const OperatorAccessSettings = () => {
                                 <Typography className={classes.ErrorMessage}>{addressError.errorMessage}</Typography>
                             </Grid>}
                             <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-                                <PrimaryButton disable={btnDisabledCondition} children={'Update'} submitFunction={updateAddressHandler}/>
+                                <PrimaryButton isDisabled={btnDisabledCondition} text={'Update'} onClick={updateAddressHandler} size={ButtonSize.XL}/>
                             </TermsAndConditionsCheckbox>
                         </Grid>
                     </Grid>

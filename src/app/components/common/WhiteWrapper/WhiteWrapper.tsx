@@ -9,13 +9,14 @@ import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv';
 import BackNavigation from '~app/components/common/BackNavigation';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styles';
 import ValidatorStore from '../../../common/stores/applications/SsvWeb/Validator.store';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 type Props = {
   header: any,
@@ -113,19 +114,19 @@ const WhiteWrapper = (props: Props) => {
           <Grid container item xs={12} alignItems={'center'}>
             {withBackButton && (
               <Grid item xs={12} className={classes.BackButtonWrapper}>
-                <BackNavigation onClick={backButtonCallBack} backButtonRedirect={backButtonRedirect} />
+                <BackNavigation onClick={backButtonCallBack} backButtonRedirect={backButtonRedirect}/>
               </Grid>
             )}
             <Grid item container xs className={classes.HeaderWrapper}>
               <Grid item container xs={6} style={{ alignItems: 'center', gap: 11 }}>
                 <Typography>{header}</Typography>
-                {withExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={21} height={21} />}
+                {withExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={21} height={21}/>}
               </Grid>
               {withCancel && (
                 <Grid item xs={6}>
                   <Grid container item className={classes.CancelWrapper}>
                     <Typography onClick={dialogHandler}>Cancel</Typography>
-                    <Grid item className={classes.CancelImage} onClick={dialogHandler} />
+                    <Grid item className={classes.CancelImage} onClick={dialogHandler}/>
                   </Grid>
                 </Grid>
               )}
@@ -134,9 +135,9 @@ const WhiteWrapper = (props: Props) => {
               <Grid item xs={6}>
                 <Grid item className={classes.Options} onClick={() => {
                   setShowSettings(!showSettings);
-                }} />
+                }}/>
                 <Grid item className={classes.SettingsWrapper}>
-                  <ShowSettings />
+                  <ShowSettings/>
                 </Grid>
               </Grid>
             )}
@@ -147,13 +148,13 @@ const WhiteWrapper = (props: Props) => {
         </Grid>
         <Dialog open={openDialog} PaperProps={{ style: { borderRadius: 16, backgroundColor: 'transparent' } }}>
           <Grid container item className={classes.DialogWrapper}>
-            <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'} />
+            <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'}/>
             <Grid container className={classes.ButtonsWrapper}>
               <Grid item xs>
-                <SecondaryButton children={'Yes, Cancel'} submitFunction={cancelProcess} />
+                <SecondaryButton text={'Yes, Cancel'} onClick={cancelProcess} size={ButtonSize.XL}/>
               </Grid>
               <Grid item xs>
-                <PrimaryButton children={'No, Go Back'} submitFunction={dialogHandler} />
+                <PrimaryButton text={'No, Go Back'} onClick={dialogHandler} size={ButtonSize.XL}/>
               </Grid>
             </Grid>
           </Grid>

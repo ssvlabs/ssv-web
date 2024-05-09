@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
-import Button from '~app/components/common/Button/Button';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
@@ -22,6 +21,7 @@ import { reactivateCluster } from '~root/services/clusterContract.service';
 import { getSelectedCluster } from '~app/redux/account.slice';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+import AllowanceButton from '~app/components/AllowanceButton';
 
 const options = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -154,8 +154,7 @@ const ReactivateCluster = () => {
               <Typography className={classes.SsvPrice}
                           style={{ marginBottom: 0 }}>{formatNumberToUi(totalCost.toFixed(18))} SSV</Typography>
             </Grid>
-            <Button
-              withAllowance
+            <AllowanceButton
               text={'Next'}
               onClick={reactivateClusterHandler}
               disable={disableCondition}

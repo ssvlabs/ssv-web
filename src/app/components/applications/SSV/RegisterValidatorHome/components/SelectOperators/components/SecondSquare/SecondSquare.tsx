@@ -16,7 +16,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -37,6 +36,8 @@ import { getValidator } from '~root/services/validator.service';
 import { setSelectedClusterId } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
@@ -251,8 +252,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
 						<WarningBox extendClass={classes.ExtendWarningClass} text={'Partial MEV Relay Correlation'}
 												textLink={'Learn more'}
 												link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}/>}
-          <PrimaryButton dataTestId={'operators-selected-button'} disable={disableButton()} children={'Next'}
-                         submitFunction={onSelectOperatorsClick}/>
+          <PrimaryButton size={ButtonSize.XL} text={'Next'} isDisabled={disableButton()} onClick={onSelectOperatorsClick} />
         </Grid>,
       ]}
     />

@@ -9,14 +9,15 @@ import ToolTip from '~app/components/common/ToolTip';
 import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 import { ProcessType } from '~app/model/processes.model';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 
 const SELECT_MINIMUM_OPERATORS = 4;
 
@@ -102,11 +103,9 @@ const RegisterValidatorHome = () => {
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton children={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} submitFunction={moveToSelectOperators}
-                         withoutLoader/>
+          <PrimaryButton onClick={moveToSelectOperators} text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} size={ButtonSize.XL}/>
           <ButtonSeparator/>
-          <SecondaryButton children={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} submitFunction={moveToUploadKeyshare}
-                           noCamelCase withoutLoader/>
+          <SecondaryButton onClick={moveToUploadKeyshare} text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} size={ButtonSize.XL}/>
         </Grid>,
       ]}
     />

@@ -17,11 +17,12 @@ import { fromWei, toWei } from '~root/services/conversions.service';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton/PrimaryButton';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { SingleCluster } from '~app/model/processes.model';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
@@ -199,8 +200,8 @@ const FundingNewValidator = () => {
                   </Grid>
                   }
                   <Grid container style={{ marginTop: 24 }}>
-                    <PrimaryButton disable={disableBtnCondition} children={'Next'}
-                                   submitFunction={moveToNextPage}/>
+                    <PrimaryButton isDisabled={disableBtnCondition} text={'Next'}
+                                   onClick={moveToNextPage} size={ButtonSize.XL}/>
                   </Grid>
                 </Grid>
               </Grid>,

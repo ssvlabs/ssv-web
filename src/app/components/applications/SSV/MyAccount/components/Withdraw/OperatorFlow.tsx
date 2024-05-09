@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import Button from '~app/components/common/Button/Button';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
@@ -10,6 +8,8 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { withdrawRewards } from '~root/services/operatorContract.service';
 
 const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
@@ -49,49 +49,46 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
   }
 
   const secondBorderScreen = [(
-      <Grid item container>
-        <Grid container item xs={12} className={classes.BalanceWrapper}>
-          <Grid item container xs={12}>
-            <Grid item xs={6}>
-              <IntegerInput
-                  type="number"
-                  value={inputValue}
-                  onChange={inputHandler}
-                  className={classes.Balance}
-              />
+    <Grid item container>
+      <Grid container item xs={12} className={classes.BalanceWrapper}>
+        <Grid item container xs={12}>
+          <Grid item xs={6}>
+            <IntegerInput
+              type="number"
+              value={inputValue}
+              onChange={inputHandler}
+              className={classes.Balance}
+            />
+          </Grid>
+          <Grid item container xs={6} className={classes.MaxButtonWrapper}>
+            <Grid item onClick={maxValue} className={classes.MaxButton}>
+              MAX
             </Grid>
-            <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-              <Grid item onClick={maxValue} className={classes.MaxButton}>
-                MAX
-              </Grid>
-              <Grid item className={classes.MaxButtonText}>SSV</Grid>
-            </Grid>
-            {/* <Grid item xs={12} className={classes.BalanceInputDollar}> */}
-            {/*  ~$9485.67 */}
-            {/* </Grid> */}
+            <Grid item className={classes.MaxButtonText}>SSV</Grid>
           </Grid>
         </Grid>
       </Grid>
+    </Grid>
   )];
 
   return (
-      <BorderScreen
-          marginTop={0}
-          withConversion
-          withoutNavigation
-          header={'Withdraw'}
-          body={secondBorderScreen}
-          bottom={[<TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
-            <Button
-              text={'Withdraw'}
-              withAllowance={false}
-              onClick={withdrawSsv}
-              isLoading={isLoading}
-              disable={Number(inputValue) === 0 || (isMainnet && !isChecked)}
-          />
-          </TermsAndConditionsCheckbox>]}
-      />
+    <BorderScreen
+      marginTop={0}
+      withConversion
+      withoutNavigation
+      header={'Withdraw'}
+      body={secondBorderScreen}
+      bottom={[<TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
+                                           isMainnet={isMainnet}>
+        <PrimaryButton
+          text={'Withdraw'}
+          onClick={withdrawSsv}
+          isLoading={isLoading}
+          isDisabled={Number(inputValue) === 0 || (isMainnet && !isChecked)}
+          size={ButtonSize.XL}/>
+      </TermsAndConditionsCheckbox>]}
+    />
   );
 };
 
-export default observer(OperatorFlow);
+export default OperatorFlow;

@@ -90,6 +90,7 @@ const SingleCluster = () => {
   };
 
   const backToClustersDashboard = () => {
+    dispatch(setSelectedClusterId(''));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 

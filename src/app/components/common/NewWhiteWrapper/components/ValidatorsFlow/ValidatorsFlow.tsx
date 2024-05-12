@@ -10,6 +10,8 @@ import { getClusterHash } from '~root/services/cluster.service';
 import { SingleCluster } from '~app/model/processes.model';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import { useDispatch } from 'react-redux';
+import { setSelectedClusterId } from '~app/redux/account.slice';
 
 type Props = {
   header: string,
@@ -18,6 +20,7 @@ type Props = {
 
 const ValidatorsFlow = ({  header, stepBack }: Props) => {
   const accountAddress = useAppSelector(getAccountAddress);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const classes = useStyles({ mainFlow: false });
   const stores = useStores();
@@ -27,6 +30,7 @@ const ValidatorsFlow = ({  header, stepBack }: Props) => {
 
   const onNavigationClicked = () => {
     if (!stepBack) {
+      dispatch(setSelectedClusterId(''));
       process.validator = undefined;
       navigate(-1);
     } else {

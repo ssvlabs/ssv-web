@@ -6,6 +6,7 @@ import { WalletOptionCard } from './WalletOptionCard';
 type Props = {
   connector: Connector;
   onClick: () => void;
+  isLoading?: boolean;
 };
 
 const ICONS: Record<string, string> = {

@@ -1,19 +1,19 @@
-import { useConnectWallet } from '@web3-onboard/react';
-import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.provider';
-import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
-import { resetContracts } from '~root/services/contracts.service';
+import { useDisconnect } from 'wagmi';
+import config from '~app/common/config';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getWalletLabel, resetWallet } from '~app/redux/wallet.slice';
-import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { store } from '~app/store';
-import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '../common/stores/applications/SsvWeb/SSV.store';
+import { setStrategyRedirect } from '~app/redux/navigation.slice';
+import { getWalletLabel, resetWallet } from '~app/redux/wallet.slice';
+import { store } from '~app/store';
+import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.provider';
+import { resetContracts } from '~root/services/contracts.service';
 import OperatorStore from '../common/stores/applications/SsvWeb/Operator.store';
+import SsvStore from '../common/stores/applications/SsvWeb/SSV.store';
 
 const useWalletDisconnector = () => {
-  const [,, disconnect] = useConnectWallet();
+  const { disconnect } = useDisconnect();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const label = useAppSelector(getWalletLabel);
@@ -32,7 +32,7 @@ const useWalletDisconnector = () => {
   };
 
   const disconnectWallet = async () => {
-    label && await disconnect({ label });
+    label && (await disconnect(/* { label } */));
     cleanLocalStorageAndCookie();
     await resetWalletAndStores();
     resetContracts();
@@ -41,7 +41,7 @@ const useWalletDisconnector = () => {
 
   return {
     resetWalletAndStores,
-    disconnectWallet,
+    disconnectWallet
   };
 };
 

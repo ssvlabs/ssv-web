@@ -1,7 +1,7 @@
 import { DialogProps } from '@radix-ui/react-alert-dialog';
 import { FC } from 'react';
 import { useLocalStorage } from 'react-use';
-import { UseAccountEffectParameters, useAccountEffect, useConnect } from 'wagmi';
+import { Connector, UseAccountEffectParameters, useAccountEffect, useConnect } from 'wagmi';
 import { Checkbox } from '~app/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~app/components/ui/dialog';
 import { useAppSelector } from '~app/hooks/redux.hook';
@@ -17,7 +17,7 @@ type Props = {
 export const ConnectWalletDialog: FC<Props & DialogProps> = ({ onConnect, ...props }) => {
   const isDarkMode = useAppSelector(getIsDarkMode);
 
-  const { connectors, connect } = useConnect();
+  const { connectors, connect, isPending, variables } = useConnect();
   const [isChecked, setIsChecked] = useLocalStorage('consent', false);
 
   useAccountEffect({
@@ -53,10 +53,22 @@ export const ConnectWalletDialog: FC<Props & DialogProps> = ({ onConnect, ...pro
           </div>
           <div className="flex gap-2">
             {connectors.map((connector) => (
-              <WalletOption className="flex-1" key={connector.uid} connector={connector} onClick={() => connect({ connector })} disabled={!isChecked} />
+              <WalletOption
+                className="flex-1"
+                key={connector.uid}
+                isLoading={connector.uid === (variables?.connector as Connector)?.uid && isPending}
+                connector={connector}
+                onClick={() => connect({ connector })}
+                disabled={!isChecked || isPending}
+              />
             ))}
             {!isMetaMaskInstalled && (
-              <WalletOptionCard className="flex-1" iconSrc="/images/wallets/metamask.svg" disabled={!isChecked} onClick={() => window.open('https://metamask.io/download.html')}>
+              <WalletOptionCard
+                className="flex-1"
+                iconSrc="/images/wallets/metamask.svg"
+                disabled={!isChecked || isPending}
+                onClick={() => window.open('https://metamask.io/download.html')}
+              >
                 MetaMask
               </WalletOptionCard>
             )}

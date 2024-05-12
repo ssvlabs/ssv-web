@@ -9,6 +9,7 @@ import { store } from '~app/store';
 import GTMFrame from '~lib/analytics/GoogleTag/components/GTMFrame';
 import * as serviceWorker from '~root/serviceWorker';
 import { rootStore } from '~root/stores';
+import { RainbowKitProvider } from './RainbowKitProvider';
 import { config } from './wagmi/config';
 
 const queryClient = new QueryClient();
@@ -21,10 +22,12 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <RdProvider store={store}>
         <Provider stores={rootStore}>
-          <BrowserRouter>
-            <App />
-            <GTMFrame />
-          </BrowserRouter>
+          <RainbowKitProvider>
+            <BrowserRouter>
+              <App />
+              <GTMFrame />
+            </BrowserRouter>
+          </RainbowKitProvider>
         </Provider>
       </RdProvider>
     </QueryClientProvider>

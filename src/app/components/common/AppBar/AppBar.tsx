@@ -30,6 +30,7 @@ const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[]; exclude
   const restrictedUserGeo = useAppSelector(getRestrictedUserGeo);
   const isLoading = useAppSelector(getIsLoading);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  console.log('strategyRedirect:', strategyRedirect)
   const hasOperatorsOrValidators = strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
 
   useEffect(() => {

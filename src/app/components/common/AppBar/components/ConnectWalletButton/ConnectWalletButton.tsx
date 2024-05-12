@@ -1,8 +1,8 @@
 import Grid from '@mui/material/Grid';
-import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
-import { useEffect, useState } from 'react';
-import { useAccount, useWalletClient } from 'wagmi';
+import { ethers } from 'ethers';
+import { useEffect } from 'react';
+import { useAccount, useAccountEffect } from 'wagmi';
 import config from '~app/common/config';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -10,39 +10,32 @@ import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import ConnectWalletDialog from '~app/components/common/ConnectWalletDialog';
 import { METAMASK_LABEL } from '~app/constants/constants';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useEthersProvider } from '~app/hooks/useEthersProvider';
 import { useStores } from '~app/hooks/useStores';
-import { setIsShowSsvLoader, setIsShowWalletPopup } from '~app/redux/appState.slice';
+import { getIsShowConnectWallet, setIsShowConnectWallet, setIsShowSsvLoader, setIsShowWalletPopup } from '~app/redux/appState.slice';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import { checkIfWalletIsContractAction, getAccountAddress, getWalletLabel, setConnectedNetwork, setWallet } from '~app/redux/wallet.slice';
 import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { initContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { useStyles } from './ConnectWalletButton.styles';
-import { useQuery } from '@tanstack/react-query';
-import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { useEthersProvider } from '~app/hooks/useEthersProvider';
-import { useEthersSigner } from '~app/hooks/useEthersSigner';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const ConnectWalletButton = () => {
-  const [open, setOpen] = useState(false);
+  useAccountEffect({
+    
+
+  })
+  return <ConnectButton />; 
+  const dispatch = useAppDispatch();
+
+  const open = useAppSelector(getIsShowConnectWallet);
+  const setOpen = (open: boolean) => dispatch(setIsShowConnectWallet(open));
 
   const account = useAccount();
-  const result = useWalletClient();
-  console.log('result:', result);
-
-  const data = useQuery({
-    queryKey: ['provider'],
-    queryFn: () =>
-      account.connector?.getProvider({
-        chainId: account.chainId
-      }),
-    enabled: account.isConnected
-  });
-  console.log('data:', data);
 
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const [{ connectedChain }] = useSetChain();
-  const dispatch = useAppDispatch();
   const storedWalletLabel = useAppSelector(getWalletLabel);
   const storedWalletAddress = useAppSelector(getAccountAddress);
   const classes = useStyles({ walletConnected: !!storedWalletAddress });
@@ -51,28 +44,37 @@ const ConnectWalletButton = () => {
   const operatorStore: OperatorStore = stores.Operator;
   const myAccountStore: MyAccountStore = stores.MyAccount;
 
-  const provv = useEthersProvider();
-  console.log('provv:', provv);
-  const signer = useEthersSigner();
-  console.log('signer:', signer);
+  const provider = useEthersProvider();
 
-  const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
+  type InitProps = {
+    walletAddress: string;
+    connectorName: string;
+    chainId: number;
+    provider: ethers.providers.JsonRpcProvider;
+  };
+
+  const initiateWallet = async ({ walletAddress, chainId, connectorName, provider }: InitProps) => {
     dispatch(setIsShowSsvLoader(true));
-    dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
-    wallet && (await dispatch(checkIfWalletIsContractAction(wallet.provider)));
-    notifyService.init(chain.id);
-    const index = getNetworkInfoIndexByNetworkId(Number(chain.id));
+    console.log('initiating wallet ');
+    dispatch(setWallet({ label: connectorName, address: walletAddress }));
+    wallet && (await dispatch(checkIfWalletIsContractAction(provider)));
+    notifyService.init(chainId.toString());
+    const index = getNetworkInfoIndexByNetworkId(Number(chainId));
     dispatch(setConnectedNetwork(index));
-    initContracts({ provider: connectedWallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: connectedWallet.label !== METAMASK_LABEL });
+    initContracts({ provider: provider as any, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
     await ssvStore.initUser();
     await operatorStore.initUser();
     await myAccountStore.getOwnerAddressOperators({});
     await myAccountStore.getOwnerAddressClusters({});
     if (myAccountStore.ownerAddressClusters?.length) {
+      console.log('were here');
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
     } else if (myAccountStore.ownerAddressOperators?.length) {
+      console.log('were here 2');
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
     } else {
+      console.log('were in root');
+
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
     await operatorStore.updateOperatorValidatorsLimit();
@@ -80,33 +82,29 @@ const ConnectWalletButton = () => {
   };
 
   useEffect(() => {
-    if (!account.isConnecting && account.isConnected) {
-      // initiateWallet({
-      //   connectedWallet: {
-      //     accounts: account.addresses
-      //   },
-      //   chain: connectedChain
-      // });
+    if (provider && account.isConnected && account.chainId) {
+      dispatch(setIsShowSsvLoader(true));
+      console.log('initiateWallet');
+      initiateWallet({
+        chainId: account.chainId!,
+        connectorName: account.connector?.name ?? '',
+        provider: provider as ethers.providers.JsonRpcProvider,
+        walletAddress: account.address as string
+      });
     }
-  }, []);
+  }, [account.address, account.chainId, account.connector?.name, account.isConnected, provider]);
 
   useEffect(() => {
     if (storedWalletAddress && wallet && storedWalletAddress !== wallet.accounts[0].address) {
       window.location.reload();
     }
-    if (wallet && connectedChain && !connecting) {
-      initiateWallet({ connectedWallet: wallet, chain: connectedChain });
-    }
-    if (!getFromLocalStorageByKey('onboard.js:last_connected_wallet')) {
-      dispatch(setIsShowSsvLoader(false));
-    }
   }, [wallet, connectedChain, connecting]);
 
   const onClick = async () => {
-    return open ? setOpen(false) : setOpen(true);
-    if (storedWalletAddress) {
+    if (account.isConnected) {
       dispatch(setIsShowWalletPopup(true));
     } else {
+      return open ? setOpen(false) : setOpen(true);
       await connect();
     }
   };

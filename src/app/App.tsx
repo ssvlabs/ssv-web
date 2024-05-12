@@ -24,6 +24,7 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { getColors } from '~root/themes';
 import './globals.css';
+import { useSwitchChain } from 'wagmi';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -65,6 +66,14 @@ const App = () => {
   const theme = { colors: getColors({ isDarkMode }) };
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const navigate = useNavigate();
+  
+  useSwitchChain({
+    mutation: {
+      onSuccess: (data) => {
+        console.log('Switched to chain:', data);
+      }
+    }
+  });
 
   useEffect(() => {
     setWeb3Onboard(onboardInstance);

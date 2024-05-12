@@ -71,11 +71,6 @@ const SingleCluster = () => {
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
 
-  if (!cluster) {
-    // TODO: add error handling
-    return null;
-  }
-
   const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !isEqualsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);

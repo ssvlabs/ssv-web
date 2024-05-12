@@ -5,6 +5,7 @@ import { IOperator } from '~app/model/operator.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getOperator } from '~root/services/operator.service';
 import { isEqualsAddresses } from '~lib/utils/strings';
+import { Contract } from 'ethers';
 
 const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   const contract = getContractByName(EContractName.GETTER);
@@ -59,4 +60,19 @@ const updateOperatorAddressWhitelist = async ({ operator, address, isContractWal
   });
 };
 
-export { getOperatorBalance, withdrawRewards, updateOperatorAddressWhitelist };
+const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { operatorId: number, isContractWallet: boolean, dispatch: Function }): Promise<boolean> => {
+  const contract: Contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+
+  return await transactionExecutor({
+    contractMethod: contract.removeOperator,
+    payload: [operatorId],
+    isContractWallet,
+    getterTransactionState: async () => !await getOperator(operatorId),
+    dispatch,
+  });
+};
+
+export { getOperatorBalance, withdrawRewards, updateOperatorAddressWhitelist, removeOperator };

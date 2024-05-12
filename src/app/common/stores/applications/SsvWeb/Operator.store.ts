@@ -83,7 +83,6 @@ class OperatorStore extends BaseStore {
       setClusterSize: action.bound,
       openCancelDialog: observable,
       getOperatorFee: action.bound,
-      removeOperator: action.bound,
       loadingOperators: observable,
       addNewOperator: action.bound,
       selectOperator: action.bound,
@@ -387,25 +386,6 @@ class OperatorStore extends BaseStore {
         id: operator.id,
         fee: operator.fee,
       },
-      dispatch,
-    });
-  }
-
-  async removeOperator({ operatorId, isContractWallet, dispatch }: {
-    operatorId: number,
-    isContractWallet: boolean,
-    dispatch: Function,
-  }): Promise<any> {
-    const contract: Contract = getContractByName(EContractName.SETTER);
-    if (!contract) {
-      return false;
-    }
-
-    return await transactionExecutor({
-      contractMethod: contract.removeOperator,
-      payload: [operatorId],
-      isContractWallet,
-      getterTransactionState: async () => !await getOperator(operatorId),
       dispatch,
     });
   }

@@ -99,7 +99,7 @@ const TextInput = ({ icon,
             }
         </Grid>
           {sideButton &&  (
-              <InputSideButton confirmedState={sideButtonClicked} sideButtonAction={sideButtonAction} disabled={sideButtonDisabled} sideButtonLabel={sideButtonLabel ?? 'Confirm'}/>
+              <InputSideButton isConfirmedState={sideButtonClicked} sideButtonAction={sideButtonAction} isDisabled={sideButtonDisabled} sideButtonLabel={sideButtonLabel ?? 'Confirm'}/>
           )}
           {withSideText && (
               <Grid item className={classes.Text}>

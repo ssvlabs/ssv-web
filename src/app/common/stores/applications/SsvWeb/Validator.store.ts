@@ -10,7 +10,7 @@ import { getContractByName } from '~root/services/contracts.service';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { IOperator } from '~app/model/operator.model';
-import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
@@ -26,10 +26,6 @@ const annotations = {
   addNewValidator: action.bound,
   keySharePublicKey: observable,
   setKeySharePublicKey: action.bound,
-  removeValidator: action.bound,
-  bulkRemoveValidators: action.bound,
-  exitValidator: action.bound,
-  bulkExitValidators: action.bound,
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
@@ -117,80 +113,6 @@ class ValidatorStore extends BaseStore {
       } catch (e: any) {
         reject(e);
       }
-    });
-  }
-
-  async removeValidator({ accountAddress, isContractWallet, publicKey, operators, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }:
-                          { accountAddress: string; isContractWallet: boolean; publicKey: string; operators: IOperator[]; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function; }): Promise<boolean> {
-    const sortedOperatorIds = getSortedOperatorsIds(operators);
-    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-    const payload = [publicKey, sortedOperatorIds, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.removeValidator,
-      payload,
-      getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-        return validatorCount;
-      },
-      prevState: clusterData.validatorCount,
-      isContractWallet,
-      dispatch,
-    });
-  }
-
-  /**
-   * Bulk remove validators
-   */
-  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorPks, operators, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }:
-                               { accountAddress: string; isContractWallet: boolean; validatorPks: string[]; operators: IOperator[]; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function; }): Promise<boolean> {
-    const sortedOperatorIds = getSortedOperatorsIds(operators);
-    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-    const payload = [validatorPks, sortedOperatorIds, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.bulkRemoveValidator,
-      payload,
-      getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-        return validatorCount;
-      },
-      isContractWallet,
-      dispatch,
-    });
-  }
-
-  /**
-   * Exit validator
-   */
-  async exitValidator({ isContractWallet, publicKey, operatorIds, dispatch }: { isContractWallet: boolean; publicKey: string; operatorIds: number[]; dispatch: Function; }): Promise<boolean> {
-    const payload = [publicKey, operatorIds];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.exitValidator,
-      payload,
-      isContractWallet: isContractWallet,
-      dispatch,
-    });
-  }
-
-  /**
-   * Bulk exit validator
-   */
-  async bulkExitValidators({ isContractWallet, validatorIds, operatorIds, dispatch }: { isContractWallet: boolean; validatorIds: string[]; operatorIds: number[]; dispatch: Function; }): Promise<boolean> {
-    const payload = [validatorIds, operatorIds];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.bulkExitValidator,
-      payload,
-      isContractWallet: isContractWallet,
-      dispatch,
     });
   }
 

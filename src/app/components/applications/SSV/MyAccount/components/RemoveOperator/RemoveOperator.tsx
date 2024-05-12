@@ -7,7 +7,6 @@ import { useStores } from '~app/hooks/useStores';
 import CheckBox from '~app/components/common/CheckBox';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/RemoveOperator/RemoveOperator.styles';
 import { useAppSelector, useAppDispatch } from '~app/hooks/redux.hook';
@@ -17,13 +16,13 @@ import { getIsContractWallet } from '~app/redux/wallet.slice';
 import ErrorButton from '~app/atomicComponents/ErrorButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchOperators } from '~app/redux/account.slice';
+import { removeOperator } from '~root/services/operatorContract.service';
 
 const RemoveOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const process: RegisterOperator = processStore.process;
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
@@ -41,7 +40,7 @@ const RemoveOperator = () => {
 
   const submitForm = async () => {
     setIsLoading(true);
-    const isRemoved = await operatorStore.removeOperator({ operatorId: Number(process.item.id), isContractWallet, dispatch });
+    const isRemoved = await removeOperator({ operatorId: Number(process.item.id), isContractWallet, dispatch });
     setIsLoading(false);
     if (isRemoved) {
       await dispatch(fetchOperators({ forcePage: 1 }));

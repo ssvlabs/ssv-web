@@ -1,32 +1,21 @@
 import React from 'react';
-import Grid from '@mui/material/Grid';
-import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/material/styles';
+import styled from 'styled-components';
+import Grid from './Grid';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    SideButton: {
-        padding: '4px 8px 4px 8px',
-        fontSize: 16,
-        fontWeight: 600,
-        color: theme.colors.gray90,
-        borderRadius: 8,
-        backgroundColor:(props: any) => props.confirmedState ? '#1fcf98' : theme.colors.gray20,
-        cursor: 'pointer',
-        position: 'relative',
-        bottom: 5,
-    },
-    Disable: {
-        color: theme.colors.gray40,
-        cursor: 'default',
-    },
-}));
+const Wrapper = styled(Grid)<{ theme: any; isConfirmedState: boolean | undefined; isDisabled: boolean | undefined; }>`
+    position: relative;
+    bottom: 5px;
+    padding: 4px 8px 4px 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: ${({ theme, isDisabled }) => isDisabled ? theme.colors.gray40 : theme.colors.gray90};
+    border-radius: 8px;
+    background-color: ${({ theme, isConfirmedState }) => isConfirmedState ? '#1fcf98' : theme.colors.gray20};
+    cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};
+`;
 
-const InputSideButton = ({ sideButtonAction, sideButtonLabel, disabled, confirmedState }: { sideButtonAction: any, sideButtonLabel: string, disabled?: boolean, confirmedState?: boolean }) => {
-    const classes = useStyles({ confirmedState });
-
-    return (
-        <Grid onClick={sideButtonAction} className={`${classes.SideButton} ${disabled && classes.Disable}`}>{sideButtonLabel}</Grid>
-    );
-};
+const InputSideButton = ({ sideButtonAction, sideButtonLabel, isDisabled, isConfirmedState }: { sideButtonAction: any, sideButtonLabel: string, isDisabled?: boolean, isConfirmedState?: boolean }) => (
+    <Wrapper onClick={sideButtonAction} isConfirmedState={isConfirmedState} isDisabled={isDisabled}>{sideButtonLabel}</Wrapper>
+);
 
 export default InputSideButton;

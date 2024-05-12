@@ -8,26 +8,29 @@ const isDistribution = import.meta.env.VITE_CLAIM_PAGE;
 
 const app = isFaucet ? 'faucet' : isDistribution ? 'distribution' : 'webapp';
 
-const appChains: Record<typeof app, Chain[]> = {
+const appChains: Record<typeof app, [Chain, ...Chain[]]> = {
   faucet: [holesky],
   distribution: [mainnet],
   webapp: [mainnet, holesky]
 };
 
 export const isChainSupported = (chainId: number) => {
-  return appChains[app].some((chain) => chain.id === chainId);
+  return chains.some((chain) => chain.id === chainId);
 };
+
+const chains = appChains[app];
+const transports = chains.reduce(
+  (acc, chain) => {
+    acc[chain.id] = http();
+    return acc;
+  },
+  {} as Record<string, HttpTransport>
+);
 
 export const config = getDefaultConfig({
   appName: 'SSV Web App',
   projectId: projectConfig.ONBOARD.PROJECT_ID,
-  chains: [mainnet, holesky],
-  transports: appChains[app].reduce(
-    (acc, chain) => {
-      acc[chain.id] = http();
-      return acc;
-    },
-    {} as Record<string, HttpTransport>
-  ),
+  chains,
+  transports,
   ssr: false
 });

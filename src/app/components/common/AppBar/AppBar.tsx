@@ -3,9 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { useStyles } from '~app/components/common/AppBar/AppBar.styles';
-import ConnectWalletButton from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
+import { WalletButton } from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton';
 import DarkModeSwitcher from '~app/components/common/AppBar/components/DarkModeSwitcher/DarkModeSwitcher';
-import NetworkToggle from '~app/components/common/AppBar/components/NetworkSwitchToggle/NetworkToggle';
 import AppLinksToggle from '~app/components/common/AppLinksToggle';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
@@ -18,7 +17,7 @@ type Button = {
   options?: any[];
 };
 
-const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[]; excludeNetworks?: number[] }) => {
+const AppBar = ({ buttons }: { buttons?: Button[] }) => {
   const navigate = useNavigate();
   const wrapperRef = useRef(null);
   const buttonsRef = useRef(null);
@@ -30,7 +29,6 @@ const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[]; exclude
   const restrictedUserGeo = useAppSelector(getRestrictedUserGeo);
   const isLoading = useAppSelector(getIsLoading);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
-  console.log('strategyRedirect:', strategyRedirect)
   const hasOperatorsOrValidators = strategyRedirect === config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
 
   useEffect(() => {
@@ -123,12 +121,10 @@ const AppBar = ({ buttons, excludeNetworks = [] }: { buttons?: Button[]; exclude
       </Grid>
       <Grid item className={classes.GridItem}>
         <Grid item container style={{ alignItems: 'center' }}>
-          <Grid item>
-            <NetworkToggle excludeNetworks={excludeNetworks} />
-          </Grid>
+          <Grid item>{/* <NetworkToggle excludeNetworks={excludeNetworks} /> */}</Grid>
           {!restrictedUserGeo && (
             <Grid item>
-              <ConnectWalletButton />
+              <WalletButton />
             </Grid>
           )}
           <Grid item className={classes.DarkModeWrapper}>

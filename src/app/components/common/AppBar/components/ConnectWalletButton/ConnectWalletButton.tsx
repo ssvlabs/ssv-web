@@ -2,7 +2,7 @@ import Grid from '@mui/material/Grid';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import { ethers } from 'ethers';
 import { useEffect } from 'react';
-import { useAccount, useAccountEffect } from 'wagmi';
+import { useAccount } from 'wagmi';
 import config from '~app/common/config';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
@@ -20,13 +20,111 @@ import { initContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { useStyles } from './ConnectWalletButton.styles';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Button } from '~app/components/ui/button';
+
+export const WalletButton = () => {
+  const account = useAccount();
+  console.log(' account.connector?.name:');
+  const classes = useStyles({ walletConnected: !!account.address });
+
+  let icon: string = '';
+  if (account.connector?.name === 'Ledger') {
+    icon = '/images/wallets/ledger.svg';
+  } else if (account.connector?.name === 'Trezor') {
+    icon = '/images/wallets/trezor.svg';
+  } else if (account.connector?.name === 'WalletConnect') {
+    icon = '/images/wallets/walletconnect.svg';
+  } else {
+    icon = '/images/wallets/metamask.svg';
+  }
+
+  return (
+    <ConnectButton.Custom>
+      {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected = ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated');
+
+        return (
+          <div
+            {...(!ready && {
+              'aria-hidden': true,
+              style: {
+                opacity: 0,
+                pointerEvents: 'none',
+                userSelect: 'none'
+              }
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <>
+                    <Button size="lg" onClick={openConnectModal}>
+                      Connect Wallet
+                    </Button>
+                  </>
+                );
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <Button variant="destructive" onClick={openChainModal}>
+                    Wrong Network
+                  </Button>
+                );
+                // return (
+                //   <Grid item container className={classes.ConnectWalletWrapper} onClick={openConnectModal}>
+                //     <Grid item>Connect Wallet</Grid>
+                //   </Grid>
+                // );
+              }
+
+              return (
+                <div className="flex gap-3">
+                  <Button size="lg" variant="ghost" onClick={openChainModal} style={{ display: 'flex', alignItems: 'center' }} type="button">
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4
+                        }}
+                      >
+                        {chain.iconUrl && <img alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} style={{ width: 16, height: 16 }} />}
+                      </div>
+                    )}
+                    {chain.name}
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={openAccountModal}>
+                    <img className={classes.WalletImage} src={icon} alt={`Connected to ${account.address}`} />
+                    {account.displayName}
+                  </Button>
+                  {/* <Grid item container className={classes.ConnectWalletWrapper} onClick={openAccountModal}>
+                    <Grid item container>
+                      <Grid item>
+                        <img className={classes.WalletImage} src={icon} alt={`Connected to ${account.address}`} />
+                      </Grid>
+                      <Grid item className={classes.WalletAddress}>
+                        {account.displayName}
+                      </Grid>
+                    </Grid>
+                  </Grid> */}
+                </div>
+              );
+            })()}
+          </div>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+};
 
 const ConnectWalletButton = () => {
-  useAccountEffect({
-    
-
-  })
-  return <ConnectButton />; 
   const dispatch = useAppDispatch();
 
   const open = useAppSelector(getIsShowConnectWallet);

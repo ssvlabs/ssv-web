@@ -12,6 +12,7 @@ const getOwnerAddressCost = async (ownerAddress: string, skipRetry?: boolean): P
 };
 
 const clustersByOwnerAddress = async (query: string): Promise<any> => {
+  console.log('config.links.SSV_API_ENDPOINT:', config.links.SSV_API_ENDPOINT)
   const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
   return await getRequest(url);
 };

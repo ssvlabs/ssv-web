@@ -25,6 +25,7 @@ import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { getColors } from '~root/themes';
 import './globals.css';
 import { useSwitchChain } from 'wagmi';
+import { useContractInitiator } from './hooks/useContractInitiator';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -66,7 +67,9 @@ const App = () => {
   const theme = { colors: getColors({ isDarkMode }) };
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const navigate = useNavigate();
-  
+
+  useContractInitiator();
+
   useSwitchChain({
     mutation: {
       onSuccess: (data) => {

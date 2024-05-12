@@ -13,6 +13,19 @@ module.exports = {
     },
     extend: {
       colors: {
+        'blue': {
+          50: '#f0f8ff',
+          100: '#dff0ff',
+          200: '#b8e2ff',
+          300: '#79cbff',
+          400: '#32b2fe',
+          500: '#1ba5f8',
+          600: '#0079cd',
+          700: '#005fa6',
+          800: '#035189',
+          900: '#094471',
+          950: '#062b4b'
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

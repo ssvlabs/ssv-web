@@ -44,8 +44,10 @@ class MyAccountStore {
     const accountAddress = store.getState().walletState.accountAddress;
     if (!accountAddress) return [];
     const { page, per_page } = this.ownerAddressClustersPagination;
+    console.log('accountAddress:', accountAddress)
     const query = `${accountAddress}?page=${forcePage ?? page}&perPage=${forcePerPage ?? per_page}`;
     const response = await clustersByOwnerAddress(query);
+    console.log('response:', response)
     if (!response) return [];
     this.ownerAddressClustersPagination = response.pagination;
     this.ownerAddressClusters = await Promise.all(

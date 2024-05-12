@@ -131,8 +131,12 @@ export const config = {
     }
   },
   links: {
-    SSV_API_ENDPOINT: api,
-    EXPLORER_URL: explorerUrl,
+    get SSV_API_ENDPOINT() {
+      return getStoredNetwork().api;
+    },
+    get EXPLORER_URL() {
+      return getStoredNetwork().explorerUrl;
+    },
     SSV_WEB_SITE: 'https://ssv.network/',
     TWITTER_LINK: 'https://twitter.com/ssv_network',
     GOVERNANCE_FORUM_LINK: 'https://forum.ssv.network/',

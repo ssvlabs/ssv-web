@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useDisconnect } from 'wagmi';
+import { useAccountEffect, useDisconnect } from 'wagmi';
 import config from '~app/common/config';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
@@ -38,6 +38,13 @@ const useWalletDisconnector = () => {
     resetContracts();
     navigate(config.routes.SSV.ROOT);
   };
+
+  useAccountEffect({
+    onConnect: () => {
+      console.log('connected');
+    },
+    onDisconnect: disconnectWallet
+  });
 
   return {
     resetWalletAndStores,

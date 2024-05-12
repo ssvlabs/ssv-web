@@ -12,6 +12,8 @@ import { rootStore } from '~root/stores';
 import { RainbowKitProvider } from './RainbowKitProvider';
 import { config } from './wagmi/config';
 
+
+
 const queryClient = new QueryClient();
 
 const container = document.getElementById('root');

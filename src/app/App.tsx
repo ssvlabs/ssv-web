@@ -20,7 +20,7 @@ import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import {
   getIsDarkMode,
-  getIsShowSsvLoader,
+  getIsShowSsvLoader, getRestrictedUserGeo,
   getShouldCheckCountryRestriction,
   setRestrictedUserGeo,
 } from '~app/redux/appState.slice';
@@ -67,6 +67,7 @@ const App = () => {
   const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
   const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
   const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
+  const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,7 +100,9 @@ const App = () => {
   }, [shouldCheckCountryRestriction]);
 
   useEffect(() => {
-    navigate(strategyRedirect);
+    if (!isRestrictedCountry) {
+      navigate(strategyRedirect);
+    }
   }, [strategyRedirect]);
 
   const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);

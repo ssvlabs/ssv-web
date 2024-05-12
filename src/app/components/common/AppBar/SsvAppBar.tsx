@@ -7,7 +7,7 @@ import AppBar from '~app/components/common/AppBar/AppBar';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsLoading } from '~app/redux/appState.slice';
+import { getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 
 const SsvAppBar = () => {
@@ -16,10 +16,11 @@ const SsvAppBar = () => {
   const isLoading = useAppSelector(getIsLoading);
   const myAccountStore: MyAccountStore = stores.MyAccount;
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
   const hasOperatorsOrClusters = [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD, config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD].includes(strategyRedirect);
 
   const moveToDashboard = () => {
-    if (isLoading) return;
+    if (isLoading || isRestrictedCountry) return;
     if (hasOperatorsOrClusters) {
       // @ts-ignore
       GoogleTagManager.getInstance().sendEvent({

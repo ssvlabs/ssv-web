@@ -84,7 +84,7 @@ const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollat
       operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
     });
     if (success) {
-      navigate(-1);
+      navigate(isClusterLiquidation && !cluster.validatorCount ? -2 : -1);
     }
     setIsLoading(false);
   };

@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
-import Button from '~app/components/common/Button';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { Table } from '~app/components/common/Table/Table';
@@ -17,13 +16,14 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import UpdateFeeState
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
+import OperatorDetails
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
@@ -32,6 +32,9 @@ import { getOperatorValidators } from '~root/services/operator.service';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { SingleOperator as SingleOperatorProcess } from '~app/model/processes.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const SingleOperator = () => {
   const stores = useStores();
@@ -228,11 +231,11 @@ const SingleOperator = () => {
           placement="top-end"
           children={
           <Grid item xs>
-            <SecondaryButton disable={!Number(operator.fee)} children={'Update Fee'} submitFunction={moveToUpdateFee} />
+            <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
           </Grid>}
       />
       :
-      <SecondaryButton disable={!Number(operator.fee)} children={'Update Fee'} submitFunction={moveToUpdateFee} />;
+      <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL}/>;
 
   return (
       <Grid container item style={{ gap: 26 }}>
@@ -269,7 +272,7 @@ const SingleOperator = () => {
                   ]}
                   bottom={[
                     <Grid item xs>
-                      <Button disable={false} text={'Withdraw'} onClick={moveToWithdraw}/>
+                      <PrimaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL}/>
                     </Grid>,
                   ]}
                   bottomWrapper={classes.ButtonSection}

@@ -8,12 +8,12 @@ import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SetOperatorFee.styles';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
-import WarningBox from '~app/components/common/WarningBox';
 import { validateFeeInput } from '~lib/utils/validatesInputs';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 type UserInput = string;
 
@@ -25,20 +25,17 @@ const SetOperatorFee = () => {
   const navigate = useNavigate();
   const operatorStore: OperatorStore = stores.Operator;
   const [error, setError] = useState(INITIAL_ERROR_STATE);
-  const [zeroError, setZeroError] = useState(false);
   const [userInput, setUserInput] = useState<UserInput>('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
 
   useEffect(() => {
    if ( userInput === '') {
-     setZeroError(false);
      setError(INITIAL_ERROR_STATE);
      setRegisterButtonDisabled(true);
      return;
     }
     validateFeeInput(userInput, setError);
     setUserInput(removeLeadingZeros(userInput));
-    setZeroError(userInput === '0');
     const isRegisterButtonDisabled = typeof userInput === 'object' || error.shouldDisplay;
     setRegisterButtonDisabled(isRegisterButtonDisabled);
   }, [error.shouldDisplay, userInput]);
@@ -88,8 +85,7 @@ const SetOperatorFee = () => {
                 onChangeCallback={verifyFeeNumber}/>
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
-            {zeroError && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'}/>}
-              <PrimaryButton children={'Next'} disable={registerButtonDisabled} submitFunction={moveToSubmitConfirmation} />
+              <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation}  size={ButtonSize.XL}/>
           </Grid>
         </Grid>,
       ]}

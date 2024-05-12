@@ -1,28 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { timeDiffCalc } from '~lib/utils/time';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
-import PrimaryButton from '~app/components/common/Button/PrimaryButton';
-import SecondaryButton from '~app/components/common/Button/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import { useStyles, StepperSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import ReactStepper
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
+import {
+  IncreaseFlowProps,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import {
+  StepperSteps,
+  useStyles,
+} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 
 const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({});
   const operatorStore: OperatorStore = stores.Operator;
+  const [isLoading, setIsLoading] = useState(false);
 
   // @ts-ignore
   const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
   const endDay = operatorEndApprovalTime.getUTCDate();
   let today = new Date();
   const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });
+
+  const cancelUpdateFeeHandler = async () => {
+    setIsLoading(true);
+    await cancelUpdateFee();
+    setIsLoading(false);
+  };
 
   return (
     <BorderScreen
@@ -60,11 +74,10 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton withoutLoader className={classes.CancelButton} disable={false} children={'Cancel'}
-                submitFunction={cancelUpdateFee} />
+              <SecondaryButton text={'Cancel'} isLoading={isLoading} onClick={cancelUpdateFeeHandler} size={ButtonSize.XL}/>
             </Grid>
             <Grid item xs>
-              <PrimaryButton withoutLoader disable children={'Execute'} submitFunction={console.log} />
+              <PrimaryButton isDisabled text={'Execute'} size={ButtonSize.XL}/>
             </Grid>
           </Grid>
         </Grid>,

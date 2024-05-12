@@ -12,7 +12,6 @@ import { IOperator } from '~app/model/operator.model';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
-import { setIsLoading } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
 
@@ -55,7 +54,7 @@ const BulkComponent = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const process: SingleCluster = processStore.getProcess;
   const currentBulkFlow = process.currentBulkFlow;
-  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (process.validator) {
@@ -120,8 +119,8 @@ const BulkComponent = () => {
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
-      dispatch(setIsLoading(true));
-      const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorKeys[0]);
+      setIsLoading(true);
+      const singleFormattedPublicKey = formatValidatorPublicKey(selectedValidatorValues.filter(selectedValidator => selectedValidator.isSelected)[0].validator.public_key);
       const exitSingle = async () => await validatorStore.exitValidator({ isContractWallet, publicKey: singleFormattedPublicKey, operatorIds: process.item.operators.map((operator: IOperator) => operator.id) });
       const exitBulk = async () => {
         const validatorIds = selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected);
@@ -132,11 +131,12 @@ const BulkComponent = () => {
       if (res && !isContractWallet) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
+      setIsLoading(false);
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
       backToSingleClusterPage();
     } else {
-      dispatch(setIsLoading(true));
-      const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorKeys[0]);
+      setIsLoading(true);
+      const singleFormattedPublicKey = formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorValues.filter(selectedValidator => selectedValidator.isSelected)[0].validator.public_key);
       const singleRemove = async () => await validatorStore.removeValidator({ accountAddress, isContractWallet, publicKey: singleFormattedPublicKey, operators: process.item.operators });
       const bulkRemove = async () => {
         const validatorIds = selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected);
@@ -146,6 +146,7 @@ const BulkComponent = () => {
       if (res && !isContractWallet) {
         backToSingleClusterPage();
       }
+      setIsLoading(false);
     }
   };
 
@@ -166,6 +167,8 @@ const BulkComponent = () => {
     return <ConfirmationStep stepBack={!process.validator ? stepBack : undefined}
                              flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
                              selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}
+                             isLoading={isLoading}
+                             currentBulkFlow={currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE}
                              nextStep={nextStep}/>;
   }
 

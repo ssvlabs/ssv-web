@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import Button from '~app/components/common/Button';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -16,9 +15,10 @@ import { encodeParameter } from '~root/services/conversions.service';
 import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { setIsLoading } from '~app/redux/appState.slice';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const GenerateOperatorKeys = () => {
   const stores = useStores();
@@ -31,7 +31,7 @@ const GenerateOperatorKeys = () => {
   const [inputsData, setInputsData] = useState({ publicKey: '' });
   const [addressError, setAddressError] = useState({ shouldDisplay: false, errorMessage: '' });
   const [publicKeyError, setPublicKeyError] = useState({ shouldDisplay: false, errorMessage: '' });
-  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Inputs validation
   useEffect(() => {
@@ -52,15 +52,20 @@ const GenerateOperatorKeys = () => {
 
   const onRegisterClick = async () => {
     setOperatorExist(false);
-    dispatch(setIsLoading(true));
+    setIsLoading(true);
 
-    const operatorKeys: NewOperator = { fee: 0, id: 0, address: accountAddress, publicKey: encodeParameter('string', inputsData.publicKey) };
+    const operatorKeys: NewOperator = {
+      fee: 0,
+      id: 0,
+      address: accountAddress,
+      publicKey: encodeParameter('string', inputsData.publicKey),
+    };
     operatorKeys.id = operatorStore.getOperatorId;
     operatorStore.setOperatorKeys(operatorKeys);
     const isExists = await validateOperatorPublicKey(inputsData.publicKey);
     setOperatorExist(isExists);
     if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
-    dispatch(setIsLoading(false));
+    setIsLoading(false);
   };
 
   return (
@@ -69,11 +74,11 @@ const GenerateOperatorKeys = () => {
       body={[
         <Grid container>
           <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
-            subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
+                           subtitle={translations.OPERATOR.REGISTER.DESCRIPTION}/>
           <Grid container direction={'column'}>
             <Grid item className={classes.GridItem}>
               <InputLabel title="Owner Address" withHint
-                toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
+                          toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}/>
               <TextInput
                 disable
                 data-testid="new-operator-address"
@@ -91,7 +96,8 @@ const GenerateOperatorKeys = () => {
                 withHint
                 toolTipText={(
                   <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                    <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'} />
+                    <LinkText text={'documentation.'}
+                              link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'}/>
                   </div>
                 )}
               />
@@ -109,9 +115,10 @@ const GenerateOperatorKeys = () => {
               {publicKeyError.shouldDisplay &&
                 <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
             </Grid>
-            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST} />}
+            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST}/>}
           </Grid>
-          <Button disable={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} />
+          <PrimaryButton isDisabled={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick}
+                         size={ButtonSize.XL} isLoading={isLoading}/>
         </Grid>,
       ]}
     />

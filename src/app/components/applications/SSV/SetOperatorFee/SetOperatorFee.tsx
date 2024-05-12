@@ -29,12 +29,16 @@ const SetOperatorFee = () => {
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
 
   useEffect(() => {
-   if ( userInput === '') {
-     setError(INITIAL_ERROR_STATE);
-     setRegisterButtonDisabled(true);
-     return;
+    if (userInput === '') {
+      setError(INITIAL_ERROR_STATE);
+      setRegisterButtonDisabled(true);
+      return;
     }
-    validateFeeInput(userInput, setError);
+    validateFeeInput({
+      value: userInput,
+      maxFee: operatorStore.maxOperatorFeePerYear,
+      callback: setError,
+    });
     setUserInput(removeLeadingZeros(userInput));
     const isRegisterButtonDisabled = typeof userInput === 'object' || error.shouldDisplay;
     setRegisterButtonDisabled(isRegisterButtonDisabled);
@@ -48,7 +52,7 @@ const SetOperatorFee = () => {
     navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
   };
 
-  const removeLeadingZeros = (num: string): string =>  {
+  const removeLeadingZeros = (num: string): string => {
     let stripped = num.toString().replace(/^0+(?!\.)/, '');
     return stripped === '' ? '0' : stripped;
   };
@@ -61,13 +65,19 @@ const SetOperatorFee = () => {
     <BorderScreen
       body={[
         <Grid container style={{ position: 'relative', gap: 0 }}>
-          <HeaderSubHeader title={'Set Operator Fee'} />
+          <HeaderSubHeader title={'Set Operator Fee'}/>
           <Grid item container style={{ gap: 24 }}>
-            <Typography className={classes.Text}>The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators.</Typography>
-            <Typography className={classes.Text}>Operators set their own fees, denominated in SSV tokens, to be charged per each validator that selects them as one of their operators.</Typography>
-            <Typography className={classes.Text}>Fees are presented as annual payments, but in practice are paid to operators continuously as an ongoing process - per each passed block.</Typography>
-            <Typography className={classes.Text}>Your earnings are paid to your ssv operator balance, and can be withdrawn to your wallet at any time.</Typography>
-            <Grid className={classes.Text}>Please note that you could always change your fee (according to <br /> the <LinkText text={'limitations'} link={config.links.SSV_UPDATE_FEE_DOCS} />) to align with market dynamics, such as competitiveness and SSV price fluctuations.</Grid>
+            <Typography className={classes.Text}>The ssv network utilizes the SSV token to facilitate payments between
+              stakers to operators for maintaining their validators.</Typography>
+            <Typography className={classes.Text}>Operators set their own fees, denominated in SSV tokens, to be charged
+              per each validator that selects them as one of their operators.</Typography>
+            <Typography className={classes.Text}>Fees are presented as annual payments, but in practice are paid to
+              operators continuously as an ongoing process - per each passed block.</Typography>
+            <Typography className={classes.Text}>Your earnings are paid to your ssv operator balance, and can be
+              withdrawn to your wallet at any time.</Typography>
+            <Grid className={classes.Text}>Please note that you could always change your fee (according
+              to <br/> the <LinkText text={'limitations'} link={config.links.SSV_UPDATE_FEE_DOCS}/>) to align with
+              market dynamics, such as competitiveness and SSV price fluctuations.</Grid>
           </Grid>
           <Grid item container className={classes.InputWrapper} style={{ gap: 24 }}>
             <Grid item container>
@@ -85,7 +95,8 @@ const SetOperatorFee = () => {
                 onChangeCallback={verifyFeeNumber}/>
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
-              <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation}  size={ButtonSize.XL}/>
+            <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation}
+                           size={ButtonSize.XL}/>
           </Grid>
         </Grid>,
       ]}

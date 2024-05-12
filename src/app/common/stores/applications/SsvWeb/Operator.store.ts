@@ -5,7 +5,7 @@ import config from '~app/common/config';
 import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import { checkIfStateChanged } from '~root/services/events.service';
-import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { fromWei, getFeeForYear, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
 import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
@@ -69,6 +69,7 @@ class OperatorStore extends BaseStore {
   loadingOperators: boolean = false;
 
   operatorValidatorsLimit: number = 0;
+  maxOperatorFeePerYear: number = 0;
   clusterSize: number = 4;
 
   private myAccountStore: MyAccountStore = this.getStore('MyAccount');
@@ -91,9 +92,9 @@ class OperatorStore extends BaseStore {
       getOperatorFee: action.bound,
       removeOperator: action.bound,
       loadingOperators: observable,
-      addNewOperator: action.bound,
       selectOperator: action.bound,
       processOperatorId: observable,
+      addNewOperator: action.bound,
       selectedOperators: observable,
       setOperatorKeys: action.bound,
       operatorFutureFee: observable,
@@ -108,6 +109,7 @@ class OperatorStore extends BaseStore {
       syncOperatorFeeInfo: action.bound,
       isOperatorSelected: action.bound,
       getSelectedOperatorsFee: computed,
+      maxOperatorFeePerYear: observable,
       selectedEnoughOperators: computed,
       unselectAllOperators: action.bound,
       clearOperatorFeeInfo: action.bound,
@@ -182,6 +184,24 @@ class OperatorStore extends BaseStore {
     try {
       if (this.operatorValidatorsLimit === 0) {
         this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
+      }
+    } catch (e) {
+      console.error('Provided contract address is wrong', e);
+    }
+  }
+
+  /**
+   * Get max operator fee
+   */
+  async updateOperatorMaxFee(): Promise<void> {
+    const contract = getContractByName(EContractName.GETTER);
+    if (!contract) {
+      return;
+    }
+    try {
+      if (this.maxOperatorFeePerYear === 0) {
+        const res =  await contract.getMaximumOperatorFee();
+        this.maxOperatorFeePerYear = Number(fromWei(res));
       }
     } catch (e) {
       console.error('Provided contract address is wrong', e);

@@ -5,7 +5,7 @@ import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
 
 const CHECK_UPDATES_MAX_ITERATIONS = 60;
 
-const checkIfStateChanged = async (updatedStateGetter: any, prevState: any): Promise<boolean> => {
+const checkIfStateChanged = async (updatedStateGetter: Function, prevState: unknown): Promise<boolean> => {
   try {
     const newState = await updatedStateGetter();
     return JSON.stringify(prevState) !== JSON.stringify(newState);
@@ -18,8 +18,8 @@ const checkIfStateChanged = async (updatedStateGetter: any, prevState: any): Pro
 const delay = async (ms?: number) => (new Promise((r) => setTimeout(() => r(true), ms || 1000)));
 
 export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBack, txHash }: {
-  updatedStateGetter: any;
-  prevState?: any;
+  updatedStateGetter: Function;
+  prevState?: unknown;
   callBack: Function;
   txHash?: string
 }) => {
@@ -44,10 +44,10 @@ export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBac
 
 export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch }: {
   contractMethod: Function,
-  payload: any,
+  payload: Array<unknown>,
   isContractWallet: boolean,
   getterTransactionState?: Function,
-  prevState?: any,
+  prevState?: unknown,
   dispatch: Function,
 }) => {
   try {

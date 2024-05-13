@@ -71,9 +71,6 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
                 setCurrentStep(IncreaseSteps.PENDING);
             } else if (startPendingStateTime > todayDate) {
                 setCurrentStep(IncreaseSteps.WAITING);
-            } else if (todayDate > endPendingStateTime) {
-                setCurrentStep(IncreaseSteps.EXPIRED);
-            // eslint-disable-next-line no-dupe-else-if
             } else if (todayDate > endPendingStateTime ) {
                 if (daysFromEndPendingStateTime >= 3){
                     declareNewFeeHandler();

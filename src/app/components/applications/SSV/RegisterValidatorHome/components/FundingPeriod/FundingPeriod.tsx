@@ -12,7 +12,6 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -22,41 +21,46 @@ import {
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+
+const OPTIONS = [
+  { id: 1, timeText: '6 Months', days: 182.5 },
+  { id: 2, timeText: '1 Year', days: 365 },
+  { id: 3, timeText: 'Custom Period', days: 365 },
+];
 
 const FundingPeriod = () => {
-  const options = [
-    { id: 1, timeText: '6 Months', days: 182.5 },
-    { id: 2, timeText: '1 Year', days: 365 },
-    { id: 3, timeText: 'Custom Period', days: 365 },
-  ];
+  const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
+  const [checkedOption, setCheckedOption] = useState(OPTIONS[1]);
+  const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
+  const { walletSsvBalance } = useFetchWalletBalance();
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
-  const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
-  const [checkedOption, setCheckedOption] = useState(options[1]);
   const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
 
   const process: RegisterValidator = processStore.process as RegisterValidator;
   const checkBox = (option: any) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
+  const networkCost = propertyCostByPeriod(networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, periodOfTime);
   const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: operatorStore.getSelectedOperatorsFee,
-    networkFee: ssvStore.networkFee,
-    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+    networkFee,
+    liquidationCollateralPeriod,
     validatorsCount: validatorStore.validatorsCount,
-    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+    minimumLiquidationCollateral,
   });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
-  const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
+  const insufficientBalance = totalCost.comparedTo(walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
 
@@ -87,7 +91,7 @@ const FundingPeriod = () => {
                 runway <br/>
                 (You can always manage it later by withdrawing or depositing more funds).</Typography>
               <Grid container item style={{ gap: 16 }}>
-                {options.map((option, index) => {
+                {OPTIONS.map((option, index) => {
                   const isCustom = option.id === 3;
                   return <Grid key={index} container item
                                className={`${classes.Box} ${isChecked(option.id) ? classes.SelectedBox : ''}`}

@@ -19,6 +19,8 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperator } from '~root/services/operator.service';
+import config from '~app/common/config';
+import Decimal from 'decimal.js';
 
 export type UpdateFeeProps = {
   error: ErrorType;
@@ -50,7 +52,7 @@ const UpdateFee = () => {
   const [newFee, setNewFee] = useState<any>(0);
   const [nextIsDisabled, setNextIsDisabled] = useState(true);
   const { logo, id } = operator || {};
-  const [oldFee, setOldFee] = useState(0);
+  const [oldFee, setOldFee] = useState('0');
   const classes = useStyles({ operatorLogo: logo });
   const [currency, setCurrency] = useState('SSV');
   const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
@@ -63,9 +65,9 @@ const UpdateFee = () => {
     dispatch(setIsLoading(true));
     getOperator(operatorStore.processOperatorId).then(async (response: any) => {
       if (response) {
-        const operatorFee = getFeeForYear(fromWei(response.fee));
+        const operatorFee = formatNumberToUi(getFeeForYear(fromWei(response.fee)));
         setOperator(response);
-        setOldFee(Number(operatorFee));
+        setOldFee(operatorFee);
         if (!operatorStore.operatorFutureFee) {
           setNewFee(Number(operatorFee));
         }
@@ -105,12 +107,13 @@ const UpdateFee = () => {
   const onInputChange = ( e : any ) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    validateFeeUpdate(Number(formatNumberToUi(getFeeForYear(fromWei(operator.fee)))), value, operatorStore.maxFeeIncrease, updateFeeErrorHandler);
+    const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+    validateFeeUpdate(new Decimal(getFeeForYear(fromWei(operator.fee))), value, operatorStore.maxFeeIncrease, isPrivateOperator, updateFeeErrorHandler);
   };
 
   const onNextHandler = () => {
     operatorStore.clearOperatorFeeInfo();
-    if (Number(newFee) > oldFee) {
+    if (Number(newFee) > Number(oldFee)) {
       setCurrentFlowStep(FeeUpdateSteps.INCREASE);
     } else {
       setCurrentFlowStep(FeeUpdateSteps.DECREASE);

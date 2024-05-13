@@ -15,7 +15,7 @@ import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { CopyButton } from '~app/components/common/Button/CopyButton/CopyButton';
+import { CopyButton } from '~app/atomicComponents';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';

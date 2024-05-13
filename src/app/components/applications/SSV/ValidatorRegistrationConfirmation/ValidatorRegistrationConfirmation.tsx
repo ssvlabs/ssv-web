@@ -2,47 +2,51 @@ import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useStores } from '~app/hooks/useStores';
+import { isEqualsAddresses } from '~lib/utils/strings';
+import LinkText from '~app/components/common/LinkText';
 import config, { translations } from '~app/common/config';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import ErrorMessage from '~app/components/common/ErrorMessage';
+import BorderScreen from '~app/components/common/BorderScreen';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import FundingSummary from '~app/components/common/FundingSummary';
+import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
+import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
+import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import AllowanceButton from '~app/components/AllowanceButton';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/ValidatorRegistrationConfirmation/ValidatorRegistrationConfirmation.styles';
-import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
-import BorderScreen from '~app/components/common/BorderScreen';
-import ErrorMessage from '~app/components/common/ErrorMessage';
-import FundingSummary from '~app/components/common/FundingSummary';
-import LinkText from '~app/components/common/LinkText';
-import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
+import OperatorDetails
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
+import { useAppSelector, useAppDispatch } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
-import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+import AllowanceButton from '~app/components/AllowanceButton';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
+  const dispatch = useAppDispatch();
   const isContractWallet = useAppSelector(getIsContractWallet);
   const accountAddress = useAppSelector(getAccountAddress);
   const isMainnet = useAppSelector(getIsMainnet);
+  const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
+  const { walletSsvBalance } = useFetchWalletBalance();
   const classes = useStyles();
-  const ssvStore: SsvStore = stores.SSV;
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
@@ -52,14 +56,14 @@ const ValidatorRegistrationConfirmation = () => {
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
   const [isLoading, setIsLoading] = useState(false);
 
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, processFundingPeriod);
+  const networkCost = propertyCostByPeriod(networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
   const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: operatorStore.getSelectedOperatorsFee,
-    networkFee: ssvStore.networkFee,
-    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+    networkFee,
+    liquidationCollateralPeriod,
+    minimumLiquidationCollateral,
     validatorsCount: validatorStore.validatorsCount,
-    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
   });
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
   const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
@@ -83,7 +87,7 @@ const ValidatorRegistrationConfirmation = () => {
     setErrorMessage('');
     setActionButtonText('Waiting for confirmation...');
     const response = await validatorStore.addNewValidator({ accountAddress, isContractWallet, isBulk: validatorStore.isMultiSharesMode,
-      operators: Object.values(operatorStore.selectedOperators) });
+      operators: Object.values(operatorStore.selectedOperators), networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch });
     if (response && !isContractWallet) {
       successPageNavigate[`${processStore.secondRegistration}`]();
     } else {
@@ -101,7 +105,7 @@ const ValidatorRegistrationConfirmation = () => {
         className={classes.TotalSSV}>{
         formatNumberToUi(totalAmountOfSsv)} SSV</Grid>
     </Grid>
-    {totalAmountOfSsv > ssvStore.walletSsvBalance && (
+    {totalAmountOfSsv > walletSsvBalance && (
       <Grid container item className={classes.InsufficientBalanceWrapper}>
         <Grid item xs>
           Insufficient SSV balance. There is not enough SSV in your wallet.

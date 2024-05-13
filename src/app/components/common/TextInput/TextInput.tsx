@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import  { useState } from 'react';
 import { useStyles } from './TextInput.styles';
-import InputSideButton from '~app/components/common/Button/InputSideButton/InputSideButton';
+import { InputSideButton } from '~app/atomicComponents';
 
 type InputProps = {
     icon?: any,
@@ -99,7 +99,7 @@ const TextInput = ({ icon,
             }
         </Grid>
           {sideButton &&  (
-              <InputSideButton confirmedState={sideButtonClicked} sideButtonAction={sideButtonAction} disabled={sideButtonDisabled} sideButtonLabel={sideButtonLabel ?? 'Confirm'}/>
+              <InputSideButton isConfirmedState={sideButtonClicked} sideButtonAction={sideButtonAction} isDisabled={sideButtonDisabled} sideButtonLabel={sideButtonLabel ?? 'Confirm'}/>
           )}
           {withSideText && (
               <Grid item className={classes.Text}>

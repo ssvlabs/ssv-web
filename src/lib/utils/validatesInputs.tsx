@@ -1,10 +1,12 @@
 
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
-import { compareNumbers } from '~lib/utils/numbers';
+import { compareNumbers, formatNumberToUi } from '~lib/utils/numbers';
 import { isAddress } from '~root/services/conversions.service';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
+
+const OPERATOR_VALID_KEY_LENGTH = 612;
 
 interface ErrorObject {
   errorMessage: any,
@@ -16,7 +18,7 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
   const regx = /^[A-Za-z0-9]+$/;
   if (value.length === 0) {
     response.errorMessage = 'Please enter an operator key.';
-  } else if (value.length !== config.FEATURE.OPERATORS.VALID_KEY_LENGTH) {
+  } else if (value.length !== OPERATOR_VALID_KEY_LENGTH) {
     response.errorMessage = <>Invalid operator key - see our <LinkText text={'documentation.'}
                                                                        link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'}/> to
       generate your key.</>;
@@ -48,9 +50,10 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
 export const validateFeeInput = (value: string, callback: Function): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
   // eslint-disable-next-line radix
-  if (value !== '0' && new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
+  if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
     response.shouldDisplay = true;
-    response.errorMessage = 'Please set a greater fee amount.';
+    const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
+    response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
   } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
@@ -66,9 +69,9 @@ export const validateOperatorPublicKey = async (publicKey: string): Promise<bool
   return res.data;
 };
 
-export const validateFeeUpdate = (previousValue: number, newValue: string, maxFeeIncrease: number, callback: any): void => {
+export const validateFeeUpdate = (previousValue: Decimal, newValue: string, maxFeeIncrease: number, isPrivateOperator: boolean, callback: any): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
-  const feeMaximumIncrease = new Decimal(previousValue).mul(maxFeeIncrease).dividedBy(100).plus(previousValue - 0.01);
+  const feeMaximumIncrease = previousValue.mul(maxFeeIncrease).dividedBy(100).plus(Math.abs(Number(previousValue) - 0.01));
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
@@ -80,13 +83,16 @@ export const validateFeeUpdate = (previousValue: number, newValue: string, maxFe
     response.errorMessage = 'Please set a different fee amount from current.';
   } else if (feeMaximumIncrease.lessThan(newValue)) {
     response.shouldDisplay = true;
-    response.errorMessage = `You can only increase your fee up to ${feeMaximumIncrease.toFixed().toString()}`;
+    response.errorMessage = `You can only increase your fee up to ${formatNumberToUi(feeMaximumIncrease)}`;
   }
   // eslint-disable-next-line radix
   else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(newValue) > 0) {
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
     response.shouldDisplay = true;
     response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
+  } else if (Number(newValue) === 0 && !isPrivateOperator) {
+    response.shouldDisplay = true;
+    response.errorMessage = 'You must set your operator as private before updating your fee to 0.';
   } else {
     response.errorMessage = '';
     response.shouldDisplay = false;

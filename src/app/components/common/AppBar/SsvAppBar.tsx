@@ -1,37 +1,24 @@
-
-import { observer } from 'mobx-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import AppBar from '~app/components/common/AppBar/AppBar';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
-import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getAccountClusters, getAccountOperators } from '~app/redux/account.slice';
 
 const SsvAppBar = () => {
-  const stores = useStores();
   const navigate = useNavigate();
   const isLoading = useAppSelector(getIsLoading);
-  const myAccountStore: MyAccountStore = stores.MyAccount;
-  const strategyRedirect = useAppSelector(getStrategyRedirect);
-  const hasOperatorsOrClusters = [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD, config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD].includes(strategyRedirect);
+  const operators = useAppSelector(getAccountOperators);
+  const clusters = useAppSelector(getAccountClusters);
 
   const moveToDashboard = () => {
     if (isLoading) return;
-    if (hasOperatorsOrClusters) {
-      // @ts-ignore
-      GoogleTagManager.getInstance().sendEvent({
-        category: 'nav',
-        action: 'click',
-        label: 'My Account',
-      });
-      if (myAccountStore.ownerAddressClusters?.length > 0) {
-        navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-      } else {
-        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
-      }
+    if (clusters.length > 0) {
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+    } else if (operators.length > 0) {
+      navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     }
   };
   const openDocs = () => {
@@ -76,4 +63,4 @@ const SsvAppBar = () => {
   return <AppBar buttons={buttons} />;
 };
 
-export default observer(SsvAppBar);
+export default SsvAppBar;

@@ -1,22 +1,22 @@
 /* eslint-disable no-async-promise-executor */
 import Decimal from 'decimal.js';
+import { KeySharesItem } from 'ssv-keys';
+import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
-import { KeyShares, KeySharesItem, SSVKeys } from 'ssv-keys';
-import { EContractName } from '~app/model/contracts.model';
-import { IOperator } from '~app/model/operator.model';
-import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
-import { getOwnerNonce } from '~root/services/account.service';
-import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
-import { getContractByName } from '~root/services/contracts.service';
+import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
-import { transactionExecutor } from '~root/services/transaction.service';
+import { getContractByName } from '~root/services/contracts.service';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { IOperator } from '~app/model/operator.model';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
+import { getOwnerNonce } from '~root/services/account.service';
+import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
+import { transactionExecutor } from '~root/services/transaction.service';
 import { createPayload } from '~root/utils/dkg.utils';
-import { myAccountStore } from './MyAccount.store';
-import { operatorStore } from './Operator.store';
-import { processStore } from './Process.store';
-import { ssvStore } from './SSV.store';
+import { rootStore } from '~root/stores.ts';
 
 const annotations = {
   keyStoreFile: observable,
@@ -27,10 +27,6 @@ const annotations = {
   addNewValidator: action.bound,
   keySharePublicKey: observable,
   setKeySharePublicKey: action.bound,
-  removeValidator: action.bound,
-  bulkRemoveValidators: action.bound,
-  exitValidator: action.bound,
-  bulkExitValidators: action.bound,
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
@@ -65,8 +61,6 @@ class ValidatorStore {
   processedKeyShare: KeyShares | null = null;
   validatorsCount = 0;
   registerValidatorsPublicKeys: string[] = [];
-
-  private myAccountStore = myAccountStore;
 
   constructor() {
     makeObservable(this, annotations);
@@ -122,109 +116,14 @@ class ValidatorStore {
     });
   }
 
-  async removeValidator({ accountAddress, isContractWallet, publicKey, operators }: {
-    accountAddress: string;
-    isContractWallet: boolean;
-    publicKey: string;
-    operators: IOperator[]
-  }): Promise<boolean> {
-    const sortedOperatorIds = getSortedOperatorsIds(operators);
-    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    const payload = [publicKey, sortedOperatorIds, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.removeValidator,
-      payload,
-      getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
-        return validatorCount;
-      },
-      prevState: clusterData.validatorCount,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters
-    });
-  }
-
-  /**
-   * Bulk remove validators
-   */
-  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators }: {
-    accountAddress: string;
-    isContractWallet: boolean;
-    validatorIds: string[];
-    operators: IOperator[]
-  }): Promise<boolean> {
-    const sortedOperatorIds = getSortedOperatorsIds(operators);
-    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    const payload = [validatorIds, sortedOperatorIds, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.bulkRemoveValidator,
-      payload,
-      getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
-        return validatorCount;
-      },
-      prevState: clusterData.validatorCount,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters
-    });
-  }
-
-  /**
-   * Exit validator
-   */
-  async exitValidator({ isContractWallet, publicKey, operatorIds }: {
-    isContractWallet: boolean;
-    publicKey: string;
-    operatorIds: number[]
-  }): Promise<boolean> {
-    const payload = [publicKey, operatorIds];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.exitValidator,
-      payload,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters
-    });
-  }
-
-  /**
-   * Bulk exit validator
-   */
-  async bulkExitValidators({ isContractWallet, validatorIds, operatorIds }: {
-    isContractWallet: boolean;
-    validatorIds: string[];
-    operatorIds: number[]
-  }): Promise<boolean> {
-    const payload = [validatorIds, operatorIds];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.bulkExitValidator,
-      payload,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters
-    });
-  }
-
-  /**
-   * Add new validator
-   */
-  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators }: {
-    accountAddress: string;
-    isContractWallet: boolean,
-    isBulk: boolean,
-    operators: IOperator[]
+  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }: {
+    accountAddress: string; isContractWallet: boolean; isBulk: boolean; operators: IOperator[]; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function;
   }) {
     const contract = getContractByName(EContractName.SETTER);
     const contractMethod = isBulk ? contract.bulkRegisterValidator : contract.registerValidator;
-    const payload = this.registrationMode === 0 ? await this.createKeySharePayload({ accountAddress }) : await this.createKeystorePayload({ accountAddress });
+    const payload = this.registrationMode === 0 ?
+      await this.createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }) :
+      await this.createKeystorePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral });
     if (!payload) {
       return false;
     }
@@ -233,16 +132,19 @@ class ValidatorStore {
       contractMethod,
       payload: payload.values(),
       getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
         return validatorCount;
       },
       prevState: payload.get('clusterData').validatorCount,
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters
+      dispatch,
     });
   }
 
-  async createKeystorePayload({ accountAddress }: { accountAddress: string }): Promise<Map<string, any> | null> {
+  async createKeystorePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
+                                { accountAddress: string; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }): Promise<Map<string, any> | null> {
+    const processStore: ProcessStore = rootStore.Process;
+    const operatorStore: OperatorStore = rootStore.Operator;
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
     const ownerNonce = await getOwnerNonce({ address: accountAddress });
     if (ownerNonce === null) {
@@ -251,87 +153,71 @@ class ValidatorStore {
     }
     const operators = Object.values(operatorStore.selectedOperators)
       .sort((a: any, b: any) => a.id - b.id)
-      .map((item) => ({ id: item.id, operatorKey: item.public_key }));
-
-    return new Promise(
-      // @ts-ignore
-      async (resolve) => {
-        try {
-          const ssvKeys = new SSVKeys();
-          // const keyShares = new KeyShares();
-          const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
-          const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
-          let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
-          if (process && 'fundingPeriod' in process) {
-            const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
-            const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-            let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-            if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
-              liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
-            }
-            totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
+      .map(item => ({ id: item.id, operatorKey: item.public_key }));
+    return new Promise(async (resolve) => {
+      try {
+        const ssvKeys = new SSVKeys();
+        // const keyShares = new KeyShares();
+        const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
+        const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
+        let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
+        if (process && 'fundingPeriod' in process) {
+          const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
+          const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
+          let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(networkFee).mul(liquidationCollateralPeriod);
+          if (Number(liquidationCollateralCost) < minimumLiquidationCollateral) {
+            liquidationCollateralCost = new Decimal(minimumLiquidationCollateral);
           }
-          const keysharePayload = await new KeySharesItem().buildPayload(
-            {
-              publicKey: threshold.publicKey,
-              operators,
-              encryptedShares
-            },
-            {
-              ownerAddress: accountAddress,
-              ownerNonce: ownerNonce as number,
-              privateKey: this.keyStorePrivateKey
-            }
-          );
-
-          const payload = createPayload(
-            this.keyStorePublicKey,
-            keysharePayload.operatorIds,
-            keysharePayload.sharesData || keysharePayload.shares,
-            `${totalCost}`,
-            await getClusterData(getClusterHash(operators as unknown as IOperator[], accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral)
-          );
-
-          resolve(payload);
-        } catch (e: any) {
-          console.log(e.message);
-          resolve(null);
+          totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
+        const keysharePayload = await (new KeySharesItem()).buildPayload({
+          publicKey: threshold.publicKey,
+          operators,
+          encryptedShares,
+        }, {
+          ownerAddress: accountAddress,
+          ownerNonce: ownerNonce as number,
+          privateKey: this.keyStorePrivateKey,
+        });
+
+        const payload = createPayload(this.keyStorePublicKey,
+          keysharePayload.operatorIds,
+          keysharePayload.sharesData || keysharePayload.shares,
+          `${totalCost}`,
+          await getClusterData(getClusterHash(operators as unknown as IOperator[], accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
+
+        resolve(payload);
+      } catch (e: any) {
+        console.log(e.message);
+        resolve(null);
       }
-    );
+    });
   }
 
-  async createKeySharePayload({ accountAddress }: { accountAddress: string }): Promise<Map<string, any> | null> {
+  async createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
+                                { accountAddress: string; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
+      const processStore: ProcessStore = rootStore.Process;
+      const operatorStore: OperatorStore = rootStore.Operator;
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
       if (process && 'fundingPeriod' in process) {
-        const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+        const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
         const liquidationCollateralCost = getLiquidationCollateralPerValidator({
           operatorsFee: operatorStore.getSelectedOperatorsFee,
-          networkFee: ssvStore.networkFee,
+          networkFee,
           validatorsCount: this.validatorsCount,
-          liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-          minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral
+          liquidationCollateralPeriod,
+          minimumLiquidationCollateral,
         });
-        totalCost = prepareSsvAmountToTransfer(
-          toWei(
-            liquidationCollateralCost
-              .add(networkCost)
-              .add(operatorsCost)
-              .mul(this.isMultiSharesMode ? this.validatorsCount : 1)
-              .toString()
-          )
-        );
+        totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(this.isMultiSharesMode ? this.validatorsCount : 1).toString()));
       }
       try {
         const keysharePayload = this.processedKeyShare?.list().find((keyShare: any) => this.registerValidatorsPublicKeys.includes(keyShare.payload.publicKey))?.payload;
         let publicKeys;
         let sharesData;
-        const operatorIds = Object.values(operatorStore.selectedOperators)
-          .map((operator: IOperator) => operator.id)
-          .sort((a: number, b: number) => a - b);
+        const operatorIds = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => operator.id).sort((a: number, b: number) => a - b);
 
         const keyShares = this.processedKeyShare?.list();
 
@@ -351,14 +237,8 @@ class ValidatorStore {
           const payload = createPayload(
             publicKeys,
             operatorIds,
-            sharesData,
-            `${totalCost}`,
-            await getClusterData(
-              getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress),
-              ssvStore.liquidationCollateralPeriod,
-              ssvStore.minimumLiquidationCollateral
-            )
-          );
+            sharesData, `${totalCost}`,
+            await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
           resolve(payload);
         }
         resolve(null);

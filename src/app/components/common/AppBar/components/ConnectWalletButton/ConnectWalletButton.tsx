@@ -11,40 +11,40 @@ import { checkIfWalletIsContractAction, getAccountAddress, getWalletLabel, setCo
 import { initContracts } from '~root/services/contracts.service';
 import { ConnectedChain, WalletState } from '@web3-onboard/core';
 import { METAMASK_LABEL } from '~app/constants/constants';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import config from '~app/common/config';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
+import { fetchAndSetNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const ConnectWalletButton = () => {
-  const [{ wallet, connecting }, connect] = useConnectWallet();
+  const [{  wallet, connecting }, connect] = useConnectWallet();
   const [{ connectedChain }] = useSetChain();
   const dispatch = useAppDispatch();
   const storedWalletLabel = useAppSelector(getWalletLabel);
   const storedWalletAddress = useAppSelector(getAccountAddress);
   const classes = useStyles({ walletConnected: !!storedWalletAddress });
   const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
     dispatch(setIsShowSsvLoader(true));
     dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
-    wallet && (await dispatch(checkIfWalletIsContractAction(wallet.provider)));
+    wallet && await dispatch(checkIfWalletIsContractAction(wallet.provider));
     notifyService.init(chain.id);
     const index = getNetworkInfoIndexByNetworkId(Number(chain.id));
     dispatch(setConnectedNetwork(index));
     initContracts({ provider: connectedWallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: connectedWallet.label !== METAMASK_LABEL });
-    await ssvStore.initUser();
+    await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral());
     await operatorStore.initUser();
-    await myAccountStore.getOwnerAddressOperators({});
-    await myAccountStore.getOwnerAddressClusters({});
-    if (myAccountStore.ownerAddressClusters?.length) {
+    const accountClusters = await dispatch(fetchClusters({}));
+    const accountOperators = await dispatch(fetchOperators({}));
+    if (accountClusters.payload?.clusters.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
-    } else if (myAccountStore.ownerAddressOperators?.length) {
+      // @ts-ignore
+    } else if (accountOperators.payload?.operators.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
     } else {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
@@ -63,7 +63,7 @@ const ConnectWalletButton = () => {
     if (!getFromLocalStorageByKey('onboard.js:last_connected_wallet')) {
       dispatch(setIsShowSsvLoader(false));
     }
-  }, [wallet, connectedChain, connecting]);
+  }, [wallet, connectedChain, connecting, storedWalletAddress, initiateWallet, dispatch]);
 
   const onClick = async () => {
     if (storedWalletAddress) {
@@ -92,11 +92,9 @@ const ConnectWalletButton = () => {
       {storedWalletAddress && (
         <Grid item container>
           <Grid item>
-            <img className={classes.WalletImage} src={icon} alt={`Connected to ${storedWalletLabel}`} />
+            <img className={classes.WalletImage} src={icon} alt={`Connected to ${storedWalletLabel}`}/>
           </Grid>
-          <Grid item className={classes.WalletAddress}>
-            {walletDisplayName(storedWalletAddress)}
-          </Grid>
+          <Grid item className={classes.WalletAddress}>{walletDisplayName(storedWalletAddress)}</Grid>
         </Grid>
       )}
     </Grid>

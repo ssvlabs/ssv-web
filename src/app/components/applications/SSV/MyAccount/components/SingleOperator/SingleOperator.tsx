@@ -32,9 +32,8 @@ import { getOperatorValidators } from '~root/services/operator.service';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { SingleOperator as SingleOperatorProcess } from '~app/model/processes.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const SingleOperator = () => {
   const stores = useStores();

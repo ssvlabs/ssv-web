@@ -1,5 +1,4 @@
-import  { useEffect, useRef, useState } from 'react';
-import _ from 'underscore';
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -12,39 +11,44 @@ import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import ClusterWarnings
   from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import {
+  fetchClusters,
+  getAccountClusters,
+  getClustersPagination,
+  setSelectedClusterId,
+} from '~app/redux/account.slice';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const ClusterDashboard = () => {
   const stores = useStores();
   const classes = useStyles({});
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const timeoutRef = useRef(null);
   const clusterIntervalRef = useRef<any>(null);
   const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
+  const accountClusters = useAppSelector(getAccountClusters);
   const processStore: ProcessStore = stores.Process;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const [hoveredGrid, setHoveredGrid] = useState(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
-  const { page, pages, per_page, total } = myAccountStore.ownerAddressClustersPagination;
+  const { page, pages, per_page, total } = useAppSelector(getClustersPagination);
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   useEffect(() => {
-    clusterIntervalRef.current = setInterval(() => myAccountStore.getOwnerAddressClusters({}), 10000);
+    clusterIntervalRef.current = setInterval(() => dispatch(fetchClusters({})), 10000);
     return () => {
       if (clusterIntervalRef.current) {
         clearInterval(clusterIntervalRef.current);
@@ -80,7 +84,7 @@ const ClusterDashboard = () => {
     return { clusterID, operators, validators, operational_runway, runWayError };
   };
 
-  const sortedClusters = myAccountStore.ownerAddressClusters?.slice().sort((a: {
+  const sortedClusters = accountClusters.slice().sort((a: {
     runWay: number;
   }, b: {
     runWay: number;
@@ -115,23 +119,24 @@ const ClusterDashboard = () => {
     );
   });
 
-  const openSingleCluster = (listIndex: string) => {
+  const openSingleCluster = (listIndex: number) => {
     processStore.setProcess({
       processName: 'single_cluster',
       item: sortedClusters[listIndex],
     }, 2);
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT, { state: { clusterId: sortedClusters[listIndex].clusterId } });
+    dispatch(setSelectedClusterId(sortedClusters[listIndex].clusterId));
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 
   const moveToFeeRecipient = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT);
   };
 
-  const onChangePage = _.debounce(async (newPage: number) => {
+  const onChangePage = async (newPage: number) => {
     setLoadingClusters(true);
-    await myAccountStore.getOwnerAddressClusters({ forcePage: newPage });
+    await dispatch(fetchClusters({ forcePage: newPage }));
     setLoadingClusters(false);
-  }, 200);
+  };
 
   const rowBackgroundColor = (index: number) => {
     const indexCluster = sortedClusters[index];

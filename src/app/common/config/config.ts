@@ -18,21 +18,6 @@ const {
 } = distributionHelper(networkId);
 
 const config = {
-  DEBUG: import.meta.env.VITE_DEBUG || false,
-  retry: {
-    default: {
-      maxAttempts: 5,
-      backOff: 500,
-      exponentialOption: {
-        maxInterval: 5000,
-        multiplier: 2,
-      },
-      doRetry: (e: Error) => {
-        console.error(`Error: ${e.message || e.stack || e}. Retrying..`);
-        return true;
-      },
-    },
-  },
   routes: {
     COUNTRY_NOT_SUPPORTED: '/compliance',
     DISTRIBUTION: {
@@ -130,14 +115,6 @@ const config = {
       },
     },
   },
-  FEATURE: {
-    DOLLAR_CALCULATION: import.meta.env.VITE_SHOULD_CALCULATE_DOLLAR,
-    OPERATORS: {
-      VALID_KEY_LENGTH: 612,
-      SELECT_MINIMUM_OPERATORS: 4,
-      AUTO_SELECT: import.meta.env.VITE_FEATURE_AUTO_SELECT_OPERATORS,
-    },
-  },
   links: {
     SSV_API_ENDPOINT: api,
     EXPLORER_URL: explorerUrl,
@@ -194,7 +171,7 @@ const config = {
     MAX_VALIDATORS_COUNT_MULTI_FLOW: 50,
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
     OPERATOR_VALIDATORS_LIMIT_PRESERVE: 5,
-    MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
+    MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.000000001,
     MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION: 1,
     DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000',
   },

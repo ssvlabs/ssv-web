@@ -1,19 +1,20 @@
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
+import BorderScreen from '~app/components/common/BorderScreen';
+import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import ReactStepper
+  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import {
   IncreaseFlowProps,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import {
   StepperSteps,
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import BorderScreen from '~app/components/common/BorderScreen';
-import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {

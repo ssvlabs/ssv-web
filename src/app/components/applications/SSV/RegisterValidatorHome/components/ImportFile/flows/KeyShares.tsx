@@ -1,57 +1,61 @@
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { observer } from 'mobx-react';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import { observer } from 'mobx-react';
+import Typography from '@mui/material/Typography';
 import { KeyShares, KeySharesItem } from 'ssv-keys';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import config, { translations } from '~app/common/config';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
-import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
-import OperatorData from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData';
-import ValidatorCounter from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import ValidatorList from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
-import BorderScreen from '~app/components/common/BorderScreen';
-import ErrorMessage from '~app/components/common/ErrorMessage';
-import LinkText from '~app/components/common/LinkText';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
-import WarningBox from '~app/components/common/WarningBox';
-import { ButtonSize } from '~app/enums/Button.enum';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
-import { IOperator } from '~app/model/operator.model';
-import { ProcessType, SingleCluster } from '~app/model/processes.model';
-import { getAccountAddress } from '~app/redux/wallet.slice';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import { getOwnerNonce } from '~root/services/account.service';
-import { getClusterData, getClusterHash } from '~root/services/cluster.service';
-import {
-  KeyShareMulti,
-  KeyShareValidationResponse,
-  KeyShareValidationResponseId,
-  SelectedOperatorData,
-  ValidatorType,
   createValidatorsRecord,
   getResponse,
   getTooltipText,
   getValidatorCountErrorMessage,
+  KeyShareMulti,
+  KeyShareValidationResponse,
+  KeyShareValidationResponseId,
   parseToMultiShareFormat,
+  SelectedOperatorData,
   validateConsistentOperatorIds,
+  ValidatorType,
 } from '~root/services/keyShare.service';
-import { getOperatorsByIds } from '~root/services/operator.service';
+import { useStores } from '~app/hooks/useStores';
+import { isEqualsAddresses } from '~lib/utils/strings';
+import LinkText from '~app/components/common/LinkText';
+import config, { translations } from '~app/common/config';
+import WarningBox from '~app/components/common/WarningBox';
+import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import {
+  useStyles,
+} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
+import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import OperatorData
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData';
+import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
+import ValidatorList
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
+import ValidatorCounter
+  from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getValidator } from '~root/services/validator.service';
+import { getOperatorsByIds } from '~root/services/operator.service';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { IOperator } from '~app/model/operator.model';
+import { getOwnerNonce } from '~root/services/account.service';
+import { ProcessType, SingleCluster } from '~app/model/processes.model';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isJsonFile } from '~root/utils/dkg.utils';
+import { PrimaryButton } from '~app/atomicComponents';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
@@ -60,7 +64,6 @@ const KeyShareFlow = () => {
     const removeButtons = useRef(null);
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
-    const ssvStore: SsvStore = stores.SSV;
     const validatorStore: ValidatorStore = stores.Validator;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -395,7 +398,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },

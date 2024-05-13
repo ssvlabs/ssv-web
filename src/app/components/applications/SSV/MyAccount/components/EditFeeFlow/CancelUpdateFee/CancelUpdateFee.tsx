@@ -1,28 +1,28 @@
-import Dialog from '@mui/material/Dialog';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
-import { useState } from 'react';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import { useStores } from '~app/hooks/useStores';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import { ButtonSize } from '~app/enums/Button.enum';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { IOperator } from '~app/model/operator.model';
-import { SingleOperator } from '~app/model/processes.model';
-import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { getIsContractWallet } from '~app/redux/wallet.slice';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { formatNumberToUi } from '~lib/utils/numbers';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { useAppSelector, useAppDispatch } from '~app/hooks/redux.hook';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import { SingleOperator } from '~app/model/processes.model';
+import { IOperator } from '~app/model/operator.model';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { PrimaryButton } from '~app/atomicComponents';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
@@ -34,12 +34,13 @@ const CancelUpdateFee = () => {
   const operator: IOperator = process.item;
   const [futureFee, setFutureFee] = useState(0);
   const [successPage, showSuccessPage] = useState(false);
+  const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
 
   const cancelUpdateProcess = async () => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
-    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
+    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
     if (response) {
       // @ts-ignore
       setFutureFee(operatorStore.operatorFutureFee);

@@ -2,7 +2,6 @@ import Decimal from 'decimal.js';
 import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
@@ -11,6 +10,7 @@ import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
+import { rootStore } from '~root/stores.ts';
 
 export interface NewOperator {
   id: number,
@@ -36,7 +36,7 @@ interface SelectedOperators {
   [index: string]: IOperator;
 }
 
-class OperatorStore extends BaseStore {
+class OperatorStore {
   // Process data
   processOperatorId: number = 0;
 
@@ -68,8 +68,6 @@ class OperatorStore extends BaseStore {
   clusterSize: number = 4;
 
   constructor() {
-    super();
-
     makeObservable(this, {
       stats: computed,
       operators: observable,
@@ -219,7 +217,7 @@ class OperatorStore extends BaseStore {
    * Retrieves the operator id
    */
   get getOperatorId(): number {
-    const operatorStore: OperatorStore = this.getStore('Operator');
+    const operatorStore: OperatorStore = rootStore.Operator;
     return operatorStore.newOperatorKeys.id;
   }
 

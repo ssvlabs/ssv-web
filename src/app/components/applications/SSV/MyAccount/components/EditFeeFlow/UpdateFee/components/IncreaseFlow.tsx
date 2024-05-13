@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
@@ -71,8 +71,6 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
                 setCurrentStep(IncreaseSteps.PENDING);
             } else if (startPendingStateTime > todayDate) {
                 setCurrentStep(IncreaseSteps.WAITING);
-            } else if (todayDate > endPendingStateTime) {
-                setCurrentStep(IncreaseSteps.EXPIRED);
             } else if (todayDate > endPendingStateTime ) {
                 if (daysFromEndPendingStateTime >= 3){
                     declareNewFeeHandler();

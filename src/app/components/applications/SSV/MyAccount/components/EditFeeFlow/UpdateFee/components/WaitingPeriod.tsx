@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -28,7 +28,7 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
   // @ts-ignore
   const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
   const endDay = operatorEndApprovalTime.getUTCDate();
-  let today = new Date();
+  const today = new Date();
   const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });
 
   const cancelUpdateFeeHandler = async () => {

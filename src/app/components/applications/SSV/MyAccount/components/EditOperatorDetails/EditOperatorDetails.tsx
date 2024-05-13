@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
 import { Typography } from '@mui/material';
@@ -32,7 +32,7 @@ const EditOperatorDetails = () => {
   const processStore: ProcessStore = stores.Process;
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
   const process: SingleOperator = processStore.getProcess;
-  let operator: IOperator = process?.item;
+  const operator: IOperator = process?.item;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +53,7 @@ const EditOperatorDetails = () => {
     const isNotValidity = metadataStore.validateOperatorMetaData();
     setButtonDisable(isNotValidity);
     if (!isNotValidity) {
-      let payload = metadataStore.createMetadataPayload();
+      const payload = metadataStore.createMetadataPayload();
       let rawDataToValidate: any = [];
       fieldsToValidateSignature.forEach(field => {
         if (payload[field]) {

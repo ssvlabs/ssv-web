@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
@@ -114,7 +114,7 @@ const SingleCluster = () => {
         header={'Cluster'}
       />
       <Grid container item className={classes.Section}>
-        {(cluster?.operators).map((operator: any, index: number) => {
+        {(cluster.operators).map((operator: any, index: number) => {
           return <OperatorBox key={index} operator={operator}/>;
         })}
       </Grid>

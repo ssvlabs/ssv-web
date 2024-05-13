@@ -2,7 +2,6 @@ import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import config from '~app/common/config';
 import { fromWei } from '~root/services/conversions.service';
-import { store } from '~app/store';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -20,7 +19,7 @@ const checkAllowance = async ({ accountAddress }: { accountAddress: string }): P
   }
 };
 
-const requestAllowance = async (callBack?: CallableFunction): Promise<any> => {
+const requestAllowance = async (callBack?: CallableFunction): Promise<boolean> => {
   try {
     const ssvContract = getContractByName(EContractName.TOKEN_SETTER);
     if (!ssvContract) {
@@ -33,10 +32,8 @@ const requestAllowance = async (callBack?: CallableFunction): Promise<any> => {
       return false;
     }
     const receipt = await tx.wait();
-    if (receipt.blockHash) {
-      return true;
-    }
-  } catch (e: any) {
+    return !!receipt.blockHash;
+  } catch (e: unknown) {
     console.warn('requestAllowance error', e);
     return false;
   }

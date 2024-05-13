@@ -1,4 +1,4 @@
-import React from 'react';
+
 import styled from 'styled-components';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';

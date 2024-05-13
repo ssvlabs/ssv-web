@@ -12,7 +12,7 @@ import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '../common/stores/applications/SsvWeb/Operator.store';
 
 const useWalletDisconnector = () => {
-  const [_, __, disconnect] = useConnectWallet();
+  const [,, disconnect] = useConnectWallet();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const label = useAppSelector(getWalletLabel);

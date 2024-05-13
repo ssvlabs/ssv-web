@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Grid } from '@mui/material';
 import ProcessElement
     from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/ProcessElement';

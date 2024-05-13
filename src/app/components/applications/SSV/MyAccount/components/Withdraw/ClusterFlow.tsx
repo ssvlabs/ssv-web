@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';

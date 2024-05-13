@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';

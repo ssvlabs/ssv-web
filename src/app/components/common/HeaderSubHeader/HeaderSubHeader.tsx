@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
 
@@ -24,7 +24,7 @@ const Header = styled.h1<{ theme: string, marginBottom: number | undefined }>`
     font-size: 20px;
     font-weight: 800;
     color: ${({ theme }) => theme.colors.gray90};
-    margin-bottom:${({ theme, marginBottom }) => {
+    margin-bottom:${({ marginBottom }) => {
         if (marginBottom) return `${marginBottom}px`;
         return '12px';
     }}
@@ -36,7 +36,7 @@ const SubHeader = styled.p<{ theme: string, marginBottom: number | undefined, re
     font-size: 16px;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.gray80} ;
-    margin-bottom:${({ theme, marginBottom, rewardPage }) => {
+    margin-bottom:${({  marginBottom, rewardPage }) => {
         if (marginBottom) return marginBottom;
         if (rewardPage) return '16px';
         return '32px';

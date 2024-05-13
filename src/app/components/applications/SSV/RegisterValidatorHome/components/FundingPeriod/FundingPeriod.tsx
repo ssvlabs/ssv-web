@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
@@ -52,7 +52,7 @@ const FundingPeriod = () => {
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, periodOfTime);
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+  const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: operatorStore.getSelectedOperatorsFee,
     networkFee,
     liquidationCollateralPeriod,

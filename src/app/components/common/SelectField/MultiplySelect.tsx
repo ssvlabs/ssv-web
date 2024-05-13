@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import  { useEffect, useState } from 'react';
 import Chip from '@mui/material/Chip';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,7 +12,7 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string, placehold
     const stores = useStores();
     const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
     const { value, options } = metadataStore.getMetadataEntity(fieldKey);
-    const [values, setValues] = React.useState<string[]>([]);
+    const [values, setValues] = useState<string[]>([]);
 
     useEffect(() => {
         const operatorMevRelays = (value ?? '').trim().split(',');

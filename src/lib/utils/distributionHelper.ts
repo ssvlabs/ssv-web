@@ -5,7 +5,7 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 
 const DISTRIBUTION = 'Distribution';
 const DISTRIBUTION_TESTNET = 'DistributionTestnet';
-const DISTRIBUTION_TESTING_CONTRACT = 'distributionTestingContract';
+// const DISTRIBUTION_TESTING_CONTRACT = 'distributionTestingContract';
 
 export const distributionHelper = (networkId: number) => {
   // TODO: refactor

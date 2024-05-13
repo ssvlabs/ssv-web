@@ -8,7 +8,7 @@ type ClusterDataType = {
 };
 
 const createPayload = (publicKey: string | string[], operatorIds: number[] | number[][], sharesData: string | string[], totalCost: string | string[], clusterData: ClusterDataType) => {
-  const payload = new Map<string, any>();
+  const payload = new Map<string, unknown>();
   payload.set('keyStorePublicKey', publicKey);
   payload.set('operatorIds', operatorIds);
   payload.set('sharesData', sharesData);
@@ -17,7 +17,7 @@ const createPayload = (publicKey: string | string[], operatorIds: number[] | num
   return payload;
 };
 
-const isJsonFile = (file: any): boolean => {
+const isJsonFile = (file: File): boolean => {
   return file?.type === 'application/json';
 };
 

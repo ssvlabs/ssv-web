@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import  { useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import MevRelayCard from '~app/components/common/MevRelayCard';
 import { MEV_RELAYS_LOGOS } from '~lib/utils/operatorMetadataHelper';

@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SetOperatorFee.styles';
@@ -49,7 +49,7 @@ const SetOperatorFee = () => {
   };
 
   const removeLeadingZeros = (num: string): string =>  {
-    let stripped = num.toString().replace(/^0+(?!\.)/, '');
+    const stripped = num.toString().replace(/^0+(?!\.)/, '');
     return stripped === '' ? '0' : stripped;
   };
 

@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
-          node-version: 16.15.1
+          node-version: 20.12.2
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
@@ -147,12 +147,12 @@ jobs:
 #          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
 #          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
 #        env:
-#          REACT_APP_FAUCET_PAGE: "true"
+#          VITE_FAUCET_PAGE: "true"
 #          SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
 #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
 #          EXPLORER_URL: "https://explorer.ssv.network/"
 #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-#          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+#          VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
 #
 #      - name: Deploy stage faucet
 #        if: github.ref == 'refs/heads/stage'
@@ -201,12 +201,12 @@ jobs:
 #          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
 #          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
 #        env:
-#          REACT_APP_FAUCET_PAGE: "true"
+#          VITE_FAUCET_PAGE: "true"
 #          SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
 #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
 #          EXPLORER_URL: "https://explorer.ssv.network/"
 #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-#          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+#          VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
 #
 #      - name: Deploy prod faucet
 #        if: github.ref == 'refs/heads/main'

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
@@ -119,7 +119,7 @@ const KeyShareFlow = () => {
           operatorStore.setClusterSize(selectedOperators.length);
         }
 
-        for (let keyShare of shares) {
+        for (const keyShare of shares) {
           if (keyShare.data.operators?.some((operatorData: { id: number, operatorKey: string }) => {
             const selectedOperator = Object.values(operatorStore.selectedOperators).find((selected: IOperator) => selected.id === operatorData.id);
             return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
@@ -134,6 +134,7 @@ const KeyShareFlow = () => {
     }
 
     async function storeKeyShareData(keyShareMulti: KeyShares) {
+      // eslint-disable-next-line no-useless-catch
       try {
         validatorStore.setProcessedKeyShare(keyShareMulti);
         const keyShares = keyShareMulti.list();
@@ -148,6 +149,7 @@ const KeyShareFlow = () => {
           return;
         }
 
+        // eslint-disable-next-line no-async-promise-executor
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
             const res = await getValidator(validator.publicKey);

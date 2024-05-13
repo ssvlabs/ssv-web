@@ -26,7 +26,7 @@ export enum EBulkMode {
 }
 
 export enum EValidatorFlowAction {
-  ADD_CLUSTER,
+  // ADD_CLUSTER,
   GENERATE_NEW_SHARE,
   ALREADY_HAVE_SHARES,
   GENERATE_KEY_SHARES_ONLINE,
@@ -122,6 +122,7 @@ const validatorRegistrationFlow = (currentRoute: string) => {
    */
   const getBulkMode = (): EBulkMode => {
     const currentNetwork: number = getStoredNetwork().networkId;
+    // @ts-ignore
     return NETWORK_TO_BULK_MODE[currentNetwork];
   };
 

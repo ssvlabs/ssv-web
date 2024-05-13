@@ -2,15 +2,6 @@ import config from '~app/common/config';
 import { getRequest } from '~root/services/httpApi.service';
 import Decimal from 'decimal.js';
 
-const getOwnerAddressCost = async (ownerAddress: string, skipRetry?: boolean): Promise<any> => {
-  try {
-    const url = `${config.links.SSV_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
-    return await getRequest(url, skipRetry);
-  } catch (e) {
-    return null;
-  }
-};
-
 const getLiquidationCollateralPerValidator = ({
                                                 operatorsFee,
                                                 networkFee,
@@ -43,7 +34,6 @@ const getValidator = async (publicKey: string) => {
 };
 
 export {
-  getOwnerAddressCost,
   validatorsByClusterHash,
   getLiquidationCollateralPerValidator,
   getValidator,

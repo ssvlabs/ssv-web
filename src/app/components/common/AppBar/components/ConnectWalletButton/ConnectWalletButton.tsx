@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useConnectWallet, useSetChain } from '@web3-onboard/react';
 import { useStores } from '~app/hooks/useStores';
@@ -15,7 +15,7 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import config from '~app/common/config';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { fetchClusters, fetchOperators, getAccountClusters, getAccountOperators } from '~app/redux/account.slice';
+import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
 import { fetchAndSetNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const ConnectWalletButton = () => {
@@ -27,9 +27,8 @@ const ConnectWalletButton = () => {
   const classes = useStyles({ walletConnected: !!storedWalletAddress });
   const stores = useStores();
   const operatorStore: OperatorStore = stores.Operator;
-  const accountClusters = useAppSelector(getAccountClusters);
-  const accountOperators = useAppSelector(getAccountOperators);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initiateWallet = async ({ connectedWallet, chain }: { connectedWallet: WalletState; chain: ConnectedChain }) => {
     dispatch(setIsShowSsvLoader(true));
     dispatch(setWallet({ label: connectedWallet.label, address: connectedWallet.accounts[0].address }));
@@ -40,11 +39,12 @@ const ConnectWalletButton = () => {
     initContracts({ provider: connectedWallet.provider, network: getStoredNetwork(), shouldUseRpcUrl: connectedWallet.label !== METAMASK_LABEL });
     await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral());
     await operatorStore.initUser();
-    const res = await dispatch(fetchClusters({}));
-    await dispatch(fetchOperators({}));
-    if (res.payload?.clusters.length) {
+    const accountClusters = await dispatch(fetchClusters({}));
+    const accountOperators = await dispatch(fetchOperators({}));
+    if (accountClusters.payload?.clusters.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
-    } else if (accountOperators.length) {
+      // @ts-ignore
+    } else if (accountOperators.payload?.operators.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
     } else {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
@@ -80,7 +80,6 @@ const ConnectWalletButton = () => {
     icon = '/images/wallets/trezor.svg';
   } else if (storedWalletLabel === 'WalletConnect') {
     icon = '/images/wallets/walletconnect.svg';
-  } else if (storedWalletLabel === 'Ledger') {
   } else {
     icon = '/images/wallets/metamask.svg';
   }

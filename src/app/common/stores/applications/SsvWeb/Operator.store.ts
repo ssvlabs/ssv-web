@@ -2,7 +2,6 @@ import Decimal from 'decimal.js';
 import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import BaseStore from '~app/common/stores/BaseStore';
 import { EContractName } from '~app/model/contracts.model';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
@@ -36,7 +35,7 @@ interface SelectedOperators {
   [index: string]: IOperator;
 }
 
-class OperatorStore extends BaseStore {
+class OperatorStore {
   // Process data
   processOperatorId: number = 0;
 
@@ -68,8 +67,6 @@ class OperatorStore extends BaseStore {
   clusterSize: number = 4;
 
   constructor() {
-    super();
-
     makeObservable(this, {
       stats: computed,
       operators: observable,
@@ -219,8 +216,7 @@ class OperatorStore extends BaseStore {
    * Retrieves the operator id
    */
   get getOperatorId(): number {
-    const operatorStore: OperatorStore = this.getStore('Operator');
-    return operatorStore.newOperatorKeys.id;
+    return this.newOperatorKeys.id;
   }
 
   /**
@@ -470,5 +466,6 @@ class OperatorStore extends BaseStore {
   }
 }
 
+export const operatorStore = new OperatorStore();
 export default OperatorStore;
 

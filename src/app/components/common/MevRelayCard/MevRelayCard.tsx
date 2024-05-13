@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { MEV_RELAYS_LOGOS } from '~lib/utils/operatorMetadataHelper';
 import { useStyles } from '~app/components/common/MevRelayCard/MevRelayCard.styles';

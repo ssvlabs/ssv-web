@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import Decimal from 'decimal.js';
 import Grid from '@mui/material/Grid';
@@ -53,7 +53,7 @@ const ReactivateCluster = () => {
   const networkCost = propertyCostByPeriod(networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
 
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+  const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee,
     networkFee,
     liquidationCollateralPeriod,

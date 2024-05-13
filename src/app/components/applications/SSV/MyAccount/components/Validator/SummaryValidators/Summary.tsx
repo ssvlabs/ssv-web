@@ -1,4 +1,4 @@
-import React from 'react';
+
 import styled from 'styled-components';
 import config from '~app/common/config';
 import { longStringShorten } from '~lib/utils/strings';

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';

@@ -1,8 +1,8 @@
+/* eslint-disable no-async-promise-executor */
 import Decimal from 'decimal.js';
 import { KeySharesItem } from 'ssv-keys';
 import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
-import BaseStore from '~app/common/stores/BaseStore';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
@@ -16,6 +16,7 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { createPayload } from '~root/utils/dkg.utils';
+import { rootStore } from '~root/stores.ts';
 
 const annotations = {
   keyStoreFile: observable,
@@ -37,32 +38,31 @@ const annotations = {
   setMultiSharesMode: action.bound,
   validatorsCount: observable,
   processedKeyShare: observable,
-  setProcessedKeyShare: action.bound,
+  setProcessedKeyShare: action.bound
 };
 
-class ValidatorStore extends BaseStore {
+class ValidatorStore {
   // general
   registrationMode = 0;
 
   // Key Stores flow
-  keyStorePublicKey: string = '';
-  keyStorePrivateKey: string = '';
+  keyStorePublicKey = '';
+  keyStorePrivateKey = '';
   keyStoreFile: File | null = null;
-  validatorPublicKeyExist: boolean = false;
+  validatorPublicKeyExist = false;
 
   // key shares flow
   // keySharePayload: any;
-  keySharePublicKey: string = '';
+  keySharePublicKey = '';
   keyShareFile: File | null = null;
 
   // New key shares flow.
-  isMultiSharesMode: boolean = false;
+  isMultiSharesMode = false;
   processedKeyShare: KeyShares | null = null;
-  validatorsCount: number = 0;
+  validatorsCount = 0;
   registerValidatorsPublicKeys: string[] = [];
 
   constructor() {
-    super();
     makeObservable(this, annotations);
   }
 
@@ -143,8 +143,8 @@ class ValidatorStore extends BaseStore {
 
   async createKeystorePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
                                 { accountAddress: string; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }): Promise<Map<string, any> | null> {
-    const processStore: ProcessStore = this.getStore('Process');
-    const operatorStore: OperatorStore = this.getStore('Operator');
+    const processStore: ProcessStore = rootStore.Process;
+    const operatorStore: OperatorStore = rootStore.Operator;
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
     const ownerNonce = await getOwnerNonce({ address: accountAddress });
     if (ownerNonce === null) {
@@ -197,14 +197,14 @@ class ValidatorStore extends BaseStore {
   async createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
                                 { accountAddress: string; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
-      const processStore: ProcessStore = this.getStore('Process');
-      const operatorStore: OperatorStore = this.getStore('Operator');
+      const processStore: ProcessStore = rootStore.Process;
+      const operatorStore: OperatorStore = rootStore.Operator;
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
       if (process && 'fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-        let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+        const liquidationCollateralCost = getLiquidationCollateralPerValidator({
           operatorsFee: operatorStore.getSelectedOperatorsFee,
           networkFee,
           validatorsCount: this.validatorsCount,
@@ -282,4 +282,5 @@ class ValidatorStore extends BaseStore {
   }
 }
 
+export const validatorStore = new ValidatorStore();
 export default ValidatorStore;

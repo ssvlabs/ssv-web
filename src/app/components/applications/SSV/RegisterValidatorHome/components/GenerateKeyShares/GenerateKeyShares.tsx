@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';

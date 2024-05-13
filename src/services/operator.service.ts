@@ -51,7 +51,7 @@ const getOperator = async (operatorId: number | string, skipRetry?: boolean) => 
 const getOperatorsByIds = async (operatorIds: number[]): Promise<IOperator[]> => {
   const promises = operatorIds.map(operatorId => getOperator(operatorId, false));
   const responses = await Promise.all(promises);
-  for (let response of responses) {
+  for (const response of responses) {
     if (!response) {
       return [];
     }
@@ -64,7 +64,7 @@ const getOperatorByPublicKey = async (publicKey: string, skipRetry: boolean = tr
   return await getRequest(url, skipRetry);
 };
 
-const updateOperatorMetadata = async (operatorId: number, signature: string, operatorMetadata: Record<string, any>): Promise<IHttpResponse<IOperator>> => {
+const updateOperatorMetadata = async (operatorId: number, signature: string, operatorMetadata: Record<string, unknown>): Promise<IHttpResponse<IOperator>> => {
   const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
   return await putRequest(url, { ...operatorMetadata, signature });
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
 import { toWei } from '~root/services/conversions.service';
@@ -181,12 +181,14 @@ const AllowanceButton = ({
         </ButtonWrapper>
         <ProgressStepsWrapper>
           <ProgressStepsInner>
+            {/* @ts-ignore */}
             <Step
               hasFinished={hasGotAllowanceApproval}
               isCurrent={!hasGotAllowanceApproval}>
               {!hasGotAllowanceApproval && <StepText>1</StepText>}
             </Step>
             <Line />
+             {/* @ts-ignore */}
             <Step isCurrent={hasGotAllowanceApproval}>
               <StepText>2</StepText>
             </Step>

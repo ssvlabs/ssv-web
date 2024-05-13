@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -58,7 +58,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   const networkCost = propertyCostByPeriod(networkFee, processFundingPeriod);
   const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+  const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: operatorStore.getSelectedOperatorsFee,
     networkFee,
     liquidationCollateralPeriod,

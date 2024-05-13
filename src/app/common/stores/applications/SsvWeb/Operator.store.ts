@@ -468,5 +468,6 @@ class OperatorStore {
   }
 }
 
+export const operatorStore = new OperatorStore();
 export default OperatorStore;
 

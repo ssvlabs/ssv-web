@@ -44,7 +44,7 @@ export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBac
 
 export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch }: {
   contractMethod: Function,
-  payload: Array<unknown>,
+  payload: any,
   isContractWallet: boolean,
   getterTransactionState?: Function,
   prevState?: unknown,

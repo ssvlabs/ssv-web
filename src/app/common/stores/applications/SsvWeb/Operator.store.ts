@@ -10,7 +10,6 @@ import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { rootStore } from '~root/stores.ts';
 
 export interface NewOperator {
   id: number,
@@ -217,8 +216,7 @@ class OperatorStore {
    * Retrieves the operator id
    */
   get getOperatorId(): number {
-    const operatorStore: OperatorStore = rootStore.Operator;
-    return operatorStore.newOperatorKeys.id;
+    return this.newOperatorKeys.id;
   }
 
   /**

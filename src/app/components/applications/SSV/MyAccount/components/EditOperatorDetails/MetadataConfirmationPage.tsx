@@ -10,8 +10,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import { SingleOperator } from '~app/model/processes.model';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 

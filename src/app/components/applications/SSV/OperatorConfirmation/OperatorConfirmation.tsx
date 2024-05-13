@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const OperatorConfirmation = () => {
@@ -43,7 +43,7 @@ const OperatorConfirmation = () => {
       setIsLoading(true);
       setActionButtonText('Waiting for confirmation...');
       operatorStore.newOperatorKeys.id = 0;
-      const operatorAdded = await operatorStore.addNewOperator(isContractWallet);
+      const operatorAdded = await operatorStore.addNewOperator(isContractWallet, dispatch);
       let publicKey = operatorStore.newOperatorKeys.publicKey;
       if (operatorAdded) {
         try {

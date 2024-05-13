@@ -15,16 +15,16 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 import { ProcessType } from '~app/model/processes.model';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+
+const SELECT_MINIMUM_OPERATORS = 4;
 
 type PreRequisiteType = {
   text: string;
   tooltip?: string;
   tooltipLinkText?: string;
 };
-
 
 const ButtonSeparator = styled.div`
   width: 100%;
@@ -66,7 +66,7 @@ const RegisterValidatorHome = () => {
       processName: 'register_validator',
     }, ProcessType.Validator);
     operatorStore.unselectAllOperators();
-    operatorStore.setClusterSize(config.FEATURE.OPERATORS.SELECT_MINIMUM_OPERATORS);
+    operatorStore.setClusterSize(SELECT_MINIMUM_OPERATORS);
     navigate(getNextNavigation(EValidatorFlowAction.GENERATE_NEW_SHARE));
   };
 

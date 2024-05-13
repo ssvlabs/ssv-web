@@ -7,18 +7,15 @@ import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getContractByName } from '~root/services/contracts.service';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { IOperator } from '~app/model/operator.model';
-import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { createPayload } from '~root/utils/dkg.utils';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 const annotations = {
   keyStoreFile: observable,
@@ -29,10 +26,6 @@ const annotations = {
   addNewValidator: action.bound,
   keySharePublicKey: observable,
   setKeySharePublicKey: action.bound,
-  removeValidator: action.bound,
-  bulkRemoveValidators: action.bound,
-  exitValidator: action.bound,
-  bulkExitValidators: action.bound,
   setKeyShareFile: action.bound,
   setRegisterValidatorsPublicKeys: action.bound,
   keyStorePrivateKey: observable,
@@ -67,8 +60,6 @@ class ValidatorStore extends BaseStore {
   processedKeyShare: KeyShares | null = null;
   validatorsCount: number = 0;
   registerValidatorsPublicKeys: string[] = [];
-
-  private myAccountStore: MyAccountStore = this.getStore('MyAccount');
 
   constructor() {
     super();
@@ -125,111 +116,14 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async removeValidator({ accountAddress, isContractWallet, publicKey, operators }: {
-    accountAddress: string;
-    isContractWallet: boolean;
-    publicKey: string;
-    operators: IOperator[]
-  }): Promise<boolean> {
-    const ssvStore: SsvStore = this.getStore('SSV');
-    const sortedOperatorIds = getSortedOperatorsIds(operators);
-    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    const payload = [publicKey, sortedOperatorIds, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.removeValidator,
-      payload,
-      getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
-        return validatorCount;
-      },
-      prevState: clusterData.validatorCount,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  /**
-   * Bulk remove validators
-   */
-  async bulkRemoveValidators({ accountAddress, isContractWallet, validatorIds, operators }: {
-    accountAddress: string;
-    isContractWallet: boolean;
-    validatorIds: string[];
-    operators: IOperator[]
-  }): Promise<boolean> {
-    const ssvStore: SsvStore = this.getStore('SSV');
-    const sortedOperatorIds = getSortedOperatorsIds(operators);
-    const clusterData = await getClusterData(getClusterHash(operators, accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral);
-    const payload = [validatorIds, sortedOperatorIds, clusterData];
-    const contract = getContractByName(EContractName.SETTER);
-    if (!payload) {
-      return false;
-    }
-    return await transactionExecutor({
-      contractMethod: contract.bulkRemoveValidator,
-      payload,
-      getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
-        return validatorCount;
-      },
-      prevState: clusterData.validatorCount,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  /**
-   * Exit validator
-   */
-  async exitValidator({ isContractWallet, publicKey, operatorIds }: {
-    isContractWallet: boolean;
-    publicKey: string;
-    operatorIds: number[]
-  }): Promise<boolean> {
-    const payload = [publicKey, operatorIds];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.exitValidator,
-      payload,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  /**
-   * Bulk exit validator
-   */
-  async bulkExitValidators({ isContractWallet, validatorIds, operatorIds }: {
-    isContractWallet: boolean;
-    validatorIds: string[];
-    operatorIds: number[]
-  }): Promise<boolean> {
-    const payload = [validatorIds, operatorIds];
-    const contract = getContractByName(EContractName.SETTER);
-    return await transactionExecutor({
-      contractMethod: contract.bulkExitValidator,
-      payload,
-      isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  /**
-   * Add new validator
-   */
-  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators }: {
-    accountAddress: string;
-    isContractWallet: boolean,
-    isBulk: boolean,
-    operators: IOperator[]
+  async addNewValidator({ accountAddress, isContractWallet, isBulk, operators, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }: {
+    accountAddress: string; isContractWallet: boolean; isBulk: boolean; operators: IOperator[]; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function;
   }) {
     const contract = getContractByName(EContractName.SETTER);
     const contractMethod = isBulk ? contract.bulkRegisterValidator : contract.registerValidator;
-    const payload = this.registrationMode === 0 ? await this.createKeySharePayload({ accountAddress }) : await this.createKeystorePayload({ accountAddress });
+    const payload = this.registrationMode === 0 ?
+      await this.createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }) :
+      await this.createKeystorePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral });
     if (!payload) {
       return false;
     }
@@ -238,17 +132,17 @@ class ValidatorStore extends BaseStore {
       contractMethod,
       payload: payload.values(),
       getterTransactionState: async () => {
-        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress));
+        const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
         return validatorCount;
       },
       prevState: payload.get('clusterData').validatorCount,
       isContractWallet: isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
+      dispatch,
     });
   }
 
-  async createKeystorePayload({ accountAddress }: { accountAddress: string }): Promise<Map<string, any> | null> {
-    const ssvStore: SsvStore = this.getStore('SSV');
+  async createKeystorePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
+                                { accountAddress: string; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }): Promise<Map<string, any> | null> {
     const processStore: ProcessStore = this.getStore('Process');
     const operatorStore: OperatorStore = this.getStore('Operator');
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
@@ -268,11 +162,11 @@ class ValidatorStore extends BaseStore {
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
         let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
         if (process && 'fundingPeriod' in process) {
-          const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+          const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
-          let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(ssvStore.networkFee).mul(ssvStore.liquidationCollateralPeriod);
-          if (Number(liquidationCollateralCost) < ssvStore.minimumLiquidationCollateral) {
-            liquidationCollateralCost = new Decimal(ssvStore.minimumLiquidationCollateral);
+          let liquidationCollateralCost = new Decimal(operatorStore.getSelectedOperatorsFee).add(networkFee).mul(liquidationCollateralPeriod);
+          if (Number(liquidationCollateralCost) < minimumLiquidationCollateral) {
+            liquidationCollateralCost = new Decimal(minimumLiquidationCollateral);
           }
           totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).toString()));
         }
@@ -290,7 +184,7 @@ class ValidatorStore extends BaseStore {
           keysharePayload.operatorIds,
           keysharePayload.sharesData || keysharePayload.shares,
           `${totalCost}`,
-          await getClusterData(getClusterHash(operators as unknown as IOperator[], accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral));
+          await getClusterData(getClusterHash(operators as unknown as IOperator[], accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
 
         resolve(payload);
       } catch (e: any) {
@@ -300,22 +194,22 @@ class ValidatorStore extends BaseStore {
     });
   }
 
-  async createKeySharePayload({ accountAddress }: { accountAddress: string }): Promise<Map<string, any> | null> {
+  async createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
+                                { accountAddress: string; networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
-      const ssvStore: SsvStore = this.getStore('SSV');
       const processStore: ProcessStore = this.getStore('Process');
       const operatorStore: OperatorStore = this.getStore('Operator');
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
       if (process && 'fundingPeriod' in process) {
-        const networkCost = propertyCostByPeriod(ssvStore.networkFee, process.fundingPeriod);
+        const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, process.fundingPeriod);
         let liquidationCollateralCost = getLiquidationCollateralPerValidator({
           operatorsFee: operatorStore.getSelectedOperatorsFee,
-          networkFee: ssvStore.networkFee,
+          networkFee,
           validatorsCount: this.validatorsCount,
-          liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-          minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+          liquidationCollateralPeriod,
+          minimumLiquidationCollateral,
         });
         totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(this.isMultiSharesMode ? this.validatorsCount : 1).toString()));
       }
@@ -344,7 +238,7 @@ class ValidatorStore extends BaseStore {
             publicKeys,
             operatorIds,
             sharesData, `${totalCost}`,
-            await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral));
+            await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
           resolve(payload);
         }
         resolve(null);

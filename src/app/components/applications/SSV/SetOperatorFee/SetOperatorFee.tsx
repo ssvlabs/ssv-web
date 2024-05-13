@@ -12,7 +12,7 @@ import { validateFeeInput } from '~lib/utils/validatesInputs';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 type UserInput = string;

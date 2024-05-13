@@ -16,9 +16,8 @@ import {
   StepperSteps,
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 
 const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();

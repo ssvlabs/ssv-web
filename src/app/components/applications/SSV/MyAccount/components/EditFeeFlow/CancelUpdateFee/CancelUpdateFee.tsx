@@ -15,13 +15,13 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppSelector, useAppDispatch } from '~app/hooks/redux.hook';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleOperator } from '~app/model/processes.model';
 import { IOperator } from '~app/model/operator.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const CancelUpdateFee = () => {
@@ -34,12 +34,13 @@ const CancelUpdateFee = () => {
   const operator: IOperator = process.item;
   const [futureFee, setFutureFee] = useState(0);
   const [successPage, showSuccessPage] = useState(false);
+  const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
 
   const cancelUpdateProcess = async () => {
     if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
-    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet });
+    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
     if (response) {
       // @ts-ignore
       setFutureFee(operatorStore.operatorFutureFee);

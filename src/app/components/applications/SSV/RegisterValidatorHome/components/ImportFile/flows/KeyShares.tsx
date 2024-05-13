@@ -27,7 +27,6 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
@@ -41,7 +40,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
@@ -50,11 +49,13 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isJsonFile } from '~root/utils/dkg.utils';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
@@ -63,7 +64,6 @@ const KeyShareFlow = () => {
     const removeButtons = useRef(null);
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
-    const ssvStore: SsvStore = stores.SSV;
     const validatorStore: ValidatorStore = stores.Validator;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -396,7 +396,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },

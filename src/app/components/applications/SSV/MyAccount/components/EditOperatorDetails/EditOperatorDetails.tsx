@@ -7,7 +7,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import {
@@ -21,21 +20,23 @@ import { EContractName } from '~app/model/contracts.model';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleOperator } from '~app/model/processes.model';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { fetchOperators } from '~app/redux/account.slice';
+import { useAppDispatch } from '~app/hooks/redux.hook';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
   const processStore: ProcessStore = stores.Process;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
   const process: SingleOperator = processStore.getProcess;
   let operator: IOperator = process?.item;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     (async () => {
@@ -76,14 +77,8 @@ const EditOperatorDetails = () => {
       }
       const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
       if (updateOperatorResponse.data) {
-        let selectedOperator = myAccountStore.ownerAddressOperators.find((op: any) => op.id === operator.id);
-        if (selectedOperator) {
-          operator = { ...operator, ...updateOperatorResponse.data };
-          Object.assign(selectedOperator, updateOperatorResponse.data);
-          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
-        } else {
-          setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
-        }
+        dispatch(fetchOperators({}));
+        navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
       } else {
         setErrorMessage([updateOperatorResponse.error || 'Update metadata failed']);
       }

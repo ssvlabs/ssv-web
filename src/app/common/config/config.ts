@@ -18,21 +18,6 @@ const {
 } = distributionHelper(networkId);
 
 const config = {
-  DEBUG: process.env.REACT_APP_DEBUG || false,
-  retry: {
-    default: {
-      maxAttempts: 5,
-      backOff: 500,
-      exponentialOption: {
-        maxInterval: 5000,
-        multiplier: 2,
-      },
-      doRetry: (e: Error) => {
-        console.error(`Error: ${e.message || e.stack || e}. Retrying..`);
-        return true;
-      },
-    },
-  },
   routes: {
     COUNTRY_NOT_SUPPORTED: '/compliance',
     DISTRIBUTION: {
@@ -130,14 +115,6 @@ const config = {
       },
     },
   },
-  FEATURE: {
-    DOLLAR_CALCULATION: process.env.REACT_APP_SHOULD_CALCULATE_DOLLAR,
-    OPERATORS: {
-      VALID_KEY_LENGTH: 612,
-      SELECT_MINIMUM_OPERATORS: 4,
-      AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
-    },
-  },
   links: {
     SSV_API_ENDPOINT: api,
     EXPLORER_URL: explorerUrl,
@@ -148,7 +125,6 @@ const config = {
     TERMS_OF_USE_LINK: 'https://ssv.network/terms-of-use/',
     PRIVACY_POLICY_LINK: 'https://ssv.network/privacy-policy/',
     LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
-    LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',

@@ -63,7 +63,7 @@ const ConnectWalletButton = () => {
     if (!getFromLocalStorageByKey('onboard.js:last_connected_wallet')) {
       dispatch(setIsShowSsvLoader(false));
     }
-  }, [wallet, connectedChain, connecting, storedWalletAddress, initiateWallet, dispatch]);
+  }, [wallet, connectedChain, connecting]);
 
   const onClick = async () => {
     if (storedWalletAddress) {

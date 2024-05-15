@@ -28,7 +28,6 @@ export default defineConfig(({ mode }) => {
         '~app': path.resolve('./src/app'),
         '~lib': path.resolve('./src/lib'),
         '~root': path.resolve('./src'),
-        '~config': path.resolve('./config'),
         '~images': path.resolve('./src/images'),
         '~redux': path.resolve('./src/redux/*')
       }

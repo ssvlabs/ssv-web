@@ -20,15 +20,12 @@ export const WalletButton = () => {
 
   return (
     <ConnectButton.Custom>
-      {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
-        // Note: If your app doesn't use authentication, you
-        // can remove all 'authenticationStatus' checks
-        const ready = mounted && authenticationStatus !== 'loading';
-        const connected = ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated');
+      {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+        const connected = mounted && account && chain;
 
         return (
           <div
-            {...(!ready && {
+            {...(!mounted && {
               'aria-hidden': true,
               style: {
                 opacity: 0,

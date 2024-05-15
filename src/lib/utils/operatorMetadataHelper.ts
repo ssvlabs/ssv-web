@@ -184,7 +184,7 @@ export const photoValidation = (file: any, callback: Function) => {
     reader.onloadend = function (e) {
         if (e?.target?.readyState === FileReader.DONE) {
             const base64ImageString = e.target.result;
-            let img = new Image();
+            const img = new Image();
             img.onload = () => {
                 if (img.width < 400 || img.height < 400) {
                     errorMessage = translations.OPERATOR_METADATA.IMAGE_RESOLUTION_ERROR;

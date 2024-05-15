@@ -3,6 +3,8 @@ import { appStateReducer } from '~app/redux/appState.slice';
 import { navStateReducer } from '~app/redux/navigation.slice';
 import { walletStateReducer } from '~app/redux/wallet.slice';
 import { notificationsStateReducer } from '~app/redux/notifications.slice';
+import { accountStateReducer } from '~app/redux/account.slice';
+import { networkStateReducer } from '~app/redux/network.slice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     navState: navStateReducer,
     walletState: walletStateReducer,
     notificationsState: notificationsStateReducer,
+    accountState: accountStateReducer,
+    networkState: networkStateReducer,
   },
 });
 

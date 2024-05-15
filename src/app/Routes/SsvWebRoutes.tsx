@@ -1,9 +1,9 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
-import Layout from '~app/components/common/Layout';
-import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Announcement from '~app/components/common/Annotation/Announcement';
+import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
+import Layout from '~app/components/common/Layout';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsShowSsvLoader } from '~app/redux/appState.slice';
 

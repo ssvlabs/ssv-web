@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -13,7 +13,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const SlashingWarning = () => {

@@ -44,7 +44,7 @@ export type SelectedOperatorData = {
 
 export const parseToMultiShareFormat = (fileJson: string): KeyShareMulti => {
   // TODO replace with call to shares.unified() from ssv-key sdk, per defined the doc 'Multi and single shares specification'
-  let parsedFile = JSON.parse(fileJson);
+  const parsedFile = JSON.parse(fileJson);
   if (!('shares' in parsedFile)) {
     parsedFile.shares = [{ data: parsedFile.data, payload: parsedFile.payload }];
     delete parsedFile.data;

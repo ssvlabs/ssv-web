@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Provider } from 'mobx-react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -20,7 +20,7 @@ root.render(
         <GTMFrame />
       </BrowserRouter>
     </Provider>
-  </RdProvider>,
+  </RdProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

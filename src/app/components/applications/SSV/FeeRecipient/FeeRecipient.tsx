@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
@@ -11,7 +11,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getFeeRecipientAddress, setFeeRecipient as setFeeRecipientAccountService } from '~root/services/account.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { checkAddressChecksum } from '~lib/utils/strings';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const FeeRecipient = () => {

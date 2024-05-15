@@ -16,13 +16,12 @@ import {
   StepperSteps,
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { SingleOperator } from '~app/model/processes.model';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -33,10 +32,11 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
+  const dispatch = useAppDispatch();
 
   const submitFeeChange = async () => {
     setIsLoading(true);
-    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet });
+    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet, dispatch });
     if (response) {
         getCurrentState(true);
     }

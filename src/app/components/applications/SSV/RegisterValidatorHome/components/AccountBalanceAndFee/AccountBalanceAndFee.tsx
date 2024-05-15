@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
@@ -14,7 +14,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const AccountBalanceAndFee = () => {

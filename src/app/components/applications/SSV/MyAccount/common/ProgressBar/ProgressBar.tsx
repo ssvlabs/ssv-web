@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/ProgressBar/ProgressBar.styles';

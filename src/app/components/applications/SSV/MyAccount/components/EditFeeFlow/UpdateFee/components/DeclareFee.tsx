@@ -16,11 +16,11 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
@@ -28,6 +28,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   const classes = useStyles({});
   const [isLoading, setIsLoading] = useState(false);
   const operatorStore: OperatorStore = stores.Operator;
+  const dispatch = useAppDispatch();
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
@@ -35,7 +36,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
 
   const changeOperatorFee = async () => {
     setIsLoading(true);
-    const response = await operatorStore.updateOperatorFee({ operator, newFee, isContractWallet });
+    const response = await operatorStore.updateOperatorFee({ operator, newFee, isContractWallet, dispatch });
     await operatorStore.syncOperatorFeeInfo(operatorStore.processOperatorId);
     if (response) {
       // @ts-ignore

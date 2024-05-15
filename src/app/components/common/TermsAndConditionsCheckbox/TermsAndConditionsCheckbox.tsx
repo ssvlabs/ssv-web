@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Grid } from '@mui/material';
 import styled from 'styled-components';
 import config from '~app/common/config';

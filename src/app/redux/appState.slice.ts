@@ -16,9 +16,9 @@ export interface AppState {
 }
 
 const getInitialStrategyName = () => {
-  if (process.env.REACT_APP_FAUCET_PAGE) {
+  if (import.meta.env.VITE_FAUCET_PAGE) {
     return 'faucet';
-  } if (process.env.REACT_APP_CLAIM_PAGE) {
+  } if (import.meta.env.VITE_CLAIM_PAGE) {
     return 'distribution';
   }
   return 'ssv-web';
@@ -26,7 +26,7 @@ const getInitialStrategyName = () => {
 
 const initialState: AppState = {
   strategyName: getInitialStrategyName(),
-  isDarkMode: !!getFromLocalStorageByKey('isDarkMode') ?? (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches),
+  isDarkMode: !!getFromLocalStorageByKey('isDarkMode') /* ?? (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches) */,
   isLoading: false,
   isShowWalletPopup: false,
   isShowTxPendingPopup: false,

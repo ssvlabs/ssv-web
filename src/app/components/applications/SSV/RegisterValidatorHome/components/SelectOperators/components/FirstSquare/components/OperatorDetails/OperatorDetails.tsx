@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import config from '~app/common/config';
@@ -36,7 +36,7 @@ const OperatorDetails = (props: Props) => {
     operatorLogo: operator.logo,
     gray80,
   });
-  let operatorName = operator?.name;
+  const operatorName = operator?.name;
   const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
   const dispatch = useAppDispatch();
 

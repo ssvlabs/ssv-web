@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,7 @@ import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys
 import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const GenerateOperatorKeys = () => {

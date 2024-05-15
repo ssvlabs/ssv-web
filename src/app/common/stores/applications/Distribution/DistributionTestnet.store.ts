@@ -1,25 +1,24 @@
 import { Contract } from 'ethers';
 import { action, computed, observable } from 'mobx';
-import BaseStore from '~app/common/stores/BaseStore';
+import { translations } from '~app/common/config';
 import merkleTree from '~app/components/applications/Distribution/assets/merkleTreeTestnet.json';
-import { fromWei } from '~root/services/conversions.service';
-import { store } from '~app/store';
 import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { translations } from '~app/common/config';
+import { store } from '~app/store';
+import { fromWei } from '~root/services/conversions.service';
 
 /**
  * Base store provides singe source of true
  * for keeping all stores instances in one place
  */
 
-class DistributionTestnetStore extends BaseStore {
-  @observable rewardIndex: number = 0;
-  @observable claimed: boolean = false;
-  @observable userAddress: string = '';
-  @observable rewardAmount: number = 0;
+class DistributionTestnetStore {
+  @observable rewardIndex = 0;
+  @observable claimed = false;
+  @observable userAddress = '';
+  @observable rewardAmount = 0;
   @observable rewardMerkleProof: string[] = [];
-  @observable userWithdrawRewards: boolean = false;
+  @observable userWithdrawRewards = false;
   @observable distributionContractInstance: Contract | null = null;
 
   @action.bound
@@ -29,12 +28,9 @@ class DistributionTestnetStore extends BaseStore {
       const contract = this.distributionContract;
       const accountAddress = store.getState().walletState.accountAddress;
       store.dispatch(setIsLoading(true));
-      await contract.methods.claim(
-        this.rewardIndex,
-        this.userAddress,
-        String(this.rewardAmount),
-        this.rewardMerkleProof,
-      ).send({ from: accountAddress })
+      await contract.methods
+        .claim(this.rewardIndex, this.userAddress, String(this.rewardAmount), this.rewardMerkleProof)
+        .send({ from: accountAddress })
         .on('receipt', async (receipt: any) => {
           console.log(receipt);
           store.dispatch(setIsLoading(false));
@@ -72,7 +68,7 @@ class DistributionTestnetStore extends BaseStore {
     // @ts-ignore
     const merkleTreeAddresses = Object.keys(merkleTree.claims);
     const accountAddress = store.getState().walletState.accountAddress;
-    const ownerAddress = merkleTreeAddresses.filter(address => address.toLowerCase() === accountAddress.toLowerCase());
+    const ownerAddress = merkleTreeAddresses.filter((address) => address.toLowerCase() === accountAddress.toLowerCase());
     if (!ownerAddress.length) return;
     // @ts-ignore
     const user = merkleTree.claims[ownerAddress[0]];
@@ -110,7 +106,7 @@ class DistributionTestnetStore extends BaseStore {
       //   config.CONTRACTS.SSV_DISTRIBUTION.ADDRESS,
       // );
     }
-    return <Contract> this.distributionContractInstance;
+    return <Contract>this.distributionContractInstance;
   }
 
   @computed
@@ -120,4 +116,5 @@ class DistributionTestnetStore extends BaseStore {
   }
 }
 
+export const distributionTestnetStore = new DistributionTestnetStore();
 export default DistributionTestnetStore;

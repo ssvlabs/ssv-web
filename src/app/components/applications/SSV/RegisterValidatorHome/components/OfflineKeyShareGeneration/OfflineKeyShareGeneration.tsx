@@ -13,7 +13,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
-import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { CopyButton } from '~app/atomicComponents';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
@@ -101,7 +101,7 @@ const OfflineKeyShareGeneration = () => {
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const { apiNetwork } = getStoredNetwork();
-  const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => !validateDkgAddress(operator.dkg_address ?? ''));
+  const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
   const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
   const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
 

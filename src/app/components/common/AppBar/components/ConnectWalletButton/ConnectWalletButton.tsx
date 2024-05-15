@@ -49,6 +49,7 @@ const ConnectWalletButton = () => {
     } else {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
+    await operatorStore.updateOperatorMaxFee();
     await operatorStore.updateOperatorValidatorsLimit();
     dispatch(setIsShowSsvLoader(false));
   };

@@ -64,6 +64,7 @@ class OperatorStore {
   loadingOperators: boolean = false;
 
   operatorValidatorsLimit: number = 0;
+  maxOperatorFeePerYear: number = 0;
   clusterSize: number = 4;
 
   constructor() {
@@ -81,9 +82,9 @@ class OperatorStore {
       openCancelDialog: observable,
       getOperatorFee: action.bound,
       loadingOperators: observable,
-      addNewOperator: action.bound,
       selectOperator: action.bound,
       processOperatorId: observable,
+      addNewOperator: action.bound,
       selectedOperators: observable,
       setOperatorKeys: action.bound,
       operatorFutureFee: observable,
@@ -98,6 +99,7 @@ class OperatorStore {
       syncOperatorFeeInfo: action.bound,
       isOperatorSelected: action.bound,
       getSelectedOperatorsFee: computed,
+      maxOperatorFeePerYear: observable,
       selectedEnoughOperators: computed,
       unselectAllOperators: action.bound,
       clearOperatorFeeInfo: action.bound,
@@ -165,6 +167,24 @@ class OperatorStore {
     try {
       if (this.operatorValidatorsLimit === 0) {
         this.operatorValidatorsLimit = await contract.getValidatorsPerOperatorLimit();
+      }
+    } catch (e) {
+      console.error('Provided contract address is wrong', e);
+    }
+  }
+
+  /**
+   * Get max operator fee
+   */
+  async updateOperatorMaxFee(): Promise<void> {
+    const contract = getContractByName(EContractName.GETTER);
+    if (!contract) {
+      return;
+    }
+    try {
+      if (this.maxOperatorFeePerYear === 0) {
+        const res =  await contract.getMaximumOperatorFee();
+        this.maxOperatorFeePerYear = Number(fromWei(res));
       }
     } catch (e) {
       console.error('Provided contract address is wrong', e);

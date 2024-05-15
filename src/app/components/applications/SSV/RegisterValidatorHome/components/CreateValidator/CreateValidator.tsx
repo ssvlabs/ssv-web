@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -7,7 +7,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const CreateValidator = () => {

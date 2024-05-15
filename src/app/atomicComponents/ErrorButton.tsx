@@ -1,7 +1,6 @@
-import React from 'react';
 import styled from 'styled-components';
-import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';
+import { ButtonSize } from '~app/enums/Button.enum';
 
 const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, isLoading: boolean, isReverseDirection: boolean }>`
     width: 100%;
@@ -24,7 +23,7 @@ const Button = styled.div<{ theme: any, size: ButtonSize, isDisabled: boolean, i
     padding: 0 18px;
     font-weight: 600;
     border: ${({ isLoading, theme, isDisabled }) => !isDisabled && `1px solid ${isLoading ? theme.colors.primaryErrorRegular : theme.colors.primaryError}`};
-    color: ${({ theme, isDisabled, isLoading }) => {
+    color: ${({ theme, isDisabled }) => {
         return isDisabled ? theme.colors.gray40 :  theme.colors.primaryError;
     }};
     cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};;
@@ -55,6 +54,7 @@ const ErrorButton = ({ size, text, icon, isReverseDirection = false, onClick, is
   const handleOnClickFunction = () => onClick && !isDisabled && !isLoading && onClick();
 
   return (
+    // @ts-ignore
     <Button isReverseDirection={isReverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
       {isLoading && <Spinner errorSpinner={true} />}
       {text}

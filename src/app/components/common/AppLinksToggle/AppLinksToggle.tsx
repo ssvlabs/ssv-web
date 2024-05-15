@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import AppLinkOption from './AppLinkOption';
 import { useStyles } from '~app/components/common/AppLinksToggle/AppLinksToggle.styles';

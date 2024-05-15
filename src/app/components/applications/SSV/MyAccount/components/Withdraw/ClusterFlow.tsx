@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import IntegerInput from '~app/components/common/IntegerInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import { depositOrWithdraw, getClusterRunWay } from '~root/services/cluster.service';
+import { getClusterRunWay } from '~root/services/cluster.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
-import ErrorButton from '~app/atomicComponents/ErrorButton';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, ErrorButton } from '~app/atomicComponents';
 import CheckBox from '~app/components/common/CheckBox';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { depositOrWithdraw } from '~root/services/clusterContract.service';
 
-const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollateral, liquidationCollateralPeriod }: {
-  cluster: ICluster;
-  callbackAfterExecution: Function;
-  minimumLiquidationCollateral: number;
-  liquidationCollateralPeriod: number;
-}) => {
+const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollateralPeriod }: { cluster: ICluster; minimumLiquidationCollateral: number; liquidationCollateralPeriod: number; }) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
+  const dispatch = useAppDispatch();
   const classes = useStyles();
   const navigate = useNavigate();
   const clusterBalance = fromWei(cluster.balance);
@@ -80,11 +76,11 @@ const ClusterFlow = ({ cluster, callbackAfterExecution, minimumLiquidationCollat
       isContractWallet,
       minimumLiquidationCollateral,
       liquidationCollateralPeriod,
-      callbackAfterExecution,
       operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
+      dispatch,
     });
     if (success) {
-      navigate(-1);
+      navigate(isClusterLiquidation && !cluster.validatorCount ? -2 : -1);
     }
     setIsLoading(false);
   };

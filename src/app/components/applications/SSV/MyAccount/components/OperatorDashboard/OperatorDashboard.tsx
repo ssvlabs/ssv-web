@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import _ from 'underscore';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,6 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
@@ -19,11 +18,11 @@ import OperatorDetails
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { useAppDispatch } from '~app/hooks/redux.hook';
-import { getOperatorBalance } from '~root/services/operator.service';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getOperatorBalance } from '~root/services/operatorContract.service';
+import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import styled from 'styled-components';
 
 const ButtonWrapper = styled.div`
     width: 164px;
@@ -35,16 +34,21 @@ const OperatorDashboard = () => {
   const navigate = useNavigate();
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const dispatch = useAppDispatch();
   const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState({});
   const [loadingOperators, setLoadingOperators] = useState(false);
-  const { page, pages, per_page, total } = myAccountStore.ownerAddressOperatorsPagination;
+  const { page, pages, per_page, total } = useAppSelector(getOperatorsPagination);
+  const operators = useAppSelector(getAccountOperators);
+
+  useEffect(() => {
+    fetchData();
+  }, [page]);
 
   const fetchData = async () => {
     try {
-      const promises = myAccountStore.ownerAddressOperators.map((operator: IOperator) => new Promise(async () => {
+      // eslint-disable-next-line no-async-promise-executor
+      const promises = operators.map((operator: IOperator) => new Promise(async () => {
         const balance = await getOperatorBalance({ id: operator.id });
         setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
       }));
@@ -53,13 +57,6 @@ const OperatorDashboard = () => {
       dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [page]);
-
-  useEffect(() => {
-  }, [operatorBalances]);
 
   const moveToRegisterOperator = () => {
     navigate(config.routes.SSV.OPERATOR.HOME);
@@ -76,7 +73,7 @@ const OperatorDashboard = () => {
     return { operatorName, status, performance, balance, yearlyFee, validators };
   };
 
-  const rows = myAccountStore.ownerAddressOperators.map((operator: any) => {
+  const rows = operators.map((operator: any) => {
     return createData(
       <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs}/>,
       <Status item={operator}/>,
@@ -95,40 +92,25 @@ const OperatorDashboard = () => {
     if (openExplorerRefs.includes(e.target)) {
       return;
     }
-    const operator = myAccountStore.ownerAddressOperators[listIndex];
+    const operator = operators[listIndex];
     processStore.setProcess({
       processName: 'single_operator',
       // @ts-ignore
       item: { ...operator, balance: operatorBalances[operator.id] },
     }, 1);
-    operatorStore.processOperatorId = myAccountStore.ownerAddressOperators[listIndex].id;
+    operatorStore.processOperatorId = operators[listIndex].id;
+    dispatch(setSelectedOperatorId(operators[listIndex].id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 
-  const onChangePage = _.debounce(async (newPage: number) => {
+  const onChangePage = async (newPage: number) =>  {
     setLoadingOperators(true);
-    await myAccountStore.getOwnerAddressOperators({ forcePage: newPage });
+    await dispatch(fetchOperators({ forcePage: newPage }));
     setLoadingOperators(false);
-  }, 200);
-
-  const sortByStatus = (arr: any) => {
-    return arr.sort((a: any, b: any) => {
-      if (a.status === 'Inactive') {
-        return -1;
-      } else if (b.status === 'Inactive') {
-        return 1;
-      } else if (a.status === 'Active') {
-        return b.status === 'No Validators' ? -1 : -1;
-      } else {
-        return b.status === 'No Validators' ? 0 : 1;
-      }
-    });
   };
 
-
-  const sortOperatorsByStatus = () => {
-    const newOperatorsList = [...myAccountStore.ownerAddressOperators];
-    myAccountStore.ownerAddressOperators = sortByStatus(newOperatorsList);
+  const sortOperatorsByStatusHandler = () => {
+    dispatch(sortOperatorsByStatus());
   };
 
   return (
@@ -156,7 +138,7 @@ const OperatorDashboard = () => {
           { name: 'Operator Name' },
           {
             name: 'Status',
-            onClick: sortOperatorsByStatus,
+            onClick: sortOperatorsByStatusHandler,
             tooltip: 'Is the operator performing duties for the majority of its validators for the last 2 epochs.',
           },
           { name: '30D Performance' },

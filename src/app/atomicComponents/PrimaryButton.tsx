@@ -1,4 +1,4 @@
-import React from 'react';
+
 import styled from 'styled-components';
 import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';

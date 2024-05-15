@@ -1,16 +1,17 @@
-import React from 'react';
+
 import Decimal from 'decimal.js';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/model/processes.model';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 type Props = {
   days?: number,
@@ -34,9 +35,9 @@ enum PaymentId {
 }
 
 const FundingSummary = (props: Props) => {
+  const { networkFee } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
     const stores = useStores();
     const classes = useStyles();
-    const ssvStore: SsvStore = stores.SSV;
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
@@ -50,7 +51,7 @@ const FundingSummary = (props: Props) => {
       { id: PaymentId.LIQUIDATION_COLLATERAL, name: 'Liquidation collateral' },
     ];
 
-    const networkCost = props.networkCost ?? propertyCostByPeriod(ssvStore.networkFee, daysPeriod);
+    const networkCost = props.networkCost ?? propertyCostByPeriod(networkFee, daysPeriod);
     const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
 
     const paymentsValue = (paymentId: number): number | Decimal => {

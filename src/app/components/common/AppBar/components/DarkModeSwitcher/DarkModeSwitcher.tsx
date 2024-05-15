@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { useStyles } from './DarkModeSwitcher.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';

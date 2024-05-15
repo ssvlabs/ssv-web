@@ -5,6 +5,7 @@
     ".dockerignore": "ignore",
     ".eslintignore": "ignore"
   },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
 
   "javascript.validate.enable": false,
   "javascript.format.enable": false,
@@ -18,5 +19,6 @@
     "npm-debug.log.*": true,
     "test/**/__snapshots__": true,
     "yarn.lock": true
-  }
+  },
+  "cSpell.words": ["holesky", "ssvweb", "Wagmi"]
 }

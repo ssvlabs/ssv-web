@@ -1,7 +1,6 @@
-import React from 'react';
 import Grid from '@mui/material/Grid';
 import { truncateText } from '~lib/utils/strings';
-import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import {
   useStyles,
@@ -9,8 +8,8 @@ import {
 import { IOperator } from '~app/model/operator.model';
 
 const DkgOperator = ({ operator }: { operator: IOperator }) => {
-  const dkgEnabled = !validateDkgAddress(operator.dkg_address ?? '');
-  const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled });
+  const isDkgEnabled = isDkgAddressValid(operator.dkg_address ?? '');
+  const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled: isDkgEnabled });
 
   return (
     <Grid className={classes.OperatorDetails}>
@@ -23,7 +22,7 @@ const DkgOperator = ({ operator }: { operator: IOperator }) => {
           <Grid className={classes.OperatorId}>ID: {operator.id}</Grid>
         </Grid>
       </Grid>
-      <Grid className={classes.DkgEnabledBudge}>DKG {dkgEnabled ? 'Enabled' : 'Disabled'}</Grid>
+      <Grid className={classes.DkgEnabledBudge}>DKG {isDkgEnabled ? 'Enabled' : 'Disabled'}</Grid>
     </Grid>
   );
 };

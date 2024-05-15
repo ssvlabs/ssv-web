@@ -148,8 +148,6 @@
     "dev": "rm -rf node_modules/.vite/ && vite",
     "start": "vite",
     "build": "vite build",
-    "test": "cross-env NODE_ENV=test INLINE_RUNTIME_CHUNK=false node scripts/test.js --watchAll=false --verbose --detectOpenHandles --forceExit",
-    "test:dev": "cross-env NODE_ENV=test INLINE_RUNTIME_CHUNK=false node scripts/test.js --coverage --reporters=default",
     "cy:open": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json",
     "cy:open:local": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json --config baseUrl=http://localhost:3000",
     "cy:headless": "cross-env NODE_ENV=test cypress run --config-file cypress-headless.json",

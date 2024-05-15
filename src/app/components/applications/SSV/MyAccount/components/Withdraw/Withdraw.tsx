@@ -1,8 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -10,6 +8,7 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
 import { SingleCluster, SingleOperator } from '~app/model/processes.model';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterBalance } from '~root/services/cluster.service';
@@ -21,11 +20,10 @@ let interval: NodeJS.Timeout;
 
 const Withdraw = () => {
   const accountAddress = useAppSelector(getAccountAddress);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const classes = useStyles();
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
-  const ssvStore: SsvStore = stores.SSV;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
   const processItem = process?.item;
   const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
@@ -33,7 +31,7 @@ const Withdraw = () => {
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       interval = setInterval(async () => {
-        const balance = await getClusterBalance(processItem.operators, accountAddress, ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true);
+        const balance = await getClusterBalance(processItem.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
       }, 12000);
       return () => clearInterval(interval);
@@ -41,33 +39,30 @@ const Withdraw = () => {
   }, []);
 
   return (
-      <Grid container item style={{ gap: 32 }}>
-        <NewWhiteWrapper type={processStore.isValidatorFlow ? 0 : 1} header={processStore.isValidatorFlow ? 'Cluster' : 'Operator Details'}/>
-        <Grid container className={classes.ScreensWrapper} item xs={12}>
-          <BorderScreen
-              marginTop={0}
-              withoutNavigation
-              header={'Available Balance'}
-              wrapperClass={classes.FirstSquare}
-              body={[
-                <Grid item container>
-                  <Grid item xs={12} className={classes.currentBalance}>
-                    {formatNumberToUi(toDecimalNumber(Number(processItemBalance?.toFixed(2))))} SSV
-                  </Grid>
-                  <Grid item xs={12} className={classes.currentBalanceDollar}></Grid>
-                </Grid>,
-              ]}
-          />
-          {processStore.isValidatorFlow ?
-            <ClusterFlow
-              cluster={processItem}
-              callbackAfterExecution={myAccountStore.refreshOperatorsAndClusters}
-              minimumLiquidationCollateral={ssvStore.minimumLiquidationCollateral}
-              liquidationCollateralPeriod={ssvStore.liquidationCollateralPeriod}
-            />
-            : <OperatorFlow operator={processItem} />}
-        </Grid>
+    <Grid container item style={{ gap: 32 }}>
+      <NewWhiteWrapper type={processStore.isValidatorFlow ? 0 : 1} header={processStore.isValidatorFlow ? 'Cluster' : 'Operator Details'} />
+      <Grid container className={classes.ScreensWrapper} item xs={12}>
+        <BorderScreen
+          marginTop={0}
+          withoutNavigation
+          header={'Available Balance'}
+          wrapperClass={classes.FirstSquare}
+          body={[
+            <Grid item container>
+              <Grid item xs={12} className={classes.currentBalance}>
+                {formatNumberToUi(toDecimalNumber(Number(processItemBalance?.toFixed(2))))} SSV
+              </Grid>
+              <Grid item xs={12} className={classes.currentBalanceDollar}></Grid>
+            </Grid>
+          ]}
+        />
+        {processStore.isValidatorFlow ? (
+          <ClusterFlow cluster={processItem} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
+        ) : (
+          <OperatorFlow operator={processItem} />
+        )}
       </Grid>
+    </Grid>
   );
 };
 

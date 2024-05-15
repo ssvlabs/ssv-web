@@ -1,5 +1,6 @@
 import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Grid';
+import { useConnectWallet } from '@web3-onboard/react';
 import { useStyles } from '~app/components/applications/SSV/WalletPopUp/WalletPopUp.styles';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -11,6 +12,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 const WalletPopUp = () => {
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
+  useConnectWallet();
   const dispatch = useAppDispatch();
   const isShowWalletPopup = useAppSelector(getIsShowWalletPopup);
   const { disconnectWallet } = useWalletDisconnector();

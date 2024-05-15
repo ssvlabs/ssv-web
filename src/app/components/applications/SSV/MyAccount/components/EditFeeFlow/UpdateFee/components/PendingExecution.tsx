@@ -2,26 +2,20 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import {
-  IncreaseFlowProps,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
-import {
-  StepperSteps,
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import BorderScreen from '~app/components/common/BorderScreen';
-import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import { ButtonSize } from '~app/enums/Button.enum';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
+import { StepperSteps, useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
+import { useStores } from '~app/hooks/useStores';
+import BorderScreen from '~app/components/common/BorderScreen';
 import { timeDiffCalc } from '~lib/utils/time';
+import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -32,12 +26,13 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
+  const dispatch = useAppDispatch();
 
   const submitFeeChange = async () => {
     setIsLoading(true);
-    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet });
+    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet, dispatch });
     if (response) {
-        getCurrentState(true);
+      getCurrentState(true);
     }
     setIsLoading(false);
   };
@@ -59,15 +54,14 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
               Execute
             </Grid>
           </Grid>
-          <ReactStepper step={StepperSteps.EXECUTION} subTextAlign={'center'}
-                        subText={`Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`} />
+          <ReactStepper step={StepperSteps.EXECUTION} subTextAlign={'center'} subText={`Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>
               <Typography>Execute your new fee in order to finalize the fee update process.</Typography>
             </Grid>
           </Grid>
           <Grid item container className={classes.FeesChangeWrapper}>
-            <ChangeFeeDisplayValues currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
+            <ChangeFeeDisplayValues currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee} />
           </Grid>
           <Grid item className={classes.Notice}>
             <Grid item className={classes.BulletsWrapper}>
@@ -78,14 +72,13 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton hasBgColor={false} text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL}/>
+              <SecondaryButton text={'Cancel'} onClick={cancelUpdateFee} size={ButtonSize.XL} />
             </Grid>
             <Grid item xs>
-              <PrimaryButton isDisabled={false} text={'Execute'}
-                onClick={submitFeeChange} isLoading={isLoading} size={ButtonSize.XL}/>
+              <PrimaryButton isDisabled={false} text={'Execute'} onClick={submitFeeChange} isLoading={isLoading} size={ButtonSize.XL} />
             </Grid>
           </Grid>
-        </Grid>,
+        </Grid>
       ]}
     />
   );

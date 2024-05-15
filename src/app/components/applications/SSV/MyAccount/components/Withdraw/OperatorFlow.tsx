@@ -1,22 +1,18 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { PrimaryButton } from '~app/atomicComponents';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import IntegerInput from '~app/components/common/IntegerInput';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { ButtonSize } from '~app/enums/Button.enum';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { getOperatorBalance, withdrawRewards } from '~root/services/operator.service';
+import { withdrawRewards } from '~root/services/operatorContract.service';
 
-const OperatorFlow = ({ operator }: { operator: IOperator }) => {
+const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
   const [inputValue, setInputValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -25,24 +21,11 @@ const OperatorFlow = ({ operator }: { operator: IOperator }) => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const classes = useStyles();
   const operatorBalance = operator.balance ?? 0;
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const processItem = process?.item;
-
-  const callbackAfterExecution = async () => {
-    const balance = await getOperatorBalance({ id: operator.id });
-    process.item = { ...processItem, balance };
-  };
+  const dispatch = useAppDispatch();
 
   const withdrawSsv = async () => {
     setIsLoading(true);
-    const success = await withdrawRewards({
-      operator,
-      amount: inputValue.toString(),
-      isContractWallet,
-      callbackAfterExecution,
-    });
+    const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet, dispatch });
     setIsLoading(false);
     if (success) {
       navigate(-1);
@@ -109,4 +92,4 @@ const OperatorFlow = ({ operator }: { operator: IOperator }) => {
   );
 };
 
-export default observer(OperatorFlow);
+export default OperatorFlow;

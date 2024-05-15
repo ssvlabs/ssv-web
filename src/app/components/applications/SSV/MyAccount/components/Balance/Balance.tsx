@@ -8,9 +8,8 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 import { fromWei } from '~root/services/conversions.service';
 import { ICluster } from '~app/model/cluster.model';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 
 const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdraw }: { cluster: ICluster; moveToReactivateCluster: Function; moveToDeposit: Function; moveToWithdraw: Function }) => {
   const classes = useStyles();

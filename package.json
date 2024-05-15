@@ -153,7 +153,7 @@
     "cy:open": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json",
     "cy:open:local": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json --config baseUrl=http://localhost:3000",
     "cy:headless": "cross-env NODE_ENV=test cypress run --config-file cypress-headless.json",
-    "lint": "eslint src/** --quiet",
+    "lint": "eslint src/**",
     "postinstall": "link-module-alias && husky install",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true",
     "prepublishOnly": "pinst --disable",

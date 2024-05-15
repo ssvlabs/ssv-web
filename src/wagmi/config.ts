@@ -6,12 +6,12 @@ import { config as projectConfig } from '~app/common/config/config';
 const isFaucet = import.meta.env.VITE_FAUCET_PAGE;
 const isDistribution = import.meta.env.VITE_CLAIM_PAGE;
 
-const app = isFaucet ? 'faucet' : isDistribution ? 'distribution' : 'webapp';
+const app = isFaucet ? 'faucet' : isDistribution ? 'distribution' : 'ssvweb';
 
 const appChains: Record<typeof app, [Chain, ...Chain[]]> = {
-  faucet: [holesky],
+  ssvweb: [mainnet, holesky],
   distribution: [mainnet],
-  webapp: [mainnet, holesky]
+  faucet: [holesky],
 };
 
 export const isChainSupported = (chainId: number) => {

@@ -1,9 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ProcessType, RegisterOperator, RegisterValidator, SingleCluster, SingleOperator } from '~app/model/processes.model';
 
-export const isRegisterValidatorProcess = (process: RegisterValidator | RegisterOperator | SingleCluster | SingleOperator): process is RegisterValidator => {
-  return 'depositAmount' in process;
-};
 class ProcessStore {
   // Process data
   type!: ProcessType;

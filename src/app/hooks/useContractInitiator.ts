@@ -3,10 +3,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useAccountEffect } from 'wagmi';
 import config from '~app/common/config';
-import { MyAccountStore, OperatorStore, SsvStore } from '~app/common/stores/applications/SsvWeb';
+import { OperatorStore } from '~app/common/stores/applications/SsvWeb';
 import { METAMASK_LABEL } from '~app/constants/constants';
+import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
 import { setIsShowSsvLoader } from '~app/redux/appState.slice';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
+import { fetchAndSetNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { checkIfWalletIsContractAction, resetWallet, setConnectedNetwork, setWallet } from '~app/redux/wallet.slice';
 import { store } from '~app/store';
 import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
@@ -34,20 +36,14 @@ export const useContractInitiator = () => {
   const provider = useEthersProvider();
 
   const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
 
   const reset = () => {
     cleanLocalStorageAndCookie();
-
-    ssvStore.clearUserSyncInterval();
     dispatch(resetWallet());
-    ssvStore.clearSettings();
     operatorStore.clearSettings();
     removeFromLocalStorageByKey('params');
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
-
     resetContracts();
     navigate(config.routes.SSV.ROOT);
   };
@@ -63,14 +59,15 @@ export const useContractInitiator = () => {
     notifyService.init(chainId.toString());
     const index = getNetworkInfoIndexByNetworkId(Number(chainId));
     dispatch(setConnectedNetwork(index));
-    initContracts({ provider: provider as any, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
-    await ssvStore.initUser();
+    initContracts({ provider: provider, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
+    await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral());
     await operatorStore.initUser();
-    await myAccountStore.getOwnerAddressOperators({});
-    await myAccountStore.getOwnerAddressClusters({});
-    if (myAccountStore.ownerAddressClusters?.length) {
+    const accountClusters = await dispatch(fetchClusters({}));
+    const accountOperators = await dispatch(fetchOperators({}));
+    if (accountClusters.payload?.clusters.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
-    } else if (myAccountStore.ownerAddressOperators?.length) {
+      // @ts-ignore
+    } else if (accountOperators.payload?.operators.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
     } else {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));

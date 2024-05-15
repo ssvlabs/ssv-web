@@ -2,16 +2,14 @@ import Decimal from 'decimal.js';
 import { Contract } from 'ethers';
 import { action, computed, makeObservable, observable } from 'mobx';
 import config from '~app/common/config';
-import { myAccountStore } from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { EContractName } from '~app/model/contracts.model';
-import { IOperator } from '~app/model/operator.model';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { getContractByName } from '~root/services/contracts.service';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { getContractByName } from '~root/services/contracts.service';
+import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider';
+import { IOperator } from '~app/model/operator.model';
 import { getOperator } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
+import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 export interface NewOperator {
   id: number;
@@ -65,10 +63,8 @@ class OperatorStore {
 
   loadingOperators = false;
 
-  operatorValidatorsLimit = 0;
-  clusterSize = 4;
-
-  private myAccountStore = myAccountStore;
+  operatorValidatorsLimit: number = 0;
+  clusterSize: number = 4;
 
   constructor() {
     makeObservable(this, {
@@ -84,7 +80,6 @@ class OperatorStore {
       setClusterSize: action.bound,
       openCancelDialog: observable,
       getOperatorFee: action.bound,
-      removeOperator: action.bound,
       loadingOperators: observable,
       addNewOperator: action.bound,
       selectOperator: action.bound,
@@ -115,7 +110,6 @@ class OperatorStore {
       getOperatorValidatorsCount: action.bound,
       unselectOperatorByPublicKey: action.bound,
       refreshAndGetOperatorFeeInfo: action.bound,
-      updateOperatorAddressWhitelist: observable,
       newOperatorRegisterSuccessfully: observable,
       updateOperatorValidatorsLimit: action.bound,
       hasOperatorReachedValidatorLimit: action.bound
@@ -132,22 +126,16 @@ class OperatorStore {
     return Object.values(this.selectedOperators).reduce((previousValue: number, currentValue: IOperator) => previousValue + fromWei(currentValue.fee), 0);
   }
 
-  /**
-   * Check if selected necessary minimum of operators
-   */
   get selectedEnoughOperators(): boolean {
     return this.stats.selected >= this.clusterSize;
   }
 
-  /**
-   * Refresh and return current operator fee data
-   */
   async refreshAndGetOperatorFeeInfo(id: number) {
     await this.syncOperatorFeeInfo(id);
     return {
       operatorFutureFee: this.operatorFutureFee,
       operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-      operatorApprovalEndTime: this.operatorApprovalEndTime,
+      operatorApprovalEndTime: this.operatorApprovalEndTime
     };
   }
 
@@ -251,42 +239,7 @@ class OperatorStore {
     }
   }
 
-  /**
-   * update operator address whitelist
-   */
-  async updateOperatorAddressWhitelist({ operator, address, isContractWallet }: {
-    operator: IOperator,
-    address: string,
-    isContractWallet: boolean
-  }) {
-    const contract = getContractByName(EContractName.SETTER);
-    if (!contract) {
-      return false;
-    }
-    const updatedStateGetter = async () => {
-      const operatorAfter = await getOperator(operator.id);
-      return operatorAfter.address_whitelist;
-    };
-
-    return await transactionExecutor({
-      contractMethod: contract.setOperatorWhitelist,
-      payload: [operator.id, address],
-      getterTransactionState: async () => {
-        const newAddress = await updatedStateGetter();
-        return isEqualsAddresses(newAddress, address);
-      },
-      isContractWallet,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  /**
-   * Cancel change fee process for operator
-   */
-  async cancelChangeFeeProcess({ operator, isContractWallet }: {
-    operator: IOperator,
-    isContractWallet: boolean
-  }): Promise<any> {
+  async cancelChangeFeeProcess({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<any> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
@@ -297,14 +250,11 @@ class OperatorStore {
       payload: [operator.id],
       isContractWallet,
       getterTransactionState: async () => await this.refreshAndGetOperatorFeeInfo(operator.id),
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
       prevState: await this.refreshAndGetOperatorFeeInfo(operator.id),
+      dispatch
     });
   }
 
-  /**
-   * get validators of operator
-   */
   async getOperatorValidatorsCount(operatorId: number): Promise<any> {
     return new Promise((resolve) => {
       const contract = getContractByName(EContractName.GETTER);
@@ -356,41 +306,33 @@ class OperatorStore {
     this.newOperatorKeys = transaction;
   }
 
-  /**
-   * Check if operator already exists in the contract
-   * @param operator
-   * @param newFee
-   * @param isContractWallet
-   */
-  async updateOperatorFee({ operator, newFee, isContractWallet }: {
-    operator: IOperator,
-    newFee: any,
-    isContractWallet: boolean
-  }): Promise<boolean> {
+  async updateOperatorFee({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: any; isContractWallet: boolean; dispatch: Function }): Promise<boolean> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
     }
-    const formattedFee = prepareSsvAmountToTransfer(
-      toWei(
-        new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
-      ),
-    );
+    const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
 
     return await transactionExecutor({
       contractMethod: contract.declareOperatorFee,
       payload: [operator.id, formattedFee],
       isContractWallet,
       getterTransactionState: async () => await this.refreshAndGetOperatorFeeInfo(operator.id),
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
       prevState: await this.refreshAndGetOperatorFeeInfo(operator.id),
+      dispatch
     });
   }
 
-  async decreaseOperatorFee({ operator, newFee, isContractWallet }: {
-    operator: IOperator,
-    newFee: any,
-    isContractWallet: boolean
+  async decreaseOperatorFee({
+    operator,
+    newFee,
+    isContractWallet,
+    dispatch
+  }: {
+    operator: IOperator;
+    newFee: any;
+    isContractWallet: boolean;
+    dispatch: Function;
   }): Promise<boolean> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
@@ -406,20 +348,12 @@ class OperatorStore {
         const { id, fee } = await getOperator(operator.id);
         return { id, fee };
       },
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
       prevState: { id: operator.id, fee: operator.fee },
+      dispatch
     });
   }
 
-  /**
-   * Check if operator already exists in the contract
-   * @param operator
-   * @param  isContractWallet
-   */
-  async approveOperatorFee({ operator, isContractWallet }: {
-    operator: IOperator,
-    isContractWallet: boolean
-  }): Promise<boolean> {
+  async approveOperatorFee({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
@@ -433,38 +367,15 @@ class OperatorStore {
         const { id, fee } = await getOperator(operator.id);
         return { id, fee };
       },
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
       prevState: {
         id: operator.id,
-        fee: operator.fee,
+        fee: operator.fee
       },
+      dispatch
     });
   }
 
-  /**
-   * Remove Operator
-   * @param operatorId
-   * @param isContractWallet
-   */
-  async removeOperator({ operatorId, isContractWallet }: {
-    operatorId: number,
-    isContractWallet: boolean
-  }): Promise<any> {
-    const contract: Contract = getContractByName(EContractName.SETTER);
-    if (!contract) {
-      return false;
-    }
-
-    return await transactionExecutor({
-      contractMethod: contract.removeOperator,
-      payload: [operatorId],
-      isContractWallet,
-      getterTransactionState: async () => !await getOperator(operatorId),
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
-    });
-  }
-
-  async addNewOperator(isContractWallet: boolean) {
+  async addNewOperator(isContractWallet: boolean, dispatch: Function) {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
@@ -477,7 +388,7 @@ class OperatorStore {
       payload: [transaction.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))],
       isContractWallet,
       getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
-      callbackAfterExecution: this.myAccountStore.refreshOperatorsAndClusters,
+      dispatch
     });
   }
 

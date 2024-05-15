@@ -1,10 +1,6 @@
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
-import { useStores } from '~app/hooks/useStores';
+import { useEffect, useState } from 'react';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { toWei } from '~root/services/conversions.service';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -12,8 +8,9 @@ import notifyService from '~root/services/notify.service';
 import Spinner from '~app/components/common/Spinner';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import styled from 'styled-components';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, Grid } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { checkAllowance, requestAllowance } from '~root/services/tokenContract.service';
 
 const Container = styled.div`
     display: flex;
@@ -48,10 +45,7 @@ const Step = styled.div<{ isCurrent: boolean, hasFinished?: boolean }>`
     border-radius: 50%;
     text-align: center;
     padding: 3px 10px;
-    background-color: ${({
-                             theme,
-                             isCurrent,
-                         }) => isCurrent ? theme.colors.primarySuccessRegularOpacity : theme.colors.gray10};
+    background-color: ${({ theme, isCurrent }) => isCurrent ? theme.colors.primarySuccessRegularOpacity : theme.colors.gray10};
     border: ${({ theme, isCurrent }) => `1px solid ${isCurrent ? theme.colors.primarySuccessDark : theme.colors.gray30}`};
     ${({ hasFinished }) => {
         if (hasFinished) {
@@ -116,13 +110,11 @@ const AllowanceButton = ({
   const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
   const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
-  const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
 
   useEffect(() => {
     const checkUserAllowance = async () => {
-      await ssvStore.checkAllowance();
-      if (ssvStore.approvedAllowance < Number(toWei(totalAmount))) {
+      const approvedAllowance = await checkAllowance({ accountAddress });
+      if (approvedAllowance < Number(toWei(totalAmount))) {
         setHasToRequestApproval(true);
         setHasGotAllowanceApproval(false);
       } else {
@@ -130,12 +122,7 @@ const AllowanceButton = ({
       }
       setHasCheckedAllowance(true);
     };
-    // eslint-disable-next-line no-constant-condition
-    if (true) {
-      checkUserAllowance();
-    } else {
-      setHasCheckedAllowance(true);
-    }
+    checkUserAllowance();
   }, [totalAmount]);
 
   const handlePendingTransaction = ({ txHash }: { txHash: string }) => {
@@ -144,11 +131,11 @@ const AllowanceButton = ({
     notifyService.hash(txHash);
   };
 
-  const requestAllowance = async () => {
+  const requestAllowanceHandler = async () => {
     try {
       setAllowanceButtonDisable(true);
       setApproveButtonText('Approving…');
-      await ssvStore.requestAllowance(handlePendingTransaction);
+      await requestAllowance(handlePendingTransaction);
       setApproveButtonText('Approved');
       setHasGotAllowanceApproval(true);
       allowanceApprovedCB && allowanceApprovedCB();
@@ -181,9 +168,7 @@ const AllowanceButton = ({
           <PrimaryButton
             text={approveButtonText}
             isDisabled={hasGotAllowanceApproval || disable}
-            onClick={() => {
-              !allowanceButtonDisable && requestAllowance();
-            }}
+            onClick={!allowanceButtonDisable ? requestAllowanceHandler : () => {}}
             size={ButtonSize.XL}
           />
           <PrimaryButton
@@ -229,4 +214,4 @@ const AllowanceButton = ({
   );
 };
 
-export default observer(AllowanceButton);
+export default AllowanceButton;

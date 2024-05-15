@@ -2,33 +2,18 @@ import config from '~app/common/config';
 import { getRequest } from '~root/services/httpApi.service';
 import Decimal from 'decimal.js';
 
-const getOwnerAddressCost = async (ownerAddress: string, skipRetry?: boolean): Promise<any> => {
-  try {
-    const url = `${config.links.SSV_API_ENDPOINT}/validators/owned_by/${ownerAddress}/cost`;
-    return await getRequest(url, skipRetry);
-  } catch (e) {
-    return null;
-  }
-};
-
-const clustersByOwnerAddress = async (query: string): Promise<any> => {
-  console.log('config.links.SSV_API_ENDPOINT:', config.links.SSV_API_ENDPOINT)
-  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${query}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
-  return await getRequest(url);
-};
-
 const getLiquidationCollateralPerValidator = ({
-                                                operatorsFee,
-                                                networkFee,
-                                                liquidationCollateralPeriod,
-                                                validatorsCount = 1,
-                                                minimumLiquidationCollateral,
-                                              }: {
-  operatorsFee: number,
-  networkFee: number,
-  liquidationCollateralPeriod: number,
-  validatorsCount?: number,
-  minimumLiquidationCollateral: number
+  operatorsFee,
+  networkFee,
+  liquidationCollateralPeriod,
+  validatorsCount = 1,
+  minimumLiquidationCollateral
+}: {
+  operatorsFee: number;
+  networkFee: number;
+  liquidationCollateralPeriod: number;
+  validatorsCount?: number;
+  minimumLiquidationCollateral: number;
 }) => {
   let liquidationCollateralCost = new Decimal(operatorsFee).add(networkFee).mul(liquidationCollateralPeriod).mul(validatorsCount);
   if (Number(liquidationCollateralCost) < minimumLiquidationCollateral) {
@@ -44,14 +29,8 @@ const validatorsByClusterHash = async (page: number, clusterHash: string, perPag
 };
 
 const getValidator = async (publicKey: string) => {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
-    return await getRequest(url);
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+  return await getRequest(url);
 };
 
-export {
-  getOwnerAddressCost,
-  clustersByOwnerAddress,
-  validatorsByClusterHash,
-  getLiquidationCollateralPerValidator,
-  getValidator,
-};
+export { validatorsByClusterHash, getLiquidationCollateralPerValidator, getValidator };

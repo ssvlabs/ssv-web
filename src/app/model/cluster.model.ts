@@ -23,4 +23,4 @@ interface ICluster {
   }
 }
 
-export { ICluster };
+export type { ICluster };

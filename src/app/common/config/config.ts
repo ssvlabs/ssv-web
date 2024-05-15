@@ -2,7 +2,7 @@ import { ABI_VERSION } from '~app/common/config/abi';
 import { distributionHelper } from '~lib/utils/distributionHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
-const { networkId, api, tokenAddress, setterContractAddress, getterContractAddress, explorerUrl, apiVersion } = getStoredNetwork();
+const { networkId, tokenAddress, setterContractAddress, getterContractAddress, apiVersion } = getStoredNetwork();
 
 const {
   abi
@@ -10,21 +10,6 @@ const {
 } = distributionHelper(networkId);
 
 export const config = {
-  DEBUG: import.meta.env.VITE_DEBUG || false,
-  retry: {
-    default: {
-      maxAttempts: 5,
-      backOff: 500,
-      exponentialOption: {
-        maxInterval: 5000,
-        multiplier: 2
-      },
-      doRetry: (e: Error) => {
-        console.error(`Error: ${e.message || e.stack || e}. Retrying..`);
-        return true;
-      }
-    }
-  },
   routes: {
     COUNTRY_NOT_SUPPORTED: '/compliance',
     DISTRIBUTION: {
@@ -122,14 +107,6 @@ export const config = {
       }
     }
   },
-  FEATURE: {
-    DOLLAR_CALCULATION: import.meta.env.VITE_SHOULD_CALCULATE_DOLLAR,
-    OPERATORS: {
-      VALID_KEY_LENGTH: 612,
-      SELECT_MINIMUM_OPERATORS: 4,
-      AUTO_SELECT: import.meta.env.VITE_FEATURE_AUTO_SELECT_OPERATORS
-    }
-  },
   links: {
     get SSV_API_ENDPOINT() {
       return getStoredNetwork().api;
@@ -144,7 +121,6 @@ export const config = {
     TERMS_OF_USE_LINK: 'https://ssv.network/terms-of-use/',
     PRIVACY_POLICY_LINK: 'https://ssv.network/privacy-policy/',
     LINK_SSV_DEV_DOCS: import.meta.env.VITE_LINK_SSV_DEV_DOCS,
-    LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
@@ -190,7 +166,7 @@ export const config = {
     MAX_VALIDATORS_COUNT_MULTI_FLOW: 50,
     CLUSTER_VALIDITY_PERIOD_MINIMUM: 30,
     OPERATOR_VALIDATORS_LIMIT_PRESERVE: 5,
-    MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.00000001,
+    MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.000000001,
     MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION: 1,
     DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000'
   },
@@ -230,6 +206,6 @@ const DEFAULT_PAGINATION = {
   per_page: 10
 };
 
-export { HOLESKY_RPC_URL, MAINNET_RPC_URL, DEFAULT_PAGINATION };
+export { DEFAULT_PAGINATION, HOLESKY_RPC_URL, MAINNET_RPC_URL };
 
 export default config;

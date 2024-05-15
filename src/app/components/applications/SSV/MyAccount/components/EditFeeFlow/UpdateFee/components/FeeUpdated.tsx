@@ -2,7 +2,6 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import config from '~app/common/config';
 import {
   IncreaseFlowProps,
@@ -12,9 +11,10 @@ import {
   StepperSteps,
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { PrimaryButton } from '~app/atomicComponents';
+import { ButtonSize } from '~app/enums/Button.enum';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import { ButtonSize } from '~app/enums/Button.enum';
 
 const FeeUpdated = ({ oldFee, newFee, currentCurrency }: IncreaseFlowProps) => {
   const navigate = useNavigate();

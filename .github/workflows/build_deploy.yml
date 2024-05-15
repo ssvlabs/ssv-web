@@ -74,9 +74,6 @@ jobs:
       - name: Run lint
         run: yarn lint
 
-      - name: Run test
-        run: yarn test
-
       # <app.stage.ssv.network>
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'

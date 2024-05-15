@@ -11,8 +11,8 @@ import {
   OPERATOR_NODE_TYPES,
   camelToSnakeFieldsMapping,
   exceptions,
-  isLink,
-  validateDkgAddress
+  isValidLink,
+  isDkgAddressValid
 } from '~lib/utils/operatorMetadataHelper';
 import { checkSpecialCharacters } from '~lib/utils/strings';
 import { getOperatorAvailableLocations, getOperatorNodes } from '~root/services/operator.service';
@@ -219,12 +219,12 @@ class OperatorMetadataStore {
   checkFieldValue(metadataFieldName: string, fieldValue: string) {
     if (metadataFieldName === FIELD_KEYS.DKG_ADDRESS) {
       return {
-        result: validateDkgAddress(fieldValue, true),
+        result: !isDkgAddressValid(fieldValue, true),
         errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR
       };
     } else {
       return {
-        result: isLink(fieldValue),
+        result: !isValidLink(fieldValue),
         errorMessage: translations.OPERATOR_METADATA.LINK_ERROR
       };
     }

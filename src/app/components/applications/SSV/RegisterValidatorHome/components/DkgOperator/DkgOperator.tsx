@@ -1,7 +1,7 @@
 
 import Grid from '@mui/material/Grid';
 import { truncateText } from '~lib/utils/strings';
-import { validateDkgAddress } from '~lib/utils/operatorMetadataHelper';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import {
   useStyles,
@@ -9,7 +9,7 @@ import {
 import { IOperator } from '~app/model/operator.model';
 
 const DkgOperator = ({ operator }: { operator: IOperator }) => {
-  const dkgEnabled = !validateDkgAddress(operator.dkg_address ?? '');
+  const dkgEnabled = isDkgAddressValid(operator.dkg_address ?? '');
   const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled });
 
   return (
